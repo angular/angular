@@ -637,18 +637,18 @@ export interface Inject {
 export const Inject: InjectDecorator;
 
 // @public (undocumented)
-export function inject<T>(token: ProviderToken<T>): T;
+export function inject<T>(token: ProviderToken<T extends (infer K)[] ? K : T>): T;
 
 // @public @deprecated (undocumented)
-export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
+export function inject<T>(token: ProviderToken<T extends (infer K)[] ? K : T>, flags?: InjectFlags): T | null;
 
 // @public (undocumented)
-export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {
+export function inject<T>(token: ProviderToken<T extends (infer K)[] ? K : T>, options: InjectOptions & {
     optional?: false;
 }): T;
 
 // @public (undocumented)
-export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T | null;
+export function inject<T>(token: ProviderToken<T extends (infer K)[] ? K : T>, options: InjectOptions): T | null;
 
 // @public
 export interface Injectable {
@@ -1513,10 +1513,10 @@ export function ɵɵdefineInjectable<T>(opts: {
 }): unknown;
 
 // @public
-export function ɵɵinject<T>(token: ProviderToken<T>): T;
+export function ɵɵinject<T>(token: ProviderToken<T extends (infer K)[] ? K : T>): T;
 
 // @public (undocumented)
-export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
+export function ɵɵinject<T>(token: ProviderToken<T extends (infer K)[] ? K : T>, flags?: InjectFlags): T | null;
 
 // @public
 export function ɵɵinjectAttribute(attrNameToInject: string): string | null;

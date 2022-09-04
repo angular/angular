@@ -49,10 +49,11 @@ export function setCurrentInjector(injector: Injector|null|undefined): Injector|
   return former;
 }
 
-export function injectInjectorOnly<T>(token: ProviderToken<T>): T;
-export function injectInjectorOnly<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
-export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|
-    null {
+export function injectInjectorOnly<T>(token: ProviderToken<T extends(infer K)[] ? K : T>): T;
+export function injectInjectorOnly<T>(
+    token: ProviderToken<T extends(infer K)[] ? K : T>, flags?: InjectFlags): T|null;
+export function injectInjectorOnly<T>(
+    token: ProviderToken<T extends(infer K)[] ? K : T>, flags = InjectFlags.Default): T|null {
   if (_currentInjector === undefined) {
     throw new RuntimeError(
         RuntimeErrorCode.MISSING_INJECTION_CONTEXT,
@@ -61,7 +62,8 @@ export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFla
   } else if (_currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
-    return _currentInjector.get(token, flags & InjectFlags.Optional ? null : undefined, flags);
+    return _currentInjector.get(
+        token as ProviderToken<T>, flags & InjectFlags.Optional ? null : undefined, flags);
   }
 }
 
@@ -75,9 +77,11 @@ export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFla
  * @codeGenApi
  * @publicApi This instruction has been emitted by ViewEngine for some time and is deployed to npm.
  */
-export function ɵɵinject<T>(token: ProviderToken<T>): T;
-export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
-export function ɵɵinject<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|null {
+export function ɵɵinject<T>(token: ProviderToken<T extends(infer K)[] ? K : T>): T;
+export function ɵɵinject<T>(
+    token: ProviderToken<T extends(infer K)[] ? K : T>, flags?: InjectFlags): T|null;
+export function ɵɵinject<T>(
+    token: ProviderToken<T extends(infer K)[] ? K : T>, flags = InjectFlags.Default): T|null {
   return (getInjectImplementation() || injectInjectorOnly)(resolveForwardRef(token), flags);
 }
 
@@ -138,7 +142,7 @@ export interface InjectOptions {
  *
  * @publicApi
  */
-export function inject<T>(token: ProviderToken<T>): T;
+export function inject<T>(token: ProviderToken<T extends(infer K)[] ? K : T>): T;
 /**
  * @param token A token that represents a dependency that should be injected.
  * @param flags Control how injection is executed. The flags correspond to injection strategies that
@@ -149,7 +153,8 @@ export function inject<T>(token: ProviderToken<T>): T;
  * @publicApi
  * @deprecated prefer an options object instead of `InjectFlags`
  */
-export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
+export function inject<T>(
+    token: ProviderToken<T extends(infer K)[] ? K : T>, flags?: InjectFlags): T|null;
 /**
  * @param token A token that represents a dependency that should be injected.
  * @param options Control how injection is executed. Options correspond to injection strategies
@@ -160,7 +165,9 @@ export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
  *
  * @publicApi
  */
-export function inject<T>(token: ProviderToken<T>, options: InjectOptions&{optional?: false}): T;
+export function inject<T>(
+    token: ProviderToken<T extends(infer K)[] ? K : T>,
+    options: InjectOptions&{optional?: false}): T;
 /**
  * @param token A token that represents a dependency that should be injected.
  * @param options Control how injection is executed. Options correspond to injection strategies
@@ -173,7 +180,8 @@ export function inject<T>(token: ProviderToken<T>, options: InjectOptions&{optio
  *
  * @publicApi
  */
-export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T|null;
+export function inject<T>(
+    token: ProviderToken<T extends(infer K)[] ? K : T>, options: InjectOptions): T|null;
 /**
  * Injects a token from the currently active injector.
  * `inject` is only supported during instantiation of a dependency by the DI system. It can be used
@@ -239,7 +247,8 @@ export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T|nu
  * @publicApi
  */
 export function inject<T>(
-    token: ProviderToken<T>, flags: InjectFlags|InjectOptions = InjectFlags.Default): T|null {
+    token: ProviderToken<T extends(infer K)[] ? K : T>,
+    flags: InjectFlags|InjectOptions = InjectFlags.Default): T|null {
   if (typeof flags !== 'number') {
     // While TypeScript doesn't accept it without a cast, bitwise OR with false-y values in
     // JavaScript is a no-op. We can use that for a very codesize-efficient conversion from

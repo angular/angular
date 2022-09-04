@@ -87,8 +87,11 @@ export interface TestBed {
 
   compileComponents(): Promise<any>;
 
-  inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
+  inject<T>(
+      token: ProviderToken<T extends(infer K)[]? K : T>, notFoundValue?: T, flags?: InjectFlags): T;
+  inject<T>(
+      token: ProviderToken<T extends(infer K)[]? K : T>, notFoundValue: null,
+      flags?: InjectFlags): T|null;
 
   /** @deprecated from v9.0.0 use TestBed.inject */
   get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
@@ -290,9 +293,14 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.overrideProvider(token, provider);
   }
 
-  static inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  static inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
-  static inject<T>(token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags): T|null {
+  static inject<T>(
+      token: ProviderToken<T extends(infer K)[]? K : T>, notFoundValue?: T, flags?: InjectFlags): T;
+  static inject<T>(
+      token: ProviderToken<T extends(infer K)[]? K : T>, notFoundValue: null,
+      flags?: InjectFlags): T|null;
+  static inject<T>(
+      token: ProviderToken<T extends(infer K)[]? K : T>, notFoundValue?: T|null,
+      flags?: InjectFlags): T|null {
     return TestBedImpl.INSTANCE.inject(token, notFoundValue, flags);
   }
 
@@ -468,16 +476,22 @@ export class TestBedImpl implements TestBed {
     return this.compiler.compileComponents();
   }
 
-  inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
-  inject<T>(token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags): T|null {
+  inject<T>(
+      token: ProviderToken<T extends(infer K)[]? K : T>, notFoundValue?: T, flags?: InjectFlags): T;
+  inject<T>(
+      token: ProviderToken<T extends(infer K)[]? K : T>, notFoundValue: null,
+      flags?: InjectFlags): T|null;
+  inject<T>(
+      token: ProviderToken<T extends(infer K)[]? K : T>, notFoundValue?: T|null,
+      flags?: InjectFlags): T|null {
     if (token as unknown === TestBed) {
       return this as any;
     }
     const UNDEFINED = {} as unknown as T;
-    const result = this.testModuleRef.injector.get(token, UNDEFINED, flags);
-    return result === UNDEFINED ? this.compiler.injector.get(token, notFoundValue, flags) as any :
-                                  result;
+    const result = this.testModuleRef.injector.get(token as ProviderToken<T>, UNDEFINED, flags);
+    return result === UNDEFINED ?
+        this.compiler.injector.get(token as ProviderToken<T>, notFoundValue, flags) as any :
+        result;
   }
 
   /** @deprecated from v9.0.0 use TestBed.inject */

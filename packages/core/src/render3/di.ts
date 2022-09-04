@@ -333,7 +333,8 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
 
 
 function notFoundValueOrThrow<T>(
-    notFoundValue: T|null, token: ProviderToken<T>, flags: InjectFlags): T|null {
+    notFoundValue: T|null, token: ProviderToken<T extends(infer K)[] ? K : T>,
+    flags: InjectFlags): T|null {
   if ((flags & InjectFlags.Optional) || notFoundValue !== undefined) {
     return notFoundValue;
   } else {
@@ -351,7 +352,8 @@ function notFoundValueOrThrow<T>(
  * @returns the value from the injector or throws an exception
  */
 function lookupTokenUsingModuleInjector<T>(
-    lView: LView, token: ProviderToken<T>, flags: InjectFlags, notFoundValue?: any): T|null {
+    lView: LView, token: ProviderToken<T extends(infer K)[] ? K : T>, flags: InjectFlags,
+    notFoundValue?: any): T|null {
   if ((flags & InjectFlags.Optional) && notFoundValue === undefined) {
     // This must be set or the NullInjector will throw for optional deps
     notFoundValue = null;
@@ -393,8 +395,9 @@ function lookupTokenUsingModuleInjector<T>(
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
-    tNode: TDirectiveHostNode|null, lView: LView, token: ProviderToken<T>,
-    flags: InjectFlags = InjectFlags.Default, notFoundValue?: any): T|null {
+    tNode: TDirectiveHostNode|null, lView: LView,
+    token: ProviderToken<T extends(infer K)[] ? K : T>, flags: InjectFlags = InjectFlags.Default,
+    notFoundValue?: any): T|null {
   if (tNode !== null) {
     // If the view or any of its ancestors have an embedded
     // view injector, we have to look it up there first.
@@ -428,8 +431,8 @@ export function getOrCreateInjectable<T>(
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 function lookupTokenUsingNodeInjector<T>(
-    tNode: TDirectiveHostNode, lView: LView, token: ProviderToken<T>, flags: InjectFlags,
-    notFoundValue?: any) {
+    tNode: TDirectiveHostNode, lView: LView, token: ProviderToken<T extends(infer K)[] ? K : T>,
+    flags: InjectFlags, notFoundValue?: any) {
   const bloomHash = bloomHashBitOrFactory(token);
   // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
   // so just call the factory function to create it.
@@ -519,8 +522,8 @@ function lookupTokenUsingNodeInjector<T>(
 }
 
 function searchTokensOnInjector<T>(
-    injectorIndex: number, lView: LView, token: ProviderToken<T>, previousTView: TView|null,
-    flags: InjectFlags, hostTElementNode: TNode|null) {
+    injectorIndex: number, lView: LView, token: ProviderToken<T extends(infer K)[] ? K : T>,
+    previousTView: TView|null, flags: InjectFlags, hostTElementNode: TNode|null) {
   const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
   // First, we need to determine if view providers can be accessed by the starting element.
@@ -566,8 +569,8 @@ function searchTokensOnInjector<T>(
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, tView: TView, token: ProviderToken<T>|string, canAccessViewProviders: boolean,
-    isHostSpecialCase: boolean|number): number|null {
+    tNode: TNode, tView: TView, token: ProviderToken<T extends(infer K)[] ? K : T>|string,
+    canAccessViewProviders: boolean, isHostSpecialCase: boolean|number): number|null {
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
 
@@ -769,8 +772,8 @@ function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T | null)|null {
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 function lookupTokenUsingEmbeddedInjector<T>(
-    tNode: TDirectiveHostNode, lView: LView, token: ProviderToken<T>, flags: InjectFlags,
-    notFoundValue?: any) {
+    tNode: TDirectiveHostNode, lView: LView, token: ProviderToken<T extends(infer K)[] ? K : T>,
+    flags: InjectFlags, notFoundValue?: any) {
   let currentTNode: TDirectiveHostNode|null = tNode;
   let currentLView: LView|null = lView;
 
@@ -804,7 +807,7 @@ function lookupTokenUsingEmbeddedInjector<T>(
       const embeddedViewInjector = currentLView[EMBEDDED_VIEW_INJECTOR];
       if (embeddedViewInjector) {
         const embeddedViewInjectorValue =
-            embeddedViewInjector.get(token, NOT_FOUND as T | {}, flags);
+            embeddedViewInjector.get(token as ProviderToken<T>, NOT_FOUND as T | {}, flags);
         if (embeddedViewInjectorValue !== NOT_FOUND) {
           return embeddedViewInjectorValue;
         }

@@ -115,9 +115,9 @@ export interface TestBed {
     get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     // (undocumented)
-    inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    inject<T>(token: ProviderToken<T extends (infer K)[] ? K : T>, notFoundValue?: T, flags?: InjectFlags): T;
     // (undocumented)
-    inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
+    inject<T>(token: ProviderToken<T extends (infer K)[] ? K : T>, notFoundValue: null, flags?: InjectFlags): T | null;
     // (undocumented)
     get ngModule(): Type<any> | Type<any>[];
     // (undocumented)

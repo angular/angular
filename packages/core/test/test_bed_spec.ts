@@ -1037,6 +1037,79 @@ describe('TestBed', () => {
       expect(value.length).toEqual(overrideValue.length);
       expect(value).toEqual(overrideValue as {} as string[]);
     });
+
+    describe('multi-provided tokens', () => {
+      const multiProvidedStringToken = new InjectionToken<string>('multiProvidedStringToken');
+      const strings = ['str1', 'str2', 'str3'];
+
+      const multiProvidedObjectToken =
+          new InjectionToken<{value: string}>('multiProvidedObjectToken');
+      const objValues = [{value: 'obj1'}, {value: 'obj2'}];
+
+      const multiProvidedArrayToken = new InjectionToken<number[]>('multiProvidedArrayToken');
+      const numbers = [[1, 10, 100], [9, 99, 999]];
+
+      beforeEach(() => {
+        @NgModule({
+          providers: [
+            {provide: multiProvidedStringToken, useValue: strings[0], multi: true},
+            {provide: multiProvidedStringToken, useValue: strings[1], multi: true},
+            {provide: multiProvidedStringToken, useValue: strings[2], multi: true},
+            {provide: multiProvidedObjectToken, useValue: objValues[0], multi: true},
+            {provide: multiProvidedObjectToken, useValue: objValues[1], multi: true},
+            {provide: multiProvidedArrayToken, useValue: numbers[0], multi: true},
+            {provide: multiProvidedArrayToken, useValue: numbers[1], multi: true}
+          ]
+        })
+        class MyModule3 {
+        }
+
+        TestBed.configureTestingModule({imports: [MyModule3]});
+      });
+
+      it('infers the injectors return type for multi-provided string (primitive)', () => {
+        // define the injectors return type by providing a value for the generic
+        const values = TestBed.inject<string[]>(multiProvidedStringToken);
+
+        // @ts-expect-error
+        expect(() => values.toUpperCase())
+            .toThrowError();  // arrays do not have toUpperCase (as opposed to strings)
+
+        expect(Array.isArray(values)).toBe(true);
+        expect(values.length).toEqual(3);
+        expect(values[0]).toEqual(strings[0]);
+        expect(values[1]).toEqual(strings[1]);
+        expect(values[2]).toEqual(strings[2]);
+      });
+
+      it('infers the injectors return type for multi-provided object', () => {
+        const values = TestBed.inject<({value: string})[]>(multiProvidedObjectToken);
+
+        // @ts-expect-error
+        expect(() => values.value.toLowerCase())
+            .toThrowError();  // prop value does not exist on array
+
+        expect(Array.isArray(values)).toBe(true);
+        expect(values.length).toEqual(2);
+        expect(values[0]).toEqual(objValues[0]);
+        expect(values[1]).toEqual(objValues[1]);
+      });
+
+      it('infers the injectors return type for multi-provided array', () => {
+        const values = TestBed.inject<number[][]>(multiProvidedArrayToken);
+
+        values.forEach(value => {
+          // @ts-expect-error
+          expect(() => value.toExponential())
+              .toThrowError();  // number[] (array) does not have toExponential
+        });
+
+        expect(Array.isArray(values)).toBe(true);
+        expect(values.length).toEqual(2);
+        expect(values[0]).toEqual(numbers[0]);
+        expect(values[1]).toEqual(numbers[1]);
+      });
+    });
   });
 
   describe('overrides providers in ModuleWithProviders', () => {

@@ -206,7 +206,7 @@ export class R3Injector extends EnvironmentInjector {
   }
 
   override get<T>(
-      token: ProviderToken<T>, notFoundValue: any = THROW_IF_NOT_FOUND,
+      token: ProviderToken<T extends(infer K)[]? K : T>, notFoundValue: any = THROW_IF_NOT_FOUND,
       flags = InjectFlags.Default): T {
     this.assertNotDestroyed();
     // Set the injection context.
@@ -344,7 +344,7 @@ export class R3Injector extends EnvironmentInjector {
     this.records.set(token, record);
   }
 
-  private hydrate<T>(token: ProviderToken<T>, record: Record<T>): T {
+  private hydrate<T>(token: ProviderToken<T extends(infer K)[]? K : T>, record: Record<T>): T {
     if (ngDevMode && record.value === CIRCULAR) {
       throwCyclicDependencyError(stringify(token));
     } else if (record.value === NOT_YET) {
