@@ -8,16 +8,186 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
-import {Component, Provider, Type} from '@angular/core';
+import {PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
+import {Component, PLATFORM_ID, Provider, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
+import {PRELOADED_IMAGES} from '../..//src/directives/ng_optimized_image/tokens';
 import {createImageLoader, IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
 import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, IMAGE_CONFIG, ImageConfig, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
+  describe('preload <link> element on a server', () => {
+    it('should create `<link>` element when the image priority attr is true', () => {
+      // Only run this test in a browser since the Node-based DOM mocks don't
+      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+      if (!isBrowser) return;
+
+      const src = 'preload1/img.png';
+
+      setupTestingModule({
+        extraProviders: [
+          {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID}, {
+            provide: IMAGE_LOADER,
+            useValue: (config: ImageLoaderConfig) => config.width ?
+                `https://angular.io/${config.src}?width=${config.width}` :
+                `https://angular.io/${config.src}`
+          }
+        ]
+      });
+
+      const template =
+          `<img ngSrc="${src}" width="150" height="50" priority sizes="10vw" ngSrcset="100w">`;
+      TestBed.overrideComponent(TestComponent, {set: {template: template}});
+
+      const _document = TestBed.inject(DOCUMENT);
+      const _window = _document.defaultView!;
+      const setAttributeSpy =
+          spyOn(_window.HTMLLinkElement.prototype, 'setAttribute').and.callThrough();
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const head = _document.head;
+
+      const rewrittenSrc = `https://angular.io/${src}`;
+
+      const preloadLink = head.querySelector(`link[href="${rewrittenSrc}"]`);
+
+      expect(preloadLink).toBeTruthy();
+
+      const [name, value] = setAttributeSpy.calls.argsFor(0);
+
+      expect(name).toEqual('as');
+      expect(value).toEqual('image');
+
+      expect(preloadLink!.getAttribute('rel')).toEqual('preload');
+      expect(preloadLink!.getAttribute('as')).toEqual('image');
+      expect(preloadLink!.getAttribute('imagesizes')).toEqual('10vw');
+      expect(preloadLink!.getAttribute('imagesrcset')).toEqual(`${rewrittenSrc}?width=100 100w`);
+
+      preloadLink!.remove();
+    });
+
+    it('should not create a preload `<link>` element when src is already preloaded.', () => {
+      // Only run this test in a browser since the Node-based DOM mocks don't
+      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+      if (!isBrowser) return;
+
+      const src = `preload2/img.png`;
+
+      const rewrittenSrc = `https://angular.io/${src}`;
+
+      setupTestingModule({
+        extraProviders: [
+          {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID}, {
+            provide: IMAGE_LOADER,
+            useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`
+          }
+        ]
+      });
+
+      const template = `<img ngSrc="${src}" width="150" height="50" priority><img ngSrc="${
+          src}" width="150" height="50" priority>`;
+      TestBed.overrideComponent(TestComponent, {set: {template: template}});
+
+      const _document = TestBed.inject(DOCUMENT);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const head = _document.head;
+
+      const preloadImages = TestBed.inject(PRELOADED_IMAGES);
+
+      expect(preloadImages.has(rewrittenSrc)).toBeTruthy();
+
+      const preloadLinks = head.querySelectorAll(`link[href="${rewrittenSrc}"]`);
+
+      expect(preloadLinks.length).toEqual(1);
+
+      preloadLinks[0]!.remove();
+    });
+
+    it('should error when the number of preloaded images is larger than the limit', () => {
+      // Only run this test in a browser since the Node-based DOM mocks don't
+      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+      if (!isBrowser) return;
+
+      setupTestingModule({
+        extraProviders: [
+          {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID}, {
+            provide: IMAGE_LOADER,
+            useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`
+          }
+        ]
+      });
+
+      const template = `
+                <img ngSrc="preloaderror2/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror3/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderro4/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror5/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror6/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror7/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror8/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror9/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror10/img.png" width="150" height="50" priority>
+                `;
+
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02961: The `NgOptimizedImage` directive has detected that more than 5 images were marked as priority. This might negatively affect an overall performance of the page. To fix this, remove the "priority" attribute from images with less priority.');
+    });
+
+    it('should not hit max preload limit when not on the server', () => {
+      // Only run this test in a browser since the Node-based DOM mocks don't
+      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+      if (!isBrowser) return;
+
+      setupTestingModule({
+        extraProviders: [{
+          provide: IMAGE_LOADER,
+          useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`
+        }]
+      });
+
+      const template = `
+                <img ngSrc="preloadbrowser1/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser2/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser3/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser4/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser5/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser6/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser7/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser8/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser9/img.png" width="150" height="50" priority>
+                `;
+
+      TestBed.overrideComponent(TestComponent, {set: {template: template}});
+
+      const _document = TestBed.inject(DOCUMENT);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const head = _document.head;
+
+      const preloadImages = TestBed.inject(PRELOADED_IMAGES);
+
+      const preloadLinks = head.querySelectorAll(`link[preload]`);
+
+      expect(preloadImages.size).toEqual(0);
+      expect(preloadLinks.length).toEqual(0);
+    });
+  });
+
   it('should set `loading` and `fetchpriority` attributes before `src`', () => {
     // Only run this test in a browser since the Node-based DOM mocks don't
     // allow to override `HTMLImageElement.prototype.setAttribute` easily.
@@ -741,9 +911,7 @@ describe('Image directive', () => {
 
     describe('PRECONNECT_CHECK_BLOCKLIST token', () => {
       it(`should allow passing host names`, withHead('', () => {
-           const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.io'},
-           ];
+           const providers = [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.io'}];
            setupTestingModule({imageLoader, extraProviders: providers});
 
            const consoleWarnSpy = spyOn(console, 'warn');
@@ -756,9 +924,8 @@ describe('Image directive', () => {
          }));
 
       it(`should allow passing origins`, withHead('', () => {
-           const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io'},
-           ];
+           const providers =
+               [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io'}];
            setupTestingModule({imageLoader, extraProviders: providers});
 
            const consoleWarnSpy = spyOn(console, 'warn');
@@ -771,9 +938,8 @@ describe('Image directive', () => {
          }));
 
       it(`should allow passing arrays of host names`, withHead('', () => {
-           const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.io']},
-           ];
+           const providers =
+               [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.io']}];
            setupTestingModule({imageLoader, extraProviders: providers});
 
            const consoleWarnSpy = spyOn(console, 'warn');
@@ -786,9 +952,8 @@ describe('Image directive', () => {
          }));
 
       it(`should allow passing nested arrays of host names`, withHead('', () => {
-           const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.io']]},
-           ];
+           const providers =
+               [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.io']]}];
            setupTestingModule({imageLoader, extraProviders: providers});
 
            const consoleWarnSpy = spyOn(console, 'warn');
@@ -1207,10 +1372,7 @@ const IMG_BASE_URL = {
 const ANGULAR_LOGO_BASE64 =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==';
 
-@Component({
-  selector: 'test-cmp',
-  template: '',
-})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   width = 100;
   height = 50;
@@ -1231,9 +1393,8 @@ function setupTestingModule(config?: {
   const loader = config?.imageLoader || defaultLoader;
   const extraProviders = config?.extraProviders || [];
   const providers: Provider[] = [
-    {provide: DOCUMENT, useValue: window.document},
-    {provide: IMAGE_LOADER, useValue: loader},
-    ...extraProviders,
+    {provide: DOCUMENT, useValue: window.document}, {provide: IMAGE_LOADER, useValue: loader},
+    ...extraProviders
   ];
   if (config?.imageConfig) {
     providers.push({provide: IMAGE_CONFIG, useValue: config.imageConfig});
@@ -1244,7 +1405,7 @@ function setupTestingModule(config?: {
     // Note: the `NgOptimizedImage` directive is experimental and is not a part of the
     // `CommonModule` yet, so it's imported separately.
     imports: [CommonModule, NgOptimizedImage],
-    providers,
+    providers
   });
 }
 
