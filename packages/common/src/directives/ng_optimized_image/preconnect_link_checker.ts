@@ -49,6 +49,8 @@ export const PRECONNECT_CHECK_BLOCKLIST =
  */
 @Injectable({providedIn: 'root'})
 export class PreconnectLinkChecker {
+  private document = inject(DOCUMENT);
+
   /**
    * Set of <link rel="preconnect"> tags found on this page.
    * The `null` value indicates that there was no DOM query operation performed.
@@ -66,7 +68,7 @@ export class PreconnectLinkChecker {
 
   constructor() {
     assertDevMode('preconnect link checker');
-    const win = inject(DOCUMENT).defaultView;
+    const win = this.document.defaultView;
     if (typeof win !== 'undefined') {
       this.window = win;
     }
@@ -127,7 +129,7 @@ export class PreconnectLinkChecker {
   private queryPreconnectLinks(): Set<string> {
     const preconnectUrls = new Set<string>();
     const selector = 'link[rel=preconnect]';
-    const links: HTMLLinkElement[] = Array.from(document.querySelectorAll(selector));
+    const links: HTMLLinkElement[] = Array.from(this.document.querySelectorAll(selector));
     for (let link of links) {
       const url = getUrl(link.href, this.window!);
       preconnectUrls.add(url.origin);
