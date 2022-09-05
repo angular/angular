@@ -51,7 +51,7 @@ This example shows some of the most useful `@Component` configuration options:
 | Configuration options | Details |
 |:---                   |:---     |
 | `selector`            | A CSS selector that tells Angular to create and insert an instance of this component wherever it finds the corresponding tag in template HTML. For example, if an application's HTML contains `<app-hero-list></app-hero-list>`, then Angular inserts an instance of the `HeroListComponent` view between those tags. |
-| `templateUrl`         | The module-relative address of this component's HTML template. Alternatively, you can provide the HTML template inline, as the value of the `template` property.  This template defines the component's *host view*.                                                                                                  |
+| `templateUrl`         | The module-relative address of this component's HTML template. Alternatively, you can provide the HTML template inline, as the value of the `template` property. This template defines the component's *host view*.                                                                                                  |
 | `providers`           | An array of [providers](guide/glossary#provider) for services that the component requires. In the example, this tells Angular how to provide the `HeroService` instance that the component's constructor uses to get the list of heroes to display.                                                                   |
 
 ## Templates and views
@@ -86,7 +86,7 @@ For example, here is a template for the Tutorial's `HeroListComponent`.
 
 <code-example header="src/app/hero-list.component.html" path="architecture/src/app/hero-list.component.html" ></code-example>
 
-This template uses typical HTML elements like `<h2>` and  `<p>`, and also includes Angular template-syntax elements, `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<app-hero-detail>`.
+This template uses typical HTML elements like `<h2>` and  `<p>`. It also includes Angular template-syntax elements, `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<app-hero-detail>`.
 The template-syntax elements tell Angular how to render the HTML to the screen, using program logic and data.
 
 *   The `*ngFor` directive tells Angular to iterate over a list
@@ -154,7 +154,7 @@ Data binding plays an important role in communication between a template and its
 Angular pipes let you declare display-value transformations in your template HTML.
 A class with the `@Pipe` decorator defines a function that transforms input values to output values for display in a view.
 
-Angular defines various pipes, such as the [date](api/common/DatePipe) pipe and [currency](api/common/CurrencyPipe) pipe; for a complete list, see the [Pipes API list](api?type=pipe).
+Angular defines various pipes, such as the [date](api/common/DatePipe) pipe and [currency](api/common/CurrencyPipe) pipe. For a complete list, see the [Pipes API list](api?type=pipe).
 You can also define new pipes.
 
 To specify a value transformation in an HTML template, use the [pipe operator (`|`)](guide/pipes).
@@ -212,8 +212,8 @@ The example template uses two built-in structural directives to add application 
 
 | Directives                                  | Details |
 |:---                                         |:---     |
-| [`*ngFor`](guide/built-in-directives#ngFor) | An iterative; it tells Angular to stamp out one `<li>` per hero in the `heroes` list. |
-| [`*ngIf`](guide/built-in-directives#ngIf)   | A conditional; it includes the `HeroDetail` component only if a selected hero exists. |
+| [`*ngFor`](guide/built-in-directives#ngFor) | An iterative, it tells Angular to stamp out one `<li>` per hero in the `heroes` list. |
+| [`*ngIf`](guide/built-in-directives#ngIf)   | A conditional, it includes the `HeroDetail` component only if a selected hero exists. |
 
 #### Attribute directives
 
