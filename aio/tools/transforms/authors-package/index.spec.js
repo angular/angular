@@ -1,5 +1,5 @@
 /* eslint jasmine/prefer-toHaveBeenCalledWith:0 */
-const fs = require('fs');
+const fs = require('fs/promises');
 const {resolve} = require('canonical-path');
 const {generateDocs} = require('./index.js');
 const { DOCS_OUTPUT_PATH } = require('../config');
@@ -17,10 +17,7 @@ describe('authors-package (integration tests)', () => {
 
   beforeEach(() => {
     files = [];
-    spyOn(fs, 'writeFile').and.callFake((file, content, callback) => {
-      files.push(file);
-      callback();
-    });
+    spyOn(fs, 'writeFile').and.callFake(async file => files.push(file));
   });
 
   it('should generate marketing docs if the "fileChanged" is a marketing doc', () => {
