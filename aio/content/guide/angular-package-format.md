@@ -125,7 +125,7 @@ The primary `package.json` contains important package metadata, including the fo
 *   It [declares](#esm-declaration) the package to be in EcmaScript Module \(ESM\) format
 *   It contains an [`"exports"` field](#exports) which defines the available source code formats of all entrypoints
 *   It contains [keys](#legacy-resolution-keys) which define the available source code formats of the primary `@angular/core` entrypoint, for tools which do not understand `"exports"`.
-    These keys are considered deprecated, and should be removed as the support for `"exports"` rolls out across the ecosystem.
+    These keys are considered deprecated, and could be removed as the support for `"exports"` rolls out across the ecosystem.
 
 *   It declares whether the package contains [side-effects](#side-effects)
 
