@@ -1,4 +1,4 @@
-# Angular Components Overview
+# Angular components overview
 
 Components are the main building block for Angular applications.
 Each component consists of:
@@ -38,7 +38,7 @@ To create a component using the Angular CLI:
 
 By default, this command creates the following:
 
-*   A folder named after the component
+*   A directory named after the component
 *   A component file, `<component-name>.component.ts`
 *   A template file, `<component-name>.component.html`
 *   A CSS file, `<component-name>.component.css`
