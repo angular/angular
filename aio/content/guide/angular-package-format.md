@@ -267,7 +267,7 @@ Not all libraries require such granularity.
 Most libraries with a single logical purpose should be published as a single entrypoint.
 `@angular/core` for example uses a single entrypoint for the runtime, because the Angular runtime is generally used as a single entity.
 
-### Resolution of secondary entrypoints
+### Resolution of secondary entry points
 
 Secondary entrypoints can be resolved via the `"exports"` field of the `package.json` for the package.
 
