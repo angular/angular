@@ -12,7 +12,6 @@ import yargs from 'yargs';
 import {exitCodeFromResult, formatDiagnostics, ParsedConfiguration, performCompilation, readConfiguration} from './perform_compile';
 import {createPerformWatchHost, performWatchCompilation} from './perform_watch';
 import * as api from './transformers/api';
-import {GENERATED_FILES} from './transformers/util';
 
 type TsickleModule = typeof import('tsickle');
 
@@ -106,9 +105,7 @@ function createEmitCallback(
       'fileNameToModuleId'|'googmodule'|'untyped'|'convertIndexImportShorthand'|
       'transformDecorators'|'transformTypesToClosure'|'generateExtraSuppressions'|
       'rootDirsRelative'> = {
-    shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName) ||
-        // View Engine's generated files were never intended to be processed with tsickle.
-        (!options.enableIvy && GENERATED_FILES.test(fileName)),
+    shouldSkipTsickleProcessing: (fileName) => fileName.endsWith('.d.ts'),
     pathToModuleName: (context, importPath) => '',
     shouldIgnoreWarningsForPath: (filePath) => false,
     fileNameToModuleId: (fileName) => fileName,

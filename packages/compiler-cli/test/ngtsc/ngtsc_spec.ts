@@ -1905,7 +1905,6 @@ function allTests(os: string) {
       it('should be able to use abstract directive in other compilation units', () => {
         env.write('tsconfig.json', JSON.stringify({
           extends: './tsconfig-base.json',
-          angularCompilerOptions: {enableIvy: true},
           compilerOptions: {rootDir: '.', outDir: '../node_modules/lib1_built'},
         }));
         env.write('index.ts', `

@@ -78,9 +78,6 @@ export class NgtscTestEnvironment {
         "lib": ["es2015", "dom"],
         "typeRoots": ["node_modules/@types"]
       },
-      "angularCompilerOptions": {
-        "enableIvy": true,
-      },
       "exclude": [
         "built"
       ]
@@ -195,7 +192,7 @@ export class NgtscTestEnvironment {
   tsconfig(extraOpts: TsConfigOptions = {}, extraRootDirs?: string[], files?: string[]): void {
     const tsconfig: {[key: string]: any} = {
       extends: './tsconfig-base.json',
-      angularCompilerOptions: {...extraOpts, enableIvy: true},
+      angularCompilerOptions: extraOpts,
     };
     if (files !== undefined) {
       tsconfig['files'] = files;

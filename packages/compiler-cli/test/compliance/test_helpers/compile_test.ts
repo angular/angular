@@ -117,7 +117,6 @@ function getOptions(
     moduleResolution: ts.ModuleResolutionKind.NodeJs,
     typeRoots: ['node_modules/@types'],
     ...convertedCompilerOptions.options,
-    enableIvy: true,
     enableI18nLegacyMessageIdFormat: false,
     ...angularCompilerOptions,
   };
