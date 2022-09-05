@@ -14,6 +14,7 @@ bundlers
 cacheable
 callout
 callouts
+camelcase
 combinator
 composability
 config
