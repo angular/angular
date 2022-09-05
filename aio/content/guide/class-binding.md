@@ -30,7 +30,7 @@ With the object format, Angular adds a class only if its associated value is tru
 
 <div class="alert is-important">
 
-With any object-like expression&mdash;such as `object`, `Array`, `Map`, or `Set`&mdash;the identity of the object must change for Angular to update the class list.
+With any object-like expression&mdash;such as `object`, `Array`, `Map`, or `Set` &mdash;the identity of the object must change for Angular to update the class list.
 Updating the property without changing object identity has no effect.
 
 </div>
@@ -52,7 +52,7 @@ To create a single style binding, use the prefix `style` followed by a dot and t
 
 For example, to set the `width` style, type the following:  `[style.width]="width"`
 
-Angular sets the property to the value of the bound expression, which is usually a string.  Optionally, you can add a unit extension like `em` or `%`, which requires a number type.
+Angular sets the property to the value of the bound expression, which is usually a string. Optionally, you can add a unit extension like `em` or `%`, which requires a number type.
 
 1. To write a style in dash-case, type the following:
 
