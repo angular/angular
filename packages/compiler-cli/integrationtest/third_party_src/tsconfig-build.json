@@ -1,7 +1,6 @@
 {
   "angularCompilerOptions": {
-    "skipTemplateCodegen": true,
-    "enableIvy": false
+    "skipTemplateCodegen": true
   },
 
   "compilerOptions": {

@@ -110,18 +110,6 @@ export interface NgcCompatibilityOptions {
    * `TestBed`, which is a no-op in Ivy.
    */
   generateNgSummaryShims?: boolean;
-
-  /**
-   * Tells the compiler to generate definitions using the Render3 style code generation.
-   * This option defaults to `true`.
-   *
-   * Acceptable values are as follows:
-   *
-   * `false` - run ngc normally
-   * `true` - run the ngtsc compiler instead of the normal ngc compiler
-   * `ngtsc` - alias for `true`
-   */
-  enableIvy?: boolean|'ngtsc';
 }
 
 /**
@@ -385,7 +373,6 @@ export interface I18nOptions {
   /**
    * Render `$localize` messages with legacy format ids.
    *
-   * This is only active if we are building with `enableIvy: true`.
    * The default value for now is `true`.
    *
    * Use this option when use are using the `$localize` based localization messages but
@@ -437,7 +424,7 @@ export interface TargetOptions {
 export interface MiscOptions {
   /**
    * Whether the compiler should avoid generating code for classes that haven't been exported.
-   * This is only active when building with `enableIvy: true`. Defaults to `true`.
+   * Defaults to `true`.
    */
   compileNonExportedClasses?: boolean;
 

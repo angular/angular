@@ -8,9 +8,8 @@
 
 import ts from 'typescript';
 
-import {CompilerOptions, DEFAULT_ERROR_CODE, SOURCE} from './api';
+import {DEFAULT_ERROR_CODE, SOURCE} from './api';
 
-export const GENERATED_FILES = /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummary)\.(js|d\.ts|ts)$/;
 
 export function error(msg: string): never {
   throw new Error(`Internal error: ${msg}`);

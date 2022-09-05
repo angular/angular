@@ -119,9 +119,6 @@ export function readConfiguration(
         ts.parseJsonConfigFileContent(
             config, parseConfigHost, basePath, existingCompilerOptions, configFileName);
 
-    // Coerce to boolean as `enableIvy` can be `ngtsc|true|false|undefined` here.
-    options.enableIvy = !!(options.enableIvy ?? true);
-
     let emitFlags = api.EmitFlags.Default;
     if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
       emitFlags |= api.EmitFlags.Metadata;

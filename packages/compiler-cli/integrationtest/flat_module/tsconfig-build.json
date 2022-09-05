@@ -2,8 +2,7 @@
   "angularCompilerOptions": {
     "flatModuleId": "flat_module",
     "flatModuleOutFile": "index.js",
-    "skipTemplateCodegen": true,
-    "enableIvy": false
+    "skipTemplateCodegen": true
   },
 
   "compilerOptions": {

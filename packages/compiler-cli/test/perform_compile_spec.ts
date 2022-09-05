@@ -51,33 +51,31 @@ describe('perform_compile', () => {
   it('should merge tsconfig "angularCompilerOptions"', () => {
     writeSomeConfigs();
     const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
-    expect(options.annotateForClosureCompiler).toBe(true);
+    expect(options.annotateForClosureCompiler).toBeTrue();
     expect(options.annotationsAs).toBe('decorators');
-    expect(options.skipMetadataEmit).toBe(true);
+    expect(options.skipMetadataEmit).toBeTrue();
   });
 
-  it(`should return 'enableIvy: true' when enableIvy is not defined in "angularCompilerOptions"`,
-     () => {
-       writeSomeConfigs();
-       const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
-       expect(options.enableIvy).toBe(true);
-     });
+  it(`should return undefined when debug is not defined in "angularCompilerOptions"`, () => {
+    writeSomeConfigs();
+    const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+    expect(options.debug).toBeUndefined();
+  });
 
-  it(`should return 'enableIvy: false' when enableIvy is disabled in "angularCompilerOptions"`,
-     () => {
-       writeSomeConfigs();
-       support.writeFiles({
-         'tsconfig-level-3.json': `{
+  it(`should return 'debug: false' when debug is disabled in "angularCompilerOptions"`, () => {
+    writeSomeConfigs();
+    support.writeFiles({
+      'tsconfig-level-3.json': `{
           "angularCompilerOptions": {
-            "enableIvy": false
+            "debug": false
           }
         }
       `,
-       });
+    });
 
-       const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
-       expect(options.enableIvy).toBe(false);
-     });
+    const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+    expect(options.debug).toBeFalse();
+  });
 
   it('should override options defined in tsconfig with those defined in `existingOptions`', () => {
     support.writeFiles({
@@ -89,15 +87,17 @@ describe('perform_compile', () => {
             "annotateForClosureCompiler": true
           }
         }
-      `
+      `,
     });
 
-    const {options} = readConfiguration(
-        path.resolve(basePath, 'tsconfig-level-1.json'),
-        {annotateForClosureCompiler: false, target: ts.ScriptTarget.ES2015, enableIvy: false});
+    const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'), {
+      annotateForClosureCompiler: false,
+      target: ts.ScriptTarget.ES2015,
+      debug: false,
+    });
 
     expect(options).toEqual(jasmine.objectContaining({
-      enableIvy: false,
+      debug: false,
       target: ts.ScriptTarget.ES2015,
       annotateForClosureCompiler: false,
     }));
@@ -108,7 +108,7 @@ describe('perform_compile', () => {
       'tsconfig-level-1.json': `{
           "extends": "@angular-ru/tsconfig",
           "angularCompilerOptions": {
-            "enableIvy": false
+            "debug": false
           }
         }
       `,
@@ -133,7 +133,7 @@ describe('perform_compile', () => {
     expect(options).toEqual(jasmine.objectContaining({
       strict: true,
       skipMetadataEmit: true,
-      enableIvy: false,
+      debug: false,
     }));
   });
 
@@ -143,7 +143,7 @@ describe('perform_compile', () => {
          'tsconfig-level-1.json': `{
             "extends": "@1stg/tsconfig/angular",
             "angularCompilerOptions": {
-              "enableIvy": false
+              "debug": false
             }
           }`,
          'node_modules/@1stg/tsconfig/angular.json': `{
@@ -164,7 +164,7 @@ describe('perform_compile', () => {
        expect(options).toEqual(jasmine.objectContaining({
          strict: true,
          skipMetadataEmit: true,
-         enableIvy: false,
+         debug: false,
        }));
      });
 
@@ -174,7 +174,7 @@ describe('perform_compile', () => {
          'tsconfig-level-1.json': `{
             "extends": "./tsconfig.app",
             "angularCompilerOptions": {
-              "enableIvy": false
+              "debug": false
             }
           }`,
          'tsconfig.app.json': `{
@@ -191,7 +191,7 @@ describe('perform_compile', () => {
        expect(options).toEqual(jasmine.objectContaining({
          strict: true,
          skipMetadataEmit: true,
-         enableIvy: false,
+         debug: false,
        }));
      });
 });

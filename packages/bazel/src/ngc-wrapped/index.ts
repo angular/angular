@@ -232,7 +232,6 @@ export function compile({
   }
 
   // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
-  const isInIvyMode = !!compilerOpts.enableIvy;
   if (!compilerOpts.rootDirs) {
     throw new Error('rootDirs is not set!');
   }
@@ -259,16 +258,14 @@ export function compile({
     bazelHost = new CompilerHost(files, compilerOpts, bazelOpts, tsHost, fileLoader);
   }
 
-  if (isInIvyMode) {
-    const delegate = bazelHost.shouldSkipTsickleProcessing.bind(bazelHost);
-    bazelHost.shouldSkipTsickleProcessing = (fileName: string) => {
-      // The base implementation of shouldSkipTsickleProcessing checks whether `fileName` is part of
-      // the original `srcs[]`. For Angular (Ivy) compilations, ngfactory/ngsummary files that are
-      // shims for original .ts files in the program should be treated identically. Thus, strip the
-      // '.ngfactory' or '.ngsummary' part of the filename away before calling the delegate.
-      return delegate(fileName.replace(/\.(ngfactory|ngsummary)\.ts$/, '.ts'));
-    };
-  }
+  const delegate = bazelHost.shouldSkipTsickleProcessing.bind(bazelHost);
+  bazelHost.shouldSkipTsickleProcessing = (fileName: string) => {
+    // The base implementation of shouldSkipTsickleProcessing checks whether `fileName` is part of
+    // the original `srcs[]`. For Angular (Ivy) compilations, ngfactory/ngsummary files that are
+    // shims for original .ts files in the program should be treated identically. Thus, strip the
+    // '.ngfactory' or '.ngsummary' part of the filename away before calling the delegate.
+    return delegate(fileName.replace(/\.(ngfactory|ngsummary)\.ts$/, '.ts'));
+  };
 
   // By default, disable tsickle decorator transforming in the tsickle compiler host.
   // The Angular compilers have their own logic for decorator processing and we wouldn't
@@ -286,9 +283,7 @@ export function compile({
       // decorator transformation is still needed. This might be because of custom decorators
       // with the `@Annotation` JSDoc that will be processed by the tsickle decorator transform.
       // TODO: Figure out why this is needed in g3 and how we can improve this. FW-2225
-      if (isInIvyMode) {
-        bazelHost.transformDecorators = true;
-      }
+      bazelHost.transformDecorators = true;
     } else {
       compilerOpts.annotateForClosureCompiler = false;
     }
