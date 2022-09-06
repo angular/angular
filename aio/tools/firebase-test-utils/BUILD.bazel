@@ -1,14 +1,24 @@
 load("//aio/tools:defaults.bzl", "nodejs_test")
 
+filegroup(
+    name = "sources",
+    srcs = glob(["*.ts"]),
+    visibility = ["//aio/tests/deployment/unit:__pkg__"],
+)
+
 nodejs_test(
     name = "test",
     data = [
         "tsconfig.json",
+        ":sources",
         "//aio:tsconfig.json",
         "@aio_npm//@types/jasmine",
         "@aio_npm//jasmine",
         "@aio_npm//ts-node",
         "@aio_npm//xregexp",
-    ] + glob(["*.ts"]),
+    ],
+    # This test script runs ts-node which seems to bypass rules_nodejs require
+    # patching and cannot find deps. Enable the linker for this target.
+    enable_linker = True,
     entry_point = "test.js",
 )

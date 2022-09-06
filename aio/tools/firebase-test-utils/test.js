@@ -14,9 +14,12 @@ const Jasmine = require('jasmine');
 const {join} = require('path');
 const {register} = require('ts-node');
 
-register({project: join(__dirname, 'tsconfig.json')});
+const runfilesRoot = process.cwd();
+const dirname = join(runfilesRoot, 'aio', 'tools', 'firebase-test-utils');
 
-const runner = new Jasmine({projectBaseDir: __dirname});
+register({project: join(dirname, 'tsconfig.json')});
+
+const runner = new Jasmine({projectBaseDir: dirname});
 runner.loadConfig({spec_files: ['**/*.spec.ts']});
 runner.execute().catch((error) => {
   // Something broke so non-zero exit to prevent the process from succeeding.
