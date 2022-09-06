@@ -67,15 +67,25 @@ const _MatFormFieldBase = mixinColor(
   'primary',
 );
 
-/** Possible appearance styles for the form field. */
+/**
+ * Possible appearance styles for the form field.
+ * @deprecated Use `MatFormFieldAppearance` from `@angular/material/form-field` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export type MatLegacyFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 
-/** Possible values for the "floatLabel" form field input. */
+/**
+ * Possible values for the "floatLabel" form field input.
+ * @deprecated Use `FloatLabelType` from `@angular/material/form-field` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export type LegacyFloatLabelType = 'always' | 'never' | 'auto';
 
 /**
  * Represents the default options for the form field that can be configured
  * using the `MAT_FORM_FIELD_DEFAULT_OPTIONS` injection token.
+ * @deprecated Use `MatFormFieldDefaultOptions` from `@angular/material/form-field` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 export interface MatLegacyFormFieldDefaultOptions {
   /** Default form field appearance style. */
@@ -94,11 +104,17 @@ export interface MatLegacyFormFieldDefaultOptions {
 /**
  * Injection token that can be used to configure the
  * default options for all form field within an app.
+ * @deprecated Use `MAT_FORM_FIELD_DEFAULT_OPTIONS` from `@angular/material/form-field` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 export const MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS =
   new InjectionToken<MatLegacyFormFieldDefaultOptions>('MAT_FORM_FIELD_DEFAULT_OPTIONS');
 
-/** Container for form controls that applies Material Design styling and behavior. */
+/**
+ * Container for form controls that applies Material Design styling and behavior.
+ * @deprecated Use `MatFormField` from `@angular/material/form-field` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Component({
   selector: 'mat-form-field',
   exportAs: 'matFormField',

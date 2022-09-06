@@ -15,14 +15,14 @@ import { MatLegacyInputHarness } from '@angular/material/legacy-input/testing';
 import { MatLegacySelectHarness } from '@angular/material/legacy-select/testing';
 import { TestElement } from '@angular/cdk/testing';
 
-// @public
+// @public @deprecated
 export type LegacyFormFieldControlHarness = MatLegacyInputHarness | MatLegacySelectHarness | MatDatepickerInputHarness | MatDateRangeInputHarness;
 
 export { LegacyFormFieldHarnessFilters }
 
 export { MatLegacyFormFieldControlHarness }
 
-// @public
+// @public @deprecated
 export class MatLegacyFormFieldHarness extends _MatFormFieldHarnessBase<LegacyFormFieldControlHarness> {
     // (undocumented)
     protected _datepickerInputControl: AsyncFactoryFn<MatDatepickerInputHarness | null>;

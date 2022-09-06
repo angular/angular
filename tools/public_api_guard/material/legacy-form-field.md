@@ -41,24 +41,24 @@ export { getMatLegacyFormFieldMissingControlError }
 
 export { getMatLegacyFormFieldPlaceholderConflictError }
 
-// @public
+// @public @deprecated
 export type LegacyFloatLabelType = 'always' | 'never' | 'auto';
 
 export { MAT_LEGACY_ERROR }
 
 export { MAT_LEGACY_FORM_FIELD }
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS: InjectionToken<MatLegacyFormFieldDefaultOptions>;
 
-// @public
+// @public @deprecated
 export const _MAT_LEGACY_HINT: InjectionToken<MatLegacyHint>;
 
 export { MAT_LEGACY_PREFIX }
 
 export { MAT_LEGACY_SUFFIX }
 
-// @public
+// @public @deprecated
 export class MatLegacyError {
     constructor(ariaLive: string, elementRef: ElementRef);
     // (undocumented)
@@ -69,7 +69,7 @@ export class MatLegacyError {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyError, [{ attribute: "aria-live"; }, null]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyFormField extends _MatFormFieldBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
     constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, _defaults: MatLegacyFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
     _animateAndLockLabel(): void;
@@ -148,12 +148,12 @@ export class MatLegacyFormField extends _MatFormFieldBase implements AfterConten
 
 export { matLegacyFormFieldAnimations }
 
-// @public
+// @public @deprecated
 export type MatLegacyFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 
 export { MatLegacyFormFieldControl }
 
-// @public
+// @public @deprecated
 export interface MatLegacyFormFieldDefaultOptions {
     appearance?: MatLegacyFormFieldAppearance;
     color?: ThemePalette;
@@ -161,7 +161,7 @@ export interface MatLegacyFormFieldDefaultOptions {
     hideRequiredMarker?: boolean;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyFormFieldModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyFormFieldModule, never>;
@@ -171,7 +171,7 @@ export class MatLegacyFormFieldModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacyFormFieldModule, [typeof i1.MatLegacyError, typeof i2.MatLegacyFormField, typeof i3.MatLegacyHint, typeof i4.MatLegacyLabel, typeof i5.MatLegacyPlaceholder, typeof i6.MatLegacyPrefix, typeof i7.MatLegacySuffix], [typeof i8.CommonModule, typeof i9.MatCommonModule, typeof i10.ObserversModule], [typeof i9.MatCommonModule, typeof i1.MatLegacyError, typeof i2.MatLegacyFormField, typeof i3.MatLegacyHint, typeof i4.MatLegacyLabel, typeof i5.MatLegacyPlaceholder, typeof i6.MatLegacyPrefix, typeof i7.MatLegacySuffix]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyHint {
     align: 'start' | 'end';
     id: string;
@@ -181,7 +181,7 @@ export class MatLegacyHint {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyHint, never>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyLabel {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyLabel, "mat-label", never, {}, {}, never, never, false>;
@@ -197,7 +197,7 @@ export class MatLegacyPlaceholder {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyPlaceholder, never>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyPrefix {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyPrefix, "[matPrefix]", never, {}, {}, never, never, false>;
@@ -205,7 +205,7 @@ export class MatLegacyPrefix {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyPrefix, never>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacySuffix {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacySuffix, "[matSuffix]", never, {}, {}, never, never, false>;

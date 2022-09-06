@@ -17,10 +17,17 @@ let nextUniqueId = 0;
  *
  * *Note*: This is not part of the public API as the MDC-based form-field will not
  * need a lightweight token for `MatHint` and we want to reduce breaking changes.
+ *
+ * @deprecated Use `_MAT_HINT` from `@angular/material/form-field` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 export const _MAT_LEGACY_HINT = new InjectionToken<MatLegacyHint>('MatHint');
 
-/** Hint text to be shown underneath the form field control. */
+/**
+ * Hint text to be shown underneath the form field control.
+ * @deprecated Use `MatHint` from `@angular/material/form-field` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Directive({
   selector: 'mat-hint',
   host: {
