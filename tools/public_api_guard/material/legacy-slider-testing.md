@@ -8,11 +8,11 @@ import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
-// @public
+// @public @deprecated
 export interface LegacySliderHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export class MatLegacySliderHarness extends ComponentHarness {
     blur(): Promise<void>;
     focus(): Promise<void>;

@@ -24,10 +24,10 @@ import { NgZone } from '@angular/core';
 import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_SLIDER_VALUE_ACCESSOR: any;
 
-// @public
+// @public @deprecated
 export class MatLegacySlider extends _MatSliderBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex {
     constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _ngZone: NgZone, _document: any, _animationMode?: string | undefined);
     // (undocumented)
@@ -105,13 +105,13 @@ export class MatLegacySlider extends _MatSliderBase implements ControlValueAcces
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySlider, [null, null, null, { optional: true; }, { attribute: "tabindex"; }, null, null, { optional: true; }]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacySliderChange {
     source: MatLegacySlider;
     value: number | null;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacySliderModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySliderModule, never>;
