@@ -14,7 +14,11 @@ import {
 } from './cell-harness';
 import {_MatRowHarnessBase, RowHarnessFilters} from '@angular/material/table/testing';
 
-/** Harness for interacting with a standard Angular Material table row. */
+/**
+ * Harness for interacting with a standard Angular Material table row.
+ * @deprecated Use `MatRowHarness` from `@angular/material/table/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyRowHarness extends _MatRowHarnessBase<
   typeof MatLegacyCellHarness,
   MatLegacyCellHarness
@@ -33,7 +37,11 @@ export class MatLegacyRowHarness extends _MatRowHarnessBase<
   }
 }
 
-/** Harness for interacting with a standard Angular Material table header row. */
+/**
+ * Harness for interacting with a standard Angular Material table header row.
+ * @deprecated Use `MatHeaderRowHarness` from `@angular/material/table/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyHeaderRowHarness extends _MatRowHarnessBase<
   typeof MatLegacyHeaderCellHarness,
   MatLegacyHeaderCellHarness
@@ -53,7 +61,11 @@ export class MatLegacyHeaderRowHarness extends _MatRowHarnessBase<
   }
 }
 
-/** Harness for interacting with a standard Angular Material table footer row. */
+/**
+ * Harness for interacting with a standard Angular Material table footer row.
+ * @deprecated Use `MatFooterRowHarness` from `@angular/material/table/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyFooterRowHarness extends _MatRowHarnessBase<
   typeof MatLegacyFooterCellHarness,
   MatLegacyFooterCellHarness

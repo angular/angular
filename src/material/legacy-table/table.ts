@@ -24,6 +24,8 @@ import {
 /**
  * Enables the recycle view repeater strategy, which reduces rendering latency. Not compatible with
  * tables that animate rows.
+ * @deprecated Use `MatRecycleRows` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: 'mat-table[recycleRows], table[mat-table][recycleRows]',
@@ -33,6 +35,8 @@ export class MatLegacyRecycleRows {}
 
 /**
  * Wrapper for the CdkTable with Material design styles.
+ * @deprecated Use `MatTable` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-table, table[mat-table]',

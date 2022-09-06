@@ -21,6 +21,8 @@ import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '
 /**
  * Header row definition for the mat-table.
  * Captures the header row's template and other header properties such as the columns to display.
+ * @deprecated Use `MatHeaderRowDef` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: '[matHeaderRowDef]',
@@ -32,6 +34,8 @@ export class MatLegacyHeaderRowDef extends CdkHeaderRowDef {}
 /**
  * Footer row definition for the mat-table.
  * Captures the footer row's template and other footer properties such as the columns to display.
+ * @deprecated Use `MatFooterRowDef` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: '[matFooterRowDef]',
@@ -44,6 +48,8 @@ export class MatLegacyFooterRowDef extends CdkFooterRowDef {}
  * Data row definition for the mat-table.
  * Captures the data row's template and other properties such as the columns to display and
  * a when predicate that describes when this row should be used.
+ * @deprecated Use `MatRowDef` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: '[matRowDef]',
@@ -52,7 +58,11 @@ export class MatLegacyFooterRowDef extends CdkFooterRowDef {}
 })
 export class MatLegacyRowDef<T> extends CdkRowDef<T> {}
 
-/** Header template container that contains the cell outlet. Adds the right class and role. */
+/**
+ * Header template container that contains the cell outlet. Adds the right class and role.
+ * @deprecated Use `MatHeaderRow` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Component({
   selector: 'mat-header-row, tr[mat-header-row]',
   template: CDK_ROW_TEMPLATE,
@@ -69,7 +79,11 @@ export class MatLegacyRowDef<T> extends CdkRowDef<T> {}
 })
 export class MatLegacyHeaderRow extends CdkHeaderRow {}
 
-/** Footer template container that contains the cell outlet. Adds the right class and role. */
+/**
+ * Footer template container that contains the cell outlet. Adds the right class and role.
+ * @deprecated Use `MatFooterRow` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Component({
   selector: 'mat-footer-row, tr[mat-footer-row]',
   template: CDK_ROW_TEMPLATE,
@@ -86,7 +100,11 @@ export class MatLegacyHeaderRow extends CdkHeaderRow {}
 })
 export class MatLegacyFooterRow extends CdkFooterRow {}
 
-/** Data row template container that contains the cell outlet. Adds the right class and role. */
+/**
+ * Data row template container that contains the cell outlet. Adds the right class and role.
+ * @deprecated Use `MatRow` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Component({
   selector: 'mat-row, tr[mat-row]',
   template: CDK_ROW_TEMPLATE,
@@ -103,7 +121,11 @@ export class MatLegacyFooterRow extends CdkFooterRow {}
 })
 export class MatLegacyRow extends CdkRow {}
 
-/** Row that can be used to display a message when no data is shown in the table. */
+/**
+ * Row that can be used to display a message when no data is shown in the table.
+ * @deprecated Use `MatNoDataRow` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Directive({
   selector: 'ng-template[matNoDataRow]',
   providers: [{provide: CdkNoDataRow, useExisting: MatLegacyNoDataRow}],

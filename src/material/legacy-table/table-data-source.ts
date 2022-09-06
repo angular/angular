@@ -21,5 +21,8 @@ import {_MatTableDataSource} from '@angular/material/table';
  * it isn't equipped to handle some more advanced cases like robust i18n support or server-side
  * interactions. If your app needs to support more advanced use cases, consider implementing your
  * own `DataSource`.
+ *
+ * @deprecated Use `MatTableDataSource` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 export class MatLegacyTableDataSource<T> extends _MatTableDataSource<T, MatLegacyPaginator> {}

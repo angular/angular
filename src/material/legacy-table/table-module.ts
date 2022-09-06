@@ -58,6 +58,10 @@ const EXPORTED_DECLARATIONS = [
   MatLegacyTextColumn,
 ];
 
+/**
+ * @deprecated Use `MatTableModule` from `@angular/material/table` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [CdkTableModule, MatCommonModule],
   exports: [MatCommonModule, EXPORTED_DECLARATIONS],

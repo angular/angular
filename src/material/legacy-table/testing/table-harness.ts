@@ -14,7 +14,11 @@ import {
 } from './row-harness';
 import {_MatTableHarnessBase, TableHarnessFilters} from '@angular/material/table/testing';
 
-/** Harness for interacting with a standard mat-table in tests. */
+/**
+ * Harness for interacting with a standard mat-table in tests.
+ * @deprecated Use `MatTableHarness` from `@angular/material/table/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyTableHarness extends _MatTableHarnessBase<
   typeof MatLegacyHeaderRowHarness,
   MatLegacyHeaderRowHarness,

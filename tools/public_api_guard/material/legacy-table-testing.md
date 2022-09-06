@@ -20,7 +20,7 @@ export { LegacyRowHarnessFilters }
 
 export { LegacyTableHarnessFilters }
 
-// @public
+// @public @deprecated
 export class MatLegacyCellHarness extends _MatLegacyCellHarnessBase {
     static hostSelector: string;
     static with(options?: LegacyCellHarnessFilters): HarnessPredicate<MatLegacyCellHarness>;
@@ -28,13 +28,13 @@ export class MatLegacyCellHarness extends _MatLegacyCellHarnessBase {
 
 export { _MatLegacyCellHarnessBase }
 
-// @public
+// @public @deprecated
 export class MatLegacyFooterCellHarness extends _MatLegacyCellHarnessBase {
     static hostSelector: string;
     static with(options?: LegacyCellHarnessFilters): HarnessPredicate<MatLegacyFooterCellHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyFooterRowHarness extends _MatLegacyRowHarnessBase<typeof MatLegacyFooterCellHarness, MatLegacyFooterCellHarness> {
     // (undocumented)
     protected _cellHarness: typeof MatLegacyFooterCellHarness;
@@ -42,13 +42,13 @@ export class MatLegacyFooterRowHarness extends _MatLegacyRowHarnessBase<typeof M
     static with(options?: LegacyRowHarnessFilters): HarnessPredicate<MatLegacyFooterRowHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyHeaderCellHarness extends _MatLegacyCellHarnessBase {
     static hostSelector: string;
     static with(options?: LegacyCellHarnessFilters): HarnessPredicate<MatLegacyHeaderCellHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyHeaderRowHarness extends _MatLegacyRowHarnessBase<typeof MatLegacyHeaderCellHarness, MatLegacyHeaderCellHarness> {
     // (undocumented)
     protected _cellHarness: typeof MatLegacyHeaderCellHarness;
@@ -56,7 +56,7 @@ export class MatLegacyHeaderRowHarness extends _MatLegacyRowHarnessBase<typeof M
     static with(options?: LegacyRowHarnessFilters): HarnessPredicate<MatLegacyHeaderRowHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyRowHarness extends _MatLegacyRowHarnessBase<typeof MatLegacyCellHarness, MatLegacyCellHarness> {
     // (undocumented)
     protected _cellHarness: typeof MatLegacyCellHarness;
@@ -68,7 +68,7 @@ export { _MatLegacyRowHarnessBase }
 
 export { MatLegacyRowHarnessColumnsText }
 
-// @public
+// @public @deprecated
 export class MatLegacyTableHarness extends _MatLegacyTableHarnessBase<typeof MatLegacyHeaderRowHarness, MatLegacyHeaderRowHarness, typeof MatLegacyRowHarness, MatLegacyRowHarness, typeof MatLegacyFooterRowHarness, MatLegacyFooterRowHarness> {
     // (undocumented)
     protected _footerRowHarness: typeof MatLegacyFooterRowHarness;
