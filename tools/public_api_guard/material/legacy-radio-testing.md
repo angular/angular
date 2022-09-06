@@ -16,7 +16,7 @@ export { LegacyRadioButtonHarnessFilters }
 
 export { LegacyRadioGroupHarnessFilters }
 
-// @public
+// @public @deprecated
 export class MatLegacyRadioButtonHarness extends _MatRadioButtonHarnessBase {
     // (undocumented)
     protected _clickLabel: AsyncFactoryFn<TestElement>;
@@ -26,7 +26,7 @@ export class MatLegacyRadioButtonHarness extends _MatRadioButtonHarnessBase {
     static with(options?: LegacyRadioButtonHarnessFilters): HarnessPredicate<MatLegacyRadioButtonHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyRadioGroupHarness extends _MatRadioGroupHarnessBase<typeof MatLegacyRadioButtonHarness, MatLegacyRadioButtonHarness, LegacyRadioButtonHarnessFilters> {
     // (undocumented)
     protected _buttonClass: typeof MatLegacyRadioButtonHarness;

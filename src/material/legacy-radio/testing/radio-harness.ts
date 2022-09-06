@@ -14,7 +14,11 @@ import {
   _MatRadioButtonHarnessBase,
 } from '@angular/material/radio/testing';
 
-/** Harness for interacting with a standard mat-radio-group in tests. */
+/**
+ * Harness for interacting with a standard mat-radio-group in tests
+ * @deprecated Use `MatRadioGroupHarness` from `@angular/material/radio/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyRadioGroupHarness extends _MatRadioGroupHarnessBase<
   typeof MatLegacyRadioButtonHarness,
   MatLegacyRadioButtonHarness,
@@ -41,7 +45,11 @@ export class MatLegacyRadioGroupHarness extends _MatRadioGroupHarnessBase<
   }
 }
 
-/** Harness for interacting with a standard mat-radio-button in tests. */
+/**
+ * Harness for interacting with a standard mat-radio-button in tests.
+ * @deprecated Use `MatRadioButtonHarness` from `@angular/material/radio/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyRadioButtonHarness extends _MatRadioButtonHarnessBase {
   /** The selector for the host element of a `MatRadioButton` instance. */
   static hostSelector = '.mat-radio-button';

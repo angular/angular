@@ -25,10 +25,10 @@ export { MAT_LEGACY_RADIO_DEFAULT_OPTIONS_FACTORY }
 
 export { MAT_LEGACY_RADIO_GROUP }
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
 
-// @public
+// @public @deprecated
 export class MatLegacyRadioButton extends _MatRadioButtonBase {
     constructor(radioGroup: MatLegacyRadioGroup, elementRef: ElementRef, changeDetector: ChangeDetectorRef, focusMonitor: FocusMonitor, radioDispatcher: UniqueSelectionDispatcher, animationMode?: string, providerOverride?: MatLegacyRadioDefaultOptions, tabIndex?: string);
     // (undocumented)
@@ -41,7 +41,7 @@ export { MatLegacyRadioChange }
 
 export { MatLegacyRadioDefaultOptions }
 
-// @public
+// @public @deprecated
 export class MatLegacyRadioGroup extends _MatRadioGroupBase<MatLegacyRadioButton> {
     // (undocumented)
     _radios: QueryList<MatLegacyRadioButton>;
@@ -51,7 +51,7 @@ export class MatLegacyRadioGroup extends _MatRadioGroupBase<MatLegacyRadioButton
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyRadioGroup, never>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyRadioModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyRadioModule, never>;
