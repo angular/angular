@@ -36,7 +36,7 @@ describe('NgOptimizedImage directive', () => {
     expectErrorMessageInLogs(
         logs,
         'The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
-            'with the \`rawSrc=\\"/e2e/b.png\\"`) has detected that ' +
+            'with the \`ngSrc=\\"/e2e/b.png\\"`) has detected that ' +
             'the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
             '\\nSupplied width and height attributes: 26w x 30h (aspect-ratio: 0.8666666666666667). ' +
@@ -45,7 +45,7 @@ describe('NgOptimizedImage directive', () => {
     expectErrorMessageInLogs(
         logs,
         'The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
-            'with the \`rawSrc=\\"/e2e/b.png\\"`) has detected that ' +
+            'with the \`ngSrc=\\"/e2e/b.png\\"`) has detected that ' +
             'the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
             '\\nSupplied width and height attributes: 24w x 240h (aspect-ratio: 0.1). ' +
@@ -55,7 +55,7 @@ describe('NgOptimizedImage directive', () => {
     expectErrorMessageInLogs(
         logs,
         'The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
-            'with the \`rawSrc=\\"/e2e/b.png\\"`) has detected that ' +
+            'with the \`ngSrc=\\"/e2e/b.png\\"`) has detected that ' +
             'the aspect ratio of the rendered image does not match the image\'s intrinsic aspect ratio. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
             '\\nRendered image size: 250w x 30h (aspect-ratio: 8.333333333333334). ' +
@@ -66,7 +66,7 @@ describe('NgOptimizedImage directive', () => {
     expectErrorMessageInLogs(
         logs,
         'The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
-            'with the \`rawSrc=\\"/e2e/b.png\\"`) has detected that ' +
+            'with the \`ngSrc=\\"/e2e/b.png\\"`) has detected that ' +
             'the aspect ratio of the rendered image does not match the image\'s intrinsic aspect ratio. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
             '\\nRendered image size: 30w x 250h (aspect-ratio: 0.12). ' +
@@ -80,7 +80,7 @@ describe('NgOptimizedImage directive', () => {
     expectErrorMessageInLogs(
         logs,
         'The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
-            'with the \`rawSrc=\\"/e2e/b.png\\"`) has detected that ' +
+            'with the \`ngSrc=\\"/e2e/b.png\\"`) has detected that ' +
             'the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
             '\\nSupplied width and height attributes: 150w x 250h (aspect-ratio: 0.6). ' +

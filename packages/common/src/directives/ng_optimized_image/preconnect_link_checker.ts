@@ -96,9 +96,9 @@ export class PreconnectLinkChecker {
    * given src.
    *
    * @param rewrittenSrc src formatted with loader
-   * @param rawSrc rawSrc value
+   * @param originalNgSrc ngSrc value
    */
-  assertPreconnect(rewrittenSrc: string, rawSrc: string): void {
+  assertPreconnect(rewrittenSrc: string, originalNgSrc: string): void {
     if (!this.window) return;
 
     const imgUrl = getUrl(rewrittenSrc, this.window);
@@ -118,8 +118,8 @@ export class PreconnectLinkChecker {
     if (!this.preconnectLinks.has(imgUrl.origin)) {
       console.warn(formatRuntimeError(
           RuntimeErrorCode.PRIORITY_IMG_MISSING_PRECONNECT_TAG,
-          `${imgDirectiveDetails(rawSrc)} there is no preconnect tag present for this image. ` +
-              `Preconnecting to the origin(s) that serve priority images ensures that these ` +
+          `${imgDirectiveDetails(originalNgSrc)} there is no preconnect tag present for this ` +
+              `image. Preconnecting to the origin(s) that serve priority images ensures that these ` +
               `images are delivered as soon as possible. To fix this, please add the following ` +
               `element into the <head> of the document:\n` +
               `  <link rel="preconnect" href="${imgUrl.origin}">`));
