@@ -15,6 +15,10 @@ import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {MatLegacyTooltip, LegacyTooltipComponent} from './tooltip';
 import {MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER} from '@angular/material/tooltip';
 
+/**
+ * @deprecated Use `MatTooltipModule` from `@angular/material/tooltip` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [A11yModule, CommonModule, OverlayModule, MatCommonModule],
   exports: [MatLegacyTooltip, LegacyTooltipComponent, MatCommonModule, CdkScrollableModule],

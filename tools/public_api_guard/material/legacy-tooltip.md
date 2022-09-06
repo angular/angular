@@ -42,7 +42,7 @@ export { getMatLegacyTooltipInvalidPositionError }
 
 export { LEGACY_SCROLL_THROTTLE_MS }
 
-// @public
+// @public @deprecated
 export class LegacyTooltipComponent extends _TooltipComponentBase {
     constructor(changeDetectorRef: ChangeDetectorRef, _breakpointObserver: BreakpointObserver, animationMode?: string);
     // (undocumented)
@@ -74,7 +74,7 @@ export { MAT_LEGACY_TOOLTIP_SCROLL_STRATEGY_FACTORY }
 
 export { MAT_LEGACY_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER }
 
-// @public
+// @public @deprecated
 export class MatLegacyTooltip extends _MatTooltipBase<LegacyTooltipComponent> {
     constructor(overlay: Overlay, elementRef: ElementRef<HTMLElement>, scrollDispatcher: ScrollDispatcher, viewContainerRef: ViewContainerRef, ngZone: NgZone, platform: Platform, ariaDescriber: AriaDescriber, focusMonitor: FocusMonitor, scrollStrategy: any, dir: Directionality, defaultOptions: MatLegacyTooltipDefaultOptions, _document: any);
     // (undocumented)
@@ -85,14 +85,14 @@ export class MatLegacyTooltip extends _MatTooltipBase<LegacyTooltipComponent> {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyTooltip, [null, null, null, null, null, null, null, null, null, { optional: true; }, { optional: true; }, null]>;
 }
 
-// @public
+// @public @deprecated
 export const matLegacyTooltipAnimations: {
     readonly tooltipState: AnimationTriggerMetadata;
 };
 
 export { MatLegacyTooltipDefaultOptions }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyTooltipModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyTooltipModule, never>;

@@ -9,7 +9,11 @@
 import {HarnessPredicate} from '@angular/cdk/testing';
 import {_MatTooltipHarnessBase, TooltipHarnessFilters} from '@angular/material/tooltip/testing';
 
-/** Harness for interacting with a standard mat-tooltip in tests. */
+/**
+ * Harness for interacting with a standard mat-tooltip in tests.
+ * @deprecated Use `MatTooltipHarness` from `@angular/material/tooltip/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyTooltipHarness extends _MatTooltipHarnessBase {
   protected _optionalPanel = this.documentRootLocatorFactory().locatorForOptional('.mat-tooltip');
   protected _hiddenClass = 'mat-tooltip-hide';

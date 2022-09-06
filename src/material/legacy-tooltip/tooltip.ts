@@ -40,6 +40,9 @@ import {
  * hiding of a tooltip provided position (defaults to below the element).
  *
  * https://material.io/design/components/tooltips.html
+ *
+ * @deprecated Use `MatTooltip` from `@angular/material/tooltip` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: '[matTooltip]',
@@ -85,6 +88,8 @@ export class MatLegacyTooltip extends _MatTooltipBase<LegacyTooltipComponent> {
 /**
  * Internal component that wraps the tooltip's content.
  * @docs-private
+ * @deprecated Use `TooltipComponent` from `@angular/material/tooltip` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-tooltip-component',

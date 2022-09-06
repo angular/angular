@@ -18,6 +18,8 @@ import {
 /**
  * Animations used by MatTooltip.
  * @docs-private
+ * @deprecated Use `matTooltipAnimations` from `@angular/material/tooltip` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 export const matLegacyTooltipAnimations: {
   readonly tooltipState: AnimationTriggerMetadata;

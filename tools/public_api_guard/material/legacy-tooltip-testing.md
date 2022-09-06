@@ -12,7 +12,7 @@ import { TestElement } from '@angular/cdk/testing';
 
 export { LegacyTooltipHarnessFilters }
 
-// @public
+// @public @deprecated
 export class MatLegacyTooltipHarness extends _MatTooltipHarnessBase {
     // (undocumented)
     protected _hiddenClass: string;
