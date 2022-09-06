@@ -15,7 +15,11 @@ import {
 import {MatLegacyTabLinkHarness} from './tab-link-harness';
 import {MatLegacyTabNavPanelHarness} from './tab-nav-panel-harness';
 
-/** Harness for interacting with a standard mat-tab-nav-bar in tests. */
+/**
+ * Harness for interacting with a standard mat-tab-nav-bar in tests.
+ * @deprecated Use `MatTabNavBarHarness` from `@angular/material/tabs/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyTabNavBarHarness extends ComponentHarness {
   /** The selector for the host element of a `MatTabNavBar` instance. */
   static hostSelector = '.mat-tab-nav-bar';

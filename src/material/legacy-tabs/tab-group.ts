@@ -32,6 +32,8 @@ import {
  * Material design tab-group component. Supports basic tab pairs (label + content) and includes
  * animated ink-bar, keyboard navigation, and screen reader.
  * See: https://material.io/design/components/tabs.html
+ * @deprecated Use `MatTabGroup` from `@angular/material/tabs` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-tab-group',

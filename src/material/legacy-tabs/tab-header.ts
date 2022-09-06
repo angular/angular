@@ -33,6 +33,8 @@ import {MatLegacyTabLabelWrapper} from './tab-label-wrapper';
  * width of the header container, then arrows will be displayed to allow the user to scroll
  * left and right across the header.
  * @docs-private
+ * @deprecated Use `MatTabHeader` from `@angular/material/tabs` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-tab-header',

@@ -21,6 +21,10 @@ import {
   MAT_TAB_CONTENT,
 } from '@angular/material/tabs';
 
+/**
+ * @deprecated Use `MatTab` from `@angular/material/tabs` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Component({
   selector: 'mat-tab',
   templateUrl: 'tab.html',

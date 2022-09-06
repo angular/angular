@@ -42,6 +42,8 @@ let nextUniqueId = 0;
 /**
  * Navigation component matching the styles of the tab group header.
  * Provides anchored navigation with animated ink bar.
+ * @deprecated Use `MatTabNav` from `@angular/material/tabs` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: '[mat-tab-nav-bar]',
@@ -87,6 +89,8 @@ export class MatLegacyTabNav extends _MatTabNavBase {
 
 /**
  * Link inside of a `mat-tab-nav-bar`.
+ * @deprecated Use `MatTabLink` from `@angular/material/tabs` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: '[mat-tab-link], [matTabLink]',
@@ -134,6 +138,8 @@ export class MatLegacyTabLink extends _MatTabLinkBase implements OnDestroy {
 
 /**
  * Tab panel component associated with MatTabNav.
+ * @deprecated Use `MatTabNavPanel` from `@angular/material/tabs` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-tab-nav-panel',

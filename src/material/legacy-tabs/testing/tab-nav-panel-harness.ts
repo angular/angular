@@ -9,7 +9,11 @@
 import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {LegacyTabNavPanelHarnessFilters} from './tab-harness-filters';
 
-/** Harness for interacting with a standard mat-tab-nav-panel in tests. */
+/**
+ * Harness for interacting with a standard mat-tab-nav-panel in tests.
+ * @deprecated Use `MatTabNavPanelHarness` from `@angular/material/tabs/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyTabNavPanelHarness extends ContentContainerComponentHarness {
   /** The selector for the host element of a `MatTabNavPanel` instance. */
   static hostSelector = '.mat-tab-nav-panel';

@@ -32,6 +32,8 @@ import {
 /**
  * The portal host directive for the contents of the tab.
  * @docs-private
+ * @deprecated Use `MatTabBodyPortal` from `@angular/material/tabs` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: '[matTabBodyHost]',
@@ -50,6 +52,8 @@ export class MatLegacyTabBodyPortal extends MatNonLegacyTabBodyPortal {
 /**
  * Wrapper for the contents of a tab.
  * @docs-private
+ * @deprecated Use `MatTabBody` from `@angular/material/tabs` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-tab-body',

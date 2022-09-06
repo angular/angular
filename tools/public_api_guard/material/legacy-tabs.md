@@ -65,7 +65,7 @@ export { MAT_LEGACY_TAB_GROUP }
 
 export { MAT_LEGACY_TABS_CONFIG }
 
-// @public
+// @public @deprecated
 export class MatLegacyInkBar {
     constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, _inkBarPositioner: _MatLegacyInkBarPositioner, _animationMode?: string | undefined);
     alignToElement(element: HTMLElement): void;
@@ -83,7 +83,7 @@ export { _MatLegacyInkBarPositioner }
 
 export { MatLegacyPaginatedTabHeader }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyTab extends _MatLegacyTabBase {
     _explicitContent: TemplateRef<any>;
     get templateLabel(): MatTabLabel;
@@ -96,7 +96,7 @@ export class MatLegacyTab extends _MatLegacyTabBase {
 
 export { _MatLegacyTabBase }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabBody extends _MatLegacyTabBodyBase {
     constructor(elementRef: ElementRef<HTMLElement>, dir: Directionality, changeDetectorRef: ChangeDetectorRef);
     // (undocumented)
@@ -111,7 +111,7 @@ export { _MatLegacyTabBodyBase }
 
 export { MatLegacyTabBodyOriginState }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabBodyPortal extends MatTabBodyPortal {
     constructor(componentFactoryResolver: ComponentFactoryResolver, viewContainerRef: ViewContainerRef, host: MatLegacyTabBody, _document: any);
     // (undocumented)
@@ -124,7 +124,7 @@ export { MatLegacyTabBodyPositionState }
 
 export { MatLegacyTabChangeEvent }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabContent extends MatTabContent {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyTabContent, "[matTabContent]", never, {}, {}, never, never, false>;
@@ -132,7 +132,7 @@ export class MatLegacyTabContent extends MatTabContent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyTabContent, never>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabGroup extends _MatLegacyTabGroupBase {
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatLegacyTabsConfig, animationMode?: string);
     // (undocumented)
@@ -149,7 +149,7 @@ export class MatLegacyTabGroup extends _MatLegacyTabGroupBase {
 
 export { _MatLegacyTabGroupBase }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabHeader extends _MatLegacyTabHeaderBase {
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
     // (undocumented)
@@ -176,7 +176,7 @@ export { _MatLegacyTabHeaderBase }
 
 export { MatLegacyTabHeaderPosition }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabLabel extends MatTabLabel {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyTabLabel, "[mat-tab-label], [matTabLabel]", never, {}, {}, never, never, false>;
@@ -184,7 +184,7 @@ export class MatLegacyTabLabel extends MatTabLabel {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyTabLabel, never>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyTabLabelWrapper extends _MatTabLabelWrapperBase {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyTabLabelWrapper, "[matTabLabelWrapper]", never, { "disabled": "disabled"; }, {}, never, never, false>;
@@ -192,7 +192,7 @@ export class MatLegacyTabLabelWrapper extends _MatTabLabelWrapperBase {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyTabLabelWrapper, never>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabLink extends _MatLegacyTabLinkBase implements OnDestroy {
     constructor(tabNavBar: MatLegacyTabNav, elementRef: ElementRef, ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, focusMonitor: FocusMonitor, animationMode?: string);
     // (undocumented)
@@ -205,7 +205,7 @@ export class MatLegacyTabLink extends _MatLegacyTabLinkBase implements OnDestroy
 
 export { _MatLegacyTabLinkBase }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabNav extends _MatLegacyTabNavBase {
     constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, platform: Platform, animationMode?: string);
     // (undocumented)
@@ -230,7 +230,7 @@ export class MatLegacyTabNav extends _MatLegacyTabNavBase {
 
 export { _MatLegacyTabNavBase }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabNavPanel {
     _activeTabId?: string;
     id: string;
@@ -244,7 +244,7 @@ export { matLegacyTabsAnimations }
 
 export { MatLegacyTabsConfig }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyTabsModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyTabsModule, never>;

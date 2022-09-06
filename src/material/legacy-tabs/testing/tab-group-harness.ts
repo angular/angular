@@ -10,7 +10,11 @@ import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing
 import {LegacyTabGroupHarnessFilters, LegacyTabHarnessFilters} from './tab-harness-filters';
 import {MatLegacyTabHarness} from './tab-harness';
 
-/** Harness for interacting with a standard mat-tab-group in tests. */
+/**
+ * Harness for interacting with a standard mat-tab-group in tests.
+ * @deprecated Use `MatTabGroupHarness` from `@angular/material/tabs/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyTabGroupHarness extends ComponentHarness {
   /** The selector for the host element of a `MatTabGroup` instance. */
   static hostSelector = '.mat-tab-group';

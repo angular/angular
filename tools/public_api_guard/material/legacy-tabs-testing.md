@@ -10,30 +10,30 @@ import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
-// @public
+// @public @deprecated
 export interface LegacyTabGroupHarnessFilters extends BaseHarnessFilters {
     selectedTabLabel?: string | RegExp;
 }
 
-// @public
+// @public @deprecated
 export interface LegacyTabHarnessFilters extends BaseHarnessFilters {
     label?: string | RegExp;
 }
 
-// @public
+// @public @deprecated
 export interface LegacyTabLinkHarnessFilters extends BaseHarnessFilters {
     label?: string | RegExp;
 }
 
-// @public
+// @public @deprecated
 export interface LegacyTabNavBarHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export interface LegacyTabNavPanelHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabGroupHarness extends ComponentHarness {
     getSelectedTab(): Promise<MatLegacyTabHarness>;
     getTabs(filter?: LegacyTabHarnessFilters): Promise<MatLegacyTabHarness[]>;
@@ -42,7 +42,7 @@ export class MatLegacyTabGroupHarness extends ComponentHarness {
     static with(options?: LegacyTabGroupHarnessFilters): HarnessPredicate<MatLegacyTabGroupHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabHarness extends ContentContainerComponentHarness<string> {
     getAriaLabel(): Promise<string | null>;
     getAriaLabelledby(): Promise<string | null>;
@@ -57,7 +57,7 @@ export class MatLegacyTabHarness extends ContentContainerComponentHarness<string
     static with(options?: LegacyTabHarnessFilters): HarnessPredicate<MatLegacyTabHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabLinkHarness extends ComponentHarness {
     click(): Promise<void>;
     getLabel(): Promise<string>;
@@ -67,7 +67,7 @@ export class MatLegacyTabLinkHarness extends ComponentHarness {
     static with(options?: LegacyTabLinkHarnessFilters): HarnessPredicate<MatLegacyTabLinkHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyTabNavBarHarness extends ComponentHarness {
     clickLink(filter?: LegacyTabLinkHarnessFilters): Promise<void>;
     getActiveLink(): Promise<MatLegacyTabLinkHarness>;
