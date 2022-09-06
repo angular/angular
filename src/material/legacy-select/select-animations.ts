@@ -23,6 +23,8 @@ import {
  *
  * The values below match the implementation of the AngularJS Material mat-select animation.
  * @docs-private
+ * @deprecated Use `matSelectAnimations` from `@angular/material/select` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 export const matLegacySelectAnimations: {
   readonly transformPanelWrap: AnimationTriggerMetadata;

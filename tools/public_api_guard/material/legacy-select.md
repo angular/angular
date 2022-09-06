@@ -35,7 +35,7 @@ export { MAT_LEGACY_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY }
 
 export { MAT_LEGACY_SELECT_TRIGGER }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> implements OnInit {
     _calculateOverlayScroll(selectedIndex: number, scrollBuffer: number, maxScroll: number): number;
     // (undocumented)
@@ -68,13 +68,13 @@ export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> imple
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySelect, never>;
 }
 
-// @public
+// @public @deprecated
 export const matLegacySelectAnimations: {
     readonly transformPanelWrap: AnimationTriggerMetadata;
     readonly transformPanel: AnimationTriggerMetadata;
 };
 
-// @public
+// @public @deprecated
 export class MatLegacySelectChange {
     constructor(
     source: MatLegacySelect,
@@ -85,7 +85,7 @@ export class MatLegacySelectChange {
 
 export { MatLegacySelectConfig }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacySelectModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySelectModule, never>;
@@ -95,7 +95,7 @@ export class MatLegacySelectModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacySelectModule, [typeof i1.MatLegacySelect, typeof i1.MatLegacySelectTrigger], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatLegacyOptionModule, typeof i5.MatCommonModule], [typeof i6.CdkScrollableModule, typeof i7.MatLegacyFormFieldModule, typeof i1.MatLegacySelect, typeof i1.MatLegacySelectTrigger, typeof i4.MatLegacyOptionModule, typeof i5.MatCommonModule]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacySelectTrigger {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacySelectTrigger, "mat-select-trigger", never, {}, {}, never, never, false>;
@@ -103,22 +103,22 @@ export class MatLegacySelectTrigger {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySelectTrigger, never>;
 }
 
-// @public
+// @public @deprecated
 const SELECT_ITEM_HEIGHT_EM = 3;
 
-// @public
+// @public @deprecated
 const SELECT_MULTIPLE_PANEL_PADDING_X: number;
 
-// @public
+// @public @deprecated
 const SELECT_PANEL_INDENT_PADDING_X: number;
 
-// @public
+// @public @deprecated
 const SELECT_PANEL_MAX_HEIGHT = 256;
 
-// @public
+// @public @deprecated
 const SELECT_PANEL_PADDING_X = 16;
 
-// @public
+// @public @deprecated
 const SELECT_PANEL_VIEWPORT_PADDING = 8;
 
 // (No @packageDocumentation comment for this package)

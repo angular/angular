@@ -12,11 +12,11 @@ import { _MatSelectHarnessBase } from '@angular/material/select/testing';
 import { OptgroupHarnessFilters } from '@angular/material/legacy-core/testing';
 import { OptionHarnessFilters } from '@angular/material/legacy-core/testing';
 
-// @public
+// @public @deprecated
 export interface LegacySelectHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export class MatLegacySelectHarness extends _MatSelectHarnessBase<typeof MatLegacyOptionHarness, MatLegacyOptionHarness, OptionHarnessFilters, typeof MatLegacyOptgroupHarness, MatLegacyOptgroupHarness, OptgroupHarnessFilters> {
     // (undocumented)
     static hostSelector: string;

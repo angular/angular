@@ -16,6 +16,10 @@ import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {MAT_SELECT_SCROLL_STRATEGY_PROVIDER} from '@angular/material/select';
 import {MatLegacySelect, MatLegacySelectTrigger} from './select';
 
+/**
+ * @deprecated Use `MatSelectModule` from `@angular/material/select` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [CommonModule, OverlayModule, MatLegacyOptionModule, MatCommonModule],
   exports: [

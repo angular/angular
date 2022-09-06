@@ -16,7 +16,11 @@ import {
 } from '@angular/material/legacy-core/testing';
 import {LegacySelectHarnessFilters} from './select-harness-filters';
 
-/** Harness for interacting with a standard mat-select in tests. */
+/**
+ * Harness for interacting with a standard mat-select in tests.
+ * @deprecated Use `MatSelectHarness` from `@angular/material/select/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacySelectHarness extends _MatSelectHarnessBase<
   typeof MatLegacyOptionHarness,
   MatLegacyOptionHarness,
