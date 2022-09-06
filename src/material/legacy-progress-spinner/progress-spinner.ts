@@ -28,7 +28,11 @@ import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {Subscription} from 'rxjs';
 
-/** Possible mode for a progress spinner. */
+/**
+ * Possible mode for a progress spinner.
+ * @deprecated Use `ProgressSpinnerMode` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export type LegacyProgressSpinnerMode = 'determinate' | 'indeterminate';
 
 /**
@@ -52,7 +56,11 @@ const _MatProgressSpinnerBase = mixinColor(
   'primary',
 );
 
-/** Default `mat-progress-spinner` options that can be overridden. */
+/**
+ * Default `mat-progress-spinner` options that can be overridden.
+ * @deprecated Use `MatProgressSpinnerDefaultOptions` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface MatLegacyProgressSpinnerDefaultOptions {
   /** Default color of the spinner. */
   color?: ThemePalette;
@@ -67,7 +75,11 @@ export interface MatLegacyProgressSpinnerDefaultOptions {
   _forceAnimations?: boolean;
 }
 
-/** Injection token to be used to override the default options for `mat-progress-spinner`. */
+/**
+ * Injection token to be used to override the default options for `mat-progress-spinner`.
+ * @deprecated Use `MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export const MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS =
   new InjectionToken<MatLegacyProgressSpinnerDefaultOptions>(
     'mat-progress-spinner-default-options',
@@ -77,7 +89,11 @@ export const MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS =
     },
   );
 
-/** @docs-private */
+/**
+ * @docs-private
+ * @deprecated Use `MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export function MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatLegacyProgressSpinnerDefaultOptions {
   return {diameter: BASE_SIZE};
 }
@@ -112,6 +128,8 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
 
 /**
  * `<mat-progress-spinner>` component.
+ * @deprecated Use `MatProgressSpinner` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-progress-spinner, mat-spinner',

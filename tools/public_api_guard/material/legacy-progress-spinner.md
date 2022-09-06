@@ -21,16 +21,16 @@ import { Platform } from '@angular/cdk/platform';
 import { ThemePalette } from '@angular/material/core';
 import { ViewportRuler } from '@angular/cdk/scrolling';
 
-// @public
+// @public @deprecated
 export type LegacyProgressSpinnerMode = 'determinate' | 'indeterminate';
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS: InjectionToken<MatLegacyProgressSpinnerDefaultOptions>;
 
-// @public
+// @public @deprecated
 export function MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatLegacyProgressSpinnerDefaultOptions;
 
-// @public
+// @public @deprecated
 export class MatLegacyProgressSpinner extends _MatProgressSpinnerBase implements OnInit, OnDestroy, CanColor {
     constructor(elementRef: ElementRef<HTMLElement>, _platform: Platform, _document: any, animationMode: string, defaults?: MatLegacyProgressSpinnerDefaultOptions,
     changeDetectorRef?: ChangeDetectorRef, viewportRuler?: ViewportRuler, ngZone?: NgZone);
@@ -59,7 +59,7 @@ export class MatLegacyProgressSpinner extends _MatProgressSpinnerBase implements
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyProgressSpinner, [null, null, { optional: true; }, { optional: true; }, null, null, null, null]>;
 }
 
-// @public
+// @public @deprecated
 export interface MatLegacyProgressSpinnerDefaultOptions {
     color?: ThemePalette;
     diameter?: number;
@@ -67,7 +67,7 @@ export interface MatLegacyProgressSpinnerDefaultOptions {
     strokeWidth?: number;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyProgressSpinnerModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyProgressSpinnerModule, never>;

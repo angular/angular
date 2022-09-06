@@ -9,11 +9,11 @@ import { ComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 import { LegacyProgressSpinnerMode } from '@angular/material/legacy-progress-spinner';
 
-// @public
+// @public @deprecated
 export interface LegacyProgressSpinnerHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyProgressSpinnerHarness extends ComponentHarness {
     getMode(): Promise<LegacyProgressSpinnerMode>;
     getValue(): Promise<number | null>;

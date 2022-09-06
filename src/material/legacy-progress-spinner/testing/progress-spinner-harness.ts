@@ -11,7 +11,11 @@ import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {LegacyProgressSpinnerMode} from '@angular/material/legacy-progress-spinner';
 import {LegacyProgressSpinnerHarnessFilters} from './progress-spinner-harness-filters';
 
-/** Harness for interacting with a standard mat-progress-spinner in tests. */
+/**
+ * Harness for interacting with a standard mat-progress-spinner in tests.
+ * @deprecated Use `MatProgressSpinnerHarness` from `@angular/material/progress-spinner/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyProgressSpinnerHarness extends ComponentHarness {
   /** The selector for the host element of a Progress Spinner instance. */
   static hostSelector = '.mat-progress-spinner';

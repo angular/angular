@@ -10,6 +10,10 @@ import {CommonModule} from '@angular/common';
 import {MatCommonModule} from '@angular/material/core';
 import {MatLegacyProgressSpinner} from './progress-spinner';
 
+/**
+ * @deprecated Use `MatProgressSpinnerModule` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [MatCommonModule, CommonModule],
   exports: [MatLegacyProgressSpinner, MatCommonModule],
