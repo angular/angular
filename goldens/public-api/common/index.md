@@ -545,16 +545,18 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
+    ngSrc: string;
+    ngSrcset: string;
     set priority(value: string | boolean | undefined);
     // (undocumented)
     get priority(): boolean;
-    rawSrc: string;
-    rawSrcset: string;
+    // @deprecated
+    set rawSrc(value: string);
     set width(value: string | number | undefined);
     // (undocumented)
     get width(): number | undefined;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[rawSrc]", never, { "rawSrc": "rawSrc"; "rawSrcset": "rawSrcset"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc],img[rawSrc]", never, { "rawSrc": "rawSrc"; "ngSrc": "ngSrc"; "ngSrcset": "ngSrcset"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
 }
