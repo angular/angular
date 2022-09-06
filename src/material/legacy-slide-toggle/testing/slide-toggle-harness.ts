@@ -13,7 +13,11 @@ import {
   SlideToggleHarnessFilters,
 } from '@angular/material/slide-toggle/testing';
 
-/** Harness for interacting with a standard mat-slide-toggle in tests. */
+/**
+ * Harness for interacting with a standard mat-slide-toggle in tests.
+ * @deprecated Use `MatSlideToggleHarness` from `@angular/material/slide-toggle/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacySlideToggleHarness extends _MatSlideToggleHarnessBase {
   private _inputContainer = this.locatorFor('.mat-slide-toggle-bar');
   protected _nativeElement = this.locatorFor('input');

@@ -12,7 +12,7 @@ import { TestElement } from '@angular/cdk/testing';
 
 export { LegacySlideToggleHarnessFilters }
 
-// @public
+// @public @deprecated
 export class MatLegacySlideToggleHarness extends _MatLegacySlideToggleHarnessBase {
     static hostSelector: string;
     isChecked(): Promise<boolean>;

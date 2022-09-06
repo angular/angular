@@ -12,6 +12,10 @@ import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatLegacySlideToggle} from './slide-toggle';
 import {_MatSlideToggleRequiredValidatorModule} from '@angular/material/slide-toggle';
 
+/**
+ * @deprecated Use `MatSlideToggleModule` from `@angular/material/slide-toggle` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [
     _MatSlideToggleRequiredValidatorModule,
