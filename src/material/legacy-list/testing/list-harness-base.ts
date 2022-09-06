@@ -19,7 +19,11 @@ import {
 } from './list-harness-filters';
 import {MatLegacySubheaderHarness} from './list-item-harness-base';
 
-/** Represents a section of a list falling under a specific header. */
+/**
+ * Represents a section of a list falling under a specific header.
+ * @deprecated Use `ListSection` from `@angular/material/list/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface ListSection<I> {
   /** The heading for this list section. `undefined` if there is no heading. */
   heading?: string;
@@ -34,6 +38,8 @@ export interface ListSection<I> {
  * @template C The list item harness type that `T` constructs.
  * @template F The filter type used filter list item harness of type `C`.
  * @docs-private
+ * @deprecated Use `class` from `@angular/material/list/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 export abstract class MatLegacyListHarnessBase<
   T extends ComponentHarnessConstructor<C> & {with: (options?: F) => HarnessPredicate<C>},

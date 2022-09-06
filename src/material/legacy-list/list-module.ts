@@ -25,6 +25,10 @@ import {
 import {MatLegacyListOption, MatLegacySelectionList} from './selection-list';
 import {MatDividerModule} from '@angular/material/divider';
 
+/**
+ * @deprecated Use `MatListModule` from `@angular/material/list` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [MatLineModule, MatRippleModule, MatCommonModule, MatPseudoCheckboxModule, CommonModule],
   exports: [

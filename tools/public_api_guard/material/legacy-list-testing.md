@@ -13,55 +13,55 @@ import { HarnessPredicate } from '@angular/cdk/testing';
 import { MatDividerHarness } from '@angular/material/divider/testing';
 import { MatLegacyListOptionCheckboxPosition } from '@angular/material/legacy-list';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacyActionListHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacyActionListItemHarnessFilters extends LegacyBaseListItemHarnessFilters {
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacyBaseListItemHarnessFilters extends BaseHarnessFilters {
     // (undocumented)
     text?: string | RegExp;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacyListHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacyListItemHarnessFilters extends LegacyBaseListItemHarnessFilters {
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacyListOptionHarnessFilters extends LegacyBaseListItemHarnessFilters {
     // (undocumented)
     selected?: boolean;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacyNavListHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacyNavListItemHarnessFilters extends LegacyBaseListItemHarnessFilters {
     // (undocumented)
     href?: string | RegExp | null;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacySelectionListHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface LegacySubheaderHarnessFilters extends BaseHarnessFilters {
     // (undocumented)
     text?: string | RegExp;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyActionListHarness extends MatLegacyListHarnessBase<typeof MatLegacyActionListItemHarness, MatLegacyActionListItemHarness, LegacyActionListItemHarnessFilters> {
     static hostSelector: string;
     // (undocumented)
@@ -69,7 +69,7 @@ export class MatLegacyActionListHarness extends MatLegacyListHarnessBase<typeof 
     static with(options?: LegacyActionListHarnessFilters): HarnessPredicate<MatLegacyActionListHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyActionListItemHarness extends MatLegacyListItemHarnessBase {
     blur(): Promise<void>;
     click(): Promise<void>;
@@ -79,7 +79,7 @@ export class MatLegacyActionListItemHarness extends MatLegacyListItemHarnessBase
     static with(options?: LegacyActionListItemHarnessFilters): HarnessPredicate<MatLegacyActionListItemHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyListHarness extends MatLegacyListHarnessBase<typeof MatLegacyListItemHarness, MatLegacyListItemHarness, LegacyListItemHarnessFilters> {
     static hostSelector: string;
     // (undocumented)
@@ -87,19 +87,19 @@ export class MatLegacyListHarness extends MatLegacyListHarnessBase<typeof MatLeg
     static with(options?: LegacyListHarnessFilters): HarnessPredicate<MatLegacyListHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyListItemHarness extends MatLegacyListItemHarnessBase {
     static hostSelector: string;
     static with(options?: LegacyListItemHarnessFilters): HarnessPredicate<MatLegacyListItemHarness>;
 }
 
-// @public
+// @public @deprecated
 export const enum MatLegacyListItemSection {
     // (undocumented)
     CONTENT = ".mat-list-item-content"
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyListOptionHarness extends MatLegacyListItemHarnessBase {
     blur(): Promise<void>;
     deselect(): Promise<void>;
@@ -113,7 +113,7 @@ export class MatLegacyListOptionHarness extends MatLegacyListItemHarnessBase {
     static with(options?: LegacyListOptionHarnessFilters): HarnessPredicate<MatLegacyListOptionHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyNavListHarness extends MatLegacyListHarnessBase<typeof MatLegacyNavListItemHarness, MatLegacyNavListItemHarness, LegacyNavListItemHarnessFilters> {
     static hostSelector: string;
     // (undocumented)
@@ -121,7 +121,7 @@ export class MatLegacyNavListHarness extends MatLegacyListHarnessBase<typeof Mat
     static with(options?: LegacyNavListHarnessFilters): HarnessPredicate<MatLegacyNavListHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyNavListItemHarness extends MatLegacyListItemHarnessBase {
     blur(): Promise<void>;
     click(): Promise<void>;
@@ -132,7 +132,7 @@ export class MatLegacyNavListItemHarness extends MatLegacyListItemHarnessBase {
     static with(options?: LegacyNavListItemHarnessFilters): HarnessPredicate<MatLegacyNavListItemHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacySelectionListHarness extends MatLegacyListHarnessBase<typeof MatLegacyListOptionHarness, MatLegacyListOptionHarness, LegacyListOptionHarnessFilters> {
     deselectItems(...filters: LegacyListItemHarnessFilters[]): Promise<void>;
     static hostSelector: string;

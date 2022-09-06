@@ -11,7 +11,11 @@ import {MatLegacyListHarnessBase} from './list-harness-base';
 import {LegacyListHarnessFilters, LegacyListItemHarnessFilters} from './list-harness-filters';
 import {getListItemPredicate, MatLegacyListItemHarnessBase} from './list-item-harness-base';
 
-/** Harness for interacting with a standard mat-list in tests. */
+/**
+ * Harness for interacting with a standard mat-list in tests.
+ * @deprecated Use `MatListHarness` from `@angular/material/list/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyListHarness extends MatLegacyListHarnessBase<
   typeof MatLegacyListItemHarness,
   MatLegacyListItemHarness,
@@ -33,7 +37,11 @@ export class MatLegacyListHarness extends MatLegacyListHarnessBase<
   override _itemHarness = MatLegacyListItemHarness;
 }
 
-/** Harness for interacting with a list item. */
+/**
+ * Harness for interacting with a list item.
+ * @deprecated Use `MatListItemHarness` from `@angular/material/list/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyListItemHarness extends MatLegacyListItemHarnessBase {
   /** The selector for the host element of a `MatListItem` instance. */
   static hostSelector = `${MatLegacyListHarness.hostSelector} .mat-list-item`;

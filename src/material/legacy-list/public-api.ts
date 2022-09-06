@@ -24,6 +24,15 @@ export {
 } from './selection-list';
 
 export {
+  /**
+   * @deprecated Use `MAT_LIST` from `@angular/material/list` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   MAT_LIST as MAT_LEGACY_LIST,
+
+  /**
+   * @deprecated Use `MAT_NAV_LIST` from `@angular/material/list` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   MAT_NAV_LIST as MAT_LEGACY_NAV_LIST,
 } from '@angular/material/list';

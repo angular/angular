@@ -46,14 +46,22 @@ import {MatLegacyListAvatarCssMatStyler, MatLegacyListIconCssMatStyler} from './
 const _MatSelectionListBase = mixinDisableRipple(class {});
 const _MatListOptionBase = mixinDisableRipple(class {});
 
-/** @docs-private */
+/**
+ * @docs-private
+ * @deprecated Use `MAT_SELECTION_LIST_VALUE_ACCESSOR` from `@angular/material/list` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export const MAT_LEGACY_SELECTION_LIST_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatLegacySelectionList),
   multi: true,
 };
 
-/** Change event that is being fired whenever the selected state of an option changes. */
+/**
+ * Change event that is being fired whenever the selected state of an option changes.
+ * @deprecated Use `MatSelectionListChange` from `@angular/material/list` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacySelectionListChange {
   constructor(
     /** Reference to the selection list that emitted the event. */
@@ -66,6 +74,8 @@ export class MatLegacySelectionListChange {
 /**
  * Type describing possible positions of a checkbox in a list option
  * with respect to the list item's text.
+ * @deprecated Use `MatListOptionCheckboxPosition` from `@angular/material/list` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 export type MatLegacyListOptionCheckboxPosition = 'before' | 'after';
 
@@ -73,6 +83,8 @@ export type MatLegacyListOptionCheckboxPosition = 'before' | 'after';
  * Component for list-options of selection-list. Each list-option can automatically
  * generate a checkbox and can put current item into the selectionModel of selection-list
  * if the current item is selected.
+ * @deprecated Use `MatListOption` from `@angular/material/list` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-list-option',
@@ -325,6 +337,8 @@ export class MatLegacyListOption
 
 /**
  * Material Design list component where each item is a selectable option. Behaves as a listbox.
+ * @deprecated Use `MatSelectionList` from `@angular/material/list` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-selection-list',
