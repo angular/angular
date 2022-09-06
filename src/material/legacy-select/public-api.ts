@@ -8,11 +8,7 @@
 
 export {MatLegacySelectModule} from './select-module';
 export {matLegacySelectAnimations} from './select-animations';
-export {
-  MatLegacySelectChange as MatSelectChange,
-  MatLegacySelect as MatSelect,
-  MatLegacySelectTrigger as MatSelectTrigger,
-} from './select';
+export {MatLegacySelectChange, MatLegacySelect, MatLegacySelectTrigger} from './select';
 
 export {
   MAT_SELECT_CONFIG as MAT_LEGACY_SELECT_CONFIG,

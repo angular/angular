@@ -35,31 +35,13 @@ export { MAT_LEGACY_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY }
 
 export { MAT_LEGACY_SELECT_TRIGGER }
 
-// @public
-export const matLegacySelectAnimations: {
-    readonly transformPanelWrap: AnimationTriggerMetadata;
-    readonly transformPanel: AnimationTriggerMetadata;
-};
-
-export { MatLegacySelectConfig }
-
 // @public (undocumented)
-export class MatLegacySelectModule {
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySelectModule, never>;
-    // (undocumented)
-    static ɵinj: i0.ɵɵInjectorDeclaration<MatLegacySelectModule>;
-    // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacySelectModule, [typeof i1.MatLegacySelect, typeof i1.MatLegacySelectTrigger], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatLegacyOptionModule, typeof i5.MatCommonModule], [typeof i6.CdkScrollableModule, typeof i7.MatLegacyFormFieldModule, typeof i1.MatLegacySelect, typeof i1.MatLegacySelectTrigger, typeof i4.MatLegacyOptionModule, typeof i5.MatCommonModule]>;
-}
-
-// @public (undocumented)
-export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit {
+export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> implements OnInit {
     _calculateOverlayScroll(selectedIndex: number, scrollBuffer: number, maxScroll: number): number;
     // (undocumented)
-    customTrigger: MatSelectTrigger;
+    customTrigger: MatLegacySelectTrigger;
     // (undocumented)
-    protected _getChangeEvent(value: any): MatSelectChange;
+    protected _getChangeEvent(value: any): MatLegacySelectChange;
     // (undocumented)
     protected _getOverlayMinWidth(): number;
     // (undocumented)
@@ -81,26 +63,44 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     _transformOrigin: string;
     _triggerFontSize: number;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSelect, "mat-select", ["matSelect"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; }, {}, ["customTrigger", "options", "optionGroups"], ["mat-select-trigger", "*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacySelect, "mat-select", ["matSelect"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; }, {}, ["customTrigger", "options", "optionGroups"], ["mat-select-trigger", "*"], false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatSelect, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySelect, never>;
 }
 
 // @public
-export class MatSelectChange {
+export const matLegacySelectAnimations: {
+    readonly transformPanelWrap: AnimationTriggerMetadata;
+    readonly transformPanel: AnimationTriggerMetadata;
+};
+
+// @public
+export class MatLegacySelectChange {
     constructor(
-    source: MatSelect,
+    source: MatLegacySelect,
     value: any);
-    source: MatSelect;
+    source: MatLegacySelect;
     value: any;
 }
 
+export { MatLegacySelectConfig }
+
+// @public (undocumented)
+export class MatLegacySelectModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySelectModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatLegacySelectModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacySelectModule, [typeof i1.MatLegacySelect, typeof i1.MatLegacySelectTrigger], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatLegacyOptionModule, typeof i5.MatCommonModule], [typeof i6.CdkScrollableModule, typeof i7.MatLegacyFormFieldModule, typeof i1.MatLegacySelect, typeof i1.MatLegacySelectTrigger, typeof i4.MatLegacyOptionModule, typeof i5.MatCommonModule]>;
+}
+
 // @public
-export class MatSelectTrigger {
+export class MatLegacySelectTrigger {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSelectTrigger, "mat-select-trigger", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacySelectTrigger, "mat-select-trigger", never, {}, {}, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatSelectTrigger, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySelectTrigger, never>;
 }
 
 // @public

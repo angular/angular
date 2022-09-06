@@ -16,7 +16,7 @@ import {MatLegacyDialog, MatLegacyDialogModule} from '@angular/material/legacy-d
 import {LegacyFloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectChange, MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatLegacySelectChange, MatLegacySelectModule} from '@angular/material/legacy-select';
 
 /** Error any time control is invalid */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -59,7 +59,7 @@ export class LegacySelectDemo {
   currentPokemonFromGroup: string;
   currentDigimon: string;
   currentAppearanceValue: string | null;
-  latestChangeEvent: MatSelectChange;
+  latestChangeEvent: MatLegacySelectChange;
   floatLabel: LegacyFloatLabelType = 'auto';
   drinksWidth = 'default';
   foodControl = new FormControl('pizza-1');
