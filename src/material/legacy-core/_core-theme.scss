@@ -7,6 +7,8 @@
 @use '../core/style/elevation';
 @use '../core/style/private';
 
+/// @deprecated Use `mat.core-color` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
 
@@ -39,6 +41,8 @@
 }
 
 // Mixin that renders all of the core styles that depend on the theme.
+/// @deprecated Use `mat.core-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   // Wrap the sub-theme includes in the duplicate theme styles mixin. This ensures that

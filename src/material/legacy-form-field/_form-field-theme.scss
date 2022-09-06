@@ -10,6 +10,8 @@
 @use './form-field-standard-theme.scss';
 
 // Color styles that apply to all appearances of the form-field.
+/// @deprecated Use `mat.form-field-color` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $primary: map.get($config, primary);
@@ -132,6 +134,8 @@ $dedupe: 0;
   $dedupe: $dedupe + 0.00001 !global;
 }
 
+/// @deprecated Use `mat.form-field-typography` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin typography($config-or-theme) {
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
@@ -242,6 +246,8 @@ $dedupe: 0;
   @include form-field-outline-theme.outline-typography($config);
 }
 
+/// @deprecated Use `mat.form-field-density` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
   @include form-field-legacy-theme.private-form-field-legacy-density($density-scale);
@@ -250,6 +256,8 @@ $dedupe: 0;
   @include form-field-outline-theme.private-form-field-outline-density($density-scale);
 }
 
+/// @deprecated Use `mat.form-field-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-form-field') {

@@ -2,6 +2,8 @@
 @use '../core/style/private';
 @use '../core/theming/theming';
 
+/// @deprecated Use `mat.autocomplete-color` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $foreground: map.get($config, foreground);
@@ -27,10 +29,14 @@
   }
 }
 
+/// @deprecated Use `mat.autocomplete-typography` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin typography($config-or-theme) {}
 
 @mixin _density($config-or-theme) {}
 
+/// @deprecated Use `mat.autocomplete-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-autocomplete') {

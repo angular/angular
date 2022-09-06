@@ -8,6 +8,8 @@ $tab-bar-height: 48px !default;
 $tab-animation-duration: 500ms !default;
 
 // Mixin styles for labels that are contained within the tab header.
+/// @deprecated Use `mat.tabs-tab-label` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin tab-label {
   height: $tab-bar-height;
   padding: 0 24px;
@@ -50,6 +52,8 @@ $tab-animation-duration: 500ms !default;
 }
 
 // The ink bar that displays under the active tab label
+/// @deprecated Use `mat.tabs-ink-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin ink-bar {
   $height: 2px;
 
@@ -71,6 +75,8 @@ $tab-animation-duration: 500ms !default;
 }
 
 // Structural styles for a tab header. Used by both `mat-tab-header` and `mat-tab-nav-bar`.
+/// @deprecated Use `mat.tabs-paginated-tab-header` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin paginated-tab-header {
   .mat-tab-header {
     display: flex;
@@ -141,6 +147,8 @@ $tab-animation-duration: 500ms !default;
 }
 
 // Structural styles for the element that wraps the paginated header items.
+/// @deprecated Use `mat.tabs-paginated-tab-header-item-wrapper` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin paginated-tab-header-item-wrapper($parent) {
   display: flex;
 
@@ -155,6 +163,8 @@ $tab-animation-duration: 500ms !default;
   }
 }
 
+/// @deprecated Use `mat.tabs-paginated-tab-header-container` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin paginated-tab-header-container {
   display: flex;
   flex-grow: 1;

@@ -5,6 +5,8 @@
 @use '../core/density/private/compatibility';
 @use './paginator-variables';
 
+/// @deprecated Use `mat.paginator-color` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $foreground: map.get($config, foreground);
@@ -40,6 +42,8 @@
   }
 }
 
+/// @deprecated Use `mat.paginator-typography` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin typography($config-or-theme) {
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
@@ -52,6 +56,8 @@
   }
 }
 
+/// @deprecated Use `mat.paginator-density` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
   $height: compatibility.private-density-prop-value(paginator-variables.$density-config,
@@ -64,6 +70,8 @@
   }
 }
 
+/// @deprecated Use `mat.paginator-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-paginator') {

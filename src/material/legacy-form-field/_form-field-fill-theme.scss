@@ -7,6 +7,8 @@
 
 // Theme styles that only apply to the fill appearance of the form-field.
 
+/// @deprecated Use `mat.form-field-fill-color` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin fill-color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $foreground: map.get($config, foreground);
@@ -60,6 +62,8 @@ $fill-dedupe: 0;
   $fill-dedupe: $fill-dedupe + 0.00001 !global;
 }
 
+/// @deprecated Use `mat.form-field-fill-typography` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin fill-typography($config-or-theme) {
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
@@ -106,8 +110,12 @@ $fill-dedupe: 0;
   }
 }
 
+/// @deprecated Use `mat.form-field-private-form-field-fill-density` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin private-form-field-fill-density($config-or-theme) {}
 
+/// @deprecated Use `mat.form-field-fill-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin fill-theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-form-field-fill') {

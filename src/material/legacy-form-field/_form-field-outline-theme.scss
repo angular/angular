@@ -7,6 +7,8 @@
 
 // Theme styles that only apply to the outline appearance of the form-field.
 
+/// @deprecated Use `mat.form-field-outline-color` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin outline-color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $primary: map.get($config, primary);
@@ -83,6 +85,8 @@ $outline-dedupe: 0;
   $outline-dedupe: $outline-dedupe + 0.00001 !global;
 }
 
+/// @deprecated Use `mat.form-field-outline-typography` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin outline-typography($config-or-theme) {
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
@@ -136,8 +140,12 @@ $outline-dedupe: 0;
   }
 }
 
+/// @deprecated Use `mat.form-field-private-form-field-outline-density` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin private-form-field-outline-density($config-or-theme) {}
 
+/// @deprecated Use `mat.form-field-outline-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin outline-theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-form-field-outline') {

@@ -8,6 +8,8 @@
 
 // Theme styles that only apply to the legacy appearance of the form-field.
 
+/// @deprecated Use `mat.form-field-legacy-color` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin legacy-color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $foreground: map.get($config, foreground);
@@ -66,6 +68,8 @@ $legacy-dedupe: 0;
   $legacy-dedupe: $legacy-dedupe + 0.00001 !global;
 }
 
+/// @deprecated Use `mat.form-field-legacy-typography` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin legacy-typography($config-or-theme) {
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
@@ -174,8 +178,12 @@ $legacy-dedupe: 0;
   }
 }
 
+/// @deprecated Use `mat.form-field-private-form-field-legacy-density` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin private-form-field-legacy-density($config-or-theme) {}
 
+/// @deprecated Use `mat.form-field-legacy-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin legacy-theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-form-field-legacy') {

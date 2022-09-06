@@ -24,6 +24,8 @@
 @use '../../legacy-table/table-theme';
 
 // Create a theme.
+/// @deprecated Use `mat.all-component-themes` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin all-legacy-component-themes($theme-or-color-config) {
   $dedupe-key: 'angular-material-legacy-theme';
   @include theming.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
@@ -53,7 +55,8 @@
   }
 }
 
-// @deprecated Use `all-legacy-component-themes`.
+/// @deprecated Use `mat.all-component-themes` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin angular-material-legacy-theme($theme-or-color-config) {
   @include all-legacy-component-themes($theme-or-color-config);
 }

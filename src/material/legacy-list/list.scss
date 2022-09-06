@@ -34,6 +34,8 @@ $item-inset-divider-offset: 72px;
 
 // This mixin provides all list-item styles, changing font size and height
 // based on whether the list is in dense mode.
+/// @deprecated Use `mat.list-item-base` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin item-base($base-height, $height-with-avatar, $two-line-height,
   $three-line-height, $multi-line-padding, $icon-size, $avatar-size) {
 
@@ -224,6 +226,8 @@ button.mat-list-item, button.mat-list-option {
 }
 
 // This mixin adjusts the heights and padding based on whether the list is in dense mode.
+/// @deprecated Use `mat.list-subheader-spacing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin subheader-spacing($top-padding, $base-height) {
   height: $base-height;
   line-height: $base-height - $side-padding * 2;

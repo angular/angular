@@ -6,6 +6,8 @@
 // @use '../../../<legacy-component>/<legacy-component>-theme';
 
 // Includes all of the density styles.
+/// @deprecated Use `mat.all-component-densities` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin all-legacy-component-densities($config-or-theme) {
   // In case a theme object has been passed instead of a configuration for
   // the density system, extract the density config from the theme object.
@@ -29,7 +31,8 @@
 }
 
 
-// @deprecated Use `all-legacy-component-densities`.
+/// @deprecated Use `mat.all-component-densities` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin angular-material-legacy-density($config-or-theme) {
   @include all-legacy-component-densities($config-or-theme);
 }

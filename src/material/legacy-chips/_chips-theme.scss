@@ -40,6 +40,8 @@ $chip-remove-font-size: 18px;
   }
 }
 
+/// @deprecated Use `mat.chips-color` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $is-dark-theme: map.get($config, is-dark);
@@ -89,6 +91,8 @@ $chip-remove-font-size: 18px;
   }
 }
 
+/// @deprecated Use `mat.chips-typography` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin typography($config-or-theme) {
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
@@ -105,6 +109,8 @@ $chip-remove-font-size: 18px;
 
 @mixin _density($config-or-theme) {}
 
+/// @deprecated Use `mat.chips-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-chips') {

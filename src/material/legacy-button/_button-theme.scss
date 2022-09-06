@@ -86,6 +86,8 @@ $_ripple-opacity: 0.1;
   }
 }
 
+/// @deprecated Use `mat.button-color` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $primary: map.get($config, primary);
@@ -163,6 +165,8 @@ $_ripple-opacity: 0.1;
   }
 }
 
+/// @deprecated Use `mat.button-typography` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin typography($config-or-theme) {
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
@@ -178,6 +182,8 @@ $_ripple-opacity: 0.1;
 
 @mixin _density($config-or-theme) {}
 
+/// @deprecated Use `mat.button-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-button') {

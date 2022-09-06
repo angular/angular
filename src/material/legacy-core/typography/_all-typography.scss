@@ -26,6 +26,8 @@
 @use '../../legacy-table/table-theme';
 
 // Includes all of the typographic styles.
+/// @deprecated Use `mat.all-component-typographies` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin all-legacy-component-typographies($config-or-theme: null) {
   $config: if(theming.private-is-theme-object($config-or-theme),
       theming.get-typography-config($config-or-theme), $config-or-theme);
@@ -67,7 +69,8 @@
   @include table-theme.typography($config);
 }
 
-// @deprecated Use `all-legacy-component-typographies`.
+/// @deprecated Use `mat.all-component-typographies` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin angular-material-legacy-typography($config-or-theme: null) {
   @include all-legacy-component-typographies($config-or-theme);
 }

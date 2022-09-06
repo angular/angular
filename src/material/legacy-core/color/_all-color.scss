@@ -2,6 +2,8 @@
 @use '../../core/theming/theming';
 
 // Includes all of the color styles.
+/// @deprecated Use `mat.all-component-colors` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin all-legacy-component-colors($config-or-theme) {
   // In case a theme object has been passed instead of a configuration for
   // the color system, extract the color config from the theme object.
@@ -19,7 +21,8 @@
   ));
 }
 
-// @deprecated Use `all-legacy-component-colors`.
+/// @deprecated Use `mat.all-component-colors` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+/// @breaking-change 17.0.0
 @mixin angular-material-legacy-color($config-or-theme) {
   @include all-legacy-component-colors($config-or-theme);
 }
