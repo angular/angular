@@ -212,8 +212,8 @@ The example template uses two built-in structural directives to add application 
 
 | Directives                                  | Details |
 |:---                                         |:---     |
-| [`*ngFor`](guide/built-in-directives#ngFor) | An iterative, it tells Angular to stamp out one `<li>` per hero in the `heroes` list. |
-| [`*ngIf`](guide/built-in-directives#ngIf)   | A conditional, it includes the `HeroDetail` component only if a selected hero exists. |
+| [`*ngFor`](guide/built-in-directives#ngFor) | An *iterative*, which tells Angular to create one `<li>` per hero in the `heroes` list. |
+| [`*ngIf`](guide/built-in-directives#ngIf)   | A *conditional*, which includes the `HeroDetail` component only if a selected hero exists. |
 
 #### Attribute directives
 
