@@ -27,7 +27,7 @@ import {getUrl} from './url';
  */
 @Injectable({providedIn: 'root'})
 export class LCPImageObserver implements OnDestroy {
-  // Map of full image URLs -> original `rawSrc` values.
+  // Map of full image URLs -> original `ngSrc` values.
   private images = new Map<string, string>();
   // Keep track of images for which `console.warn` was produced.
   private alreadyWarned = new Set<string>();
@@ -65,8 +65,8 @@ export class LCPImageObserver implements OnDestroy {
       // Exclude `data:` and `blob:` URLs, since they are not supported by the directive.
       if (imgSrc.startsWith('data:') || imgSrc.startsWith('blob:')) return;
 
-      const imgRawSrc = this.images.get(imgSrc);
-      if (imgRawSrc && !this.alreadyWarned.has(imgSrc)) {
+      const imgNgSrc = this.images.get(imgSrc);
+      if (imgNgSrc && !this.alreadyWarned.has(imgSrc)) {
         this.alreadyWarned.add(imgSrc);
         logMissingPriorityWarning(imgSrc);
       }
@@ -75,9 +75,9 @@ export class LCPImageObserver implements OnDestroy {
     return observer;
   }
 
-  registerImage(rewrittenSrc: string, rawSrc: string) {
+  registerImage(rewrittenSrc: string, originalNgSrc: string) {
     if (!this.observer) return;
-    this.images.set(getUrl(rewrittenSrc, this.window!).href, rawSrc);
+    this.images.set(getUrl(rewrittenSrc, this.window!).href, originalNgSrc);
   }
 
   unregisterImage(rewrittenSrc: string) {
@@ -93,8 +93,8 @@ export class LCPImageObserver implements OnDestroy {
   }
 }
 
-function logMissingPriorityWarning(rawSrc: string) {
-  const directiveDetails = imgDirectiveDetails(rawSrc);
+function logMissingPriorityWarning(ngSrc: string) {
+  const directiveDetails = imgDirectiveDetails(ngSrc);
   console.warn(formatRuntimeError(
       RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
       `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
