@@ -17,7 +17,11 @@ import {
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {_MatTestDialogOpenerBase} from '@angular/material/dialog/testing';
 
-/** Test component that immediately opens a dialog when created. */
+/**
+ * Test component that immediately opens a dialog when created.
+ * @deprecated Use `MatTestDialogOpener` from `@angular/material/dialog/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Component({
   selector: 'mat-test-dialog-opener',
   template: '',
@@ -44,6 +48,10 @@ export class MatTestLegacyDialogOpener<T = unknown, R = unknown> extends _MatTes
   }
 }
 
+/**
+ * @deprecated Use `MatTestDialogOpenerModule` from `@angular/material/dialog/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   declarations: [MatTestLegacyDialogOpener],
   imports: [MatLegacyDialogModule, NoopAnimationsModule],

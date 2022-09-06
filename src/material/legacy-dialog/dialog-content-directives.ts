@@ -24,6 +24,8 @@ let dialogElementUid = 0;
 
 /**
  * Button that will close the current dialog.
+ * @deprecated Use `MatDialogClose` from `@angular/material/dialog` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: '[mat-dialog-close], [matDialogClose]',
@@ -93,6 +95,8 @@ export class MatLegacyDialogClose implements OnInit, OnChanges {
 
 /**
  * Title of a dialog element. Stays fixed to the top of the dialog when scrolling.
+ * @deprecated Use `MatDialogTitle` from `@angular/material/dialog` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: '[mat-dialog-title], [matDialogTitle]',
@@ -133,6 +137,8 @@ export class MatLegacyDialogTitle implements OnInit {
 
 /**
  * Scrollable content container of a dialog.
+ * @deprecated Use `MatDialogContent` from `@angular/material/dialog` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: `[mat-dialog-content], mat-dialog-content, [matDialogContent]`,
@@ -143,6 +149,8 @@ export class MatLegacyDialogContent {}
 /**
  * Container for the bottom action buttons in a dialog.
  * Stays fixed to the bottom when scrolling.
+ * @deprecated Use `MatDialogActions` from `@angular/material/dialog` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: `[mat-dialog-actions], mat-dialog-actions, [matDialogActions]`,

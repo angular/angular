@@ -8,4 +8,10 @@
 
 export {MatLegacyDialogSection, MatLegacyDialogHarness} from './dialog-harness';
 export {MatTestLegacyDialogOpener, MatTestLegacyDialogOpenerModule} from './dialog-opener';
-export {DialogHarnessFilters as LegacyDialogHarnessFilters} from '@angular/material/dialog/testing';
+export {
+  /**
+   * @deprecated Use `DialogHarnessFilters` from `@angular/material/dialog/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
+  DialogHarnessFilters as LegacyDialogHarnessFilters,
+} from '@angular/material/dialog/testing';

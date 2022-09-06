@@ -9,14 +9,22 @@
 import {HarnessPredicate} from '@angular/cdk/testing';
 import {_MatDialogHarnessBase, DialogHarnessFilters} from '@angular/material/dialog/testing';
 
-/** Selectors for different sections of the mat-dialog that can contain user content. */
+/**
+ * Selectors for different sections of the mat-dialog that can contain user content.
+ * @deprecated Use `enum` from `@angular/material/dialog/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export const enum MatLegacyDialogSection {
   TITLE = '.mat-dialog-title',
   CONTENT = '.mat-dialog-content',
   ACTIONS = '.mat-dialog-actions',
 }
 
-/** Harness for interacting with a standard `MatDialog` in tests. */
+/**
+ * Harness for interacting with a standard `MatDialog` in tests.
+ * @deprecated Use `MatDialogHarness` from `@angular/material/dialog/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyDialogHarness extends _MatDialogHarnessBase {
   // Developers can provide a custom component or template for the
   // dialog. The canonical dialog parent is the "MatDialogContainer".

@@ -46,28 +46,28 @@ export { LegacyDialogPosition }
 
 export { LegacyDialogRole }
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_DIALOG_DATA: InjectionToken<any>;
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_DIALOG_DEFAULT_OPTIONS: InjectionToken<MatLegacyDialogConfig<any>>;
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_DIALOG_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
 
 export { MAT_LEGACY_DIALOG_SCROLL_STRATEGY_FACTORY }
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_DIALOG_SCROLL_STRATEGY_PROVIDER: {
     provide: InjectionToken<() => ScrollStrategy>;
     deps: (typeof Overlay)[];
     useFactory: typeof MAT_LEGACY_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY;
 };
 
-// @public
+// @public @deprecated
 export function MAT_LEGACY_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay): () => ScrollStrategy;
 
-// @public
+// @public @deprecated
 export class MatLegacyDialog extends _MatLegacyDialogBase<MatLegacyDialogContainer> {
     constructor(overlay: Overlay, injector: Injector,
     _location: Location_2, defaultOptions: MatLegacyDialogConfig, scrollStrategy: any, parentDialog: MatLegacyDialog,
@@ -81,7 +81,7 @@ export class MatLegacyDialog extends _MatLegacyDialogBase<MatLegacyDialogContain
     static ɵprov: i0.ɵɵInjectableDeclaration<MatLegacyDialog>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyDialogActions {
     align?: 'start' | 'center' | 'end';
     // (undocumented)
@@ -94,7 +94,7 @@ export { matLegacyDialogAnimations }
 
 export { _MatLegacyDialogBase }
 
-// @public
+// @public @deprecated
 export class MatLegacyDialogClose implements OnInit, OnChanges {
     constructor(
     dialogRef: MatLegacyDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatLegacyDialog);
@@ -117,13 +117,13 @@ export class MatLegacyDialogClose implements OnInit, OnChanges {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyDialogClose, [{ optional: true; }, null, null]>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyDialogConfig<D = any> extends MatDialogConfig<D> {
     enterAnimationDuration?: string;
     exitAnimationDuration?: string;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyDialogContainer extends _MatLegacyDialogContainerBase {
     constructor(elementRef: ElementRef, focusTrapFactory: FocusTrapFactory, document: any, dialogConfig: MatLegacyDialogConfig, checker: InteractivityChecker, ngZone: NgZone, overlayRef: OverlayRef, _changeDetectorRef: ChangeDetectorRef, focusMonitor?: FocusMonitor);
     // (undocumented)
@@ -146,7 +146,7 @@ export class MatLegacyDialogContainer extends _MatLegacyDialogContainerBase {
 
 export { _MatLegacyDialogContainerBase }
 
-// @public
+// @public @deprecated
 export class MatLegacyDialogContent {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyDialogContent, "[mat-dialog-content], mat-dialog-content, [matDialogContent]", never, {}, {}, never, never, false>;
@@ -154,7 +154,7 @@ export class MatLegacyDialogContent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyDialogContent, never>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyDialogModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyDialogModule, never>;
@@ -164,13 +164,13 @@ export class MatLegacyDialogModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacyDialogModule, [typeof i1.MatLegacyDialogContainer, typeof i2.MatLegacyDialogClose, typeof i2.MatLegacyDialogTitle, typeof i2.MatLegacyDialogActions, typeof i2.MatLegacyDialogContent], [typeof i3.DialogModule, typeof i4.OverlayModule, typeof i5.PortalModule, typeof i6.MatCommonModule], [typeof i1.MatLegacyDialogContainer, typeof i2.MatLegacyDialogClose, typeof i2.MatLegacyDialogTitle, typeof i2.MatLegacyDialogContent, typeof i2.MatLegacyDialogActions, typeof i6.MatCommonModule]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyDialogRef<T, R = any> extends MatDialogRef<T, R> {
 }
 
 export { MatLegacyDialogState }
 
-// @public
+// @public @deprecated
 export class MatLegacyDialogTitle implements OnInit {
     constructor(_dialogRef: MatLegacyDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatLegacyDialog);
     id: string;

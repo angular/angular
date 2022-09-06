@@ -17,7 +17,7 @@ import { TestElement } from '@angular/cdk/testing';
 
 export { LegacyDialogHarnessFilters }
 
-// @public
+// @public @deprecated
 export class MatLegacyDialogHarness extends _MatDialogHarnessBase {
     // (undocumented)
     protected _actions: AsyncFactoryFn<TestElement | null>;
@@ -29,7 +29,7 @@ export class MatLegacyDialogHarness extends _MatDialogHarnessBase {
     static with(options?: LegacyDialogHarnessFilters): HarnessPredicate<MatLegacyDialogHarness>;
 }
 
-// @public
+// @public @deprecated
 export const enum MatLegacyDialogSection {
     // (undocumented)
     ACTIONS = ".mat-dialog-actions",
@@ -39,13 +39,13 @@ export const enum MatLegacyDialogSection {
     TITLE = ".mat-dialog-title"
 }
 
-// @public
+// @public @deprecated
 export class MatTestLegacyDialogOpener<T = unknown, R = unknown> extends _MatTestDialogOpenerBase<MatLegacyDialogContainer, T, R> {
     constructor(dialog: MatLegacyDialog);
     static withComponent<T = unknown, R = unknown>(component: ComponentType<T>, config?: MatLegacyDialogConfig): ComponentType<MatTestLegacyDialogOpener<T, R>>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatTestLegacyDialogOpenerModule {
 }
 

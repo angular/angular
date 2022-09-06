@@ -20,6 +20,10 @@ import {
   MatLegacyDialogTitle,
 } from './dialog-content-directives';
 
+/**
+ * @deprecated Use `MatDialogModule` from `@angular/material/dialog` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [DialogModule, OverlayModule, PortalModule, MatCommonModule],
   exports: [
