@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './tooltip-harness';
+export {MatLegacyTooltipHarness} from './tooltip-harness';
 export {TooltipHarnessFilters as LegacyTooltipHarnessFilters} from '@angular/material/tooltip/testing';
