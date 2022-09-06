@@ -8,7 +8,11 @@
 import {HarnessPredicate} from '@angular/cdk/testing';
 import {_MatSnackBarHarnessBase, SnackBarHarnessFilters} from '@angular/material/snack-bar/testing';
 
-/** Harness for interacting with a standard mat-snack-bar in tests. */
+/**
+ * Harness for interacting with a standard mat-snack-bar in tests.
+ * @deprecated Use `MatSnackBarHarness` from `@angular/material/snack-bar/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacySnackBarHarness extends _MatSnackBarHarnessBase {
   // Developers can provide a custom component or template for the snackbar. The canonical snack-bar
   // parent is the "MatSnackBarContainer". We use `:not([mat-exit])` to exclude snack bars that

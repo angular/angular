@@ -10,7 +10,7 @@ import { _MatSnackBarHarnessBase } from '@angular/material/snack-bar/testing';
 
 export { LegacySnackBarHarnessFilters }
 
-// @public
+// @public @deprecated
 export class MatLegacySnackBarHarness extends _MatSnackBarHarnessBase {
     // (undocumented)
     protected _actionButtonSelector: string;

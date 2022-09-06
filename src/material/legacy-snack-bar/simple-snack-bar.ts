@@ -12,6 +12,8 @@ import {TextOnlySnackBar, MatSnackBarRef, MAT_SNACK_BAR_DATA} from '@angular/mat
 /**
  * A component used to open as the default snack bar, matching material spec.
  * This should only be used internally by the snack bar service.
+ * @deprecated Use `SimpleSnackBar` from `@angular/material/snack-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'simple-snack-bar',

@@ -21,6 +21,8 @@ import {MatLegacySnackBarModule} from './snack-bar-module';
 
 /**
  * Service to dispatch Material Design snack bar messages.
+ * @deprecated Use `MatSnackBar` from `@angular/material/snack-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Injectable({providedIn: MatLegacySnackBarModule})
 export class MatLegacySnackBar extends _MatSnackBarBase {
