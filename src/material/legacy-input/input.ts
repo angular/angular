@@ -14,7 +14,11 @@ import {
   MAT_LEGACY_FORM_FIELD,
 } from '@angular/material/legacy-form-field';
 
-/** Directive that allows a native input to work inside a `MatFormField`. */
+/**
+ * Directive that allows a native input to work inside a `MatFormField`.
+ * @deprecated Use `MatInput` from `@angular/material/input` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Directive({
   selector: `input[matInput], textarea[matInput], select[matNativeControl],
       input[matNativeControl], textarea[matNativeControl]`,

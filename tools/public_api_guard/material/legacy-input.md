@@ -16,7 +16,7 @@ export { getMatLegacyInputUnsupportedTypeError }
 
 export { MAT_LEGACY_INPUT_VALUE_ACCESSOR }
 
-// @public
+// @public @deprecated
 export class MatLegacyInput extends MatInput {
     // (undocumented)
     protected _getPlaceholder(): string | null;
@@ -26,7 +26,7 @@ export class MatLegacyInput extends MatInput {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyInput, never>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyInputModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyInputModule, never>;
