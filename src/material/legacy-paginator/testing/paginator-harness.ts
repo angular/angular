@@ -13,7 +13,11 @@ import {
   PaginatorHarnessFilters,
 } from '@angular/material/paginator/testing';
 
-/** Harness for interacting with a standard mat-paginator in tests. */
+/**
+ * Harness for interacting with a standard mat-paginator in tests.
+ * @deprecated Use `MatPaginatorHarness` from `@angular/material/paginator/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyPaginatorHarness extends _MatPaginatorHarnessBase {
   /** Selector used to find paginator instances. */
   static hostSelector = '.mat-paginator';

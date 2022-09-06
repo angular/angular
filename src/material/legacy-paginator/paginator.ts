@@ -18,7 +18,11 @@ import {
 import {MatLegacyFormFieldAppearance} from '@angular/material/legacy-form-field';
 import {_MatPaginatorBase, MatPaginatorIntl} from '@angular/material/paginator';
 
-/** Object that can be used to configure the default options for the paginator module. */
+/**
+ * Object that can be used to configure the default options for the paginator module.
+ * @deprecated Use `MatPaginatorDefaultOptions` from `@angular/material/paginator` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface MatLegacyPaginatorDefaultOptions {
   /** Number of items to display on a page. By default set to 50. */
   pageSize?: number;
@@ -36,7 +40,11 @@ export interface MatLegacyPaginatorDefaultOptions {
   formFieldAppearance?: MatLegacyFormFieldAppearance;
 }
 
-/** Injection token that can be used to provide the default options for the paginator module. */
+/**
+ * Injection token that can be used to provide the default options for the paginator module.
+ * @deprecated Use `MAT_PAGINATOR_DEFAULT_OPTIONS` from `@angular/material/paginator` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export const MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS =
   new InjectionToken<MatLegacyPaginatorDefaultOptions>('MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS');
 
@@ -44,6 +52,8 @@ export const MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS =
  * Component to provide navigation between paged information. Displays the size of the current
  * page, user-selectable options to change that size, what items are being shown, and
  * navigational button to go to the previous or next page.
+ * @deprecated Use `MatPaginator` from `@angular/material/paginator` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-paginator',

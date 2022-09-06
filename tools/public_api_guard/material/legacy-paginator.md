@@ -22,14 +22,14 @@ import { MatPaginatorSelectConfig as MatLegacyPaginatorSelectConfig } from '@ang
 
 export { LegacyPageEvent }
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS: InjectionToken<MatLegacyPaginatorDefaultOptions>;
 
 export { MAT_LEGACY_PAGINATOR_INTL_PROVIDER }
 
 export { MAT_LEGACY_PAGINATOR_INTL_PROVIDER_FACTORY }
 
-// @public
+// @public @deprecated
 export class MatLegacyPaginator extends _MatLegacyPaginatorBase<MatLegacyPaginatorDefaultOptions> {
     constructor(intl: MatLegacyPaginatorIntl, changeDetectorRef: ChangeDetectorRef, defaults?: MatLegacyPaginatorDefaultOptions);
     _formFieldAppearance?: MatLegacyFormFieldAppearance;
@@ -41,7 +41,7 @@ export class MatLegacyPaginator extends _MatLegacyPaginatorBase<MatLegacyPaginat
 
 export { _MatLegacyPaginatorBase }
 
-// @public
+// @public @deprecated
 export interface MatLegacyPaginatorDefaultOptions {
     formFieldAppearance?: MatLegacyFormFieldAppearance;
     hidePageSize?: boolean;
@@ -52,7 +52,7 @@ export interface MatLegacyPaginatorDefaultOptions {
 
 export { MatLegacyPaginatorIntl }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyPaginatorModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyPaginatorModule, never>;

@@ -13,7 +13,7 @@ import { TestElement } from '@angular/cdk/testing';
 
 export { LegacyPaginatorHarnessFilters }
 
-// @public
+// @public @deprecated
 export class MatLegacyPaginatorHarness extends _MatLegacyPaginatorHarnessBase {
     // (undocumented)
     protected _firstPageButton: AsyncFactoryFn<TestElement | null>;
