@@ -361,5 +361,5 @@ function testSourceMatch(
     matches: { [url: string]: unknown|undefined }) {
   expect(source.namedGroups).toEqual(captures.named || []);
   expect(source.restNamedGroups).toEqual(captures.rest || []);
-  Object.keys(matches).forEach(url => expect(source.match(url)).toEqual(matches[url]));
+  Object.keys(matches).forEach(url => expect(source.match(url) as any).toEqual(matches[url]));
 }

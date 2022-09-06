@@ -11,6 +11,7 @@ nodejs_test(
         "//aio:ngsw-config.json",
         "//aio:tsconfig.json",
         "//aio/tests/deployment/shared",
+        "//aio/tools/firebase-test-utils:sources",
         "//packages/service-worker/config:sources",
         "@aio_npm//@types/jasmine",
         "@aio_npm//canonical-path",
@@ -19,5 +20,8 @@ nodejs_test(
         "@aio_npm//ts-node",
         "@aio_npm//xregexp",
     ],
+    # This test script runs ts-node which seems to bypass rules_nodejs require
+    # patching and cannot find deps. Enable the linker for this target.
+    enable_linker = True,
     entry_point = "test.js",
 )
