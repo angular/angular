@@ -25,11 +25,11 @@ You will need to import the directive into your application. In addition, you wi
 
 ### Overview
 
-To activate the `NgOptimizedImage` directive, replace your image's `src` attribute with `rawSrc`.
+To activate the `NgOptimizedImage` directive, replace your image's `src` attribute with `ngSrc`.
 
 <code-example format="typescript" language="typescript">
 
-&lt;img rawSrc="cat.jpg" width="400" height="200"&gt;
+&lt;img ngSrc="cat.jpg" width="400" height="200"&gt;
 
 </code-example>
 
@@ -43,7 +43,7 @@ Always mark the [LCP image](https://web.dev/lcp/#what-elements-are-considered) o
 
 <code-example format="typescript" language="typescript">
 
-&lt;img rawSrc="cat.jpg" width="400" height="200" priority&gt;
+&lt;img ngSrc="cat.jpg" width="400" height="200" priority&gt;
 
 </code-example>
 
@@ -84,21 +84,21 @@ You can typically fix this by adding `height: auto` or `width: auto` to your ima
 
 ### Handling `srcset` attributes
 
-If your `<img>` tag defines a `srcset` attribute, replace it with `rawSrcset`.
+If your `<img>` tag defines a `srcset` attribute, replace it with `ngSrcset`.
 
 <code-example format="html" language="html">
 
-&lt;img rawSrc="hero.jpg" rawSrcset="100w, 200w, 300w"&gt;
+&lt;img ngSrc="hero.jpg" ngSrcset="100w, 200w, 300w"&gt;
 
 </code-example>
 
-If the `rawSrcset` attribute is present, `NgOptimizedImage` generates and sets the [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset) using the configured image loader. Do not include image file names in `rawSrcset` - the directive infers this information from `rawSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`) are supported.
+If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets the [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset) using the configured image loader. Do not include image file names in `ngSrcset` - the directive infers this information from `ngSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`) are supported.
 
-You can also use `rawSrcset` with the standard image [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
+You can also use `ngSrcset` with the standard image [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
 
 <code-example format="html" language="html">
 
-&lt;img rawSrc="hero.jpg" rawSrcset="100w, 200w, 300w" sizes="50vw"&gt;
+&lt;img ngSrc="hero.jpg" ngSrcset="100w, 200w, 300w" sizes="50vw"&gt;
 
 </code-example>
 
@@ -108,7 +108,7 @@ By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not m
 
 <code-example format="html" language="html">
 
-&lt;img rawSrc="cat.jpg" width="400" height="200" loading="eager"&gt;
+&lt;img ngSrc="cat.jpg" width="400" height="200" loading="eager"&gt;
 
 </code-example>
 

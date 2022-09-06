@@ -93,4 +93,4 @@ providers: [
 
 A loader function for the `NgOptimizedImage` directive takes an object with the `ImageLoaderConfig` type (from `@angular/common`) as its argument and returns the absolute URL of the image asset. The `ImageLoaderConfig` object contains the `src`and `width` properties.
 
-Note: a custom loader must support requesting images at various widths in order for `rawSrcset` to work properly.
+Note: a custom loader must support requesting images at various widths in order for `ngSrcset` to work properly.
