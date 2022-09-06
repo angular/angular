@@ -8,11 +8,11 @@ import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
-// @public
+// @public @deprecated
 export interface LegacyProgressBarHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyProgressBarHarness extends ComponentHarness {
     getMode(): Promise<string | null>;
     getValue(): Promise<number | null>;
