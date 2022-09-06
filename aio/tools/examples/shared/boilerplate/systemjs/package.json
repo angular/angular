@@ -25,15 +25,15 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^14.1.0",
-    "@angular/common": "^14.1.0",
-    "@angular/compiler": "^14.1.0",
-    "@angular/core": "^14.1.0",
-    "@angular/forms": "^14.1.0",
-    "@angular/platform-browser": "^14.1.0",
-    "@angular/platform-browser-dynamic": "^14.1.0",
-    "@angular/router": "^14.1.0",
-    "@angular/upgrade": "^14.1.0",
+    "@angular/animations": "^14.2.0",
+    "@angular/common": "^14.2.0",
+    "@angular/compiler": "^14.2.0",
+    "@angular/core": "^14.2.0",
+    "@angular/forms": "^14.2.0",
+    "@angular/platform-browser": "^14.2.0",
+    "@angular/platform-browser-dynamic": "^14.2.0",
+    "@angular/router": "^14.2.0",
+    "@angular/upgrade": "^14.2.0",
     "core-js": "^2.5.4",
     "rxjs": "~7.5.0",
     "systemjs": "~0.19.39",
@@ -42,7 +42,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "^14.1.0",
+    "@angular/compiler-cli": "^14.2.0",
     "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-node-resolve": "^13.2.0",
     "@types/angular": "^1.8.4",
@@ -63,6 +63,6 @@
     "protractor": "~7.0.0",
     "rollup": "^2.70.1",
     "rollup-plugin-terser": "^7.0.2",
-    "typescript": "~4.7.2"
+    "typescript": "~4.8.0"
   }
 }
