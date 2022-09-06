@@ -16,12 +16,12 @@ import {Component} from '@angular/core';
   template: `
       <!-- Image is rendered within threshold range-->
       <div style="width: 500px; height: 500px">
-        <img rawSrc="/e2e/logo-500w.jpg" width="200" height="200" priority>
+        <img ngSrc="/e2e/logo-500w.jpg" width="200" height="200" priority>
       </div>
-      <!-- Image is rendered too small but rawSrcset set-->
+      <!-- Image is rendered too small but ngSrcset set-->
       <div style="width: 300px; height: 300px">
-        <img rawSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority
-            rawSrcset="100w, 200w">
+        <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority
+            ngSrcset="100w, 200w">
       </div>
      `,
 })
@@ -36,7 +36,7 @@ export class OversizedImageComponentPassing {
   template: `
       <!-- Image is rendered too small  -->
       <div style="width: 300px; height: 300px">
-         <img rawSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority>
+         <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority>
        </div>
       `,
 })

@@ -17,9 +17,9 @@ import {TestBed} from '@angular/core/testing';
 
 const absoluteUrlError = (src: string, path: string) =>
     `NG02959: Image loader has detected a \`<img>\` tag with an invalid ` +
-    `\`rawSrc\` attribute: ${src}. This image loader expects \`rawSrc\` ` +
+    `\`ngSrc\` attribute: ${src}. This image loader expects \`ngSrc\` ` +
     `to be a relative URL - however the provided value is an absolute URL. ` +
-    `To fix this, provide \`rawSrc\` as a path relative to the base URL ` +
+    `To fix this, provide \`ngSrc\` as a path relative to the base URL ` +
     `configured for this loader (\`${path}\`).`;
 
 const invalidPathError = (path: string, formats: string) =>
