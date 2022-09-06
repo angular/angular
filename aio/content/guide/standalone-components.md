@@ -11,6 +11,8 @@ In v14 and higher, **standalone components** provide a simplified way to build A
 
 ## Creating standalone components
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/x5PZwb4XurU" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ### The `standalone` flag and component `imports`
 
 Components, directives, and pipes can now be marked as `standalone: true`. Angular classes marked as standalone do not need to be declared in an `NgModule` (the Angular compiler will report an error if you try).
