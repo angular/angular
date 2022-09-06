@@ -23,7 +23,11 @@ import {
   MatMenuDefaultOptions,
 } from '@angular/material/menu';
 
-/** @docs-public MatMenu */
+/**
+ * @docs-public MatMenu
+ * @deprecated Use `MatMenu` from `@angular/material/menu` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Component({
   selector: 'mat-menu',
   templateUrl: 'menu.html',

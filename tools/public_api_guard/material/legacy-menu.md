@@ -41,7 +41,7 @@ export { MAT_LEGACY_MENU_PANEL }
 
 export { MAT_LEGACY_MENU_SCROLL_STRATEGY }
 
-// @public
+// @public @deprecated
 export class MatLegacyMenu extends _MatMenuBase {
     // @deprecated
     constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatLegacyMenuDefaultOptions);
@@ -57,7 +57,7 @@ export class MatLegacyMenu extends _MatMenuBase {
 
 export { matLegacyMenuAnimations }
 
-// @public
+// @public @deprecated
 export class MatLegacyMenuContent extends _MatMenuContentBase {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyMenuContent, "ng-template[matMenuContent]", never, {}, {}, never, never, false>;
@@ -67,7 +67,7 @@ export class MatLegacyMenuContent extends _MatMenuContentBase {
 
 export { MatLegacyMenuDefaultOptions }
 
-// @public
+// @public @deprecated
 export class MatLegacyMenuItem extends MatMenuItem {
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; }, {}, never, ["*"], false>;
@@ -75,7 +75,7 @@ export class MatLegacyMenuItem extends MatMenuItem {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyMenuItem, never>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyMenuModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyMenuModule, never>;
@@ -87,7 +87,7 @@ export class MatLegacyMenuModule {
 
 export { MatLegacyMenuPanel }
 
-// @public
+// @public @deprecated
 export class MatLegacyMenuTrigger extends _MatMenuTriggerBase {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyMenuTrigger, "[mat-menu-trigger-for], [matMenuTriggerFor]", ["matMenuTrigger"], {}, {}, never, never, false>;

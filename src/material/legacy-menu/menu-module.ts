@@ -17,6 +17,10 @@ import {MatLegacyMenuContent} from './menu-content';
 import {MatLegacyMenuItem} from './menu-item';
 import {MatLegacyMenuTrigger} from './menu-trigger';
 
+/**
+ * @deprecated Use `MatMenuModule` from `@angular/material/menu` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [CommonModule, MatCommonModule, MatRippleModule, OverlayModule],
   exports: [

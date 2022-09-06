@@ -11,6 +11,8 @@ import {MAT_MENU_CONTENT, _MatMenuContentBase} from '@angular/material/menu';
 
 /**
  * Menu content that will be rendered lazily once the menu is opened.
+ * @deprecated Use `MatMenuContent` from `@angular/material/menu` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: 'ng-template[matMenuContent]',

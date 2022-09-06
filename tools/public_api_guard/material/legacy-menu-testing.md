@@ -14,7 +14,7 @@ export { LegacyMenuHarnessFilters }
 
 export { LegacyMenuItemHarnessFilters }
 
-// @public
+// @public @deprecated
 export class MatLegacyMenuHarness extends _MatMenuHarnessBase<typeof MatLegacyMenuItemHarness, MatLegacyMenuItemHarness, LegacyMenuItemHarnessFilters> {
     static hostSelector: string;
     // (undocumented)
@@ -22,7 +22,7 @@ export class MatLegacyMenuHarness extends _MatMenuHarnessBase<typeof MatLegacyMe
     static with(options?: LegacyMenuHarnessFilters): HarnessPredicate<MatLegacyMenuHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyMenuItemHarness extends _MatMenuItemHarnessBase<typeof MatLegacyMenuHarness, MatLegacyMenuHarness> {
     static hostSelector: string;
     // (undocumented)

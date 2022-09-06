@@ -11,6 +11,8 @@ import {MatMenuItem as BaseMatMenuItem} from '@angular/material/menu';
 
 /**
  * Single item inside of a `mat-menu`. Provides the menu item styling and accessibility treatment.
+ * @deprecated Use `MatMenuItem` from `@angular/material/menu` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: '[mat-menu-item]',

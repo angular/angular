@@ -14,7 +14,11 @@ import {
   _MatMenuItemHarnessBase,
 } from '@angular/material/menu/testing';
 
-/** Harness for interacting with a standard mat-menu in tests. */
+/**
+ * Harness for interacting with a standard mat-menu in tests.
+ * @deprecated Use `MatMenuHarness` from `@angular/material/menu/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyMenuHarness extends _MatMenuHarnessBase<
   typeof MatLegacyMenuItemHarness,
   MatLegacyMenuItemHarness,
@@ -39,7 +43,11 @@ export class MatLegacyMenuHarness extends _MatMenuHarnessBase<
   }
 }
 
-/** Harness for interacting with a standard mat-menu-item in tests. */
+/**
+ * Harness for interacting with a standard mat-menu-item in tests.
+ * @deprecated Use `MatMenuItemHarness` from `@angular/material/menu/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyMenuItemHarness extends _MatMenuItemHarnessBase<
   typeof MatLegacyMenuHarness,
   MatLegacyMenuHarness
