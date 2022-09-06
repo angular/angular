@@ -184,7 +184,7 @@ copy_to_bin(
 )
 
 architect(
-    name = "build",
+    name = "build-app",
     args = [
         "site:build:stable",
         "--output-path=build",
@@ -217,11 +217,13 @@ npm_package_bin(
     tool = "//aio/scripts:build-404-page",
 )
 
+# Prepare the final build artifact which substitutes a generated 404 page
+# into the architect output.
 copy_to_directory(
-    name = "build-with-404",
+    name = "build",
     srcs = [
         ":404-page",
-        ":build",
+        ":build-app",
     ],
     replace_prefixes = {
         "build": "",
