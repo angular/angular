@@ -254,9 +254,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#2c68d0f9752df9bdbb185b89630ea085a2e62484":
-  version "0.0.0-5ffe2357f61a57d16f44a3209cd880c211c575b5"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#2c68d0f9752df9bdbb185b89630ea085a2e62484"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#f2a04c81f9cfbf8a86e595ca5d1ca1da50ddf9dd":
+  version "0.0.0-1c648b45459fa32ffd7de8a8fc07bde6bdbef923"
+  uid f2a04c81f9cfbf8a86e595ca5d1ca1da50ddf9dd
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#f2a04c81f9cfbf8a86e595ca5d1ca1da50ddf9dd"
   dependencies:
     "@angular-devkit/build-angular" "14.2.0-rc.0"
     "@angular/benchpress" "0.3.0"
@@ -268,7 +269,7 @@
     "@bazel/runfiles" "5.5.3"
     "@bazel/terser" "5.5.3"
     "@bazel/typescript" "5.5.3"
-    "@microsoft/api-extractor" "7.29.3"
+    "@microsoft/api-extractor" "7.29.5"
     "@types/browser-sync" "^2.26.3"
     "@types/node" "16.10.9"
     "@types/selenium-webdriver" "^4.0.18"
@@ -287,7 +288,7 @@
     tmp "^0.2.1"
     "true-case-path" "^2.2.1"
     tslib "^2.3.0"
-    typescript "~4.7.3"
+    typescript "~4.8.0"
     uuid "^8.3.2"
     yargs "^17.0.0"
 
@@ -361,12 +362,13 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#da938be2693c1c05ad7ab74b5f6c0dedc2ffa5ca":
-  version "0.0.0-806c568a439877f69b975aedbf5e4eb26fd7eaaf"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#da938be2693c1c05ad7ab74b5f6c0dedc2ffa5ca"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#20aa4d8a5ec774e1f21fbc50bca511c229a1a7f8":
+  version "0.0.0-1c648b45459fa32ffd7de8a8fc07bde6bdbef923"
+  uid "20aa4d8a5ec774e1f21fbc50bca511c229a1a7f8"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#20aa4d8a5ec774e1f21fbc50bca511c229a1a7f8"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
-    typescript "~4.7.3"
+    typescript "~4.8.0"
 
 "@angular/platform-browser-12@npm:@angular/platform-browser@12.2.13":
   version "12.2.13"
@@ -2062,24 +2064,24 @@
     "@microsoft/tsdoc-config" "~0.16.1"
     "@rushstack/node-core-library" "3.49.0"
 
-"@microsoft/api-extractor-model@7.23.1":
-  version "7.23.1"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.23.1.tgz#d93704882241e7720094d41c7005b07eb593c073"
-  integrity sha512-axlZ33H2LfYX7goAaWpzABWZl3JtX/EUkfVBsI4SuMn3AZYBJsP5MVpMCq7jt0PCefWGwwO+Rv+lCmmJIjFhlQ==
+"@microsoft/api-extractor-model@7.23.3":
+  version "7.23.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.23.3.tgz#82961ebaddd7427112afbfc4c1d7c76a9932f2fc"
+  integrity sha512-HpsWzG6jrWHrTlIg53kmp/IVQPBHUZc+8dunnr9VXrmDjVBehaXxp9A6jhTQ/bd7W1m5TYfAvwCmseC1+9FCuA==
   dependencies:
     "@microsoft/tsdoc" "0.14.1"
     "@microsoft/tsdoc-config" "~0.16.1"
-    "@rushstack/node-core-library" "3.50.2"
+    "@rushstack/node-core-library" "3.51.1"
 
-"@microsoft/api-extractor@7.29.3":
-  version "7.29.3"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.29.3.tgz#f91ca61833c170c6c47a0fc064fa010460a11457"
-  integrity sha512-PHq+Oo8yiXhwi11VQ1Nz36s+aZwgFqjtkd41udWHtSpyMv2slJ74m1cHdpWbs2ovGUCfldayzdpGwnexZLd2bA==
+"@microsoft/api-extractor@7.29.5":
+  version "7.29.5"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.29.5.tgz#8afafc8b2c27d8334579434971f718b347634f35"
+  integrity sha512-+vqO/TAGw9xXANpvTjA4y5ADcaRuYuBoJ9IfoAHubrGuxKG6GoW3P2tfdgwteLz95CnlftBxYp+3NG/mf05P9Q==
   dependencies:
-    "@microsoft/api-extractor-model" "7.23.1"
+    "@microsoft/api-extractor-model" "7.23.3"
     "@microsoft/tsdoc" "0.14.1"
     "@microsoft/tsdoc-config" "~0.16.1"
-    "@rushstack/node-core-library" "3.50.2"
+    "@rushstack/node-core-library" "3.51.1"
     "@rushstack/rig-package" "0.3.14"
     "@rushstack/ts-command-line" "4.12.2"
     colors "~1.2.1"
@@ -2391,10 +2393,10 @@
     timsort "~0.3.0"
     z-schema "~5.0.2"
 
-"@rushstack/node-core-library@3.50.2":
-  version "3.50.2"
-  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.50.2.tgz#43df3f8422898a448114fcb9c7d4e967625da585"
-  integrity sha512-+zpZBcaX5s+wA0avF0Lk3sd5jbGRo5SmsEJpElJbqQd3KGFvc/hcyeNSMqV5+esJ1JuTfnE1QyRt8nvxFNTaQg==
+"@rushstack/node-core-library@3.51.1":
+  version "3.51.1"
+  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.51.1.tgz#e123053c4924722cc9614c0091fda5ed7bbc6c9d"
+  integrity sha512-xLoUztvGpaT5CphDexDPt2WbBx8D68VS5tYOkwfr98p90y0f/wepgXlTA/q5MUeZGGucASiXKp5ysdD+GPYf9A==
   dependencies:
     "@types/node" "12.20.24"
     colors "~1.2.1"
@@ -2403,7 +2405,6 @@
     jju "~1.4.0"
     resolve "~1.17.0"
     semver "~7.3.0"
-    timsort "~0.3.0"
     z-schema "~5.0.2"
 
 "@rushstack/rig-package@0.3.13":
@@ -15054,7 +15055,7 @@ typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
   integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
 
-typescript@^4.6.2, typescript@~4.7.3, typescript@~4.7.4:
+typescript@^4.6.2, typescript@~4.7.4:
   version "4.7.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"
   integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
@@ -15064,7 +15065,7 @@ typescript@~4.6.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.4.tgz#caa78bbc3a59e6a5c510d35703f6a09877ce45e9"
   integrity sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==
 
-typescript@~4.8.2:
+typescript@~4.8.0, typescript@~4.8.2:
   version "4.8.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.2.tgz#e3b33d5ccfb5914e4eeab6699cf208adee3fd790"
   integrity sha512-C0I1UsrrDHo2fYI5oaCGbSejwX4ch+9Y5jTQELvovfmFkK3HHSZJB8MSJcWLmCUBzQBchCrZ9rMRV6GuNrvGtw==
