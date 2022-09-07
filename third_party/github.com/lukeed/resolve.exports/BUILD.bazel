@@ -11,6 +11,6 @@ filegroup(
         "index.mjs",
     ],
     visibility = [
-        "//aio/tools/esm-loader:__pkg__",
+        "//tools/esm-loader:__pkg__",
     ],
 )
