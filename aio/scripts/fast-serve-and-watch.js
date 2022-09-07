@@ -7,7 +7,7 @@ const spawn = require("cross-spawn");
 const watchr = require("../tools/transforms/authors-package/watchr.js");
 const architectCli = require.resolve("@angular-devkit/architect-cli/bin/architect");
 
-const serve = spawn(architectCli, ["site:serve"], {stdio: "inherit"});
+const serve = spawn(architectCli, ["site:serve", "--open", "--poll=1000", "--live-reload", "--watch"], {stdio: "inherit"});
 serve.on("error", error => {
     console.error("architect serve script failed");
     console.error(error);

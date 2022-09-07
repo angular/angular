@@ -1939,6 +1939,11 @@
   resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-5.5.4.tgz#d08b3f8127d3efb1085dce2f7039969fcb61b113"
   integrity sha512-C9R5hTgYmP/GU7yNzgOus6SaS7tyS5J5ptWruM3ERKaw5CIEPTi0hlBLmPpM9Wo8xIDNlF0BhGvM59T7bKs2iQ==
 
+"@bazel/ibazel@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.16.2.tgz#05dd7f06659759fda30f87b15534f1e42f1201bb"
+  integrity sha512-KgqAWMH0emL6f3xH6nqyTryoBMqlJ627LBIe9PT1PRRQPz2FtHib3FIHJPukp1slzF3hJYZvdiVwgPnHbaSOOA==
+
 "@bazel/jasmine@^5.4.1":
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-5.7.1.tgz#114797c8c2871255d32e2c154f7e354028efbdcc"

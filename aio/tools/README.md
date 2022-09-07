@@ -10,7 +10,7 @@ a `README.md` file in each folder that describes the tool in more detail.
 
 ## cli-patches
 
-The AIO application is built using the Angular CLI tool. We are often trialling new features for the CLI, which
+The AIO application is built using Angular Architect (backend for the Angular CLI tool) wrapped under Bazel. We are often trialling new features for Architect and CLI, which
 we apply to the library after it is installed.  This folder contains git patch files that contain these new features
 and a utility to apply those patches to the CLI library.
 
@@ -24,15 +24,14 @@ example can be built and run independently. Each example also provides e2e specs
 of our CI build tasks, to verify that the examples continue to work as expected, as changes are made
 to the core Angular libraries.
 
-In order to build, run and test these examples independently we need to install dependencies into their
-sub-folder. Also there are a number of common boilerplate files that are needed to configure each
+There are a number of common boilerplate files that are needed to configure each
 example's project. We maintain these common boilerplate files centrally to reduce the amount of effort
 if one of them needs to change.
 
 This `examples` tool folder contains three utilities:
 
-* example-boilerplate.js - install/remove the npm dependencies and boilerplate files into/from each of the
-  examples' subfolders.
+* example-boilerplate.js - combine examples with the necessary boilerplate files. The compiled example
+folder can be found in the Bazel output tree under `../dist/bin/aio/content/examples/my-example`.
 * run-example-e2e.mjs - run the e2e tests for one or more examples
 * create-example.js - create a new example from the `example-scaffold/` directory or by importing files from a CLI project.
 
