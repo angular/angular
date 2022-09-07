@@ -167,7 +167,7 @@ Otherwise if you are implementing the logic to paginate your data, you will want
 paginator's `(page)` output and pass the right slice of data to your table.
 
 For more information on using and configuring the `<mat-paginator>`, check out the
-[mat-paginator docs](https://material.angular.io/components/legacy-paginator/overview).
+[mat-paginator docs](https://material.angular.io/components/paginator/overview).
 
 The `MatPaginator` is one provided solution to paginating your table's data, but it is not the only
 option. In fact, the table can work with any custom pagination UI or strategy since the `MatTable`
