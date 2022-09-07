@@ -184,6 +184,11 @@ The `addItem()` method takes an argument in the form of a string and then adds t
 
     The `*ngFor` iterates over the items in the `items` array.
     When you enter a value in the child's `<input>` and click the button, the child emits the event and the parent's `addItem()` method pushes the value to the `items` array and new item renders in the list.
+    
+Using @Output and Emitters as shown above demonstrates how you can create custom events and represent them in the custom components elements with the same simplicity of say a click event. These events can be raised by the child component and declared and used by the parent component with the same elegance of say a click event and handled in same manner. It also renders some degree of loose coupling. It truly componentises the child components. Thus its possible to create a library of the child components declaratively declare their usage and specify the events.   
+
+But that is not the only way a child component can communicate with its parent component. Depending on the requirements it's also possible especially if reuse of the child component is not needed across different parents to just inject the parent class into the child class and invoke parent class method from the child component. That is also an effective way of sharing data from child to parent and can be considered if appropriate.
+    
 
 ## Using `@Input()` and `@Output()` together
 
