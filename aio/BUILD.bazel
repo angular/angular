@@ -6,6 +6,7 @@ load(":local_packages_util.bzl", "link_local_packages", "substitute_local_packag
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("//aio/scripts:local_server_test.bzl", "local_server_test")
 load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load(":aio_targets.bzl", "aio_test")
 
 exports_files([
     "firebase.json",
@@ -214,23 +215,31 @@ copy_to_directory(
     },
 )
 
-architect_test(
+TEST_DATA = TEST_FILES + select({
+    ":aio_local_deps": substitute_local_packages(TEST_DEPS),
+    "//conditions:default": TEST_DEPS,
+})
+
+aio_test(
     name = "test",
     args = [
         "site:test",
         "--no-watch",
     ],
-    chdir = package_name(),
-    configuration_env_vars = ["NG_BUILD_CACHE"],
-    data = TEST_FILES + select({
-        ":aio_local_deps": substitute_local_packages(TEST_DEPS),
-        "//conditions:default": TEST_DEPS,
-    }),
-    env = {
-        "CHROME_BIN": "../$(CHROMIUM)",
-    },
-    toolchains = [
-        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+    data = TEST_DATA,
+)
+
+aio_test(
+    name = "test-and-watch",
+    args = [
+        "site:test",
+        "--watch",
+        "--poll=1000",
+    ],
+    data = TEST_DATA,
+    tags = [
+        "ibazel_notify_changes",
+        "manual",
     ],
 )
 
@@ -262,6 +271,10 @@ architect(
     name = "serve",
     args = [
         "site:serve",
+        "--open",
+        "--poll=1000",
+        "--live-reload",
+        "--watch",
     ],
     chdir = package_name(),
     data = APPLICATION_FILES + select({
@@ -277,7 +290,7 @@ architect(
 # the full dgeni build on each change.
 
 nodejs_binary(
-    name = "fast-serve",
+    name = "docs-watch",
     chdir = package_name(),
     data = APPLICATION_FILES + [
         "//aio/scripts:fast-serve-and-watch",
