@@ -12,8 +12,7 @@ const basePackage = require('../angular-base-package');
  * A base package used by all the authoring packages in this folder.
  *
  * This package turns off lots of the potentially fatal checks to allow
- * doc-gen to complete when authors are using the `docs-watch` or `serve-and-sync`
- * jobs.
+ * doc-gen to complete when authors are using the `docs-watch` jobs.
  */
 const baseAuthoringPackage = new Package('base-authoring', [basePackage]);
 baseAuthoringPackage
