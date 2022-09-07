@@ -6,7 +6,7 @@
 """
 
 load("//integration:npm_package_archives.bzl", "NPM_PACKAGE_ARCHIVES", "npm_package_archive_label")
-load("@npm//@angular/dev-infra-private/bazel/integration:index.bzl", "integration_test")
+load("@npm//@angular/build-tooling/bazel/integration:index.bzl", "integration_test")
 load("//:packages.bzl", "INTEGRATION_PACKAGES")
 
 def _ng_integration_test(name, setup_chromium = False, **kwargs):
