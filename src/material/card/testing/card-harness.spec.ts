@@ -1,5 +1,5 @@
 import {MatCardModule} from '@angular/material/card';
-import {runHarnessTests} from '@angular/material/legacy-card/testing/shared.spec';
+import {runHarnessTests} from './shared.spec';
 import {MatCardHarness, MatCardSection} from './card-harness';
 
 describe('MDC-based MatCardHarness', () => {

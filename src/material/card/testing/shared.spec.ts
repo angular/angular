@@ -2,16 +2,13 @@ import {ComponentHarness, HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {
-  MatLegacyCardHarness,
-  MatLegacyCardSection,
-} from '@angular/material/legacy-card/testing/card-harness';
+import {MatCardModule} from '@angular/material/card';
+import {MatCardHarness, MatCardSection} from '@angular/material/card/testing';
 
 /** Shared tests to run on both the original and MDC-based cards. */
 export function runHarnessTests(
-  cardModule: typeof MatLegacyCardModule,
-  cardHarness: typeof MatLegacyCardHarness,
+  cardModule: typeof MatCardModule,
+  cardHarness: typeof MatCardHarness,
   contentSelectors: {header: string; content: string; actions: string; footer: string},
 ) {
   let fixture: ComponentFixture<CardHarnessTest>;
@@ -73,32 +70,28 @@ export function runHarnessTests(
 
   it('should get a harness loader for the card header', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
-    const headerLoader = await card.getChildLoader(contentSelectors.header as MatLegacyCardSection);
+    const headerLoader = await card.getChildLoader(contentSelectors.header as MatCardSection);
     const headerSubcomponents = (await headerLoader?.getAllHarnesses(DummyHarness)) ?? [];
     expect(headerSubcomponents.length).toBe(2);
   });
 
   it('should get a harness loader for the card content', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
-    const contentLoader = await card.getChildLoader(
-      contentSelectors.content as MatLegacyCardSection,
-    );
+    const contentLoader = await card.getChildLoader(contentSelectors.content as MatCardSection);
     const contentSubcomponents = (await contentLoader?.getAllHarnesses(DummyHarness)) ?? [];
     expect(contentSubcomponents.length).toBe(1);
   });
 
   it('should get a harness loader for the card actions', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
-    const actionLoader = await card.getChildLoader(
-      contentSelectors.actions as MatLegacyCardSection,
-    );
+    const actionLoader = await card.getChildLoader(contentSelectors.actions as MatCardSection);
     const actionSubcomponents = (await actionLoader?.getAllHarnesses(DummyHarness)) ?? [];
     expect(actionSubcomponents.length).toBe(2);
   });
 
   it('should get a harness loader for the card footer', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
-    const footerLoader = await card.getChildLoader(contentSelectors.footer as MatLegacyCardSection);
+    const footerLoader = await card.getChildLoader(contentSelectors.footer as MatCardSection);
     const footerSubcomponents = (await footerLoader?.getAllHarnesses(DummyHarness)) ?? [];
     expect(footerSubcomponents.length).toBe(1);
   });
