@@ -1,3 +1,38 @@
+<a name="15.0.0-next.1"></a>
+# 15.0.0-next.1 (2022-09-07)
+## Breaking Changes
+### compiler-cli
+- Angular compiler option `enableIvy` has been removed as Ivy is the only rendering engine.
+### localize
+- - `canParse` method has been removed from all translation parsers in `@angular/localize/tools`. `analyze` should be used instead.
+  -  the `hint` parameter in the`parse` methods is now mandatory.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [220d1203e6](https://github.com/angular/angular/commit/220d1203e66116bfcf69204ebac2092eb638bb75) | fix | improve formatting of image warnings ([#47299](https://github.com/angular/angular/pull/47299)) |
+| [93d7d9101e](https://github.com/angular/angular/commit/93d7d9101e56a51f1ce315b1d0e67fa02e8916d9) | fix | use DOCUMENT token to query for preconnect links ([#47353](https://github.com/angular/angular/pull/47353)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cf0c53aa1c](https://github.com/angular/angular/commit/cf0c53aa1c54bf747529a9f7899e68c71249fc9d) | fix | avoid errors for inputs with Object-builtin names ([#47220](https://github.com/angular/angular/pull/47220)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [16f96eeabf](https://github.com/angular/angular/commit/16f96eeabf77964092b4b6a830e29f2761ffaeec) | refactor | remove `enableIvy` options ([#47346](https://github.com/angular/angular/pull/47346)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d36fd3d9e4](https://github.com/angular/angular/commit/d36fd3d9e41984818af5e1aad5e3004574d837bb) | refactor | remove deprecated `canParse` method from TranslationParsers ([#47275](https://github.com/angular/angular/pull/47275)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e1bb638e0b](https://github.com/angular/angular/commit/e1bb638e0bc9cf2da4ba3aa8ad7b549164ad5c12) | fix | include headers in requests for assets ([#47260](https://github.com/angular/angular/pull/47260)) |
+| [a0c3326485](https://github.com/angular/angular/commit/a0c3326485548e8d9b193f5472a9b02a02d679a6) | fix | only consider GET requests as navigation requests ([#47263](https://github.com/angular/angular/pull/47263)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Aristeidis Bampakos, Asaf M, Bingo's Code, Bob Watson, Daniel Ostrovsky, George Kalpakas, Giovanni Alberto Rivas, Jeremy Elbourn, JiaLiPassion, Jobayer Hossain, Joe Martin (Crowdstaffing), Joey Perrott, JoostK, Kara Erickson, Kristiyan Kostadinov, Maina Wycliffe, Sabareesh Kappagantu, Simona Cotin, Sonu Sindhu, Yann Provoost, abergquist, angular-robot[bot], jaybell and vyom1611
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.1"></a>
 # 14.2.1 (2022-09-07)
 ### common
