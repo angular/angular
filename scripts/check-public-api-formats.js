@@ -32,13 +32,14 @@ function throwLegacyNamingError(path, node) {
   const invalidSymbol = node.exportClause.elements
     .map(n => n.name.escapedText)
     .filter(n => !n.includes('legacy'))
-    .join('\n    * ');
+    .map(n => `    * ${n}`)
+    .join('\n');
   errors.push(
     chalk.red(
       `ERROR ${errors.length + 1}:` +
         `\n  File: ${path}` +
         `\n  The following exported symbols do not contain 'legacy':` +
-        `\n    ${invalidSymbol}`,
+        `\n${invalidSymbol}`,
     ),
   );
 }
@@ -96,4 +97,6 @@ if (errors.length) {
     separator,
   );
   process.exitCode = 1;
+} else {
+  console.log(chalk.green('✓ All public-api format checks passed!'));
 }
