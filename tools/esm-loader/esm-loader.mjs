@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import {pathToFileURL} from 'url';
-import {resolve as resolveExports} from '../../../third_party/github.com/lukeed/resolve.exports/index.mjs';
+import {resolve as resolveExports} from '../../third_party/github.com/lukeed/resolve.exports/index.mjs';
 
 /*
   Custom module loader (see https://nodejs.org/api/cli.html#--experimental-loadermodule) to support
@@ -17,13 +17,7 @@ export async function resolve(specifier, context, defaultResolve) {
       return defaultResolve(specifier, context, defaultResolve);
     }
 
-    let nodeModules;
-    if (isBazelRunOrTestAction()) {
-      nodeModules = path.resolve('../', process.env.NODE_MODULES_WORKSPACE_NAME, 'node_modules');
-    } else {
-      nodeModules = path.resolve('external', process.env.NODE_MODULES_WORKSPACE_NAME, 'node_modules');
-    }
-
+    const nodeModules = path.resolve(process.env.RUNFILES_DIR, process.env.NODE_MODULES_WORKSPACE_NAME, 'node_modules');
     const packageImport = parsePackageImport(specifier);
     const pathToNodeModule = path.join(nodeModules, packageImport.packageName);
 
@@ -58,8 +52,4 @@ function resolvePackageLocalFilepath(packageImport, packageJson) {
     }
 
     return packageImport.pathInPackage || packageJson.module || packageJson.main || 'index.js';
-}
-
-function isBazelRunOrTestAction() {
-  return process.env.TEST_WORKSPACE || process.env.BUILD_WORKSPACE_DIRECTORY;
 }
