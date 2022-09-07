@@ -28,6 +28,7 @@ import {
   MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS,
   LegacyProgressAnimationEnd,
 } from '@angular/material/legacy-progress-bar';
+import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 
 // Boilerplate for applying mixins to MatProgressBar.
 /** @docs-private */
@@ -96,8 +97,8 @@ export class MatProgressBar
   get value(): number {
     return this._value;
   }
-  set value(v: number) {
-    this._value = clamp(v || 0);
+  set value(v: NumberInput) {
+    this._value = clamp(coerceNumberProperty(v));
     this._changeDetectorRef.markForCheck();
   }
   private _value = 0;
@@ -107,8 +108,8 @@ export class MatProgressBar
   get bufferValue(): number {
     return this._bufferValue || 0;
   }
-  set bufferValue(v: number) {
-    this._bufferValue = clamp(v || 0);
+  set bufferValue(v: NumberInput) {
+    this._bufferValue = clamp(coerceNumberProperty(v));
     this._changeDetectorRef.markForCheck();
   }
   private _bufferValue = 0;

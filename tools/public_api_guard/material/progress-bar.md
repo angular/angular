@@ -19,6 +19,7 @@ import { MAT_LEGACY_PROGRESS_BAR_LOCATION_FACTORY as MAT_PROGRESS_BAR_LOCATION_F
 import { MatLegacyProgressBarDefaultOptions as MatProgressBarDefaultOptions } from '@angular/material/legacy-progress-bar';
 import { MatLegacyProgressBarLocation as MatProgressBarLocation } from '@angular/material/legacy-progress-bar';
 import { NgZone } from '@angular/core';
+import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
 import { LegacyProgressAnimationEnd as ProgressAnimationEnd } from '@angular/material/legacy-progress-bar';
 
@@ -35,7 +36,7 @@ export class MatProgressBar extends _MatProgressBarBase implements AfterViewInit
     // (undocumented)
     _animationMode?: string | undefined;
     get bufferValue(): number;
-    set bufferValue(v: number);
+    set bufferValue(v: NumberInput);
     _getBufferBarFlexBasis(): string;
     _getPrimaryBarTransform(): string;
     _isIndeterminate(): boolean;
@@ -47,7 +48,7 @@ export class MatProgressBar extends _MatProgressBarBase implements AfterViewInit
     // (undocumented)
     ngOnDestroy(): void;
     get value(): number;
-    set value(v: number);
+    set value(v: NumberInput);
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatProgressBar, "mat-progress-bar", ["matProgressBar"], { "color": "color"; "value": "value"; "bufferValue": "bufferValue"; "mode": "mode"; }, { "animationEnd": "animationEnd"; }, never, never, false>;
     // (undocumented)
