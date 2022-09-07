@@ -364,22 +364,62 @@ def protractor_web_test_suite(**kwargs):
         **kwargs
     )
 
-def nodejs_binary(data = [], templated_args = [], **kwargs):
+def nodejs_binary(data = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
+    data = data + [
+        "@%s//source-map-support" % _node_modules_workspace_name(),
+    ]
+
+    if not enable_linker:
+        templated_args = templated_args + [
+            # Disable the linker and rely on patched resolution which works better on Windows
+            # and is less prone to race conditions when targets build concurrently.
+            "--nobazel_run_linker",
+        ]
+
+        (env, templated_args, data) = _apply_esm_import_patch(env, templated_args, data)
+
     _nodejs_binary(
-        data = data + ["@npm//source-map-support"],
-        # Disable the linker and rely on patched resolution which works better on Windows
-        # and is less prone to race conditions when targets build concurrently.
-        templated_args = ["--nobazel_run_linker"] + templated_args,
+        data = data,
+        env = env,
+        templated_args = templated_args,
         **kwargs
     )
 
-def nodejs_test(templated_args = [], **kwargs):
+def nodejs_test(data = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
+    if not enable_linker:
+        templated_args = templated_args + [
+            # Disable the linker and rely on patched resolution which works better on Windows
+            # and is less prone to race conditions when targets build concurrently.
+            "--nobazel_run_linker",
+        ]
+
+        (env, templated_args, data) = _apply_esm_import_patch(env, templated_args, data)
+
     _nodejs_test(
-        # Disable the linker and rely on patched resolution which works better on Windows
-        # and is less prone to race conditions when targets build concurrently.
-        templated_args = ["--nobazel_run_linker"] + templated_args,
+        data = data,
+        env = env,
+        templated_args = templated_args,
         **kwargs
     )
+
+def _node_modules_workspace_name():
+    return "npm" if not native.package_name().startswith("aio") else "aio_npm"
+
+def _apply_esm_import_patch(env, templated_args, data):
+    """Adjust properties from a nodejs_binary/test to provide a custom esm loader
+    to resolve third-party deps. Unlike for cjs modules, rules_nodejs doesn't patch
+    imports when the linker is disabled."""
+
+    env = dict(env, **{"NODE_MODULES_WORKSPACE_NAME": _node_modules_workspace_name()})
+    templated_args = templated_args + [
+        "--node_options=--loader=$$(rlocation $(rootpath //tools/esm-loader:esm-loader.mjs))",
+    ]
+    data = data + [
+        "//tools/esm-loader",
+        "//tools/esm-loader:esm-loader.mjs",
+    ]
+
+    return (env, templated_args, data)
 
 def npm_package_bin(args = [], **kwargs):
     _npm_package_bin(
