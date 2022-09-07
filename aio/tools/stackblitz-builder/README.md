@@ -44,10 +44,11 @@ Here you can specify a description for the stackblitz, some tags and also a file
 
 ## Executing the stackblitz generation
 
-`generateStackblitz.mjs` will create a stackblitz for each `stackblitz.json` it finds.
+`generateStackblitz.mjs` will create a stackblitz for each `stackblitz.json` it finds. The examples
+are created as part of the Bazel build, and can be toggled on or off in
+[`examples.bzl`](../../content/examples/examples.bzl).
 
-Where?
-At `src/generated/live-examples/`.
+Where? Under the Bazel output tree rooted at `../dist/bin/aio/stackblitz/generated/live-examples`.
 
 Then the `<live-example>` embedded component will look at this folder to get the stackblitz it needs for the
 example.
