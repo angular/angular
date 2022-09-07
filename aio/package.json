@@ -160,6 +160,7 @@
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
     "shelljs": "^0.8.5",
+    "source-map-support": "0.5.21",
     "stemmer": "^2.0.0",
     "tree-kill": "^1.1.0",
     "ts-node": "^10.8.1",
