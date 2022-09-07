@@ -30,9 +30,9 @@ ng_test_library(
         exclude = ["shared.spec.ts"],
     ),
     deps = [
+        ":harness_tests_lib",
         ":testing",
         "//src/material/dialog",
-        "//src/material/legacy-dialog/testing:harness_tests_lib",
         "@npm//@angular/platform-browser",
     ],
 )
@@ -41,5 +41,18 @@ ng_web_test_suite(
     name = "unit_tests",
     deps = [
         ":unit_tests_lib",
+    ],
+)
+
+ng_test_library(
+    name = "harness_tests_lib",
+    srcs = ["shared.spec.ts"],
+    deps = [
+        ":testing",
+        "//src/cdk/overlay",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
+        "//src/material/dialog",
+        "@npm//@angular/platform-browser",
     ],
 )

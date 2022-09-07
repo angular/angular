@@ -2,19 +2,15 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, TemplateRef, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {
-  MatLegacyDialog,
-  MatLegacyDialogModule,
-  MatLegacyDialogConfig,
-} from '@angular/material/legacy-dialog';
+import {MatDialog, MatDialogModule, MatDialogConfig} from '@angular/material/dialog';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatLegacyDialogHarness} from './dialog-harness';
+import {MatDialogHarness} from './dialog-harness';
 
 /** Shared tests to run on both the original and MDC-based dialog's. */
 export function runHarnessTests(
-  dialogModule: typeof MatLegacyDialogModule,
-  dialogHarness: typeof MatLegacyDialogHarness,
-  dialogService: typeof MatLegacyDialog,
+  dialogModule: typeof MatDialogModule,
+  dialogHarness: typeof MatDialogHarness,
+  dialogService: typeof MatDialog,
 ) {
   let fixture: ComponentFixture<DialogHarnessTest>;
   let loader: HarnessLoader;
@@ -25,9 +21,7 @@ export function runHarnessTests(
     // the existing instance of the specified dialog service. This allows us to run these
     // tests for the MDC-based version of the dialog too.
     const providers =
-      dialogService !== MatLegacyDialog
-        ? [{provide: MatLegacyDialog, useExisting: dialogService}]
-        : undefined;
+      dialogService !== MatDialog ? [{provide: MatDialog, useExisting: dialogService}] : undefined;
     await TestBed.configureTestingModule({
       imports: [dialogModule, NoopAnimationsModule],
       declarations: [DialogHarnessTest],
@@ -138,9 +132,9 @@ export function runHarnessTests(
   class DialogHarnessTest {
     @ViewChild(TemplateRef) dialogTmpl: TemplateRef<any>;
 
-    constructor(readonly dialog: MatLegacyDialog) {}
+    constructor(readonly dialog: MatDialog) {}
 
-    open(config?: MatLegacyDialogConfig) {
+    open(config?: MatDialogConfig) {
       return this.dialog.open(this.dialogTmpl, config);
     }
   }
