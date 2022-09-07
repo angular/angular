@@ -161,7 +161,7 @@ const OVERSIZED_IMAGE_TOLERANCE = 1000;
  */
 @Directive({
   standalone: true,
-  selector: 'img[ngSrc]',
+  selector: 'img[ngSrc],img[rawSrc]',
 })
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private imageLoader = inject(IMAGE_LOADER);
@@ -179,6 +179,29 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * instance that might be already destroyed).
    */
   private _renderedSrc: string|null = null;
+
+  /**
+   * Previously, the `rawSrc` attribute was used to activate the directive.
+   * The attribute was renamed to `ngSrc` and this input just produces an error,
+   * suggesting to switch to `ngSrc` instead.
+   *
+   * This error should be removed in v15.
+   *
+   * @nodoc
+   * @deprecated Use `ngSrc` instead.
+   */
+  @Input()
+  set rawSrc(value: string) {
+    if (ngDevMode) {
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_INPUT,
+          `${imgDirectiveDetails(value, false)} the \`rawSrc\` attribute was used ` +
+              `to activate the directive. Newer version of the directive uses the \`ngSrc\` ` +
+              `attribute instead. Please replace \`rawSrc\` with \`ngSrc\` and ` +
+              `\`rawSrcset\` with \`ngSrcset\` attributes in the template to ` +
+              `enable image optimizations.`);
+    }
+  }
 
   /**
    * Name of the source image.
