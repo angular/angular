@@ -1,3 +1,18 @@
+<a name="14.2.1"></a>
+# 14.2.1 "carbon-candle" (2022-09-07)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [84388dd23](https://github.com/angular/components/commit/84388dd239a6c96823c9701cccf937d25c3e78fb) | fix | **collections:** ConnectableObservable incorrectly inferred as data source ([#25526](https://github.com/angular/components/pull/25526)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8683f476c](https://github.com/angular/components/commit/8683f476c854f494507f213b21ef54ee6aea7b31) | fix | **button-toggle:** incorrect event source in some cases ([#25544](https://github.com/angular/components/pull/25544)) |
+## Special Thanks
+Kristiyan Kostadinov, Mark Goldberg and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.0"></a>
 # 14.2.0 "rayon-river" (2022-08-25)
 ### cdk
