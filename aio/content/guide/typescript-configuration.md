@@ -148,7 +148,7 @@ For instance, to install typings for `chai` you run `npm install @types/chai --s
 
 ### `target`
 
-By default, the target is `es2017`, which is supported in modern browsers.
+By default, the target is `es2020`, which is supported in modern browsers.
 
 <!-- links -->
 
