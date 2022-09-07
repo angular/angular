@@ -2,14 +2,14 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatLegacyTabNavBarHarness} from './tab-nav-bar-harness';
+import {MatTabNavBarHarness} from './tab-nav-bar-harness';
 
 /** Shared tests to run on both the original and MDC-based tab nav bars. */
 export function runTabNavBarHarnessTests(
-  tabsModule: typeof MatLegacyTabsModule,
-  tabNavBarHarness: typeof MatLegacyTabNavBarHarness,
+  tabsModule: typeof MatTabsModule,
+  tabNavBarHarness: typeof MatTabNavBarHarness,
 ) {
   let fixture: ComponentFixture<TabNavBarHarnessTest>;
   let loader: HarnessLoader;

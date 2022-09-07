@@ -2,14 +2,14 @@ import {ComponentHarness, HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatLegacyTabGroupHarness} from './tab-group-harness';
+import {MatTabGroupHarness} from './tab-group-harness';
 
 /** Shared tests to run on both the original and MDC-based tab-group's. */
 export function runTabGroupHarnessTests(
-  tabsModule: typeof MatLegacyTabsModule,
-  tabGroupHarness: typeof MatLegacyTabGroupHarness,
+  tabsModule: typeof MatTabsModule,
+  tabGroupHarness: typeof MatTabGroupHarness,
 ) {
   let fixture: ComponentFixture<TabGroupHarnessTest>;
   let loader: HarnessLoader;
