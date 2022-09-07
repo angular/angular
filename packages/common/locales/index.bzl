@@ -1,4 +1,5 @@
 load("@cldr_json_data//:index.bzl", _ALL_CLDR_LOCALES = "LOCALES")
+load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
 
 # List of locales the tool can generate files for.
 LOCALES = _ALL_CLDR_LOCALES
@@ -54,11 +55,12 @@ def generate_all_locale_files(name, **kwargs):
             "extra/%s.ts" % locale,
         ]
 
-    native.genrule(
+    npm_package_bin(
         name = name,
         outs = locale_files,
-        srcs = [],
-        exec_tools = [WRITE_LOCALE_FILES_TO_DIST_BIN],
-        cmd = """$(location %s) $(@D)""" % WRITE_LOCALE_FILES_TO_DIST_BIN,
+        tool = WRITE_LOCALE_FILES_TO_DIST_BIN,
+        args = [
+            "$(@D)",
+        ],
         **kwargs
     )
