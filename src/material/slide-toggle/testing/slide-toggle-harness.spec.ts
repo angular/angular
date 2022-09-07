@@ -1,7 +1,7 @@
-import {runHarnessTests} from '@angular/material/legacy-slide-toggle/testing/shared.spec';
+import {runHarnessTests} from './shared.spec';
 import {MatSlideToggleModule} from '../index';
 import {MatSlideToggleHarness} from './slide-toggle-harness';
 
 describe('MDC-based MatSlideToggleHarness', () => {
-  runHarnessTests(MatSlideToggleModule, MatSlideToggleHarness as any);
+  runHarnessTests(MatSlideToggleModule, MatSlideToggleHarness);
 });

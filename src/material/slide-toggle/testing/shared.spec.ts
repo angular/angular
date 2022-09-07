@@ -3,13 +3,13 @@ import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
-import {MatLegacySlideToggleHarness} from '@angular/material/legacy-slide-toggle/testing/slide-toggle-harness';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatSlideToggleHarness} from '@angular/material/slide-toggle/testing';
 
 /** Shared tests to run on both the original and MDC-based slide-toggles. */
 export function runHarnessTests(
-  slideToggleModule: typeof MatLegacySlideToggleModule,
-  slideToggleHarness: typeof MatLegacySlideToggleHarness,
+  slideToggleModule: typeof MatSlideToggleModule,
+  slideToggleHarness: typeof MatSlideToggleHarness,
 ) {
   let fixture: ComponentFixture<SlideToggleHarnessTest>;
   let loader: HarnessLoader;
