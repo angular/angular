@@ -20,9 +20,6 @@ nodejs_binary(
     name = "types_bundler",
     data = [":lib"],
     entry_point = ":index.ts",
-    # Disable the linker and rely on patched resolution which works better on Windows
-    # and is less prone to race conditions when targets build concurrently.
-    templated_args = ["--nobazel_run_linker"],
     visibility = ["//visibility:public"],
 )
 
