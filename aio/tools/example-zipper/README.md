@@ -46,8 +46,10 @@ In those cases, you can create a `zipper.json` file with the same syntax. It wil
 
 ## Executing the zip generation
 
-`generateZips.mjs` will create a zip for each `stackblitz.json`  or `zipper.json` it finds.
+`generateZips.mjs` will create a zip for each `stackblitz.json`  or `zipper.json` it finds. The zips
+are created as part of the Bazel build, and can be toggled on or off in
+[`examples.bzl`](../../content/examples/examples.bzl).
 
-Where? At `src/generated/zips/`.
+Where? Under the Bazel output tree rooted at `../dist/bin/aio/example-zips/generated/zips`.
 
 Then the `<live-example>` embedded component will look at this folder to get the zip it needs for the example.
