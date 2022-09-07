@@ -1,4 +1,4 @@
-load("//aio/tools:defaults.bzl", "nodejs_test")
+load("//tools:defaults.bzl", "nodejs_test")
 
 filegroup(
     name = "sources",

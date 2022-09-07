@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//aio/tools:defaults.bzl", "nodejs_binary", "nodejs_test")
 load("@aio_npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_outputs")
+load("//tools:defaults.bzl", "nodejs_binary", "nodejs_test")
 
 package(default_visibility = ["//visibility:public"])
 
