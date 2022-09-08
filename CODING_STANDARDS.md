@@ -257,16 +257,6 @@ Avoid using inheritance to apply reusable behaviors to multiple components. This
 behaviors can be composed. Instead, [TypeScript mixins][ts-mixins] can be used to compose multiple
 common behaviors into a single component.
 
-#### MDC checks
-To ensure backwards compatability, we check that tests written for MDC Components include all of
-the same tests that the non-MDC version had. Similarly, we check that the public API of MDC
-Components match that of the non-MDC version.
-
-In the case where old tests no longer make sense and should be omitted or the public API should be
-changed, you can do so in [scripts/check-mdc-tests-config.ts](https://github.com/angular/components/blob/main/scripts/check-mdc-tests-config.ts) and
-[scripts/check-mdc-exports-config.ts](https://github.com/angular/components/blob/main/scripts/check-mdc-exports-config.ts).
-Remember to leave a comment explaining why the change was necessary.
-
 #### Coercion
 Component and directive inputs for boolean and number values must use a setter to coerce values to
 the expected type using cdk/coercion.

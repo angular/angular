@@ -330,7 +330,6 @@ jobs:
       - run: yarn stylelint
       - run: yarn tslint
       - run: yarn -s ts-circular-deps:check
-      - run: yarn check-mdc-exports
       # Should be last so that it doesn't prevent the other lint checks from running.
       - run:
           name: Check Commit Message (PR Only)
