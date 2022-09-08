@@ -21,8 +21,8 @@ ng_module(
         "//src/cdk/coercion",
         "//src/material/button",
         "//src/material/core",
-        "//src/material/legacy-select",
-        "//src/material/legacy-tooltip",
+        "//src/material/select",
+        "//src/material/tooltip",
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",  # TODO(jelbourn): transitive dep via generated code
