@@ -12,8 +12,8 @@ import {
   ComponentHarnessConstructor,
   HarnessPredicate,
 } from '@angular/cdk/testing';
-import {LegacyProgressSpinnerMode} from '@angular/material/legacy-progress-spinner';
-import {LegacyProgressSpinnerHarnessFilters} from '@angular/material/legacy-progress-spinner/testing';
+import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
+import {ProgressSpinnerHarnessFilters} from './progress-spinner-harness-filters';
 
 /** Harness for interacting with a MDC based mat-progress-spinner in tests. */
 export class MatProgressSpinnerHarness extends ComponentHarness {
@@ -28,7 +28,7 @@ export class MatProgressSpinnerHarness extends ComponentHarness {
    */
   static with<T extends MatProgressSpinnerHarness>(
     this: ComponentHarnessConstructor<T>,
-    options: LegacyProgressSpinnerHarnessFilters = {},
+    options: ProgressSpinnerHarnessFilters = {},
   ): HarnessPredicate<T> {
     return new HarnessPredicate(this, options);
   }
@@ -41,8 +41,8 @@ export class MatProgressSpinnerHarness extends ComponentHarness {
   }
 
   /** Gets the progress spinner's mode. */
-  async getMode(): Promise<LegacyProgressSpinnerMode> {
+  async getMode(): Promise<ProgressSpinnerMode> {
     const modeAttr = (await this.host()).getAttribute('mode');
-    return (await modeAttr) as LegacyProgressSpinnerMode;
+    return (await modeAttr) as ProgressSpinnerMode;
   }
 }

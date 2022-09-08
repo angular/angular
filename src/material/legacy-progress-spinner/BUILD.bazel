@@ -23,6 +23,7 @@ ng_module(
         "//src/cdk/platform",
         "//src/cdk/scrolling",
         "//src/material/core",
+        "//src/material/progress-spinner",
         "@npm//@angular/animations",
         "@npm//@angular/common",
         "@npm//@angular/core",

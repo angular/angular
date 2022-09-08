@@ -24,7 +24,6 @@ ng_module(
     deps = [
         "//src/cdk/platform",
         "//src/material/core",
-        "//src/material/legacy-progress-spinner",
         "@npm//@angular/common",
         "@npm//@angular/core",
     ],
@@ -58,7 +57,6 @@ ng_test_library(
     deps = [
         ":progress-spinner",
         "//src/cdk/platform",
-        "//src/material/legacy-progress-spinner",
         "@npm//@angular/common",
         "@npm//@angular/platform-browser",
     ],

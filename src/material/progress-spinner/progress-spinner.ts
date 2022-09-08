@@ -11,17 +11,14 @@ import {
   Component,
   ElementRef,
   Inject,
+  InjectionToken,
   Input,
   Optional,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanColor, mixinColor} from '@angular/material/core';
+import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {
-  MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS,
-  MatLegacyProgressSpinnerDefaultOptions,
-} from '@angular/material/legacy-progress-spinner';
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 
 // Boilerplate for applying mixins to MatProgressBar.
@@ -34,6 +31,33 @@ const _MatProgressSpinnerBase = mixinColor(
 
 /** Possible mode for a progress spinner. */
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';
+
+/** Default `mat-progress-spinner` options that can be overridden. */
+export interface MatProgressSpinnerDefaultOptions {
+  /** Default color of the spinner. */
+  color?: ThemePalette;
+  /** Diameter of the spinner. */
+  diameter?: number;
+  /** Width of the spinner's stroke. */
+  strokeWidth?: number;
+  /**
+   * Whether the animations should be force to be enabled, ignoring if the current environment is
+   * using NoopAnimationsModule.
+   */
+  _forceAnimations?: boolean;
+}
+
+/** Injection token to be used to override the default options for `mat-progress-spinner`. */
+export const MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS =
+  new InjectionToken<MatProgressSpinnerDefaultOptions>('mat-progress-spinner-default-options', {
+    providedIn: 'root',
+    factory: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY,
+  });
+
+/** @docs-private */
+export function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgressSpinnerDefaultOptions {
+  return {diameter: BASE_SIZE};
+}
 
 /**
  * Base reference size of the spinner.
@@ -79,8 +103,8 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements CanCo
   constructor(
     elementRef: ElementRef<HTMLElement>,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
-    @Inject(MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS)
-    defaults?: MatLegacyProgressSpinnerDefaultOptions,
+    @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
+    defaults?: MatProgressSpinnerDefaultOptions,
   ) {
     super(elementRef);
     this._noopAnimations =

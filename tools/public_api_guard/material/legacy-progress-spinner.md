@@ -12,23 +12,22 @@ import { ElementRef } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i2 from '@angular/material/core';
 import * as i3 from '@angular/common';
-import { InjectionToken } from '@angular/core';
+import { ProgressSpinnerMode as LegacyProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS as MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS } from '@angular/material/progress-spinner';
+import { MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY as MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY } from '@angular/material/progress-spinner';
+import { MatProgressSpinnerDefaultOptions as MatLegacyProgressSpinnerDefaultOptions } from '@angular/material/progress-spinner';
 import { NgZone } from '@angular/core';
 import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Platform } from '@angular/cdk/platform';
-import { ThemePalette } from '@angular/material/core';
 import { ViewportRuler } from '@angular/cdk/scrolling';
 
-// @public @deprecated
-export type LegacyProgressSpinnerMode = 'determinate' | 'indeterminate';
+export { LegacyProgressSpinnerMode }
 
-// @public @deprecated
-export const MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS: InjectionToken<MatLegacyProgressSpinnerDefaultOptions>;
+export { MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS }
 
-// @public @deprecated
-export function MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatLegacyProgressSpinnerDefaultOptions;
+export { MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY }
 
 // @public @deprecated
 export class MatLegacyProgressSpinner extends _MatProgressSpinnerBase implements OnInit, OnDestroy, CanColor {
@@ -59,13 +58,7 @@ export class MatLegacyProgressSpinner extends _MatProgressSpinnerBase implements
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyProgressSpinner, [null, null, { optional: true; }, { optional: true; }, null, null, null, null]>;
 }
 
-// @public @deprecated
-export interface MatLegacyProgressSpinnerDefaultOptions {
-    color?: ThemePalette;
-    diameter?: number;
-    _forceAnimations?: boolean;
-    strokeWidth?: number;
-}
+export { MatLegacyProgressSpinnerDefaultOptions }
 
 // @public @deprecated (undocumented)
 export class MatLegacyProgressSpinnerModule {

@@ -1,4 +1,4 @@
-import {runHarnessTests} from '@angular/material/legacy-progress-spinner/testing/shared.spec';
+import {runHarnessTests} from '@angular/material/progress-spinner/testing/shared.spec';
 import {MatProgressSpinnerHarness} from './progress-spinner-harness';
 import {MatProgressSpinnerModule} from '../index';
 

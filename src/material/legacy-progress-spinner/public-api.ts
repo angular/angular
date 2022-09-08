@@ -9,13 +9,14 @@
 import {MatLegacyProgressSpinner} from './progress-spinner';
 
 export {MatLegacyProgressSpinnerModule} from './progress-spinner-module';
+export {MatLegacyProgressSpinner} from './progress-spinner';
+
 export {
-  MatLegacyProgressSpinner,
-  MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS,
-  LegacyProgressSpinnerMode,
-  MatLegacyProgressSpinnerDefaultOptions,
-  MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY,
-} from './progress-spinner';
+  MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS as MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS,
+  MatProgressSpinnerDefaultOptions as MatLegacyProgressSpinnerDefaultOptions,
+  MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY as MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY,
+  ProgressSpinnerMode as LegacyProgressSpinnerMode,
+} from '@angular/material/progress-spinner';
 
 /**
  * @deprecated Import Progress Spinner instead. Note that the

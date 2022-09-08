@@ -4,14 +4,12 @@
 
 ```ts
 
-import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { ProgressSpinnerHarnessFilters as LegacyProgressSpinnerHarnessFilters } from '@angular/material/progress-spinner/testing';
 import { LegacyProgressSpinnerMode } from '@angular/material/legacy-progress-spinner';
 
-// @public @deprecated
-export interface LegacyProgressSpinnerHarnessFilters extends BaseHarnessFilters {
-}
+export { LegacyProgressSpinnerHarnessFilters }
 
 // @public @deprecated
 export class MatLegacyProgressSpinnerHarness extends ComponentHarness {

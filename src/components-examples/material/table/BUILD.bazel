@@ -24,7 +24,7 @@ ng_module(
         "//src/material/legacy-checkbox",
         "//src/material/legacy-input",
         "//src/material/legacy-paginator",
-        "//src/material/progress-spinner",
+        "//src/material/legacy-progress-spinner",
         "//src/material/sort",
         "//src/material/table",
         "//src/material/table/testing",

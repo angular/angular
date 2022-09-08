@@ -15,7 +15,6 @@ import {
   Component,
   ElementRef,
   Inject,
-  InjectionToken,
   Input,
   Optional,
   ViewEncapsulation,
@@ -24,16 +23,14 @@ import {
   OnDestroy,
   NgZone,
 } from '@angular/core';
-import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
+import {CanColor, mixinColor} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {
+  MatProgressSpinnerDefaultOptions,
+  MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
+  ProgressSpinnerMode,
+} from '@angular/material/progress-spinner';
 import {Subscription} from 'rxjs';
-
-/**
- * Possible mode for a progress spinner.
- * @deprecated Use `ProgressSpinnerMode` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export type LegacyProgressSpinnerMode = 'determinate' | 'indeterminate';
 
 /**
  * Base reference size of the spinner.
@@ -55,48 +52,6 @@ const _MatProgressSpinnerBase = mixinColor(
   },
   'primary',
 );
-
-/**
- * Default `mat-progress-spinner` options that can be overridden.
- * @deprecated Use `MatProgressSpinnerDefaultOptions` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export interface MatLegacyProgressSpinnerDefaultOptions {
-  /** Default color of the spinner. */
-  color?: ThemePalette;
-  /** Diameter of the spinner. */
-  diameter?: number;
-  /** Width of the spinner's stroke. */
-  strokeWidth?: number;
-  /**
-   * Whether the animations should be force to be enabled, ignoring if the current environment is
-   * using NoopAnimationsModule.
-   */
-  _forceAnimations?: boolean;
-}
-
-/**
- * Injection token to be used to override the default options for `mat-progress-spinner`.
- * @deprecated Use `MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export const MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS =
-  new InjectionToken<MatLegacyProgressSpinnerDefaultOptions>(
-    'mat-progress-spinner-default-options',
-    {
-      providedIn: 'root',
-      factory: MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY,
-    },
-  );
-
-/**
- * @docs-private
- * @deprecated Use `MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY` from `@angular/material/progress-spinner` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export function MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatLegacyProgressSpinnerDefaultOptions {
-  return {diameter: BASE_SIZE};
-}
 
 // .0001 percentage difference is necessary in order to avoid unwanted animation frames
 // for example because the animation duration is 4 seconds, .1% accounts to 4ms
@@ -210,7 +165,7 @@ export class MatLegacyProgressSpinner
   }
 
   /** Mode of the progress circle */
-  @Input() mode: LegacyProgressSpinnerMode = 'determinate';
+  @Input() mode: ProgressSpinnerMode = 'determinate';
 
   /** Value of the progress circle. */
   @Input()
@@ -226,8 +181,8 @@ export class MatLegacyProgressSpinner
     _platform: Platform,
     @Optional() @Inject(DOCUMENT) private _document: any,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
-    @Inject(MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS)
-    defaults?: MatLegacyProgressSpinnerDefaultOptions,
+    @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
+    defaults?: MatProgressSpinnerDefaultOptions,
     /**
      * @deprecated `changeDetectorRef`, `viewportRuler` and `ngZone`
      * parameters to become required.
