@@ -195,8 +195,6 @@ architect(
     }),
     output_dir = True,
     # AIO build makes a network call to download fonts, which is prohibited on remote executors.
-    # Further, when building with local packages (--config=aio_local_deps), RBE complains about
-    # the input tree being too large (> 70,000 files).
     tags = ["no-remote-exec"],
 )
 

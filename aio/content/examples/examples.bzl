@@ -207,7 +207,7 @@ def docs_example(name, test = True):
                 "//conditions:default": [],
             }),
             configuration_env_vars = ["NG_BUILD_CACHE"],
-            entry_point = "//aio/tools/examples:run-example-e2e",
+            entry_point = "//aio/tools/examples:run-example-e2e.mjs",
             env = {
                 "CHROME_BIN": "$(CHROMIUM)",
                 "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
@@ -215,7 +215,4 @@ def docs_example(name, test = True):
             toolchains = [
                 "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
             ],
-            # RBE complains about superseeding the max inputs limit (70,000) due to the
-            # size of the input tree.
-            tags = ["no-remote-exec"],
         )

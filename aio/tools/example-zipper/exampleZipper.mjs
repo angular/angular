@@ -182,6 +182,12 @@ export class ExampleZipper {
       // zip.append(fs.createReadStream(fileName), { name: relativePath });
       let output = regionExtractor()(content, extn).contents;
 
+      // For some unknown reason, after flipping exports_directories_only to True
+      // in the aio yarn_install, attempting to archive empty files fails. As a
+      // workaround, whenever the file is empty instead archive a file with a newline.
+      if (!output.length) {
+        output = "\n";
+      }
       zip.append(output, { name: relativePath } );
     });
 
