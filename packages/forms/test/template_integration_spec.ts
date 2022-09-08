@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, Directive, forwardRef, Input, Type, ViewChild} from '@angular/core';
+import {Component, Directive, ElementRef, forwardRef, Input, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormControl, FormsModule, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, NgModel, Validator} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -1061,6 +1061,21 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                  .toEqual(
                      ['fired', 'fired'],
                      'Expected ngModelChanges to fire again on submit if value changed.');
+           }));
+
+
+        it('should not prevent the default action on forms with method="dialog"', fakeAsync(() => {
+             if (typeof HTMLDialogElement === 'undefined') {
+               return;
+             }
+
+             const fixture = initTest(NativeDialogForm);
+             fixture.detectChanges();
+             tick();
+             const event = dispatchEvent(fixture.componentInstance.form.nativeElement, 'submit');
+             fixture.detectChanges();
+
+             expect(event.defaultPrevented).toBe(false);
            }));
       });
 
@@ -2931,4 +2946,18 @@ class NgModelNoMinMaxValidator {
   min!: number;
   max!: number;
   @ViewChild('myDir') myDir: any;
+}
+
+@Component({
+  selector: 'ng-model-nested',
+  template: `
+    <dialog open>
+      <form #form method="dialog">
+        <button>Submit</button>
+      </form>
+    </dialog>
+  `
+})
+class NativeDialogForm {
+  @ViewChild('form') form!: ElementRef<HTMLFormElement>;
 }
