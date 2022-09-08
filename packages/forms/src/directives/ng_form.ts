@@ -298,7 +298,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     (this as {submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this._directives);
     this.ngSubmit.emit($event);
-    return false;
+    // Forms with `method="dialog"` have some special behavior
+    // that won't reload the page and that shouldn't be prevented.
+    return ($event?.target as HTMLFormElement | null)?.method === 'dialog';
   }
 
   /**
