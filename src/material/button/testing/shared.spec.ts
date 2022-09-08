@@ -3,15 +3,15 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyButtonHarness} from '@angular/material/legacy-button/testing/button-harness';
+import {MatButtonModule} from '@angular/material/button';
+import {MatButtonHarness} from '@angular/material/button/testing/button-harness';
 import {MatIconModule} from '@angular/material/icon';
 import {MatIconHarness} from '@angular/material/icon/testing/icon-harness';
 
 /** Shared tests to run on both the original and MDC-based buttons. */
 export function runHarnessTests(
-  buttonModule: typeof MatLegacyButtonModule,
-  buttonHarness: typeof MatLegacyButtonHarness,
+  buttonModule: typeof MatButtonModule,
+  buttonHarness: typeof MatButtonHarness,
 ) {
   let fixture: ComponentFixture<ButtonHarnessTest>;
   let loader: HarnessLoader;

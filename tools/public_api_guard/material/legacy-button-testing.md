@@ -4,14 +4,11 @@
 
 ```ts
 
-import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { ButtonHarnessFilters as LegacyButtonHarnessFilters } from '@angular/material/button/testing';
 
-// @public @deprecated
-export interface LegacyButtonHarnessFilters extends BaseHarnessFilters {
-    text?: string | RegExp;
-}
+export { LegacyButtonHarnessFilters }
 
 // @public @deprecated
 export class MatLegacyButtonHarness extends ContentContainerComponentHarness {

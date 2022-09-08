@@ -12,7 +12,7 @@ import {
   HarnessPredicate,
 } from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {LegacyButtonHarnessFilters} from '@angular/material/legacy-button/testing';
+import {ButtonHarnessFilters} from './button-harness-filters';
 
 /** Harness for interacting with a MDC-based mat-button in tests. */
 export class MatButtonHarness extends ContentContainerComponentHarness {
@@ -29,7 +29,7 @@ export class MatButtonHarness extends ContentContainerComponentHarness {
    */
   static with<T extends MatButtonHarness>(
     this: ComponentHarnessConstructor<T>,
-    options: LegacyButtonHarnessFilters = {},
+    options: ButtonHarnessFilters = {},
   ): HarnessPredicate<T> {
     return new HarnessPredicate(this, options).addOption('text', options.text, (harness, text) =>
       HarnessPredicate.stringMatches(harness.getText(), text),

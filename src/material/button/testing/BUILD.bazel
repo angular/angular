@@ -11,7 +11,6 @@ ts_library(
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/testing",
-        "//src/material/legacy-button/testing",
     ],
 )
 
@@ -22,11 +21,30 @@ filegroup(
 
 ng_test_library(
     name = "unit_tests_lib",
-    srcs = glob(["**/*.spec.ts"]),
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["shared.spec.ts"],
+    ),
     deps = [
+        ":harness_tests_lib",
         ":testing",
         "//src/material/button",
-        "//src/material/legacy-button/testing:harness_tests_lib",
+    ],
+)
+
+ng_test_library(
+    name = "harness_tests_lib",
+    srcs = ["shared.spec.ts"],
+    deps = [
+        ":testing",
+        "//src/cdk/platform",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
+        "//src/material/button",
+        "//src/material/icon",
+        "//src/material/icon/testing",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
     ],
 )
 

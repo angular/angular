@@ -4,12 +4,15 @@
 
 ```ts
 
+import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
-import { LegacyButtonHarnessFilters } from '@angular/material/legacy-button/testing';
 
-export { LegacyButtonHarnessFilters }
+// @public
+export interface ButtonHarnessFilters extends BaseHarnessFilters {
+    text?: string | RegExp;
+}
 
 // @public
 export class MatButtonHarness extends ContentContainerComponentHarness {
@@ -23,7 +26,7 @@ export class MatButtonHarness extends ContentContainerComponentHarness {
     static hostSelector: string;
     isDisabled(): Promise<boolean>;
     isFocused(): Promise<boolean>;
-    static with<T extends MatButtonHarness>(this: ComponentHarnessConstructor<T>, options?: LegacyButtonHarnessFilters): HarnessPredicate<T>;
+    static with<T extends MatButtonHarness>(this: ComponentHarnessConstructor<T>, options?: ButtonHarnessFilters): HarnessPredicate<T>;
 }
 
 // (No @packageDocumentation comment for this package)
