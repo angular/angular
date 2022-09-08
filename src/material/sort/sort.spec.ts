@@ -12,7 +12,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {MatLegacyTableModule} from '../legacy-table/index';
+import {MatTableModule} from '@angular/material/table';
 import {
   MAT_SORT_DEFAULT_OPTIONS,
   MatSort,
@@ -35,7 +35,7 @@ describe('MatSort', () => {
 
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [MatSortModule, MatLegacyTableModule, CdkTableModule, NoopAnimationsModule],
+        imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
         declarations: [
           SimpleMatSortApp,
           CdkTableMatSortApp,
@@ -507,7 +507,7 @@ describe('MatSort', () => {
 
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [MatSortModule, MatLegacyTableModule, CdkTableModule, NoopAnimationsModule],
+        imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
         declarations: [MatSortWithoutExplicitInputs],
         providers: [
           {
@@ -541,7 +541,7 @@ describe('MatSort', () => {
 
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [MatSortModule, MatLegacyTableModule, CdkTableModule, NoopAnimationsModule],
+        imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
         declarations: [MatSortWithoutInputs],
         providers: [
           {

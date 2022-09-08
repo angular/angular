@@ -55,7 +55,7 @@ ng_test_library(
         "//src/cdk/collections",
         "//src/cdk/table",
         "//src/cdk/testing/private",
-        "//src/material/legacy-table",
+        "//src/material/table",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",
     ],
