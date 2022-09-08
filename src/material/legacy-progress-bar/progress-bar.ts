@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
-import {DOCUMENT} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -14,8 +13,6 @@ import {
   ElementRef,
   EventEmitter,
   Inject,
-  inject,
-  InjectionToken,
   Input,
   NgZone,
   OnDestroy,
@@ -25,21 +22,20 @@ import {
   ViewEncapsulation,
   ChangeDetectorRef,
 } from '@angular/core';
-import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
+import {CanColor, mixinColor} from '@angular/material/core';
+import {
+  MatProgressBarDefaultOptions,
+  MAT_PROGRESS_BAR_DEFAULT_OPTIONS,
+  ProgressAnimationEnd,
+  ProgressBarMode,
+  MAT_PROGRESS_BAR_LOCATION,
+  MatProgressBarLocation,
+} from '@angular/material/progress-bar';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {fromEvent, Observable, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
 // TODO(josephperrott): Add ARIA attributes for progress bar "for".
-
-/**
- * Last animation end data.
- * @deprecated Use `ProgressAnimationEnd` from `@angular/material/progress-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export interface LegacyProgressAnimationEnd {
-  value: number;
-}
 
 // Boilerplate for applying mixins to MatProgressBar.
 /** @docs-private */
@@ -49,71 +45,6 @@ const _MatProgressBarBase = mixinColor(
   },
   'primary',
 );
-
-/**
- * Injection token used to provide the current location to `MatProgressBar`.
- * Used to handle server-side rendering and to stub out during unit tests.
- * @docs-private
- * @deprecated Use `MAT_PROGRESS_BAR_LOCATION` from `@angular/material/progress-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export const MAT_LEGACY_PROGRESS_BAR_LOCATION = new InjectionToken<MatLegacyProgressBarLocation>(
-  'mat-progress-bar-location',
-  {providedIn: 'root', factory: MAT_LEGACY_PROGRESS_BAR_LOCATION_FACTORY},
-);
-
-/**
- * Stubbed out location for `MatProgressBar`.
- * @docs-private
- * @deprecated Use `MatProgressBarLocation` from `@angular/material/progress-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export interface MatLegacyProgressBarLocation {
-  getPathname: () => string;
-}
-
-/**
- * @docs-private
- * @deprecated Use `MAT_PROGRESS_BAR_LOCATION_FACTORY` from `@angular/material/progress-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export function MAT_LEGACY_PROGRESS_BAR_LOCATION_FACTORY(): MatLegacyProgressBarLocation {
-  const _document = inject(DOCUMENT);
-  const _location = _document ? _document.location : null;
-
-  return {
-    // Note that this needs to be a function, rather than a property, because Angular
-    // will only resolve it once, but we want the current path on each call.
-    getPathname: () => (_location ? _location.pathname + _location.search : ''),
-  };
-}
-
-/**
- * @deprecated Use `ProgressBarMode` from `@angular/material/progress-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export type LegacyProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';
-
-/**
- * Default `mat-progress-bar` options that can be overridden.
- * @deprecated Use `MatProgressBarDefaultOptions` from `@angular/material/progress-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export interface MatLegacyProgressBarDefaultOptions {
-  /** Default color of the progress bar. */
-  color?: ThemePalette;
-
-  /** Default mode of the progress bar. */
-  mode?: LegacyProgressBarMode;
-}
-
-/**
- * Injection token to be used to override the default options for `mat-progress-bar`.
- * @deprecated Use `MAT_PROGRESS_BAR_DEFAULT_OPTIONS` from `@angular/material/progress-bar` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
- * @breaking-change 17.0.0
- */
-export const MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS =
-  new InjectionToken<MatLegacyProgressBarDefaultOptions>('MAT_PROGRESS_BAR_DEFAULT_OPTIONS');
 
 /** Counter used to generate unique IDs for progress bars. */
 let progressbarId = 0;
@@ -156,10 +87,10 @@ export class MatLegacyProgressBar
      * @deprecated `location` parameter to be made required.
      * @breaking-change 8.0.0
      */
-    @Optional() @Inject(MAT_LEGACY_PROGRESS_BAR_LOCATION) location?: MatLegacyProgressBarLocation,
+    @Optional() @Inject(MAT_PROGRESS_BAR_LOCATION) location?: MatProgressBarLocation,
     @Optional()
-    @Inject(MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS)
-    defaults?: MatLegacyProgressBarDefaultOptions,
+    @Inject(MAT_PROGRESS_BAR_DEFAULT_OPTIONS)
+    defaults?: MatProgressBarDefaultOptions,
     /**
      * @deprecated `_changeDetectorRef` parameter to be made required.
      * @breaking-change 11.0.0
@@ -223,7 +154,7 @@ export class MatLegacyProgressBar
    * be emitted when animations are disabled, nor will it be emitted for modes with continuous
    * animations (indeterminate and query).
    */
-  @Output() readonly animationEnd = new EventEmitter<LegacyProgressAnimationEnd>();
+  @Output() readonly animationEnd = new EventEmitter<ProgressAnimationEnd>();
 
   /** Reference to animation end subscription to be unsubscribed on destroy. */
   private _animationEndSubscription: Subscription = Subscription.EMPTY;
@@ -235,7 +166,7 @@ export class MatLegacyProgressBar
    * 'determinate'.
    * Mirrored to mode attribute.
    */
-  @Input() mode: LegacyProgressBarMode = 'determinate';
+  @Input() mode: ProgressBarMode = 'determinate';
 
   /** ID of the progress bar. */
   progressbarId = `mat-progress-bar-${progressbarId++}`;

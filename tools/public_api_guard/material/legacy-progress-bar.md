@@ -14,29 +14,26 @@ import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i2 from '@angular/common';
 import * as i3 from '@angular/material/core';
-import { InjectionToken } from '@angular/core';
+import { ProgressAnimationEnd as LegacyProgressAnimationEnd } from '@angular/material/progress-bar';
+import { ProgressBarMode as LegacyProgressBarMode } from '@angular/material/progress-bar';
+import { MAT_PROGRESS_BAR_DEFAULT_OPTIONS as MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS } from '@angular/material/progress-bar';
+import { MAT_PROGRESS_BAR_LOCATION as MAT_LEGACY_PROGRESS_BAR_LOCATION } from '@angular/material/progress-bar';
+import { MAT_PROGRESS_BAR_LOCATION_FACTORY as MAT_LEGACY_PROGRESS_BAR_LOCATION_FACTORY } from '@angular/material/progress-bar';
+import { MatProgressBarDefaultOptions as MatLegacyProgressBarDefaultOptions } from '@angular/material/progress-bar';
+import { MatProgressBarLocation as MatLegacyProgressBarLocation } from '@angular/material/progress-bar';
 import { NgZone } from '@angular/core';
 import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
-import { ThemePalette } from '@angular/material/core';
 
-// @public @deprecated
-export interface LegacyProgressAnimationEnd {
-    // (undocumented)
-    value: number;
-}
+export { LegacyProgressAnimationEnd }
 
-// @public @deprecated (undocumented)
-export type LegacyProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';
+export { LegacyProgressBarMode }
 
-// @public @deprecated
-export const MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS: InjectionToken<MatLegacyProgressBarDefaultOptions>;
+export { MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS }
 
-// @public @deprecated
-export const MAT_LEGACY_PROGRESS_BAR_LOCATION: InjectionToken<MatLegacyProgressBarLocation>;
+export { MAT_LEGACY_PROGRESS_BAR_LOCATION }
 
-// @public @deprecated
-export function MAT_LEGACY_PROGRESS_BAR_LOCATION_FACTORY(): MatLegacyProgressBarLocation;
+export { MAT_LEGACY_PROGRESS_BAR_LOCATION_FACTORY }
 
 // @public @deprecated
 export class MatLegacyProgressBar extends _MatProgressBarBase implements CanColor, AfterViewInit, OnDestroy {
@@ -72,17 +69,9 @@ export class MatLegacyProgressBar extends _MatProgressBarBase implements CanColo
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyProgressBar, [null, null, { optional: true; }, { optional: true; }, { optional: true; }, null]>;
 }
 
-// @public @deprecated
-export interface MatLegacyProgressBarDefaultOptions {
-    color?: ThemePalette;
-    mode?: LegacyProgressBarMode;
-}
+export { MatLegacyProgressBarDefaultOptions }
 
-// @public @deprecated
-export interface MatLegacyProgressBarLocation {
-    // (undocumented)
-    getPathname: () => string;
-}
+export { MatLegacyProgressBarLocation }
 
 // @public @deprecated (undocumented)
 export class MatLegacyProgressBarModule {

@@ -20,15 +20,62 @@ import {
   AfterViewInit,
   OnDestroy,
   ChangeDetectorRef,
+  InjectionToken,
+  inject,
 } from '@angular/core';
-import {CanColor, mixinColor} from '@angular/material/core';
+import {DOCUMENT} from '@angular/common';
+import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {
-  MatLegacyProgressBarDefaultOptions,
-  MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS,
-  LegacyProgressAnimationEnd,
-} from '@angular/material/legacy-progress-bar';
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
+
+/** Last animation end data. */
+export interface ProgressAnimationEnd {
+  value: number;
+}
+
+/** Default `mat-progress-bar` options that can be overridden. */
+export interface MatProgressBarDefaultOptions {
+  /** Default color of the progress bar. */
+  color?: ThemePalette;
+
+  /** Default mode of the progress bar. */
+  mode?: ProgressBarMode;
+}
+
+/** Injection token to be used to override the default options for `mat-progress-bar`. */
+export const MAT_PROGRESS_BAR_DEFAULT_OPTIONS = new InjectionToken<MatProgressBarDefaultOptions>(
+  'MAT_PROGRESS_BAR_DEFAULT_OPTIONS',
+);
+
+/**
+ * Injection token used to provide the current location to `MatProgressBar`.
+ * Used to handle server-side rendering and to stub out during unit tests.
+ * @docs-private
+ */
+export const MAT_PROGRESS_BAR_LOCATION = new InjectionToken<MatProgressBarLocation>(
+  'mat-progress-bar-location',
+  {providedIn: 'root', factory: MAT_PROGRESS_BAR_LOCATION_FACTORY},
+);
+
+/**
+ * Stubbed out location for `MatProgressBar`.
+ * @docs-private
+ */
+export interface MatProgressBarLocation {
+  getPathname: () => string;
+}
+
+/** @docs-private */
+export function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocation {
+  const _document = inject(DOCUMENT);
+  const _location = _document ? _document.location : null;
+
+  return {
+    // Note that this needs to be a function, rather than a property, because Angular
+    // will only resolve it once, but we want the current path on each call.
+    getPathname: () => (_location ? _location.pathname + _location.search : ''),
+  };
+}
 
 // Boilerplate for applying mixins to MatProgressBar.
 /** @docs-private */
@@ -74,8 +121,8 @@ export class MatProgressBar
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
     @Optional()
-    @Inject(MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS)
-    defaults?: MatLegacyProgressBarDefaultOptions,
+    @Inject(MAT_PROGRESS_BAR_DEFAULT_OPTIONS)
+    defaults?: MatProgressBarDefaultOptions,
   ) {
     super(elementRef);
     this._isNoopAnimation = _animationMode === 'NoopAnimations';
@@ -119,7 +166,7 @@ export class MatProgressBar
    * be emitted when animations are disabled, nor will it be emitted for modes with continuous
    * animations (indeterminate and query).
    */
-  @Output() readonly animationEnd = new EventEmitter<LegacyProgressAnimationEnd>();
+  @Output() readonly animationEnd = new EventEmitter<ProgressAnimationEnd>();
 
   /**
    * Mode of the progress bar.

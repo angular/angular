@@ -23,7 +23,6 @@ ng_module(
     assets = [":progress_bar_scss"] + glob(["**/*.html"]),
     deps = [
         "//src/material/core",
-        "//src/material/legacy-progress-bar",
         "@npm//@angular/core",
     ],
 )

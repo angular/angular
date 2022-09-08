@@ -2,12 +2,12 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
-import {MatLegacyProgressBarHarness} from './progress-bar-harness';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatProgressBarHarness} from './progress-bar-harness';
 
 export function runHarnessTests(
-  progressBarModule: typeof MatLegacyProgressBarModule,
-  progressBarHarness: typeof MatLegacyProgressBarHarness,
+  progressBarModule: typeof MatProgressBarModule,
+  progressBarHarness: typeof MatProgressBarHarness,
 ) {
   let fixture: ComponentFixture<ProgressBarHarnessTest>;
   let loader: HarnessLoader;

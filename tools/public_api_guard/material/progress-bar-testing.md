@@ -4,10 +4,10 @@
 
 ```ts
 
+import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
 import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
-import { LegacyProgressBarHarnessFilters as ProgressBarHarnessFilters } from '@angular/material/legacy-progress-bar/testing';
 
 // @public
 export class MatProgressBarHarness extends ComponentHarness {
@@ -18,7 +18,9 @@ export class MatProgressBarHarness extends ComponentHarness {
     static with<T extends MatProgressBarHarness>(this: ComponentHarnessConstructor<T>, options?: ProgressBarHarnessFilters): HarnessPredicate<T>;
 }
 
-export { ProgressBarHarnessFilters }
+// @public
+export interface ProgressBarHarnessFilters extends BaseHarnessFilters {
+}
 
 // (No @packageDocumentation comment for this package)
 

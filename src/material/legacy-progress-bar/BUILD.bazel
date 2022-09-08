@@ -20,6 +20,7 @@ ng_module(
     assets = [":progress-bar.css"] + glob(["**/*.html"]),
     deps = [
         "//src/material/core",
+        "//src/material/progress-bar",
         "@npm//@angular/animations",
         "@npm//@angular/common",
         "@npm//@angular/core",

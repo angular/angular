@@ -2,8 +2,12 @@ import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {ApplicationRef, Component, DebugElement, Provider, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '../../cdk/testing/private';
-import {MatLegacyProgressBarModule, MAT_LEGACY_PROGRESS_BAR_LOCATION} from './index';
-import {MatLegacyProgressBar, MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS} from './progress-bar';
+import {
+  MatLegacyProgressBarModule,
+  MAT_LEGACY_PROGRESS_BAR_LOCATION,
+  MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS,
+} from './index';
+import {MatLegacyProgressBar} from './progress-bar';
 
 describe('MatProgressBar', () => {
   let fakePath: string;

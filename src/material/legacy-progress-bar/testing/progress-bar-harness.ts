@@ -8,7 +8,7 @@
 
 import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
-import {LegacyProgressBarHarnessFilters} from './progress-bar-harness-filters';
+import {ProgressBarHarnessFilters} from '@angular/material/progress-bar/testing';
 
 /**
  * Harness for interacting with a standard mat-progress-bar in tests.
@@ -26,7 +26,7 @@ export class MatLegacyProgressBarHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(
-    options: LegacyProgressBarHarnessFilters = {},
+    options: ProgressBarHarnessFilters = {},
   ): HarnessPredicate<MatLegacyProgressBarHarness> {
     return new HarnessPredicate(MatLegacyProgressBarHarness, options);
   }
