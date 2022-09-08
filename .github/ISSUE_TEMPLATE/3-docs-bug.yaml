@@ -5,38 +5,54 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: Description
+      label: Describe the problem that you experienced
     validations:
       required: true
 
   - type: input
     id: affected-url
     attributes:
-      label: What is the affected URL?
+      label: Enter the URL of the topic with the problem
+
+  - type: textarea
+    id: documentation-goal
+    attributes:
+      label: Describe what you were looking for in the documentation
 
   - type: textarea
     id: reproduction-steps
     attributes:
-      label: Please provide the steps to reproduce the issue
+      label: Describe the actions that led you to experience the problem
 
   - type: textarea
     id: expected-vs-actual-behavior
     attributes:
-      label: Please provide the expected behavior vs the actual behavior you encountered
+      label: Describe what you want to experience that would fix the problem
 
   - type: textarea
     id: screenshot
     attributes:
-      label: Please provide a screenshot if possible
+      label: Add a screenshot if that helps illustrate the problem
 
   - type: textarea
     id: exception-or-error
     attributes:
-      label: Please provide the exception or error you saw
+      label: If this problem caused an exception or error, please paste it here
       render: true
+      placeholder: |
+        ```
+        Paste the exception or error here inside a markdown code block,
+        which is annotated by three grave \(&grave;\) characters before and after the text block.
+        ```
 
   - type: textarea
     id: browser-info
     attributes:
-      label: Is this a browser-specific issue? If so, please specify the device, browser, and version.
+      label: If the problem is browser-specific, please specify the device, OS, browser, and version
+      render: true
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Provide any additional information here in as much as detail as you can
       render: true
