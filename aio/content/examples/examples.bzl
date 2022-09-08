@@ -171,7 +171,9 @@ def docs_example(name, test = True):
                 "$(execpath :%s)" % name,
                 "$(RULEDIR)",
             ],
-            data = [":%s" % name],
+            data = [
+                ":%s" % name,
+            ],
             outs = outs,
             tool = "//aio/tools/example-zipper:generate-example-zip",
         )
