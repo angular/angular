@@ -326,7 +326,6 @@ jobs:
 
       - run: yarn ng-dev format changed --check << pipeline.git.base_revision >>
       - run: yarn ownerslint
-      - run: yarn check-mdc-tests
       - run: yarn stylelint
       - run: yarn tslint
       - run: yarn -s ts-circular-deps:check

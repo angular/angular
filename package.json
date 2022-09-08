@@ -46,7 +46,6 @@
     "test-linker-aot": "bazel test --partial_compilation --test_tag_filters=partial-compilation-integration,-firefox --build_tests_only -- //integration/... //src/...",
     "test-linker-jit": "bazel test --partial_compilation --test_tag_filters=partial-compilation-integration,-firefox --build_tests_only --//tools:force_partial_jit_compilation=True  -- //integration/... //src/...",
     "integration-tests:mdc-migration": "bazel test --test_output=streamed //integration/mdc-migration/...",
-    "check-mdc-tests": "ts-node --project scripts/tsconfig.json scripts/check-mdc-tests.ts",
     "check-tooling-setup": "yarn tsc --project tools/tsconfig.json && yarn tsc --project scripts/tsconfig.json && yarn tsc --project .ng-dev/tsconfig.json",
     "tsc": "node ./node_modules/typescript/bin/tsc",
     "ci-push-deploy-docs-app": "ts-node --esm --project scripts/tsconfig.json scripts/docs-deploy/deploy-ci-push.mts",
