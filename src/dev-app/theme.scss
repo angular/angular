@@ -13,8 +13,6 @@ $candy-app-theme: mat.define-light-theme((
     accent: $candy-app-accent
   ),
   // Define the default typography for our app.
-  // TODO(mmalerba): Update to `mat-mdc-typography-config()` once non-MDC components can handle
-  //  2018 configs.
   typography: mat.define-typography-config(),
   // Define the default density level for our app.
   density: 0,
