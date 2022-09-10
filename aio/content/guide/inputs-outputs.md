@@ -189,7 +189,7 @@ Using @Output and Emitters as shown above demonstrates how you can create custom
 
 But that is not the only way a child component can communicate with its parent component. It's also possible especially if reuse of the child component is not needed across different parents to just inject the parent class into the child class and invoke parent class method from the child component. That is also an effective way of sharing data from child to parent and can be considered.
 
-However both the approaches are effectively the same. Event emitting is almost the same as the direct method invocation discussed here with the additional advantage of declaratively describing its usage and facilitanting reuse. Data is passed in same manner by refernce for objects and by copy for primitives in both the cases.
+However both the approaches are effectively the same. Event emitting is almost the same as the direct method invocation discussed here with the additional advantage of declaratively describing its usage and facilitanting reuse. Data is passed in same manner by refernce for objects and by copy for primitives in both the cases. In emit there is just the extra step where the thread figures out from the parent component's template which method in the parent component to invoke. Otherwise there is no difference betwen the two approaches.
     
 
 ## Using `@Input()` and `@Output()` together
