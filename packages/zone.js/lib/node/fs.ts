@@ -8,7 +8,7 @@
 
 import {patchMacroTask} from '../common/utils';
 
-Zone.__load_patch('fs', () => {
+Zone.__load_patch('fs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   let fs: any;
   try {
     fs = require('fs');
@@ -19,7 +19,6 @@ Zone.__load_patch('fs', () => {
   // because EventEmitter has been patched
   const TO_PATCH_MACROTASK_NESTED = [
     {'parent': 'realpath', 'nested': 'native'},
-    {'parent': 'realpathSync', 'nested': 'native'},
   ];
   const TO_PATCH_MACROTASK_METHODS = [
     'access',  'appendFile', 'chmod',    'chown',    'close',     'exists',    'fchmod',
@@ -29,42 +28,32 @@ Zone.__load_patch('fs', () => {
     'symlink', 'truncate',   'unlink',   'utimes',   'write',     'writeFile',
   ];
 
-  if (fs) {
-    // store the patched nested function temporarily first
-    const tempNestedResults: {[key: string]: any} = {};
-    TO_PATCH_MACROTASK_NESTED
-        .filter(
-            method => !!fs?.[method.parent][method.nested] &&
-                typeof fs[method.parent][method.nested] === 'function')
-        .forEach(function(method) {
-          patchMacroTask(fs[method.parent], method.nested, function(self, args) {
-            return {
-              name: 'fs.' + method.parent + '.' + method.nested,
-              args: args,
-              cbIdx: args.length > 0 ? args.length - 1 : -1,
-              target: self
-            };
-          });
-          tempNestedResults[method.parent] = tempNestedResults[method.parent] || {};
-          tempNestedResults[method.parent][method.nested] = fs[method.parent][method.nested];
+  // patching of direct fs functions will override nested functions
+  TO_PATCH_MACROTASK_METHODS.filter(name => !!fs[name] && typeof fs[name] === 'function')
+      .forEach(name => {
+        patchMacroTask(fs, name, (self: any, args: any[]) => {
+          return {
+            name: 'fs.' + name,
+            args: args,
+            cbIdx: args.length > 0 ? args.length - 1 : -1,
+            target: self
+          };
         });
+      });
 
-    // patching of direct fs functions will override nested functions
-    TO_PATCH_MACROTASK_METHODS.filter(name => !!fs[name] && typeof fs[name] === 'function')
-        .forEach(name => {
-          patchMacroTask(fs, name, (self: any, args: any[]) => {
-            return {
-              name: 'fs.' + name,
-              args: args,
-              cbIdx: args.length > 0 ? args.length - 1 : -1,
-              target: self
-            };
-          });
-        });
-
-    // re-populate the nested function as it became undefined
-    for (let method of TO_PATCH_MACROTASK_NESTED) {
-      fs[method.parent][method.nested] = tempNestedResults[method.parent][method.nested];
+  TO_PATCH_MACROTASK_NESTED.forEach(nested => {
+    // get original delegate
+    const patched = fs[nested.parent];
+    if (!patched) {
+      return;
     }
-  }
+    const unpatched = patched[api.symbol('OriginalDelegate')];
+    patched[nested.nested] = unpatched && unpatched[nested.nested];
+    patchMacroTask(patched, nested.nested, (self: any, args: any[]) => {
+      return {
+        name: `fs.${nested.parent}.${nested.nested}`, args: args,
+            cbIdx: args.length > 0 ? args.length - 1 : -1, target: self
+      }
+    });
+  });
 });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {closeSync, exists, fstatSync, openSync, read, unlink, unlinkSync, unwatchFile, watch, watchFile, write, writeFile} from 'fs';
+import {closeSync, exists, fstatSync, openSync, read, realpath, unlink, unlinkSync, unwatchFile, watch, watchFile, write, writeFile} from 'fs';
 import * as util from 'util';
 
 describe('nodejs file system', () => {
@@ -33,6 +33,42 @@ describe('nodejs file system', () => {
       spyOn(zoneASpec, 'onScheduleTask').and.callThrough();
       zoneA.run(() => {
         exists('testfile', (_) => {
+          expect(zoneASpec.onScheduleTask).toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    it('realpath should patched as macroTask', (done) => {
+      const zoneASpec = {
+        name: 'A',
+        onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+            Task => {
+              return delegate.scheduleTask(targetZone, task);
+            }
+      };
+      const zoneA = Zone.current.fork(zoneASpec);
+      spyOn(zoneASpec, 'onScheduleTask').and.callThrough();
+      zoneA.run(() => {
+        realpath('testfile', (_) => {
+          expect(zoneASpec.onScheduleTask).toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    it('realpath.native should patched as macroTask', (done) => {
+      const zoneASpec = {
+        name: 'A',
+        onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+            Task => {
+              return delegate.scheduleTask(targetZone, task);
+            }
+      };
+      const zoneA = Zone.current.fork(zoneASpec);
+      spyOn(zoneASpec, 'onScheduleTask').and.callThrough();
+      zoneA.run(() => {
+        realpath.native('testfile', (_) => {
           expect(zoneASpec.onScheduleTask).toHaveBeenCalled();
           done();
         });
