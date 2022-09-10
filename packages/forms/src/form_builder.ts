@@ -153,7 +153,7 @@ export class FormBuilder {
 
   /**
    * @description
-   * Construct a new `FormGroup` instance. Accepts a single generic argument, which is an object
+   * Constructs a new `FormGroup` instance. Accepts a single generic argument, which is an object
    * containing all the keys and corresponding inner control types.
    *
    * @param controls A collection of child controls. The key for each child is the name
@@ -173,7 +173,7 @@ export class FormBuilder {
 
   /**
    * @description
-   * Construct a new `FormGroup` instance.
+   * Constructs a new `FormGroup` instance.
    *
    * @deprecated This API is not typesafe and can result in issues with Closure Compiler renaming.
    * Use the `FormBuilder#group` overload with `AbstractControlOptions` instead.
@@ -217,7 +217,7 @@ export class FormBuilder {
 
   /**
    * @description
-   * Construct a new `FormRecord` instance. Accepts a single generic argument, which is an object
+   * Constructs a new `FormRecord` instance. Accepts a single generic argument, which is an object
    * containing all the keys and corresponding inner control types.
    *
    * @param controls A collection of child controls. The key for each child is the name
@@ -259,7 +259,7 @@ export class FormBuilder {
 
   /**
    * @description
-   * Construct a new `FormControl` with the given state, validators and options. Set
+   * Constructs a new `FormControl` with the given state, validators and options. Sets
    * `{nonNullable: true}` in the options to get a non-nullable control. Otherwise, the
    * control will be nullable. Accepts a single generic argument, which is the type  of the
    * control's value.
