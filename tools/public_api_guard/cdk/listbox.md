@@ -22,7 +22,6 @@ import { Validator } from '@angular/forms';
 
 // @public (undocumented)
 export class CdkListbox<T = unknown> implements AfterContentInit, OnDestroy, ControlValueAccessor, Validator {
-    constructor();
     protected readonly changeDetectorRef: ChangeDetectorRef;
     get compareWith(): undefined | ((o1: T, o2: T) => boolean);
     set compareWith(fn: undefined | ((o1: T, o2: T) => boolean));

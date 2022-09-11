@@ -1,4 +1,4 @@
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {Component, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {CdkListbox, CdkListboxModule, CdkOption, ListboxValueChangeEvent} from './index';
@@ -40,7 +40,7 @@ async function setupComponent<T, O = string>(component: Type<T>, imports: any[] 
 
 describe('CdkOption and CdkListbox', () => {
   describe('id', () => {
-    it('should generate unique ids', async () => {
+    it('should generate unique ids', waitForAsync(async () => {
       const {listbox, listboxEl, options, optionEls} = await setupComponent(ListboxWithOptions);
       const optionIds = new Set(optionEls.map(option => option.id));
       expect(optionIds.size).toBe(options.length);
@@ -50,9 +50,9 @@ describe('CdkOption and CdkListbox', () => {
       }
       expect(listbox.id).toEqual(listboxEl.id);
       expect(listbox.id).toMatch(/cdk-listbox-\d+/);
-    });
+    }));
 
-    it('should not overwrite user given ids', async () => {
+    it('should not overwrite user given ids', waitForAsync(async () => {
       const {testComponent, fixture, listboxEl, optionEls} = await setupComponent(
         ListboxWithOptions,
       );
@@ -61,11 +61,11 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
       expect(listboxEl.id).toBe('my-listbox');
       expect(optionEls[0].id).toBe('my-apple');
-    });
+    }));
   });
 
   describe('tabindex', () => {
-    it('should use tabindex=0 for focusable elements, tabindex=-1 for non-focusable elements', async () => {
+    it('should use tabindex=0 for focusable elements, tabindex=-1 for non-focusable elements', waitForAsync(async () => {
       const {fixture, listbox, listboxEl, optionEls} = await setupComponent(ListboxWithOptions);
       expect(listboxEl.getAttribute('tabindex')).toBe('0');
       expect(optionEls[0].getAttribute('tabindex')).toBe('-1');
@@ -75,9 +75,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listboxEl.getAttribute('tabindex')).toBe('-1');
       expect(optionEls[0].getAttribute('tabindex')).toBe('0');
-    });
+    }));
 
-    it('should respect user given tabindex for focusable elements', async () => {
+    it('should respect user given tabindex for focusable elements', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl, optionEls} = await setupComponent(
         ListboxWithOptions,
       );
@@ -93,9 +93,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listboxEl.getAttribute('tabindex')).toBe('-1');
       expect(optionEls[0].getAttribute('tabindex')).toBe('20');
-    });
+    }));
 
-    it('should use listbox tabindex for focusable options', async () => {
+    it('should use listbox tabindex for focusable options', waitForAsync(async () => {
       const {testComponent, fixture, listbox, optionEls} = await setupComponent(ListboxWithOptions);
       testComponent.listboxTabindex = 10;
       fixture.detectChanges();
@@ -106,11 +106,11 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(optionEls[0].getAttribute('tabindex')).toBe('10');
-    });
+    }));
   });
 
   describe('selection', () => {
-    it('should be empty initially', async () => {
+    it('should be empty initially', waitForAsync(async () => {
       const {fixture, listbox, options, optionEls} = await setupComponent(ListboxWithOptions);
       expect(listbox.value).toEqual([]);
       for (let i = 0; i < options.length; i++) {
@@ -118,9 +118,9 @@ describe('CdkOption and CdkListbox', () => {
         expect(optionEls[i].getAttribute('aria-selected')).toBe('false');
       }
       expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
+    }));
 
-    it('should update when selection is changed programmatically', async () => {
+    it('should update when selection is changed programmatically', waitForAsync(async () => {
       const {fixture, listbox, options, optionEls} = await setupComponent(ListboxWithOptions);
       options[1].select();
       fixture.detectChanges();
@@ -129,9 +129,9 @@ describe('CdkOption and CdkListbox', () => {
       expect(options[1].isSelected()).toBeTrue();
       expect(optionEls[1].getAttribute('aria-selected')).toBe('true');
       expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
+    }));
 
-    it('should update on option clicked', async () => {
+    it('should update on option clicked', waitForAsync(async () => {
       const {fixture, listbox, options, optionEls} = await setupComponent(ListboxWithOptions);
       optionEls[0].click();
       fixture.detectChanges();
@@ -140,9 +140,9 @@ describe('CdkOption and CdkListbox', () => {
       expect(options[0].isSelected()).toBeTrue();
       expect(optionEls[0].getAttribute('aria-selected')).toBe('true');
       expect(fixture.componentInstance.changedOption?.id).toBe(options[0].id);
-    });
+    }));
 
-    it('should select and deselect range on option SHIFT + click', async () => {
+    it('should select and deselect range on option SHIFT + click', waitForAsync(async () => {
       const {testComponent, fixture, listbox, optionEls} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
@@ -188,9 +188,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(listbox.value).toEqual(['orange']);
-    });
+    }));
 
-    it('should update on option activated via keyboard', async () => {
+    it('should update on option activated via keyboard', waitForAsync(async () => {
       const {fixture, listbox, listboxEl, options, optionEls} = await setupComponent(
         ListboxWithOptions,
       );
@@ -202,9 +202,9 @@ describe('CdkOption and CdkListbox', () => {
       expect(options[0].isSelected()).toBeTrue();
       expect(optionEls[0].getAttribute('aria-selected')).toBe('true');
       expect(fixture.componentInstance.changedOption?.id).toBe(options[0].id);
-    });
+    }));
 
-    it('should deselect previously selected option in single-select listbox', async () => {
+    it('should deselect previously selected option in single-select listbox', waitForAsync(async () => {
       const {fixture, listbox, options, optionEls} = await setupComponent(ListboxWithOptions);
       dispatchMouseEvent(optionEls[0], 'click');
       fixture.detectChanges();
@@ -217,9 +217,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listbox.value).toEqual(['banana']);
       expect(options[0].isSelected()).toBeFalse();
-    });
+    }));
 
-    it('should select all options programmatically in multi-select listbox', async () => {
+    it('should select all options programmatically in multi-select listbox', waitForAsync(async () => {
       const {testComponent, fixture, listbox} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
@@ -228,9 +228,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(listbox.value).toEqual(['apple', 'orange', 'banana', 'peach']);
-    });
+    }));
 
-    it('should add to selection in multi-select listbox', async () => {
+    it('should add to selection in multi-select listbox', waitForAsync(async () => {
       const {testComponent, fixture, listbox, options, optionEls} = await setupComponent(
         ListboxWithOptions,
       );
@@ -246,9 +246,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listbox.value).toEqual(['apple', 'banana']);
       expect(options[0].isSelected()).toBeTrue();
-    });
+    }));
 
-    it('should deselect all options when switching to single-selection with invalid selection', async () => {
+    it('should deselect all options when switching to single-selection with invalid selection', waitForAsync(async () => {
       const {testComponent, fixture, listbox} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
@@ -261,9 +261,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(listbox.value).toEqual([]);
-    });
+    }));
 
-    it('should preserve selection when switching to single-selection with valid selection', async () => {
+    it('should preserve selection when switching to single-selection with valid selection', waitForAsync(async () => {
       const {testComponent, fixture, listbox, optionEls} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
@@ -276,9 +276,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(listbox.value).toEqual(['apple']);
-    });
+    }));
 
-    it('should allow programmatically toggling options', async () => {
+    it('should allow programmatically toggling options', waitForAsync(async () => {
       const {testComponent, fixture, listbox, options} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
@@ -296,9 +296,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(options[0].isSelected()).toBeFalse();
       expect(options[1].isSelected()).toBeFalse();
-    });
+    }));
 
-    it('should allow programmatically selecting and deselecting options', async () => {
+    it('should allow programmatically selecting and deselecting options', waitForAsync(async () => {
       const {testComponent, fixture, listbox, options} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
@@ -316,9 +316,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(options[0].isSelected()).toBeFalse();
       expect(options[1].isSelected()).toBeFalse();
-    });
+    }));
 
-    it('should allow binding to listbox value', async () => {
+    it('should allow binding to listbox value', waitForAsync(async () => {
       const {testComponent, fixture, listbox, options} = await setupComponent(
         ListboxWithBoundValue,
       );
@@ -330,11 +330,25 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listbox.value).toEqual(['orange']);
       expect(options[1].isSelected()).toBeTrue();
-    });
+    }));
+
+    it('should should handle multiple preselected values', waitForAsync(async () => {
+      const {testComponent, fixture, listbox, options} = await setupComponent(
+        ListboxWithMultipleBoundValues,
+      );
+      expect(listbox.value).toEqual(['apple', 'banana']);
+      expect(options.map(o => o.isSelected())).toEqual([true, false, true, false]);
+
+      testComponent.value = ['orange', 'peach'];
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['orange', 'peach']);
+      expect(options.map(o => o.isSelected())).toEqual([false, true, false, true]);
+    }));
   });
 
   describe('disabled state', () => {
-    it('should be able to toggle listbox disabled state', async () => {
+    it('should be able to toggle listbox disabled state', waitForAsync(async () => {
       const {fixture, testComponent, listbox, listboxEl, options, optionEls} = await setupComponent(
         ListboxWithOptions,
       );
@@ -348,18 +362,18 @@ describe('CdkOption and CdkListbox', () => {
         expect(options[i].disabled).toBeTrue();
         expect(optionEls[i].getAttribute('aria-disabled')).toBe('true');
       }
-    });
+    }));
 
-    it('should toggle option disabled state', async () => {
+    it('should toggle option disabled state', waitForAsync(async () => {
       const {fixture, testComponent, options, optionEls} = await setupComponent(ListboxWithOptions);
       testComponent.isAppleDisabled = true;
       fixture.detectChanges();
 
       expect(options[0].disabled).toBeTrue();
       expect(optionEls[0].getAttribute('aria-disabled')).toBe('true');
-    });
+    }));
 
-    it('should not change selection on click of a disabled option', async () => {
+    it('should not change selection on click of a disabled option', waitForAsync(async () => {
       const {fixture, testComponent, listbox, optionEls} = await setupComponent(ListboxWithOptions);
       testComponent.isAppleDisabled = true;
       fixture.detectChanges();
@@ -369,9 +383,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listbox.value).toEqual([]);
       expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
+    }));
 
-    it('should not change selection on click in a disabled listbox', async () => {
+    it('should not change selection on click in a disabled listbox', waitForAsync(async () => {
       const {fixture, testComponent, listbox, optionEls} = await setupComponent(ListboxWithOptions);
       testComponent.isListboxDisabled = true;
       fixture.detectChanges();
@@ -381,9 +395,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listbox.value).toEqual([]);
       expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
+    }));
 
-    it('should not change selection on keyboard activation in a disabled listbox', async () => {
+    it('should not change selection on keyboard activation in a disabled listbox', waitForAsync(async () => {
       const {fixture, testComponent, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
       listbox.focus();
       fixture.detectChanges();
@@ -396,9 +410,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listbox.value).toEqual([]);
       expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
+    }));
 
-    it('should not change selection on click of a disabled option', async () => {
+    it('should not change selection on click of a disabled option', waitForAsync(async () => {
       const {fixture, testComponent, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
       listbox.focus();
       fixture.detectChanges();
@@ -411,7 +425,7 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listbox.value).toEqual([]);
       expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
+    }));
 
     it('should not handle type ahead on a disabled listbox', async (...args: unknown[]) => {
       const {fixture, testComponent, listboxEl, options} = await setupComponent(ListboxWithOptions);
@@ -429,7 +443,7 @@ describe('CdkOption and CdkListbox', () => {
       })(args);
     });
 
-    it('should skip disabled options when navigating with arrow keys', async () => {
+    it('should skip disabled options when navigating with arrow keys', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl, options} = await setupComponent(
         ListboxWithOptions,
       );
@@ -443,9 +457,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(options[2].isActive()).toBeTrue();
-    });
+    }));
 
-    it('should not skip disabled options when navigating with arrow keys when skipping is turned off', async () => {
+    it('should not skip disabled options when navigating with arrow keys when skipping is turned off', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl, options} = await setupComponent(
         ListboxWithOptions,
       );
@@ -460,9 +474,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(options[1].isActive()).toBeTrue();
-    });
+    }));
 
-    it('should not select disabled options with CONTROL + A', async () => {
+    it('should not select disabled options with CONTROL + A', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       testComponent.isOrangeDisabled = true;
@@ -473,11 +487,11 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(listbox.value).toEqual(['apple', 'banana', 'peach']);
-    });
+    }));
   });
 
   describe('compare with', () => {
-    it('should allow custom function to compare option values', async () => {
+    it('should allow custom function to compare option values', waitForAsync(async () => {
       const {fixture, listbox, options} = await setupComponent<
         ListboxWithObjectValues,
         {name: string}
@@ -491,11 +505,11 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(options[1].isSelected()).toBeTrue();
-    });
+    }));
   });
 
   describe('keyboard navigation', () => {
-    it('should update active item on arrow key presses', async () => {
+    it('should update active item on arrow key presses', waitForAsync(async () => {
       const {fixture, listbox, listboxEl, options} = await setupComponent(ListboxWithOptions);
       listbox.focus();
       dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
@@ -507,9 +521,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(options[0].isActive()).toBeTrue();
-    });
+    }));
 
-    it('should update active option on home and end key press', async () => {
+    it('should update active option on home and end key press', waitForAsync(async () => {
       const {fixture, listbox, listboxEl, options, optionEls} = await setupComponent(
         ListboxWithOptions,
       );
@@ -525,7 +539,7 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(options[0].isActive()).toBeTrue();
       expect(optionEls[0].classList).toContain('cdk-option-active');
-    });
+    }));
 
     it('should change active item using type ahead', async (...args: unknown[]) => {
       const {fixture, listbox, listboxEl, options} = await setupComponent(ListboxWithOptions);
@@ -557,7 +571,7 @@ describe('CdkOption and CdkListbox', () => {
       })(args);
     });
 
-    it('should focus and toggle the next item when pressing SHIFT + DOWN_ARROW', async () => {
+    it('should focus and toggle the next item when pressing SHIFT + DOWN_ARROW', waitForAsync(async () => {
       const {fixture, listbox, listboxEl, options} = await setupComponent(ListboxWithOptions);
       listbox.focus();
       fixture.detectChanges();
@@ -567,9 +581,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listbox.value).toEqual(['orange']);
       expect(fixture.componentInstance.changedOption?.id).toBe(options[1].id);
-    });
+    }));
 
-    it('should update active item on arrow key presses in horizontal mode', async () => {
+    it('should update active item on arrow key presses in horizontal mode', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl, options} = await setupComponent(
         ListboxWithOptions,
       );
@@ -588,9 +602,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(options[0].isActive()).toBeTrue();
-    });
+    }));
 
-    it('should select and deselect all option with CONTROL + A', async () => {
+    it('should select and deselect all option with CONTROL + A', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
@@ -605,9 +619,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(listbox.value).toEqual([]);
-    });
+    }));
 
-    it('should select and deselect range with CONTROL + SPACE', async () => {
+    it('should select and deselect range with CONTROL + SPACE', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
@@ -630,9 +644,9 @@ describe('CdkOption and CdkListbox', () => {
       dispatchKeyboardEvent(listboxEl, 'keydown', SPACE, undefined, {shift: true});
 
       expect(listbox.value).toEqual(['orange']);
-    });
+    }));
 
-    it('should select and deselect range with CONTROL + SHIFT + HOME', async () => {
+    it('should select and deselect range with CONTROL + SHIFT + HOME', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       listbox.focus();
@@ -649,9 +663,9 @@ describe('CdkOption and CdkListbox', () => {
       dispatchKeyboardEvent(listboxEl, 'keydown', HOME, undefined, {control: true, shift: true});
 
       expect(listbox.value).toEqual([]);
-    });
+    }));
 
-    it('should select and deselect range with CONTROL + SHIFT + END', async () => {
+    it('should select and deselect range with CONTROL + SHIFT + END', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       listbox.focus();
@@ -667,9 +681,9 @@ describe('CdkOption and CdkListbox', () => {
       dispatchKeyboardEvent(listboxEl, 'keydown', END, undefined, {control: true, shift: true});
 
       expect(listbox.value).toEqual([]);
-    });
+    }));
 
-    it('should wrap navigation when wrapping is enabled', async () => {
+    it('should wrap navigation when wrapping is enabled', waitForAsync(async () => {
       const {fixture, listbox, listboxEl, options} = await setupComponent(ListboxWithOptions);
       listbox.focus();
       dispatchKeyboardEvent(listboxEl, 'keydown', END);
@@ -681,9 +695,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(options[0].isActive()).toBeTrue();
-    });
+    }));
 
-    it('should not wrap navigation when wrapping is not enabled', async () => {
+    it('should not wrap navigation when wrapping is not enabled', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl, options} = await setupComponent(
         ListboxWithOptions,
       );
@@ -700,11 +714,11 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(options[options.length - 1].isActive()).toBeTrue();
-    });
+    }));
   });
 
   describe('with roving tabindex', () => {
-    it('should shift focus on keyboard navigation', async () => {
+    it('should shift focus on keyboard navigation', waitForAsync(async () => {
       const {fixture, listbox, listboxEl, optionEls} = await setupComponent(ListboxWithOptions);
       listbox.focus();
       fixture.detectChanges();
@@ -717,28 +731,28 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(document.activeElement).toBe(optionEls[1]);
       expect(listboxEl.hasAttribute('aria-activedescendant')).toBeFalse();
-    });
+    }));
 
-    it('should focus first option on listbox focus', async () => {
+    it('should focus first option on listbox focus', waitForAsync(async () => {
       const {fixture, listbox, optionEls} = await setupComponent(ListboxWithOptions);
       listbox.focus();
       fixture.detectChanges();
 
       expect(document.activeElement).toBe(optionEls[0]);
-    });
+    }));
 
-    it('should focus listbox if no focusable options available', async () => {
+    it('should focus listbox if no focusable options available', waitForAsync(async () => {
       const {fixture, listbox, listboxEl} = await setupComponent(ListboxWithNoOptions);
 
       listbox.focus();
       fixture.detectChanges();
 
       expect(document.activeElement).toBe(listboxEl);
-    });
+    }));
   });
 
   describe('with aria-activedescendant', () => {
-    it('should update active descendant on keyboard navigation', async () => {
+    it('should update active descendant on keyboard navigation', waitForAsync(async () => {
       const {testComponent, fixture, listbox, listboxEl, optionEls} = await setupComponent(
         ListboxWithOptions,
       );
@@ -756,9 +770,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(listboxEl.getAttribute('aria-activedescendant')).toBe(optionEls[1].id);
       expect(document.activeElement).toBe(listboxEl);
-    });
+    }));
 
-    it('should not activate an option on listbox focus', async () => {
+    it('should not activate an option on listbox focus', waitForAsync(async () => {
       const {testComponent, fixture, listbox, options} = await setupComponent(ListboxWithOptions);
       testComponent.isActiveDescendant = true;
       fixture.detectChanges();
@@ -768,9 +782,9 @@ describe('CdkOption and CdkListbox', () => {
       for (let option of options) {
         expect(option.isActive()).toBeFalse();
       }
-    });
+    }));
 
-    it('should focus listbox and make option active on option focus', async () => {
+    it('should focus listbox and make option active on option focus', waitForAsync(async () => {
       const {testComponent, fixture, listboxEl, options, optionEls} = await setupComponent(
         ListboxWithOptions,
       );
@@ -781,11 +795,11 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(document.activeElement).toBe(listboxEl);
       expect(options[2].isActive()).toBeTrue();
-    });
+    }));
   });
 
   describe('with FormControl', () => {
-    it('should reflect disabled state of the FormControl', async () => {
+    it('should reflect disabled state of the FormControl', waitForAsync(async () => {
       const {testComponent, fixture, listbox} = await setupComponent(ListboxWithFormControl, [
         ReactiveFormsModule,
       ]);
@@ -793,9 +807,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(listbox.disabled).toBeTrue();
-    });
+    }));
 
-    it('should update when FormControl value changes', async () => {
+    it('should update when FormControl value changes', waitForAsync(async () => {
       const {testComponent, fixture, options} = await setupComponent(ListboxWithFormControl, [
         ReactiveFormsModule,
       ]);
@@ -803,9 +817,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
 
       expect(options[2].isSelected()).toBeTrue();
-    });
+    }));
 
-    it('should update FormControl when selection changes', async () => {
+    it('should update FormControl when selection changes', waitForAsync(async () => {
       const {testComponent, fixture, optionEls} = await setupComponent(ListboxWithFormControl, [
         ReactiveFormsModule,
       ]);
@@ -820,9 +834,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(spy).toHaveBeenCalledWith(['orange']);
       subscription.unsubscribe();
-    });
+    }));
 
-    it('should update multi-select listbox when FormControl value changes', async () => {
+    it('should update multi-select listbox when FormControl value changes', waitForAsync(async () => {
       const {testComponent, fixture, options} = await setupComponent(ListboxWithFormControl, [
         ReactiveFormsModule,
       ]);
@@ -833,9 +847,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(options[1].isSelected()).toBeTrue();
       expect(options[2].isSelected()).toBeTrue();
-    });
+    }));
 
-    it('should update FormControl when multi-selection listbox changes', async () => {
+    it('should update FormControl when multi-selection listbox changes', waitForAsync(async () => {
       const {testComponent, fixture, optionEls} = await setupComponent(ListboxWithFormControl, [
         ReactiveFormsModule,
       ]);
@@ -855,9 +869,9 @@ describe('CdkOption and CdkListbox', () => {
       fixture.detectChanges();
       expect(spy).toHaveBeenCalledWith(['orange', 'banana']);
       subscription.unsubscribe();
-    });
+    }));
 
-    it('should have FormControl error when multiple values selected in single-select listbox', async () => {
+    it('should have FormControl error when multiple values selected in single-select listbox', waitForAsync(async () => {
       const {testComponent, fixture} = await setupComponent(ListboxWithFormControl, [
         ReactiveFormsModule,
       ]);
@@ -866,9 +880,9 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(testComponent.formControl.hasError('cdkListboxUnexpectedMultipleValues')).toBeTrue();
       expect(testComponent.formControl.hasError('cdkListboxUnexpectedOptionValues')).toBeFalse();
-    });
+    }));
 
-    it('should have FormControl error when non-option value selected', async () => {
+    it('should have FormControl error when non-option value selected', waitForAsync(async () => {
       const {testComponent, fixture} = await setupComponent(ListboxWithFormControl, [
         ReactiveFormsModule,
       ]);
@@ -881,9 +895,9 @@ describe('CdkOption and CdkListbox', () => {
       expect(testComponent.formControl.errors?.['cdkListboxUnexpectedOptionValues']).toEqual({
         'values': ['dragonfruit', 'mango'],
       });
-    });
+    }));
 
-    it('should have multiple FormControl errors when multiple non-option values selected in single-select listbox', async () => {
+    it('should have multiple FormControl errors when multiple non-option values selected in single-select listbox', waitForAsync(async () => {
       const {testComponent, fixture} = await setupComponent(ListboxWithFormControl, [
         ReactiveFormsModule,
       ]);
@@ -895,7 +909,7 @@ describe('CdkOption and CdkListbox', () => {
       expect(testComponent.formControl.errors?.['cdkListboxUnexpectedOptionValues']).toEqual({
         'values': ['dragonfruit', 'mango'],
       });
-    });
+    }));
   });
 });
 
@@ -993,6 +1007,22 @@ class ListboxWithCustomTypeahead {}
 })
 class ListboxWithBoundValue {
   value = ['banana'];
+}
+
+@Component({
+  template: `
+    <div cdkListbox
+         cdkListboxMultiple
+         [cdkListboxValue]="value">
+      <div cdkOption="apple">Apple</div>
+      <div cdkOption="orange">Orange</div>
+      <div cdkOption="banana">Banana</div>
+      <div cdkOption="peach">Peach</div>
+    </div>
+  `,
+})
+class ListboxWithMultipleBoundValues {
+  value = ['apple', 'banana'];
 }
 
 @Component({

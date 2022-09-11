@@ -307,7 +307,10 @@ export class CdkListbox<T = unknown>
   }
   set multiple(value: BooleanInput) {
     this.selectionModel.multiple = coerceBooleanProperty(value);
-    this._updateInternalValue();
+
+    if (this.options) {
+      this._updateInternalValue();
+    }
   }
 
   /** Whether the listbox is disabled. */
@@ -470,13 +473,6 @@ export class CdkListbox<T = unknown>
     this._validateUnexpectedOptionValues,
   ])!;
 
-  constructor() {
-    // Update the internal value whenever the selection model's selection changes.
-    this.selectionModel.changed.pipe(startWith(null), takeUntil(this.destroyed)).subscribe(() => {
-      this._updateInternalValue();
-    });
-  }
-
   ngAfterContentInit() {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       this._verifyNoOptionValueCollisions();
@@ -484,11 +480,10 @@ export class CdkListbox<T = unknown>
 
     this._initKeyManager();
 
-    // Update the internal value whenever the options change, as this may change the validity of
-    // the current selection
-    this.options.changes.pipe(startWith(this.options), takeUntil(this.destroyed)).subscribe(() => {
-      this._updateInternalValue();
-    });
+    // Update the internal value whenever the options or the model value changes.
+    merge(this.selectionModel.changed, this.options.changes)
+      .pipe(startWith(null), takeUntil(this.destroyed))
+      .subscribe(() => this._updateInternalValue());
 
     this._optionClicked
       .pipe(
