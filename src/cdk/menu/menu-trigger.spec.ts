@@ -34,6 +34,10 @@ describe('MenuTrigger', () => {
       expect(menuItemElement.getAttribute('role')).toBe('menuitem');
     });
 
+    it('should set a type on the trigger', () => {
+      expect(menuItemElement.getAttribute('type')).toBe('button');
+    });
+
     it('should set the aria disabled attribute', () => {
       expect(menuItemElement.getAttribute('aria-disabled')).toBeNull();
 

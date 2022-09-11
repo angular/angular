@@ -53,7 +53,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
   protected readonly _dir = inject(Directionality, InjectFlags.Optional);
 
   /** The menu's native DOM host element. */
-  readonly _elementRef = inject(ElementRef);
+  readonly _elementRef: ElementRef<HTMLElement> = inject(ElementRef);
 
   /** The Angular zone. */
   protected _ngZone = inject(NgZone);
@@ -109,6 +109,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
 
   constructor() {
     this._setupMouseEnter();
+    this._setType();
 
     if (this._isStandaloneItem()) {
       this._tabindex = 0;
@@ -197,7 +198,6 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
       case SPACE:
       case ENTER:
         if (!hasModifierKey(event)) {
-          event.preventDefault();
           this.trigger({keepOpen: event.keyCode === SPACE && !this.closeOnSpacebarTrigger});
         }
         break;
@@ -297,5 +297,15 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
    */
   private _isParentVertical() {
     return this._parentMenu?.orientation === 'vertical';
+  }
+
+  /** Sets the `type` attribute of the menu item. */
+  private _setType() {
+    const element = this._elementRef.nativeElement;
+
+    if (element.nodeName === 'BUTTON' && !element.getAttribute('type')) {
+      // Prevent form submissions.
+      element.setAttribute('type', 'button');
+    }
   }
 }

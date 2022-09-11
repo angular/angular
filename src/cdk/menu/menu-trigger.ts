@@ -84,6 +84,7 @@ export class CdkMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
     this._subscribeToMenuStackClosed();
     this._subscribeToMouseEnter();
     this._subscribeToMenuStackHasFocus();
+    this._setType();
   }
 
   /** Toggle the attached menu. */
@@ -130,7 +131,6 @@ export class CdkMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
       case SPACE:
       case ENTER:
         if (!hasModifierKey(event)) {
-          event.preventDefault();
           this.toggle();
           this.childMenu?.focusFirstItem('keyboard');
         }
@@ -324,6 +324,16 @@ export class CdkMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
     // role, otherwise this is a standalone trigger, and we should ensure it has role="button".
     if (!this._parentMenu) {
       this._elementRef.nativeElement.setAttribute('role', 'button');
+    }
+  }
+
+  /** Sets thte `type` attribute of the trigger. */
+  private _setType() {
+    const element = this._elementRef.nativeElement;
+
+    if (element.nodeName === 'BUTTON' && !element.getAttribute('type')) {
+      // Prevents form submissions.
+      element.setAttribute('type', 'button');
     }
   }
 }

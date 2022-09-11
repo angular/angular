@@ -122,7 +122,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
     protected readonly _dir: Directionality | null;
     get disabled(): boolean;
     set disabled(value: BooleanInput);
-    readonly _elementRef: ElementRef<any>;
+    readonly _elementRef: ElementRef<HTMLElement>;
     focus(): void;
     getLabel(): string;
     getMenu(): Menu | undefined;

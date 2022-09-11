@@ -38,6 +38,10 @@ describe('MenuItem', () => {
       expect(nativeButton.getAttribute('role')).toBe('menuitem');
     });
 
+    it('should a type on the button', () => {
+      expect(nativeButton.getAttribute('type')).toBe('button');
+    });
+
     it('should coerce the disabled property', () => {
       (menuItem as any).disabled = '';
       expect(menuItem.disabled).toBeTrue();
