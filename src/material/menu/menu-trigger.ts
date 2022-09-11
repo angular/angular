@@ -159,6 +159,8 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
         }
       });
     }
+
+    this._menuItemInstance?._setTriggersSubmenu(this.triggersSubmenu());
   }
   private _menu: MatMenuPanel | null;
 
@@ -257,10 +259,6 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
       this._handleTouchStart,
       passiveEventListenerOptions,
     );
-
-    if (_menuItemInstance) {
-      _menuItemInstance._triggersSubmenu = this.triggersSubmenu();
-    }
   }
 
   ngAfterContentInit() {
@@ -296,7 +294,7 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
 
   /** Whether the menu triggers a sub-menu or a top-level one. */
   triggersSubmenu(): boolean {
-    return !!(this._menuItemInstance && this._parentMaterialMenu);
+    return !!(this._menuItemInstance && this._parentMaterialMenu && this.menu);
   }
 
   /** Toggles the menu between the open and closed states. */

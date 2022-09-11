@@ -219,6 +219,8 @@ export class MatMenuItem extends _MatMenuItemBase implements FocusableOption, Ca
     role: 'menuitem' | 'menuitemradio' | 'menuitemcheckbox';
     // (undocumented)
     _setHighlighted(isHighlighted: boolean): void;
+    // (undocumented)
+    _setTriggersSubmenu(triggersSubmenu: boolean): void;
     _triggersSubmenu: boolean;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "role": "role"; }, {}, never, ["mat-icon", "*"], false>;

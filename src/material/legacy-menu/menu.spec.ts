@@ -2304,6 +2304,12 @@ describe('MatMenu', () => {
       expect(menuItems[0].querySelector('.mat-menu-submenu-icon')).toBeTruthy();
       expect(menuItems[1].classList).not.toContain('mat-menu-item-submenu-trigger');
       expect(menuItems[1].querySelector('.mat-menu-submenu-icon')).toBeFalsy();
+
+      instance.levelOneTrigger.menu = null;
+      fixture.detectChanges();
+
+      expect(menuItems[0].classList).not.toContain('mat-menu-item-submenu-trigger');
+      expect(menuItems[0].querySelector('.mat-menu-submenu-icon')).toBeFalsy();
     }));
 
     it('should increase the sub-menu elevation based on its depth', fakeAsync(() => {

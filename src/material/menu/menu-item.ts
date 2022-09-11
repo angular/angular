@@ -183,6 +183,12 @@ export class MatMenuItem
     this._changeDetectorRef?.markForCheck();
   }
 
+  _setTriggersSubmenu(triggersSubmenu: boolean) {
+    // @breaking-change 12.0.0 Remove null check for `_changeDetectorRef`.
+    this._triggersSubmenu = triggersSubmenu;
+    this._changeDetectorRef?.markForCheck();
+  }
+
   _hasFocus(): boolean {
     return this._document && this._document.activeElement === this._getHostElement();
   }
