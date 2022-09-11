@@ -56,7 +56,7 @@
     @return $x;
   }
   @if meta.type-of($x) == 'number' and math.unit($x) == 'rem' {
-    @return ($x / 1rem) * $px-per-rem;
+    @return math.div($x, 1rem) * $px-per-rem;
   }
   @else {
     @return $x;
