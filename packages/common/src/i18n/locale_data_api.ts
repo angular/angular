@@ -674,10 +674,7 @@ const DEFAULT_NB_OF_CURRENCY_DIGITS = 2;
  * @publicApi
  */
 export function getNumberOfCurrencyDigits(code: string, locale = 'en'): number {
-  let digits;
   const currency = getLocaleCurrencies(locale)[code] || CURRENCIES_EN[code] || [];
-  if (currency) {
-    digits = currency[ɵCurrencyIndex.NbOfDigits];
-  }
+  const digits = currency[ɵCurrencyIndex.NbOfDigits];
   return typeof digits === 'number' ? digits : DEFAULT_NB_OF_CURRENCY_DIGITS;
 }
