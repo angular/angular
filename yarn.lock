@@ -256,7 +256,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#c6e22890605f308ccfd504fa9cce7d16662aaa85":
   version "0.0.0-3c526cbb36b8517829dbbf02a7833fa3081479bb"
-  uid c6e22890605f308ccfd504fa9cce7d16662aaa85
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#c6e22890605f308ccfd504fa9cce7d16662aaa85"
   dependencies:
     "@angular-devkit/build-angular" "15.0.0-next.0"
@@ -364,7 +363,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#44bb94e2925b5288b6fbd46a7ed9162262cdfbdd":
   version "0.0.0-3c526cbb36b8517829dbbf02a7833fa3081479bb"
-  uid "44bb94e2925b5288b6fbd46a7ed9162262cdfbdd"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#44bb94e2925b5288b6fbd46a7ed9162262cdfbdd"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"

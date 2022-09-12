@@ -3,6 +3,7 @@
 const child = require('child_process');
 const semver = require('semver');
 const versionMatcher = /refs\/tags\/(\d+.+)$/mg;
+const GIT = process.env.GIT_BIN; // Path provided via bazel git toolchain
 
 /**
  * Get a collection of all the previous "last major" versions sorted by semantic version.
@@ -16,7 +17,7 @@ module.exports = function getPreviousMajorVersions(packageInfo, versionInfo) {
     // always use the remote tags as the local clone might not contain all commits when cloned with
     // `git clone --depth=...`
     const repoUrl = packageInfo.repository.url;
-    const tagResults = child.spawnSync('git', ['ls-remote', '--tags', repoUrl], {encoding: 'utf8'});
+    const tagResults = child.spawnSync(GIT, ['ls-remote', '--tags', repoUrl], {encoding: 'utf8'});
 
     if (tagResults.status !== 0) {
       return [];
