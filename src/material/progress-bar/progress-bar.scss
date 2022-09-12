@@ -1,8 +1,13 @@
 @use '../core/mdc-helpers/mdc-helpers';
-@use '@material/linear-progress' as mdc-linear-progress;
+@use '@material/linear-progress/linear-progress' as mdc-linear-progress;
+@use '@material/linear-progress/linear-progress-theme' as mdc-linear-progress-theme;
 
 @include mdc-helpers.disable-mdc-fallback-declarations {
-  @include mdc-linear-progress.core-styles($query: mdc-helpers.$mdc-base-styles-query);
+  @include mdc-linear-progress.static-styles($query: mdc-helpers.$mdc-base-styles-query);
+
+  // TODO(crisbeto): we should be able to save some bytes here by setting the `track-color`
+  // to null, but MDC's styles assume that a string is always going to be passed in.
+  @include mdc-linear-progress-theme.theme-styles($theme: mdc-linear-progress-theme.$light-theme);
 }
 
 .mat-mdc-progress-bar {
