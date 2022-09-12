@@ -52,6 +52,7 @@ import {FormatWidth, FormStyle, getCurrencySymbol, getLocaleDateFormat, getLocal
         expect(getNumberOfCurrencyDigits('USD')).toEqual(2);
         expect(getNumberOfCurrencyDigits('GNF')).toEqual(0);
         expect(getNumberOfCurrencyDigits('BHD')).toEqual(3);
+        expect(getNumberOfCurrencyDigits('USD', 'fr')).toEqual(2);
         expect(getNumberOfCurrencyDigits('unexisting_ISO_code')).toEqual(2);
       });
     });

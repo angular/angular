@@ -200,7 +200,7 @@ export function getLocaleTimeFormat(locale: string, width: FormatWidth): string;
 export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay];
 
 // @public
-export function getNumberOfCurrencyDigits(code: string): number;
+export function getNumberOfCurrencyDigits(code: string, locale: string): number;
 
 // @public
 export class HashLocationStrategy extends LocationStrategy implements OnDestroy {

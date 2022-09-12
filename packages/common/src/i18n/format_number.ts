@@ -153,7 +153,7 @@ export function formatCurrency(
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Currency);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
 
-  pattern.minFrac = getNumberOfCurrencyDigits(currencyCode!);
+  pattern.minFrac = getNumberOfCurrencyDigits(currencyCode!, locale);
   pattern.maxFrac = pattern.minFrac;
 
   const res = formatNumberToLocaleString(

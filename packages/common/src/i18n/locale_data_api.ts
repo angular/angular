@@ -495,7 +495,8 @@ export function getLocaleCurrencyCode(locale: string): string|null {
  * @returns The currency values.
  * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n-overview)
  */
-function getLocaleCurrencies(locale: string): {[code: string]: CurrenciesSymbols} {
+function getLocaleCurrencies(locale: string):
+    {[code: string]: CurrenciesSymbols|[string | undefined, string | undefined, number]} {
   const data = ɵfindLocaleData(locale);
   return data[ɵLocaleDataIndex.Currencies];
 }
@@ -666,14 +667,15 @@ const DEFAULT_NB_OF_CURRENCY_DIGITS = 2;
  * The value depends upon the presence of cents in that particular currency.
  *
  * @param code The currency code.
+ * @param locale A locale code for the locale format rules to use.
  * @returns The number of decimal digits, typically 0 or 2.
  * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n-overview)
  *
  * @publicApi
  */
-export function getNumberOfCurrencyDigits(code: string): number {
+export function getNumberOfCurrencyDigits(code: string, locale = 'en'): number {
   let digits;
-  const currency = CURRENCIES_EN[code];
+  const currency = getLocaleCurrencies(locale)[code] || CURRENCIES_EN[code] || [];
   if (currency) {
     digits = currency[ɵCurrencyIndex.NbOfDigits];
   }
