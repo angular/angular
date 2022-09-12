@@ -1438,10 +1438,6 @@ export class Router {
         // finalUrl), but we weren't moving anywhere in history (skipLocationChange or replaceUrl).
         // We still need to reset the router state back to what it was when the navigation started.
         this.resetState(t);
-        // TODO(atscott): resetting the `browserUrlTree` should really be done in `resetState`.
-        // Investigate if this can be done by running TGP.
-        this.browserUrlTree = t.currentUrlTree;
-        this.resetUrlToCurrentUrlTree();
       } else {
         // The browser URL and router state was not updated before the navigation cancelled so
         // there's no restoration needed.
@@ -1467,6 +1463,9 @@ export class Router {
     // addition, the URLHandlingStrategy may be configured to specifically preserve parts of the URL
     // when merging, such as the query params so they are not lost on a refresh.
     this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
+    // Investigate if this can be done by running TGP.
+    this.browserUrlTree = t.currentUrlTree;
+    this.resetUrlToCurrentUrlTree();
   }
 
   private resetUrlToCurrentUrlTree(): void {
