@@ -31,13 +31,16 @@ npm_package_bin(
     name = "dgeni",
     # angular.io-package is a js_library target, which copies sources to $(BINDIR)
     args = ["./$(BINDIR)/aio/tools/transforms/angular.io-package"],
-    configuration_env_vars = ["PATH"],  # Need PATH for dgeni package that invokes git
     data = ["//aio/tools/transforms/angular.io-package"],
     env = {
         "BAZEL_DGENI_OUTPUT_PATH": "$(@D)",
+        "GIT_BIN": "$(GIT_BIN_PATH)",
     },
     output_dir = True,
     tool = "@aio_npm//dgeni/bin:dgeni",
+    toolchains = [
+        "@npm//@angular/build-tooling/bazel/git-toolchain:current_git_toolchain",
+    ],
     visibility = ["//aio/tests/deployment:__subpackages__"],
 )
 
