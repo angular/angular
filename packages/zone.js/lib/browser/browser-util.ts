@@ -7,12 +7,7 @@
  */
 export function patchCallbacks(
     api: _ZonePrivate, target: any, targetName: string, method: string, callbacks: string[]) {
-  const symbol = Zone.__symbol__(method);
-  if (target[symbol]) {
-    return;
-  }
-  const nativeDelegate = target[symbol] = target[method];
-  target[method] = function(name: any, opts: any, options?: any) {
+  api.patchMethod(target, method, (delegate) => (self: any, [name, opts, options]: any[]) => {
     if (opts && opts.prototype) {
       callbacks.forEach(function(callback) {
         const source = `${targetName}.${method}::` + callback;
@@ -44,8 +39,6 @@ export function patchCallbacks(
       });
     }
 
-    return nativeDelegate.call(target, name, opts, options);
-  };
-
-  api.attachOriginToPatched(target[method], nativeDelegate);
+    return delegate.call(self, name, opts, options);
+  });
 }
