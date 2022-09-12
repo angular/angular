@@ -14,9 +14,9 @@ import {Component, Inject} from '@angular/core';
   standalone: true,
   imports: [NgOptimizedImage],
   template: `
-    <img rawSrc="/e2e/a.png" width="50" height="50" priority>
-    <img rawSrc="/e2e/b.png" width="50" height="50" priority>
-    <img rawSrc="/e2e/c.png" width="50" height="50">
+    <img ngSrc="/e2e/a.png" width="50" height="50" priority>
+    <img ngSrc="/e2e/b.png" width="50" height="50" priority>
+    <img ngSrc="/e2e/c.png" width="50" height="50">
   `,
   providers: [{
     provide: IMAGE_LOADER,

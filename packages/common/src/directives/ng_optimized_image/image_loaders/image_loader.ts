@@ -118,10 +118,10 @@ function throwUnexpectedAbsoluteUrlError(path: string, url: string): never {
   throw new RuntimeError(
       RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
       ngDevMode &&
-          `Image loader has detected a \`<img>\` tag with an invalid \`rawSrc\` attribute: ${
+          `Image loader has detected a \`<img>\` tag with an invalid \`ngSrc\` attribute: ${
               url}. ` +
-              `This image loader expects \`rawSrc\` to be a relative URL - ` +
+              `This image loader expects \`ngSrc\` to be a relative URL - ` +
               `however the provided value is an absolute URL. ` +
-              `To fix this, provide \`rawSrc\` as a path relative to the base URL ` +
+              `To fix this, provide \`ngSrc\` as a path relative to the base URL ` +
               `configured for this loader (\`${path}\`).`);
 }

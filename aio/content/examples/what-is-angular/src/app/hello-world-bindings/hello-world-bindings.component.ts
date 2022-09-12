@@ -15,5 +15,4 @@ export class HelloWorldBindingsComponent {
     alert(this.message);
   }
 // #enddocregion
-
 }

@@ -7,8 +7,8 @@
  */
 
 // Assembles directive details string, useful for error messages.
-export function imgDirectiveDetails(rawSrc: string, includeRawSrc = true) {
-  const rawSrcInfo =
-      includeRawSrc ? `(activated on an <img> element with the \`rawSrc="${rawSrc}"\`) ` : '';
-  return `The NgOptimizedImage directive ${rawSrcInfo}has detected that`;
+export function imgDirectiveDetails(ngSrc: string, includeNgSrc = true) {
+  const ngSrcInfo =
+      includeNgSrc ? `(activated on an <img> element with the \`ngSrc="${ngSrc}"\`) ` : '';
+  return `The NgOptimizedImage directive ${ngSrcInfo}has detected that`;
 }

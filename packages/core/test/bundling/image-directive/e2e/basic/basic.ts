@@ -13,7 +13,7 @@ import {Component} from '@angular/core';
   selector: 'basic',
   standalone: true,
   imports: [NgOptimizedImage],
-  template: `<img rawSrc="/e2e/a.png" width="150" height="150" priority>`,
+  template: `<img ngSrc="/e2e/a.png" width="150" height="150" priority>`,
   providers: [{
     provide: IMAGE_LOADER,
     useValue: () => 'https://angular.io/assets/images/logos/angular/angular.svg'
