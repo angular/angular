@@ -19,7 +19,7 @@ describe('getPreviousMajorVersions', () => {
   it('should spawn a child process to git', () => {
     spyOn(child, 'spawnSync').and.returnValue({status: 0, stdout: ''});
     getPreviousMajorVersions();
-    expect(child.spawnSync).toHaveBeenCalledWith('git', ['ls-remote', '--tags', 'SOME_GIT_URL'], {
+    expect(child.spawnSync).toHaveBeenCalledWith(process.env.GIT_BIN, ['ls-remote', '--tags', 'SOME_GIT_URL'], {
       encoding: 'utf8'
     });
   });
