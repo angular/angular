@@ -7,7 +7,7 @@ import { WithCustomElementComponent } from '../element-registry';
 @NgModule({
   imports: [ CommonModule ],
   declarations: [ EventsComponent ],
-  providers: [ EventsService]
+  providers: [ EventsService ],
 })
 export class EventsModule implements WithCustomElementComponent {
   customElementComponent: Type<any> = EventsComponent;

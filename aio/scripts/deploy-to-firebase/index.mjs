@@ -383,7 +383,8 @@ function deploy(data) {
   firebase(`use "${projectId}"`);
   firebase('target:clear hosting aio');
   firebase(`target:apply hosting aio "${siteId}"`);
-  firebase(`deploy --only hosting:aio --message "Commit: ${currentCommit}" --non-interactive`);
+  firebase(
+      `deploy --only database,hosting:aio --message "Commit: ${currentCommit}" --non-interactive`);
 
   u.logSectionHeader('Run post-deploy actions.');
   postDeployActions.forEach(fn => fn(data));
