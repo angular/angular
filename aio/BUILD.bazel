@@ -6,10 +6,6 @@ load(":local_packages_util.bzl", "link_local_packages", "substitute_local_packag
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("//aio/scripts:local_server_test.bzl", "local_server_test")
 
-# The write_source_files macro is used to write bazel outputs to the source tree and test that they are up to date.
-# See: https://docs.aspect.build/aspect-build/bazel-lib/v0.5.0/docs/docs/write_source_files-docgen.html
-load("@aspect_bazel_lib//lib:write_source_files.bzl", generated_files_test = "write_source_files")
-
 exports_files([
     "firebase.json",
     "ngsw-config.json",
@@ -27,22 +23,6 @@ config_setting(
     name = "aio_local_deps",
     flag_values = {
         ":flag_aio_local_deps": "true",
-    },
-)
-
-# Generate ngsw-config
-npm_package_bin(
-    name = "ngsw-config",
-    outs = ["ngsw-config_generated.json"],
-    args = ["$@"],
-    tool = "//aio/scripts:build-ngsw-config",
-)
-
-# Write ngsw-config to the source directory and test that it's up to date
-generated_files_test(
-    name = "write-ngsw-config",
-    files = {
-        "ngsw-config.json": ":ngsw-config",
     },
 )
 
@@ -88,7 +68,6 @@ copy_to_directory(
 # All source and configuration files required to build the docs app
 APPLICATION_FILES = [
     "angular.json",
-    "ngsw-config.json",
     "package.json",
     "tsconfig.app.json",
     "tsconfig.json",
@@ -112,6 +91,7 @@ APPLICATION_DEPS = [
     ":dgeni",
     ":stackblitz",
     ":example-zips",
+    "//aio/src/generated:ngsw-config",
     "@aio_npm//@angular-devkit/build-angular",
     "@aio_npm//@angular-eslint/builder",
     "@aio_npm//@angular/animations",
