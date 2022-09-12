@@ -29,7 +29,7 @@ jobs:
       - name: Generate `events.json`
         run: node aio/scripts/generate-events/index.mjs --ignore-invalid-dates
       - name: Create a PR (if necessary)
-        uses: gkalpak/dev-infra/github-actions/create-pr-for-changes@88c198ae1a3462223cb5c1e83338e4b94b435283
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@bf4bb09bb2d32015f71943371c7484cb845f8c33
         with:
           branch-prefix: docs-update-events
           pr-title: 'docs: update events'
