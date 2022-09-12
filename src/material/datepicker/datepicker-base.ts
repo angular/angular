@@ -48,6 +48,7 @@ import {
   OnChanges,
   SimpleChanges,
   OnInit,
+  inject,
 } from '@angular/core';
 import {CanColor, DateAdapter, mixinColor, ThemePalette} from '@angular/material/core';
 import {merge, Subject, Observable, Subscription} from 'rxjs';
@@ -68,6 +69,7 @@ import {
   MatDateRangeSelectionStrategy,
 } from './date-range-selection-strategy';
 import {MatDatepickerIntl} from './datepicker-intl';
+import {DOCUMENT} from '@angular/common';
 
 /** Used to generate a unique ID for each datepicker instance. */
 let datepickerUid = 0;
@@ -320,6 +322,7 @@ export abstract class MatDatepickerBase<
 {
   private _scrollStrategy: () => ScrollStrategy;
   private _inputStateChanges = Subscription.EMPTY;
+  private _document = inject(DOCUMENT);
 
   /** An input indicating the type of the custom header component for the calendar, if set. */
   @Input() calendarHeaderComponent: ComponentType<any>;
@@ -613,11 +616,10 @@ export abstract class MatDatepickerBase<
       return;
     }
 
-    if (this._componentRef) {
-      const instance = this._componentRef.instance;
-      instance._startExitAnimation();
-      instance._animationDone.pipe(take(1)).subscribe(() => this._destroyOverlay());
-    }
+    const canRestoreFocus =
+      this._restoreFocus &&
+      this._focusedElementBeforeOpen &&
+      typeof this._focusedElementBeforeOpen.focus === 'function';
 
     const completeClose = () => {
       // The `_opened` could've been reset already if
@@ -625,21 +627,37 @@ export abstract class MatDatepickerBase<
       if (this._opened) {
         this._opened = false;
         this.closedStream.emit();
-        this._focusedElementBeforeOpen = null;
       }
     };
 
-    if (
-      this._restoreFocus &&
-      this._focusedElementBeforeOpen &&
-      typeof this._focusedElementBeforeOpen.focus === 'function'
-    ) {
+    if (this._componentRef) {
+      const {instance, location} = this._componentRef;
+      instance._startExitAnimation();
+      instance._animationDone.pipe(take(1)).subscribe(() => {
+        const activeElement = this._document.activeElement;
+
+        // Since we restore focus after the exit animation, we have to check that
+        // the user didn't move focus themselves inside the `close` handler.
+        if (
+          canRestoreFocus &&
+          (!activeElement ||
+            activeElement === this._document.activeElement ||
+            location.nativeElement.contains(activeElement))
+        ) {
+          this._focusedElementBeforeOpen!.focus();
+        }
+
+        this._focusedElementBeforeOpen = null;
+        this._destroyOverlay();
+      });
+    }
+
+    if (canRestoreFocus) {
       // Because IE moves focus asynchronously, we can't count on it being restored before we've
       // marked the datepicker as closed. If the event fires out of sequence and the element that
       // we're refocusing opens the datepicker on focus, the user could be stuck with not being
       // able to close the calendar at all. We work around it by making the logic, that marks
       // the datepicker as closed, async as well.
-      this._focusedElementBeforeOpen.focus();
       setTimeout(completeClose);
     } else {
       completeClose();
