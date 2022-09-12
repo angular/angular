@@ -14,6 +14,12 @@ $_generate-default-density: true !default;
 $_duplicate-warning: 'Read more about how style duplication can be avoided in a dedicated ' +
   'guide. https://github.com/angular/components/blob/main/guides/duplicate-theming-styles.md';
 
+// Warning that will be printed if the legacy theming API is used.
+$_legacy-theme-warning: 'Angular Material themes should be created from a map containing the ' +
+  'keys "color", "typography", and "density". The color value should be a map containing the ' +
+  'palette values for "primary", "accent", and "warn". ' +
+  'See https://material.angular.io/guide/theming for more information.';
+
 // These variable are not intended to be overridden externally. They use `!default` to
 // avoid being reset every time this file is imported.
 $_emitted-color: () !default;
@@ -167,6 +173,7 @@ $_emitted-density: () !default;
   // If the legacy pattern is used, we generate a container object only with a light-themed
   // configuration for the `color` theming part.
   @if $accent != null {
+    @warn $_legacy-theme-warning;
     @return private-create-backwards-compatibility-theme(_mat-validate-theme((
       _is-legacy-theme: true,
       color: _mat-create-light-color-config($primary, $accent, $warn),
@@ -207,6 +214,7 @@ $_emitted-density: () !default;
   // If the legacy pattern is used, we generate a container object only with a dark-themed
   // configuration for the `color` theming part.
   @if $accent != null {
+    @warn $_legacy-theme-warning;
     @return private-create-backwards-compatibility-theme(_mat-validate-theme((
       _is-legacy-theme: true,
       color: _mat-create-dark-color-config($primary, $accent, $warn),
@@ -432,6 +440,8 @@ $_emitted-density: () !default;
   @if private-is-theme-object($theme-or-color-config) {
     @return $theme-or-color-config;
   }
+
+  @warn $_legacy-theme-warning;
   @return private-create-backwards-compatibility-theme((
     _is-legacy-theme: true,
     color: $theme-or-color-config
