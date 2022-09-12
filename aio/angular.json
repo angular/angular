@@ -36,7 +36,9 @@
             "tsConfig": "tsconfig.app.json",
             "webWorkerTsConfig": "tsconfig.worker.json",
             "optimization": {
-              "fonts": true,
+              "fonts": {
+                "inline": false
+              },
               "scripts": true,
               "styles": {
                 "inlineCritical": false,
