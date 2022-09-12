@@ -24,7 +24,7 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * `CommonModule` is included, the `ngSwitch` would also be covered.
  */
 export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Map([
-  ['ngIf', 'NgIf'], ['ngFor', 'NgForOf'], ['ngSwitchCase', 'NgSwitchCase'],
+  ['ngIf', 'NgIf'], ['ngFor', 'NgFor'], ['ngSwitchCase', 'NgSwitchCase'],
   ['ngSwitchDefault', 'NgSwitchDefault']
 ]);
 

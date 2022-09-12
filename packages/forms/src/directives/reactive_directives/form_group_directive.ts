@@ -94,8 +94,8 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   @Output() ngSubmit = new EventEmitter();
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) private validators: (Validator|ValidatorFn)[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private asyncValidators:
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
           (AsyncValidator|AsyncValidatorFn)[]) {
     super();
     this._setValidators(validators);
@@ -271,7 +271,10 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     (this as {submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this.directives);
     this.ngSubmit.emit($event);
-    return false;
+    // Forms with `method="dialog"` have some special behavior that won't reload the page and that
+    // shouldn't be prevented. Note that we need to null check the `event` and the `target`, because
+    // some internal apps call this method directly with the wrong arguments.
+    return ($event?.target as HTMLFormElement | null)?.method === 'dialog';
   }
 
   /**

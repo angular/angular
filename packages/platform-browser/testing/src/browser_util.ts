@@ -97,10 +97,11 @@ export class BrowserDetection {
 
 export const browserDetection: BrowserDetection = BrowserDetection.setup();
 
-export function dispatchEvent(element: any, eventType: any): void {
+export function dispatchEvent(element: any, eventType: any): Event {
   const evt: Event = getDOM().getDefaultDocument().createEvent('Event');
   evt.initEvent(eventType, true, true);
   getDOM().dispatchEvent(element, evt);
+  return evt;
 }
 
 export function createMouseEvent(eventType: string): MouseEvent {

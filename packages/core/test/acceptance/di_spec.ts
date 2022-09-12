@@ -1025,6 +1025,24 @@ describe('di', () => {
           const dirC = fixture.componentInstance.dirC;
           expect(dirC.dirB).toBeNull();
         });
+
+        it('should imply @Optional in presence of a default value', () => {
+          const NON_EXISTING_PROVIDER = new InjectionToken<string>('non-existing');
+
+          @Component({template: ''})
+          class MyComp {
+            value: string|undefined;
+            constructor(injector: Injector) {
+              this.value = injector.get(NON_EXISTING_PROVIDER, 'default', InjectFlags.Host);
+            }
+          }
+
+          const injector = Injector.create({providers: []});
+          expect(injector.get(NON_EXISTING_PROVIDER, 'default', InjectFlags.Host)).toBe('default');
+
+          const fixture = TestBed.createComponent(MyComp);
+          expect(fixture.componentInstance.value).toBe('default');
+        });
       });
 
       it('should check only the current node with @Self', () => {
