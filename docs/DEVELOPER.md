@@ -100,6 +100,24 @@ This can be done by running:
 yarn ng-dev misc build-and-link <path-to-local-project-root>
 ```
 
+### Building and serving a project
+
+#### Cache
+
+When making changes to Angular packages and testing in a local library/project you need to run `ng cache disable` to disable the Angular CLI disk cache. If you are making changes that are not reflected in your locally served library/project, verify if you have [CLI Cache](https://angular.io/guide/workspace-config#cache-options) disabled.
+
+#### Invoking the Angular CLI
+
+The Angular CLI needs to be invoked using Node.js [`--preserve-symlinks`](https://nodejs.org/api/cli.html#--preserve-symlinks) flag. Otherwise the symbolic links will be resolved using their real path which causes node module resolution to fail.
+
+##### Windows
+
+`set BAZEL_TARGET="1" && node --preserve-symlinks node_modules/@angular/cli/lib/init.js serve`
+
+##### Unix Systems
+
+`BAZEL_TARGET="1" node --preserve-symlinks node_modules/.bin/ng serve`
+
 ## Formatting your source code
 
 Angular uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to format the source code.
