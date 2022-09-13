@@ -5,12 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {ifEnvSupports, ifEnvSupportsWithDone} from '../test-util';
+import {AsyncStackTaggingZoneSpec} from '../../src/zone/async-stack-tagging';
 
 describe('AsyncTaggingConsoleTest', () => {
-  const AsyncStackTaggingZoneSpec = (Zone as any)['AsyncStackTaggingZoneSpec'];
-
   describe('should call console async stack tagging API', () => {
     const startAsyncTaskSpy = jasmine.createSpy('startAsyncTask');
     const finishAsyncTaskSpy = jasmine.createSpy('finishAsyncTask');
@@ -91,45 +88,51 @@ describe('AsyncTaggingConsoleTest', () => {
       });
     });
 
-    it('XMLHttpRequest', ifEnvSupportsWithDone('XMLHttpRequest', (done: DoneFn) => {
-         asyncStackTaggingZone.run(() => {
-           const req = new XMLHttpRequest();
-           req.onload = () => {
-             Zone.root.run(() => {
-               setTimeout(() => {
-                 expect(scheduleAsyncTaskSpy.calls.all()[0].args).toEqual([
-                   'Zone - XMLHttpRequest.addEventListener:load',
-                 ]);
-                 expect(scheduleAsyncTaskSpy.calls.all()[1].args).toEqual([
-                   'Zone - XMLHttpRequest.send',
-                 ]);
-                 expect(startAsyncTaskSpy.calls.count()).toBe(2);
-                 expect(finishAsyncTaskSpy.calls.count()).toBe(2);
-                 done();
-               });
-             });
-           };
-           req.open('get', '/', true);
-           req.send();
-         });
-       }));
+    if (global.XMLHttpRequest) {
+      it('XMLHttpRequest', (done: DoneFn) => {
+        asyncStackTaggingZone.run(() => {
+          const req = new XMLHttpRequest();
+          req.onload = () => {
+            Zone.root.run(() => {
+              setTimeout(() => {
+                expect(scheduleAsyncTaskSpy.calls.all()[0].args).toEqual([
+                  'Zone - XMLHttpRequest.addEventListener:load',
+                ]);
+                expect(scheduleAsyncTaskSpy.calls.all()[1].args).toEqual([
+                  'Zone - XMLHttpRequest.send',
+                ]);
+                expect(startAsyncTaskSpy.calls.count()).toBe(2);
+                expect(finishAsyncTaskSpy.calls.count()).toBe(2);
+                done();
+              });
+            });
+          };
+          req.open('get', '/', true);
+          req.send();
+        });
+      });
+    }
 
-    it('button click', ifEnvSupports('document', () => {
-         asyncStackTaggingZone.run(() => {
-           const button = document.createElement('button');
-           const clickEvent = document.createEvent('Event');
-           clickEvent.initEvent('click', true, true);
-           document.body.appendChild(button);
-           const handler = () => {};
-           button.addEventListener('click', handler);
-           button.dispatchEvent(clickEvent);
-           button.dispatchEvent(clickEvent);
-           button.removeEventListener('click', handler);
-           expect(scheduleAsyncTaskSpy)
-               .toHaveBeenCalledWith('Zone - HTMLButtonElement.addEventListener:click');
-           expect(startAsyncTaskSpy.calls.count()).toBe(2);
-           expect(finishAsyncTaskSpy.calls.count()).toBe(2);
-         });
-       }));
+    // Only run test when addEventListener is patched by zone.js
+    if (document && document.addEventListener &&
+        (document.addEventListener as any)[Zone.__symbol__('OriginalDelegate')]) {
+      it('button click', () => {
+        asyncStackTaggingZone.run(() => {
+          const button = document.createElement('button');
+          const clickEvent = document.createEvent('Event');
+          clickEvent.initEvent('click', true, true);
+          document.body.appendChild(button);
+          const handler = () => {};
+          button.addEventListener('click', handler);
+          button.dispatchEvent(clickEvent);
+          button.dispatchEvent(clickEvent);
+          button.removeEventListener('click', handler);
+          expect(scheduleAsyncTaskSpy)
+              .toHaveBeenCalledWith('Zone - HTMLButtonElement.addEventListener:click');
+          expect(startAsyncTaskSpy.calls.count()).toBe(2);
+          expect(finishAsyncTaskSpy.calls.count()).toBe(2);
+        });
+      });
+    }
   });
 });

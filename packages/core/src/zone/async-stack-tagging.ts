@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-interface Console {
+interface ConsoleWithAsyncTagging {
   createTask(name: string): ConsoleTask;
 }
 
@@ -14,30 +14,31 @@ interface ConsoleTask {
   run<T>(f: () => T): T;
 }
 
-interface Task {
+interface ZoneConsoleTask extends Task {
   consoleTask?: ConsoleTask;
 }
 
-class AsyncStackTaggingZoneSpec implements ZoneSpec {
-  createTask: Console['createTask'];
+export class AsyncStackTaggingZoneSpec implements ZoneSpec {
+  createTask: ConsoleWithAsyncTagging['createTask'];
 
-  constructor(namePrefix: string, consoleAsyncStackTaggingImpl: Console = console) {
+  constructor(
+      namePrefix: string, consoleAsyncStackTaggingImpl: ConsoleWithAsyncTagging = console as any) {
     this.name = 'asyncStackTagging for ' + namePrefix;
-    this.createTask = consoleAsyncStackTaggingImpl?.createTask ?? (() => {});
+    this.createTask = consoleAsyncStackTaggingImpl?.createTask ?? (() => null);
   }
 
   // ZoneSpec implementation below.
-
   name: string;
 
-  onScheduleTask(delegate: ZoneDelegate, _current: Zone, target: Zone, task: Task): Task {
+  onScheduleTask(delegate: ZoneDelegate, _current: Zone, target: Zone, task: ZoneConsoleTask):
+      Task {
     task.consoleTask = this.createTask(`Zone - ${task.source || task.type}`);
     return delegate.scheduleTask(target, task);
   }
 
   onInvokeTask(
-      delegate: ZoneDelegate, _currentZone: Zone, targetZone: Zone, task: Task, applyThis: any,
-      applyArgs?: any[]) {
+      delegate: ZoneDelegate, _currentZone: Zone, targetZone: Zone, task: ZoneConsoleTask,
+      applyThis: any, applyArgs?: any[]) {
     let ret;
     if (task.consoleTask) {
       ret = task.consoleTask.run(() => delegate.invokeTask(targetZone, task, applyThis, applyArgs));
@@ -47,7 +48,3 @@ class AsyncStackTaggingZoneSpec implements ZoneSpec {
     return ret;
   }
 }
-
-// Export the class so that new instances can be created with proper
-// constructor params.
-(Zone as any)['AsyncStackTaggingZoneSpec'] = AsyncStackTaggingZoneSpec;
