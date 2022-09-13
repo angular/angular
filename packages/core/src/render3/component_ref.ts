@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as AbstractComponentRef} from '../linker/component_factory';
-import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
-import {createElementRef, ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
-import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
+import {ComponentFactory as AbstractComponentFactory, ComponentRef as AbstractComponentRef} from '../linker/component_factory';
+import {ComponentFactoryResolver as AbstractComponentFactoryResolver} from '../linker/component_factory_resolver';
+import {createElementRef, ElementRef} from '../linker/element_ref';
+import {NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertIndexInRange} from '../util/assert';
@@ -29,12 +29,12 @@ import {diPublicInInjector, getOrCreateNodeInjectorForNode, NodeInjector} from '
 import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
 import {reportUnknownPropertyError} from './instructions/element_validation';
-import {addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, markDirtyIfOnPush, registerHostBindingOpCodes, renderView, setInputsForProperty} from './instructions/shared';
+import {addToViewTree, createLView, createTView, getOrCreateComponentTView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, markDirtyIfOnPush, registerHostBindingOpCodes, renderView, setInputsForProperty} from './instructions/shared';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {Renderer, RendererFactory} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
-import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, TVIEW, TViewType} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {createElementNode, writeDirectClass, writeDirectStyle} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
@@ -45,15 +45,15 @@ import {stringifyForError} from './util/stringify_utils';
 import {getTNode} from './util/view_utils';
 import {RootViewRef, ViewRef} from './view_ref';
 
-export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
+export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
    * @param ngModule The NgModuleRef to which all resolved factories are bound.
    */
-  constructor(private ngModule?: viewEngine_NgModuleRef<any>) {
+  constructor(private ngModule?: NgModuleRef<any>) {
     super();
   }
 
-  override resolveComponentFactory<T>(component: Type<T>): viewEngine_ComponentFactory<T> {
+  override resolveComponentFactory<T>(component: Type<T>): AbstractComponentFactory<T> {
     ngDevMode && assertComponentType(component);
     const componentDef = getComponentDef(component)!;
     return new ComponentFactory(componentDef, this.ngModule);
@@ -102,9 +102,9 @@ class ChainedInjector implements Injector {
 }
 
 /**
- * Render3 implementation of {@link viewEngine_ComponentFactory}.
+ * ComponentFactory interface implementation.
  */
-export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
+export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   override selector: string;
   override componentType: Type<any>;
   override ngContentSelectors: string[];
@@ -122,8 +122,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
    * @param componentDef The component definition.
    * @param ngModule The NgModuleRef to which the factory is bound.
    */
-  constructor(
-      private componentDef: ComponentDef<any>, private ngModule?: viewEngine_NgModuleRef<any>) {
+  constructor(private componentDef: ComponentDef<any>, private ngModule?: NgModuleRef<any>) {
     super();
     this.componentType = componentDef.type;
     this.selector = stringifyCSSSelectorList(componentDef.selectors);
@@ -134,7 +133,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
   override create(
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
-      environmentInjector?: viewEngine_NgModuleRef<any>|EnvironmentInjector|
+      environmentInjector?: NgModuleRef<any>|EnvironmentInjector|
       undefined): AbstractComponentRef<T> {
     environmentInjector = environmentInjector || this.ngModule;
 
@@ -173,13 +172,12 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
-    const rootContext = createRootContext();
 
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
     const rootLView = createLView(
-        null, rootTView, rootContext, rootFlags, null, null, rendererFactory, hostRenderer,
-        sanitizer, rootViewInjector, null);
+        null, rootTView, null, rootFlags, null, null, rendererFactory, hostRenderer, sanitizer,
+        rootViewInjector, null);
 
     // rootView is the parent when bootstrapping
     // TODO(misko): it looks like we are entering view here but we don't really need to as
@@ -230,8 +228,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // TODO: should LifecycleHooksFeature and other host features be generated by the compiler and
       // executed here?
       // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
-      component = createRootComponent(
-          componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
+      component =
+          createRootComponent(componentView, this.componentDef, rootLView, [LifecycleHooksFeature]);
       renderView(rootTView, rootLView, null);
     } finally {
       leaveView();
@@ -252,7 +250,7 @@ const componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryR
  *
  * @returns The ComponentFactoryResolver instance to use
  */
-export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryResolver {
+export function injectComponentFactoryResolver(): AbstractComponentFactoryResolver {
   return componentFactoryResolver;
 }
 
@@ -267,12 +265,11 @@ export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryRes
 export class ComponentRef<T> extends AbstractComponentRef<T> {
   override instance: T;
   override hostView: ViewRef<T>;
-  override changeDetectorRef: ViewEngine_ChangeDetectorRef;
+  override changeDetectorRef: ChangeDetectorRef;
   override componentType: Type<T>;
 
   constructor(
-      componentType: Type<T>, instance: T, public location: viewEngine_ElementRef,
-      private _rootLView: LView,
+      componentType: Type<T>, instance: T, public location: ElementRef, private _rootLView: LView,
       private _tNode: TElementNode|TContainerNode|TElementContainerNode) {
     super();
     this.instance = instance;
@@ -361,7 +358,7 @@ export function createRootComponentView(
 
   const viewRenderer = rendererFactory.createRenderer(rNode, def);
   const componentView = createLView(
-      rootView, getOrCreateTComponentView(def), null,
+      rootView, getOrCreateComponentTView(def), null,
       def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[index], tNode,
       rendererFactory, viewRenderer, sanitizer || null, null, null);
 
@@ -382,14 +379,15 @@ export function createRootComponentView(
  * renderComponent() and ViewContainerRef.createComponent().
  */
 export function createRootComponent<T>(
-    componentView: LView, componentDef: ComponentDef<T>, rootLView: LView, rootContext: RootContext,
+    componentView: LView, componentDef: ComponentDef<T>, rootLView: LView,
     hostFeatures: HostFeature[]|null): any {
   const tView = rootLView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
   const component = instantiateRootComponent(tView, rootLView, componentDef);
 
-  rootContext.components.push(component);
-  componentView[CONTEXT] = component;
+  // Root view only contains an instance of this component,
+  // so we use a reference to that component instance as a context.
+  componentView[CONTEXT] = rootLView[CONTEXT] = component;
 
   if (hostFeatures !== null) {
     for (const feature of hostFeatures) {
@@ -419,10 +417,6 @@ export function createRootComponent<T>(
     invokeHostBindingsInCreationMode(componentDef, component);
   }
   return component;
-}
-
-function createRootContext(): RootContext {
-  return {components: []};
 }
 
 /**
