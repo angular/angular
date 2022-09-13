@@ -29,4 +29,3 @@ import './jasmine-patch.spec';
 import './browser/messageport.spec';
 import './extra/cordova.spec';
 import './browser/queue-microtask.spec';
-import './zone-spec/async-tagging-console.spec';

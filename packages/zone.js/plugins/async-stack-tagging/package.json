@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/async-stack-tagging",
-  "main": "../../bundles/async-stack-tagging.umd.js",
-  "fesm2015": "../../fesm2015/async-stack-tagging.js",
-  "es2015": "../../fesm2015/async-stack-tagging.js",
-  "module": "../../fesm2015/async-stack-tagging.js"
-}
