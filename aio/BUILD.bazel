@@ -187,7 +187,7 @@ architect(
     name = "build-app",
     args = [
         "site:build:stable",
-        "--output-path=build",
+        "--output-path=build-app",
     ],
     chdir = "$(RULEDIR)",
     configuration_env_vars = ["NG_BUILD_CACHE"],
@@ -207,12 +207,12 @@ npm_package_bin(
     outs = ["404.html"],
     args = [
         "$(execpath src/404-body.html)",
-        "$(execpath :build)",
+        "$(execpath :build-app)",
         "$@",
     ],
     data = [
         "src/404-body.html",
-        ":build",
+        ":build-app",
     ],
     tool = "//aio/scripts:build-404-page",
 )
@@ -226,7 +226,7 @@ copy_to_directory(
         ":build-app",
     ],
     replace_prefixes = {
-        "build": "",
+        "build-app": "",
     },
 )
 
