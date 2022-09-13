@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Migration} from '@angular/cdk/schematics';
+import {Migration, getPropertyNameText} from '@angular/cdk/schematics';
 import {SchematicContext} from '@angular-devkit/schematics';
 import {ComponentMigrator} from '../index';
 import * as ts from 'typescript';
@@ -28,30 +28,63 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
       this._migrateModuleSpecifier(node.argument.literal);
     } else if (ts.isImportDeclaration(node)) {
       // Note: TypeScript enforces the `moduleSpecifier` to be a string literal in its syntax.
-      this._migrateModuleSpecifier(node.moduleSpecifier as ts.StringLiteral);
-    } else if (this._isComponentDecorator(node)) {
-      this._migrateTemplatesAndStyles(node);
+      this._migrateModuleSpecifier(node.moduleSpecifier as ts.StringLiteral, node.importClause);
+    } else if (
+      ts.isDecorator(node) &&
+      (this._isNgModuleDecorator(node) || this._isComponentDecorator(node))
+    ) {
+      this._migrateDecoratorProperties(node as ts.Decorator);
     }
   }
 
-  private _migrateTemplatesAndStyles(node: ts.Node): void {
-    if (node.getChildCount() > 0) {
-      if (node.kind === ts.SyntaxKind.PropertyAssignment) {
-        // The first child node will always be the identifier for a property
-        // assignment node
-        const identifier = node.getChildAt(0);
-        if (identifier.getText() === 'styles') {
-          this._migrateStyles(node);
-        } else if (this._hasPossibleTemplateMigrations && identifier.getText() === 'template') {
-          this._migrateTemplate(node);
+  private _migrateDecoratorProperties(node: ts.Decorator) {
+    if (!ts.isCallExpression(node.expression)) {
+      return;
+    }
+    const metadata = node.expression.arguments[0];
+
+    if (!ts.isObjectLiteralExpression(metadata)) {
+      return;
+    }
+
+    for (const prop of metadata.properties) {
+      if (prop.name) {
+        switch (getPropertyNameText(prop.name)) {
+          case 'imports':
+            this._migrateImportsAndExports(prop as ts.PropertyAssignment);
+            break;
+          case 'exports':
+            this._migrateImportsAndExports(prop as ts.PropertyAssignment);
+            break;
+          case 'styles':
+            this._migrateStyles(prop as ts.PropertyAssignment);
+            break;
+          case 'template':
+            if (this._hasPossibleTemplateMigrations) {
+              this._migrateTemplate(prop as ts.PropertyAssignment);
+            }
+            break;
         }
-      } else {
-        node.forEachChild(child => this._migrateTemplatesAndStyles(child));
       }
     }
   }
 
-  private _migrateStyles(node: ts.Node) {
+  private _migrateImportsAndExports(node: ts.PropertyAssignment) {
+    node.initializer.forEachChild(specifier => {
+      // Iterate through all activated migrators and check if the import can be migrated.
+      for (const migrator of this.upgradeData) {
+        const newSpecifier = migrator.runtime?.updateImportOrExportSpecifier(
+          specifier as ts.Identifier,
+        );
+        if (newSpecifier) {
+          this._printAndUpdateNode(specifier.getSourceFile(), specifier, newSpecifier);
+          break;
+        }
+      }
+    });
+  }
+
+  private _migrateStyles(node: ts.PropertyAssignment) {
     // Create styles migration if no styles have been migrated yet. Needs to be
     // additionally created because the migrations run in isolation.
     if (!this._stylesMigration) {
@@ -66,16 +99,12 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
       );
     }
 
-    node.forEachChild(childNode => {
-      if (childNode.kind === ts.SyntaxKind.ArrayLiteralExpression) {
-        childNode.forEachChild(stringLiteralNode => {
-          this._migratePropertyAssignment(stringLiteralNode, this._stylesMigration);
-        });
-      }
+    node.initializer.forEachChild(stringLiteralNode => {
+      this._migratePropertyAssignment(stringLiteralNode as ts.StringLiteral, this._stylesMigration);
     });
   }
 
-  private _migrateTemplate(node: ts.Node) {
+  private _migrateTemplate(node: ts.PropertyAssignment) {
     // Create template migration if no template has been migrated yet. Needs to
     // be additionally created because the migrations run in isolation.
     if (!this._templateMigration) {
@@ -98,62 +127,65 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
       }
     }
 
-    node.forEachChild(childNode => {
-      this._migratePropertyAssignment(childNode, this._templateMigration);
-    });
+    this._migratePropertyAssignment(node.initializer as ts.StringLiteral, this._templateMigration);
   }
 
   private _migratePropertyAssignment(
-    node: ts.Node,
+    node: ts.StringLiteralLike | ts.Identifier,
     migration: TemplateMigration | ThemingStylesMigration,
   ) {
-    if (
-      node.kind === ts.SyntaxKind.StringLiteral ||
-      node.kind === ts.SyntaxKind.NoSubstitutionTemplateLiteral
-    ) {
-      let nodeText = node.getText();
-      const trimmedNodeText = nodeText.trimStart().trimEnd();
-      // Remove quotation marks from string since not apart of the CSS or HTML
-      const nodeTextWithoutQuotes = trimmedNodeText.substring(1, trimmedNodeText.length - 1);
-      const migratedText = migration.migrate(nodeTextWithoutQuotes);
-      const migratedTextLines = migratedText.split('\n');
-      const isMultiline = migratedTextLines.length > 1;
+    let migratedText = migration.migrate(node.text);
+    let migratedTextLines = migratedText.split('\n');
 
-      // If migrated text is now multiline, update quotes to avoid compilation
-      // errors
-      if (isMultiline) {
-        nodeText = nodeText.replace(trimmedNodeText, '`' + nodeTextWithoutQuotes + '`');
-      }
+    // Update quotes based on if its multiline or not to avoid compilation errors
+    if (migratedTextLines.length > 1) {
+      // Add correct identation for new lines before replacing
+      migratedText = migratedTextLines
+        .map((line: string, index: number) => {
+          if (index !== 0 && line != '\n') {
+            const leadingWidth = node.getLeadingTriviaWidth();
+            if (leadingWidth > 0) {
+              line = ' '.repeat(leadingWidth - 1) + line;
+            }
+          }
+          return line;
+        })
+        .join('\n');
 
-      this._printAndUpdateNode(
-        node.getSourceFile(),
-        node,
-        ts.factory.createRegularExpressionLiteral(
-          nodeText.replace(
-            nodeTextWithoutQuotes,
-            migratedTextLines
-              .map((line: string, index: number) => {
-                // Only need to worry about indentation when adding new lines
-                if (isMultiline && index !== 0 && line != '\n') {
-                  const leadingWidth = node.getLeadingTriviaWidth();
-                  if (leadingWidth > 0) {
-                    line = ' '.repeat(leadingWidth - 1) + line;
-                  }
-                }
-                return line;
-              })
-              .join('\n'),
-          ),
-        ),
-      );
+      migratedText = '`' + migratedText + '`';
+    } else {
+      // Need to grab quotation because it is not included in node.text
+      const quotation = node.getText().trimStart()[0];
+      migratedText = quotation + migratedText + quotation;
     }
+
+    this._printAndUpdateNode(
+      node.getSourceFile(),
+      node,
+      ts.factory.createRegularExpressionLiteral(migratedText),
+    );
   }
 
-  private _migrateModuleSpecifier(specifierLiteral: ts.StringLiteralLike) {
+  private _migrateModuleSpecifier(
+    specifierLiteral: ts.StringLiteralLike,
+    importClause?: ts.ImportClause,
+  ) {
     const sourceFile = specifierLiteral.getSourceFile();
 
     // Iterate through all activated migrators and check if the import can be migrated.
     for (const migrator of this.upgradeData) {
+      if (importClause && importClause.namedBindings) {
+        const importSpecifiers = (importClause.namedBindings as ts.NamedImports).elements;
+        importSpecifiers.forEach(importSpecifer => {
+          const newImportSpecifier =
+            migrator.runtime?.updateImportSpecifierWithPossibleAlias(importSpecifer);
+
+          if (newImportSpecifier) {
+            this._printAndUpdateNode(sourceFile, importSpecifer, newImportSpecifier);
+          }
+        });
+      }
+
       const newModuleSpecifier = migrator.runtime?.updateModuleSpecifier(specifierLiteral) ?? null;
 
       if (newModuleSpecifier !== null) {
@@ -165,9 +197,24 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
     }
   }
 
-  /** Gets whether the specified node is a component decorator for a class */
-  private _isComponentDecorator(node: ts.Node): boolean {
-    return node.kind === ts.SyntaxKind.Decorator && node.getText().startsWith('@Component');
+  /** Gets whether the specified decorator node is for a NgModule declaration  */
+  private _isNgModuleDecorator(node: ts.Decorator): boolean {
+    const call = node.expression;
+    if (!ts.isCallExpression(call) || !ts.isIdentifier(call.expression)) {
+      return false;
+    }
+
+    return call.expression.text === 'NgModule';
+  }
+
+  /** Gets whether the specified decorator node is for a Component declaration */
+  private _isComponentDecorator(node: ts.Decorator): boolean {
+    const call = node.expression;
+    if (!ts.isCallExpression(call) || !ts.isIdentifier(call.expression)) {
+      return false;
+    }
+
+    return call.expression.text === 'Component';
   }
 
   /** Gets whether the specified node is an import expression. */

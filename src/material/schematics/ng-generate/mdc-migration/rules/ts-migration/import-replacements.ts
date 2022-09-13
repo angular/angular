@@ -8,76 +8,76 @@
 
 export const IMPORT_REPLACEMENTS: {[component: string]: {old: string; new: string}} = {
   'button': {
-    old: '@angular/material/button',
-    new: '@angular/material-experimental/mdc-button',
+    old: '@angular/material/legacy-button',
+    new: '@angular/material/button',
   },
   'card': {
-    old: '@angular/material/card',
-    new: '@angular/material-experimental/mdc-card',
+    old: '@angular/material/legacy-card',
+    new: '@angular/material/card',
   },
   'checkbox': {
     old: '@angular/material/legacy-checkbox',
     new: '@angular/material/checkbox',
   },
   'chips': {
-    old: '@angular/material/chips',
-    new: '@angular/material-experimental/mdc-chips',
+    old: '@angular/material/legacy-chips',
+    new: '@angular/material/chips',
   },
   'dialog': {
     old: '@angular/material/legacy-dialog',
     new: '@angular/material/dialog',
   },
   'autocomplete': {
-    old: '@angular/material/autocomplete',
-    new: '@angular/material-experimental/mdc-autocomplete',
+    old: '@angular/material/legacy-autocomplete',
+    new: '@angular/material/autocomplete',
   },
   'form-field': {
-    old: '@angular/material/form-field',
-    new: '@angular/material-experimental/mdc-form-field',
+    old: '@angular/material/legacy-form-field',
+    new: '@angular/material/form-field',
   },
   'input': {
-    old: '@angular/material/input',
-    new: '@angular/material-experimental/mdc-input',
+    old: '@angular/material/legacy-input',
+    new: '@angular/material/input',
   },
   'select': {
-    old: '@angular/material/select',
-    new: '@angular/material-experimental/mdc-select',
+    old: '@angular/material/legacy-select',
+    new: '@angular/material/select',
   },
   'core': {
-    old: '@angular/material/core',
+    old: '@angular/material/legacy-core',
     new: '@angular/material/core',
   },
   'list': {
-    old: '@angular/material/list',
-    new: '@angular/material-experimental/mdc-list',
+    old: '@angular/material/legacy-list',
+    new: '@angular/material/list',
   },
   'menu': {
-    old: '@angular/material/menu',
-    new: '@angular/material-experimental/mdc-menu',
+    old: '@angular/material/legacy-menu',
+    new: '@angular/material/menu',
   },
   'progress-bar': {
-    old: '@angular/material/progress-bar',
-    new: '@angular/material-experimental/mdc-progress-bar',
+    old: '@angular/material/legacy-progress-bar',
+    new: '@angular/material/progress-bar',
   },
   'progress-spinner': {
     old: '@angular/material/legacy-progress-spinner',
     new: '@angular/material/progress-spinner',
   },
   'radio': {
-    old: '@angular/material/radio',
-    new: '@angular/material-experimental/mdc-radio',
+    old: '@angular/material/legacy-radio',
+    new: '@angular/material/radio',
   },
   'sidenav': {
-    old: '@angular/material/sidenav',
-    new: '@angular/material-experimental/mdc-sidenav',
+    old: '@angular/material/legacy-sidenav',
+    new: '@angular/material-experimental/legacy-sidenav',
   },
   'slide-toggle': {
     old: '@angular/material/legacy-slide-toggle',
     new: '@angular/material/slide-toggle',
   },
   'slider': {
-    old: '@angular/material/slider',
-    new: '@angular/material-experimental/mdc-slider',
+    old: '@angular/material/legacy-slider',
+    new: '@angular/material/slider',
   },
   'snack-bar': {
     old: '@angular/material/legacy-snack-bar',
@@ -96,7 +96,7 @@ export const IMPORT_REPLACEMENTS: {[component: string]: {old: string; new: strin
     new: '@angular/material/paginator',
   },
   'tooltip': {
-    old: '@angular/material/tooltip',
-    new: '@angular/material-experimental/mdc-tooltip',
+    old: '@angular/material/legacy-tooltip',
+    new: '@angular/material/tooltip',
   },
 };

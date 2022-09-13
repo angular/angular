@@ -17,7 +17,7 @@ describe('button runtime code', () => {
 
   async function runMigrationTest(oldFileContent: string, newFileContent: string) {
     cliAppTree.overwrite(APP_MODULE_FILE, oldFileContent);
-    const tree = await migrateComponents(['button', 'card'], runner, cliAppTree);
+    const tree = await migrateComponents(['button', 'card', 'dialog'], runner, cliAppTree);
     expect(tree.readContent(APP_MODULE_FILE)).toBe(newFileContent);
   }
 
@@ -26,16 +26,35 @@ describe('button runtime code', () => {
       await runMigrationTest(
         `
         import {NgModule} from '@angular/core';
+        import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+
+        @NgModule({imports: [MatLegacyButtonModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
         import {MatButtonModule} from '@angular/material/button';
 
         @NgModule({imports: [MatButtonModule]})
         export class AppModule {}
       `,
+      );
+    });
+
+    it('should replace the old imports with the new ones', async () => {
+      await runMigrationTest(
         `
         import {NgModule} from '@angular/core';
-        import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+        import {MatLegacyDialogModule, MAT_LEGACY_DIALOG_DEFAULT_OPTIONS} from '@angular/material/legacy-dialog';
 
-        @NgModule({imports: [MatButtonModule]})
+        @NgModule({imports: [MatLegacyDialogModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
+        import {MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
+
+        @NgModule({imports: [MatDialogModule]})
         export class AppModule {}
       `,
       );
@@ -46,9 +65,34 @@ describe('button runtime code', () => {
         `
         import {NgModule} from '@angular/core';
         import {
+          MatLegacyButton,
+          MatLegacyButtonModule,
+        } from '@angular/material/legacy-button';
+
+        @NgModule({imports: [MatLegacyButtonModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
+        import {
           MatButton,
           MatButtonModule,
         } from '@angular/material/button';
+
+        @NgModule({imports: [MatButtonModule]})
+        export class AppModule {}
+      `,
+      );
+    });
+
+    it('should migrate multi-line imports with aliases', async () => {
+      await runMigrationTest(
+        `
+        import {NgModule} from '@angular/core';
+        import {
+          MatLegacyButton as MatButton,
+          MatLegacyButtonModule as MatButtonModule,
+        } from '@angular/material/legacy-button';
 
         @NgModule({imports: [MatButtonModule]})
         export class AppModule {}
@@ -58,7 +102,7 @@ describe('button runtime code', () => {
         import {
           MatButton,
           MatButtonModule,
-        } from '@angular/material-experimental/mdc-button';
+        } from '@angular/material/button';
 
         @NgModule({imports: [MatButtonModule]})
         export class AppModule {}
@@ -70,16 +114,37 @@ describe('button runtime code', () => {
       await runMigrationTest(
         `
         import {NgModule} from '@angular/core';
+        import {MatLegacyButton} from '@angular/material/legacy-button';
+        import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+
+        @NgModule({imports: [MatLegacyButtonModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
         import {MatButton} from '@angular/material/button';
         import {MatButtonModule} from '@angular/material/button';
 
         @NgModule({imports: [MatButtonModule]})
         export class AppModule {}
       `,
+      );
+    });
+
+    it('should migrate multiple statements with aliases', async () => {
+      await runMigrationTest(
         `
         import {NgModule} from '@angular/core';
-        import {MatButton} from '@angular/material-experimental/mdc-button';
-        import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+        import {MatLegacyButton as MatButton} from '@angular/material/legacy-button';
+        import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
+
+        @NgModule({imports: [MatButtonModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
+        import {MatButton} from '@angular/material/button';
+        import {MatButtonModule} from '@angular/material/button';
 
         @NgModule({imports: [MatButtonModule]})
         export class AppModule {}
@@ -91,18 +156,83 @@ describe('button runtime code', () => {
       await runMigrationTest(
         `
         import {NgModule} from '@angular/core';
+        import {MatLegacyButton /* comment */} from '@angular/material/legacy-button';
+        import {MatLegacyButtonModule} from '@angular/material/legacy-button'; // a comment
+
+        @NgModule({imports: [MatLegacyButtonModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
         import {MatButton /* comment */} from '@angular/material/button';
         import {MatButtonModule} from '@angular/material/button'; // a comment
 
         @NgModule({imports: [MatButtonModule]})
         export class AppModule {}
       `,
+      );
+    });
+
+    it('should also migrate re-exported modules', async () => {
+      await runMigrationTest(
         `
         import {NgModule} from '@angular/core';
-        import {MatButton /* comment */} from '@angular/material-experimental/mdc-button';
-        import {MatButtonModule} from '@angular/material-experimental/mdc-button'; // a comment
+        import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 
-        @NgModule({imports: [MatButtonModule]})
+        @NgModule({
+          imports: [MatLegacyButtonModule],
+          exports: [MatLegacyButtonModule],
+        })
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
+        import {MatButtonModule} from '@angular/material/button';
+
+        @NgModule({
+          imports: [MatButtonModule],
+          exports: [MatButtonModule],
+        })
+        export class AppModule {}
+      `,
+      );
+    });
+
+    it('should migrate module in standalone components', async () => {
+      await runMigrationTest(
+        `
+        @Component({
+          standalone: true,
+          selector: 'button-example',
+          imports: [MatLegacyButton, MatLegacyButtonModule]
+        })
+        class ButtonExample {}
+      `,
+        `
+        @Component({
+          standalone: true,
+          selector: 'button-example',
+          imports: [MatButton, MatButtonModule]
+        })
+        class ButtonExample {}
+      `,
+      );
+    });
+
+    it('should not migrate import for unmigrated component', async () => {
+      await runMigrationTest(
+        `
+        import {NgModule} from '@angular/core';
+        import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
+
+        @NgModule({imports: [MatLegacyRadioModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
+        import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
+
+        @NgModule({imports: [MatLegacyRadioModule]})
         export class AppModule {}
       `,
       );
@@ -226,16 +356,41 @@ describe('button runtime code', () => {
       `,
       );
     });
+
+    it('should migrate imports, template, and styles for a component', async () => {
+      await runMigrationTest(
+        `
+        @Component({
+          standalone: true,
+          selector: 'card-example',
+          imports: [MatLegacyCardModule],
+          template: '<mat-card>Learn More</mat-card>',
+          styles: ['.mat-card { padding-right: 4px; }'],
+        })
+        class CardExample {}
+      `,
+        `
+        @Component({
+          standalone: true,
+          selector: 'card-example',
+          imports: [MatCardModule],
+          template: '<mat-card appearance="outlined">Learn More</mat-card>',
+          styles: ['.mat-mdc-card { padding-right: 4px; }'],
+        })
+        class CardExample {}
+      `,
+      );
+    });
   });
 
   describe('import expressions', () => {
     it('should replace the old import with the new one', async () => {
       await runMigrationTest(
         `
-        const buttonModule = import('@angular/material/button');
+        const buttonModule = import('@angular/material/legacy-button');
       `,
         `
-        const buttonModule = import('@angular/material-experimental/mdc-button');
+        const buttonModule = import('@angular/material/button');
       `,
       );
     });
@@ -243,10 +398,10 @@ describe('button runtime code', () => {
     it('should replace type import expressions', async () => {
       await runMigrationTest(
         `
-        let buttonModule: typeof import("@angular/material/button");
+        let buttonModule: typeof import("@angular/material/legacy-button");
       `,
         `
-        let buttonModule: typeof import("@angular/material-experimental/mdc-button");
+        let buttonModule: typeof import("@angular/material/button");
       `,
       );
     });
