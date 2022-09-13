@@ -54,7 +54,7 @@
     "@types/node": "^16.11.35",
     "concurrently": "^7.0.0",
     "http-server": "^14.0.0",
-    "jasmine-core": "~4.3.0",
+    "jasmine-core": "~4.4.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-jasmine": "~5.1.0",
