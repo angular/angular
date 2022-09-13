@@ -1,8 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {MatLegacyTabGroupHarness} from '@angular/material/legacy-tabs/testing';
+import {MatTabGroupHarness} from '@angular/material/tabs/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {TabGroupHarnessExample} from './tab-group-harness-example';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -12,7 +12,7 @@ describe('TabGroupHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatLegacyTabsModule, NoopAnimationsModule],
+      imports: [MatTabsModule, NoopAnimationsModule],
       declarations: [TabGroupHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(TabGroupHarnessExample);
@@ -21,13 +21,13 @@ describe('TabGroupHarnessExample', () => {
   });
 
   it('should load harness for tab-group', async () => {
-    const tabGroups = await loader.getAllHarnesses(MatLegacyTabGroupHarness);
+    const tabGroups = await loader.getAllHarnesses(MatTabGroupHarness);
     expect(tabGroups.length).toBe(1);
   });
 
   it('should load harness for tab-group with selected tab label', async () => {
     const tabGroups = await loader.getAllHarnesses(
-      MatLegacyTabGroupHarness.with({
+      MatTabGroupHarness.with({
         selectedTabLabel: 'Profile',
       }),
     );
@@ -35,13 +35,13 @@ describe('TabGroupHarnessExample', () => {
   });
 
   it('should be able to get tabs of tab-group', async () => {
-    const tabGroup = await loader.getHarness(MatLegacyTabGroupHarness);
+    const tabGroup = await loader.getHarness(MatTabGroupHarness);
     const tabs = await tabGroup.getTabs();
     expect(tabs.length).toBe(3);
   });
 
   it('should be able to select tab from tab-group', async () => {
-    const tabGroup = await loader.getHarness(MatLegacyTabGroupHarness);
+    const tabGroup = await loader.getHarness(MatTabGroupHarness);
     expect(await (await tabGroup.getSelectedTab()).getLabel()).toBe('Profile');
     await tabGroup.selectTab({label: 'FAQ'});
     expect(await (await tabGroup.getSelectedTab()).getLabel()).toBe('FAQ');

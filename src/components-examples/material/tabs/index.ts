@@ -1,12 +1,12 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
+import {MatInputModule} from '@angular/material/input';
+import {MatTabsModule} from '@angular/material/tabs';
 import {TabGroupAlignExample} from './tab-group-align/tab-group-align-example';
 import {TabGroupAnimationsExample} from './tab-group-animations/tab-group-animations-example';
 import {TabGroupAsyncExample} from './tab-group-async/tab-group-async-example';
@@ -21,6 +21,9 @@ import {TabGroupPreserveContentExample} from './tab-group-preserve-content/tab-g
 import {TabGroupStretchedExample} from './tab-group-stretched/tab-group-stretched-example';
 import {TabGroupThemeExample} from './tab-group-theme/tab-group-theme-example';
 import {TabNavBarBasicExample} from './tab-nav-bar-basic/tab-nav-bar-basic-example';
+import {TabGroupPaginatedExample} from './tab-group-paginated/tab-group-paginated-example';
+import {TabGroupInvertedExample} from './tab-group-inverted/tab-group-inverted-example';
+import {TabGroupInkBarExample} from './tab-group-ink-bar/tab-group-ink-bar-example';
 
 export {
   TabGroupAlignExample,
@@ -37,6 +40,9 @@ export {
   TabGroupThemeExample,
   TabNavBarBasicExample,
   TabGroupPreserveContentExample,
+  TabGroupPaginatedExample,
+  TabGroupInvertedExample,
+  TabGroupInkBarExample,
 };
 
 const EXAMPLES = [
@@ -54,17 +60,20 @@ const EXAMPLES = [
   TabGroupThemeExample,
   TabNavBarBasicExample,
   TabGroupPreserveContentExample,
+  TabGroupPaginatedExample,
+  TabGroupInvertedExample,
+  TabGroupInkBarExample,
 ];
 
 @NgModule({
   imports: [
     CommonModule,
-    MatLegacyButtonModule,
+    MatButtonModule,
     MatButtonToggleModule,
-    MatLegacyCheckboxModule,
+    MatCheckboxModule,
     MatIconModule,
-    MatLegacyInputModule,
-    MatLegacyTabsModule,
+    MatInputModule,
+    MatTabsModule,
     ReactiveFormsModule,
   ],
   declarations: EXAMPLES,

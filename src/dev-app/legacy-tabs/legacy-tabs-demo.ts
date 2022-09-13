@@ -7,18 +7,18 @@
  */
 
 import {Component} from '@angular/core';
-import {MatTabsModule} from '@angular/material/tabs';
+import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
 import {CommonModule} from '@angular/common';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @Component({
-  selector: 'mdc-tabs-demo',
-  templateUrl: 'mdc-tabs-demo.html',
-  styleUrls: ['mdc-tabs-demo.css'],
+  selector: 'legacy-tabs-demo',
+  templateUrl: 'legacy-tabs-demo.html',
+  styleUrls: ['legacy-tabs-demo.css'],
   standalone: true,
-  imports: [MatTabsModule, CommonModule, MatButtonToggleModule],
+  imports: [MatLegacyTabsModule, CommonModule, MatButtonToggleModule],
 })
-export class MdcTabsDemo {
+export class LegacyTabsDemo {
   fitInkBarToContent = true;
   links = ['First', 'Second', 'Third'];
   lotsOfTabs = new Array(30).fill(0).map((_, index) => `Tab ${index}`);

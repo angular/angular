@@ -3,19 +3,19 @@ load("//tools:defaults.bzl", "ng_module", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "mdc-tabs",
+    name = "legacy-tabs",
     srcs = glob(["**/*.ts"]),
     assets = [
-        "mdc-tabs-demo.html",
-        ":mdc_tabs_demo_scss",
+        "legacy-tabs-demo.html",
+        ":legacy_tabs_demo_scss",
     ],
     deps = [
         "//src/material/button-toggle",
-        "//src/material/tabs",
+        "//src/material/legacy-tabs",
     ],
 )
 
 sass_binary(
-    name = "mdc_tabs_demo_scss",
-    src = "mdc-tabs-demo.scss",
+    name = "legacy_tabs_demo_scss",
+    src = "legacy-tabs-demo.scss",
 )

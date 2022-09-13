@@ -193,6 +193,7 @@
 /src/dev-app/legacy-radio/**                                @andrewseguin @devversion
 /src/dev-app/legacy-select/**                               @crisbeto
 /src/dev-app/legacy-snack-bar/**                            @andrewseguin
+/src/dev-app/legacy-tabs/**                                 @andrewseguin
 /src/dev-app/legacy-table/**                                @andrewseguin
 /src/dev-app/legacy-tooltip/**                              @crisbeto
 /src/dev-app/list/**                                        @andrewseguin @crisbeto @devversion
