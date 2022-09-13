@@ -5,10 +5,12 @@ package(default_visibility = ["//visibility:public"])
 ng_module(
     name = "slider",
     srcs = glob(["**/*.ts"]),
-    assets = ["slider-demo.html"],
+    assets = [
+        "slider-demo.html",
+    ],
     deps = [
-        "//src/material/legacy-slider",
-        "//src/material/legacy-tabs",
+        "//src/material/slider",
+        "//src/material/tabs",
         "@npm//@angular/forms",
     ],
 )

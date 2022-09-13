@@ -204,7 +204,7 @@
 /src/dev-app/mdc-progress-bar/**                            @crisbeto
 /src/dev-app/mdc-progress-spinner/**                        @mmalerba
 /src/dev-app/mdc-slide-toggle/**                            @crisbeto
-/src/dev-app/mdc-slider/**                                  @devversion
+/src/dev-app/legacy-slider/**                               @devversion
 /src/dev-app/mdc-snack-bar/**                               @andrewseguin
 /src/dev-app/mdc-tabs/**                                    @crisbeto
 /src/dev-app/menu/**                                        @crisbeto

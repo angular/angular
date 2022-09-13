@@ -214,8 +214,8 @@ export const DEV_APP_ROUTES: Routes = [
       import('./mdc-slide-toggle/mdc-slide-toggle-demo').then(m => m.MdcSlideToggleDemo),
   },
   {
-    path: 'mdc-slider',
-    loadComponent: () => import('./mdc-slider/mdc-slider-demo').then(m => m.MdcSliderDemo),
+    path: 'slider',
+    loadComponent: () => import('./slider/slider-demo').then(m => m.SliderDemo),
   },
   {
     path: 'legacy-table',
@@ -280,8 +280,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./slide-toggle/slide-toggle-demo').then(m => m.SlideToggleDemo),
   },
   {
-    path: 'slider',
-    loadComponent: () => import('./slider/slider-demo').then(m => m.SliderDemo),
+    path: 'legacy-slider',
+    loadComponent: () => import('./legacy-slider/legacy-slider-demo').then(m => m.LegacySliderDemo),
   },
   {
     path: 'legacy-snack-bar',

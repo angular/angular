@@ -8,17 +8,16 @@
 
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatSliderModule} from '@angular/material/slider';
-import {MatTabsModule} from '@angular/material/tabs';
+import {MatLegacySliderModule} from '@angular/material/legacy-slider';
+import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
 
 @Component({
-  selector: 'mdc-slider-demo',
-  templateUrl: 'mdc-slider-demo.html',
-  styles: ['.mat-mdc-slider { width: 300px; }'],
+  selector: 'legacy-slider-demo',
+  templateUrl: 'legacy-slider-demo.html',
   standalone: true,
-  imports: [FormsModule, MatSliderModule, MatTabsModule],
+  imports: [FormsModule, MatLegacySliderModule, MatLegacyTabsModule],
 })
-export class MdcSliderDemo {
+export class LegacySliderDemo {
   demo: number;
   val: number = 50;
   min: number = 0;

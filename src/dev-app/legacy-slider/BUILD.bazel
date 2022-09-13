@@ -3,14 +3,12 @@ load("//tools:defaults.bzl", "ng_module")
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "mdc-slider",
+    name = "legacy-slider",
     srcs = glob(["**/*.ts"]),
-    assets = [
-        "mdc-slider-demo.html",
-    ],
+    assets = ["legacy-slider-demo.html"],
     deps = [
-        "//src/material/slider",
-        "//src/material/tabs",
+        "//src/material/legacy-slider",
+        "//src/material/legacy-tabs",
         "@npm//@angular/forms",
     ],
 )
