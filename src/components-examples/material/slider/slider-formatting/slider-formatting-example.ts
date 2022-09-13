@@ -9,11 +9,11 @@ import {Component} from '@angular/core';
   styleUrls: ['slider-formatting-example.css'],
 })
 export class SliderFormattingExample {
-  formatLabel(value: number) {
+  formatLabel(value: number): string {
     if (value >= 1000) {
       return Math.round(value / 1000) + 'k';
     }
 
-    return value;
+    return `${value}`;
   }
 }

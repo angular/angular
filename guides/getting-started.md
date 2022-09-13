@@ -53,26 +53,26 @@ You're done! Angular Material is now configured to be used in your application.
 
 ### Display a component
 
-Let's display a slider component in your app and verify that everything works.
+Let's display a slide toggle component in your app and verify that everything works.
 
-You need to import the `MatSliderModule` that you want to display by adding the following lines to
+You need to import the `MatSlideToggleModule` that you want to display by adding the following lines to
 your `app.module.ts` file.
 
 ```ts
-import { MatSliderModule } from '@angular/material/slider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule ({
   imports: [
-    MatSliderModule,
+    MatSlideToggleModule,
   ]
 })
 class AppModule {}
 ```
 
-Add the `<mat-slider>` tag to the `app.component.html` like so:
+Add the `<mat-slide-toggle>` tag to the `app.component.html` like so:
 
 ```html
-<mat-slider min="1" max="100" step="1" value="50"></mat-slider>
+<mat-slide-toggle>Toggle me!</mat-slide-toggle>
 ```
 
 Run your local dev server:
@@ -83,7 +83,7 @@ ng serve
 
 Then point your browser to [http://localhost:4200](http://localhost:4200)
 
-You should see the Material slider component on the page.
+You should see the Material slide toggle component on the page.
 
 In addition to the installation schematic, Angular Material comes with
 [several other schematics](https://material.angular.io/guide/schematics) (like nav, table,

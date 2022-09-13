@@ -1,20 +1,22 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacySliderModule} from '@angular/material/legacy-slider';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatInputModule} from '@angular/material/input';
+import {MatSliderModule} from '@angular/material/slider';
 import {SliderConfigurableExample} from './slider-configurable/slider-configurable-example';
 import {SliderFormattingExample} from './slider-formatting/slider-formatting-example';
 import {SliderOverviewExample} from './slider-overview/slider-overview-example';
 import {SliderHarnessExample} from './slider-harness/slider-harness-example';
+import {SliderRangeExample} from './slider-range/slider-range-example';
 
 export {
   SliderConfigurableExample,
   SliderFormattingExample,
   SliderHarnessExample,
   SliderOverviewExample,
+  SliderRangeExample,
 };
 
 const EXAMPLES = [
@@ -22,16 +24,17 @@ const EXAMPLES = [
   SliderFormattingExample,
   SliderHarnessExample,
   SliderOverviewExample,
+  SliderRangeExample,
 ];
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    MatLegacyCardModule,
-    MatLegacyCheckboxModule,
-    MatLegacyInputModule,
-    MatLegacySliderModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatInputModule,
+    MatSliderModule,
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,

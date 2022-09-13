@@ -1,5 +1,6 @@
 .example-h2 {
-  margin: 0 8px 16px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .example-section {
@@ -12,21 +13,18 @@
 .example-margin {
   margin: 8px;
 }
+
 .example-width {
   max-width: 180px;
   width: 100%;
 }
 
-.mat-slider-horizontal {
+.mat-mdc-slider {
   max-width: 300px;
   width: 100%;
 }
 
-.mat-slider-vertical {
-  height: 300px;
-}
-
-.mat-card + .mat-card {
+.mat-mdc-card + .mat-mdc-card {
   margin-top: 8px;
 }
 
@@ -34,20 +32,11 @@
   margin: 0 8px;
 }
 
-.example-result-card .example-label-container.example-label-horizontal {
+.example-label-container {
   display: flex;
   justify-content: space-between;
-  margin: 0 0 12px 16px;
+  margin: 20px 10px 0;
   max-width: 284px;
-}
-
-.example-result-card .example-label-container.example-label-vertical {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 68px;
-  height: 48px;
 }
 
 .example-result-card .example-value-label {

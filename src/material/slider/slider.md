@@ -10,38 +10,33 @@ in increments of `1`. These values can be changed by setting the `min`, `max`, a
 respectively. The initial value is set to the minimum value unless otherwise specified.
 
 ```html
-<mat-slider min="1" max="5" step="0.5" value="1.5"></mat-slider>
+<mat-slider min="1" max="5" step="0.5" value="1.5">
+  <input matSliderThumb>
+</mat-slider>
 ```
 
-### Orientation
-
-By default sliders are horizontal with the minimum value on the left and the maximum value on the
-right. The `vertical` attribute can be added to a slider to make it vertical with the minimum value
-on bottom and the maximum value on top.
+### Selecting a range
+A `<mat-slider>` can be converted into a range slider by projecting both a `matStartThumb` and a
+`matEndThumb` into it. Each of the thumbs has an independent value, but they won't be allowed to
+overlap and they're still bound by the same `min` and `max` from the slider.
 
 ```html
-<mat-slider vertical></mat-slider>
+<mat-slider>
+  <input matSliderStartThumb>
+  <input matSliderEndThumb>
+</mat-slider>
 ```
 
-An `invert` attribute is also available which can be specified to flip the axis that the thumb moves
-along. An inverted horizontal slider will have the minimum value on the right and the maximum value
-on the left, while an inverted vertical slider will have the minimum value on top and the maximum
-value on bottom.
-
-```html
-<mat-slider invert></mat-slider>
-```
+<!-- example(slider-range) -->
 
 ### Thumb label
 By default, the exact selected value of a slider is not visible to the user. However, this value can
-be added to the thumb by adding the `thumbLabel` attribute.
-
-The [Material Design spec](https://material.io/design/components/sliders.html#discrete-slider) recommends using the
-`thumbLabel` attribute (along with `tickInterval="1"`) only for sliders that are used to display a
-discrete value (such as a 1-5 rating).
+be added to the thumb by adding the `discrete` attribute.
 
 ```html
-<mat-slider thumbLabel tickInterval="1"></mat-slider>
+<mat-slider discrete>
+  <input matSliderThumb>
+</mat-slider>
 ```
 
 ### Formatting the thumb label
@@ -53,28 +48,13 @@ displayed, you can do so using the `displayWith` input.
 
 ### Tick marks
 By default, sliders do not show tick marks along the thumb track. This can be enabled using the
-`tickInterval` attribute. The value of `tickInterval` should be a number representing the number
-of steps between ticks. For example a `tickInterval` of `3` with a `step` of `4` will draw
-tick marks at every `3` steps, which is the same as every `12` values.
+`showTickMarks` attribute.
 
 ```html
-<mat-slider step="4" tickInterval="3"></mat-slider>
+<mat-slider showTickMarks>
+  <input matSliderThumb>
+</mat-slider>
 ```
-
-The `tickInterval` can also be set to `auto` which will automatically choose the number of steps
-such that there is at least `30px` of space between ticks.
-
-```html
-<mat-slider tickInterval="auto"></mat-slider>
-```
-
-The slider will always show a tick at the beginning and end of the track. If the remaining space
-doesn't add up perfectly the last interval will be shortened or lengthened so that the tick can be
-shown at the end of the track.
-
-The [Material Design spec](https://material.io/design/components/sliders.html#discrete-slider) recommends using the
-`tickInterval` attribute (set to `1` along with the `thumbLabel` attribute) only for sliders that
-are used to display a discrete value (such as a 1-5 rating).
 
 
 ### Keyboard interaction
@@ -93,6 +73,5 @@ The slider has the following keyboard bindings:
 
 ### Accessibility
 
-`MatSlider` implements the ARIA `role="slider"` pattern, handling keyboard input and focus
-management. Always provide an accessible label for each slider via `aria-label` or
-`aria-labelledby`.
+`MatSlider` uses an internal `<input type="range">` to provide an accessible experience. The input
+receives focus and it can be labelled using `aria-label` or `aria-labelledby`.

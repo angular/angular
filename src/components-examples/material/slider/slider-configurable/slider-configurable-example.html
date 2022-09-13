@@ -22,54 +22,36 @@
     </section>
 
     <section class="example-section">
-      <mat-checkbox class="example-margin" [(ngModel)]="showTicks">Show ticks</mat-checkbox>
-      <mat-checkbox class="example-margin" [(ngModel)]="autoTicks" *ngIf="showTicks">
-        Auto ticks
-      </mat-checkbox>
-      <mat-form-field class="example-margin example-width" appearance="fill" *ngIf="showTicks && !autoTicks">
-        <mat-label>Tick interval</mat-label>
-        <input matInput type="number" [(ngModel)]="tickInterval">
-      </mat-form-field>
+      <mat-checkbox [(ngModel)]="showTicks">Show ticks</mat-checkbox>
     </section>
 
     <section class="example-section">
-      <mat-checkbox class="example-margin" [(ngModel)]="thumbLabel">Show thumb label</mat-checkbox>
+      <mat-checkbox [(ngModel)]="thumbLabel">Show thumb label</mat-checkbox>
     </section>
 
     <section class="example-section">
-      <mat-checkbox class="example-margin" [(ngModel)]="vertical">Vertical</mat-checkbox>
-      <mat-checkbox class="example-margin" [(ngModel)]="invert">Inverted</mat-checkbox>
+      <mat-checkbox [(ngModel)]="disabled">Disabled</mat-checkbox>
     </section>
-
-    <section class="example-section">
-      <mat-checkbox class="example-margin" [(ngModel)]="disabled">Disabled</mat-checkbox>
-    </section>
-
   </mat-card-content>
 </mat-card>
 
 <mat-card class="example-result-card">
   <mat-card-content>
     <h2>Result</h2>
-    <br>
-    <br>
 
-    <div class="example-label-container" [class]="vertical ? 'example-label-vertical' : 'example-label-horizontal'">
-      <label id="example-name-label" class="example-name-label">Max Value</label>
+    <div class="example-label-container">
+      <label id="example-name-label" class="example-name-label">Value</label>
       <label class="example-value-label">{{value}}</label>
     </div>
     <mat-slider
         class="example-margin"
         [disabled]="disabled"
-        [invert]="invert"
         [max]="max"
         [min]="min"
         [step]="step"
-        [thumbLabel]="thumbLabel"
-        [tickInterval]="getSliderTickInterval()"
-        [(ngModel)]="value"
-        [vertical]="vertical"
-        aria-labelledby="example-name-label">
+        [discrete]="thumbLabel"
+        [showTickMarks]="showTicks">
+      <input matSliderThumb [(ngModel)]="value">
     </mat-slider>
   </mat-card-content>
 </mat-card>

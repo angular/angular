@@ -1,8 +1,3 @@
-<mat-slider
-  thumbLabel
-  [displayWith]="formatLabel"
-  tickInterval="1000"
-  step="1000"
-  min="0"
-  max="100000"
-  aria-label="units"></mat-slider>
+<mat-slider min="0" max="100000" step="1000" showTickMarks discrete [displayWith]="formatLabel">
+  <input matSliderThumb>
+</mat-slider>
