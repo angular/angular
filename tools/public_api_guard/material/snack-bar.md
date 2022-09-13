@@ -66,7 +66,7 @@ export class MatSnackBar extends _MatSnackBarBase {
 // @public
 export class MatSnackBarAction {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSnackBarAction, "[matSnackBarAction]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSnackBarAction, "[matSnackBarAction]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarAction, never>;
 }
@@ -74,7 +74,7 @@ export class MatSnackBarAction {
 // @public
 export class MatSnackBarActions {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSnackBarActions, "[matSnackBarActions]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSnackBarActions, "[matSnackBarActions]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarActions, never>;
 }
@@ -122,7 +122,7 @@ export class MatSnackBarContainer extends _MatSnackBarContainerBase {
     protected _afterPortalAttached(): void;
     _label: ElementRef;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSnackBarContainer, "mat-snack-bar-container", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSnackBarContainer, "mat-snack-bar-container", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarContainer, never>;
 }
@@ -151,7 +151,7 @@ export abstract class _MatSnackBarContainerBase extends BasePortalOutlet impleme
     _role?: 'status' | 'alert';
     snackBarConfig: MatSnackBarConfig;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatSnackBarContainerBase, never, never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatSnackBarContainerBase, never, never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatSnackBarContainerBase, never>;
 }
@@ -167,7 +167,7 @@ export type MatSnackBarHorizontalPosition = 'start' | 'center' | 'end' | 'left' 
 // @public
 export class MatSnackBarLabel {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSnackBarLabel, "[matSnackBarLabel]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSnackBarLabel, "[matSnackBarLabel]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarLabel, never>;
 }
@@ -217,7 +217,7 @@ export class SimpleSnackBar implements TextOnlySnackBar {
     // (undocumented)
     snackBarRef: MatSnackBarRef<SimpleSnackBar>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<SimpleSnackBar, "simple-snack-bar", ["matSnackBar"], {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SimpleSnackBar, "simple-snack-bar", ["matSnackBar"], {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SimpleSnackBar, never>;
 }

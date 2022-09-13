@@ -39,7 +39,7 @@ export class LegacySimpleSnackBar implements LegacyTextOnlySnackBar {
     // (undocumented)
     snackBarRef: MatLegacySnackBarRef<LegacySimpleSnackBar>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<LegacySimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<LegacySimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<LegacySimpleSnackBar, never>;
 }
@@ -78,7 +78,7 @@ export class MatLegacySnackBarContainer extends _MatLegacySnackBarContainerBase 
     // (undocumented)
     protected _afterPortalAttached(): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacySnackBarContainer, "snack-bar-container", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacySnackBarContainer, "snack-bar-container", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySnackBarContainer, never>;
 }

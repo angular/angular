@@ -34,7 +34,7 @@ export class MatLegacyPaginator extends _MatLegacyPaginatorBase<MatLegacyPaginat
     constructor(intl: MatLegacyPaginatorIntl, changeDetectorRef: ChangeDetectorRef, defaults?: MatLegacyPaginatorDefaultOptions);
     _formFieldAppearance?: MatLegacyFormFieldAppearance;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; }, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyPaginator, [null, null, { optional: true; }]>;
 }

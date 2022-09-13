@@ -21,7 +21,7 @@ export class MatToolbar extends _MatToolbarBase implements CanColor, AfterViewIn
     ngAfterViewInit(): void;
     _toolbarRows: QueryList<MatToolbarRow>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatToolbar, "mat-toolbar", ["matToolbar"], { "color": "color"; }, {}, ["_toolbarRows"], ["*", "mat-toolbar-row"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatToolbar, "mat-toolbar", ["matToolbar"], { "color": "color"; }, {}, ["_toolbarRows"], ["*", "mat-toolbar-row"], false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatToolbar, never>;
 }
@@ -39,7 +39,7 @@ export class MatToolbarModule {
 // @public (undocumented)
 export class MatToolbarRow {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatToolbarRow, "mat-toolbar-row", ["matToolbarRow"], {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatToolbarRow, "mat-toolbar-row", ["matToolbarRow"], {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatToolbarRow, never>;
 }

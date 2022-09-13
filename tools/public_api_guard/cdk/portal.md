@@ -46,7 +46,7 @@ export abstract class BasePortalOutlet implements PortalOutlet {
 export class CdkPortal extends TemplatePortal {
     constructor(templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkPortal, "[cdkPortal]", ["cdkPortal"], {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkPortal, "[cdkPortal]", ["cdkPortal"], {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CdkPortal, never>;
 }
@@ -68,7 +68,7 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
     get portal(): Portal<any> | null;
     set portal(portal: Portal<any> | null | undefined | '');
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkPortalOutlet, "[cdkPortalOutlet]", ["cdkPortalOutlet"], { "portal": "cdkPortalOutlet"; }, { "attached": "attached"; }, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkPortalOutlet, "[cdkPortalOutlet]", ["cdkPortalOutlet"], { "portal": "cdkPortalOutlet"; }, { "attached": "attached"; }, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CdkPortalOutlet, never>;
 }
@@ -129,7 +129,7 @@ export type PortalHost = PortalOutlet;
 // @public @deprecated (undocumented)
 export class PortalHostDirective extends CdkPortalOutlet {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<PortalHostDirective, "[cdkPortalHost], [portalHost]", ["cdkPortalHost"], { "portal": "cdkPortalHost"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<PortalHostDirective, "[cdkPortalHost], [portalHost]", ["cdkPortalHost"], { "portal": "cdkPortalHost"; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PortalHostDirective, never>;
 }
@@ -180,7 +180,7 @@ export class TemplatePortal<C = any> extends Portal<EmbeddedViewRef<C>> {
 // @public @deprecated (undocumented)
 export class TemplatePortalDirective extends CdkPortal {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<TemplatePortalDirective, "[cdk-portal], [portal]", ["cdkPortal"], {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<TemplatePortalDirective, "[cdk-portal], [portal]", ["cdkPortal"], {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<TemplatePortalDirective, never>;
 }

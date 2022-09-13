@@ -95,7 +95,7 @@ export class MatBottomSheetContainer extends CdkDialogContainer implements OnDes
     // (undocumented)
     _onAnimationStart(event: AnimationEvent_2): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatBottomSheetContainer, "mat-bottom-sheet-container", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatBottomSheetContainer, "mat-bottom-sheet-container", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatBottomSheetContainer, [null, null, { optional: true; }, null, null, null, null, null, null, null]>;
 }

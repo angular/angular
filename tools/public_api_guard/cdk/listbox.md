@@ -78,7 +78,7 @@ export class CdkListbox<T = unknown> implements AfterContentInit, OnDestroy, Con
     readonly valueChange: Subject<ListboxValueChangeEvent<T>>;
     writeValue(value: readonly T[]): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkListbox<any>, "[cdkListbox]", ["cdkListbox"], { "id": "id"; "enabledTabIndex": "tabindex"; "value": "cdkListboxValue"; "multiple": "cdkListboxMultiple"; "disabled": "cdkListboxDisabled"; "useActiveDescendant": "cdkListboxUseActiveDescendant"; "orientation": "cdkListboxOrientation"; "compareWith": "cdkListboxCompareWith"; "navigationWrapDisabled": "cdkListboxNavigationWrapDisabled"; "navigateDisabledOptions": "cdkListboxNavigatesDisabledOptions"; }, { "valueChange": "cdkListboxValueChange"; }, ["options"], never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkListbox<any>, "[cdkListbox]", ["cdkListbox"], { "id": "id"; "enabledTabIndex": "tabindex"; "value": "cdkListboxValue"; "multiple": "cdkListboxMultiple"; "disabled": "cdkListboxDisabled"; "useActiveDescendant": "cdkListboxUseActiveDescendant"; "orientation": "cdkListboxOrientation"; "compareWith": "cdkListboxCompareWith"; "navigationWrapDisabled": "cdkListboxNavigationWrapDisabled"; "navigateDisabledOptions": "cdkListboxNavigatesDisabledOptions"; }, { "valueChange": "cdkListboxValueChange"; }, ["options"], never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CdkListbox<any>, never>;
 }
@@ -121,7 +121,7 @@ export class CdkOption<T = unknown> implements ListKeyManagerOption, Highlightab
     typeaheadLabel: string;
     value: T;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkOption<any>, "[cdkOption]", ["cdkOption"], { "id": "id"; "value": "cdkOption"; "typeaheadLabel": "cdkOptionTypeaheadLabel"; "disabled": "cdkOptionDisabled"; "enabledTabIndex": "tabindex"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkOption<any>, "[cdkOption]", ["cdkOption"], { "id": "id"; "value": "cdkOption"; "typeaheadLabel": "cdkOptionTypeaheadLabel"; "disabled": "cdkOptionDisabled"; "enabledTabIndex": "tabindex"; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CdkOption<any>, never>;
 }

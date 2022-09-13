@@ -50,7 +50,7 @@ export class MatLegacyMenu extends _MatMenuBase {
     // (undocumented)
     protected _elevationPrefix: string;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyMenu, "mat-menu", ["matMenu"], {}, {}, never, ["*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyMenu, "mat-menu", ["matMenu"], {}, {}, never, ["*"], false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyMenu, never>;
 }
@@ -60,7 +60,7 @@ export { matLegacyMenuAnimations }
 // @public @deprecated
 export class MatLegacyMenuContent extends _MatMenuContentBase {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyMenuContent, "ng-template[matMenuContent]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyMenuContent, "ng-template[matMenuContent]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyMenuContent, never>;
 }
@@ -70,7 +70,7 @@ export { MatLegacyMenuDefaultOptions }
 // @public @deprecated
 export class MatLegacyMenuItem extends MatMenuItem {
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; }, {}, never, ["*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; }, {}, never, ["*"], false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyMenuItem, never>;
 }
@@ -90,7 +90,7 @@ export { MatLegacyMenuPanel }
 // @public @deprecated
 export class MatLegacyMenuTrigger extends _MatMenuTriggerBase {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyMenuTrigger, "[mat-menu-trigger-for], [matMenuTriggerFor]", ["matMenuTrigger"], {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyMenuTrigger, "[mat-menu-trigger-for], [matMenuTriggerFor]", ["matMenuTrigger"], {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyMenuTrigger, never>;
 }

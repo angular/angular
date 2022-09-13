@@ -13,7 +13,7 @@ export class MatLegacyCard {
     // (undocumented)
     _animationMode?: string | undefined;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyCard, "mat-card", ["matCard"], {}, {}, never, ["*", "mat-card-footer"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyCard, "mat-card", ["matCard"], {}, {}, never, ["*", "mat-card-footer"], false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCard, [{ optional: true; }]>;
 }
@@ -22,7 +22,7 @@ export class MatLegacyCard {
 export class MatLegacyCardActions {
     align: 'start' | 'end';
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardActions, "mat-card-actions", ["matCardActions"], { "align": "align"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardActions, "mat-card-actions", ["matCardActions"], { "align": "align"; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardActions, never>;
 }
@@ -30,7 +30,7 @@ export class MatLegacyCardActions {
 // @public @deprecated
 export class MatLegacyCardAvatar {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardAvatar, "[mat-card-avatar], [matCardAvatar]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardAvatar, "[mat-card-avatar], [matCardAvatar]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardAvatar, never>;
 }
@@ -38,7 +38,7 @@ export class MatLegacyCardAvatar {
 // @public @deprecated
 export class MatLegacyCardContent {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardContent, "mat-card-content, [mat-card-content], [matCardContent]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardContent, "mat-card-content, [mat-card-content], [matCardContent]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardContent, never>;
 }
@@ -46,7 +46,7 @@ export class MatLegacyCardContent {
 // @public @deprecated
 export class MatLegacyCardFooter {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardFooter, "mat-card-footer", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardFooter, "mat-card-footer", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardFooter, never>;
 }
@@ -54,7 +54,7 @@ export class MatLegacyCardFooter {
 // @public @deprecated
 export class MatLegacyCardHeader {
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyCardHeader, "mat-card-header", never, {}, {}, never, ["[mat-card-avatar], [matCardAvatar]", "mat-card-title, mat-card-subtitle,\n      [mat-card-title], [mat-card-subtitle],\n      [matCardTitle], [matCardSubtitle]", "*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyCardHeader, "mat-card-header", never, {}, {}, never, ["[mat-card-avatar], [matCardAvatar]", "mat-card-title, mat-card-subtitle,\n      [mat-card-title], [mat-card-subtitle],\n      [matCardTitle], [matCardSubtitle]", "*"], false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardHeader, never>;
 }
@@ -62,7 +62,7 @@ export class MatLegacyCardHeader {
 // @public @deprecated
 export class MatLegacyCardImage {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardImage, "[mat-card-image], [matCardImage]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardImage, "[mat-card-image], [matCardImage]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardImage, never>;
 }
@@ -70,7 +70,7 @@ export class MatLegacyCardImage {
 // @public @deprecated
 export class MatLegacyCardLgImage {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardLgImage, "[mat-card-lg-image], [matCardImageLarge]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardLgImage, "[mat-card-lg-image], [matCardImageLarge]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardLgImage, never>;
 }
@@ -78,7 +78,7 @@ export class MatLegacyCardLgImage {
 // @public @deprecated
 export class MatLegacyCardMdImage {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardMdImage, "[mat-card-md-image], [matCardImageMedium]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardMdImage, "[mat-card-md-image], [matCardImageMedium]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardMdImage, never>;
 }
@@ -96,7 +96,7 @@ export class MatLegacyCardModule {
 // @public @deprecated
 export class MatLegacyCardSmImage {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardSmImage, "[mat-card-sm-image], [matCardImageSmall]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardSmImage, "[mat-card-sm-image], [matCardImageSmall]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardSmImage, never>;
 }
@@ -104,7 +104,7 @@ export class MatLegacyCardSmImage {
 // @public @deprecated
 export class MatLegacyCardSubtitle {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardSubtitle, "mat-card-subtitle, [mat-card-subtitle], [matCardSubtitle]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardSubtitle, "mat-card-subtitle, [mat-card-subtitle], [matCardSubtitle]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardSubtitle, never>;
 }
@@ -112,7 +112,7 @@ export class MatLegacyCardSubtitle {
 // @public @deprecated
 export class MatLegacyCardTitle {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardTitle, "mat-card-title, [mat-card-title], [matCardTitle]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardTitle, "mat-card-title, [mat-card-title], [matCardTitle]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardTitle, never>;
 }
@@ -120,7 +120,7 @@ export class MatLegacyCardTitle {
 // @public @deprecated
 export class MatLegacyCardTitleGroup {
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyCardTitleGroup, "mat-card-title-group", never, {}, {}, never, ["mat-card-title, mat-card-subtitle,\n      [mat-card-title], [mat-card-subtitle],\n      [matCardTitle], [matCardSubtitle]", "img", "*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyCardTitleGroup, "mat-card-title-group", never, {}, {}, never, ["mat-card-title, mat-card-subtitle,\n      [mat-card-title], [mat-card-subtitle],\n      [matCardTitle], [matCardSubtitle]", "img", "*"], false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardTitleGroup, never>;
 }
@@ -128,7 +128,7 @@ export class MatLegacyCardTitleGroup {
 // @public @deprecated
 export class MatLegacyCardXlImage {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardXlImage, "[mat-card-xl-image], [matCardImageXLarge]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyCardXlImage, "[mat-card-xl-image], [matCardImageXLarge]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCardXlImage, never>;
 }

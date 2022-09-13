@@ -53,7 +53,7 @@ export class LegacyTooltipComponent extends _TooltipComponentBase {
     // (undocumented)
     _tooltip: ElementRef<HTMLElement>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<LegacyTooltipComponent, "mat-tooltip-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<LegacyTooltipComponent, "mat-tooltip-component", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<LegacyTooltipComponent, [null, null, { optional: true; }]>;
 }
@@ -80,7 +80,7 @@ export class MatLegacyTooltip extends _MatTooltipBase<LegacyTooltipComponent> {
     // (undocumented)
     protected readonly _tooltipComponent: typeof LegacyTooltipComponent;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyTooltip, "[matTooltip]", ["matTooltip"], {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyTooltip, "[matTooltip]", ["matTooltip"], {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyTooltip, [null, null, null, null, null, null, null, null, null, { optional: true; }, { optional: true; }, null]>;
 }

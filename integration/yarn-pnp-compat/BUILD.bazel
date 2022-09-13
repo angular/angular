@@ -16,9 +16,6 @@ node_integration_test(
     srcs = glob(["**/*"]),
     commands = [
         "yarn install --no-immutable",
-        # TODO(devversion): Remove when https://github.com/angular/angular-cli/commit/5319428e14a7e364a58caa8ca936964cfc5503cf
-        # is available.
-        "mkdir node_modules",
         "yarn build",
     ],
     environment = {
