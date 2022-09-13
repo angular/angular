@@ -14,6 +14,9 @@
   // depending on the CSS order, with an affix selector joint with the input.
   .mat-mdc-form-field-input-control.mat-mdc-form-field-input-control {
     font: inherit;
+    letter-spacing: inherit;
+    text-decoration: inherit;
+    text-transform: inherit;
     border: none;
   }
 
