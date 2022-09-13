@@ -12,8 +12,9 @@ import localeDa from '@angular/common/locales/da';
 import localeDeAt from '@angular/common/locales/de-AT';
 import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
+import localeFa from '@angular/common/locales/fa';
 import localeFr from '@angular/common/locales/fr';
-import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
+import {Component, ɵLocaleDataIndex, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 {
@@ -25,6 +26,7 @@ import {TestBed} from '@angular/core/testing';
       ɵregisterLocaleData(localeAr);
       ɵregisterLocaleData(localeDeAt);
       ɵregisterLocaleData(localeDa);
+      ɵregisterLocaleData(localeFa);
     });
 
     afterAll(() => ɵunregisterLocaleData());
@@ -154,6 +156,12 @@ import {TestBed} from '@angular/core/testing';
     describe('CurrencyPipe', () => {
       let pipe: CurrencyPipe;
 
+      beforeAll(() => {
+        const _localeFa = localeFa as any;
+        _localeFa[ɵLocaleDataIndex.Currencies]['IRT'] = ['تومان', 'تومان', 0];
+        ɵregisterLocaleData(_localeFa);
+      });
+
       beforeEach(() => {
         pipe = new CurrencyPipe('en-US', 'USD');
       });
@@ -214,6 +222,11 @@ import {TestBed} from '@angular/core/testing';
           pipe.transform(123, 'USD', true);
           expect(warnSpy).toHaveBeenCalledWith(
               `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
+        });
+
+        it('should support overridden fraction digits', () => {
+          expect(pipe.transform(123, 'IRT')).toEqual('IRT123.00');
+          expect(pipe.transform(123, 'IRT', 'symbol', '', 'fa')).toEqual('‎تومان 123');
         });
       });
 
