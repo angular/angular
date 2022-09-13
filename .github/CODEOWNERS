@@ -202,7 +202,7 @@
 /src/dev-app/legacy-button/**                               @andrewseguin
 /src/dev-app/mdc-chips/**                                   @mmalerba
 /src/dev-app/legacy-progress-bar/**                         @crisbeto
-/src/dev-app/mdc-progress-spinner/**                        @mmalerba
+/src/dev-app/legacy-progress-spinner/**                     @mmalerba
 /src/dev-app/mdc-slide-toggle/**                            @crisbeto
 /src/dev-app/legacy-slider/**                               @devversion
 /src/dev-app/mdc-snack-bar/**                               @andrewseguin

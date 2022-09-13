@@ -8,11 +8,11 @@
 
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
-import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'progress-spinner-demo',
@@ -20,11 +20,11 @@ import {MatLegacyProgressSpinnerModule} from '@angular/material/legacy-progress-
   styleUrls: ['progress-spinner-demo.css'],
   standalone: true,
   imports: [
-    FormsModule,
-    MatLegacyButtonModule,
+    MatButtonModule,
+    MatCheckboxModule,
     MatButtonToggleModule,
-    MatLegacyCheckboxModule,
-    MatLegacyProgressSpinnerModule,
+    FormsModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class ProgressSpinnerDemo {
