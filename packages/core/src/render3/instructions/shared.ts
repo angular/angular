@@ -33,7 +33,7 @@ import {Renderer, RendererFactory} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -480,30 +480,6 @@ export function refreshView<T>(
   }
 }
 
-export function renderComponentOrTemplate<T>(
-    tView: TView, lView: LView, templateFn: ComponentTemplate<{}>|null, context: T) {
-  const rendererFactory = lView[RENDERER_FACTORY];
-
-  // Check no changes mode is a dev only mode used to verify that bindings have not changed
-  // since they were assigned. We do not want to invoke renderer factory functions in that mode
-  // to avoid any possible side-effects.
-  const checkNoChangesMode = !!ngDevMode && isInCheckNoChangesMode();
-  const creationModeIsActive = isCreationMode(lView);
-  try {
-    if (!checkNoChangesMode && !creationModeIsActive && rendererFactory.begin) {
-      rendererFactory.begin();
-    }
-    if (creationModeIsActive) {
-      renderView(tView, lView, context);
-    }
-    refreshView(tView, lView, templateFn, context);
-  } finally {
-    if (!checkNoChangesMode && !creationModeIsActive && rendererFactory.end) {
-      rendererFactory.end();
-    }
-  }
-}
-
 function executeTemplate<T>(
     tView: TView, lView: LView<T>, templateFn: ComponentTemplate<T>, rf: RenderFlags, context: T) {
   const prevSelectedIndex = getSelectedIndex();
@@ -586,7 +562,7 @@ export function saveResolvedLocalsInData(
  * @param def ComponentDef
  * @returns TView
  */
-export function getOrCreateTComponentView(def: ComponentDef<any>): TView {
+export function getOrCreateComponentTView(def: ComponentDef<any>): TView {
   const tView = def.tView;
 
   // Create a TView if there isn't one, or recreate it if the first create pass didn't
@@ -1420,7 +1396,7 @@ function configureViewWithDirective<T>(
 
 function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: ComponentDef<T>): void {
   const native = getNativeByTNode(hostTNode, lView) as RElement;
-  const tView = getOrCreateTComponentView(def);
+  const tView = getOrCreateComponentTView(def);
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
@@ -1791,62 +1767,33 @@ export function markViewDirty(lView: LView): LView|null {
   return null;
 }
 
-export function tickRootContext(rootContext: RootContext) {
-  for (let i = 0; i < rootContext.components.length; i++) {
-    const rootComponent = rootContext.components[i];
-    const lView = readPatchedLView(rootComponent);
-    // We might not have an `LView` if the component was destroyed.
-    if (lView !== null) {
-      const tView = lView[TVIEW];
-      renderComponentOrTemplate(tView, lView, tView.template, rootComponent);
-    }
-  }
-}
-
-export function detectChangesInternal<T>(tView: TView, lView: LView, context: T) {
+export function detectChangesInternal<T>(
+    tView: TView, lView: LView, context: T, notifyErrorHandler = true) {
   const rendererFactory = lView[RENDERER_FACTORY];
-  if (rendererFactory.begin) rendererFactory.begin();
+
+  // Check no changes mode is a dev only mode used to verify that bindings have not changed
+  // since they were assigned. We do not want to invoke renderer factory functions in that mode
+  // to avoid any possible side-effects.
+  const checkNoChangesMode = !!ngDevMode && isInCheckNoChangesMode();
+
+  if (!checkNoChangesMode && rendererFactory.begin) rendererFactory.begin();
   try {
     refreshView(tView, lView, tView.template, context);
   } catch (error) {
-    handleError(lView, error);
+    if (notifyErrorHandler) {
+      handleError(lView, error);
+    }
     throw error;
   } finally {
-    if (rendererFactory.end) rendererFactory.end();
+    if (!checkNoChangesMode && rendererFactory.end) rendererFactory.end();
   }
 }
 
-/**
- * Synchronously perform change detection on a root view and its components.
- *
- * @param lView The view which the change detection should be performed on.
- */
-export function detectChangesInRootView(lView: LView): void {
-  tickRootContext(lView[CONTEXT] as RootContext);
-}
-
-export function checkNoChangesInternal<T>(tView: TView, view: LView, context: T) {
+export function checkNoChangesInternal<T>(
+    tView: TView, lView: LView, context: T, notifyErrorHandler = true) {
   setIsInCheckNoChangesMode(true);
   try {
-    detectChangesInternal(tView, view, context);
-  } finally {
-    setIsInCheckNoChangesMode(false);
-  }
-}
-
-/**
- * Checks the change detector on a root view and its components, and throws if any changes are
- * detected.
- *
- * This is used in development mode to verify that running change detection doesn't
- * introduce other changes.
- *
- * @param lView The view which the change detection should be checked on.
- */
-export function checkNoChangesInRootView(lView: LView): void {
-  setIsInCheckNoChangesMode(true);
-  try {
-    detectChangesInRootView(lView);
+    detectChangesInternal(tView, lView, context, notifyErrorHandler);
   } finally {
     setIsInCheckNoChangesMode(false);
   }
@@ -1858,7 +1805,6 @@ function executeViewQueryFn<T>(
   setCurrentQueryIndex(0);
   viewQueryFn(flags, component);
 }
-
 
 ///////////////////////////////
 //// Bindings & interpolations

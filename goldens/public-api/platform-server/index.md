@@ -58,7 +58,7 @@ export function renderApplication<T>(rootComponent: Type<T>, options: {
 }): Promise<string>;
 
 // @public
-export function renderModule<T>(module: Type<T>, options: {
+export function renderModule<T>(moduleType: Type<T>, options: {
     document?: string | Document;
     url?: string;
     extraProviders?: StaticProvider[];

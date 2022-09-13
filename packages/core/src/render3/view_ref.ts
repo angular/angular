@@ -13,7 +13,7 @@ import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 
 import {collectNativeNodes} from './collect_native_nodes';
-import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
+import {checkNoChangesInternal, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
@@ -317,12 +317,18 @@ export class RootViewRef<T> extends ViewRef<T> {
   }
 
   override detectChanges(): void {
-    detectChangesInRootView(this._view);
+    const lView = this._view;
+    const tView = lView[TVIEW];
+    const context = lView[CONTEXT];
+    detectChangesInternal(tView, lView, context, false);
   }
 
   override checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInRootView(this._view);
+      const lView = this._view;
+      const tView = lView[TVIEW];
+      const context = lView[CONTEXT];
+      checkNoChangesInternal(tView, lView, context, false);
     }
   }
 
