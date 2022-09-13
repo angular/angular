@@ -160,9 +160,8 @@ export const DEV_APP_ROUTES: Routes = [
       import('./legacy-checkbox/legacy-checkbox-demo').then(m => m.LegacyCheckboxDemo),
   },
   {
-    path: 'mdc-progress-bar',
-    loadComponent: () =>
-      import('./mdc-progress-bar/mdc-progress-bar-demo').then(m => m.MdcProgressBarDemo),
+    path: 'progress-bar',
+    loadComponent: () => import('./progress-bar/progress-bar-demo').then(m => m.ProgressBarDemo),
   },
   {
     path: 'mdc-chips',
@@ -251,8 +250,9 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./portal/portal-demo').then(m => m.PortalDemo),
   },
   {
-    path: 'progress-bar',
-    loadComponent: () => import('./progress-bar/progress-bar-demo').then(m => m.ProgressBarDemo),
+    path: 'legacy-progress-bar',
+    loadComponent: () =>
+      import('./legacy-progress-bar/legacy-progress-bar-demo').then(m => m.LegacyProgressBarDemo),
   },
   {
     path: 'progress-spinner',

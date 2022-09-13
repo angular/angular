@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-progress-bar",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-progress-bar-demo.html",
+        ":legacy_progress_bar_demo_scss",
+    ],
+    deps = [
+        "//src/material/button-toggle",
+        "//src/material/legacy-button",
+        "//src/material/legacy-progress-bar",
+        "@npm//@angular/forms",
+    ],
+)
+
+sass_binary(
+    name = "legacy_progress_bar_demo_scss",
+    src = "legacy-progress-bar-demo.scss",
+)
