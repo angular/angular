@@ -3,8 +3,6 @@ package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "plugin_bundle_group",
     srcs = [
-        "//packages/zone.js/plugins:async-stack-tagging.min/package.json",
-        "//packages/zone.js/plugins:async-stack-tagging/package.json",
         "//packages/zone.js/plugins:async-test.min/package.json",
         "//packages/zone.js/plugins:async-test/package.json",
         "//packages/zone.js/plugins:fake-async-test.min/package.json",

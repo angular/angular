@@ -115,8 +115,6 @@ describe('Zone.js npm_package', () => {
     describe('plugins folder check', () => {
       it('should contain all plugin folders in ./plugins', () => {
         const expected = [
-          'async-stack-tagging',
-          'async-stack-tagging.min',
           'async-test',
           'async-test.min',
           'fake-async-test',
@@ -197,8 +195,6 @@ describe('Zone.js npm_package', () => {
     describe('bundles file list', () => {
       it('should contain all files', () => {
         const expected = [
-          'async-stack-tagging.js',
-          'async-stack-tagging.min.js',
           'async-test.js',
           'async-test.min.js',
           'fake-async-test.js',
@@ -293,8 +289,6 @@ describe('Zone.js npm_package', () => {
       it('should contain all original folders in /dist', () => {
         const list = shx.ls('./dist').stdout.split('\n').sort().slice(1);
         const expected = [
-          'async-stack-tagging.js',
-          'async-stack-tagging.min.js',
           'async-test.js',
           'async-test.min.js',
           'fake-async-test.js',

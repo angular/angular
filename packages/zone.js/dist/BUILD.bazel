@@ -45,8 +45,6 @@ js_library(
 filegroup(
     name = "dist_bundle_group",
     srcs = [
-        ":async-stack-tagging.js",
-        ":async-stack-tagging.min.js",
         ":async-test.js",
         ":async-test.min.js",
         ":fake-async-test.js",
