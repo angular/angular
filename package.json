@@ -207,7 +207,7 @@
     "minimist": "^1.2.0",
     "multimatch": "^6.0.0",
     "prettier": "^2.5.1",
-    "sauce-connect": "https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz",
+    "sauce-connect": "https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz",
     "semver": "^7.3.5",
     "send": "^0.18.0",
     "ts-node": "^10.8.1",
