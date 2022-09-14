@@ -1,5 +1,5 @@
 load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
-load("//aio/tools:defaults.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "nodejs_binary")
 
 DEPLOY_TO_FIREBASE_SOURCES = glob(
     ["**/*.mjs"],
