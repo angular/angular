@@ -4993,14 +4993,13 @@ chainsaw@~0.1.0:
   dependencies:
     traverse ">=0.3.0 <0.4"
 
-chalk@2.x, chalk@^2.0.0, chalk@^2.3.0:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
-  integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
+chalk@4.x, chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1, chalk@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
+  integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
   dependencies:
-    ansi-styles "^3.2.1"
-    escape-string-regexp "^1.0.5"
-    supports-color "^5.3.0"
+    ansi-styles "^4.1.0"
+    supports-color "^7.1.0"
 
 chalk@^1.1.1, chalk@^1.1.3:
   version "1.1.3"
@@ -5013,18 +5012,19 @@ chalk@^1.1.1, chalk@^1.1.3:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
+chalk@^2.0.0, chalk@^2.3.0:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
+  integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
+  dependencies:
+    ansi-styles "^3.2.1"
+    escape-string-regexp "^1.0.5"
+    supports-color "^5.3.0"
+
 chalk@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-3.0.0.tgz#3f73c2bf526591f574cc492c51e2456349f844e4"
   integrity sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==
-  dependencies:
-    ansi-styles "^4.1.0"
-    supports-color "^7.1.0"
-
-chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1, chalk@^4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
-  integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
@@ -8718,40 +8718,40 @@ google-auth-library@^8.0.2:
     jws "^4.0.0"
     lru-cache "^6.0.0"
 
-google-closure-compiler-java@^20220719.0.0:
-  version "20220719.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20220719.0.0.tgz#a6dc7c7a7e58670d17467c64a77b2fd94418e38e"
-  integrity sha512-tjWdQSkFqxaFCgzUBaiJj2CxrWUYV0Ij2txp9Um+GyvrzMeX9rqHSUeW4I9cGpOrXkamvWCyAig4Yi0NZXApdg==
+google-closure-compiler-java@^20220905.0.0:
+  version "20220905.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20220905.0.0.tgz#53d4b081c63fac09b6589729f5f359c8ec3ce27e"
+  integrity sha512-wxGxNla/0UDS1Lm0cRxEy85KhVRd0vNlsTclnIJ9f1gRWzvvTsJ4lwz+PdT60R6y2hKAOBvydIJHh+B8XJastA==
 
-google-closure-compiler-linux@^20220719.0.0:
-  version "20220719.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-linux/-/google-closure-compiler-linux-20220719.0.0.tgz#85ebdf3da6aaeee094295d6fc2be23324cf386c9"
-  integrity sha512-Em8QEAH7RC8T41QgTZC2keO0gsNdQgburXuXoF6gv2ySD/kJvNqrlZCCqLZMZUF6iuCpu3PgnMahdd3IrLpprA==
+google-closure-compiler-linux@^20220905.0.0:
+  version "20220905.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-linux/-/google-closure-compiler-linux-20220905.0.0.tgz#4cefd19938b522c1ac9b8254a44ecfffcb3354d8"
+  integrity sha512-kH09S66sz9+6wZmYM22VX8vG8KhCKJwFwXCfHx/ZOU6DBEzni6KfWrP+87CzTmZFEivclBhWAndm5HgNhSOEXQ==
 
-google-closure-compiler-osx@^20220719.0.0:
-  version "20220719.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-osx/-/google-closure-compiler-osx-20220719.0.0.tgz#e97246adffc109a64bd79bcfdf964c78664c66da"
-  integrity sha512-NwOLgq0ftq0kY1jum6vrafwUMQrCJEpJu6wv5fW/TnYUprPJb1J0T7c4Su8wSm9rdvpqkkqWWMGpfb9RJBuM0g==
+google-closure-compiler-osx@^20220905.0.0:
+  version "20220905.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-osx/-/google-closure-compiler-osx-20220905.0.0.tgz#0e685fb886db298af88b96ba683a04601f8c168b"
+  integrity sha512-4uo2GAz77gI8nDt4OA8VUYh/FNdjmTLOIRDazl7si+BOjgp9bC6C3E/88o+YHETsVtrPmZk57/W7vH0lftyTAw==
 
-google-closure-compiler-windows@^20220719.0.0:
-  version "20220719.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-windows/-/google-closure-compiler-windows-20220719.0.0.tgz#1177d2d27515d7d0867cdc4e258b32b499a6c005"
-  integrity sha512-Qi88lkU7a45SzCwdd9CV1D6paiiF7cEpBefkJIaNKi9MBfOZueHZH7Y8/56rdMhJLRjv5VMCGoJY4xH6FcXkvg==
+google-closure-compiler-windows@^20220905.0.0:
+  version "20220905.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-windows/-/google-closure-compiler-windows-20220905.0.0.tgz#89b8767c4b6d95b4e8d13cc01bc6e4acdc5700dd"
+  integrity sha512-TZKHu6RHnrmgV90Gyen8+TGc0vgjgds80ErR+al5CqmfP9p+AskBbOe5CWZJht0bANrUhaeBMCrbs+7loFv06Q==
 
-google-closure-compiler@20220719.0.0:
-  version "20220719.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20220719.0.0.tgz#234a53e0a09ea04ae04df6bab877e9c833afbd8f"
-  integrity sha512-0KTxUoX8WBZGeprvZfzp+czdi6wJ5wfJnG4RsIMEPFLR67fW4f+ghh04WSBLBt8kgT64NxaZGESjq23v0dbYNg==
+google-closure-compiler@20220905.0.0:
+  version "20220905.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20220905.0.0.tgz#3e31cc164cea63789c04fca67f89661efec749de"
+  integrity sha512-idZavy2vn91HCmqEepjmLFjfOdYoRsh9PggUbazUpjAOrBQz0HOm3WjOICMiywre+EnY1QGss0srEBtFtukM6w==
   dependencies:
-    chalk "2.x"
-    google-closure-compiler-java "^20220719.0.0"
+    chalk "4.x"
+    google-closure-compiler-java "^20220905.0.0"
     minimist "1.x"
     vinyl "2.x"
     vinyl-sourcemaps-apply "^0.2.0"
   optionalDependencies:
-    google-closure-compiler-linux "^20220719.0.0"
-    google-closure-compiler-osx "^20220719.0.0"
-    google-closure-compiler-windows "^20220719.0.0"
+    google-closure-compiler-linux "^20220905.0.0"
+    google-closure-compiler-osx "^20220905.0.0"
+    google-closure-compiler-windows "^20220905.0.0"
 
 google-gax@^3.0.1:
   version "3.1.3"
