@@ -1,5 +1,6 @@
 load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 load("//tools:defaults.bzl", "nodejs_binary")
+load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 
 DEPLOY_TO_FIREBASE_SOURCES = glob(
     ["**/*.mjs"],
@@ -20,5 +21,8 @@ jasmine_node_test(
     name = "test",
     srcs = glob(["**/*.spec.mjs"]),
     data = DEPLOY_TO_FIREBASE_SOURCES,
+    # Tests make remote calls to git
+    exec_properties = ENABLE_NETWORK,
+    tags = ["requires-network"],
     deps = DEPLOY_TO_FIREBASE_DEPS,
 )
