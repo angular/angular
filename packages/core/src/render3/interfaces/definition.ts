@@ -211,8 +211,11 @@ export interface DirectiveDef<T> {
    * Patched onto the definition by the `HostDirectivesFeature`.
    */
   applyHostDirectives:
-      ((tView: TView, viewData: LView, tNode: TElementNode|TContainerNode|TElementContainerNode,
-        matches: any[]) => void)|null;
+      ((matches: DirectiveDef<unknown>[], def: DirectiveDef<unknown>, tView: TView, viewData: LView,
+        tNode: TElementNode|TContainerNode|TElementContainerNode) => void)|null;
+
+  /** Additional directives to be applied whenever the directive has been matched. */
+  hostDirectives: HostDirectiveDef[]|null;
 
   setInput:
       (<U extends T>(
@@ -401,6 +404,18 @@ export interface DirectiveDefFeature {
    * every bundle.
    */
   ngInherit?: true;
+}
+
+/** Runtime information used to configure a host directive. */
+export interface HostDirectiveDef<T = unknown> {
+  /** Class representing the host directive. */
+  directive: Type<T>;
+
+  /** Directive inputs that have been exposed. */
+  inputs: {[publicName: string]: string};
+
+  /** Directive outputs that have been exposed. */
+  outputs: {[publicName: string]: string};
 }
 
 export interface ComponentDefFeature {
