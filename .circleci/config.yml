@@ -459,9 +459,8 @@ jobs:
       # after a delay. We do this as the CircleCI API does not refresh immediately when a job
       # completes/starts, and this will improve stability of the queue step. See source:
       # https://github.com/eddiewebb/circleci-queue/commit/5d42add5bbcff5e8ac7fe189448a61fea98b0839.
-      # TODO(devversion): re-enable once https://github.com/eddiewebb/circleci-queue/issues/79 is resolved.
-      # - queue/until_front_of_line:
-      #    confidence: '2'
+      - queue/until_front_of_line:
+          confidence: '2'
 
       - run: ./scripts/circleci/publish-snapshots.sh
       - *slack_notify_on_failure
