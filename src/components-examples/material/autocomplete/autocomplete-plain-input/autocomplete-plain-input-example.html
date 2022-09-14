@@ -2,7 +2,8 @@
   <input type="text"
          placeholder="Search for a street"
          [formControl]="control"
-         [matAutocomplete]="auto">
+         [matAutocomplete]="auto"
+         class="example-input">
   <mat-autocomplete #auto="matAutocomplete">
     <mat-option *ngFor="let street of filteredStreets | async" [value]="street">
       {{street}}

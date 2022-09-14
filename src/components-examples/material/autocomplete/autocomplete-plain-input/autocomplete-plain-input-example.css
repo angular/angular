@@ -7,3 +7,8 @@
 .example-full-width {
   width: 100%;
 }
+
+.example-input {
+  max-width: 100%;
+  width: 300px;
+}
