@@ -57,9 +57,13 @@ $scale: 0.75 !default;
   display: inline-flex;
   align-items: center;
 
-  // When used in a box appearance form-field the arrow should be shifted up 40%.
+  // When used in a fill appearance with a label, form-field the arrow should be shifted up 8px.
   .mat-form-field-appearance-fill & {
-    transform: translateY(-40%);
+    transform: translateY(-8px);
+  }
+
+  .mat-form-field-appearance-fill .mdc-text-field--no-label & {
+    transform: none;
   }
 }
 

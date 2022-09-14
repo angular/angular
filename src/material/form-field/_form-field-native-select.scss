@@ -46,6 +46,8 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
       border-top: $mat-form-field-select-arrow-height solid;
       position: absolute;
       right: 0;
+      top: 50%;
+      margin-top: -#{math.div($mat-form-field-select-arrow-height, 2)};
 
       // Make the arrow non-clickable so the user can click on the form control under it.
       pointer-events: none;
