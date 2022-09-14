@@ -1,3 +1,39 @@
+<a name="15.0.0-next.1"></a>
+# 15.0.0-next.1 "ferrofluid-flounder" (2022-09-14)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c294a3a5e3](https://github.com/angular/components/commit/c294a3a5e3268f82597870c51444cc84793aec3e) | fix | **a11y:** account for Windows 11 high contrast themes in detector ([#25624](https://github.com/angular/components/pull/25624)) |
+| [1b0265c4a5](https://github.com/angular/components/commit/1b0265c4a52c329abbd5484ceafa037c918134e3) | fix | **listbox:** error with multiple preselected values ([#25621](https://github.com/angular/components/pull/25621)) |
+| [eae2620e4b](https://github.com/angular/components/commit/eae2620e4bd84f62265dcd8708f880d5fc5c7651) | fix | **menu:** don't prevent default enter and space actions ([#25591](https://github.com/angular/components/pull/25591)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [518b2b63aa](https://github.com/angular/components/commit/518b2b63aa7fefbfc660dabb55ca663dbeaf0b12) | fix | **button:** remove dependency on legacy button ([#25579](https://github.com/angular/components/pull/25579)) |
+| [1ade334525](https://github.com/angular/components/commit/1ade33452569dc41a06373d989575e3dd6f0f041) | fix | **card:** remove card deps on legacy-card |
+| [7021954dea](https://github.com/angular/components/commit/7021954dea6992c7bc7b7cc9c941e2f6ef0a4d88) | fix | **core:** fix swapped units in define-typography functions ([#25615](https://github.com/angular/components/pull/25615)) |
+| [bf9f2ec1d5](https://github.com/angular/components/commit/bf9f2ec1d54725f6761c30c9d30e16607c6d7f64) | fix | **core:** warn when legacy theme is created ([#25625](https://github.com/angular/components/pull/25625)) |
+| [814ba1b668](https://github.com/angular/components/commit/814ba1b6685b45aa7361f6fb7d7dd5928d26bdbc) | fix | **datepicker:** restore focus after closing animation ([#25567](https://github.com/angular/components/pull/25567)) |
+| [5e34770a41](https://github.com/angular/components/commit/5e34770a41d522fd9c5c2b63c0a5e23d71e64b21) | fix | **dialog:** remove dialog deps on legacy-dialog |
+| [a0d74daf94](https://github.com/angular/components/commit/a0d74daf943e85bda968ba86de5d709a6dd0194f) | fix | **form-field:** fix typography for native input element ([#25616](https://github.com/angular/components/pull/25616)) |
+| [73550546e4](https://github.com/angular/components/commit/73550546e4bf9bea4cbae4b5799d728297705648) | fix | **menu:** update submenu indication when menu is assigned ([#25608](https://github.com/angular/components/pull/25608)) |
+| [07421d02fe](https://github.com/angular/components/commit/07421d02fe59a23aa10905343b17d86a47814514) | fix | **paginator:** remove deps on legacy components |
+| [9331866b11](https://github.com/angular/components/commit/9331866b11693a1b62d8c47dffd1b253c996de3b) | fix | **progress-bar:** add coercion for number inputs ([#25585](https://github.com/angular/components/pull/25585)) |
+| [c5c8e64f10](https://github.com/angular/components/commit/c5c8e64f109bc38a40a736f96f40bf5742430764) | fix | **progress-bar:** remove dependency on legacy progress bar ([#25581](https://github.com/angular/components/pull/25581)) |
+| [f9583184d6](https://github.com/angular/components/commit/f9583184d6ca487970ee70a1c05cec6e36f3e18c) | fix | **progress-spinner:** remove dependency on legacy progress spinner ([#25583](https://github.com/angular/components/pull/25583)) |
+| [9be94a0bfb](https://github.com/angular/components/commit/9be94a0bfb1d91ba1d2b43fe5f2e10394c0d3ab2) | fix | **select:** fix arrow alignment ([#25626](https://github.com/angular/components/pull/25626)) |
+| [a3e6b58482](https://github.com/angular/components/commit/a3e6b58482e36bf078b4d61a7709a03d6581339c) | fix | **slide-toggle:** remove slide-toggle deps on legacy-slide-toggle |
+| [e8e91538f4](https://github.com/angular/components/commit/e8e91538f46b197fea5f6f66cf5883f7b24b84aa) | fix | **snack-bar:** fix legacy reference in docs |
+| [4b1ecdf71a](https://github.com/angular/components/commit/4b1ecdf71a88159a3c4c33fd5662adcdc23f7b1e) | fix | **sort:** remove deps on legacy components |
+| [b98ae5ac07](https://github.com/angular/components/commit/b98ae5ac07e421e868389af5f02fa92d2aa9cccf) | fix | **stepper:** remove deps on legacy components |
+| [b70c18bcfe](https://github.com/angular/components/commit/b70c18bcfe30f4721d6e8f310c9d7b8ff93f0126) | fix | **table:** fix legacy reference in docs |
+| [c586fe6fc5](https://github.com/angular/components/commit/c586fe6fc5f5de62b94fe6134ea12dbbb533b394) | fix | **tabs:** remove tabs deps on legacy-tabs |
+| [04ea76cd01](https://github.com/angular/components/commit/04ea76cd01036299fbd724217e05db45ec9ff048) | fix | **tooltip:** remove tooltip deps on legacy-tooltip |
+## Special Thanks
+Andrew Seguin, ConnorLin, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.2"></a>
 # 14.2.2 "cytoplasm-salmon" (2022-09-14)
 ### cdk
