@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
 
-package(default_visibility = ["//aio:__pkg__"])
+package(default_visibility = ["//aio:__subpackages__"])
 
 # Generate ngsw-config
 npm_package_bin(
