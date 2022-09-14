@@ -2,13 +2,12 @@
   display: flex;
   flex-flow: row wrap;
 
-  .mat-mdc-card {
+  .mat-card {
     width: 400px;
     margin: 24px;
-    padding: 16px;
   }
 
-  .mat-mdc-form-field {
+  .mat-form-field {
     margin-top: 16px;
     min-width: 200px;
     max-width: 100%;

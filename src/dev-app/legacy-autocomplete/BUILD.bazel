@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-autocomplete",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-autocomplete-demo.html",
+        ":legacy_autocomplete_demo_scss",
+    ],
+    deps = [
+        "//src/material/legacy-autocomplete",
+        "//src/material/legacy-button",
+        "//src/material/legacy-card",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
+        "@npm//@angular/forms",
+    ],
+)
+
+sass_binary(
+    name = "legacy_autocomplete_demo_scss",
+    src = "legacy-autocomplete-demo.scss",
+)

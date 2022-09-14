@@ -198,7 +198,7 @@
 /src/dev-app/legacy-tooltip/**                              @crisbeto
 /src/dev-app/list/**                                        @andrewseguin @crisbeto @devversion
 /src/dev-app/live-announcer/**                              @jelbourn
-/src/dev-app/mdc-autocomplete/**                            @crisbeto
+/src/dev-app/legacy-autocomplete/**                         @crisbeto
 /src/dev-app/mdc-button/**                                  @andrewseguin
 /src/dev-app/legacy-button/**                               @andrewseguin
 /src/dev-app/mdc-chips/**                                   @mmalerba

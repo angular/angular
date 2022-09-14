@@ -7,12 +7,13 @@
  */
 
 import {Component, ViewChild} from '@angular/core';
-import {FormControl, NgModel, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
-import {MatInputModule} from '@angular/material/input';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {MatLegacyAutocompleteModule} from '@angular/material/legacy-autocomplete';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -27,21 +28,22 @@ export interface StateGroup {
 }
 
 @Component({
-  selector: 'mdc-autocomplete-demo',
-  templateUrl: 'mdc-autocomplete-demo.html',
-  styleUrls: ['mdc-autocomplete-demo.css'],
+  selector: 'legacy-autocomplete-demo',
+  templateUrl: 'legacy-autocomplete-demo.html',
+  styleUrls: ['legacy-autocomplete-demo.css'],
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    MatAutocompleteModule,
-    MatButtonModule,
-    MatCardModule,
-    MatInputModule,
+    MatLegacyAutocompleteModule,
+    MatLegacyButtonModule,
+    MatLegacyCardModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     ReactiveFormsModule,
   ],
 })
-export class MdcAutocompleteDemo {
+export class LegacyAutocompleteDemo {
   stateCtrl = new FormControl({code: 'CA', name: 'California'});
   currentState = '';
   currentGroupedState = '';

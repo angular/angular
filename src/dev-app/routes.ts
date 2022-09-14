@@ -142,9 +142,9 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./menubar/mat-menubar-demo').then(m => m.MatMenuBarDemo),
   },
   {
-    path: 'mdc-autocomplete',
+    path: 'legacy-autocomplete',
     loadComponent: () =>
-      import('./mdc-autocomplete/mdc-autocomplete-demo').then(m => m.MdcAutocompleteDemo),
+      import('./legacy-autocomplete/legacy-autocomplete-demo').then(m => m.LegacyAutocompleteDemo),
   },
   {
     path: 'legacy-button',

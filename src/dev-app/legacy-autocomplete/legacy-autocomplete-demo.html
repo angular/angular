@@ -6,7 +6,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <div>Reactive value: {{ stateCtrl.value | json }}</div>
     <div>Reactive dirty: {{ stateCtrl.dirty }}</div>
 
-    <mat-form-field>
+    <mat-form-field floatLabel="never">
       <mat-label>State</mat-label>
       <input matInput [matAutocomplete]="reactiveAuto" [formControl]="stateCtrl">
       <mat-autocomplete #reactiveAuto="matAutocomplete" [displayWith]="displayFn">

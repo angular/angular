@@ -4,6 +4,7 @@ import {MatAutocompleteHarness} from '@angular/material/autocomplete/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {AutocompleteHarnessExample} from './autocomplete-harness-example';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('AutocompleteHarnessExample', () => {
   let fixture: ComponentFixture<AutocompleteHarnessExample>;
@@ -11,7 +12,7 @@ describe('AutocompleteHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatAutocompleteModule],
+      imports: [MatAutocompleteModule, NoopAnimationsModule],
       declarations: [AutocompleteHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(AutocompleteHarnessExample);
