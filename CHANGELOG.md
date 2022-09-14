@@ -1,3 +1,20 @@
+<a name="14.2.2"></a>
+# 14.2.2 "cytoplasm-salmon" (2022-09-14)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6275f9d41f](https://github.com/angular/components/commit/6275f9d41f509724a938ab35e7038965b1c59651) | fix | **a11y:** account for Windows 11 high contrast themes in detector ([#25624](https://github.com/angular/components/pull/25624)) |
+| [eb5f79bb7b](https://github.com/angular/components/commit/eb5f79bb7b2660a1e007aa82ddceb5c33aa7acac) | fix | **listbox:** error with multiple preselected values ([#25621](https://github.com/angular/components/pull/25621)) |
+| [65af24ee53](https://github.com/angular/components/commit/65af24ee53c7a23f6005ec807bb8c1407368de71) | fix | **menu:** don't prevent default enter and space actions ([#25591](https://github.com/angular/components/pull/25591)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b3e35f3be4](https://github.com/angular/components/commit/b3e35f3be43bee79e8e368d0e753130bce07d70c) | fix | **datepicker:** restore focus after closing animation ([#25567](https://github.com/angular/components/pull/25567)) |
+## Special Thanks
+Kristiyan Kostadinov and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-next.0"></a>
 # 15.0.0-next.0 "charcoal-coin" (2022-09-07)
 ## Breaking Changes
