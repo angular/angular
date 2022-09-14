@@ -5,6 +5,7 @@ load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load(":local_packages_util.bzl", "link_local_packages", "substitute_local_packages")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("//aio/scripts:local_server_test.bzl", "local_server_test")
+load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 
 exports_files([
     "firebase.json",
@@ -36,7 +37,10 @@ npm_package_bin(
         "BAZEL_DGENI_OUTPUT_PATH": "$(@D)",
         "GIT_BIN": "$(GIT_BIN_PATH)",
     },
+    exec_properties = ENABLE_NETWORK,
     output_dir = True,
+    # Makes remote git calls to get previous versions
+    tags = ["requires-network"],
     tool = "@aio_npm//dgeni/bin:dgeni",
     toolchains = [
         "@npm//@angular/build-tooling/bazel/git-toolchain:current_git_toolchain",
