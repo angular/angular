@@ -1,4 +1,4 @@
-load("//aio/tools:defaults.bzl", "nodejs_test")
+load("//tools:defaults.bzl", "nodejs_test")
 
 def local_server_test(name, entry_point, serve_target, data = [], args = []):
     """Run a test script alongside a locally running http server.
