@@ -5,14 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {resolveForwardRef} from '../../di';
 import {Type} from '../../interface/type';
 import {EMPTY_OBJ} from '../../util/empty';
+import {getDirectiveDef} from '../definition';
 import {DirectiveDef} from '../interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from '../interfaces/node';
 import {LView, TView} from '../interfaces/view';
 
 /** Values that can be used to define a host directive through the `HostDirectivesFeature`. */
-type HostDirectiveDefiniton = Type<unknown>|{
+type HostDirectiveConfig = Type<unknown>|{
   directive: Type<unknown>;
   inputs?: string[];
   outputs?: string[];
@@ -38,23 +40,39 @@ type HostDirectiveDefiniton = Type<unknown>|{
  *
  * @codeGenApi
  */
-export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveDefiniton[]|
-                                        (() => HostDirectiveDefiniton[])) {
-  const unwrappedHostDirectives =
-      Array.isArray(rawHostDirectives) ? rawHostDirectives : rawHostDirectives();
-  const hostDirectives = unwrappedHostDirectives.map(
-      dir => typeof dir === 'function' ? {directive: dir, inputs: EMPTY_OBJ, outputs: EMPTY_OBJ} : {
-        directive: dir.directive,
-        inputs: bindingArrayToMap(dir.inputs),
-        outputs: bindingArrayToMap(dir.outputs)
-      });
-
+export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig[]|
+                                        (() => HostDirectiveConfig[])) {
   return (definition: DirectiveDef<unknown>) => {
-    // TODO(crisbeto): implement host directive matching logic.
-    definition.applyHostDirectives =
-        (tView: TView, viewData: LView, tNode: TElementNode|TContainerNode|TElementContainerNode,
-         matches: any[]) => {};
+    definition.findHostDirectiveDefs = findHostDirectiveDefs;
+    definition.hostDirectives =
+        (Array.isArray(rawHostDirectives) ? rawHostDirectives : rawHostDirectives()).map(dir => {
+          return typeof dir === 'function' ?
+              {directive: resolveForwardRef(dir), inputs: EMPTY_OBJ, outputs: EMPTY_OBJ} :
+              {
+                directive: resolveForwardRef(dir.directive),
+                inputs: bindingArrayToMap(dir.inputs),
+                outputs: bindingArrayToMap(dir.outputs)
+              };
+        });
   };
+}
+
+function findHostDirectiveDefs(
+    matches: DirectiveDef<unknown>[], def: DirectiveDef<unknown>, tView: TView, lView: LView,
+    tNode: TElementNode|TContainerNode|TElementContainerNode): void {
+  if (def.hostDirectives !== null) {
+    for (const hostDirectiveConfig of def.hostDirectives) {
+      const hostDirectiveDef = getDirectiveDef(hostDirectiveConfig.directive)!;
+
+      // TODO(crisbeto): assert that the def exists.
+
+      // Host directives execute before the host so that its host bindings can be overwritten.
+      findHostDirectiveDefs(matches, hostDirectiveDef, tView, lView, tNode);
+    }
+  }
+
+  // Push the def itself at the end since it needs to execute after the host directives.
+  matches.push(def);
 }
 
 /**
@@ -62,14 +80,14 @@ export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveDefini
  * a map in the form of `{publicName: 'alias', otherPublicName: 'otherAlias'}`.
  */
 function bindingArrayToMap(bindings: string[]|undefined) {
-  if (!bindings || bindings.length === 0) {
+  if (bindings === undefined || bindings.length === 0) {
     return EMPTY_OBJ;
   }
 
   const result: {[publicName: string]: string} = {};
 
-  for (let i = 1; i < bindings.length; i += 2) {
-    result[bindings[i - 1]] = bindings[i];
+  for (let i = 0; i < bindings.length; i += 2) {
+    result[bindings[i]] = bindings[i + 1];
   }
 
   return result;

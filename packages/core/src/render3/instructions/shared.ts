@@ -1062,7 +1062,10 @@ export function resolveDirectives(
 
   let hasDirectives = false;
   if (getBindingsEnabled()) {
-    const directiveDefs: DirectiveDef<any>[]|null = findDirectiveDefMatches(tView, lView, tNode);
+    const directiveDefsMatchedBySelectors = findDirectiveDefMatches(tView, lView, tNode);
+    const directiveDefs = directiveDefsMatchedBySelectors ?
+        findHostDirectiveDefs(directiveDefsMatchedBySelectors, tView, lView, tNode) :
+        null;
     const exportsMap: ({[key: string]: number}|null) = localRefs === null ? null : {'': -1};
 
     if (directiveDefs !== null) {
@@ -1288,8 +1291,6 @@ function findDirectiveDefMatches(
         } else {
           matches.push(def);
         }
-
-        def.applyHostDirectives?.(tView, viewData, tNode, matches);
       }
     }
   }
@@ -1308,6 +1309,29 @@ export function markAsComponentHost(tView: TView, hostTNode: TNode): void {
       .push(hostTNode.index);
 }
 
+/**
+ * Given an array of directives that were matched by their selectors, this function
+ * produces a new array that also includes any host directives that have to be applied.
+ * @param selectorMatches Directives matched in a template based on their selectors.
+ * @param tView Current TView.
+ * @param lView Current LView.
+ * @param tNode Current TNode that is being matched.
+ */
+function findHostDirectiveDefs(
+    selectorMatches: DirectiveDef<unknown>[], tView: TView, lView: LView,
+    tNode: TElementNode|TContainerNode|TElementContainerNode): DirectiveDef<unknown>[] {
+  const matches: DirectiveDef<unknown>[] = [];
+
+  for (const def of selectorMatches) {
+    if (def.findHostDirectiveDefs === null) {
+      matches.push(def);
+    } else {
+      def.findHostDirectiveDefs(matches, def, tView, lView, tNode);
+    }
+  }
+
+  return matches;
+}
 
 /** Caches local names and their matching directive indices for query and template lookups. */
 function cacheMatchingLocalNames(
