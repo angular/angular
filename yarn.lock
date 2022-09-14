@@ -256,7 +256,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#f2a04c81f9cfbf8a86e595ca5d1ca1da50ddf9dd":
   version "0.0.0-1c648b45459fa32ffd7de8a8fc07bde6bdbef923"
-  uid f2a04c81f9cfbf8a86e595ca5d1ca1da50ddf9dd
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#f2a04c81f9cfbf8a86e595ca5d1ca1da50ddf9dd"
   dependencies:
     "@angular-devkit/build-angular" "14.2.0-rc.0"
@@ -364,7 +363,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#20aa4d8a5ec774e1f21fbc50bca511c229a1a7f8":
   version "0.0.0-1c648b45459fa32ffd7de8a8fc07bde6bdbef923"
-  uid "20aa4d8a5ec774e1f21fbc50bca511c229a1a7f8"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#20aa4d8a5ec774e1f21fbc50bca511c229a1a7f8"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -13402,9 +13400,9 @@ sass@1.54.4:
     immutable "^4.0.0"
     source-map-js ">=0.6.2 <2.0.0"
 
-"sauce-connect@https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz":
+"sauce-connect@https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz":
   version "0.0.0"
-  resolved "https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz#e5d7f82ad98251a653d1b0537f1103e49eda5e11"
+  resolved "https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz#9c16682e4c9716734432789884f868212f95f563"
 
 saucelabs@7.2.0, saucelabs@^1.5.0, saucelabs@^4.6.3:
   version "7.2.0"
