@@ -120,6 +120,17 @@ build:remote --remote_executor=remotebuildexecution.googleapis.com
 # https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
 build:remote --experimental_allow_tags_propagation
 
+# Disable network access in the sandbox by default. To enable network access
+# for a particular target, use:
+#
+# load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+# my_target(
+#   ...,
+#   exec_properties = ENABLE_NETWORK,   # Enables network in remote exec
+#   tags = ["requires-network"]         # Enables network in sandbox
+# )
+build --nosandbox_default_allow_network
+
 ##################################
 # Saucelabs tests settings       #
 # Turn on these settings with    #
