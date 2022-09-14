@@ -104,11 +104,9 @@ export class DevAppLayout {
     {name: 'Virtual Scrolling', route: '/virtual-scroll'},
     {name: 'YouTube Player', route: '/youtube-player'},
     {name: 'MDC Chips', route: '/mdc-chips'},
-    {name: 'MDC Progress Bar', route: '/mdc-progress-bar'},
     {name: 'MDC Slide Toggle', route: '/mdc-slide-toggle'},
     {name: 'MDC Slider', route: '/mdc-slider'},
     {name: 'Legacy Autocomplete', route: '/legacy-autocomplete'},
-    {name: 'Legacy Tabs', route: '/legacy-tabs'},
     {name: 'Legacy Button', route: '/legacy-button'},
     {name: 'Legacy Card', route: '/legacy-card'},
     {name: 'Legacy Checkbox', route: '/legacy-checkbox'},
@@ -124,6 +122,7 @@ export class DevAppLayout {
     {name: 'Legacy Slider', route: '/legacy-slider'},
     {name: 'Legacy Snack Bar', route: '/legacy-snack-bar'},
     {name: 'Legacy Table', route: '/legacy-table'},
+    {name: 'Legacy Tabs', route: '/legacy-tabs'},
     {name: 'Legacy Tooltip', route: '/legacy-tooltip'},
   ];
 
