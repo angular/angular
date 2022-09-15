@@ -18,8 +18,8 @@ export interface AngularEvent {
 })
 export class EventsComponent implements OnInit {
 
-  pastEvents: AngularEvent[];
-  upcomingEvents: AngularEvent[];
+  pastEvents: AngularEvent[] = [];
+  upcomingEvents: AngularEvent[] = [];
 
   constructor(private eventsService: EventsService) { }
 
