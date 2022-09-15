@@ -1,14 +1,14 @@
 // #docregion import-http
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 // #docregion props
 import { Product } from './products';
+import { Injectable } from '@angular/core';
 // #enddocregion props, import-http
 
+// #docregion props, methods, inject-http, get-shipping
 @Injectable({
   providedIn: 'root'
 })
-// #docregion props, methods, inject-http, get-shipping
 export class CartService {
 // #enddocregion get-shipping
   items: Product[] = [];
