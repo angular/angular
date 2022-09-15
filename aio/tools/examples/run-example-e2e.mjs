@@ -118,6 +118,8 @@ function isCliTest(examplePath) {
 async function runE2eTestsSystemJS(exampleName, appDir) {
   const config = loadExampleConfig(appDir);
 
+  preserveSymlinksWhenUsingLocalPackages(LOCAL_PACKAGES, appDir);
+
   const runArgs = await overrideSystemJsExampleToUseRandomPort(config, appDir);
 
   const appBuildSpawnInfo = spawnExt(NODE, [VENDORED_YARN, config.build], {cwd: appDir});
@@ -244,6 +246,12 @@ function pointBinSymlinksToLocalPackages(linkedNodeModules) {
   }
   const allNodeModuleBins = globbySync(['**'], {cwd: path.join(linkedNodeModules, '.bin'), onlyFiles: true});
   allNodeModuleBins.forEach(bin => {
+    // TODO: Swapping the symlink to ngc with the local package equivalent
+    // doesn't seem to work. When ngc runs in upgrade-phonecat-2-hybrid via
+    // the build:aot yarn script, node cannot resolve @angular/compiler.
+    if (bin === "ngc") {
+      return;
+    }
     const symlinkTarget = fs.readlinkSync(path.join(linkedNodeModules, '.bin', bin));
     for (const pkgName of Object.keys(LOCAL_PACKAGES)) {
       const binMightBeInLocalPackage = symlinkTarget.includes(path.join(EXAMPLE_DEPS_WORKSPACE_NAME, 'node_modules', pkgName) + path.sep);
@@ -307,15 +315,7 @@ function runE2eTestsCLI(exampleName, appDir) {
     }
   }
 
-  // When local packages are symlinked in, node has trouble resolving some peer deps. Setting
-  // preserveSymlinks: true in angular.json fixes this. This isn't required without local
-  // packages because in the worst case we would leak into the original Bazel repository
-  // and it would still find a node_modules folder for resolution.
-  if (Object.keys(LOCAL_PACKAGES).length > 0) {
-    const angularJson = jsonc.load(path.join(appDir, 'angular.json'), {encoding: 'utf-8'});
-    angularJson.projects['angular.io-example'].architect.build.options.preserveSymlinks = true;
-    fs.writeFileSync(path.join(appDir, 'angular.json'), JSON.stringify(angularJson));
-  }
+  preserveSymlinksWhenUsingLocalPackages(LOCAL_PACKAGES, appDir);
 
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const testCommands = config.tests || [{
@@ -433,6 +433,44 @@ function adjustChromeBinPathForWindows() {
    return path.join(`../../../../../../../../../external/org_chromium_chromium_windows/${process.env.CHROME_BIN}`);
   }
   return process.env.CHROME_BIN;
+}
+
+// When local packages are symlinked in, node has trouble resolving some peer deps. Setting
+// preserveSymlinks in relevant files fixes this. This isn't required without local packages
+// because in the worst case we would leak into the original Bazel repository and it would
+// still find a node_modules folder for resolution. Add the preserveSymlinks options to various
+// files that are used by the cli and systemjs tests (and sometimes both).
+function preserveSymlinksWhenUsingLocalPackages(LOCAL_PACKAGES, appDir) {
+  if (Object.keys(LOCAL_PACKAGES).length == 0) {
+    return;
+  }
+
+  // Set preserveSymlinks in angular.json
+  const angularJsonPath = path.join(appDir, 'angular.json');
+  if (fs.existsSync(angularJsonPath)) {
+    const angularJson = jsonc.load(angularJsonPath, {encoding: 'utf-8'});
+    angularJson.projects['angular.io-example'].architect.build.options.preserveSymlinks = true;
+    fs.writeFileSync(angularJsonPath, JSON.stringify(angularJson, undefined, 2));
+  }
+
+  // Set preserveSymlinks in any tsconfig.json files
+  const tsConfigPaths = globbySync([path.join(appDir, 'tsconfig*.json')]);
+  for (let tsConfigPath of tsConfigPaths) {
+    const tsConfig = jsonc.load(tsConfigPath, {encoding: 'utf-8'});
+    const isRootConfig = !tsConfig.extends;
+    if (isRootConfig) {
+      tsConfig.compilerOptions.preserveSymlinks = true;
+      fs.writeFileSync(tsConfigPath, JSON.stringify(tsConfig, undefined, 2));
+    }
+  }
+
+  // Call rollup with --preserveSymlinks
+  const packageJsonPath = path.join(appDir, 'package.json');
+  const packageJson = jsonc.load(packageJsonPath, {encoding: 'utf-8'});
+  if ('rollup' in packageJson.dependencies || 'rollup' in packageJson.devDependencies) {
+    packageJson.scripts['rollup'] = 'rollup --preserveSymlinks';
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, undefined, 2));
+  }
 }
 
 runE2e(EXAMPLE_PATH);

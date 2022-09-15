@@ -19,7 +19,7 @@
     "test:once": "karma start karma.conf.js --single-run",
     "build:upgrade": "tsc",
     "serve:upgrade": "http-server",
-    "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
+    "build:aot": "ngc -p tsconfig-aot.json && yarn rollup -c rollup-config.js",
     "serve:aot": "lite-server -c bs-config.aot.json",
     "copy-dist-files": "node ./copy-dist-files.js"
   },
