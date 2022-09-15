@@ -37,7 +37,7 @@ table {
       padding: 16px;
       text-align: left;
       @include mixins.line-height(24);
-      vertical-align: top;
+      vertical-align: baseline;
 
       @media (max-width: 480px) {
         &:before {
