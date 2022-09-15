@@ -8,18 +8,24 @@
 
 import {ChangeDetectionStrategy} from '../../change_detection/constants';
 import {Injector} from '../../di/injector';
+import {InjectFlags} from '../../di/interface/injector';
+import {NullInjector} from '../../di/null_injector';
+import {NgModuleRef} from '../../linker/ng_module_factory';
 import {ViewEncapsulation} from '../../metadata/view';
 import {assertEqual} from '../../util/assert';
-import {assertLView} from '../assert';
-import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext, readPatchedLView} from '../context_discovery';
+import {assertLView, assertNodeInjector} from '../assert';
+import {discoverLocalRefs, findViaNativeElement, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext, readPatchedLView} from '../context_discovery';
 import {getComponentDef, getDirectiveDef} from '../definition';
-import {NodeInjector} from '../di';
+import {getInjectorIndex, getParentInjectorLocation, NodeInjector} from '../di';
 import {buildDebugNode} from '../instructions/lview_debug';
 import {DirectiveDef} from '../interfaces/definition';
+import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
+import {RElement, RNode} from '../interfaces/renderer_dom';
 import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
+import {CLEANUP, CONTEXT, DebugNode, FLAGS, INJECTOR, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
 
+import {getParentInjectorIndex, getParentInjectorView} from './injector_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
 import {getTNode, unwrapRNode} from './view_utils';
 
@@ -501,4 +507,96 @@ function assertDomElement(value: any) {
   if (typeof Element !== 'undefined' && !(value instanceof Element)) {
     throw new Error('Expecting instance of DOM Element');
   }
+}
+
+interface DebugInjector {
+  owner: any;
+  type: 'Element'|'Module'|'NullInjector'|'Platform'|'Injector';
+}
+
+export function getInjectorResolutionPath(element: Element): DebugInjector[]|null {
+  const context = getLContext(element);
+  if (context === null) {
+    return null;
+  }
+
+  const target = element as any as RElement;
+  const nodeIndex = findViaNativeElement(context.lView!, target);
+  const tView = context.lView![TVIEW];
+  const tNode = tView.data[nodeIndex] as TNode;
+  const injectorPath: DebugInjector[] = [];
+
+  getElementInjectorPath(context.lView!, tNode).forEach(({nativeElement}) => {
+    injectorPath.push({type: 'Element', owner: nativeElement});
+  });
+
+  let injector = (context.lView![INJECTOR] as any).parentInjector;
+  while (injector !== undefined) {
+    const ngModule = injector.get(NgModuleRef, null, InjectFlags.Self)?.instance;
+
+    // NullInjector Case
+    if (injector instanceof NullInjector) {
+      injectorPath.push({type: 'NullInjector', owner: injector});
+      break;
+    }
+
+    // Platform Injector case
+    if (injector.scopes?.has?.('platform')) {
+      injectorPath.push({type: 'Platform', owner: injector});
+    }
+
+    // Root Injector Case
+    else if (injector.scopes?.has?.('environment')) {
+      injectorPath.push(
+          ngModule ? {type: 'Module', owner: ngModule} : {type: 'Injector', owner: injector});
+    }
+
+    // NgModule Case
+    else if (ngModule !== undefined && ngModule.constructor.ɵmod) {
+      injectorPath.push({type: 'Module', owner: ngModule});
+    }
+
+    injector = injector.parent;
+  }
+
+  return injectorPath;
+}
+
+/**
+ * Similar to TNode.prototype.debugNodeInjectorPath but without the overhead associated with
+ * building DebugNode objects
+ */
+function getElementInjectorPath(lView: LView, tNode: TNode): {nativeElement: RNode}[] {
+  const path: {nativeElement: RNode}[] = [];
+
+  let injectorIndex = getInjectorIndex(tNode, lView);
+  if (injectorIndex === -1) {
+    // Looks like the current `TNode` does not have `NodeInjector` associated with it => look for
+    // parent NodeInjector.
+    const parentLocation = getParentInjectorLocation(tNode, lView);
+    if (parentLocation !== NO_PARENT_INJECTOR) {
+      // We found a parent, so start searching from the parent location.
+      injectorIndex = getParentInjectorIndex(parentLocation);
+      lView = getParentInjectorView(parentLocation, lView);
+    }
+  }
+
+  while (injectorIndex !== -1) {
+    ngDevMode && assertNodeInjector(lView, injectorIndex);
+    const tNode = lView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
+
+    const rawValue = lView[tNode.index];
+    const nativeElement = unwrapRNode(rawValue);
+    path.push({nativeElement});
+
+    const parentLocation = lView[injectorIndex + NodeInjectorOffset.PARENT];
+    if (parentLocation === NO_PARENT_INJECTOR) {
+      break;
+    }
+
+    injectorIndex = getParentInjectorIndex(parentLocation);
+    lView = getParentInjectorView(parentLocation, lView);
+  }
+
+  return path;
 }

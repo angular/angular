@@ -7,6 +7,8 @@
  */
 import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, Directive, HostBinding, InjectionToken, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {NullInjector} from '@angular/core/src/di/null_injector';
+import {R3Injector} from '@angular/core/src/di/r3_injector';
 import {EventEmitter} from '@angular/core/src/event_emitter';
 import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
@@ -15,7 +17,7 @@ import {getElementStyles} from '@angular/core/testing/src/styling';
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement} from '../../src/render3/index';
-import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
+import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getInjectorResolutionPath, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
 
 describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -365,6 +367,36 @@ describe('discovery utils', () => {
       expect(metadata!.inputs).toEqual({a: 'b'});
       expect(metadata!.outputs).toEqual({c: 'd'});
     });
+  });
+
+  describe('getInjectorResolutionPath', () => {
+    it('should be able to get the resolution path from the dom element of an element injector',
+       () => {
+         /**
+          * Expected resolution path:
+          *
+          * Element Injector (my-app)
+          *    |
+          *    v
+          * Module Injector (TestBed Module)
+          *    |
+          *    v
+          * Platform Injector
+          *    |
+          *    v
+          * Null Injector
+          */
+         const injectorResolutionPath = getInjectorResolutionPath(fixture.nativeElement);
+         expect(injectorResolutionPath).toBeTruthy();
+         expect(injectorResolutionPath!.length).toEqual(4);
+         expect(injectorResolutionPath![0].type).toBe('Element');
+         expect(injectorResolutionPath![0].owner).toBe(fixture.nativeElement);
+         expect(injectorResolutionPath![1].type).toBe('Module');
+         expect(injectorResolutionPath![2].type).toBe('Platform');
+         expect(injectorResolutionPath![2].owner).toBeInstanceOf(R3Injector);
+         expect(injectorResolutionPath![3].type).toBe('NullInjector');
+         expect(injectorResolutionPath![3].owner).toBeInstanceOf(NullInjector);
+       });
   });
 });
 

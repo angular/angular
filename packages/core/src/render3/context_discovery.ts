@@ -215,7 +215,7 @@ export function isDirectiveInstance(instance: any): boolean {
 /**
  * Locates the element within the given LView and returns the matching index
  */
-function findViaNativeElement(lView: LView, target: RElement): number {
+export function findViaNativeElement(lView: LView, target: RElement): number {
   const tView = lView[TVIEW];
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
     if (unwrapRNode(lView[i]) === target) {
