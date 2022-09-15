@@ -132,7 +132,10 @@
       "./packages/zone.js/**/*",
 
       "./devtools/bazel-out/**/*",
-      "./devtools/projects/ng-devtools/src/lib/vendor/**/*"
+      "./devtools/projects/ng-devtools/src/lib/vendor/**/*",
+
+      // Ignore vendored code
+      "./third_party/**/*"
     ]
   }
 }
