@@ -12,4 +12,4 @@ source ../scripts/ci/payload-size.sh
 # Provide node_modules from aio
 NODE_MODULES_BIN=$PROJECT_ROOT/aio/node_modules/.bin/
 
-trackPayloadSize "$target" "dist/*.css dist/*.js" true "$PROJECT_ROOT/goldens/size-tracking/aio-payloads.json"
+trackPayloadSize "$target" "../dist/bin/aio/build/*.css ../dist/bin/aio/build/*.js" true "$PROJECT_ROOT/goldens/size-tracking/aio-payloads.json"
