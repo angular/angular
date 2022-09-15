@@ -15,6 +15,10 @@ readonly deployedUrl=https://pr${prNumber}-${prLastSha:0:7}.ngbuilds.io/
   # Build and store the app
   yarn build
 
+  # Remove write protection from the opensearch.xml in the Bazel
+  # output tree so that the url can be substituted.
+  chmod u+w ../dist/bin/aio/build/assets/opensearch.xml
+
   # Set deployedUrl as parameter in the opensearch description
   # deployedUrl must end with /
   yarn set-opensearch-url $deployedUrl
