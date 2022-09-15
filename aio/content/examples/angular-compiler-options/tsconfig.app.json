@@ -38,6 +38,6 @@
       "sourceMap": true,
       "declaration": false
       // #docregion angular-compiler-options-app
-    },
+    }
   }
   // #enddocregion angular-compiler-options-app
