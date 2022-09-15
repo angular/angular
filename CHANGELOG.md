@@ -1,3 +1,26 @@
+<a name="15.0.0-next.2"></a>
+# 15.0.0-next.2 (2022-09-14)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7ec196e0fb](https://github.com/angular/angular/commit/7ec196e0fb7d73caada1f502758cab0950e3a272) | fix | make sure that the animation function delay is applied ([#47285](https://github.com/angular/angular/pull/47285)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca7bf65933](https://github.com/angular/angular/commit/ca7bf6593380fa760891d29fba5c9f61c6e9bf8b) | fix | rename `rawSrc` -> `ngSrc` in NgOptimizedImage directive ([#47362](https://github.com/angular/angular/pull/47362)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4e10a74941](https://github.com/angular/angular/commit/4e10a7494130b9bb4772ee8f76b66675867b2145) | fix | imply @Optional flag when a default value is provided ([#47242](https://github.com/angular/angular/pull/47242)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4a13210ecd](https://github.com/angular/angular/commit/4a13210ecd692aaace7f67fadf25741f3f0cc50b) | fix | don't prevent default behavior for forms with method="dialog" ([#47308](https://github.com/angular/angular/pull/47308)) |
+## Special Thanks
+Abhishek Rawat, Andrew Kushnir, Benjamin Chanudet, Bob Watson, Dylan Hunn, George Kalpakas, Ikko Ashimine, Joey Perrott, Kristiyan Kostadinov, Marc Wrobel, Mariia Subkov, Pawel Kozlowski, Sebastian, abergquist, dario-piotrowicz, onrails and vyom1611
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.2"></a>
 # 14.2.2 (2022-09-14)
 ### animations
