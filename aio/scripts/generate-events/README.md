@@ -43,7 +43,8 @@ In a nutshell, the setup can be summarized as follows:
 
 1. The DevRel team keeps information about events in a Google Sheets spreadsheet (in the appropriate format).
 2. An Apps Script extension on the spreadsheet periodically saves the relevant information (such as event names and dates) in a Firebase Realtime Database.
-3. There is a script (that can be run periodically) which can query the database and generate `events.json` based on the latest data.
+3. There is a script which can query the database and generate `events.json` based on the latest data.
+4. A GitHub Actions periodically runs the script and creates a pull request if there are updates.
 
 
 #### Apps Script extension overview
@@ -68,6 +69,8 @@ Useful resource: https://stackoverflow.com/questions/53207906/how-to-integrate-f
   - Each team allocation sheet should have the event names on the second row (each under the corresponding date cell).
     Event names can optionally be links pointing to the event's web page.
 
+  _**NOTE:** For this project, we use our [Angular Conferences Speaker Tracker](https://docs.google.com/spreadsheets/d/1B_2VUYMmaNhjCTIFKYluI7BwOYj1rEcRJX1ttniqteQ) spreadsheet._
+
 2. Create an [Apps Script extension](https://developers.google.com/apps-script/guides/sheets) for the aforementioned spreadsheet with the source code from the [apps-script-extension/](./apps-script-extension/) directory.
   To do this, open the spreadsheet, click on `Extensions > Apps Script`, create the necessary files as seen in the source code (with the difference that the `.js` extension must be replaced with `.gs`) and copy the source code.
   For `appsscript.json`, follow the instructions [here](https://developers.google.com/apps-script/concepts/manifests#editing_a_manifest) to make it appear in the in-browser editor.
@@ -80,12 +83,14 @@ Useful resource: https://stackoverflow.com/questions/53207906/how-to-integrate-f
 5. Follow the instructions [here](https://firebase.google.com/docs/rules/manage-deploy#generate_a_configuration_file) to set up [security rules](https://firebase.google.com/docs/rules) and make sure they are deployed to the Firebase project as needed.
   You can see the database security rules used for this project in [database.rules.json](../../database.rules.json).
   These rules will allow anyone to read the events from the database, but only someone with access to the Firebase project will be able to update the events in the database.
-  NOTE: For this project, the rules are deployed as part of the `deploy_aio` CI job.
+
+  _**NOTE:** For this project, the rules are deployed as part of the `deploy_aio` CI job._
 
 6. Ensure that the account that was used to create the Google Sheets trigger on step 3 also has access to the Firebase project (otherwise, the trigger will fail to update the database when events change in the spreadsheet).
 
 7. Wire the [index.mjs](./index.mjs) script to run when necessary to generate an updated `events.json` file.
-  NOTE: For this project, there is a [GitHub Action](https://github.com/angular/angular/blob/main/.github/workflows/update-events.yml) that periodically runs the script and creates a pull request (if necessary).
+
+  _**NOTE:** For this project, there is a [GitHub Action](../../../.github/workflows/update-events.yml) that periodically runs the script and creates a pull request (if necessary)._
 
 8. Ensure that both [constants.gs](./apps-script-extension/constants.js) and [index.mjs](./index.mjs) point to the correct database URL.
 
@@ -94,6 +99,41 @@ Useful resource: https://stackoverflow.com/questions/53207906/how-to-integrate-f
 
 Although the source code in [apps-script-extension/](./apps-script-extension/) and the actual code used in the spreadsheet are independent, it is advised for versioning purposes to keep the two in sync.
 Whenever a change is needed to be made to the Apps Script extension, the change should be applied in both places.
+
+
+### How to debug
+
+If the process does not work as expected, i.e. changes are made to the spreadsheet but no pull request is created to update `event.json`, there are three places where one can look to find out at which point the process breaks:
+
+1. Ensure that the Apps Script extension runs successfully:
+
+  - You can check the previous executions of the `updateEventsOnFirebase()` function by opening the spreadsheet and clicking on `Extensions > Apps Script > Executions`.
+    There, you can see when the extension ran and also click on an execution to see the output log.
+
+    _**NOTE:** For this project, executions can be found [here](https://script.google.com/home/projects/1X4IxdwG3WBE-jGK_3PZi5Ud1y-A3V2x_ZbKd0dHZGudRJgL_ssLVS9y2/executions)._
+
+  - You can also manually run the `updateEventsOnFirebase()` function by opening the spreadsheet and clicking on `Extensions > Apps Script > Editor > persister.gs`.
+    From there, choose the function in the dropdown at the top of the editor and click the `Run` button.
+
+    _**NOTE:** For this project, the editor can be found [here](https://script.google.com/home/projects/1X4IxdwG3WBE-jGK_3PZi5Ud1y-A3V2x_ZbKd0dHZGudRJgL_ssLVS9y2/edit)._
+
+2. Ensure that the database contains the correct data:
+
+  - Visit the [Firebase console](https://console.firebase.google.com/), open the targeted project and click on `Realtime Database`.
+
+  - From there, you can explore the data and ensure that the `events` node contains the expected data.
+
+  _**NOTE:** For this project, the database can be found [here](https://console.firebase.google.com/project/angular-io/database/angular-io/data)._
+
+3. If you have set up a GitHub Action, ensure that it runs successfully:
+
+  - You can check the previous runs of the GitHub action by visiting the repository page on GitHub, clicking the `Actions` tab and then choosing the correct workflow from the list on the left.
+
+  - From there, you can see when the action was run and also click on a run to see the completion status of each job and the output log.
+
+  - You can also manually run the action, by clicking the `Run workflow` button.
+
+  _**NOTE:** For this project, you can see runs of the `Update AIO events` GitHub Action [here](https://github.com/angular/angular/actions/workflows/update-events.yml)._
 
 
 ### Trade-offs/Alternatives considered

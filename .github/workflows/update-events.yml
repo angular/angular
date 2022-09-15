@@ -1,3 +1,9 @@
+# Update the `events.json` file that powers the [AIO events page](https://angular.io/events) (if
+# necessary) and create a pull request.
+#
+# For more details on the overall process, see
+# [aio/scripts/generate-events/README.md](../../aio/scripts/generate-events/README.md).
+
 name: Update AIO events
 
 on:
