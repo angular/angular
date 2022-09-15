@@ -11,7 +11,7 @@ on:
     inputs: {}
   schedule:
     # Run every day at 15:00.
-    - cron: 0 15 * * *
+    - cron: '0 15 * * *'
 
 # Declare default permissions as read only.
 permissions:
@@ -45,4 +45,4 @@ jobs:
             action: review
             comp: docs
             target: patch
-          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
+          angular-robot-token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
