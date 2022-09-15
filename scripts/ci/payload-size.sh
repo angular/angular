@@ -31,7 +31,7 @@ NODE_MODULES_BIN=$PROJECT_ROOT/node_modules/.bin/
 getGzipSize() {
   local filePath=$1
   local compLevel=$2
-  local compPath=$1$2.gz
+  local compPath="$(mktemp).gz"
   local size=-1
 
   gzip -c -$compLevel "$filePath" >> "$compPath"
