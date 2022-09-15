@@ -15,13 +15,13 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@angular-devkit/architect-cli@0.1402.1":
-  version "0.1402.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect-cli/-/architect-cli-0.1402.1.tgz#0ffe438f7de65ecc3c4b9b61d64e7b46b727b93f"
-  integrity sha512-6N7O8J0hA+lE6qMygthA6ojjNXBb98Hk42t5xciUavv/65OWW6iYZq/XlubrnrPXattWsHC5gcCTIwbO0xWdOQ==
+"@angular-devkit/architect-cli@0.1500.0-next.0":
+  version "0.1500.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect-cli/-/architect-cli-0.1500.0-next.0.tgz#3faff912d92306dfab8398af776d90262df22762"
+  integrity sha512-Y90ZMjOSxYvsWV8tLWz0aABWLuOYpFesaFGedE8VFmAY6uONSOMY+u42auUefX0JLk7DeW/znDQm7DCjyVzwug==
   dependencies:
-    "@angular-devkit/architect" "0.1402.1"
-    "@angular-devkit/core" "14.2.1"
+    "@angular-devkit/architect" "0.1500.0-next.0"
+    "@angular-devkit/core" "15.0.0-next.0"
     ansi-colors "4.1.3"
     progress "2.0.3"
     symbol-observable "4.0.0"
@@ -33,6 +33,14 @@
   integrity sha512-OZ5mkVHSrk5WX6wIfvkxJUCqJRtfQh1S476qHIi80llhJufFTwoOwJrcz7XtNRvbZMLRMztf0aIhEDaUtEBRZQ==
   dependencies:
     "@angular-devkit/core" "14.2.1"
+    rxjs "6.6.7"
+
+"@angular-devkit/architect@0.1500.0-next.0":
+  version "0.1500.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1500.0-next.0.tgz#71bb79523f5bbff7745d1ecee6aab831589c7dd6"
+  integrity sha512-xXxgzkDeD5H1Ia7sKXIekYfeMgSArxB6TOhyDd3F8h/ku7hQaMVnpV98g5ZOU8vIFpXGJ1YiH9al7rq6w+yGWw==
+  dependencies:
+    "@angular-devkit/core" "15.0.0-next.0"
     rxjs "6.6.7"
 
 "@angular-devkit/build-angular@^14.2.1":
@@ -121,6 +129,17 @@
     ajv "8.11.0"
     ajv-formats "2.1.1"
     jsonc-parser "3.1.0"
+    rxjs "6.6.7"
+    source-map "0.7.4"
+
+"@angular-devkit/core@15.0.0-next.0":
+  version "15.0.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-15.0.0-next.0.tgz#fc8a78db96a21e105c1948ef65e5210edca223ea"
+  integrity sha512-QNLLgMKSGBNh5iy99F0lzUYBkERft2Qk5CQvYe07AWuQkvzIp+SYDfjugiSnBJbzK79Wja728KETtIz6X9bLaA==
+  dependencies:
+    ajv "8.11.0"
+    ajv-formats "2.1.1"
+    jsonc-parser "3.2.0"
     rxjs "6.6.7"
     source-map "0.7.4"
 
@@ -7630,6 +7649,11 @@ jsonc-parser@3.1.0, jsonc-parser@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.1.0.tgz#73b8f0e5c940b83d03476bc2e51a20ef0932615d"
   integrity sha512-DRf0QjnNeCUds3xTjKlQQ3DpJD51GvDjJfnxUVWg6PZTo2otSm+slzNAxU/35hF8/oJIKoG9slq30JYOsF2azg==
+
+jsonc-parser@3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.2.0.tgz#31ff3f4c2b9793f89c67212627c51c6394f88e76"
+  integrity sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==
 
 jsonfile@^4.0.0:
   version "4.0.0"
