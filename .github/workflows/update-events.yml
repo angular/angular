@@ -5,7 +5,7 @@ on:
     inputs: {}
   schedule:
     # Run every day at 15:00.
-    - cron: 0 15 * * *
+    - cron: '0 15 * * *'
 
 # Declare default permissions as read only.
 permissions:
@@ -29,7 +29,7 @@ jobs:
       - name: Generate `events.json`
         run: node aio/scripts/generate-events/index.mjs --ignore-invalid-dates
       - name: Create a PR (if necessary)
-        uses: angular/dev-infra/github-actions/create-pr-for-changes@bf4bb09bb2d32015f71943371c7484cb845f8c33
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@3c526cbb36b8517829dbbf02a7833fa3081479bb
         with:
           branch-prefix: docs-update-events
           pr-title: 'docs: update events'
@@ -39,4 +39,4 @@ jobs:
             action: review
             comp: docs
             target: patch
-          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
+          angular-robot-token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
