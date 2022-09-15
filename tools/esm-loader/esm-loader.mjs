@@ -25,7 +25,8 @@ export async function resolve(specifier, context, defaultResolve) {
       return defaultResolve(specifier, context, defaultResolve);
     }
 
-    const nodeModules = path.resolve(process.env.RUNFILES_DIR, process.env.NODE_MODULES_WORKSPACE_NAME, 'node_modules');
+    const runfilesWorkspaceRoot = path.resolve(process.env.RUNFILES_DIR || path.join(process.env.RUNFILES, 'angular'));
+    const nodeModules = path.join(runfilesWorkspaceRoot, process.env.NODE_MODULES_WORKSPACE_NAME, 'node_modules');
     const packageImport = parsePackageImport(specifier);
     const pathToNodeModule = path.join(nodeModules, packageImport.packageName);
 
