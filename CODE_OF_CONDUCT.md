@@ -2,7 +2,7 @@
 
 ## Our Pledge
 
-In the interest of fostering an safe and welcoming environment, we as
+In the interest of fostering a safe and welcoming environment, we as
 the Angular team pledge to make participation in our project and
 our community a harassment-free experience for everyone, regardless of age, body
 size, disability, ethnicity, sex characteristics, gender identity, gender expression,
