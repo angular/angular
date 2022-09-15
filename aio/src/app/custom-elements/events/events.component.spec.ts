@@ -20,11 +20,11 @@ describe('EventsComponent', () => {
   });
 
   it('should have no pastEvents when first created', () => {
-    expect(component.pastEvents).toBeUndefined();
+    expect(component.pastEvents.length).toEqual(0);
   });
 
   it('should have no upcoming when first created', () => {
-    expect(component.upcomingEvents).toBeUndefined();
+    expect(component.upcomingEvents.length).toEqual(0);
   });
 
   describe('ngOnInit()', () => {
