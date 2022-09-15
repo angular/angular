@@ -2,7 +2,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//tools:defaults.bzl", "nodejs_test")
 load("//:yarn.bzl", "YARN_LABEL")
-load("//:packages.bzl", "ALL_PACKAGES", "to_package_label")
+load("//:packages.bzl", "AIO_EXAMPLE_PACKAGES", "to_package_label")
 
 # This map controls which examples are included and whether or not to generate
 # a stackblitz live examples and zip archives. Keys are the example name, and values
@@ -181,11 +181,11 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}):
     if test:
         EXAMPLE_DEPS_WORKSPACE_NAME = "aio_example_deps"
 
-        LOCAL_PACKAGE_DEPS = [to_package_label(dep) for dep in ALL_PACKAGES]
+        LOCAL_PACKAGE_DEPS = [to_package_label(dep) for dep in AIO_EXAMPLE_PACKAGES]
 
         # Local package deps are passed as args to the test script in the form "@package/name#path/to/package"
         # for the script's convenience.
-        LOCAL_PACKAGE_ARGS = ["%s#$(rootpath %s)" % (dep, to_package_label(dep)) for dep in ALL_PACKAGES]
+        LOCAL_PACKAGE_ARGS = ["%s#$(rootpath %s)" % (dep, to_package_label(dep)) for dep in AIO_EXAMPLE_PACKAGES]
 
         nodejs_test(
             name = "e2e",
