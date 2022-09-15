@@ -37,8 +37,9 @@ def substitute_local_packages(deps):
             label = Label(dep)
             if label.package in ALL_PACKAGES:
                 substituted.append(_npm_link_name(dep))
-            else:
-                substituted.append(dep)
+                continue
+
+        substituted.append(dep)
     return substituted
 
 def _npm_link_name(dep):
