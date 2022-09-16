@@ -637,11 +637,6 @@
           "url": "guide/prerendering",
           "title": "Prerendering",
           "tooltip": "Prerender HTML server-side with Angular Universal."
-        },
-        {
-          "url": "guide/image-directive",
-          "title": "Image Directive",
-          "tooltip": "Performant images with the Angular image directive."
         }
       ]
     },
@@ -861,6 +856,11 @@
           "url": "guide/standalone-components",
           "title": "Standalone components",
           "tooltip": "Standalone components, directives and pipes"
+        },
+        {
+          "url": "guide/image-directive",
+          "title": "Image Directive",
+          "tooltip": "Performant images with the Angular image directive."
         }
       ]
     },

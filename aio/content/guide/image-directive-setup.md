@@ -1,5 +1,12 @@
 # Setting up `NgOptimizedImage`
 
+<div class="alert is-important">
+
+The `NgOptimizedImage` directive is available for [developer preview](https://angular.io/guide/releases#developer-preview).
+It's ready for you to try, but it might change before it is stable.
+
+</div>
+
 This tutorial explains how to set up the `NgOptimizedImage`. For information on using `NgOptimizedImage`, see [Getting Started with NgOptimizedImage](/guide/image-directive).
 
 ## Import `NgOptimizedImage`
