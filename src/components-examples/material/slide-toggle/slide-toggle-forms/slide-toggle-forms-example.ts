@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 /**
  * @title Slide-toggle with forms
@@ -18,7 +18,7 @@ export class SlideToggleFormsExample {
 
   constructor(private _formBuilder: FormBuilder) {}
 
-  onFormSubmit() {
-    alert(JSON.stringify(this.formGroup.value, null, 2));
+  alertFormValues(formGroup: FormGroup) {
+    alert(JSON.stringify(formGroup.value, null, 2));
   }
 }

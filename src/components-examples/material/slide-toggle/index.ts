@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
-import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {SlideToggleConfigurableExample} from './slide-toggle-configurable/slide-toggle-configurable-example';
 import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
 import {SlideToggleOverviewExample} from './slide-toggle-overview/slide-toggle-overview-example';
@@ -27,11 +27,11 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCardModule,
-    MatLegacyCheckboxModule,
-    MatLegacyRadioModule,
-    MatLegacySlideToggleModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    MatSlideToggleModule,
     ReactiveFormsModule,
   ],
   declarations: EXAMPLES,

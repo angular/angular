@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-slide-toggle",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-slide-toggle-demo.html",
+        ":legacy_slide_toggle_demo_scss",
+    ],
+    deps = [
+        "//src/material/legacy-button",
+        "//src/material/legacy-slide-toggle",
+        "@npm//@angular/forms",
+    ],
+)
+
+sass_binary(
+    name = "legacy_slide_toggle_demo_scss",
+    src = "legacy-slide-toggle-demo.scss",
+)

@@ -7,17 +7,18 @@
  */
 
 import {Component} from '@angular/core';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 
 @Component({
-  selector: 'mdc-slide-toggle-demo',
-  templateUrl: 'mdc-slide-toggle-demo.html',
-  styleUrls: ['mdc-slide-toggle-demo.css'],
+  selector: 'slide-toggle-demo',
+  templateUrl: 'legacy-slide-toggle-demo.html',
+  styleUrls: ['legacy-slide-toggle-demo.css'],
   standalone: true,
-  imports: [FormsModule, MatSlideToggleModule],
+  imports: [FormsModule, MatLegacyButtonModule, MatLegacySlideToggleModule],
 })
-export class MdcSlideToggleDemo {
+export class LegacySlideToggleDemo {
   firstToggle: boolean;
 
   onFormSubmit() {

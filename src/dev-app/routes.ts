@@ -208,9 +208,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./snack-bar/snack-bar-demo').then(m => m.SnackBarDemo),
   },
   {
-    path: 'mdc-slide-toggle',
-    loadComponent: () =>
-      import('./mdc-slide-toggle/mdc-slide-toggle-demo').then(m => m.MdcSlideToggleDemo),
+    path: 'slide-toggle',
+    loadComponent: () => import('./slide-toggle/slide-toggle-demo').then(m => m.SlideToggleDemo),
   },
   {
     path: 'slider',
@@ -276,8 +275,9 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./sidenav/sidenav-demo').then(m => m.SidenavDemo),
   },
   {
-    path: 'slide-toggle',
-    loadComponent: () => import('./slide-toggle/slide-toggle-demo').then(m => m.SlideToggleDemo),
+    path: 'legacy-slide-toggle',
+    loadComponent: () =>
+      import('./legacy-slide-toggle/legacy-slide-toggle-demo').then(m => m.LegacySlideToggleDemo),
   },
   {
     path: 'legacy-slider',
