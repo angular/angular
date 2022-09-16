@@ -1,6 +1,11 @@
 # Getting started with NgOptimizedImage
 
-Note: the `NgOptimizedImage` directive is currently in the ["Developer Preview" mode](https://angular.io/guide/releases#developer-preview). The Angular team will stabilize the APIs based on the feedback and will make an announcement once the APIs are fully stable.
+<div class="alert is-important">
+
+The `NgOptimizedImage` directive is available for [developer preview](https://angular.io/guide/releases#developer-preview).
+It's ready for you to try, but it might change before it is stable.
+
+</div>
 
 The `NgOptimizedImage` directive makes it easy to adopt performance best practices for loading images.
 
