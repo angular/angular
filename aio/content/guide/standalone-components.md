@@ -1,13 +1,13 @@
 # Getting started with standalone components
 
-In v14 and higher, **standalone components** provide a simplified way to build Angular applications. Standalone components, directives, and pipes aim to streamline the authoring experience by reducing the need for `NgModule`s. Existing applications can optionally and incrementally adopt the new standalone style without any breaking changes.
-
 <div class="alert is-important">
 
-The standalone component feature is available for developer preview. 
-It's ready for you to try; but it might change before it is stable.
+The standalone component feature is available for [developer preview](https://angular.io/guide/releases#developer-preview).
+It's ready for you to try, but it might change before it is stable.
 
 </div>
+
+In v14 and higher, **standalone components** provide a simplified way to build Angular applications. Standalone components, directives, and pipes aim to streamline the authoring experience by reducing the need for `NgModule`s. Existing applications can optionally and incrementally adopt the new standalone style without any breaking changes.
 
 ## Creating standalone components
 
