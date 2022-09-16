@@ -110,9 +110,7 @@ describe('MatSelect', () => {
       ],
     }).compileComponents();
 
-    inject([OverlayContainer], (oc: OverlayContainer) => {
-      overlayContainerElement = oc.getContainerElement();
-    })();
+    overlayContainerElement = TestBed.inject(OverlayContainer).getContainerElement();
   }
 
   describe('core', () => {
@@ -6002,7 +6000,7 @@ class SelectWithNgIfAndLabel {
   `,
 })
 class MultiSelectWithLotsOfOptions {
-  items = new Array(1000).fill(0).map((_, i) => i);
+  items = new Array(100).fill(0).map((_, i) => i);
   value: number[] = [];
 
   checkAll() {
