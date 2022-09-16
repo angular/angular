@@ -1028,54 +1028,63 @@
     "date": {
       "start": "2022-08-31"
     },
+    "linkUrl": "https://2022.ng-conf.org/",
     "name": "ng-conf"
   },
   {
     "date": {
       "start": "2022-09-12"
     },
+    "linkUrl": "https://www.telerik.com/devreach-2022",
     "name": "DevReach"
   },
   {
     "date": {
       "start": "2022-10-06"
     },
+    "linkUrl": "https://ng-de.org/",
     "name": "NG-DE"
   },
   {
     "date": {
       "start": "2022-10-06"
     },
+    "linkUrl": "https://nordicjs.com/2022",
     "name": "Nordic.js"
   },
   {
     "date": {
       "start": "2022-10-07"
     },
+    "linkUrl": "https://2022.angularday.it/",
     "name": "angularday"
   },
   {
     "date": {
       "start": "2022-10-18"
     },
+    "linkUrl": "https://extra.codemotion.com/conference-milan-2022",
     "name": "Codemotion Milan"
   },
   {
     "date": {
       "start": "2022-10-25"
     },
+    "linkUrl": "http://ng-poland.pl/",
     "name": "NG-Poland"
   },
   {
     "date": {
       "start": "2022-10-26"
     },
+    "linkUrl": "http://js-poland.pl/",
     "name": "JS Poland"
   },
   {
     "date": {
       "start": "2022-10-27"
     },
+    "linkUrl": "https://portotechhub.com/conference-2022",
     "name": "Porto Tech Hub"
   },
   {
@@ -1088,6 +1097,7 @@
     "date": {
       "start": "2022-12-02"
     },
+    "linkUrl": "https://ngrome.io/",
     "name": "ngRome"
   },
   {
