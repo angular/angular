@@ -211,7 +211,7 @@ export interface DirectiveDef<T> {
    * Patched onto the definition by the `HostDirectivesFeature`.
    */
   applyHostDirectives:
-      ((matches: DirectiveDef<unknown>[], def: DirectiveDef<unknown>, tView: TView, viewData: LView,
+      ((matches: DirectiveDef<unknown>[], def: DirectiveDef<unknown>, tView: TView, lView: LView,
         tNode: TElementNode|TContainerNode|TElementContainerNode) => void)|null;
 
   /** Additional directives to be applied whenever the directive has been matched. */

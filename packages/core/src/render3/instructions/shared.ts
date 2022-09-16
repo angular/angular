@@ -1062,9 +1062,10 @@ export function resolveDirectives(
 
   let hasDirectives = false;
   if (getBindingsEnabled()) {
-    const selectorMatches = findDirectiveDefMatches(tView, lView, tNode);
-    const directiveDefs =
-        selectorMatches ? applyHostDirectives(selectorMatches, tView, lView, tNode) : null;
+    const directiveDefsMatchedBySelectors = findDirectiveDefMatches(tView, lView, tNode);
+    const directiveDefs = directiveDefsMatchedBySelectors ?
+        applyHostDirectives(directiveDefsMatchedBySelectors, tView, lView, tNode) :
+        null;
     const exportsMap: ({[key: string]: number}|null) = localRefs === null ? null : {'': -1};
 
     if (directiveDefs !== null) {
