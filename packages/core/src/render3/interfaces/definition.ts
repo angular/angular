@@ -207,10 +207,10 @@ export interface DirectiveDef<T> {
   readonly features: DirectiveDefFeature[]|null;
 
   /**
-   * Function that will apply the host directives to the list of matches during directive matching.
+   * Function that will add the host directives to the list of matches during directive matching.
    * Patched onto the definition by the `HostDirectivesFeature`.
    */
-  applyHostDirectives:
+  findHostDirectiveDefs:
       ((matches: DirectiveDef<unknown>[], def: DirectiveDef<unknown>, tView: TView, lView: LView,
         tNode: TElementNode|TContainerNode|TElementContainerNode) => void)|null;
 

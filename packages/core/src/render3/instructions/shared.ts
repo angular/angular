@@ -1064,7 +1064,7 @@ export function resolveDirectives(
   if (getBindingsEnabled()) {
     const directiveDefsMatchedBySelectors = findDirectiveDefMatches(tView, lView, tNode);
     const directiveDefs = directiveDefsMatchedBySelectors ?
-        applyHostDirectives(directiveDefsMatchedBySelectors, tView, lView, tNode) :
+        findHostDirectiveDefs(directiveDefsMatchedBySelectors, tView, lView, tNode) :
         null;
     const exportsMap: ({[key: string]: number}|null) = localRefs === null ? null : {'': -1};
 
@@ -1317,16 +1317,16 @@ export function markAsComponentHost(tView: TView, hostTNode: TNode): void {
  * @param lView Current LView.
  * @param tNode Current TNode that is being matched.
  */
-function applyHostDirectives(
+function findHostDirectiveDefs(
     selectorMatches: DirectiveDef<unknown>[], tView: TView, lView: LView,
     tNode: TElementNode|TContainerNode|TElementContainerNode): DirectiveDef<unknown>[] {
   const matches: DirectiveDef<unknown>[] = [];
 
   for (const def of selectorMatches) {
-    if (def.applyHostDirectives === null) {
+    if (def.findHostDirectiveDefs === null) {
       matches.push(def);
     } else {
-      def.applyHostDirectives(matches, def, tView, lView, tNode);
+      def.findHostDirectiveDefs(matches, def, tView, lView, tNode);
     }
   }
 

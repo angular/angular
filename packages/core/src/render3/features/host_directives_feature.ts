@@ -43,7 +43,7 @@ type HostDirectiveConfig = Type<unknown>|{
 export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig[]|
                                         (() => HostDirectiveConfig[])) {
   return (definition: DirectiveDef<unknown>) => {
-    definition.applyHostDirectives = applyHostDirectives;
+    definition.findHostDirectiveDefs = findHostDirectiveDefs;
     definition.hostDirectives =
         (Array.isArray(rawHostDirectives) ? rawHostDirectives : rawHostDirectives()).map(dir => {
           return typeof dir === 'function' ?
@@ -57,7 +57,7 @@ export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig
   };
 }
 
-function applyHostDirectives(
+function findHostDirectiveDefs(
     matches: DirectiveDef<unknown>[], def: DirectiveDef<unknown>, tView: TView, lView: LView,
     tNode: TElementNode|TContainerNode|TElementContainerNode): void {
   if (def.hostDirectives !== null) {
@@ -67,7 +67,7 @@ function applyHostDirectives(
       // TODO(crisbeto): assert that the def exists.
 
       // Host directives execute before the host so that its host bindings can be overwritten.
-      applyHostDirectives(matches, hostDirectiveDef, tView, lView, tNode);
+      findHostDirectiveDefs(matches, hostDirectiveDef, tView, lView, tNode);
     }
   }
 
