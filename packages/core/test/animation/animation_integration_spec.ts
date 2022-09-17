@@ -3923,13 +3923,11 @@ describe('animation tests', function() {
       ]);
     });
 
-    it('should combine the delay specified in the animation with that of the caller', () => {
-      const animationMetaData = animation(
-          [
-            style({color: 'red'}),
-            animate(500, style({color: 'green'})),
-          ],
-          {delay: 2000});
+    it('should apply the delay specified in the useAnimation call', () => {
+      const animationMetaData = animation([
+        style({color: 'red'}),
+        animate(550, style({color: 'green'})),
+      ]);
 
       @Component({
         selector: 'cmp',
@@ -3938,7 +3936,10 @@ describe('animation tests', function() {
          </div>
        `,
         animations: [
-          trigger('anim', [transition(':enter', useAnimation(animationMetaData), {delay: 750})]),
+          trigger('anim', [transition(
+                              ':enter',
+                              useAnimation(animationMetaData, {delay: 1500}),
+                              )]),
         ]
       })
       class Cmp {
@@ -3958,13 +3959,108 @@ describe('animation tests', function() {
       const players = getLog();
       expect(players.length).toEqual(1);
       const [player] = players;
-      expect(player.delay).toEqual(2750);
-      expect(player.duration).toEqual(500);
+      expect(player.delay).toEqual(1500);
+      expect(player.duration).toEqual(550);
       expect(player.keyframes).toEqual([
         new Map<string, string|number>([['color', 'red'], ['offset', 0]]),
         new Map<string, string|number>([['color', 'green'], ['offset', 1]]),
       ]);
     });
+
+    it('should apply the delay specified in the useAnimation call using params', () => {
+      const animationMetaData = animation(
+          [
+            style({color: 'red'}),
+            animate(700, style({color: 'green'})),
+          ],
+      );
+
+      @Component({
+        selector: 'cmp',
+        template: `
+         <div @anim *ngIf="exp">
+         </div>
+       `,
+        animations: [
+          trigger('anim', [transition(
+                              ':enter',
+                              useAnimation(animationMetaData, {
+                                delay: '{{useAnimationDelay}}ms',
+                                params: {useAnimationDelay: 7500}
+                              }),
+                              )]),
+        ]
+      })
+      class Cmp {
+        exp: boolean = false;
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+
+      const engine = TestBed.inject(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+      cmp.exp = true;
+
+      fixture.detectChanges();
+      engine.flush();
+
+      const players = getLog();
+      expect(players.length).toEqual(1);
+      const [player] = players;
+      expect(player.delay).toEqual(7500);
+      expect(player.duration).toEqual(700);
+      expect(player.keyframes).toEqual([
+        new Map<string, string|number>([['color', 'red'], ['offset', 0]]),
+        new Map<string, string|number>([['color', 'green'], ['offset', 1]]),
+      ]);
+    });
+
+    it('should combine the delays specified in the animation and the useAnimation with that of the caller',
+       () => {
+         const animationMetaData = animation(
+             [
+               style({color: 'red'}),
+               animate(567, style({color: 'green'})),
+             ],
+             {delay: 1000});
+
+         @Component({
+           selector: 'cmp',
+           template: `
+         <div @anim *ngIf="exp">
+         </div>
+       `,
+           animations: [
+             trigger('anim', [transition(
+                                 ':enter', useAnimation(animationMetaData, {delay: 34}),
+                                 {delay: 200})]),
+           ]
+         })
+         class Cmp {
+           exp: boolean = false;
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.inject(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+         cmp.exp = true;
+
+         fixture.detectChanges();
+         engine.flush();
+
+         const players = getLog();
+         expect(players.length).toEqual(1);
+         const [player] = players;
+         expect(player.delay).toEqual(1234);
+         expect(player.duration).toEqual(567);
+         expect(player.keyframes).toEqual([
+           new Map<string, string|number>([['color', 'red'], ['offset', 0]]),
+           new Map<string, string|number>([['color', 'green'], ['offset', 1]]),
+         ]);
+       });
   });
 
   it('should combine multiple errors together into one exception when an animation fails to be built',
