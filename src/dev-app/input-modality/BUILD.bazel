@@ -8,10 +8,10 @@ ng_module(
     assets = ["input-modality-detector-demo.html"],
     deps = [
         "//src/cdk/a11y",
-        "//src/material/legacy-button",
-        "//src/material/legacy-form-field",
-        "//src/material/legacy-input",
-        "//src/material/legacy-radio",
-        "//src/material/legacy-select",
+        "//src/material/button",
+        "//src/material/form-field",
+        "//src/material/input",
+        "//src/material/radio",
+        "//src/material/select",
     ],
 )

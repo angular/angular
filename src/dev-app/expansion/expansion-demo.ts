@@ -10,18 +10,18 @@ import {Component, ViewChild} from '@angular/core';
 import {CdkAccordionModule} from '@angular/cdk/accordion';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {
   MatAccordion,
   MatAccordionDisplayMode,
   MatAccordionTogglePosition,
   MatExpansionModule,
 } from '@angular/material/expansion';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
-import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'expansion-demo',
@@ -32,13 +32,13 @@ import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle'
     CdkAccordionModule,
     CommonModule,
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCheckboxModule,
+    MatButtonModule,
+    MatCheckboxModule,
     MatExpansionModule,
-    MatLegacyFormFieldModule,
-    MatLegacyInputModule,
-    MatLegacyRadioModule,
-    MatLegacySlideToggleModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRadioModule,
+    MatSlideToggleModule,
   ],
 })
 export class ExpansionDemo {

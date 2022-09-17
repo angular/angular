@@ -16,11 +16,11 @@ import {
   QueryList,
 } from '@angular/core';
 import {A11yModule, CdkTrapFocus} from '@angular/cdk/a11y';
-import {MatLegacyDialog, MatLegacyDialogModule} from '@angular/material/legacy-dialog';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
@@ -40,9 +40,9 @@ export class FocusTrapShadowDomDemo {}
   imports: [
     A11yModule,
     CommonModule,
-    MatLegacyButtonModule,
-    MatLegacyCardModule,
-    MatLegacyDialogModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
     MatToolbarModule,
     FocusTrapShadowDomDemo,
   ],
@@ -56,7 +56,7 @@ export class FocusTrapDemo implements AfterViewInit {
 
   _supportsShadowDom = _supportsShadowDom();
 
-  constructor(public dialog: MatLegacyDialog) {}
+  constructor(public dialog: MatDialog) {}
 
   ngAfterViewInit() {
     // We want all the traps to be disabled by default, but doing so while using the value in
@@ -91,11 +91,11 @@ let dialogCount = 0;
   styleUrls: ['focus-trap-dialog-demo.css'],
   templateUrl: 'focus-trap-dialog-demo.html',
   standalone: true,
-  imports: [MatLegacyDialogModule],
+  imports: [MatDialogModule],
 })
 export class FocusTrapDialogDemo {
   id = dialogCount++;
-  constructor(public dialog: MatLegacyDialog) {}
+  constructor(public dialog: MatDialog) {}
 
   openAnotherDialog() {
     this.dialog.open(FocusTrapDialogDemo);

@@ -11,8 +11,8 @@ ng_module(
     ],
     deps = [
         "//src/material/button-toggle",
+        "//src/material/checkbox",
         "//src/material/icon",
-        "//src/material/legacy-checkbox",
     ],
 )
 

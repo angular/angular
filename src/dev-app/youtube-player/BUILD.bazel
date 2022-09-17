@@ -10,8 +10,8 @@ ng_module(
         ":youtube_player_demo_scss",
     ],
     deps = [
-        "//src/material/legacy-checkbox",
-        "//src/material/legacy-radio",
+        "//src/material/checkbox",
+        "//src/material/radio",
         "//src/youtube-player",
         "@npm//@angular/forms",
     ],

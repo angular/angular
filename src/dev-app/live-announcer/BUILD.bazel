@@ -8,6 +8,6 @@ ng_module(
     assets = ["live-announcer-demo.html"],
     deps = [
         "//src/cdk/a11y",
-        "//src/material/legacy-button",
+        "//src/material/button",
     ],
 )

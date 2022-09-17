@@ -16,11 +16,11 @@ import {
 } from '@angular/forms';
 import {ThemePalette} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 import {MatStepperModule} from '@angular/material/stepper';
 
 @Component({
@@ -30,12 +30,12 @@ import {MatStepperModule} from '@angular/material/stepper';
   imports: [
     CommonModule,
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCheckboxModule,
-    MatLegacyFormFieldModule,
-    MatLegacyInputModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatStepperModule,
-    MatLegacySelectModule,
+    MatSelectModule,
     ReactiveFormsModule,
   ],
 })

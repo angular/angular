@@ -48,6 +48,7 @@ ng_module(
         "//src/dev-app/input-modality",
         "//src/dev-app/layout",
         "//src/dev-app/legacy-autocomplete",
+        "//src/dev-app/legacy-baseline",
         "//src/dev-app/legacy-button",
         "//src/dev-app/legacy-card",
         "//src/dev-app/legacy-checkbox",

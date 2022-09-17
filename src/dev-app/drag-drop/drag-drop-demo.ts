@@ -17,9 +17,9 @@ import {
 } from '@angular/cdk/drag-drop';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 
 @Component({
   selector: 'drag-drop-demo',
@@ -32,10 +32,10 @@ import {MatLegacySelectModule} from '@angular/material/legacy-select';
     CommonModule,
     DragDropModule,
     FormsModule,
-    MatLegacyFormFieldModule,
+    MatFormFieldModule,
     MatIconModule,
-    MatLegacyInputModule,
-    MatLegacySelectModule,
+    MatInputModule,
+    MatSelectModule,
   ],
 })
 export class DragAndDropDemo {

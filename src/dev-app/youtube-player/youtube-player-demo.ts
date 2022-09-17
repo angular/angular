@@ -16,9 +16,9 @@ import {
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
+import {MatRadioModule} from '@angular/material/radio';
 import {YouTubePlayerModule} from '@angular/youtube-player';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 interface Video {
   id: string;
@@ -45,13 +45,7 @@ const VIDEOS: Video[] = [
   templateUrl: 'youtube-player-demo.html',
   styleUrls: ['youtube-player-demo.css'],
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatLegacyRadioModule,
-    MatLegacyCheckboxModule,
-    YouTubePlayerModule,
-  ],
+  imports: [CommonModule, FormsModule, MatRadioModule, MatCheckboxModule, YouTubePlayerModule],
 })
 export class YouTubePlayerDemo implements AfterViewInit, OnDestroy {
   @ViewChild('demoYouTubePlayer') demoYouTubePlayer: ElementRef<HTMLDivElement>;

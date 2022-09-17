@@ -8,11 +8,8 @@
 
 import {Component} from '@angular/core';
 import {ToolbarExamplesModule} from '@angular/components-examples/material/toolbar';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
@@ -20,14 +17,6 @@ import {MatToolbarModule} from '@angular/material/toolbar';
   templateUrl: 'toolbar-demo.html',
   styleUrls: ['toolbar-demo.css'],
   standalone: true,
-  imports: [
-    MatLegacyButtonModule,
-    MatLegacyFormFieldModule,
-    MatIconModule,
-    MatLegacyInputModule,
-    MatLegacySelectModule,
-    MatToolbarModule,
-    ToolbarExamplesModule,
-  ],
+  imports: [MatButtonModule, MatIconModule, MatToolbarModule, ToolbarExamplesModule],
 })
 export class ToolbarDemo {}

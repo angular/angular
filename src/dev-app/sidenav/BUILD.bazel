@@ -10,8 +10,8 @@ ng_module(
         ":sidenav_demo_scss",
     ],
     deps = [
-        "//src/material/legacy-button",
-        "//src/material/legacy-checkbox",
+        "//src/material/button",
+        "//src/material/checkbox",
         "//src/material/sidenav",
         "//src/material/toolbar",
         "@npm//@angular/forms",

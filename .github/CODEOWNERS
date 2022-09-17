@@ -153,6 +153,7 @@
 /src/dev-app/autocomplete/**                                @crisbeto
 /src/dev-app/badge/**                                       @andrewseguin
 /src/dev-app/baseline/**                                    @mmalerba
+/src/dev-app/legacy-baseline/**                             @mmalerba
 /src/dev-app/bottom-sheet/**                                @andrewseguin @crisbeto
 /src/dev-app/button-toggle/**                               @andrewseguin
 /src/dev-app/button/**                                      @andrewseguin

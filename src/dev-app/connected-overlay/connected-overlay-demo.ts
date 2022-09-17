@@ -26,9 +26,9 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatRadioModule} from '@angular/material/radio';
 
 @Component({
   selector: 'overlay-demo',
@@ -40,9 +40,9 @@ import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
     CdkOverlayExamplesModule,
     CommonModule,
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCheckboxModule,
-    MatLegacyRadioModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatRadioModule,
     OverlayModule,
   ],
 })

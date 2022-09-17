@@ -12,11 +12,11 @@ import {A11yModule, InputModality, InputModalityDetector} from '@angular/cdk/a11
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CommonModule} from '@angular/common';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatButtonModule} from '@angular/material/button';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSelectModule} from '@angular/material/select';
 
 @Component({
   selector: 'input-modality-detector-demo',
@@ -25,11 +25,11 @@ import {MatLegacySelectModule} from '@angular/material/legacy-select';
   imports: [
     A11yModule,
     CommonModule,
-    MatLegacyButtonModule,
-    MatLegacyFormFieldModule,
-    MatLegacyInputModule,
-    MatLegacyRadioModule,
-    MatLegacySelectModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRadioModule,
+    MatSelectModule,
   ],
 })
 export class InputModalityDetectorDemo implements OnDestroy {

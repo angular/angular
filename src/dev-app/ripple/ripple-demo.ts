@@ -9,11 +9,11 @@
 import {Component, ViewChild} from '@angular/core';
 import {CoreExamplesModule} from '@angular/components-examples/material/core';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRipple} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatInputModule} from '@angular/material/input';
 
 @Component({
   selector: 'ripple-demo',
@@ -23,10 +23,10 @@ import {MatLegacyInputModule} from '@angular/material/legacy-input';
   imports: [
     CoreExamplesModule,
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCheckboxModule,
+    MatButtonModule,
+    MatCheckboxModule,
     MatIconModule,
-    MatLegacyInputModule,
+    MatInputModule,
   ],
 })
 export class RippleDemo {

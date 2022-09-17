@@ -3,10 +3,12 @@
 <mat-checkbox [(ngModel)]="unbounded" class="example-ripple-checkbox">Unbounded</mat-checkbox>
 
 <mat-form-field class="example-ripple-form-field" appearance="fill">
-  <input matInput [(ngModel)]="radius" type="number" placeholder="Radius">
+  <mat-label>Radius</mat-label>
+  <input matInput [(ngModel)]="radius" type="number">
 </mat-form-field>
 <mat-form-field class="example-ripple-form-field" appearance="fill">
-  <input matInput [(ngModel)]="color" type="text" placeholder="Color">
+  <mat-label>Color</mat-label>
+  <input matInput [(ngModel)]="color" type="text">
 </mat-form-field>
 
 

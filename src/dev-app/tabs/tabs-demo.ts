@@ -7,13 +7,13 @@
  */
 
 import {Component} from '@angular/core';
-import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {TabGroupExamplesModule} from '@angular/components-examples/material/tabs';
 
 @Component({
   selector: 'tabs-demo',
   templateUrl: 'tabs-demo.html',
   standalone: true,
-  imports: [TabGroupExamplesModule, MatLegacyTabsModule],
+  imports: [TabGroupExamplesModule, MatTabsModule],
 })
 export class TabsDemo {}

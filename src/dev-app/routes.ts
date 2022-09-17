@@ -29,6 +29,11 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./baseline/baseline-demo').then(m => m.BaselineDemo),
   },
   {
+    path: 'legacy-baseline',
+    loadComponent: () =>
+      import('./legacy-baseline/legacy-baseline-demo').then(m => m.LegacyBaselineDemo),
+  },
+  {
     path: 'button',
     loadComponent: () => import('./button/button-demo').then(m => m.ButtonDemo),
   },

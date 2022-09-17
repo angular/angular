@@ -37,9 +37,9 @@
 <ng-template let-bottomSheetRef="bottomSheetRef">
   <mat-nav-list>
     <mat-list-item (click)="bottomSheetRef.dismiss()" *ngFor="let action of [1, 2, 3]">
-      <mat-icon mat-list-icon>folder</mat-icon>
-      <span mat-line>Action {{ action }}</span>
-      <span mat-line>Description</span>
+      <mat-icon matListItemIcon>folder</mat-icon>
+      <span matListItemTitle>Action {{ action }}</span>
+      <span matLine>Description</span>
     </mat-list-item>
   </mat-nav-list>
 </ng-template>

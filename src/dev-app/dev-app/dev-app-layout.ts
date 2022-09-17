@@ -52,7 +52,7 @@ export class DevAppLayout {
     {name: 'CDK Menu', route: '/cdk-menu'},
     {name: 'Autocomplete', route: '/autocomplete'},
     {name: 'Badge', route: '/badge'},
-    {name: 'Bottom sheet', route: '/bottom-sheet'},
+    {name: 'Bottom Sheet', route: '/bottom-sheet'},
     {name: 'Button Toggle', route: '/button-toggle'},
     {name: 'Button', route: '/button'},
     {name: 'Card', route: '/card'},

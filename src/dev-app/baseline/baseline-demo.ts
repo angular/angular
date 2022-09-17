@@ -8,12 +8,12 @@
 
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSelectModule} from '@angular/material/select';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
@@ -23,12 +23,12 @@ import {MatToolbarModule} from '@angular/material/toolbar';
   standalone: true,
   imports: [
     CommonModule,
-    MatLegacyCardModule,
-    MatLegacyCheckboxModule,
-    MatLegacyFormFieldModule,
-    MatLegacyInputModule,
-    MatLegacyRadioModule,
-    MatLegacySelectModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRadioModule,
+    MatSelectModule,
     MatToolbarModule,
   ],
 })

@@ -15,14 +15,14 @@ import {
   MatBottomSheetModule,
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacyListModule} from '@angular/material/legacy-list';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
 
 const defaultConfig = new MatBottomSheetConfig();
 
@@ -35,14 +35,14 @@ const defaultConfig = new MatBottomSheetConfig();
     CommonModule,
     FormsModule,
     MatBottomSheetModule,
-    MatLegacyButtonModule,
-    MatLegacyCardModule,
-    MatLegacyCheckboxModule,
-    MatLegacyFormFieldModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
     MatIconModule,
-    MatLegacyInputModule,
-    MatLegacySelectModule,
-    MatLegacyListModule,
+    MatInputModule,
+    MatSelectModule,
+    MatListModule,
   ],
 })
 export class BottomSheetDemo {
@@ -71,13 +71,13 @@ export class BottomSheetDemo {
   template: `
     <mat-nav-list>
       <a href="#" mat-list-item (click)="handleClick($event)" *ngFor="let action of [1, 2, 3]">
-        <span mat-line>Action {{ action }}</span>
-        <span mat-line>Description</span>
+        <span matListItemTitle>Action {{ action }}</span>
+        <span matListItemLine>Description</span>
       </a>
     </mat-nav-list>
   `,
   standalone: true,
-  imports: [CommonModule, MatLegacyListModule],
+  imports: [CommonModule, MatListModule],
 })
 export class ExampleBottomSheet {
   constructor(private _bottomSheet: MatBottomSheetRef) {}

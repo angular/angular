@@ -7,8 +7,8 @@
  */
 
 import {Component} from '@angular/core';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyListModule} from '@angular/material/legacy-list';
+import {MatButtonModule} from '@angular/material/button';
+import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
 
 @Component({
@@ -16,7 +16,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
   templateUrl: 'drawer-demo.html',
   styleUrls: ['drawer-demo.css'],
   standalone: true,
-  imports: [MatLegacyButtonModule, MatLegacyListModule, MatSidenavModule],
+  imports: [MatButtonModule, MatListModule, MatSidenavModule],
 })
 export class DrawerDemo {
   invert = false;

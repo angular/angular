@@ -1,9 +1,9 @@
 <mat-sidenav-container class="demo-container">
-  <mat-sidenav #start role="navigation">
+  <mat-sidenav #navigation role="navigation">
     <mat-nav-list>
       <a *ngFor="let navItem of navItems"
          mat-list-item
-         (click)="start.close()"
+         (click)="navigation.close()"
          routerLinkActive
          #routerLinkActiveInstance="routerLinkActive"
          [attr.tabindex]="routerLinkActiveInstance.isActive ? 0 : -1"
@@ -11,16 +11,23 @@
         {{navItem.name}}
       </a>
 
-      <hr>
+      <mat-divider></mat-divider>
+
+      <a mat-list-item
+          tabindex="-1"
+          (click)="navigation.close()"
+          [routerLink]="['/baseline']">
+        Baseline
+      </a>
 
       <a mat-list-item
          tabindex="-1"
-         (click)="start.close()"
-         [routerLink]="['/baseline']">
-        Baseline
+         (click)="navigation.close()"
+         [routerLink]="['/legacy-baseline']">
+        Legacy Baseline
       </a>
     </mat-nav-list>
-    <button mat-button tabindex="-1" (click)="start.close()">CLOSE</button>
+    <button mat-button tabindex="-1" (click)="navigation.close()">CLOSE</button>
   </mat-sidenav>
   <!--
     Note that the setup with the directionality and density is a little convoluted, but it's
@@ -32,7 +39,7 @@
   <main [attr.dir]="dir.value" [ngClass]="getDensityClass()" class="demo-main">
     <!-- The toolbar should always be in the LTR direction -->
     <mat-toolbar color="primary" dir="ltr">
-      <button mat-icon-button (click)="start.open('mouse')">
+      <button mat-icon-button (click)="navigation.open('mouse')">
         <mat-icon>menu</mat-icon>
       </button>
       <div class="demo-toolbar">
