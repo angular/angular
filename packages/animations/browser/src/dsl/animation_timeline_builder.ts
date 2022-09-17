@@ -183,32 +183,25 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
   visitAnimateRef(ast: AnimateRefAst, context: AnimationTimelineContext): any {
     const innerContext = context.createSubContext(ast.options);
     innerContext.transformIntoNewTimeline();
-    this._applyAnimateRefDelay(ast.animation, context, innerContext);
+    this._applyAnimationRefDelays([ast.options, ast.animation.options], context, innerContext);
     this.visitReference(ast.animation, innerContext);
     context.transformIntoNewTimeline(innerContext.currentTimeline.currentTime);
     context.previousNode = ast;
   }
 
-  private _applyAnimateRefDelay(
-      animation: ReferenceAst, context: AnimationTimelineContext,
+  private _applyAnimationRefDelays(
+      animationsRefsOptions: (AnimationOptions|null)[], context: AnimationTimelineContext,
       innerContext: AnimationTimelineContext) {
-    const animationDelay = animation.options?.delay;
-
-    if (!animationDelay) {
-      return;
+    for (const animationRefOptions of animationsRefsOptions) {
+      const animationDelay = animationRefOptions?.delay;
+      if (animationDelay) {
+        const animationDelayValue = typeof animationDelay === 'number' ?
+            animationDelay :
+            resolveTimingValue(interpolateParams(
+                animationDelay, animationRefOptions?.params ?? {}, context.errors));
+        innerContext.delayNextStep(animationDelayValue);
+      }
     }
-
-    let animationDelayValue: number;
-
-    if (typeof animationDelay === 'string') {
-      const interpolatedDelay =
-          interpolateParams(animationDelay, animation.options?.params ?? {}, context.errors);
-      animationDelayValue = resolveTimingValue(interpolatedDelay);
-    } else {
-      animationDelayValue = animationDelay;
-    }
-
-    innerContext.delayNextStep(animationDelayValue);
   }
 
   private _visitSubInstructions(
