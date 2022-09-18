@@ -18,7 +18,6 @@ const ELEMENT_DATA = [
  */
 @Component({
   selector: 'table-with-ripples-example',
-  styleUrls: ['table-with-ripples-example.css'],
   templateUrl: 'table-with-ripples-example.html',
 })
 export class TableWithRipplesExample {

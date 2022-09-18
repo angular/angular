@@ -3,6 +3,6 @@
   align-items: center;
 }
 
-.example-headers-align .mat-form-field + .mat-form-field {
+.example-headers-align .mat-mdc-form-field + .mat-mdc-form-field {
   margin-left: 8px;
 }

@@ -1,12 +1,12 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyListModule} from '@angular/material/legacy-list';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatListModule} from '@angular/material/list';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSelectModule} from '@angular/material/select';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {SidenavAutosizeExample} from './sidenav-autosize/sidenav-autosize-example';
@@ -53,13 +53,13 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCheckboxModule,
+    MatButtonModule,
+    MatCheckboxModule,
     MatIconModule,
-    MatLegacyListModule,
-    MatLegacyRadioModule,
+    MatListModule,
+    MatRadioModule,
     MatSidenavModule,
-    MatLegacySelectModule,
+    MatSelectModule,
     MatToolbarModule,
     ReactiveFormsModule,
   ],

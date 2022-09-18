@@ -13,7 +13,7 @@ ng_module(
         "//src/cdk/collections",
         "//src/cdk/table",
         "//src/material-experimental/selection",
-        "//src/material/legacy-checkbox",
+        "//src/material/checkbox",
         "@npm//@angular/forms",
     ],
 )

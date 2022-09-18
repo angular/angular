@@ -1,13 +1,13 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatRippleModule} from '@angular/material/core';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacyPaginatorModule} from '@angular/material/legacy-paginator';
-import {MatLegacyProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
+import {MatInputModule} from '@angular/material/input';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import {DragDropModule} from '@angular/cdk/drag-drop';
@@ -118,13 +118,13 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     CommonModule,
-    MatLegacyButtonModule,
+    MatButtonModule,
     MatButtonToggleModule,
-    MatLegacyCheckboxModule,
+    MatCheckboxModule,
     MatIconModule,
-    MatLegacyInputModule,
-    MatLegacyPaginatorModule,
-    MatLegacyProgressSpinnerModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
     MatRippleModule,
     MatSortModule,
     MatTableModule,

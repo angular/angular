@@ -11,7 +11,7 @@ ng_module(
     ]),
     deps = [
         "//src/cdk/a11y",
-        "//src/material/legacy-select",
+        "//src/material/select",
     ],
 )
 

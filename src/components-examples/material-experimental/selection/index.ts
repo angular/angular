@@ -1,9 +1,9 @@
 import {MatSelectionModule} from '@angular/material-experimental/selection';
-import {MatLegacyTableModule} from '@angular/material/legacy-table';
+import {MatTableModule} from '@angular/material/table';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 import {MatSelectionColumnExample} from './mat-selection-column/mat-selection-column-example';
 import {MatSelectionListExample} from './mat-selection-list/mat-selection-list-example';
@@ -15,11 +15,11 @@ const EXAMPLES = [MatSelectionListExample, MatSelectionColumnExample];
 @NgModule({
   imports: [
     MatSelectionModule,
-    MatLegacyTableModule,
+    MatTableModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatLegacyCheckboxModule,
+    MatCheckboxModule,
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,

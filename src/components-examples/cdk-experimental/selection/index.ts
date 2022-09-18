@@ -3,7 +3,7 @@ import {CdkTableModule} from '@angular/cdk/table';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 import {CdkSelectionColumnExample} from './cdk-selection-column/cdk-selection-column-example';
 import {CdkSelectionListExample} from './cdk-selection-list/cdk-selection-list-example';
@@ -19,7 +19,7 @@ const EXAMPLES = [CdkSelectionListExample, CdkSelectionColumnExample];
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatLegacyCheckboxModule,
+    MatCheckboxModule,
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,

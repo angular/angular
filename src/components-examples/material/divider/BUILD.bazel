@@ -17,7 +17,7 @@ ng_module(
         "//src/cdk/testing/testbed",
         "//src/material/divider",
         "//src/material/divider/testing",
-        "//src/material/legacy-list",
+        "//src/material/list",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types/jasmine",

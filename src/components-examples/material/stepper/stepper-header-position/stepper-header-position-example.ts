@@ -7,7 +7,6 @@ import {FormBuilder, Validators} from '@angular/forms';
 @Component({
   selector: 'stepper-header-position-example',
   templateUrl: 'stepper-header-position-example.html',
-  styleUrls: ['stepper-header-position-example.css'],
 })
 export class StepperHeaderPositionExample {
   firstFormGroup = this._formBuilder.group({

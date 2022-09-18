@@ -6,6 +6,5 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'stepper-lazy-content-example',
   templateUrl: 'stepper-lazy-content-example.html',
-  styleUrls: ['stepper-lazy-content-example.css'],
 })
 export class StepperLazyContentExample {}

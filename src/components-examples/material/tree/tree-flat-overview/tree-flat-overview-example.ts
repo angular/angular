@@ -44,7 +44,6 @@ interface ExampleFlatNode {
 @Component({
   selector: 'tree-flat-overview-example',
   templateUrl: 'tree-flat-overview-example.html',
-  styleUrls: ['tree-flat-overview-example.css'],
 })
 export class TreeFlatOverviewExample {
   private _transformer = (node: FoodNode, level: number) => {

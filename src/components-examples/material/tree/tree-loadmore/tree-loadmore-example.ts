@@ -98,7 +98,6 @@ export class LoadmoreDatabase {
 @Component({
   selector: 'tree-loadmore-example',
   templateUrl: 'tree-loadmore-example.html',
-  styleUrls: ['tree-loadmore-example.css'],
   providers: [LoadmoreDatabase],
 })
 export class TreeLoadmoreExample {

@@ -11,8 +11,8 @@ ng_module(
     ]),
     deps = [
         "//src/cdk/tree",
+        "//src/material/button",
         "//src/material/icon",
-        "//src/material/legacy-button",
     ],
 )
 

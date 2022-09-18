@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {FormValueContainer} from '@angular/cdk-experimental/popover-edit';
 import {NgForm} from '@angular/forms';
-import {MatLegacySnackBar} from '@angular/material/legacy-snack-bar';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 export type ElementType = 'Metal' | 'Semimetal' | 'Nonmetal';
@@ -220,7 +220,7 @@ export class PopoverEditMatTableExample {
   readonly typeValues = new FormValueContainer<PeriodicElement, any>();
   readonly fantasyValues = new FormValueContainer<PeriodicElement, any>();
 
-  constructor(private readonly _snackBar: MatLegacySnackBar) {}
+  constructor(private readonly _snackBar: MatSnackBar) {}
 
   onSubmitName(element: PeriodicElement, f: NgForm) {
     if (!f.valid) {
