@@ -893,19 +893,20 @@ export function initializeInputAndOutputAliases(tView: TView, tNode: TNode): voi
   const inputsFromAttrs: InitialInputData = ngDevMode ? new TNodeInitialInputs() : [];
   let inputsStore: PropertyAliases|null = null;
   let outputsStore: PropertyAliases|null = null;
+
   for (let i = start; i < end; i++) {
     const directiveDef = tViewData[i] as DirectiveDef<any>;
-    const directiveInputs = directiveDef.inputs;
+    inputsStore = generatePropertyAliases(directiveDef.inputs, i, inputsStore);
+    outputsStore = generatePropertyAliases(directiveDef.outputs, i, outputsStore);
     // Do not use unbound attributes as inputs to structural directives, since structural
     // directive inputs can only be set using microsyntax (e.g. `<div *dir="exp">`).
     // TODO(FW-1930): microsyntax expressions may also contain unbound/static attributes, which
     // should be set for inline templates.
-    const initialInputs = (tNodeAttrs !== null && !isInlineTemplate(tNode)) ?
-        generateInitialInputs(directiveInputs, tNodeAttrs) :
+    const initialInputs =
+        (inputsStore !== null && tNodeAttrs !== null && !isInlineTemplate(tNode)) ?
+        generateInitialInputs(inputsStore, i, tNodeAttrs) :
         null;
     inputsFromAttrs.push(initialInputs);
-    inputsStore = generatePropertyAliases(directiveInputs, i, inputsStore);
-    outputsStore = generatePropertyAliases(directiveDef.outputs, i, outputsStore);
   }
 
   if (inputsStore !== null) {
@@ -1487,11 +1488,12 @@ function setInputsFromAttrs<T>(
  *
  * <my-component name="Bess"></my-component>
  *
- * @param inputs The list of inputs from the directive def
- * @param attrs The static attrs on this node
+ * @param inputs Input alias map that was generated from the directive def inputs.
+ * @param directiveIndex Index of the directive that is currently being processed.
+ * @param attrs Static attrs on this node.
  */
-function generateInitialInputs(inputs: {[key: string]: string}, attrs: TAttributes): InitialInputs|
-    null {
+function generateInitialInputs(
+    inputs: PropertyAliases, directiveIndex: number, attrs: TAttributes): InitialInputs|null {
   let inputsToStore: InitialInputs|null = null;
   let i = 0;
   while (i < attrs.length) {
@@ -1511,7 +1513,19 @@ function generateInitialInputs(inputs: {[key: string]: string}, attrs: TAttribut
 
     if (inputs.hasOwnProperty(attrName as string)) {
       if (inputsToStore === null) inputsToStore = [];
-      inputsToStore.push(attrName as string, inputs[attrName as string], attrs[i + 1] as string);
+
+      // Find the input's public name from the input store. Note that we can be found easier
+      // through the directive def, but we want to do it using the inputs store so that it can
+      // account for host directive aliases.
+      const inputConfig = inputs[attrName as string];
+      for (let j = 0; j < inputConfig.length; j += 2) {
+        if (inputConfig[j] === directiveIndex) {
+          inputsToStore.push(
+              attrName as string, inputConfig[j + 1] as string, attrs[i + 1] as string);
+          // A directive can't have multiple inputs with the same name so we can break here.
+          break;
+        }
+      }
     }
 
     i += 2;
