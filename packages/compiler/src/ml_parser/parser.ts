@@ -307,10 +307,11 @@ class _TreeBuilder {
   }
 
   private _pushElement(el: html.Element) {
-    const parentEl = this._getParentElement();
+    let parentEl = this._getParentElement();
 
-    if (parentEl && this.getTagDefinition(parentEl.name).isClosedByChild(el.name)) {
+    while (parentEl && this.getTagDefinition(parentEl.name).isClosedByChild(el.name)) {
       this._elementStack.pop();
+      parentEl = this._getParentElement();
     }
 
     this._addToParent(el);

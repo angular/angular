@@ -257,6 +257,20 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           ]);
           expect(errors).toEqual([]);
         });
+
+        // https://github.com/angular/angular/issues/47473
+        it('should auto-close multiple elements at once', () => {
+          // The second <li> element should close both the <p> and the first <li> element.
+          expect(humanizeDom(parser.parse('<ul><li>bbb<p>ccc<li>ddd</ul>', 'TestComp'))).toEqual([
+            [html.Element, 'ul', 0],
+            [html.Element, 'li', 1],
+            [html.Text, 'bbb', 2, ['bbb']],
+            [html.Element, 'p', 2],
+            [html.Text, 'ccc', 3, ['ccc']],
+            [html.Element, 'li', 1],
+            [html.Text, 'ddd', 2, ['ddd']],
+          ]);
+        });
       });
 
       describe('attributes', () => {
