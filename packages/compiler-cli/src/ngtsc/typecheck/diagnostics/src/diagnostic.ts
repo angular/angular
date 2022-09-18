@@ -10,7 +10,7 @@ import {ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
 
 import {addDiagnosticChain, makeDiagnosticChain} from '../../../diagnostics';
-import {ExternalTemplateSourceMapping, TemplateDiagnostic, TemplateId, TemplateSourceMapping} from '../../api';
+import {ExternalTemplateSourceMapping, IndirectTemplateSourceMapping, TemplateDiagnostic, TemplateId, TemplateSourceMapping} from '../../api';
 
 /**
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
@@ -82,7 +82,7 @@ export function makeTemplateDiagnostic(
 
     let sf: ts.SourceFile;
     try {
-      sf = parseTemplateAsSourceFile(fileName, mapping.template);
+      sf = getParsedTemplateSourceFile(fileName, mapping);
     } catch (e) {
       const failureChain = makeDiagnosticChain(
           `Failed to report an error in '${fileName}' at ${span.start.line + 1}:${
@@ -135,6 +135,22 @@ export function makeTemplateDiagnostic(
   }
 }
 
+const TemplateSourceFile = Symbol('TemplateSourceFile');
+
+type TemplateSourceMappingWithSourceFile =
+    (ExternalTemplateSourceMapping|IndirectTemplateSourceMapping)&{
+  [TemplateSourceFile]?: ts.SourceFile;
+};
+
+function getParsedTemplateSourceFile(
+    fileName: string, mapping: TemplateSourceMappingWithSourceFile): ts.SourceFile {
+  if (mapping[TemplateSourceFile] === undefined) {
+    mapping[TemplateSourceFile] = parseTemplateAsSourceFile(fileName, mapping.template);
+  }
+
+  return mapping[TemplateSourceFile];
+}
+
 let parseTemplateAsSourceFileForTest: typeof parseTemplateAsSourceFile|null = null;
 
 export function setParseTemplateAsSourceFileForTest(fn: typeof parseTemplateAsSourceFile): void {
@@ -152,7 +168,6 @@ function parseTemplateAsSourceFile(fileName: string, template: string): ts.Sourc
 
   // TODO(alxhub): investigate creating a fake `ts.SourceFile` here instead of invoking the TS
   // parser against the template (HTML is just really syntactically invalid TypeScript code ;).
-  // Also investigate caching the file to avoid running the parser multiple times.
   return ts.createSourceFile(
       fileName, template, ts.ScriptTarget.Latest, /* setParentNodes */ false, ts.ScriptKind.JSX);
 }
