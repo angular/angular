@@ -15,7 +15,9 @@ $theme: theming.define-light-theme((
   color: (
     primary: $primary,
     accent: $accent
-  )
+  ),
+  typography: null,
+  density: 0,
 ));
 
 // Include all theme styles for the components.
