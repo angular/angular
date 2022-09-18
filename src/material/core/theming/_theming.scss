@@ -20,6 +20,11 @@ $_legacy-theme-warning: 'Angular Material themes should be created from a map co
   'palette values for "primary", "accent", and "warn". ' +
   'See https://material.angular.io/guide/theming for more information.';
 
+// Flag whether theme config getter functions should warn if a key is expected to exist but not
+// present in the config. This can be transformed internally in Google to ensure all clients have
+// comprehensive theme configurations.
+$_enable-strict-theme-config: false;
+
 // These variable are not intended to be overridden externally. They use `!default` to
 // avoid being reset every time this file is imported.
 $_emitted-color: () !default;
@@ -255,6 +260,9 @@ $_emitted-density: () !default;
   @if map.has-key($theme, color) {
     @return map.get($theme, color);
   }
+  @else if ($_enable-strict-theme-config) {
+    @error 'Angular Material theme configuration is missing a "color" value';
+  }
   @return $default;
 }
 
@@ -273,6 +281,9 @@ $_emitted-density: () !default;
   // or fall back to the default density config.
   @if map.has-key($theme-or-config, density) {
     @return map.get($theme-or-config, density);
+  }
+  @else if ($_enable-strict-theme-config) {
+    @error 'Angular Material theme configuration is missing a "density" value';
   }
   @return $default;
 }
@@ -293,6 +304,9 @@ $_emitted-density: () !default;
   // or fall back to the default typography config.
   @if (map.has-key($theme-or-config, typography)) {
     @return map.get($theme-or-config, typography);
+  }
+  @else if ($_enable-strict-theme-config) {
+    @error 'Angular Material theme configuration is missing a "typography" value';
   }
   @return $default;
 }
