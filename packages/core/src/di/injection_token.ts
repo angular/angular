@@ -69,6 +69,18 @@ export class InjectionToken<T> {
   readonly ɵprov: unknown;
 
   /**
+   * This property is only used to allow the compiler to distinguish between injection tokens based
+   * on their generic type. If the property didn't exist, the following wouldn't result in an error:
+   *
+   * ```
+   * const foo = new InjectionToken<number>('foo');
+   * const bar: InjectionToken<string> = foo; // Should be an error.
+   * ```
+   */
+  // tslint:disable-next-line:require-internal-with-underscore
+  declare __brand__: (arg: T) => void;
+
+  /**
    * @deprecated The `providedIn: NgModule` or `providedIn:'any'` options are deprecated. Please use the other signature.
    */
   constructor(
@@ -120,7 +132,9 @@ export class InjectionToken<T> {
    * @internal
    */
   get multi(): InjectionToken<Array<T>> {
-    return this as InjectionToken<Array<T>>;
+    // TODO(crisbeto): the `as unknown` here shouldn't be necessary,
+    // but it fails internally, likely because g3 is still on TS 4.7.
+    return this as unknown as InjectionToken<Array<T>>;
   }
 
   toString(): string {

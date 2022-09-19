@@ -8,6 +8,6 @@
 
 import {InjectionToken} from '@angular/core';
 
-export const WINDOW = new InjectionToken<Window>('WINDOW', {
+export const WINDOW = new InjectionToken<typeof globalThis>('WINDOW', {
   factory: () => window,
 });
