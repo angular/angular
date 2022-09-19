@@ -201,6 +201,9 @@ export class LegacyComponentsMigration extends Migration<null> {
     if (symbol.startsWith('_MAT_')) {
       return `_MAT_LEGACY_${symbol.slice('_MAT_'.length)}`;
     }
+    if (symbol.endsWith('HarnessFilters')) {
+      return `Legacy${symbol}`;
+    }
     return;
   }
 

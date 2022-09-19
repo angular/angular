@@ -42,16 +42,39 @@ export const MDC_IMPORT_CHANGES = COMPONENTS.map(component => ({
 }));
 
 export const CUSTOM_TS_SYMBOL_RENAMINGS = [
-  {old: 'ProgressAnimationEnd', new: 'LegacyProgressAnimationEnd'},
-  {old: 'ProgressBarMode', new: 'LegacyProgressBarMode'},
-  {old: 'ProgressSpinnerMode', new: 'LegacyProgressSpinnerMode'},
+  {old: 'getMatAutocompleteMissingPanelError', new: 'getMatLegacyAutocompleteMissingPanelError'},
+  {old: 'TransitionCheckState', new: 'LegacyTransitionCheckState'},
+  {old: 'MatTestDialogOpener', new: 'MatTestLegacyDialogOpener'},
   {old: 'AutoFocusTarget', new: 'LegacyAutoFocusTarget'},
   {old: 'DialogRole', new: 'LegacyDialogRole'},
   {old: 'DialogPosition', new: 'LegacyDialogPosition'},
   {old: '_closeDialogVia', new: '_closeLegacyDialogVia'},
-  {old: 'MatTestDialogOpener', new: 'MatTestLegacyDialogOpener'},
+  {old: 'FormFieldControlHarness', new: 'LegacyFormFieldControlHarness'},
+  {old: 'LegacyFloatLabelType', new: 'LegacyFloatLabelType'},
+  {old: 'getMatFormFieldDuplicatedHintError', new: 'getMatLegacyFormFieldDuplicatedHintError'},
+  {old: 'getMatFormFieldMissingControlError', new: 'getMatLegacyFormFieldMissingControlError'},
+  {
+    old: 'getMatFormFieldPlaceholderConflictError',
+    new: 'getMatLegacyFormFieldPlaceholderConflictError',
+  },
+  {old: 'getMatInputUnsupportedTypeError', new: 'getMatLegacyInputUnsupportedTypeError'},
+  {old: 'fadeInItems', new: 'fadeInLegacyItems'},
+  {old: 'MenuPositionX', new: 'LegacyMenuPositionX'},
+  {old: 'MenuPositionY', new: 'LegacyMenuPositionY'},
+  {old: 'transformMenu', new: 'transformLegacyMenu'},
+  {old: 'PageEvent', new: 'LegacyPageEvent'},
+  {old: 'ProgressAnimationEnd', new: 'LegacyProgressAnimationEnd'},
+  {old: 'ProgressBarMode', new: 'LegacyProgressBarMode'},
+  {old: 'ProgressSpinnerMode', new: 'LegacyProgressSpinnerMode'},
   {old: 'SimpleSnackBar', new: 'LegacySimpleSnackBar'},
   {old: 'TextOnlySnackBar', new: 'LegacyTextOnlySnackBar'},
+  {old: 'ScrollDirection', new: 'LegacyScrollDirection'},
+  {old: 'TooltipComponent', new: 'LegacyTooltipComponent'},
+  {old: 'getMatTooltipInvalidPositionError', new: 'getMatLegacyTooltipInvalidPositionError'},
+  {old: 'TooltipPosition', new: 'LegacyTooltipPosition'},
+  {old: 'TooltipTouchGestures', new: 'LegacyTooltipTouchGestures'},
+  {old: 'TooltipVisibility', new: 'LegacyTooltipVisibility'},
+  {old: 'SCROLL_THROTTLE_MS', new: 'LEGACY_SCROLL_THROTTLE_MS'},
 ];
 
 export const MIXINS = COMPONENTS.concat(['option', 'optgroup']).flatMap(component => [
