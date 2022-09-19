@@ -1085,7 +1085,7 @@ groups:
           ])
     reviewers:
       users:
-        - aleksanderbodurri
+        - AleksanderBodurri
         - devversion
         - josephperrott
         - mgechev
@@ -1323,7 +1323,7 @@ groups:
     reviewers:
       users:
         - alan-agius4 # Alan Agius
-        - aleksanderbodurri # Aleksander Bodurri
+        - AleksanderBodurri # Aleksander Bodurri
         - alxhub # Alex Rickabaugh
         - AndrewKushnir # Andrew Kushnir
         - andrewseguin # Andrew Seguin
