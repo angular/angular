@@ -14,19 +14,17 @@ import {
   DateTimeOptions as LuxonDateTimeOptions,
 } from 'luxon';
 
-/** Configurable options for {@see LuxonDateAdapter}. */
+/** Configurable options for the `LuxonDateAdapter`. */
 export interface MatLuxonDateAdapterOptions {
   /**
    * Turns the use of utc dates on or off.
    * Changing this will change how Angular Material components like DatePicker output dates.
-   * {@default false}
    */
   useUtc: boolean;
 
   /**
    * Sets the first day of week.
    * Changing this will change how Angular Material components like DatePicker shows start of week.
-   * {@default 0}
    */
   firstDayOfWeek: number;
 }
@@ -197,7 +195,8 @@ export class LuxonDateAdapter extends DateAdapter<LuxonDateTime> {
     }
     return date
       .setLocale(this.locale)
-      .toFormat(displayFormat, {timeZone: this._useUTC ? 'utc' : undefined});
+      .setZone(this._useUTC ? 'utc' : undefined)
+      .toFormat(displayFormat);
   }
 
   addCalendarYears(date: LuxonDateTime, years: number): LuxonDateTime {

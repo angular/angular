@@ -254,7 +254,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#6f2cb5cf1860e75368528cf2216798db6f94d937":
   version "0.0.0-bf4bb09bb2d32015f71943371c7484cb845f8c33"
-  uid "6f2cb5cf1860e75368528cf2216798db6f94d937"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#6f2cb5cf1860e75368528cf2216798db6f94d937"
   dependencies:
     "@angular-devkit/build-angular" "14.2.0-rc.0"
@@ -388,7 +387,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#170605f156be18f179ad0024d386d4a7c05efa9a":
   version "0.0.0-bf4bb09bb2d32015f71943371c7484cb845f8c33"
-  uid "170605f156be18f179ad0024d386d4a7c05efa9a"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#170605f156be18f179ad0024d386d4a7c05efa9a"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -3754,10 +3752,10 @@
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.1.tgz#459c65fa1867dafe6a8f322c4c51695663cc55e9"
   integrity sha512-5tXH6Bx/kNGd3MgffdmP4dy2Z+G4eaXw0SE81Tq3BNadtnMR5/ySMzX4SLEzHJzSmPNn4HIdpQsBvXMUykr58w==
 
-"@types/luxon@^1.27.0":
-  version "1.27.1"
-  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-1.27.1.tgz#aceeb2d5be8fccf541237e184e37ecff5faa9096"
-  integrity sha512-cPiXpOvPFDr2edMnOXlz3UBDApwUfR+cpizvxCy0n3vp9bz/qe8BWzHPIEFcy+ogUOyjKuCISgyq77ELZPmkkg==
+"@types/luxon@^3.0.0":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-3.0.1.tgz#2b1657096473e24b049bdedf3710f99645f3a17f"
+  integrity sha512-/LAvk1cMOJt0ghzMFrZEvByUhsiEfeeT2IF53Le+Ki3A538yEL9pRZ7a6MuCxdrYK+YNqNIDmrKU/r2nnw04zQ==
 
 "@types/marked@^2.0.0":
   version "2.0.5"
@@ -11111,10 +11109,10 @@ lru-queue@^0.1.0:
   dependencies:
     es5-ext "~0.10.2"
 
-luxon@^2.3.0:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/luxon/-/luxon-2.3.2.tgz#5f2f3002b8c39b60a7b7ad24b2a85d90dc5db49c"
-  integrity sha512-MlAQQVMFhGk4WUA6gpfsy0QycnKP0+NlCBJRVRNPxxSIbjrCbQ65nrpJD3FVyJNZLuJ0uoqL57ye6BmDYgHaSw==
+luxon@^3.0.0:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-3.0.3.tgz#573e65531efd3d92265feb640f02ba7a192e2388"
+  integrity sha512-+EfHWnF+UT7GgTnq5zXg3ldnTKL2zdv7QJgsU5bjjpbH17E3qi/puMhQyJVYuCq+FRkogvB5WB6iVvUr+E4a7w==
 
 madge@^4.0.0:
   version "4.0.2"
