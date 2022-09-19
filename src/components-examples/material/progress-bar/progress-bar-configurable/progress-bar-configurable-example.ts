@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
-import {LegacyProgressBarMode} from '@angular/material/legacy-progress-bar';
+import {ProgressBarMode} from '@angular/material/progress-bar';
 
 /**
  * @title Configurable progress-bar
@@ -12,7 +12,7 @@ import {LegacyProgressBarMode} from '@angular/material/legacy-progress-bar';
 })
 export class ProgressBarConfigurableExample {
   color: ThemePalette = 'primary';
-  mode: LegacyProgressBarMode = 'determinate';
+  mode: ProgressBarMode = 'determinate';
   value = 50;
   bufferValue = 75;
 }

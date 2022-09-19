@@ -1,10 +1,10 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatLegacyProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
-import {MatLegacySliderModule} from '@angular/material/legacy-slider';
+import {MatCardModule} from '@angular/material/card';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSliderModule} from '@angular/material/slider';
 import {ProgressSpinnerConfigurableExample} from './progress-spinner-configurable/progress-spinner-configurable-example';
 import {ProgressSpinnerOverviewExample} from './progress-spinner-overview/progress-spinner-overview-example';
 import {ProgressSpinnerHarnessExample} from './progress-spinner-harness/progress-spinner-harness-example';
@@ -24,10 +24,10 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     CommonModule,
-    MatLegacyCardModule,
-    MatLegacyProgressSpinnerModule,
-    MatLegacyRadioModule,
-    MatLegacySliderModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatSliderModule,
     FormsModule,
   ],
   declarations: EXAMPLES,

@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card class="example-card">
   <mat-card-content>
     <h2 class="example-h2">Progress spinner configuration</h2>
 
@@ -31,11 +31,14 @@
 
     <section class="example-section" *ngIf="mode === 'determinate'">
       <label class="example-margin">Progress:</label>
-      <mat-slider class="example-margin" [(ngModel)]="value"></mat-slider>
+      <mat-slider class="example-margin">
+        <input type="range" [(ngModel)]="value" matSliderThumb>
+      </mat-slider>
     </section>
   </mat-card-content>
 </mat-card>
-<mat-card>
+
+<mat-card class="example-card">
   <mat-card-content>
     <h2 class="example-h2">Result</h2>
 

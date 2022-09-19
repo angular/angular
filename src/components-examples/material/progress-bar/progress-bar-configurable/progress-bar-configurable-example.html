@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card class="example-card">
   <mat-card-content>
     <h2 class="example-h2">Progress bar configuration</h2>
 
@@ -37,16 +37,20 @@
 
     <section class="example-section" *ngIf="mode === 'determinate' || mode === 'buffer'">
       <label class="example-margin">Progress:</label>
-      <mat-slider class="example-margin" [(ngModel)]="value"></mat-slider>
+      <mat-slider class="example-margin">
+        <input type="range" [(ngModel)]="value" matSliderThumb>
+      </mat-slider>
     </section>
     <section class="example-section" *ngIf="mode === 'buffer'">
       <label class="example-margin">Buffer:</label>
-      <mat-slider class="example-margin" [(ngModel)]="bufferValue"></mat-slider>
+      <mat-slider class="example-margin">
+        <input type="range" [(ngModel)]="bufferValue" matSliderThumb>
+      </mat-slider>
     </section>
   </mat-card-content>
 </mat-card>
 
-<mat-card>
+<mat-card class="example-card">
   <mat-card-content>
     <h2 class="example-h2">Result</h2>
 
