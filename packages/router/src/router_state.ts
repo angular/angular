@@ -308,7 +308,11 @@ export class ActivatedRouteSnapshot {
   _queryParamMap!: ParamMap;
 
   /** The resolved route title */
-  readonly title?: string = this.data?.[RouteTitleKey];
+  get title(): string|undefined {
+    // Note: This _must_ be a getter because the data is mutated in the resolvers. Title will not be
+    // available at the time of class instantiation.
+    return this.data?.[RouteTitleKey];
+  }
 
   /** @internal */
   constructor(

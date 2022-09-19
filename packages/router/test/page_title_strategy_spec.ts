@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {Component, Inject, Injectable, NgModule} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Router, RouterModule, RouterStateSnapshot, TitleStrategy} from '@angular/router';
+import {NavigationEnd, Router, RouterModule, RouterStateSnapshot, TitleStrategy} from '@angular/router';
 
 import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
 
@@ -99,6 +99,18 @@ describe('title strategy', () => {
          tick();
          expect(document.title).toBe('resolved title');
        }));
+
+    it('can get the title from the ActivatedRouteSnapshot', async () => {
+      router.resetConfig([
+        {
+          path: 'home',
+          title: 'My Application',
+          component: BlankCmp,
+        },
+      ]);
+      await router.navigateByUrl('home');
+      expect(router.routerState.snapshot.root.firstChild!.title).toEqual('My Application');
+    });
   });
 
   describe('custom strategies', () => {
