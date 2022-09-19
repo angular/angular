@@ -106,6 +106,6 @@ export const CUSTOM_SASS_MIXIN_RENAMINGS: {[key: string]: string} = {
   'core': 'legacy-core',
 };
 
-export const CUSTOM_SASS_FUNCTION_RENAMINGS = {
+export const CUSTOM_SASS_FUNCTION_RENAMINGS: {[key: string]: string} = {
   'define-typography-config': 'define-legacy-typography-config',
 };

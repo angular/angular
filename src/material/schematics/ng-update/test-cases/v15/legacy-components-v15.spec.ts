@@ -243,5 +243,20 @@ describe('v15 legacy components migration', () => {
         new: [`@use '@angular/material' as mat;`, `@include mat.button-toggle-theme($theme);`],
       });
     });
+
+    it('updates sass functions', async () => {
+      await runSassMigrationTest('variable assignment', {
+        old: [
+          `@use '@angular/material' as mat;`,
+          `$typography: mat.define-typography-config();`,
+          `@include mat.all-component-typographies(mat.define-typography-config());`,
+        ],
+        new: [
+          `@use '@angular/material' as mat;`,
+          `$typography: mat.define-legacy-typography-config();`,
+          `@include mat.all-legacy-component-typographies(mat.define-legacy-typography-config());`,
+        ],
+      });
+    });
   });
 });

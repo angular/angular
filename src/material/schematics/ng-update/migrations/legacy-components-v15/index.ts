@@ -9,15 +9,14 @@
 import * as ts from 'typescript';
 import * as postcss from 'postcss';
 import * as scss from 'postcss-scss';
-
 import {
   CUSTOM_TS_SYMBOL_RENAMINGS,
   MAT_IMPORT_CHANGES,
   MDC_IMPORT_CHANGES,
   COMPONENT_THEME_MIXINS,
   CUSTOM_SASS_MIXIN_RENAMINGS,
+  CUSTOM_SASS_FUNCTION_RENAMINGS,
 } from './constants';
-
 import {Migration, ResolvedResource, TargetVersion, WorkspacePath} from '@angular/cdk/schematics';
 
 export class LegacyComponentsMigration extends Migration<null> {
@@ -34,6 +33,7 @@ export class LegacyComponentsMigration extends Migration<null> {
           },
           include: node => this._handleAtInclude(node, stylesheet.filePath, namespace),
         },
+        RootExit: root => this._handleRootNode(root, stylesheet.filePath, namespace),
       },
     ]);
     processor.process(stylesheet.content, {syntax: scss}).sync();
@@ -68,6 +68,28 @@ export class LegacyComponentsMigration extends Migration<null> {
         new: `${namespace}.legacy-`,
       });
     }
+  }
+
+  /** Handles updating the root node. */
+  private _handleRootNode(root: postcss.Root, file: any, namespace?: string) {
+    if (!namespace) {
+      return;
+    }
+    // @functions could be referenced anywhere, so we need to just walk everything from the root
+    // and replace all instances that are not in comments.
+    root.walk(node => {
+      if (node.source?.start != null && node.type !== 'comment') {
+        const srcString = node.toString();
+        for (const old in CUSTOM_SASS_FUNCTION_RENAMINGS) {
+          if (srcString.includes(`${namespace}.${old}`)) {
+            this._replaceAt(file, node.source.start.offset, {
+              old: `${namespace}.${old}`,
+              new: `${namespace}.${CUSTOM_SASS_FUNCTION_RENAMINGS[old]}`,
+            });
+          }
+        }
+      }
+    });
   }
 
   /** Returns true if the given at-include rule is a use of a legacy component mixin. */
