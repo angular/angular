@@ -2,11 +2,10 @@
   <div class="mat-calendar-controls">
     <button mat-button type="button" class="mat-calendar-period-button"
             (click)="currentPeriodClicked()" [attr.aria-label]="periodButtonLabel"
-            [attr.aria-describedby]="_buttonDescriptionId"
-            aria-live="polite">
-      <span [attr.id]="_buttonDescriptionId">{{periodButtonText}}</span>
+            [attr.aria-describedby]="_periodButtonLabelId" aria-live="polite">
+      <span aria-hidden="true">{{periodButtonText}}</span>
       <svg class="mat-calendar-arrow" [class.mat-calendar-invert]="calendar.currentView !== 'month'"
-           viewBox="0 0 10 5" focusable="false">
+           viewBox="0 0 10 5" focusable="false" aria-hidden="true">
            <polygon points="0,0 5,5 10,0"/>
       </svg>
     </button>
@@ -26,3 +25,4 @@
     </button>
   </div>
 </div>
+<label [id]="_periodButtonLabelId" class="mat-calendar-hidden-label">{{periodButtonDescription}}</label>

@@ -191,10 +191,16 @@ describe('MatCalendarHeader', () => {
     });
 
     it('should label and describe period button for assistive technology', () => {
-      const description = periodButton.querySelector('span[id]');
+      expect(calendarInstance.currentView).toBe('month');
+
+      periodButton.click();
+      fixture.detectChanges();
+
+      expect(calendarInstance.currentView).toBe('multi-year');
       expect(periodButton.hasAttribute('aria-label')).toBe(true);
+      expect(periodButton.getAttribute('aria-label')).toMatch(/^[a-z0-9\s]+$/i);
       expect(periodButton.hasAttribute('aria-describedby')).toBe(true);
-      expect(periodButton.getAttribute('aria-describedby')).toBe(description?.getAttribute('id')!);
+      expect(periodButton.getAttribute('aria-describedby')).toMatch(/mat-calendar-header-[0-9]+/i);
     });
   });
 

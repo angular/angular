@@ -291,15 +291,15 @@ export type MatCalendarCellCssClasses = string | string[] | Set<string> | {
 export class MatCalendarHeader<D> {
     constructor(_intl: MatDatepickerIntl, calendar: MatCalendar<D>, _dateAdapter: DateAdapter<D>, _dateFormats: MatDateFormats, changeDetectorRef: ChangeDetectorRef);
     // (undocumented)
-    _buttonDescriptionId: string;
-    // (undocumented)
     calendar: MatCalendar<D>;
     currentPeriodClicked(): void;
     get nextButtonLabel(): string;
     nextClicked(): void;
     nextEnabled(): boolean;
-    // (undocumented)
+    get periodButtonDescription(): string;
     get periodButtonLabel(): string;
+    // (undocumented)
+    _periodButtonLabelId: string;
     get periodButtonText(): string;
     get prevButtonLabel(): string;
     previousClicked(): void;
