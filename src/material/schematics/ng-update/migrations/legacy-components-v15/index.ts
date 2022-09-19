@@ -14,7 +14,8 @@ import {
   CUSTOM_TS_SYMBOL_RENAMINGS,
   MAT_IMPORT_CHANGES,
   MDC_IMPORT_CHANGES,
-  MIXINS,
+  COMPONENT_THEME_MIXINS,
+  CUSTOM_SASS_MIXIN_RENAMINGS,
 } from './constants';
 
 import {Migration, ResolvedResource, TargetVersion, WorkspacePath} from '@angular/cdk/schematics';
@@ -55,10 +56,11 @@ export class LegacyComponentsMigration extends Migration<null> {
     if (!namespace || !node.source?.start) {
       return;
     }
-    if (node.params.startsWith(`${namespace}.all-component-`)) {
+    const mixinName = node.params.split(/[.(;]/)[1];
+    if (CUSTOM_SASS_MIXIN_RENAMINGS[mixinName]) {
       this._replaceAt(filePath, node.source.start.offset, {
-        old: `${namespace}.all-`,
-        new: `${namespace}.all-legacy-`,
+        old: `${namespace}.${mixinName}`,
+        new: `${namespace}.${CUSTOM_SASS_MIXIN_RENAMINGS[mixinName]}`,
       });
     } else if (this._isLegacyMixin(node, namespace)) {
       this._replaceAt(filePath, node.source.start.offset, {
@@ -73,8 +75,8 @@ export class LegacyComponentsMigration extends Migration<null> {
     if (!node.params.startsWith(`${namespace}.`)) {
       return false;
     }
-    for (let i = 0; i < MIXINS.length; i++) {
-      if (node.params.startsWith(`${namespace}.${MIXINS[i]}`)) {
+    for (let i = 0; i < COMPONENT_THEME_MIXINS.length; i++) {
+      if (node.params.startsWith(`${namespace}.${COMPONENT_THEME_MIXINS[i]}`)) {
         return true;
       }
     }

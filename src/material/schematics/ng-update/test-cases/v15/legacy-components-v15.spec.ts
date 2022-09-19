@@ -182,14 +182,14 @@ describe('v15 legacy components migration', () => {
         `@use '@angular/material' as mat;`,
         `@include mat.all-component-themes($theme);`,
         `@include mat.all-component-colors($theme);`,
-        `@include mat.all-component-densities($theme);`,
+        `@include mat.private-all-component-densities($theme);`,
         `@include mat.all-component-typographies($theme);`,
       ];
       const newFile: string[] = [
         `@use '@angular/material' as mat;`,
         `@include mat.all-legacy-component-themes($theme);`,
         `@include mat.all-legacy-component-colors($theme);`,
-        `@include mat.all-legacy-component-densities($theme);`,
+        `@include mat.private-all-legacy-component-densities($theme);`,
         `@include mat.all-legacy-component-typographies($theme);`,
       ];
       for (let i = 0; i < COMPONENTS.length; i++) {

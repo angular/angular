@@ -89,9 +89,23 @@ export const CUSTOM_TS_SYMBOL_RENAMINGS = [
   {old: 'SCROLL_THROTTLE_MS', new: 'LEGACY_SCROLL_THROTTLE_MS'},
 ];
 
-export const MIXINS = COMPONENTS.concat(['option', 'optgroup']).flatMap(component => [
-  `${component}-theme`,
-  `${component}-color`,
-  `${component}-density`,
-  `${component}-typography`,
-]);
+export const COMPONENT_THEME_MIXINS = COMPONENTS.concat(['option', 'optgroup']).flatMap(
+  component => [
+    `${component}-theme`,
+    `${component}-color`,
+    `${component}-density`,
+    `${component}-typography`,
+  ],
+);
+
+export const CUSTOM_SASS_MIXIN_RENAMINGS: {[key: string]: string} = {
+  'all-component-themes': 'all-legacy-component-themes',
+  'all-component-colors': 'all-legacy-component-colors',
+  'all-component-typographies': 'all-legacy-component-typographies',
+  'private-all-component-densities': 'private-all-legacy-component-densities',
+  'core': 'legacy-core',
+};
+
+export const CUSTOM_SASS_FUNCTION_RENAMINGS = {
+  'define-typography-config': 'define-legacy-typography-config',
+};
