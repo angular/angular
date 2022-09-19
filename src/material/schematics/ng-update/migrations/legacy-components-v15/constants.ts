@@ -31,15 +31,27 @@ export const COMPONENTS = [
   'tooltip',
 ];
 
-export const MAT_IMPORT_CHANGES = COMPONENTS.map(component => ({
-  old: `@angular/material/${component}`,
-  new: `@angular/material/legacy-${component}`,
-}));
+export const MAT_IMPORT_CHANGES = COMPONENTS.flatMap(component => [
+  {
+    old: `@angular/material/${component}`,
+    new: `@angular/material/legacy-${component}`,
+  },
+  {
+    old: `@angular/material/${component}/testing`,
+    new: `@angular/material/legacy-${component}/testing`,
+  },
+]);
 
-export const MDC_IMPORT_CHANGES = COMPONENTS.map(component => ({
-  old: `@angular/material-experimental/mdc-${component}`,
-  new: `@angular/material/${component}`,
-}));
+export const MDC_IMPORT_CHANGES = COMPONENTS.flatMap(component => [
+  {
+    old: `@angular/material-experimental/mdc-${component}`,
+    new: `@angular/material/${component}`,
+  },
+  {
+    old: `@angular/material-experimental/mdc-${component}/testing`,
+    new: `@angular/material/${component}/testing`,
+  },
+]);
 
 export const CUSTOM_TS_SYMBOL_RENAMINGS = [
   {old: 'getMatAutocompleteMissingPanelError', new: 'getMatLegacyAutocompleteMissingPanelError'},

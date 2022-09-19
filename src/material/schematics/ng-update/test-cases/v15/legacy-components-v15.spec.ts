@@ -88,6 +88,10 @@ describe('v15 legacy components migration', () => {
           old: `import {ProgressBarMode as MatProgressBarMode} from '@angular/material/progress-bar';`,
           new: `import {LegacyProgressBarMode as MatProgressBarMode} from '@angular/material/legacy-progress-bar';`,
         });
+        await runTypeScriptMigrationTest('test code', {
+          old: `import {MatButtonHarness, ButtonHarnessFilters} from '@angular/material/button/testing';`,
+          new: `import {MatLegacyButtonHarness as MatButtonHarness, LegacyButtonHarnessFilters as ButtonHarnessFilters} from '@angular/material/legacy-button/testing';`,
+        });
       });
 
       it('updates import expressions', async () => {
@@ -138,6 +142,10 @@ describe('v15 legacy components migration', () => {
         await runTypeScriptMigrationTest('multiple named bindings w/ alias', {
           old: `import {MatButton, MatButtonModule as ButtonModule} from '@angular/material-experimental/mdc-button';`,
           new: `import {MatButton, MatButtonModule as ButtonModule} from '@angular/material/button';`,
+        });
+        await runTypeScriptMigrationTest('test code', {
+          old: `import {MatButtonHarness, ButtonHarnessFilters} from '@angular/material-experimental/mdc-button/testing';`,
+          new: `import {MatButtonHarness, ButtonHarnessFilters} from '@angular/material/button/testing';`,
         });
       });
 
