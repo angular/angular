@@ -38,7 +38,7 @@ export function isDevMode(): boolean {
 export function enableProdMode(): void {
   // The below check is there so when ngDevMode is set via terser
   // `global['ngDevMode'] = false;` is also dropped.
-  if (typeof ngDevMode === undefined || !!ngDevMode) {
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
     global['ngDevMode'] = false;
   }
 }
