@@ -74,7 +74,7 @@ export class ActivatedRouteSnapshot {
     queryParams: Params;
     get root(): ActivatedRouteSnapshot;
     readonly routeConfig: Route | null;
-    readonly title?: string;
+    get title(): string | undefined;
     // (undocumented)
     toString(): string;
     url: UrlSegment[];
