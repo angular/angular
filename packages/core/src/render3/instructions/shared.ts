@@ -1282,7 +1282,7 @@ function findDirectiveDefMatches(
                 `"${tNode.value}" tags cannot be used as component hosts. ` +
                     `Please use a different tag to activate the ${stringify(def.type)} component.`);
 
-            if (tNode.componentOffset > -1) {
+            if (isComponentHost(tNode)) {
               // If another component has been matched previously, it's the first element in the
               // `matches` array, see how we store components/directives in `matches` below.
               throwMultipleComponentError(tNode, matches[0].type, def.type);
@@ -1302,7 +1302,7 @@ function findDirectiveDefMatches(
 
 /**
  * Marks a given TNode as a component's host. This consists of:
- * - setting appropriate TNode flags;
+ * - setting the component offset on the TNode.
  * - storing index of component's host element so it will be queued for view refresh during CD.
  */
 export function markAsComponentHost(tView: TView, hostTNode: TNode, componentOffset: number): void {
