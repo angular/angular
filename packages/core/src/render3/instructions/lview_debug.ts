@@ -181,6 +181,7 @@ class TNode implements ITNode {
       public index: number,                                                          //
       public insertBeforeIndex: InsertBeforeIndex,                                   //
       public injectorIndex: number,                                                  //
+      public componentOffset: number,                                                //
       public directiveStart: number,                                                 //
       public directiveEnd: number,                                                   //
       public directiveStylingLast: number,                                           //
@@ -263,7 +264,6 @@ class TNode implements ITNode {
     if (this.flags & TNodeFlags.hasContentQuery) flags.push('TNodeFlags.hasContentQuery');
     if (this.flags & TNodeFlags.hasStyleInput) flags.push('TNodeFlags.hasStyleInput');
     if (this.flags & TNodeFlags.hasHostBindings) flags.push('TNodeFlags.hasHostBindings');
-    if (this.flags & TNodeFlags.isComponentHost) flags.push('TNodeFlags.isComponentHost');
     if (this.flags & TNodeFlags.isDirectiveHost) flags.push('TNodeFlags.isDirectiveHost');
     if (this.flags & TNodeFlags.isDetached) flags.push('TNodeFlags.isDetached');
     if (this.flags & TNodeFlags.isProjected) flags.push('TNodeFlags.isProjected');

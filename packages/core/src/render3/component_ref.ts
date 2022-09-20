@@ -364,7 +364,7 @@ export function createRootComponentView(
 
   if (tView.firstCreatePass) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);
-    markAsComponentHost(tView, tNode);
+    markAsComponentHost(tView, tNode, 0);
     initTNodeFlags(tNode, rootView.length, 1);
   }
 

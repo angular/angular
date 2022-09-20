@@ -304,17 +304,21 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
 export function getDirectivesAtNodeIndex(
     nodeIndex: number, lView: LView, includeComponents: boolean): any[]|null {
   const tNode = lView[TVIEW].data[nodeIndex] as TNode;
-  let directiveStartIndex = tNode.directiveStart;
-  if (directiveStartIndex == 0) return EMPTY_ARRAY;
-  const directiveEndIndex = tNode.directiveEnd;
-  if (!includeComponents && tNode.flags & TNodeFlags.isComponentHost) directiveStartIndex++;
-  return lView.slice(directiveStartIndex, directiveEndIndex);
+  if (tNode.directiveStart === 0) return EMPTY_ARRAY;
+  const results: any[] = [];
+  for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
+    const directiveInstance = lView[i];
+    if (!isComponentInstance(directiveInstance) || includeComponents) {
+      results.push(directiveInstance);
+    }
+  }
+  return results;
 }
 
 export function getComponentAtNodeIndex(nodeIndex: number, lView: LView): {}|null {
   const tNode = lView[TVIEW].data[nodeIndex] as TNode;
-  let directiveStartIndex = tNode.directiveStart;
-  return tNode.flags & TNodeFlags.isComponentHost ? lView[directiveStartIndex] : null;
+  const {directiveStart, componentOffset} = tNode;
+  return componentOffset > -1 ? lView[directiveStart + componentOffset] : null;
 }
 
 /**
