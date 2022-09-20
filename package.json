@@ -88,7 +88,7 @@
     "@types/babel__traverse": "7.18.1",
     "@types/base64-js": "1.3.0",
     "@types/bluebird": "^3.5.27",
-    "@types/chrome": "^0.0.196",
+    "@types/chrome": "^0.0.197",
     "@types/convert-source-map": "^1.5.1",
     "@types/diff": "^5.0.0",
     "@types/events": "3.0.0",

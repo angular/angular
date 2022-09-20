@@ -66,7 +66,7 @@
     "concurrently": "^7.0.0",
     "copyfiles": "^2.4.1",
     "http-server": "^14.0.0",
-    "jasmine-core": "~4.3.0",
+    "jasmine-core": "~4.4.0",
     "jasmine-marbles": "~0.9.2",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",
