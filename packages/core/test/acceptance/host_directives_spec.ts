@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewChecked, AfterViewInit, Component, Directive, forwardRef, inject, Inject, InjectionToken, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, Directive, ElementRef, forwardRef, inject, Inject, InjectionToken, Input, OnInit, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+
+import {getComponent, getDirectives} from '../../src/render3/util/discovery_utils';
 
 /**
  * Temporary `any` used for metadata until `hostDirectives` is enabled publicly.
@@ -183,20 +186,38 @@ describe('host directives', () => {
     } as HostDirectiveAny)
     class MyComp {
       constructor() {
-        logs.push('host');
+        logs.push('MyComp');
       }
     }
-    @Component({template: '<my-comp></my-comp>'})
+
+    @Directive({standalone: true})
+    class SelectorMatchedHostDir {
+      constructor() {
+        logs.push('SelectorMatchedHostDir');
+      }
+    }
+
+    @Directive({
+      selector: '[selector-matched-dir]',
+      hostDirectives: [SelectorMatchedHostDir],
+    } as HostDirectiveAny)
+    class SelectorMatchedDir {
+      constructor() {
+        logs.push('SelectorMatchedDir');
+      }
+    }
+
+    @Component({template: '<my-comp selector-matched-dir></my-comp>'})
     class App {
     }
 
-    TestBed.configureTestingModule({declarations: [App, MyComp]});
+    TestBed.configureTestingModule({declarations: [App, MyComp, SelectorMatchedDir]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
     expect(diTokenValue!).toBe('host value');
     expect(fixture.nativeElement.innerHTML)
-        .toBe('<my-comp id="host-id" class="leaf middle host"></my-comp>');
+        .toBe('<my-comp id="host-id" selector-matched-dir="" class="leaf middle host"></my-comp>');
     expect(logs).toEqual([
       'Chain1 - level 3',
       'Chain1 - level 2',
@@ -205,7 +226,9 @@ describe('host directives', () => {
       'Chain2 - level 1',
       'Chain3 - level 2',
       'Chain3 - level 1',
-      'host',
+      'MyComp',
+      'SelectorMatchedHostDir',
+      'SelectorMatchedDir',
     ]);
   });
 
@@ -288,73 +311,166 @@ describe('host directives', () => {
     expect(fixture.nativeElement.textContent).toContain('FirstHost | SecondHost');
   });
 
-  it('should invoke lifecycle hooks from the host directives', () => {
-    const logs: string[] = [];
+  // TODO(crisbeto): add a test for `ngOnChanges`.
+  describe('lifecycle hooks', () => {
+    it('should invoke lifecycle hooks from the host directives', () => {
+      const logs: string[] = [];
 
-    @Directive({standalone: true})
-    class HostDir implements OnInit, AfterViewInit, AfterViewChecked {
-      ngOnInit() {
-        logs.push('HostDir - ngOnInit');
+      @Directive({standalone: true})
+      class HostDir implements OnInit, AfterViewInit, AfterViewChecked {
+        ngOnInit() {
+          logs.push('HostDir - ngOnInit');
+        }
+
+        ngAfterViewInit() {
+          logs.push('HostDir - ngAfterViewInit');
+        }
+
+        ngAfterViewChecked() {
+          logs.push('HostDir - ngAfterViewChecked');
+        }
       }
 
-      ngAfterViewInit() {
-        logs.push('HostDir - ngAfterViewInit');
+      @Directive({standalone: true})
+      class OtherHostDir implements OnInit, AfterViewInit, AfterViewChecked {
+        ngOnInit() {
+          logs.push('OtherHostDir - ngOnInit');
+        }
+
+        ngAfterViewInit() {
+          logs.push('OtherHostDir - ngAfterViewInit');
+        }
+
+        ngAfterViewChecked() {
+          logs.push('OtherHostDir - ngAfterViewChecked');
+        }
       }
 
-      ngAfterViewChecked() {
-        logs.push('HostDir - ngAfterViewChecked');
-      }
-    }
+      @Directive({selector: '[dir]', hostDirectives: [HostDir, OtherHostDir]} as HostDirectiveAny)
+      class Dir implements OnInit, AfterViewInit, AfterViewChecked {
+        ngOnInit() {
+          logs.push('Dir - ngOnInit');
+        }
 
-    @Directive({standalone: true})
-    class OtherHostDir implements OnInit, AfterViewInit, AfterViewChecked {
-      ngOnInit() {
-        logs.push('OtherHostDir - ngOnInit');
-      }
+        ngAfterViewInit() {
+          logs.push('Dir - ngAfterViewInit');
+        }
 
-      ngAfterViewInit() {
-        logs.push('OtherHostDir - ngAfterViewInit');
-      }
-
-      ngAfterViewChecked() {
-        logs.push('OtherHostDir - ngAfterViewChecked');
-      }
-    }
-
-    @Directive({selector: '[dir]', hostDirectives: [HostDir, OtherHostDir]} as HostDirectiveAny)
-    class Dir implements OnInit, AfterViewInit, AfterViewChecked {
-      ngOnInit() {
-        logs.push('Dir - ngOnInit');
+        ngAfterViewChecked() {
+          logs.push('Dir - ngAfterViewChecked');
+        }
       }
 
-      ngAfterViewInit() {
-        logs.push('Dir - ngAfterViewInit');
+      @Component({template: '<div dir></div>'})
+      class App {
       }
 
-      ngAfterViewChecked() {
-        logs.push('Dir - ngAfterViewChecked');
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(logs).toEqual([
+        'HostDir - ngOnInit',
+        'OtherHostDir - ngOnInit',
+        'Dir - ngOnInit',
+        'HostDir - ngAfterViewInit',
+        'HostDir - ngAfterViewChecked',
+        'OtherHostDir - ngAfterViewInit',
+        'OtherHostDir - ngAfterViewChecked',
+        'Dir - ngAfterViewInit',
+        'Dir - ngAfterViewChecked',
+      ]);
+    });
+
+    // Note: lifecycle hook order is different when components and directives are mixed so this
+    // test aims to cover it. Usually lifecycle hooks are invoked based on the order in which
+    // directives were matched, but components bypass this logic and always execute first.
+    it('should invoke host directive lifecycle hooks before the host component hooks', () => {
+      const logs: string[] = [];
+
+      // Utility so we don't have to repeat the logging code.
+      @Directive({standalone: true})
+      abstract class LogsLifecycles implements OnInit, AfterViewInit {
+        abstract name: string;
+
+        ngOnInit() {
+          logs.push(`${this.name} - ngOnInit`);
+        }
+
+        ngAfterViewInit() {
+          logs.push(`${this.name} - ngAfterViewInit`);
+        }
       }
-    }
 
-    @Component({template: '<div dir></div>'})
-    class App {
-    }
+      @Directive({standalone: true})
+      class ChildHostDir extends LogsLifecycles {
+        override name = 'ChildHostDir';
+      }
 
-    TestBed.configureTestingModule({declarations: [App, Dir]});
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+      @Directive({standalone: true})
+      class OtherChildHostDir extends LogsLifecycles {
+        override name = 'OtherChildHostDir';
+      }
 
-    expect(logs).toEqual([
-      'HostDir - ngOnInit',
-      'OtherHostDir - ngOnInit',
-      'Dir - ngOnInit',
-      'HostDir - ngAfterViewInit',
-      'HostDir - ngAfterViewChecked',
-      'OtherHostDir - ngAfterViewInit',
-      'OtherHostDir - ngAfterViewChecked',
-      'Dir - ngAfterViewInit',
-      'Dir - ngAfterViewChecked',
-    ]);
+      @Component({
+        selector: 'child',
+        hostDirectives: [ChildHostDir, OtherChildHostDir],
+      } as HostDirectiveAny)
+      class Child extends LogsLifecycles {
+        override name = 'Child';
+      }
+
+      @Directive({standalone: true})
+      class ParentHostDir extends LogsLifecycles {
+        override name = 'ParentHostDir';
+      }
+
+      @Directive({standalone: true})
+      class OtherParentHostDir extends LogsLifecycles {
+        override name = 'OtherParentHostDir';
+      }
+
+      @Component({
+        selector: 'parent',
+        hostDirectives: [ParentHostDir, OtherParentHostDir],
+        template: '<child plain-dir="PlainDir on child"></child>',
+      } as HostDirectiveAny)
+      class Parent extends LogsLifecycles {
+        override name = 'Parent';
+      }
+
+      @Directive({selector: '[plain-dir]'})
+      class PlainDir extends LogsLifecycles {
+        @Input('plain-dir') override name = '';
+      }
+
+      @Component({template: '<parent plain-dir="PlainDir on parent"></parent>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Parent, Child, PlainDir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(logs).toEqual([
+        'ParentHostDir - ngOnInit',
+        'OtherParentHostDir - ngOnInit',
+        'Parent - ngOnInit',
+        'PlainDir on parent - ngOnInit',
+        'ChildHostDir - ngOnInit',
+        'OtherChildHostDir - ngOnInit',
+        'Child - ngOnInit',
+        'PlainDir on child - ngOnInit',
+        'ChildHostDir - ngAfterViewInit',
+        'OtherChildHostDir - ngAfterViewInit',
+        'Child - ngAfterViewInit',
+        'PlainDir on child - ngAfterViewInit',
+        'ParentHostDir - ngAfterViewInit',
+        'OtherParentHostDir - ngAfterViewInit',
+        'Parent - ngAfterViewInit',
+        'PlainDir on parent - ngAfterViewInit',
+      ]);
+    });
   });
 
   describe('host bindings', () => {
@@ -436,6 +552,89 @@ describe('host directives', () => {
   });
 
   describe('dependency injection', () => {
+    it('should allow the host to inject its host directives', () => {
+      let hostInstance!: Host;
+      let firstHostDirInstance!: FirstHostDir;
+      let secondHostDirInstance!: SecondHostDir;
+
+      @Directive({standalone: true})
+      class SecondHostDir {
+        constructor() {
+          secondHostDirInstance = this;
+        }
+      }
+
+      @Directive({standalone: true, hostDirectives: [SecondHostDir]} as HostDirectiveAny)
+      class FirstHostDir {
+        constructor() {
+          firstHostDirInstance = this;
+        }
+      }
+
+      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]} as HostDirectiveAny)
+      class Host {
+        firstHostDir = inject(FirstHostDir);
+        secondHostDir = inject(SecondHostDir);
+
+        constructor() {
+          hostInstance = this;
+        }
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Host]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(hostInstance instanceof Host).toBe(true);
+      expect(firstHostDirInstance instanceof FirstHostDir).toBe(true);
+      expect(secondHostDirInstance instanceof SecondHostDir).toBe(true);
+
+      expect(hostInstance.firstHostDir).toBe(firstHostDirInstance);
+      expect(hostInstance.secondHostDir).toBe(secondHostDirInstance);
+    });
+
+    it('should be able to inject a host directive into a child component', () => {
+      let hostDirectiveInstance!: HostDir;
+
+      @Component({selector: 'child', template: ''})
+      class Child {
+        hostDir = inject(HostDir);
+      }
+
+      @Directive({standalone: true})
+      class HostDir {
+        constructor() {
+          hostDirectiveInstance = this;
+        }
+      }
+
+      @Component({
+        selector: 'host',
+        template: '<child></child>',
+        hostDirectives: [HostDir],
+      } as HostDirectiveAny)
+      class Host {
+        @ViewChild(Child) child!: Child;
+      }
+
+      @Component({template: '<host></host>'})
+      class App {
+        @ViewChild(Host) host!: Host;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Host, Child]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const injectedInstance = fixture.componentInstance.host.child.hostDir;
+
+      expect(injectedInstance instanceof HostDir).toBe(true);
+      expect(injectedInstance).toBe(hostDirectiveInstance);
+    });
+
     it('should allow the host directives to inject their host', () => {
       let hostInstance!: Host;
       let firstHostDirInstance!: FirstHostDir;
@@ -641,6 +840,172 @@ describe('host directives', () => {
       fixture.detectChanges();
 
       expect(tokenValue).toBe(null);
+    });
+
+    it('should throw a circular dependency error if a host and a host directive inject each other',
+       () => {
+         @Directive({standalone: true})
+         class HostDir {
+           host = inject(Host);
+         }
+
+         @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+         class Host {
+           hostDir = inject(HostDir);
+         }
+
+         @Component({template: '<div dir></div>'})
+         class App {
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Host]});
+         expect(() => TestBed.createComponent(App))
+             .toThrowError(/NG0200: Circular dependency in DI detected for HostDir/);
+       });
+  });
+
+  describe('debugging and testing utilities', () => {
+    it('should be able to retrieve host directives using ng.getDirectives', () => {
+      let hostDirInstance!: HostDir;
+      let otherHostDirInstance!: OtherHostDir;
+      let plainDirInstance!: PlainDir;
+
+      @Directive({standalone: true})
+      class HostDir {
+        constructor() {
+          hostDirInstance = this;
+        }
+      }
+
+      @Directive({standalone: true})
+      class OtherHostDir {
+        constructor() {
+          otherHostDirInstance = this;
+        }
+      }
+
+      @Directive({selector: '[plain-dir]'})
+      class PlainDir {
+        constructor() {
+          plainDirInstance = this;
+        }
+      }
+
+      @Component({
+        selector: 'comp',
+        template: '',
+        hostDirectives: [HostDir, OtherHostDir],
+      } as HostDirectiveAny)
+      class Comp {
+      }
+
+      @Component({template: '<comp plain-dir></comp>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Comp, PlainDir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const componentHost = fixture.nativeElement.querySelector('comp');
+
+      expect(hostDirInstance instanceof HostDir).toBe(true);
+      expect(otherHostDirInstance instanceof OtherHostDir).toBe(true);
+      expect(plainDirInstance instanceof PlainDir).toBe(true);
+      expect(getDirectives(componentHost)).toEqual([
+        hostDirInstance, otherHostDirInstance, plainDirInstance
+      ]);
+    });
+
+    it('should be able to retrieve components that have host directives using ng.getComponent',
+       () => {
+         let compInstance!: Comp;
+
+         @Directive({standalone: true})
+         class HostDir {
+         }
+
+         @Component({
+           selector: 'comp',
+           template: '',
+           hostDirectives: [HostDir],
+         } as HostDirectiveAny)
+         class Comp {
+           constructor() {
+             compInstance = this;
+           }
+         }
+
+         @Component({template: '<comp></comp>'})
+         class App {
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Comp]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         const componentHost = fixture.nativeElement.querySelector('comp');
+
+         expect(compInstance instanceof Comp).toBe(true);
+         expect(getComponent(componentHost)).toBe(compInstance);
+       });
+
+    it('should be able to retrieve components that have host directives using DebugNode.componentInstance',
+       () => {
+         let compInstance!: Comp;
+
+         @Directive({standalone: true})
+         class HostDir {
+         }
+
+         @Component({
+           selector: 'comp',
+           template: '',
+           hostDirectives: [HostDir],
+         } as HostDirectiveAny)
+         class Comp {
+           constructor() {
+             compInstance = this;
+           }
+         }
+
+         @Component({template: '<comp></comp>'})
+         class App {
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Comp]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         const node = fixture.debugElement.query(By.css('comp'));
+
+         expect(compInstance instanceof Comp).toBe(true);
+         expect(node.componentInstance).toBe(compInstance);
+       });
+
+    it('should be able to query by a host directive', () => {
+      @Directive({standalone: true})
+      class HostDir {
+      }
+
+      @Component({
+        selector: 'comp',
+        template: '',
+        hostDirectives: [HostDir],
+      } as HostDirectiveAny)
+      class Comp {
+        constructor(public elementRef: ElementRef<HTMLElement>) {}
+      }
+
+      @Component({template: '<comp></comp>'})
+      class App {
+        @ViewChild(Comp) compInstance!: Comp;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Comp]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const expected = fixture.componentInstance.compInstance.elementRef.nativeElement;
+      const result = fixture.debugElement.query(By.directive(HostDir)).nativeElement;
+
+      expect(result).toBe(expected);
     });
   });
 });

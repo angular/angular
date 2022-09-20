@@ -221,7 +221,7 @@ export function getDirectives(node: Node): {}[] {
     return [];
   }
   if (context.directives === undefined) {
-    context.directives = getDirectivesAtNodeIndex(nodeIndex, lView, false);
+    context.directives = getDirectivesAtNodeIndex(nodeIndex, lView);
   }
 
   // The `directives` in this case are a named array called `LComponentView`. Clone the

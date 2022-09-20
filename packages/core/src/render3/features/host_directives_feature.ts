@@ -68,11 +68,9 @@ function findHostDirectiveDefs(
 
       // Host directives execute before the host so that its host bindings can be overwritten.
       findHostDirectiveDefs(matches, hostDirectiveDef, tView, lView, tNode);
+      matches.push(hostDirectiveDef);
     }
   }
-
-  // Push the def itself at the end since it needs to execute after the host directives.
-  matches.push(def);
 }
 
 /**
