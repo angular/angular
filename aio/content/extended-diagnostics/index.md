@@ -10,6 +10,12 @@ Currently, Angular supports the following extended diagnostics:
 
 *   [NG8101 - `invalidBananaInBox`](extended-diagnostics/NG8101)
 *   [NG8102 - `nullishCoalescingNotNullable`](extended-diagnostics/NG8102)
+*   NG8103 - `missingControlFlowDirective`
+*   NG8104 - `textAttributeNotBinding`
+*   NG8105 - `missingNgForOfLet`
+*   NG8106 - `suffixNotSupported`
+*   NG8107 - `optionalChainNotNullable`
+*   [NG8108 - `imgAltRequired`](extended-diagnostics/NG8108)
 
 ## Configuration
 

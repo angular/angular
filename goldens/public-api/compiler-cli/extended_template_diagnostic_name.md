@@ -7,6 +7,8 @@
 // @public
 export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
+    IMG_ALT_REQUIRED = "imgAltRequired",
+    // (undocumented)
     INVALID_BANANA_IN_BOX = "invalidBananaInBox",
     // (undocumented)
     MISSING_CONTROL_FLOW_DIRECTIVE = "missingControlFlowDirective",

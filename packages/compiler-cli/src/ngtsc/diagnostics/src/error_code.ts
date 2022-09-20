@@ -319,6 +319,11 @@ export enum ErrorCode {
   OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
 
   /**
+   * `<img />` tags require the `alt` attribute to provide accessibility information.
+   */
+  IMG_ALT_REQUIRED = 8108,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
