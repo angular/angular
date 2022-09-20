@@ -1,9 +1,9 @@
-const JsDOMEnvironment = require('jest-environment-jsdom');
+const JSDOMEnvironment = require('jest-environment-jsdom').default;
 const exportFakeTimersToSandboxGlobal = require('./jest-zone-patch-fake-timer');
 
-class ZoneJsDOMEnvironment extends JsDOMEnvironment {
-  constructor(config) {
-    super(config);
+class ZoneJsDOMEnvironment extends JSDOMEnvironment {
+  constructor(config, context) {
+    super(config, context);
     exportFakeTimersToSandboxGlobal(this);
   }
 

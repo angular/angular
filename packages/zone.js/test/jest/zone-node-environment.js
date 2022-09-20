@@ -1,9 +1,9 @@
-const NodeEnvironment = require('jest-environment-node');
+const NodeEnvironment = require('jest-environment-node').default;
 const exportFakeTimersToSandboxGlobal = require('./jest-zone-patch-fake-timer');
 
 class ZoneNodeEnvironment extends NodeEnvironment {
-  constructor(config) {
-    super(config);
+  constructor(config, context) {
+    super(config, context);
     exportFakeTimersToSandboxGlobal(this);
   }
 
