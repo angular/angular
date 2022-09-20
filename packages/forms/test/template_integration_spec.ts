@@ -2662,7 +2662,12 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const fixture = initTest(App);
            fixture.detectChanges();
            tick();
-           expect(console.warn).toHaveBeenCalled();
+           expect(console.warn)
+               .toHaveBeenCalledWith(
+                   `The "first" name is used for multiple \`ngModel\` bindings in this form. ` +
+                   `This could lead to stale values in these bindings. ` +
+                   `Make sure that elements with \`ngModel\` bindings in this form group ` +
+                   `have unique "name" attribute values.`);
          }));
 
       it('should not warn when adding a case insensitve duplicate name that is not a radio button',
@@ -2689,8 +2694,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            @Component({
              template: `
               <form>
-                <input ngModel name="first" />
-                <input ngModel name="first" ngModelOptions="{standalone: true}" />
+                <input ngModel name="withstandalone" />
+                <input ngModel name="withstandalone" ngModelOptions="{standalone: true}" />
               </form>
             `
            })
@@ -2701,7 +2706,12 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const fixture = initTest(App);
            fixture.detectChanges();
            tick();
-           expect(console.warn).toHaveBeenCalled();
+           expect(console.warn)
+               .toHaveBeenCalledWith(
+                   `The "withstandalone" name is used for multiple \`ngModel\` bindings in this form. ` +
+                   `This could lead to stale values in these bindings. ` +
+                   `Make sure that elements with \`ngModel\` bindings in this form group ` +
+                   `have unique "name" attribute values.`);
          }));
 
       it('should warn if one of the duplicates is radio but the other is now', fakeAsync(() => {
@@ -2720,7 +2730,12 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const fixture = initTest(App);
            fixture.detectChanges();
            tick();
-           expect(console.warn).toHaveBeenCalled();
+           expect(console.warn)
+               .toHaveBeenCalledWith(
+                   `The "first" name is used for multiple \`ngModel\` bindings in this form. ` +
+                   `This could lead to stale values in these bindings. ` +
+                   `Make sure that elements with \`ngModel\` bindings in this form group ` +
+                   `have unique "name" attribute values.`);
          }));
 
       it('should not warn when adding a duplicate name that is a radio button', fakeAsync(() => {
@@ -2791,7 +2806,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
               <form>
                 <ng-container ngModelGroup="group">
                   <div *ngFor="let item of items; index as i">
-                    <input [(ngModel)]="item.value" name="name-{{i.name}}">
+                    <input [(ngModel)]="item.value" name="name-{{item.name}}">
                   </div>
                 </ng-container>
               </form>
@@ -2806,8 +2821,6 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              }
            }
 
-           const getValues = () =>
-               fixture.debugElement.queryAll(By.css('input')).map(el => el.nativeElement.value);
            const fixture = initTest(App);
            fixture.componentInstance.add();
            fixture.detectChanges();
@@ -2816,7 +2829,12 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.componentInstance.add();
            fixture.detectChanges();
            tick();
-           expect(console.warn).toHaveBeenCalled();
+           expect(console.warn)
+               .toHaveBeenCalledWith(
+                   `The "name-item" name is used for multiple \`ngModel\` bindings in this form. ` +
+                   `This could lead to stale values in these bindings. ` +
+                   `Make sure that elements with \`ngModel\` bindings in this form group ` +
+                   `have unique "name" attribute values.`);
          }));
     });
   });

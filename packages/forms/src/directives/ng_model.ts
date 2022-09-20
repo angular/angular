@@ -163,7 +163,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * A subscription to the duplicate name check. Allow null as initial value.
    * @nodoc
    */
-  private dupeNameSubscription: Subscription|null;
+  private dupeNameSubscription: Subscription|null = null;
 
   /**
    * @description
@@ -224,7 +224,6 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
-    this.dupeNameSubscription = null;
   }
 
   /** @nodoc */
@@ -242,35 +241,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
           this.formDirective.removeControl({name: oldName, path: this._getPath(oldName)});
         }
       }
-      if (ngDevMode && this.formDirective) {
-        if (this.dupeNameSubscription !== null) {
-          this.dupeNameSubscription.unsubscribe();
-        }
-
-        this.dupeNameSubscription = this._ngZone.onStable.subscribe(() => {
-          /**
-           * We need to check the directives for duplicates on the names when a control is
-           * registered. Given ngFor can produce duplicates *for a short time* we need to skip
-           * the validation when changes contain a previous value on the name, since the duplicate
-           * will be deleted.
-           */
-          if (changes['name']?.isFirstChange()) {
-            this.formDirective._directives?.forEach((directive: NgModel) => {
-              /*
-               * Radio inputs need to be excluded from the dupelicate name check, since
-               * radio buttons require identical names in order to properly function. However,
-               * if a non radio input shares the name then it will be counted as a duplicate.
-               */
-              if ((!(directive.valueAccessor instanceof RadioControlValueAccessor) ||
-                   !(this.valueAccessor instanceof RadioControlValueAccessor)) &&
-                  directive !== this && directive.name === this.name)
-                console.warn(`
-                  Duplicate name "${
-                    this.name}" in form detected on non radio controls. This could lead to unintended results.
-                `);
-            });
-          }
-        });
+      if (ngDevMode) {
+        this._checkDuplicateModels(changes);
       }
       this._setUpControl();
     }
@@ -344,6 +316,40 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
       this._checkParentType();
     }
     this._checkName();
+  }
+
+  private _checkDuplicateModels(changes: SimpleChanges): void {
+    if (this.formDirective) {
+      if (this.dupeNameSubscription !== null) {
+        this.dupeNameSubscription.unsubscribe();
+      }
+
+      /**
+       * Given ngFor can produce duplicates *for a short time* we need to skip
+       * the validation when changes contain a previous value on the name, since the duplicate
+       * will be deleted.
+       */
+      if (changes['name']?.isFirstChange()) {
+        this.dupeNameSubscription = this._ngZone.onStable.subscribe(() => {
+          this.formDirective._directives?.forEach((directive: NgModel) => {
+            /*
+             * Radio inputs need to be excluded from the dupelicate name check, since
+             * radio buttons require identical names in order to properly function. However,
+             * if a non radio input shares the name then it will be counted as a duplicate.
+             */
+            if ((!(directive.valueAccessor instanceof RadioControlValueAccessor) ||
+                 !(this.valueAccessor instanceof RadioControlValueAccessor)) &&
+                directive !== this && directive.name === this.name)
+              console.warn(
+                  `The "${
+                      this.name}" name is used for multiple \`ngModel\` bindings in this form. ` +
+                  `This could lead to stale values in these bindings. ` +
+                  `Make sure that elements with \`ngModel\` bindings in this form group ` +
+                  `have unique "name" attribute values.`);
+          });
+        });
+      }
+    }
   }
 
   private _checkParentType(): void {
