@@ -62,28 +62,6 @@ export class PreconnectLinkChecker {
   }
 
   /**
-   * Assembles a blocklist based on the following:
-   *  - internal list of origins (localhost, etc)
-   *  - origins configured by developers via `NG_OPTIMIZED_IMAGE_CONFIG` token
-   *  - origins added to the list by image loaders (when `ensurePreconnect` is set to `false`)
-   */
-  private assembleBlocklist(injector: Injector): Set<string> {
-    const blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
-    const userConfiguredOrigins = getDirectiveConfig(injector).preconnectCheckBlocklist ?? [];
-    const loadersConfiguredOrigins = injector.get(PRECONNECT_CHECK_BLOCKLIST, null) ?? [];
-    if (userConfiguredOrigins !== null && !Array.isArray(userConfiguredOrigins)) {
-      throw new RuntimeError(
-          RuntimeErrorCode.INVALID_PRECONNECT_CHECK_BLOCKLIST,
-          `The blocklist for the preconnect check was not provided as an array. ` +
-              `Check that the \`NG_OPTIMIZED_IMAGE_CONFIG\` token value has correct shape.`);
-    }
-    deepForEach([...userConfiguredOrigins, ...loadersConfiguredOrigins], origin => {
-      blocklist.add(extractHostname(origin));
-    });
-    return blocklist;
-  }
-
-  /**
    * Checks that a preconnect resource hint exists in the head for the given src.
    *
    * Note: this function takes a directive injector as an argument to retrieve the
@@ -127,6 +105,11 @@ export class PreconnectLinkChecker {
     }
   }
 
+  ngOnDestroy() {
+    this.preconnectLinks?.clear();
+    this.alreadySeen.clear();
+  }
+
   private queryPreconnectLinks(): Set<string> {
     const preconnectUrls = new Set<string>();
     const selector = 'link[rel=preconnect]';
@@ -138,9 +121,26 @@ export class PreconnectLinkChecker {
     return preconnectUrls;
   }
 
-  ngOnDestroy() {
-    this.preconnectLinks?.clear();
-    this.alreadySeen.clear();
+  /**
+   * Assembles a blocklist based on the following:
+   *  - internal list of origins (localhost, etc)
+   *  - origins configured by developers via `NG_OPTIMIZED_IMAGE_CONFIG` token
+   *  - origins added to the list by image loaders (when `ensurePreconnect` is set to `false`)
+   */
+  private assembleBlocklist(injector: Injector): Set<string> {
+    const blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
+    const userConfiguredOrigins = getDirectiveConfig(injector).preconnectCheckBlocklist ?? [];
+    const loadersConfiguredOrigins = injector.get(PRECONNECT_CHECK_BLOCKLIST, null) ?? [];
+    if (userConfiguredOrigins !== null && !Array.isArray(userConfiguredOrigins)) {
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_PRECONNECT_CHECK_BLOCKLIST,
+          `The blocklist for the preconnect check was not provided as an array. ` +
+              `Check that the \`NG_OPTIMIZED_IMAGE_CONFIG\` token value has correct shape.`);
+    }
+    deepForEach([...userConfiguredOrigins, ...loadersConfiguredOrigins], origin => {
+      blocklist.add(extractHostname(origin));
+    });
+    return blocklist;
   }
 }
 
