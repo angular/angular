@@ -410,6 +410,9 @@ export class LowerCasePipe implements PipeTransform {
 }
 
 // @public
+export const NG_OPTIMIZED_IMAGE_CONFIG: InjectionToken<NgOptimizedImageConfig>;
+
+// @public
 export class NgClass implements DoCheck {
     constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer2);
     // (undocumented)
@@ -559,6 +562,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc],img[rawSrc]", never, { "rawSrc": "rawSrc"; "ngSrc": "ngSrc"; "ngSrcset": "ngSrcset"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
+}
+
+// @public
+export interface NgOptimizedImageConfig {
+    preconnectCheckBlocklist?: string[];
 }
 
 // @public
@@ -786,9 +794,6 @@ interface PopStateEvent_2 {
     url?: string;
 }
 export { PopStateEvent_2 as PopStateEvent }
-
-// @public
-export const PRECONNECT_CHECK_BLOCKLIST: InjectionToken<(string | string[])[]>;
 
 // @public
 export const provideCloudflareLoader: (path: string, options?: {

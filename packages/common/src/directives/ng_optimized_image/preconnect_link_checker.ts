@@ -12,6 +12,7 @@ import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
 import {assertDevMode} from './asserts';
+import {getDirectiveConfig} from './config';
 import {imgDirectiveDetails} from './error_helper';
 import {extractHostname, getUrl} from './url';
 
@@ -19,26 +20,14 @@ import {extractHostname, getUrl} from './url';
 const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
 
 /**
- * Multi-provider injection token to configure which origins should be excluded
+ * An internal multi-provider injection token to configure which origins should be excluded
  * from the preconnect checks. It can either be a single string or an array of strings
- * to represent a group of origins, for example:
- *
- * ```typescript
- *  {provide: PRECONNECT_CHECK_BLOCKLIST, multi: true, useValue: 'https://your-domain.com'}
- * ```
- *
- * or:
- *
- * ```typescript
- *  {provide: PRECONNECT_CHECK_BLOCKLIST, multi: true,
- *   useValue: ['https://your-domain-1.com', 'https://your-domain-2.com']}
- * ```
- *
- * @publicApi
- * @developerPreview
+ * to represent a group of origins. The token is used by the image loaders that allow developers
+ * to opt-out of the preconnect link checks by specifying `ensurePreconnect: false` in the loader
+ * config.
  */
 export const PRECONNECT_CHECK_BLOCKLIST =
-    new InjectionToken<Array<string|string[]>>('PRECONNECT_CHECK_BLOCKLIST');
+    new InjectionToken<Array<string|string[]>>(ngDevMode ? 'PRECONNECT_CHECK_BLOCKLIST' : '');
 
 /**
  * Contains the logic to detect whether an image, marked with the "priority" attribute
@@ -72,21 +61,25 @@ export class PreconnectLinkChecker {
     }
   }
 
+  /**
+   * Assembles a blocklist based on the following:
+   *  - internal list of origins (localhost, etc)
+   *  - origins configured by developers via `NG_OPTIMIZED_IMAGE_CONFIG` token
+   *  - origins added to the list by image loaders (when `ensurePreconnect` is set to `false`)
+   */
   private assembleBlocklist(injector: Injector): Set<string> {
     const blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
-    const origins = injector.get(PRECONNECT_CHECK_BLOCKLIST, null);
-    if (origins !== null) {
-      if (Array.isArray(origins)) {
-        deepForEach(origins, origin => {
-          blocklist.add(extractHostname(origin));
-        });
-      } else {
-        throw new RuntimeError(
-            RuntimeErrorCode.INVALID_PRECONNECT_CHECK_BLOCKLIST,
-            `The blocklist for the preconnect check was not provided as an array. ` +
-                `Check that the \`PRECONNECT_CHECK_BLOCKLIST\` token is configured as a \`multi: true\` provider.`);
-      }
+    const userConfiguredOrigins = getDirectiveConfig(injector).preconnectCheckBlocklist ?? [];
+    const loadersConfiguredOrigins = injector.get(PRECONNECT_CHECK_BLOCKLIST, null) ?? [];
+    if (userConfiguredOrigins !== null && !Array.isArray(userConfiguredOrigins)) {
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_PRECONNECT_CHECK_BLOCKLIST,
+          `The blocklist for the preconnect check was not provided as an array. ` +
+              `Check that the \`NG_OPTIMIZED_IMAGE_CONFIG\` token value has correct shape.`);
     }
+    deepForEach([...userConfiguredOrigins, ...loadersConfiguredOrigins], origin => {
+      blocklist.add(extractHostname(origin));
+    });
     return blocklist;
   }
 
