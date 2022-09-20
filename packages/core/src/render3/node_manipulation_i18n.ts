@@ -62,7 +62,7 @@ export function processI18nInsertBefore(
       anchorRNode = i18nParent;
       i18nParent = parentRElement;
     }
-    if (i18nParent !== null && (childTNode.flags & TNodeFlags.isComponentHost) === 0) {
+    if (i18nParent !== null && childTNode.componentOffset === -1) {
       for (let i = 1; i < tNodeInsertBeforeIndex.length; i++) {
         // No need to `unwrapRNode` because all of the indexes point to i18n text nodes.
         // see `assertDomNode` below.

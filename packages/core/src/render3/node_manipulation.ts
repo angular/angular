@@ -576,10 +576,11 @@ export function getClosestRElement(tView: TView, tNode: TNode|null, lView: LView
     return lView[HOST];
   } else {
     ngDevMode && assertTNodeType(parentTNode, TNodeType.AnyRNode | TNodeType.Container);
-    if (parentTNode.flags & TNodeFlags.isComponentHost) {
+    const {componentOffset} = parentTNode;
+    if (componentOffset > -1) {
       ngDevMode && assertTNodeForLView(parentTNode, lView);
-      const encapsulation =
-          (tView.data[parentTNode.directiveStart] as ComponentDef<unknown>).encapsulation;
+      const {encapsulation} =
+          (tView.data[parentTNode.directiveStart + componentOffset] as ComponentDef<unknown>);
       // We've got a parent which is an element in the current view. We just need to verify if the
       // parent element is not a component. Component's content nodes are not inserted immediately
       // because they will be projected, and so doing insert at this point would be wasteful.

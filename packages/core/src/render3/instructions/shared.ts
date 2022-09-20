@@ -14,7 +14,7 @@ import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
+import {assertDefined, assertEqual, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
@@ -789,6 +789,7 @@ export function createTNode(
           index,          // index: number
           null,           // insertBeforeIndex: null|-1|number|number[]
           injectorIndex,  // injectorIndex: number
+          -1,             // componentOffset: number
           -1,             // directiveStart: number
           -1,             // directiveEnd: number
           -1,             // directiveStylingLast: number
@@ -825,6 +826,7 @@ export function createTNode(
         directiveStart: -1,
         directiveEnd: -1,
         directiveStylingLast: -1,
+        componentOffset: -1,
         propertyBindings: null,
         flags: 0,
         providerIndexes: 0,
@@ -1040,8 +1042,9 @@ export function instantiateRootComponent<T>(tView: TView, lView: LView, def: Com
     configureViewWithDirective(tView, rootTNode, lView, directiveIndex, def);
     initializeInputAndOutputAliases(tView, rootTNode);
   }
-  const directive =
-      getNodeInjectable(lView, tView, rootTNode.directiveStart, rootTNode as TElementNode);
+  const directive = getNodeInjectable(
+      lView, tView, rootTNode.directiveStart + rootTNode.componentOffset,
+      rootTNode as TElementNode);
   attachPatchData(directive, lView);
   const native = getNativeByTNode(rootTNode, lView);
   if (native) {
@@ -1279,13 +1282,13 @@ function findDirectiveDefMatches(
                 `"${tNode.value}" tags cannot be used as component hosts. ` +
                     `Please use a different tag to activate the ${stringify(def.type)} component.`);
 
-            if (tNode.flags & TNodeFlags.isComponentHost) {
+            if (isComponentHost(tNode)) {
               // If another component has been matched previously, it's the first element in the
               // `matches` array, see how we store components/directives in `matches` below.
               throwMultipleComponentError(tNode, matches[0].type, def.type);
             }
           }
-          markAsComponentHost(tView, tNode);
+          markAsComponentHost(tView, tNode, 0);
           // The component is always stored first with directives after.
           matches.unshift(def);
         } else {
@@ -1299,12 +1302,13 @@ function findDirectiveDefMatches(
 
 /**
  * Marks a given TNode as a component's host. This consists of:
- * - setting appropriate TNode flags;
+ * - setting the component offset on the TNode.
  * - storing index of component's host element so it will be queued for view refresh during CD.
  */
-export function markAsComponentHost(tView: TView, hostTNode: TNode): void {
+export function markAsComponentHost(tView: TView, hostTNode: TNode, componentOffset: number): void {
   ngDevMode && assertFirstCreatePass(tView);
-  hostTNode.flags |= TNodeFlags.isComponentHost;
+  ngDevMode && assertGreaterThan(componentOffset, -1, 'componentOffset must be great than -1');
+  hostTNode.componentOffset = componentOffset;
   (tView.components || (tView.components = ngDevMode ? new TViewComponents() : []))
       .push(hostTNode.index);
 }
