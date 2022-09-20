@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, InjectionToken, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Injectable, InjectFlags, InjectionToken, Injector, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
@@ -64,45 +64,53 @@ export class PreconnectLinkChecker {
 
   private window: Window|null = null;
 
-  private blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
-
   constructor() {
     assertDevMode('preconnect link checker');
     const win = this.document.defaultView;
     if (typeof win !== 'undefined') {
       this.window = win;
     }
-    const blocklist = inject(PRECONNECT_CHECK_BLOCKLIST, {optional: true});
-    if (blocklist) {
-      this.populateBlocklist(blocklist);
-    }
   }
 
-  private populateBlocklist(origins: Array<string|string[]>) {
-    if (Array.isArray(origins)) {
-      deepForEach(origins, origin => {
-        this.blocklist.add(extractHostname(origin));
-      });
-    } else {
-      throw new RuntimeError(
-          RuntimeErrorCode.INVALID_PRECONNECT_CHECK_BLOCKLIST,
-          `The blocklist for the preconnect check was not provided as an array. ` +
-              `Check that the \`PRECONNECT_CHECK_BLOCKLIST\` token is configured as a \`multi: true\` provider.`);
+  private assembleBlocklist(injector: Injector): Set<string> {
+    const blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
+    const origins = injector.get(PRECONNECT_CHECK_BLOCKLIST, null);
+    if (origins !== null) {
+      if (Array.isArray(origins)) {
+        deepForEach(origins, origin => {
+          blocklist.add(extractHostname(origin));
+        });
+      } else {
+        throw new RuntimeError(
+            RuntimeErrorCode.INVALID_PRECONNECT_CHECK_BLOCKLIST,
+            `The blocklist for the preconnect check was not provided as an array. ` +
+                `Check that the \`PRECONNECT_CHECK_BLOCKLIST\` token is configured as a \`multi: true\` provider.`);
+      }
     }
+    return blocklist;
   }
 
   /**
-   * Checks that a preconnect resource hint exists in the head fo rthe
-   * given src.
+   * Checks that a preconnect resource hint exists in the head for the given src.
    *
-   * @param rewrittenSrc src formatted with loader
-   * @param originalNgSrc ngSrc value
+   * Note: this function takes a directive injector as an argument to retrieve the
+   * accumulated value of the `PRECONNECT_CHECK_BLOCKLIST` multi-provider, taking
+   * into account values specified at the @Component.providers level. Since this class
+   * is provided in `root`, it has access to the root environment injector only, so
+   * we need a directive injector to get an actual value of the `PRECONNECT_CHECK_BLOCKLIST`
+   * multi-provider.
+   *
+   * @param rewrittenSrc `src` formatted with loader
+   * @param originalNgSrc `ngSrc` value
+   * @param directiveInjector Injector instance at the NgOptimizedImage directive level
    */
-  assertPreconnect(rewrittenSrc: string, originalNgSrc: string): void {
+  assertPreconnect(rewrittenSrc: string, originalNgSrc: string, directiveInjector: Injector): void {
     if (!this.window) return;
 
+    const blocklist = this.assembleBlocklist(directiveInjector);
+
     const imgUrl = getUrl(rewrittenSrc, this.window);
-    if (this.blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
+    if (blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
 
     // Register this origin as seen, so we don't check it again later.
     this.alreadySeen.add(imgUrl.origin);

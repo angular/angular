@@ -8,12 +8,12 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
-import {Component, Provider} from '@angular/core';
+import {Component, Provider, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
-import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
+import {createImageLoader, IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
 import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
@@ -883,6 +883,66 @@ describe('Image directive', () => {
       expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
     });
 
+    it(`should allow providing image loaders via Component providers`, withHead('', () => {
+         const createImgUrl = (path: string, config: ImageLoaderConfig) => `${path}/${config.src}`;
+         const provideCustomLoader = createImageLoader(createImgUrl);
+
+         @Component({
+           selector: 'test-cmp',
+           template: '<img ngSrc="a.png" width="100" height="50" priority>',
+           providers: [provideCustomLoader('https://angular.io')]
+         })
+         class TestComponent {
+         }
+
+         setupTestingModule({component: TestComponent});
+
+         const consoleWarnSpy = spyOn(console, 'warn');
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+
+         const nativeElement = fixture.nativeElement as HTMLElement;
+         const img = nativeElement.querySelector('img')!;
+         expect(img.src).toBe('https://angular.io/a.png');
+
+         // Verify that there is a warning in a console related to a missing preconnect.
+         const warning = consoleWarnSpy.calls.argsFor(0)[0];
+         expect(warning).toContain(
+             'NG02956: The NgOptimizedImage directive ' +
+             '(activated on an <img> element with the `ngSrc="a.png"`) ' +
+             'has detected that there is no preconnect tag present for this image.');
+       }));
+
+    it(`should allow disabling preconnect check for image loaders configured using Component providers`,
+       withHead('', () => {
+         const createImgUrl = (path: string, config: ImageLoaderConfig) => `${path}/${config.src}`;
+         const provideCustomLoader = createImageLoader(createImgUrl);
+
+         @Component({
+           selector: 'test-cmp',
+           template: '<img ngSrc="a.png" width="100" height="50" priority>',
+           providers: [
+             provideCustomLoader('https://angular.io', {ensurePreconnect: false}),
+           ]
+         })
+         class TestComponent {
+         }
+
+         setupTestingModule({component: TestComponent});
+
+         const consoleWarnSpy = spyOn(console, 'warn');
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+
+         const nativeElement = fixture.nativeElement as HTMLElement;
+         const img = nativeElement.querySelector('img')!;
+         expect(img.src).toBe('https://angular.io/a.png');
+
+         // The `ensurePreconnect: false` was specified in a loader config,
+         // so we expect no warnings in the console.
+         expect(consoleWarnSpy.calls.count()).toBe(0);
+       }));
+
     describe('`ngSrcset` values', () => {
       let imageLoader!: ImageLoader;
 
@@ -1051,7 +1111,8 @@ class TestComponent {
   priority = false;
 }
 
-function setupTestingModule(config?: {imageLoader?: ImageLoader, extraProviders?: any[]}) {
+function setupTestingModule(
+    config?: {imageLoader?: ImageLoader, extraProviders?: Provider[], component?: Type<unknown>}) {
   const defaultLoader = (config: ImageLoaderConfig) => {
     const isAbsolute = /^https?:\/\//.test(config.src);
     return isAbsolute ? config.src : window.location.origin + '/' + config.src;
@@ -1065,7 +1126,7 @@ function setupTestingModule(config?: {imageLoader?: ImageLoader, extraProviders?
   ];
 
   TestBed.configureTestingModule({
-    declarations: [TestComponent],
+    declarations: [config?.component ?? TestComponent],
     // Note: the `NgOptimizedImage` directive is experimental and is not a part of the
     // `CommonModule` yet, so it's imported separately.
     imports: [CommonModule, NgOptimizedImage],

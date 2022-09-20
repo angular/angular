@@ -298,7 +298,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNoImageDistortion(this, this.imgElement, this.renderer);
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
-        checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
+        checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc, this.injector);
       } else {
         // Monitor whether an image is an LCP element only in case
         // the `priority` attribute is missing. Otherwise, an image
