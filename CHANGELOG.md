@@ -1,3 +1,18 @@
+<a name="15.0.0-next.3"></a>
+# 15.0.0-next.3 (2022-09-21)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d11b1d99b0](https://github.com/angular/angular/commit/d11b1d99b0af1bc6389ef0e0157c5bca8a7f951a) | fix | make sure that the useAnimation function delay is applied ([#47468](https://github.com/angular/angular/pull/47468)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8fcadaad48](https://github.com/angular/angular/commit/8fcadaad48b2b1328f47b7603b230445a26f95a8) | perf | cache source file for reporting type-checking diagnostics ([#47471](https://github.com/angular/angular/pull/47471)) |
+## Special Thanks
+AleksanderBodurri, Andrew Kushnir, Andrew Scott, Bob Watson, George Kalpakas, JiaLiPassion, Joey Perrott, JoostK, Kristiyan Kostadinov, Mauro Mattos, Pawel Kozlowski, Sabareesh Kappagantu, angular-robot[bot], dario-piotrowicz, fabioemoutinho and famzila
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.3"></a>
 # 14.2.3 (2022-09-21)
 ### animations
