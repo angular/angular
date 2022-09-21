@@ -11,24 +11,9 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
 import {HTTP_INTERCEPTOR_FNS, HTTP_INTERCEPTORS, HttpInterceptorHandler, LEGACY_INTERCEPTOR_FN, legacyInterceptorFnFactory, NoopInterceptor} from './interceptor';
-import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
+import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
-
-/**
- * Factory function that determines where to store JSONP callbacks.
- *
- * Ordinarily JSONP callbacks are stored on the `window` object, but this may not exist
- * in test environments. In that case, callbacks are stored on an anonymous object instead.
- *
- *
- */
-export function jsonpCallbackContext(): Object {
-  if (typeof window === 'object') {
-    return window;
-  }
-  return {};
-}
 
 /**
  * Configures XSRF protection support for outgoing requests.
@@ -140,7 +125,7 @@ export class HttpClientModule {
   providers: [
     JsonpClientBackend,
     {provide: JsonpCallbackContext, useFactory: jsonpCallbackContext},
-    {provide: HTTP_INTERCEPTORS, useClass: JsonpInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTOR_FNS, useValue: jsonpInterceptorFn, multi: true},
   ],
 })
 export class HttpClientJsonpModule {

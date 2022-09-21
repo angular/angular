@@ -4,6 +4,7 @@
 
 ```ts
 
+import { EnvironmentInjector } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
@@ -2121,8 +2122,8 @@ export class JsonpClientBackend implements HttpBackend {
 
 // @public
 export class JsonpInterceptor {
-    constructor(jsonp: JsonpClientBackend);
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
+    constructor(injector: EnvironmentInjector);
+    intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<JsonpInterceptor, never>;
     // (undocumented)
