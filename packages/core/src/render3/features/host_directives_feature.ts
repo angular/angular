@@ -61,15 +61,12 @@ function findHostDirectiveDefs(
     matches: DirectiveDef<unknown>[], def: DirectiveDef<unknown>, tView: TView, lView: LView,
     tNode: TElementNode|TContainerNode|TElementContainerNode): void {
   if (def.hostDirectives !== null) {
-    // Iterate in reverse so the directive that declares
-    // the host directives preserves its original order.
-    for (let i = def.hostDirectives.length - 1; i > -1; i--) {
-      const hostDirectiveConfig = def.hostDirectives[i];
+    for (const hostDirectiveConfig of def.hostDirectives) {
       const hostDirectiveDef = getDirectiveDef(hostDirectiveConfig.directive)!;
 
       // Host directives execute before the host so that its host bindings can be overwritten.
-      matches.unshift(hostDirectiveDef);
       findHostDirectiveDefs(matches, hostDirectiveDef, tView, lView, tNode);
+      matches.push(hostDirectiveDef);
     }
   }
 }

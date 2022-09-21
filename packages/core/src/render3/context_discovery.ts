@@ -63,7 +63,7 @@ export function getLContext(target: any): LContext|null {
         if (nodeIndex == -1) {
           throw new Error('The provided directive was not found in the application');
         }
-        directives = getDirectivesAtNodeIndex(nodeIndex, lView, false);
+        directives = getDirectivesAtNodeIndex(nodeIndex, lView);
       } else {
         nodeIndex = findViaNativeElement(lView, target as RElement);
         if (nodeIndex == -1) {
@@ -295,20 +295,18 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
 
 /**
  * Returns a list of directives extracted from the given view based on the
- * provided list of directive index values.
+ * provided list of directive index values, excluding components.
  *
  * @param nodeIndex The node index
  * @param lView The target view data
- * @param includeComponents Whether or not to include components in returned directives
  */
-export function getDirectivesAtNodeIndex(
-    nodeIndex: number, lView: LView, includeComponents: boolean): any[]|null {
+export function getDirectivesAtNodeIndex(nodeIndex: number, lView: LView): any[]|null {
   const tNode = lView[TVIEW].data[nodeIndex] as TNode;
   if (tNode.directiveStart === 0) return EMPTY_ARRAY;
   const results: any[] = [];
   for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
     const directiveInstance = lView[i];
-    if (!isComponentInstance(directiveInstance) || includeComponents) {
+    if (!isComponentInstance(directiveInstance)) {
       results.push(directiveInstance);
     }
   }

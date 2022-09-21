@@ -1265,13 +1265,13 @@ export function invokeHostBindingsInCreationMode(def: DirectiveDef<any>, directi
  * If a component is matched (at most one), it is returned in first position in the array.
  */
 function findDirectiveDefMatches(
-    tView: TView, viewData: LView,
-    tNode: TElementNode|TContainerNode|TElementContainerNode): DirectiveDef<any>[]|null {
+    tView: TView, lView: LView,
+    tNode: TElementNode|TContainerNode|TElementContainerNode): DirectiveDef<unknown>[]|null {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
 
   const registry = tView.directiveRegistry;
-  let matches: any[]|null = null;
+  let matches: DirectiveDef<unknown>[]|null = null;
   if (registry) {
     for (let i = 0; i < registry.length; i++) {
       const def = registry[i] as ComponentDef<any>| DirectiveDef<any>;
@@ -1286,19 +1286,32 @@ function findDirectiveDefMatches(
                     `Please use a different tag to activate the ${stringify(def.type)} component.`);
 
             if (isComponentHost(tNode)) {
-              // If another component has been matched previously, it's the first element in the
-              // `matches` array, see how we store components/directives in `matches` below.
-              throwMultipleComponentError(tNode, matches[0].type, def.type);
+              throwMultipleComponentError(tNode, matches.find(isComponentDef)!.type, def.type);
             }
           }
-          markAsComponentHost(tView, tNode, 0);
-          // The component is always stored first with directives after.
-          matches.unshift(def);
+
+          // Components are inserted at the front of the matches array so that their lifecycle
+          // hooks run before any directive lifecycle hooks. This appears to be for ViewEngine
+          // compatibility. This logic doesn't make sense with host directives, because it
+          // would allow the host directives to undo any overrides the host may have made.
+          // To handle this case, the host directives of components are inserted at the beginning
+          // of the array, followed by the component.
+          if (def.findHostDirectiveDefs !== null) {
+            const hostDirectiveMatches: DirectiveDef<unknown>[] = [];
+            // Append any host directives to the matches first.
+            def.findHostDirectiveDefs(hostDirectiveMatches, def, tView, lView, tNode);
+            hostDirectiveMatches.push(def);
+            matches.unshift(...hostDirectiveMatches);
+            markAsComponentHost(tView, tNode, hostDirectiveMatches.length - 1);
+          } else {
+            matches.unshift(def);
+            markAsComponentHost(tView, tNode, 0);
+          }
         } else {
+          // Append any host directives to the matches first.
+          def.findHostDirectiveDefs?.(matches, def, tView, lView, tNode);
           matches.push(def);
         }
-
-        def.findHostDirectiveDefs?.(matches, def, tView, viewData, tNode);
       }
     }
   }
