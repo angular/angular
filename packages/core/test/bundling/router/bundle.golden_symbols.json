@@ -978,6 +978,9 @@
     "name": "extractDirectiveDef"
   },
   {
+    "name": "fillProperties"
+  },
+  {
     "name": "filter"
   },
   {
@@ -1248,6 +1251,15 @@
     "name": "incrementInitPhaseFlags"
   },
   {
+    "name": "inheritContentQueries"
+  },
+  {
+    "name": "inheritHostBindings"
+  },
+  {
+    "name": "inheritViewQuery"
+  },
+  {
     "name": "inheritedParamsDataResolve"
   },
   {
@@ -1459,6 +1471,9 @@
   },
   {
     "name": "matrixParamsMatch"
+  },
+  {
+    "name": "maybeUnwrapEmpty"
   },
   {
     "name": "maybeUnwrapFn"
@@ -1819,6 +1834,9 @@
   },
   {
     "name": "ɵEmptyOutletComponent"
+  },
+  {
+    "name": "ɵɵInheritDefinitionFeature"
   },
   {
     "name": "ɵɵNgOnChangesFeature"
