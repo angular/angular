@@ -12,10 +12,10 @@ ng_module(
     deps = [
         "//src/cdk/bidi",
         "//src/cdk/overlay",
+        "//src/material/button",
         "//src/material/core",
         "//src/material/icon",
-        "//src/material/legacy-button",
-        "//src/material/legacy-list",
+        "//src/material/list",
         "//src/material/sidenav",
         "//src/material/toolbar",
         "@npm//@angular/router",

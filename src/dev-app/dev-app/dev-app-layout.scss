@@ -18,7 +18,7 @@ body {
     min-width: 15vw;
     position: fixed;
 
-    .mat-button {
+    .mat-mdc-button {
       width: 100%;
       position: relative;
       bottom: 0;
@@ -68,4 +68,13 @@ body {
 .demo-main {
   // Removes extra space on top of toolbar on IE.
   display: block;
+}
+
+.demo-config-buttons {
+  display: flex;
+  align-items: center;
+
+  .mat-mdc-button-base {
+    --mdc-text-button-label-text-color: inherit;
+  }
 }
