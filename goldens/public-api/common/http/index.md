@@ -9,6 +9,7 @@ import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Provider } from '@angular/core';
 import { XhrFactory as XhrFactory_2 } from '@angular/common';
 
 // @public
@@ -1726,6 +1727,26 @@ export enum HttpEventType {
     User = 5
 }
 
+// @public (undocumented)
+export interface HttpFeature<KindT extends HttpFeatureKind> {
+    // (undocumented)
+    ɵkind: KindT;
+    // (undocumented)
+    ɵproviders: Provider[];
+}
+
+// @public (undocumented)
+export enum HttpFeatureKind {
+    // (undocumented)
+    CustomXsrfConfiguration = 1,
+    // (undocumented)
+    JsonpSupport = 3,
+    // (undocumented)
+    LegacyInterceptors = 0,
+    // (undocumented)
+    NoXsrfProtection = 2
+}
+
 // @public
 export abstract class HttpHandler {
     // (undocumented)
@@ -2129,6 +2150,24 @@ export class JsonpInterceptor {
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<JsonpInterceptor>;
 }
+
+// @public (undocumented)
+export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): Provider[];
+
+// @public (undocumented)
+export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;
+
+// @public (undocumented)
+export function withLegacyInterceptors(): HttpFeature<HttpFeatureKind.LegacyInterceptors>;
+
+// @public (undocumented)
+export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtection>;
+
+// @public (undocumented)
+export function withXsrfConfiguration({ cookieName, headerName }: {
+    cookieName?: string;
+    headerName?: string;
+}): HttpFeature<HttpFeatureKind.CustomXsrfConfiguration>;
 
 // @public @deprecated
 export type XhrFactory = XhrFactory_2;

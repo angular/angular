@@ -97,8 +97,9 @@ export class HttpClientXsrfModule {
    */
   providers: [
     HttpClient,
-    {provide: HttpHandler, useClass: HttpInterceptorHandler},
     HttpXhrBackend,
+    HttpInterceptorHandler,
+    {provide: HttpHandler, useExisting: HttpInterceptorHandler},
     {provide: HttpBackend, useExisting: HttpXhrBackend},
     {provide: LEGACY_INTERCEPTOR_FN, useFactory: legacyInterceptorFnFactory},
     {
