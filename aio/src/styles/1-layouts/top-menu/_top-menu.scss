@@ -208,6 +208,24 @@ mat-toolbar.app-toolbar {
       }
     }
 
+    .search-box-shortcut {
+      display: none;
+      position: absolute;
+      right: 16px;
+      font-size: 1.2rem;
+      line-height: 2.2rem;
+      padding: 0 0.8rem;
+      pointer-events: none;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 4px;
+      border: 1px solid;
+    }
+
+    input:not(:focus):placeholder-shown + .search-box-shortcut {
+      display: block;
+    }
+
     mat-icon {
       position: absolute;
       color: constants.$blue;
