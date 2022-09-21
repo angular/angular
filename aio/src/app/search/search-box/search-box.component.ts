@@ -24,6 +24,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     (keyup)="doSearch()"
     (focus)="doFocus()"
     (click)="doSearch()">
+  <div class="search-box-shortcut">/</div>
   <mat-icon
     *ngIf="searchBox.value"
     (click)="searchBox.value = ''; searchBox.focus()">
