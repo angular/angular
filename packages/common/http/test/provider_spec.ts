@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, XhrFactory} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, JsonpClientBackend} from '@angular/common/http';
-import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {inject, InjectionToken, PLATFORM_ID, Provider} from '@angular/core';
+import {HttpClientTestingModule, HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {createEnvironmentInjector, EnvironmentInjector, inject, InjectionToken, PLATFORM_ID, Provider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable} from 'rxjs';
 
 import {HttpInterceptorFn} from '../src/interceptor';
-import {provideHttpClient, withInterceptors, withJsonpSupport, withLegacyInterceptors, withNoXsrfProtection, withXsrfConfiguration} from '../src/provider';
+import {provideHttpClient, withInterceptors, withJsonpSupport, withLegacyInterceptors, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from '../src/provider';
 
 describe('provideHttp', () => {
   beforeEach(() => {
@@ -269,6 +269,100 @@ describe('provideHttp', () => {
 
       TestBed.inject(HttpClient).jsonp('/test', 'callback').subscribe();
       TestBed.inject(HttpTestingController).expectNone('/test?callback=JSONP_CALLBACK');
+    });
+  });
+
+  describe('withRequestsMadeViaParent()', () => {
+    it('should have independent HTTP setups if not explicitly specified', async () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
+      });
+
+      const child = createEnvironmentInjector(
+          [
+            provideHttpClient(), {
+              provide: XhrFactory,
+              useValue: {
+                build: () => {
+                  throw new Error('Request reached the "backend".');
+                },
+              },
+            }
+          ],
+          TestBed.inject(EnvironmentInjector));
+
+      // Because `child` is an entirely independent HTTP context, it is not connected to the
+      // HTTP testing backend from the parent injector, and requests attempted via the child's
+      // `HttpClient` will fail.
+      await expectAsync(child.get(HttpClient).get('/test').toPromise()).toBeRejected();
+    });
+
+    it('should connect child to parent configuration if specified', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
+      });
+
+      const child = createEnvironmentInjector(
+          [provideHttpClient(withRequestsMadeViaParent())], TestBed.inject(EnvironmentInjector));
+
+
+      // `child` is now to the parent HTTP context and therefore the testing backend, and so a
+      // request made via its `HttpClient` can be made.
+      child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      req.flush('');
+    });
+
+    it('should include interceptors from both parent and child contexts', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([makeLiteralTagInterceptorFn('parent')])),
+          provideHttpClientTesting(),
+        ],
+      });
+
+      const child = createEnvironmentInjector(
+          [provideHttpClient(
+              withRequestsMadeViaParent(),
+              withInterceptors([makeLiteralTagInterceptorFn('child')]),
+              )],
+          TestBed.inject(EnvironmentInjector));
+
+
+      child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-Tag')).toEqual('child,parent');
+      req.flush('');
+    });
+
+    it('should be able to connect to a legacy-provided HttpClient context', () => {
+      TestBed.configureTestingModule({
+        imports: [
+          HttpClientTestingModule,
+        ],
+        providers: [
+          provideLegacyInterceptor('parent'),
+        ],
+      });
+
+      const child = createEnvironmentInjector(
+          [provideHttpClient(
+              withRequestsMadeViaParent(),
+              withInterceptors([makeLiteralTagInterceptorFn('child')]),
+              )],
+          TestBed.inject(EnvironmentInjector));
+
+
+      child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-Tag')).toEqual('child,parent');
+      req.flush('');
     });
   });
 
