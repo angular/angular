@@ -9,7 +9,7 @@
 import {ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ExternalTemplateSourceMapping, TemplateDiagnostic, TemplateId, TemplateSourceMapping} from '../../api';
+import {ExternalTemplateSourceMapping, IndirectTemplateSourceMapping, TemplateDiagnostic, TemplateId, TemplateSourceMapping} from '../../api';
 
 /**
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
@@ -66,9 +66,7 @@ export function makeTemplateDiagnostic(
         (mapping as ExternalTemplateSourceMapping).templateUrl;
     // TODO(alxhub): investigate creating a fake `ts.SourceFile` here instead of invoking the TS
     // parser against the template (HTML is just really syntactically invalid TypeScript code ;).
-    // Also investigate caching the file to avoid running the parser multiple times.
-    const sf = ts.createSourceFile(
-        fileName, mapping.template, ts.ScriptTarget.Latest, false, ts.ScriptKind.JSX);
+    const sf = getParsedTemplateSourceFile(fileName, mapping);
 
     let relatedInformation: ts.DiagnosticRelatedInformation[] = [];
     if (relatedMessages !== undefined) {
@@ -111,6 +109,23 @@ export function makeTemplateDiagnostic(
   } else {
     throw new Error(`Unexpected source mapping type: ${(mapping as {type: string}).type}`);
   }
+}
+
+const TemplateSourceFile = Symbol('TemplateSourceFile');
+
+type TemplateSourceMappingWithSourceFile =
+    (ExternalTemplateSourceMapping|IndirectTemplateSourceMapping)&{
+  [TemplateSourceFile]?: ts.SourceFile;
+};
+
+function getParsedTemplateSourceFile(
+    fileName: string, mapping: TemplateSourceMappingWithSourceFile): ts.SourceFile {
+  if (mapping[TemplateSourceFile] === undefined) {
+    mapping[TemplateSourceFile] = ts.createSourceFile(
+        fileName, mapping.template, ts.ScriptTarget.Latest, false, ts.ScriptKind.JSX);
+  }
+
+  return mapping[TemplateSourceFile];
 }
 
 export function isTemplateDiagnostic(diagnostic: ts.Diagnostic): diagnostic is TemplateDiagnostic {
