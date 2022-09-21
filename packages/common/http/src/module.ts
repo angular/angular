@@ -101,9 +101,6 @@ export class HttpClientModule {
  * Without this module, Jsonp requests reach the backend
  * with method JSONP, where they are rejected.
  *
- * You can add interceptors to the chain behind `HttpClient` by binding them to the
- * multiprovider for built-in [DI token](guide/glossary#di-token) `HTTP_INTERCEPTORS`.
- *
  * @publicApi
  */
 @NgModule({
