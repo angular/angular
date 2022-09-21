@@ -11,7 +11,7 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
 import {HTTP_INTERCEPTOR_FNS, HTTP_INTERCEPTORS, HttpInterceptorHandler, legacyInterceptorFnFactory, NoopInterceptor} from './interceptor';
-import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
+import {JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
 
@@ -139,7 +139,7 @@ export class HttpClientModule {
   providers: [
     JsonpClientBackend,
     {provide: JsonpCallbackContext, useFactory: jsonpCallbackContext},
-    {provide: HTTP_INTERCEPTORS, useClass: JsonpInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTOR_FNS, useValue: jsonpInterceptorFn, multi: true},
   ],
 })
 export class HttpClientJsonpModule {
