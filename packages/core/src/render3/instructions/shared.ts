@@ -1295,7 +1295,11 @@ function findDirectiveDefMatches(
           // compatibility. This logic doesn't make sense with host directives, because it
           // would allow the host directives to undo any overrides the host may have made.
           // To handle this case, the host directives of components are inserted at the beginning
-          // of the array, followed by the component.
+          // of the array, followed by the component. As such, the insertion order is as follows:
+          // 1. Host directives belonging to the selector-matched component.
+          // 2. Selector-matched component.
+          // 3. Host directives belonging to selector-matched directives.
+          // 4. Selector-matched directives.
           if (def.findHostDirectiveDefs !== null) {
             const hostDirectiveMatches: DirectiveDef<unknown>[] = [];
             // Append any host directives to the matches first.

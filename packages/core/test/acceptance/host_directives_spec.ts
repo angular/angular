@@ -362,95 +362,95 @@ describe('host directives', () => {
       ]);
     });
 
-    // Note: lifecycle hook order is different when components and
-    // directives are mixed so this test aims to cover it.
-    it('should invoke lifecycle hooks in the correct order when host directives are applied to a component',
-       () => {
-         const logs: string[] = [];
+    // Note: lifecycle hook order is different when components and directives are mixed so this
+    // test aims to cover it. Usually lifecycle hooks are invoked based on the order in which
+    // directives were matched, but components bypass this logic and always execute first.
+    it('should invoke host directive lifecycle hooks before the host component hooks', () => {
+      const logs: string[] = [];
 
-         // Utility so we don't have to repeat the logging code.
-         @Directive({standalone: true})
-         abstract class LogsLifecycles implements OnInit, AfterViewInit {
-           abstract name: string;
+      // Utility so we don't have to repeat the logging code.
+      @Directive({standalone: true})
+      abstract class LogsLifecycles implements OnInit, AfterViewInit {
+        abstract name: string;
 
-           ngOnInit() {
-             logs.push(`${this.name} - ngOnInit`);
-           }
+        ngOnInit() {
+          logs.push(`${this.name} - ngOnInit`);
+        }
 
-           ngAfterViewInit() {
-             logs.push(`${this.name} - ngAfterViewInit`);
-           }
-         }
+        ngAfterViewInit() {
+          logs.push(`${this.name} - ngAfterViewInit`);
+        }
+      }
 
-         @Directive({standalone: true})
-         class ChildHostDir extends LogsLifecycles {
-           override name = 'ChildHostDir';
-         }
+      @Directive({standalone: true})
+      class ChildHostDir extends LogsLifecycles {
+        override name = 'ChildHostDir';
+      }
 
-         @Directive({standalone: true})
-         class OtherChildHostDir extends LogsLifecycles {
-           override name = 'OtherChildHostDir';
-         }
+      @Directive({standalone: true})
+      class OtherChildHostDir extends LogsLifecycles {
+        override name = 'OtherChildHostDir';
+      }
 
-         @Component({
-           selector: 'child',
-           hostDirectives: [ChildHostDir, OtherChildHostDir],
-         } as HostDirectiveAny)
-         class Child extends LogsLifecycles {
-           override name = 'Child';
-         }
+      @Component({
+        selector: 'child',
+        hostDirectives: [ChildHostDir, OtherChildHostDir],
+      } as HostDirectiveAny)
+      class Child extends LogsLifecycles {
+        override name = 'Child';
+      }
 
-         @Directive({standalone: true})
-         class ParentHostDir extends LogsLifecycles {
-           override name = 'ParentHostDir';
-         }
+      @Directive({standalone: true})
+      class ParentHostDir extends LogsLifecycles {
+        override name = 'ParentHostDir';
+      }
 
-         @Directive({standalone: true})
-         class OtherParentHostDir extends LogsLifecycles {
-           override name = 'OtherParentHostDir';
-         }
+      @Directive({standalone: true})
+      class OtherParentHostDir extends LogsLifecycles {
+        override name = 'OtherParentHostDir';
+      }
 
-         @Component({
-           selector: 'parent',
-           hostDirectives: [ParentHostDir, OtherParentHostDir],
-           template: '<child plain-dir="PlainDir on child"></child>',
-         } as HostDirectiveAny)
-         class Parent extends LogsLifecycles {
-           override name = 'Parent';
-         }
+      @Component({
+        selector: 'parent',
+        hostDirectives: [ParentHostDir, OtherParentHostDir],
+        template: '<child plain-dir="PlainDir on child"></child>',
+      } as HostDirectiveAny)
+      class Parent extends LogsLifecycles {
+        override name = 'Parent';
+      }
 
-         @Directive({selector: '[plain-dir]'})
-         class PlainDir extends LogsLifecycles {
-           @Input('plain-dir') override name = '';
-         }
+      @Directive({selector: '[plain-dir]'})
+      class PlainDir extends LogsLifecycles {
+        @Input('plain-dir') override name = '';
+      }
 
-         @Component({template: '<parent plain-dir="PlainDir on parent"></parent>'})
-         class App {
-         }
+      @Component({template: '<parent plain-dir="PlainDir on parent"></parent>'})
+      class App {
+      }
 
-         TestBed.configureTestingModule({declarations: [App, Parent, Child, PlainDir]});
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
+      TestBed.configureTestingModule({declarations: [App, Parent, Child, PlainDir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
 
-         expect(logs).toEqual([
-           'ParentHostDir - ngOnInit',
-           'OtherParentHostDir - ngOnInit',
-           'Parent - ngOnInit',
-           'PlainDir on parent - ngOnInit',
-           'ChildHostDir - ngOnInit',
-           'OtherChildHostDir - ngOnInit',
-           'Child - ngOnInit',
-           'PlainDir on child - ngOnInit',
-           'ChildHostDir - ngAfterViewInit',
-           'OtherChildHostDir - ngAfterViewInit',
-           'Child - ngAfterViewInit',
-           'PlainDir on child - ngAfterViewInit',
-           'ParentHostDir - ngAfterViewInit',
-           'OtherParentHostDir - ngAfterViewInit',
-           'Parent - ngAfterViewInit',
-           'PlainDir on parent - ngAfterViewInit',
-         ]);
-       });
+      expect(logs).toEqual([
+        'ParentHostDir - ngOnInit',
+        'OtherParentHostDir - ngOnInit',
+        'Parent - ngOnInit',
+        'PlainDir on parent - ngOnInit',
+        'ChildHostDir - ngOnInit',
+        'OtherChildHostDir - ngOnInit',
+        'Child - ngOnInit',
+        'PlainDir on child - ngOnInit',
+        'ChildHostDir - ngAfterViewInit',
+        'OtherChildHostDir - ngAfterViewInit',
+        'Child - ngAfterViewInit',
+        'PlainDir on child - ngAfterViewInit',
+        'ParentHostDir - ngAfterViewInit',
+        'OtherParentHostDir - ngAfterViewInit',
+        'Parent - ngAfterViewInit',
+        'PlainDir on parent - ngAfterViewInit',
+      ]);
+    });
   });
 
   describe('host bindings', () => {
