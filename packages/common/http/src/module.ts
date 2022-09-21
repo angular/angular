@@ -6,59 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Injector, ModuleWithProviders, NgModule} from '@angular/core';
-import {Observable} from 'rxjs';
+import {ModuleWithProviders, NgModule} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
-import {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler, NoopInterceptor} from './interceptor';
+import {HTTP_INTERCEPTORS, HttpInterceptorHandler, NoopInterceptor} from './interceptor';
 import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
-import {HttpRequest} from './request';
-import {HttpEvent} from './response';
 import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
-
-/**
- * An injectable `HttpHandler` that applies multiple interceptors
- * to a request before passing it to the given `HttpBackend`.
- *
- * The interceptors are loaded lazily from the injector, to allow
- * interceptors to themselves inject classes depending indirectly
- * on `HttpInterceptingHandler` itself.
- * @see `HttpInterceptor`
- */
-@Injectable()
-export class HttpInterceptingHandler implements HttpHandler {
-  private chain: HttpHandler|null = null;
-
-  constructor(private backend: HttpBackend, private injector: Injector) {}
-
-  handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-    if (this.chain === null) {
-      const interceptors = this.injector.get(HTTP_INTERCEPTORS, []);
-      this.chain = interceptors.reduceRight(
-          (next, interceptor) => new HttpInterceptorHandler(next, interceptor), this.backend);
-    }
-    return this.chain.handle(req);
-  }
-}
-
-/**
- * Constructs an `HttpHandler` that applies interceptors
- * to a request before passing it to the given `HttpBackend`.
- *
- * Use as a factory function within `HttpClientModule`.
- *
- *
- */
-export function interceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[]|null = []): HttpHandler {
-  if (!interceptors) {
-    return backend;
-  }
-  return interceptors.reduceRight(
-      (next, interceptor) => new HttpInterceptorHandler(next, interceptor), backend);
-}
 
 /**
  * Factory function that determines where to store JSONP callbacks.
@@ -156,7 +111,7 @@ export class HttpClientXsrfModule {
    */
   providers: [
     HttpClient,
-    {provide: HttpHandler, useClass: HttpInterceptingHandler},
+    {provide: HttpHandler, useClass: HttpInterceptorHandler},
     HttpXhrBackend,
     {provide: HttpBackend, useExisting: HttpXhrBackend},
   ],
