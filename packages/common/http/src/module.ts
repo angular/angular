@@ -10,7 +10,7 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
-import {HTTP_INTERCEPTORS, HttpInterceptorHandler, NoopInterceptor} from './interceptor';
+import {HTTP_INTERCEPTOR_FNS, HTTP_INTERCEPTORS, HttpInterceptorHandler, LEGACY_INTERCEPTOR_FN, legacyInterceptorFnFactory, NoopInterceptor} from './interceptor';
 import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
 import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
@@ -114,6 +114,12 @@ export class HttpClientXsrfModule {
     {provide: HttpHandler, useClass: HttpInterceptorHandler},
     HttpXhrBackend,
     {provide: HttpBackend, useExisting: HttpXhrBackend},
+    {provide: LEGACY_INTERCEPTOR_FN, useFactory: legacyInterceptorFnFactory},
+    {
+      provide: HTTP_INTERCEPTOR_FNS,
+      useExisting: LEGACY_INTERCEPTOR_FN,
+      multi: true,
+    },
   ],
 })
 export class HttpClientModule {
