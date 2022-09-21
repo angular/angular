@@ -108,12 +108,24 @@ Dates are offered as general guidance and are subject to change.
 
 </div>
 
+### Release schedule
+
+| Version | Date               |
+| :---    | :---               |
+| v14.1   | Week of 2022-07-18 |
+| v14.2   | Week of 2022-08-22 |
+| v15.0   | Week of 2022-11-18 |
+
+### Support window
+
 All major releases are typically supported for 18 months.
 
 | Support stage     | Support Timing | Details |
 |:---               |:---            |:---     |
 | Active            | 6 months       | Regularly-scheduled updates and patches are released                |
 | Long-term \(LTS\) | 12 months      | Only [critical fixes and security patches](#lts-fixes) are released |
+
+### Actively supported versions
 
 The following table provides the status for Angular versions under support.
 
