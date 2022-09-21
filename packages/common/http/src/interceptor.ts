@@ -119,12 +119,34 @@ function adaptLegacyInterceptorToChain(
 }
 
 /**
+ * Constructs a `ChainedInterceptorFn` which wraps and invokes a functional interceptor in the given
+ * injector.
+ */
+function chainedInterceptorFn(
+    chainTailFn: ChainedInterceptorFn<unknown>, interceptorFn: HttpInterceptorFn,
+    injector: EnvironmentInjector): ChainedInterceptorFn<unknown> {
+  // clang-format off
+  return (initialRequest, finalHandlerFn) => injector.runInContext(() =>
+    interceptorFn(
+      initialRequest,
+      downstreamRequest => chainTailFn(downstreamRequest, finalHandlerFn)
+    )
+  );
+  // clang-format on
+}
+
+/**
  * A multi-provider token that represents the array of registered
  * `HttpInterceptor` objects.
  *
  * @publicApi
  */
 export const HTTP_INTERCEPTORS = new InjectionToken<HttpInterceptor[]>('HTTP_INTERCEPTORS');
+
+/**
+ * A multi-provided token of `HttpInterceptorFn`s.
+ */
+export const HTTP_INTERCEPTOR_FNS = new InjectionToken<HttpInterceptorFn[]>('HTTP_INTERCEPTOR_FNS');
 
 @Injectable()
 export class NoopInterceptor implements HttpInterceptor {
@@ -155,17 +177,29 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
   };
 }
 
+export const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>('LEGACY_INTERCEPTOR_FN');
+
 @Injectable()
 export class HttpInterceptorHandler extends HttpHandler {
-  private legacyInterceptors = legacyInterceptorFnFactory();
+  private chain: ChainedInterceptorFn<unknown>|null = null;
 
   constructor(private backend: HttpBackend, private injector: EnvironmentInjector) {
     super();
   }
 
   override handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
-    return this.injector.runInContext(
-        () => this.legacyInterceptors(
-            initialRequest, downstreamRequest => this.backend.handle(downstreamRequest)));
+    if (this.chain === null) {
+      const dedupedInterceptorFns = Array.from(new Set(this.injector.get(HTTP_INTERCEPTOR_FNS)));
+
+      // Note: interceptors are wrapped right-to-left so that final execution order is
+      // left-to-right. That is, if `dedupedInterceptorFns` is the array `[a, b, c]`, we want to
+      // produce a chain that is conceptually `c(b(a(end)))`, which we build from the inside
+      // out.
+      this.chain = dedupedInterceptorFns.reduceRight(
+          (nextSequencedFn, interceptorFn) =>
+              chainedInterceptorFn(nextSequencedFn, interceptorFn, this.injector),
+          interceptorChainEndFn as ChainedInterceptorFn<unknown>);
+    }
+    return this.chain(initialRequest, downstreamRequest => this.backend.handle(downstreamRequest));
   }
 }
