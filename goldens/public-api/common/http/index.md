@@ -1654,7 +1654,7 @@ export class HttpClientModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<HttpClientModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientModule, never, [typeof HttpClientXsrfModule], never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientModule, never, never, never>;
 }
 
 // @public
