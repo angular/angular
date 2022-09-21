@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '@angular/core';
+import {InjectionToken, Provider} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
-import {HTTP_INTERCEPTOR_FNS, HttpInterceptorHandler, LEGACY_INTERCEPTOR_FN, legacyInterceptorFnFactory} from './interceptor';
+import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, HttpInterceptorHandler, legacyInterceptorFnFactory} from './interceptor';
 import {JsonpCallbackContext, jsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
@@ -69,6 +69,8 @@ export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): 
 
   return providers;
 }
+
+const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>('LEGACY_INTERCEPTOR_FN');
 
 export function withLegacyInterceptors(): HttpFeature<HttpFeatureKind.LegacyInterceptors> {
   // Note: the legacy interceptor function is provided here via an intermediate token
