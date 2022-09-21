@@ -129,7 +129,7 @@
 .mat-horizontal-stepper-content {
   outline: 0;
 
-  &[aria-expanded='false'] {
+  &.mat-horizontal-stepper-content-inactive {
     height: 0;
     overflow: hidden;
   }

@@ -20,7 +20,7 @@
            (@horizontalStepTransition.done)="_animationDone.next($event)"
            [id]="_getStepContentId(i)"
            [attr.aria-labelledby]="_getStepLabelId(i)"
-           [attr.aria-expanded]="selectedIndex === i">
+           [class.mat-horizontal-stepper-content-inactive]="selectedIndex !== i">
         <ng-container [ngTemplateOutlet]="step.content"></ng-container>
       </div>
     </div>
@@ -41,7 +41,7 @@
              (@verticalStepTransition.done)="_animationDone.next($event)"
              [id]="_getStepContentId(i)"
              [attr.aria-labelledby]="_getStepLabelId(i)"
-             [attr.aria-expanded]="selectedIndex === i">
+             [class.mat-vertical-stepper-content-inactive]="selectedIndex !== i">
           <div class="mat-vertical-content">
             <ng-container [ngTemplateOutlet]="step.content"></ng-container>
           </div>

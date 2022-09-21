@@ -131,22 +131,6 @@ describe('MatStepper', () => {
       expect(stepperEl.getAttribute('role')).toBe('tablist');
     });
 
-    it('should set aria-expanded of content correctly', () => {
-      const stepContents = fixture.debugElement.queryAll(By.css(`.mat-vertical-stepper-content`));
-      const stepperComponent = fixture.debugElement.query(
-        By.directive(MatStepper),
-      )!.componentInstance;
-      const firstStepContentEl = stepContents[0].nativeElement;
-      expect(firstStepContentEl.getAttribute('aria-expanded')).toBe('true');
-
-      stepperComponent.selectedIndex = 1;
-      fixture.detectChanges();
-
-      expect(firstStepContentEl.getAttribute('aria-expanded')).toBe('false');
-      const secondStepContentEl = stepContents[1].nativeElement;
-      expect(secondStepContentEl.getAttribute('aria-expanded')).toBe('true');
-    });
-
     it('should display the correct label', () => {
       const stepperComponent = fixture.debugElement.query(
         By.directive(MatStepper),
