@@ -412,7 +412,7 @@ def _apply_esm_import_patch(env, templated_args, data):
 
     env = dict(env, **{"NODE_MODULES_WORKSPACE_NAME": _node_modules_workspace_name()})
     templated_args = templated_args + [
-        "--node_options=--loader=$$(rlocation $(rootpath //tools/esm-loader:esm-loader.mjs))",
+        "--node_options=--loader=file:///$$(rlocation $(rootpath //tools/esm-loader:esm-loader.mjs))",
     ]
     data = data + [
         "//tools/esm-loader",
