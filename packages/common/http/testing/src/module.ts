@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpBackend, HttpClientModule} from '@angular/common/http';
+import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 
-import {HttpTestingController} from './api';
-import {HttpClientTestingBackend} from './backend';
+import {provideHttpClientTesting} from './provider';
 
 
 /**
@@ -25,9 +24,7 @@ import {HttpClientTestingBackend} from './backend';
     HttpClientModule,
   ],
   providers: [
-    HttpClientTestingBackend,
-    {provide: HttpBackend, useExisting: HttpClientTestingBackend},
-    {provide: HttpTestingController, useExisting: HttpClientTestingBackend},
+    provideHttpClientTesting(),
   ],
 })
 export class HttpClientTestingModule {
