@@ -31,11 +31,14 @@ export {HttpBackend, HttpHandler} from './src/backend';
 export {HttpClient} from './src/client';
 export {HttpContext, HttpContextToken} from './src/context';
 export {HttpHeaders} from './src/headers';
-export {HTTP_INTERCEPTORS, HttpInterceptor} from './src/interceptor';
+export {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler as ɵHttpInterceptorHandler} from './src/interceptor';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
-export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule, HttpInterceptingHandler as ɵHttpInterceptingHandler} from './src/module';
+export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule} from './src/module';
 export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec} from './src/params';
 export {HttpRequest} from './src/request';
 export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpStatusCode, HttpUploadProgressEvent, HttpUserEvent} from './src/response';
 export {HttpXhrBackend} from './src/xhr';
 export {HttpXsrfTokenExtractor} from './src/xsrf';
+
+// This re-export exists because g3 depends on this old private name.
+export {HttpInterceptorHandler as ɵHttpInterceptingHandler} from './src/interceptor';
