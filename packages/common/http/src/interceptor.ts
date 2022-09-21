@@ -170,8 +170,6 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
   };
 }
 
-export const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>('LEGACY_INTERCEPTOR_FN');
-
 @Injectable()
 export class HttpInterceptorHandler extends HttpHandler {
   private chain: ChainedInterceptorFn<unknown>|null = null;
