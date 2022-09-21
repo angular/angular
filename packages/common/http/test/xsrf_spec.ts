@@ -9,7 +9,6 @@
 import {HttpHeaders} from '@angular/common/http/src/headers';
 import {HttpRequest} from '@angular/common/http/src/request';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor} from '@angular/common/http/src/xsrf';
-
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
 
 class SampleTokenExtractor extends HttpXsrfTokenExtractor {
@@ -25,7 +24,8 @@ class SampleTokenExtractor extends HttpXsrfTokenExtractor {
 {
   describe('HttpXsrfInterceptor', () => {
     let backend: HttpClientTestingBackend;
-    const interceptor = new HttpXsrfInterceptor(new SampleTokenExtractor('test'), 'X-XSRF-TOKEN');
+    const interceptor = new HttpXsrfInterceptor(
+        new SampleTokenExtractor('test'), 'X-XSRF-TOKEN', /* enabled */ true);
     beforeEach(() => {
       backend = new HttpClientTestingBackend();
     });
@@ -59,7 +59,8 @@ class SampleTokenExtractor extends HttpXsrfTokenExtractor {
       req.flush({});
     });
     it('does not set the header for a null token', () => {
-      const interceptor = new HttpXsrfInterceptor(new SampleTokenExtractor(null), 'X-XSRF-TOKEN');
+      const interceptor = new HttpXsrfInterceptor(
+          new SampleTokenExtractor(null), 'X-XSRF-TOKEN', /* enabled */ true);
       interceptor.intercept(new HttpRequest('POST', '/test', {}), backend).subscribe();
       const req = backend.expectOne('/test');
       expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);
