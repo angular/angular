@@ -915,4 +915,31 @@ withEachNg1Version(() => {
                              'downgrading more than one Angular module (via \'downgradeModule()\').'));
        }));
   });
+
+  describe('standalone', () => {
+    beforeEach(() => destroyPlatform());
+    afterEach(() => destroyPlatform());
+
+    it('should downgrade a standalone component using NgModule APIs', waitForAsync(() => {
+         @Component({selector: 'ng2', standalone: true, template: 'Hi from Angular!'})
+         class Ng2Component {
+         }
+
+         const ng1Module = angular.module_('ng1', []).directive(
+             'ng2', downgradeComponent({component: Ng2Component}));
+
+
+         @NgModule({
+           imports: [BrowserModule, UpgradeModule, Ng2Component],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const element = html('<ng2></ng2>');
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+           expect(element.textContent).toBe('Hi from Angular!');
+         });
+       }));
+  });
 });
