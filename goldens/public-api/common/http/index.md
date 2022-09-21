@@ -1738,13 +1738,15 @@ export interface HttpFeature<KindT extends HttpFeatureKind> {
 // @public (undocumented)
 export enum HttpFeatureKind {
     // (undocumented)
-    CustomXsrfConfiguration = 1,
+    CustomXsrfConfiguration = 2,
     // (undocumented)
-    JsonpSupport = 3,
+    Interceptors = 0,
     // (undocumented)
-    LegacyInterceptors = 0,
+    JsonpSupport = 4,
     // (undocumented)
-    NoXsrfProtection = 2
+    LegacyInterceptors = 1,
+    // (undocumented)
+    NoXsrfProtection = 3
 }
 
 // @public
@@ -1752,6 +1754,9 @@ export abstract class HttpHandler {
     // (undocumented)
     abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
+
+// @public
+export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<unknown>>;
 
 // @public
 export class HttpHeaderResponse extends HttpResponseBase {
@@ -1789,6 +1794,9 @@ export class HttpHeaders {
 export interface HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }
+
+// @public
+export type HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => Observable<HttpEvent<unknown>>;
 
 // @public
 export interface HttpParameterCodec {
@@ -2153,6 +2161,9 @@ export class JsonpInterceptor {
 
 // @public (undocumented)
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): Provider[];
+
+// @public (undocumented)
+export function withInterceptors(interceptorFns: HttpInterceptorFn[]): HttpFeature<HttpFeatureKind.Interceptors>;
 
 // @public (undocumented)
 export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;

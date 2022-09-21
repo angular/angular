@@ -11,11 +11,12 @@ import {InjectionToken, Provider} from '@angular/core';
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
 import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, HttpInterceptorHandler, legacyInterceptorFnFactory} from './interceptor';
-import {JsonpCallbackContext, jsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
+import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
 
 export enum HttpFeatureKind {
+  Interceptors,
   LegacyInterceptors,
   CustomXsrfConfiguration,
   NoXsrfProtection,
@@ -68,6 +69,17 @@ export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): 
   }
 
   return providers;
+}
+
+export function withInterceptors(interceptorFns: HttpInterceptorFn[]):
+    HttpFeature<HttpFeatureKind.Interceptors> {
+  return makeHttpFeature(HttpFeatureKind.Interceptors, interceptorFns.map(interceptorFn => {
+    return {
+      provide: HTTP_INTERCEPTOR_FNS,
+      useValue: interceptorFn,
+      multi: true,
+    };
+  }));
 }
 
 const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>('LEGACY_INTERCEPTOR_FN');
