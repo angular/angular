@@ -13,7 +13,7 @@ import {HttpClient} from './client';
 import {HTTP_INTERCEPTOR_FNS, HTTP_INTERCEPTORS, HttpInterceptorHandler, LEGACY_INTERCEPTOR_FN, legacyInterceptorFnFactory} from './interceptor';
 import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME} from './xsrf';
+import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_DEFAULT_COOKIE_NAME, XSRF_DEFAULT_HEADER_NAME, XSRF_ENABLED, XSRF_HEADER_NAME} from './xsrf';
 
 /**
  * Configures XSRF protection support for outgoing requests.
@@ -32,8 +32,8 @@ import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XS
     HttpXsrfInterceptor,
     {provide: HTTP_INTERCEPTORS, useExisting: HttpXsrfInterceptor, multi: true},
     {provide: HttpXsrfTokenExtractor, useClass: HttpXsrfCookieExtractor},
-    {provide: XSRF_COOKIE_NAME, useValue: 'XSRF-TOKEN'},
-    {provide: XSRF_HEADER_NAME, useValue: 'X-XSRF-TOKEN'},
+    {provide: XSRF_COOKIE_NAME, useValue: XSRF_DEFAULT_COOKIE_NAME},
+    {provide: XSRF_HEADER_NAME, useValue: XSRF_DEFAULT_HEADER_NAME},
     {provide: XSRF_ENABLED, useValue: true},
   ],
 })
@@ -87,8 +87,8 @@ export class HttpClientXsrfModule {
    */
   imports: [
     HttpClientXsrfModule.withOptions({
-      cookieName: 'XSRF-TOKEN',
-      headerName: 'X-XSRF-TOKEN',
+      cookieName: XSRF_DEFAULT_COOKIE_NAME,
+      headerName: XSRF_DEFAULT_HEADER_NAME,
     }),
   ],
   /**
