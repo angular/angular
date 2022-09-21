@@ -1746,7 +1746,9 @@ export enum HttpFeatureKind {
     // (undocumented)
     LegacyInterceptors = 1,
     // (undocumented)
-    NoXsrfProtection = 3
+    NoXsrfProtection = 3,
+    // (undocumented)
+    RequestsMadeViaParent = 5
 }
 
 // @public
@@ -2173,6 +2175,9 @@ export function withLegacyInterceptors(): HttpFeature<HttpFeatureKind.LegacyInte
 
 // @public (undocumented)
 export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtection>;
+
+// @public (undocumented)
+export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.RequestsMadeViaParent>;
 
 // @public (undocumented)
 export function withXsrfConfiguration({ cookieName, headerName }: {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, Provider} from '@angular/core';
+import {inject, InjectionToken, Provider} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
@@ -21,6 +21,7 @@ export enum HttpFeatureKind {
   CustomXsrfConfiguration,
   NoXsrfProtection,
   JsonpSupport,
+  RequestsMadeViaParent,
 }
 
 export interface HttpFeature<KindT extends HttpFeatureKind> {
@@ -131,5 +132,24 @@ export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
     JsonpClientBackend,
     {provide: JsonpCallbackContext, useFactory: jsonpCallbackContext},
     {provide: HTTP_INTERCEPTOR_FNS, useValue: jsonpInterceptorFn, multi: true},
+  ]);
+}
+
+/**
+ * @developerPreview
+ */
+export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.RequestsMadeViaParent> {
+  return makeHttpFeature(HttpFeatureKind.RequestsMadeViaParent, [
+    {
+      provide: HttpBackend,
+      useFactory: () => {
+        const handlerFromParent = inject(HttpHandler, {skipSelf: true, optional: true});
+        if (ngDevMode && handlerFromParent === null) {
+          throw new Error(
+              'withRequestsMadeViaParent() can only be used when the parent injector also configures HttpClient');
+        }
+        return handlerFromParent;
+      },
+    },
   ]);
 }
