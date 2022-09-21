@@ -15,6 +15,7 @@ import {HttpInterceptor} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
+export const XSRF_ENABLED = new InjectionToken<boolean>('XSRF_ENABLED');
 export const XSRF_COOKIE_NAME = new InjectionToken<string>('XSRF_COOKIE_NAME');
 export const XSRF_HEADER_NAME = new InjectionToken<string>('XSRF_HEADER_NAME');
 
@@ -70,7 +71,8 @@ export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
 export class HttpXsrfInterceptor implements HttpInterceptor {
   constructor(
       private tokenService: HttpXsrfTokenExtractor,
-      @Inject(XSRF_HEADER_NAME) private headerName: string) {}
+      @Inject(XSRF_HEADER_NAME) private headerName: string,
+      @Inject(XSRF_ENABLED) private enabled: boolean) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const lcUrl = req.url.toLowerCase();
@@ -78,8 +80,8 @@ export class HttpXsrfInterceptor implements HttpInterceptor {
     // Non-mutating requests don't require a token, and absolute URLs require special handling
     // anyway as the cookie set
     // on our origin is not the same as the token expected by another origin.
-    if (req.method === 'GET' || req.method === 'HEAD' || lcUrl.startsWith('http://') ||
-        lcUrl.startsWith('https://')) {
+    if (!this.enabled || req.method === 'GET' || req.method === 'HEAD' ||
+        lcUrl.startsWith('http://') || lcUrl.startsWith('https://')) {
       return next.handle(req);
     }
     const token = this.tokenService.getToken();
