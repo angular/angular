@@ -4293,5 +4293,46 @@ withEachNg1Version(() => {
                .toBe('ng2A(ng1A(ng2B(ng1B(^^ng1A: ng1A | ?^^ng1B: | ^ng1B: ng1B))))');
          });
        }));
+
+    describe('standalone', () => {
+      it('should upgrade to a standalone component in NgModule-bootstrapped application',
+         waitForAsync(() => {
+           const ng1Component: angular.IComponent = {template: `I'm from AngularJS!`};
+
+           // Define `Ng1ComponentFacade` (standalone)
+           @Directive({selector: 'ng1', standalone: true})
+           class Ng1ComponentStandaloneFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2Component {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module_('ng1Module', [])
+                                 .component('ng1', ng1Component)
+                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             declarations: [Ng2Component],
+             imports: [BrowserModule, UpgradeModule, Ng1ComponentStandaloneFacade]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2></ng2>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+             expect(multiTrim(element.textContent)).toBe(`I'm from AngularJS!`);
+           });
+         }));
+    });
   });
 });
