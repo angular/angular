@@ -10,10 +10,10 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
-import {HTTP_INTERCEPTOR_FNS, HTTP_INTERCEPTORS, HttpInterceptorHandler, legacyInterceptorFnFactory, NoopInterceptor} from './interceptor';
+import {HTTP_INTERCEPTOR_FNS, HTTP_INTERCEPTORS, HttpInterceptorHandler, legacyInterceptorFnFactory} from './interceptor';
 import {JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
+import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME} from './xsrf';
 
 /**
  * Factory function that determines where to store JSONP callbacks.
@@ -49,6 +49,7 @@ export function jsonpCallbackContext(): Object {
     {provide: HttpXsrfTokenExtractor, useClass: HttpXsrfCookieExtractor},
     {provide: XSRF_COOKIE_NAME, useValue: 'XSRF-TOKEN'},
     {provide: XSRF_HEADER_NAME, useValue: 'X-XSRF-TOKEN'},
+    {provide: XSRF_ENABLED, useValue: true},
   ],
 })
 export class HttpClientXsrfModule {
@@ -59,7 +60,7 @@ export class HttpClientXsrfModule {
     return {
       ngModule: HttpClientXsrfModule,
       providers: [
-        {provide: HttpXsrfInterceptor, useClass: NoopInterceptor},
+        {provide: XSRF_ENABLED, useValue: false},
       ],
     };
   }

@@ -148,13 +148,6 @@ export const HTTP_INTERCEPTORS = new InjectionToken<HttpInterceptor[]>('HTTP_INT
  */
 export const HTTP_INTERCEPTOR_FNS = new InjectionToken<HttpInterceptorFn[]>('HTTP_INTERCEPTOR_FNS');
 
-@Injectable()
-export class NoopInterceptor implements HttpInterceptor {
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(req);
-  }
-}
-
 /**
  * Creates an `HttpInterceptorFn` which lazily initializes an interceptor chain from the legacy
  * class-based interceptors and runs the request through it.
