@@ -7,8 +7,8 @@
  */
 
 import {PlatformLocation, XhrFactory} from '@angular/common';
-import {HttpBackend, HttpEvent, HttpHandler, HttpRequest, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
-import {Injectable, Injector, Provider} from '@angular/core';
+import {HttpBackend, HttpEvent, HttpHandler, HttpRequest, ɵHttpInterceptorHandler as HttpInterceptorHandler} from '@angular/common/http';
+import {Injectable, Provider} from '@angular/core';
 import {Observable, Observer, Subscription} from 'rxjs';
 import * as xhr2 from 'xhr2';
 
@@ -128,17 +128,15 @@ export class ZoneClientBackend extends
   }
 }
 
-export function zoneWrappedInterceptingHandler(
-    backend: HttpBackend, injector: Injector, platformLocation: PlatformLocation,
-    config: PlatformConfig) {
-  const realBackend: HttpBackend = new HttpInterceptingHandler(backend, injector);
-  return new ZoneClientBackend(realBackend, platformLocation, config);
+export function zoneWrappedInterceptorHandler(
+    platformLocation: PlatformLocation, config: PlatformConfig) {
+  return new ZoneClientBackend(new HttpInterceptorHandler(), platformLocation, config);
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
   {provide: XhrFactory, useClass: ServerXhr}, {
     provide: HttpHandler,
-    useFactory: zoneWrappedInterceptingHandler,
-    deps: [HttpBackend, Injector, PlatformLocation, INITIAL_CONFIG]
+    useFactory: zoneWrappedInterceptorHandler,
+    deps: [PlatformLocation, INITIAL_CONFIG]
   }
 ];
