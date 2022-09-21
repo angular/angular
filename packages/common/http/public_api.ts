@@ -35,7 +35,7 @@ export {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler as ɵHttpInte
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
 export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule} from './src/module';
 export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec} from './src/params';
-export {HttpFeature, HttpFeatureKind, provideHttpClient, withJsonpSupport, withLegacyInterceptors, withNoXsrfProtection, withXsrfConfiguration, withInterceptors} from './src/provider';
+export {HttpFeature, HttpFeatureKind, provideHttpClient, withJsonpSupport, withLegacyInterceptors, withNoXsrfProtection, withXsrfConfiguration, withInterceptors, withRequestsMadeViaParent} from './src/provider';
 export {HttpRequest} from './src/request';
 export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpStatusCode, HttpUploadProgressEvent, HttpUserEvent} from './src/response';
 export {HttpXhrBackend} from './src/xhr';
