@@ -10,10 +10,10 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
-import {HTTP_INTERCEPTOR_FNS, HTTP_INTERCEPTORS, HttpInterceptorHandler, LEGACY_INTERCEPTOR_FN, legacyInterceptorFnFactory, NoopInterceptor} from './interceptor';
+import {HTTP_INTERCEPTOR_FNS, HTTP_INTERCEPTORS, HttpInterceptorHandler, LEGACY_INTERCEPTOR_FN, legacyInterceptorFnFactory} from './interceptor';
 import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
+import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME} from './xsrf';
 
 /**
  * Configures XSRF protection support for outgoing requests.
@@ -34,6 +34,7 @@ import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XS
     {provide: HttpXsrfTokenExtractor, useClass: HttpXsrfCookieExtractor},
     {provide: XSRF_COOKIE_NAME, useValue: 'XSRF-TOKEN'},
     {provide: XSRF_HEADER_NAME, useValue: 'X-XSRF-TOKEN'},
+    {provide: XSRF_ENABLED, useValue: true},
   ],
 })
 export class HttpClientXsrfModule {
@@ -44,7 +45,7 @@ export class HttpClientXsrfModule {
     return {
       ngModule: HttpClientXsrfModule,
       providers: [
-        {provide: HttpXsrfInterceptor, useClass: NoopInterceptor},
+        {provide: XSRF_ENABLED, useValue: false},
       ],
     };
   }
