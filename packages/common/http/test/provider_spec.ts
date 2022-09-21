@@ -9,11 +9,12 @@
 import {DOCUMENT} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, JsonpClientBackend} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {InjectionToken, PLATFORM_ID, Provider} from '@angular/core';
+import {inject, InjectionToken, PLATFORM_ID, Provider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable} from 'rxjs';
 
-import {provideHttpClient, withJsonpSupport, withLegacyInterceptors, withNoXsrfProtection, withXsrfConfiguration} from '../src/provider';
+import {HttpInterceptorFn} from '../src/interceptor';
+import {provideHttpClient, withInterceptors, withJsonpSupport, withLegacyInterceptors, withNoXsrfProtection, withXsrfConfiguration} from '../src/provider';
 
 describe('provideHttp', () => {
   beforeEach(() => {
@@ -75,6 +76,106 @@ describe('provideHttp', () => {
     const req = TestBed.inject(HttpTestingController).expectOne('/test');
     expect(req.request.headers.get('X-Tag')).toEqual('alpha,beta');
     req.flush('');
+  });
+
+  describe('interceptor functions', () => {
+    it('should allow configuring interceptors', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([
+            makeLiteralTagInterceptorFn('alpha'),
+            makeLiteralTagInterceptorFn('beta'),
+          ])),
+          provideHttpClientTesting(),
+        ],
+      });
+
+      TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-Tag')).toEqual('alpha,beta');
+      req.flush('');
+    });
+
+    it('should accept multiple separate interceptor configs', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(
+              withInterceptors([
+                makeLiteralTagInterceptorFn('alpha'),
+              ]),
+              withInterceptors([
+                makeLiteralTagInterceptorFn('beta'),
+              ])),
+          provideHttpClientTesting(),
+        ],
+      });
+
+      TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-Tag')).toEqual('alpha,beta');
+      req.flush('');
+    });
+
+    it('should allow injection from an interceptor context', () => {
+      const ALPHA =
+          new InjectionToken<string>('alpha', {providedIn: 'root', factory: () => 'alpha'});
+      const BETA = new InjectionToken<string>('beta', {providedIn: 'root', factory: () => 'beta'});
+
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([
+            makeTokenTagInterceptorFn(ALPHA),
+            makeTokenTagInterceptorFn(BETA),
+          ])),
+          provideHttpClientTesting(),
+        ],
+      });
+
+      TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-Tag')).toEqual('alpha,beta');
+      req.flush('');
+    });
+
+    it('should allow combination with legacy interceptors, before the legacy stack', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(
+              withInterceptors([
+                makeLiteralTagInterceptorFn('functional'),
+              ]),
+              withLegacyInterceptors(),
+              ),
+          provideHttpClientTesting(),
+          provideLegacyInterceptor('legacy'),
+        ],
+      });
+
+      TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-Tag')).toEqual('functional,legacy');
+      req.flush('');
+    });
+
+    it('should allow combination with legacy interceptors, after the legacy stack', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(
+              withLegacyInterceptors(),
+              withInterceptors([
+                makeLiteralTagInterceptorFn('functional'),
+              ]),
+              ),
+          provideHttpClientTesting(),
+          provideLegacyInterceptor('legacy'),
+        ],
+      });
+
+      TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-Tag')).toEqual('legacy,functional');
+      req.flush('');
+    });
   });
 
   describe('xsrf protection', () => {
@@ -222,6 +323,14 @@ function provideLegacyInterceptor(tag: string): Provider {
     useExisting: token,
     multi: true,
   };
+}
+
+function makeLiteralTagInterceptorFn(tag: string): HttpInterceptorFn {
+  return (req, next) => next(addTagToRequest(req, tag));
+}
+
+function makeTokenTagInterceptorFn(tag: InjectionToken<string>): HttpInterceptorFn {
+  return (req, next) => next(addTagToRequest(req, inject(tag)));
 }
 
 function addTagToRequest(req: HttpRequest<unknown>, tag: string): HttpRequest<unknown> {
