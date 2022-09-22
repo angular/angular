@@ -120,8 +120,7 @@ describe('progress-bar styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of progress-bar that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of progress-bar that may no longer apply for the MDC version. */
         .mat-progress-bar-buffer {
           background-color: red;
         }
@@ -138,8 +137,7 @@ describe('progress-bar styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of progress-bar that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of progress-bar that may no longer apply for the MDC version. */
         .some-class
         .mat-progress-bar-buffer {
           background-color: red;
@@ -156,8 +154,7 @@ describe('progress-bar styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of progress-bar that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of progress-bar that may no longer apply for the MDC version. */
         .mat-mdc-progress-bar.some-class, .mat-progress-bar-buffer {
           width: 50%;
         }

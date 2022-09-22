@@ -150,8 +150,7 @@ describe('autocomplete styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of autocomplete that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version. */
         .mat-autocomplete-panel {
           background-color: red;
         }
@@ -168,8 +167,7 @@ describe('autocomplete styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of autocomplete that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version. */
         .some-class
         .mat-autocomplete-panel {
           background-color: red;
@@ -186,8 +184,7 @@ describe('autocomplete styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of autocomplete that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version. */
         .mat-mdc-autocomplete.some-class, .mat-autocomplete-panel {
           padding: 16px;
         }

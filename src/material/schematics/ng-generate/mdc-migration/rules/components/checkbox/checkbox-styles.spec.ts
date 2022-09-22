@@ -120,8 +120,7 @@ describe('checkbox styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
         .mat-checkbox-label {
           font-size: 16px;
         }
@@ -138,8 +137,7 @@ describe('checkbox styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
         .some-class
         .mat-checkbox-label {
           font-size: 16px;
@@ -156,8 +154,7 @@ describe('checkbox styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
         .mat-mdc-checkbox.some-class, .mat-checkbox-label {
           background-color: transparent;
         }

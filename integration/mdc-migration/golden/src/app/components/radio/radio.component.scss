@@ -1,7 +1,6 @@
 .mat-mdc-radio-button { padding: 16px; }
 
-/* TODO: The following rule targets internal classes of radio that may no longer apply for the MDC version. */
-
+/* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version. */
 .mat-radio-container {
   padding: 16px;
 }

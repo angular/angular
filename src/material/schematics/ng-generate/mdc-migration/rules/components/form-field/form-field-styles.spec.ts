@@ -171,8 +171,7 @@ describe('form-field styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
         .mat-form-field-wrapper {
           padding: 16px;
         }
@@ -189,8 +188,7 @@ describe('form-field styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
         .some-class
         .mat-form-field-wrapper {
           padding: 16px;
@@ -207,8 +205,7 @@ describe('form-field styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
         .mat-mdc-form-field.some-class, .mat-form-field-wrapper {
           padding: 16px;
         }

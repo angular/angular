@@ -120,8 +120,7 @@ describe('slide-toggle styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
         .mat-slide-toggle-thumb {
           height: 16px;
         }
@@ -138,8 +137,7 @@ describe('slide-toggle styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
         .some-class
         .mat-slide-toggle-thumb {
           height: 16px;
@@ -156,8 +154,7 @@ describe('slide-toggle styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
         .mat-mdc-slide-toggle.some-class, .mat-slide-toggle-thumb {
           background-color: transparent;
         }

@@ -2,8 +2,7 @@
   padding: 4px;
 }
 
-/* TODO: The following rule targets internal classes of select that may no longer apply for the MDC version. */
-
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
 .select-example ::ng-deep.mat-select-value {
   color: darkblue;
 }

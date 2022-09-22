@@ -171,8 +171,7 @@ describe('dialog styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of dialog that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of dialog that may no longer apply for the MDC version. */
         .mat-dialog-close {
           font-size: 24px;
         }
@@ -189,8 +188,7 @@ describe('dialog styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of dialog that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of dialog that may no longer apply for the MDC version. */
         .some-class
         .mat-dialog-close {
           font-size: 24px;
@@ -207,8 +205,7 @@ describe('dialog styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of dialog that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of dialog that may no longer apply for the MDC version. */
         .mat-mdc-dialog.some-class, .mat-dialog-close {
           font-size: 24px;
         }

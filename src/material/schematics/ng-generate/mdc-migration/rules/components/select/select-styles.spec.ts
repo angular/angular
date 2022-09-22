@@ -181,8 +181,7 @@ describe('select styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of select that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
         .mat-select-value {
           color: red;
         }
@@ -214,8 +213,7 @@ describe('select styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of select that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
         .some-class
         .mat-select-value {
           color: red;
@@ -232,8 +230,7 @@ describe('select styles', () => {
         }
       `,
         `
-        /* TODO: The following rule targets internal classes of select that may no longer apply for the MDC version. */
-
+        /* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
         .mat-mdc-select.some-class, .mat-select-value {
           padding: 16px;
         }

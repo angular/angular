@@ -1,7 +1,6 @@
 .mat-mdc-autocomplete { padding: 16px; }
 
-/* TODO: The following rule targets internal classes of autocomplete that may no longer apply for the MDC version. */
-
+/* TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version. */
 ::ng-deep .mat-autocomplete-panel {
   background-color: lavenderblush;
 }
