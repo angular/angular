@@ -4,7 +4,11 @@ const ignore = require('ignore');
 const path = require('canonical-path');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
-const {EXAMPLES_BASE_PATH, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, EXAMPLE_CONFIG_FILENAME, SHARED_PATH} = require('./constants');
+const {RUNFILES_ROOT, getExamplesBasePath, getSharedPath, EXAMPLE_CONFIG_FILENAME} = require('./constants');
+
+const PROJECT_ROOT = RUNFILES_ROOT;
+const EXAMPLES_BASE_PATH = getExamplesBasePath(PROJECT_ROOT);
+const SHARED_PATH = getSharedPath(PROJECT_ROOT);
 
 const BOILERPLATE_BASE_PATH = path.resolve(SHARED_PATH, 'boilerplate');
 const BOILERPLATE_CLI_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'cli');
@@ -14,7 +18,7 @@ class ExampleBoilerPlate {
   /**
    * Add boilerplate files to an example
    */
-  add(exampleFolder) {
+  add(exampleFolder, outputDir) {
     const gitignore = ignore().add(fs.readFileSync(path.resolve(BOILERPLATE_BASE_PATH, '.gitignore'), 'utf8'));
 
     const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
@@ -31,22 +35,21 @@ class ExampleBoilerPlate {
 
     const boilerPlateType = exampleConfig.projectType || 'cli';
     const boilerPlateBasePath = path.resolve(BOILERPLATE_BASE_PATH, boilerPlateType);
-    const outputPath = BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH;
-    shelljs.mkdir('-p', outputPath);
+    shelljs.mkdir('-p', outputDir);
 
     // All example types other than `cli` and `systemjs` are based on `cli`. Copy over the `cli`
     // boilerplate files first.
     // (Some of these files might be later overwritten by type-specific files.)
     if (boilerPlateType !== 'cli' && boilerPlateType !== 'systemjs') {
-      this.copyDirectoryContents(BOILERPLATE_CLI_PATH, outputPath, isPathIgnored);
+      this.copyDirectoryContents(BOILERPLATE_CLI_PATH, outputDir, isPathIgnored);
     }
 
     // Copy the type-specific boilerplate files.
-    this.copyDirectoryContents(boilerPlateBasePath, outputPath, isPathIgnored);
+    this.copyDirectoryContents(boilerPlateBasePath, outputDir, isPathIgnored);
 
     // Copy the common boilerplate files (unless explicitly not used).
     if (exampleConfig.useCommonBoilerplate !== false) {
-      this.copyDirectoryContents(BOILERPLATE_COMMON_PATH, outputPath, isPathIgnored);
+      this.copyDirectoryContents(BOILERPLATE_COMMON_PATH, outputDir, isPathIgnored);
     }
   }
 
@@ -80,7 +83,7 @@ class ExampleBoilerPlate {
 
   main() {
     yargs.usage('$0 <cmd> [args]')
-        .command('add', 'add the boilerplate to each example', yrgs => this.add(yrgs.argv._[1]))
+        .command('add <exampleDir> <outputDir>', 'create boilerplate for an example', yrgs => this.add(yrgs.argv._[1], yrgs.argv._[2]))
         .command('list-overrides', 'list all the boilerplate files that have been overridden in examples', () => this.listOverrides())
         .demandCommand(1, 'Please supply a command from the list above')
         .argv;

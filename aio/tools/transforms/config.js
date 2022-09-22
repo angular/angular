@@ -5,9 +5,10 @@ const { readdirSync } = require('fs');
 // directory (TEST_TMPDIR) that bazel provides for tests.
 const BAZEL_OUTPUT_PATH = process.env.BAZEL_DGENI_OUTPUT_PATH || process.env.TEST_TMPDIR;
 
-// During a bazel build this script executes in the execroot, so assume
-// the root is the current directory unless overridden.
-const PROJECT_ROOT = resolve(process.env.PROJECT_ROOT || '.');
+// The current directory is always the correct project root. During a build, this evalutates
+// to the exec root. During the "fast-serve" bazel run mode, it resolves to the runfiles root
+// of the fast serve binary.
+const PROJECT_ROOT = resolve('.');
 
 const AIO_PATH = resolve(PROJECT_ROOT, 'aio');
 const TEMPLATES_PATH = resolve(AIO_PATH, 'tools/transforms/templates');
@@ -26,4 +27,3 @@ function requireFolder(dirname, folderPath) {
     .map(p => require(resolve(absolutePath, p)));
 }
 module.exports = { BAZEL_OUTPUT_PATH, PROJECT_ROOT, AIO_PATH, TEMPLATES_PATH, API_TEMPLATES_PATH, CONTENTS_PATH, GUIDE_EXAMPLES_PATH, SRC_PATH, OUTPUT_PATH, DOCS_OUTPUT_PATH, API_SOURCE_PATH, requireFolder };
-
