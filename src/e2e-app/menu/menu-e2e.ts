@@ -9,8 +9,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'mdc-menu-e2e',
-  templateUrl: 'mdc-menu-e2e.html',
+  selector: 'menu-e2e',
+  templateUrl: 'menu-e2e.html',
   styles: [
     `
     #before-t, #above-t, #combined-t {
@@ -24,6 +24,6 @@ import {Component} from '@angular/core';
   `,
   ],
 })
-export class MdcMenuE2e {
+export class MenuE2e {
   selected: string = '';
 }

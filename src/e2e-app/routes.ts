@@ -7,7 +7,6 @@ import {Home} from './e2e-app/e2e-app-layout';
 import {ExpansionE2e} from './expansion/expansion-e2e';
 import {GridListE2E} from './grid-list/grid-list-e2e';
 import {IconE2E} from './icon/icon-e2e';
-import {LegacyMenuE2e} from './legacy-menu/legacy-menu-e2e';
 import {LegacyProgressBarE2e} from './legacy-progress-bar/legacy-progress-bar-e2e';
 import {LegacyProgressSpinnerE2e} from './legacy-progress-spinner/legacy-progress-spinner-e2e';
 import {LegacyRadioE2e} from './legacy-radio/legacy-radio-e2e';
@@ -18,7 +17,7 @@ import {ButtonE2e} from './button/button-e2e';
 import {CheckboxE2e} from './checkbox/checkbox-e2e';
 import {DialogE2E} from './dialog/dialog-e2e';
 import {InputE2E} from './input/input-e2e';
-import {MdcMenuE2e} from './mdc-menu/mdc-menu-e2e';
+import {MenuE2e} from './menu/menu-e2e';
 import {MdcProgressBarE2E} from './mdc-progress-bar/mdc-progress-bar-e2e';
 import {MdcProgressSpinnerE2e} from './mdc-progress-spinner/mdc-progress-spinner-e2e';
 import {MdcRadioE2e} from './mdc-radio/mdc-radio-e2e';
@@ -43,7 +42,7 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'icon', component: IconE2E},
   {path: 'checkbox', component: CheckboxE2e},
   {path: 'input', component: InputE2E},
-  {path: 'legacy-menu', component: LegacyMenuE2e},
+  {path: 'menu', component: MenuE2e},
   {path: 'legacy-progress-bar', component: LegacyProgressBarE2e},
   {path: 'legacy-progress-spinner', component: LegacyProgressSpinnerE2e},
   {path: 'legacy-radio', component: LegacyRadioE2e},
@@ -52,7 +51,6 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'list', component: ListE2e},
   {path: 'button', component: ButtonE2e},
   {path: 'dialog', component: DialogE2E},
-  {path: 'mdc-menu', component: MdcMenuE2e},
   {path: 'mdc-progress-bar', component: MdcProgressBarE2E},
   {path: 'mdc-progress-spinner', component: MdcProgressSpinnerE2e},
   {path: 'mdc-radio', component: MdcRadioE2e},

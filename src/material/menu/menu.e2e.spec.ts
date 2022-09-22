@@ -10,7 +10,7 @@ import {
 const presenceOf = ExpectedConditions.presenceOf;
 const not = ExpectedConditions.not;
 
-describe('MDC-based menu', () => {
+describe('menu', () => {
   const menuSelector = '.mat-mdc-menu-panel';
   const page = {
     menu: () => element(by.css(menuSelector)),
@@ -29,7 +29,7 @@ describe('MDC-based menu', () => {
     getResultText: () => page.textArea().getText(),
   };
 
-  beforeEach(async () => await browser.get('/mdc-menu'));
+  beforeEach(async () => await browser.get('/menu'));
 
   it('should open menu when the trigger is clicked', async () => {
     await expectToExist(menuSelector, false);
