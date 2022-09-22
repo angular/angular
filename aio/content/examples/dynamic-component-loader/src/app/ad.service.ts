@@ -15,7 +15,7 @@ export class AdService {
       ),
       new AdItem(
         HeroProfileComponent,
-        { name: 'Dr IQ', bio: 'Smart as they come' }
+        { name: 'Dr. IQ', bio: 'Smart as they come' }
       ),
       new AdItem(
         HeroJobAdComponent,
