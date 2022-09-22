@@ -121,10 +121,7 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}):
     # Generate example boilerplate
     npm_package_bin(
         name = "boilerplate",
-        args = ["add", native.package_name()],
-        env = {
-            "BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH": "$(@D)",
-        },
+        args = ["add", native.package_name(), "$(@D)"],
         data = [":files"],
         output_dir = True,
         tool = "//aio/tools/examples:example-boilerplate",
