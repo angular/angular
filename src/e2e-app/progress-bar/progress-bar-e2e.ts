@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'mdc-progress-bar-e2e',
-  templateUrl: 'mdc-progress-bar-e2e.html',
+  selector: 'progress-bar-e2e',
+  templateUrl: 'progress-bar-e2e.html',
   styles: [
     `
     mat-progress-bar {
@@ -11,7 +11,7 @@ import {Component} from '@angular/core';
   `,
   ],
 })
-export class MdcProgressBarE2E {
+export class ProgressBarE2E {
   determinateValue: number = 57;
   bufferValue: number = 35;
 }

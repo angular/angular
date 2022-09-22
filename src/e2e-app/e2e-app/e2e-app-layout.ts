@@ -39,7 +39,6 @@ export class E2eAppLayout {
     {path: 'mdc-slide-toggle', title: 'MDC Slide Toggle'},
     {path: 'mdc-table', title: 'MDC Table'},
     {path: 'mdc-tabs', title: 'MDC Tabs'},
-    {path: 'mdc-progress-bar', title: 'MDC Progress bar'},
     {path: 'mdc-progress-spinner', title: 'MDC Progress spinner'},
   ];
 }

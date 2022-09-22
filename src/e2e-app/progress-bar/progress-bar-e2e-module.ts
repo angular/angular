@@ -8,10 +8,10 @@
 
 import {NgModule} from '@angular/core';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
-import {MdcProgressBarE2E} from './mdc-progress-bar-e2e';
+import {ProgressBarE2E} from './progress-bar-e2e';
 
 @NgModule({
   imports: [MatProgressBarModule],
-  declarations: [MdcProgressBarE2E],
+  declarations: [ProgressBarE2E],
 })
-export class MdcProgressBarE2eModule {}
+export class ProgressBarE2eModule {}

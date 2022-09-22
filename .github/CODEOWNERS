@@ -249,7 +249,6 @@
 /src/e2e-app/expansion/**                                   @andrewseguin
 /src/e2e-app/grid-list/**                                   @andrewseguin
 /src/e2e-app/icon/**                                        @andrewseguin
-/src/e2e-app/legacy-progress-bar/**                         @andrewseguin @crisbeto
 /src/e2e-app/legacy-progress-spinner/**                     @andrewseguin @crisbeto
 /src/e2e-app/legacy-radio/**                                @andrewseguin @devversion
 /src/e2e-app/legacy-slide-toggle/**                         @devversion
@@ -261,7 +260,7 @@
 /src/e2e-app/dialog/**                                      @devversion
 /src/e2e-app/input/**                                       @devversion
 /src/e2e-app/menu/**                                        @crisbeto
-/src/e2e-app/mdc-progress-bar/**                            @crisbeto
+/src/e2e-app/progress-bar/**                                @crisbeto
 /src/e2e-app/mdc-progress-spinner/**                        @mmalerba
 /src/e2e-app/mdc-radio/**                                   @mmalerba
 /src/e2e-app/mdc-slide-toggle/**                            @crisbeto
