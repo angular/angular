@@ -50,11 +50,8 @@ export class ThemingStylesMigration extends Migration<ComponentMigrator[], Schem
     });
     if (migrator) {
       migrator.styles.replaceMixin(this.namespace, atRule);
-    } else if (atRule.params.includes('all-legacy-component-themes') && atRule.parent) {
-      // We use an arbitrary migrator because searching for the right one
-      // doesn't matter since the all-component-theme mixin affects all
-      // components and it only needs to be replaced once.
-      this.upgradeData[0]?.styles.replaceAllComponentThemeMixin(atRule);
+    } else if (atRule.params.includes('all-legacy-component-') && atRule.parent) {
+      replaceAllComponentsMixin(atRule);
     }
   }
 
@@ -96,4 +93,16 @@ function isAngularMaterialImport(atRule: postcss.AtRule): boolean {
 function parseNamespace(atRule: postcss.AtRule): string {
   const params = postcss.list.space(atRule.params);
   return params[params.length - 1];
+}
+
+/**
+ * Replaces mixin prefixed with `all-legacy-component` to the MDC equivalent.
+ *
+ * @param allComponentThemesNode a all-components-theme mixin node
+ */
+function replaceAllComponentsMixin(allComponentNode: postcss.AtRule) {
+  allComponentNode.cloneBefore({
+    params: allComponentNode.params.replace('all-legacy-component', 'all-component'),
+  });
+  allComponentNode.remove();
 }

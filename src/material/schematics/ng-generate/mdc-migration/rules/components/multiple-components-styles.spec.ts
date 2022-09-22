@@ -125,5 +125,25 @@ describe('multiple component styles', () => {
       `,
       );
     });
+
+    it('should add migrate all component mixins', async () => {
+      await runMigrationTest(
+        ['checkbox', 'radio'],
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.all-legacy-component-themes($sample-project-themes);
+        @include mat.all-legacy-component-colors($sample-colors);
+        @include mat.all-legacy-component-typographies($sample-typographies);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.all-component-themes($sample-project-themes);
+        @include mat.all-component-colors($sample-colors);
+        @include mat.all-component-typographies($sample-typographies);
+      `,
+      );
+    });
   });
 });

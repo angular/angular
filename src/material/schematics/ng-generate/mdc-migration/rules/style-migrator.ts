@@ -119,21 +119,6 @@ export abstract class StyleMigrator {
   }
 
   /**
-   * Replaces the all-component-themes mixin with the MDC equivalent.
-   *
-   * @param allComponentThemesNode a all-components-theme mixin node
-   */
-  replaceAllComponentThemeMixin(allComponentThemesNode: postcss.AtRule) {
-    allComponentThemesNode.cloneBefore({
-      params: allComponentThemesNode.params.replace(
-        'all-legacy-component-themes',
-        'all-component-themes',
-      ),
-    });
-    allComponentThemesNode.remove();
-  }
-
-  /**
    * Returns whether the given postcss rule uses a legacy selector of this component.
    *
    * @param rule a postcss rule.
