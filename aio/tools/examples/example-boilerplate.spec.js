@@ -3,12 +3,18 @@ const fs = require('fs-extra');
 const glob = require('glob');
 const shelljs = require('shelljs');
 
-const {BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, EXAMPLES_BASE_PATH} = require("./constants");
+const {RUNFILES_ROOT, getExamplesBasePath, getSharedPath} = require("./constants");
+
+const PROJECT_ROOT = RUNFILES_ROOT;
+const EXAMPLES_BASE_PATH = getExamplesBasePath(PROJECT_ROOT);
+const SHARED_PATH = getSharedPath(PROJECT_ROOT);
+
 const exampleBoilerPlate = require('./example-boilerplate');
+const outputDir = process.env.TEST_TMPDIR; // Bazel-provided temp dir
 
 describe('example-boilerplate tool', () => {
   describe('add', () => {
-    const sharedDir = path.resolve(__dirname, 'shared');
+    const sharedDir = SHARED_PATH;
     const exampleFolder = 'a';
 
     beforeEach(() => {
@@ -21,12 +27,12 @@ describe('example-boilerplate tool', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'systemjs' });
 
-      exampleBoilerPlate.add(exampleFolder);
+      exampleBoilerPlate.add(exampleFolder, outputDir);
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(2);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/systemjs`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/systemjs`, outputDir, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, outputDir, jasmine.any(Function)],
       ]);
     });
 
@@ -34,12 +40,12 @@ describe('example-boilerplate tool', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'cli' });
 
-      exampleBoilerPlate.add(exampleFolder);
+      exampleBoilerPlate.add(exampleFolder, outputDir);
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(2);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, outputDir, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, outputDir, jasmine.any(Function)],
       ]);
     });
 
@@ -47,12 +53,12 @@ describe('example-boilerplate tool', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({});
 
-      exampleBoilerPlate.add(exampleFolder);
+      exampleBoilerPlate.add(exampleFolder, outputDir);
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(2);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, outputDir, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, outputDir, jasmine.any(Function)],
       ]);
     });
 
@@ -60,13 +66,13 @@ describe('example-boilerplate tool', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'i18n' });
 
-      exampleBoilerPlate.add(exampleFolder);
+      exampleBoilerPlate.add(exampleFolder, outputDir);
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(3);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
-        [`${boilerplateDir}/i18n`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, outputDir, jasmine.any(Function)],
+        [`${boilerplateDir}/i18n`, outputDir, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, outputDir, jasmine.any(Function)],
       ]);
     });
 
@@ -74,13 +80,13 @@ describe('example-boilerplate tool', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'universal' });
 
-      exampleBoilerPlate.add(exampleFolder);
+      exampleBoilerPlate.add(exampleFolder, outputDir);
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(3);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
-        [`${boilerplateDir}/universal`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, outputDir, jasmine.any(Function)],
+        [`${boilerplateDir}/universal`, outputDir, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, outputDir, jasmine.any(Function)],
       ]);
     });
 
@@ -90,7 +96,7 @@ describe('example-boilerplate tool', () => {
         'overrideBoilerplate': [ 'c/d' ]
       });
 
-      exampleBoilerPlate.add(exampleFolder);
+      exampleBoilerPlate.add(exampleFolder, outputDir);
 
       const isPathIgnored = exampleBoilerPlate.copyDirectoryContents.calls.first().args[2];
       expect(isPathIgnored(`${boilerplateDir}/cli/a/b`)).toBe(false);
@@ -98,7 +104,7 @@ describe('example-boilerplate tool', () => {
     });
 
     it('should try to load the example config file', () => {
-      exampleBoilerPlate.add(exampleFolder);
+      exampleBoilerPlate.add(exampleFolder, outputDir);
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledTimes(1);
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve(`${exampleFolder}/example-config.json`));
     });

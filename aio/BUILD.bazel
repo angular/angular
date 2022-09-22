@@ -291,7 +291,6 @@ architect(
 
 nodejs_binary(
     name = "docs-watch",
-    chdir = package_name(),
     data = APPLICATION_FILES + [
         "//aio/scripts:fast-serve-and-watch",
     ] + select({
@@ -301,9 +300,6 @@ nodejs_binary(
     enable_linker = True,
     entry_point = "//aio/scripts:fast-serve-and-watch.js",
     env = {
-        # Tell dgeni packages where the project root is since we used chdir
-        "PROJECT_ROOT": "../",
-
         # Have the authors package output its low-fi dgeni build
         # to a different directory in the runfiles tree because bazel
         # write-protects original dgeni runfiles. Then in angular.json
