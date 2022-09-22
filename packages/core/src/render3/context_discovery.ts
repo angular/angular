@@ -294,8 +294,9 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
 }
 
 /**
- * Returns a list of directives extracted from the given view based on the
- * provided list of directive index values, excluding components.
+ * Returns a list of directives applied to a node at a specific index. The list includes
+ * directives matched by selector and any host directives, but it excludes components.
+ * Use `getComponentAtNodeIndex` to find the component applied to a node.
  *
  * @param nodeIndex The node index
  * @param lView The target view data

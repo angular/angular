@@ -1302,12 +1302,17 @@ function findDirectiveDefMatches(
           // 4. Selector-matched directives.
           if (def.findHostDirectiveDefs !== null) {
             const hostDirectiveMatches: DirectiveDef<unknown>[] = [];
-            // Append any host directives to the matches first.
             def.findHostDirectiveDefs(hostDirectiveMatches, def, tView, lView, tNode);
-            hostDirectiveMatches.push(def);
-            matches.unshift(...hostDirectiveMatches);
-            markAsComponentHost(tView, tNode, hostDirectiveMatches.length - 1);
+            // Add all host directives declared on this component, followed by the component itself.
+            // Host directives should execute first so the host has a chance to override changes
+            // to the DOM made by them.
+            matches.unshift(...hostDirectiveMatches, def);
+            // Component is offset starting from the beginning of the host directives array.
+            const componentOffset = hostDirectiveMatches.length;
+            markAsComponentHost(tView, tNode, componentOffset);
           } else {
+            // No host directives on this component, just add the
+            // component def to the beginning of the matches.
             matches.unshift(def);
             markAsComponentHost(tView, tNode, 0);
           }

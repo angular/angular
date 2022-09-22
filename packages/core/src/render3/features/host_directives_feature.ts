@@ -64,6 +64,8 @@ function findHostDirectiveDefs(
     for (const hostDirectiveConfig of def.hostDirectives) {
       const hostDirectiveDef = getDirectiveDef(hostDirectiveConfig.directive)!;
 
+      // TODO(crisbeto): assert that the def exists.
+
       // Host directives execute before the host so that its host bindings can be overwritten.
       findHostDirectiveDefs(matches, hostDirectiveDef, tView, lView, tNode);
       matches.push(hostDirectiveDef);

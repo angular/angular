@@ -186,20 +186,38 @@ describe('host directives', () => {
     } as HostDirectiveAny)
     class MyComp {
       constructor() {
-        logs.push('host');
+        logs.push('MyComp');
       }
     }
-    @Component({template: '<my-comp></my-comp>'})
+
+    @Directive({standalone: true})
+    class SelectorMatchedHostDir {
+      constructor() {
+        logs.push('SelectorMatchedHostDir');
+      }
+    }
+
+    @Directive({
+      selector: '[selector-matched-dir]',
+      hostDirectives: [SelectorMatchedHostDir],
+    } as HostDirectiveAny)
+    class SelectorMatchedDir {
+      constructor() {
+        logs.push('SelectorMatchedDir');
+      }
+    }
+
+    @Component({template: '<my-comp selector-matched-dir></my-comp>'})
     class App {
     }
 
-    TestBed.configureTestingModule({declarations: [App, MyComp]});
+    TestBed.configureTestingModule({declarations: [App, MyComp, SelectorMatchedDir]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
     expect(diTokenValue!).toBe('host value');
     expect(fixture.nativeElement.innerHTML)
-        .toBe('<my-comp id="host-id" class="leaf middle host"></my-comp>');
+        .toBe('<my-comp id="host-id" selector-matched-dir="" class="leaf middle host"></my-comp>');
     expect(logs).toEqual([
       'Chain1 - level 3',
       'Chain1 - level 2',
@@ -208,7 +226,9 @@ describe('host directives', () => {
       'Chain2 - level 1',
       'Chain3 - level 2',
       'Chain3 - level 1',
-      'host',
+      'MyComp',
+      'SelectorMatchedHostDir',
+      'SelectorMatchedDir',
     ]);
   });
 
