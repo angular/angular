@@ -36,7 +36,6 @@ export class E2eAppLayout {
     {path: 'toolbar', title: 'Toolbar'},
     {path: 'virtual-scroll', title: 'Virtual Scroll'},
     {path: 'mdc-chips', title: 'MDC Chips'},
-    {path: 'mdc-dialog', title: 'MDC Dialog'},
     {path: 'mdc-input', title: 'MDC Input'},
     {path: 'mdc-menu', title: 'MDC Menu'},
     {path: 'mdc-radio', title: 'MDC Radio'},

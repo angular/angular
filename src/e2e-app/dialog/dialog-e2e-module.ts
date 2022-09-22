@@ -8,10 +8,10 @@
 
 import {NgModule} from '@angular/core';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MdcDialogE2E, TestDialog} from './mdc-dialog-e2e';
+import {DialogE2E, TestDialog} from './dialog-e2e';
 
 @NgModule({
   imports: [MatDialogModule],
-  declarations: [MdcDialogE2E, TestDialog],
+  declarations: [DialogE2E, TestDialog],
 })
-export class MdcDialogE2eModule {}
+export class DialogE2eModule {}

@@ -11,7 +11,6 @@ import {E2eAppModule} from './e2e-app/e2e-app-module';
 import {ExpansionE2eModule} from './expansion/expansion-e2e-module';
 import {GridListE2eModule} from './grid-list/grid-list-e2e-module';
 import {IconE2eModule} from './icon/icon-e2e-module';
-import {LegacyDialogE2eModule} from './legacy-dialog/legacy-dialog-e2e-module';
 import {LegacyInputE2eModule} from './legacy-input/legacy-input-e2e-module';
 import {LegacyMenuE2eModule} from './legacy-menu/legacy-menu-e2e-module';
 import {LegacyProgressBarE2eModule} from './legacy-progress-bar/legacy-progress-bar-e2e-module';
@@ -23,7 +22,7 @@ import {ListE2eModule} from './list/list-e2e-module';
 import {ButtonE2eModule} from './button/button-e2e-module';
 import {CheckboxE2eModule} from './checkbox/checkbox-e2e-module';
 import {MdcChipsE2eModule} from './mdc-chips/mdc-chips-e2e-module';
-import {MdcDialogE2eModule} from './mdc-dialog/mdc-dialog-e2e-module';
+import {DialogE2eModule} from './dialog/dialog-e2e-module';
 import {MdcMenuE2eModule} from './mdc-menu/mdc-menu-e2e-module';
 import {MdcProgressBarE2eModule} from './mdc-progress-bar/mdc-progress-bar-e2e-module';
 import {MdcProgressSpinnerE2eModule} from './mdc-progress-spinner/mdc-progress-spinner-module';
@@ -56,7 +55,6 @@ const enableAnimations = window.location.search.includes('animations=true');
     ExpansionE2eModule,
     GridListE2eModule,
     IconE2eModule,
-    LegacyDialogE2eModule,
     LegacyInputE2eModule,
     LegacyMenuE2eModule,
     LegacyProgressBarE2eModule,
@@ -68,7 +66,7 @@ const enableAnimations = window.location.search.includes('animations=true');
     ButtonE2eModule,
     CheckboxE2eModule,
     MdcChipsE2eModule,
-    MdcDialogE2eModule,
+    DialogE2eModule,
     MdcMenuE2eModule,
     MdcProgressBarE2eModule,
     MdcProgressSpinnerE2eModule,

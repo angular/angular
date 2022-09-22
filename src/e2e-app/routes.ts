@@ -7,7 +7,6 @@ import {Home} from './e2e-app/e2e-app-layout';
 import {ExpansionE2e} from './expansion/expansion-e2e';
 import {GridListE2E} from './grid-list/grid-list-e2e';
 import {IconE2E} from './icon/icon-e2e';
-import {LegacyDialogE2e} from './legacy-dialog/legacy-dialog-e2e';
 import {LegacyInputE2e} from './legacy-input/legacy-input-e2e';
 import {LegacyMenuE2e} from './legacy-menu/legacy-menu-e2e';
 import {LegacyProgressBarE2e} from './legacy-progress-bar/legacy-progress-bar-e2e';
@@ -19,7 +18,7 @@ import {ListE2e} from './list/list-e2e';
 import {ButtonE2e} from './button/button-e2e';
 import {CheckboxE2e} from './checkbox/checkbox-e2e';
 import {MdcChipsE2e} from './mdc-chips/mdc-chips-e2e';
-import {MdcDialogE2E} from './mdc-dialog/mdc-dialog-e2e';
+import {DialogE2E} from './dialog/dialog-e2e';
 import {MdcInputE2E} from './mdc-input/mdc-input-e2e';
 import {MdcMenuE2e} from './mdc-menu/mdc-menu-e2e';
 import {MdcProgressBarE2E} from './mdc-progress-bar/mdc-progress-bar-e2e';
@@ -45,7 +44,6 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'grid-list', component: GridListE2E},
   {path: 'icon', component: IconE2E},
   {path: 'checkbox', component: CheckboxE2e},
-  {path: 'legacy-dialog', component: LegacyDialogE2e},
   {path: 'legacy-input', component: LegacyInputE2e},
   {path: 'legacy-menu', component: LegacyMenuE2e},
   {path: 'legacy-progress-bar', component: LegacyProgressBarE2e},
@@ -56,7 +54,7 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'list', component: ListE2e},
   {path: 'button', component: ButtonE2e},
   {path: 'mdc-chips', component: MdcChipsE2e},
-  {path: 'mdc-dialog', component: MdcDialogE2E},
+  {path: 'dialog', component: DialogE2E},
   {path: 'mdc-input', component: MdcInputE2E},
   {path: 'mdc-menu', component: MdcMenuE2e},
   {path: 'mdc-progress-bar', component: MdcProgressBarE2E},

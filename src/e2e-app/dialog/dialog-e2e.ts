@@ -1,22 +1,18 @@
 import {Component, ViewChild, TemplateRef} from '@angular/core';
-import {
-  MatLegacyDialog,
-  MatLegacyDialogConfig,
-  MatLegacyDialogRef,
-} from '@angular/material/legacy-dialog';
+import {MatDialog, MatDialogRef, MatDialogConfig} from '@angular/material/dialog';
 
 @Component({
-  selector: 'legacy-dialog-e2e',
-  templateUrl: 'legacy-dialog-e2e.html',
+  selector: 'dialog-e2e',
+  templateUrl: 'dialog-e2e.html',
 })
-export class LegacyDialogE2e {
-  dialogRef: MatLegacyDialogRef<TestDialog> | null;
+export class DialogE2E {
+  dialogRef: MatDialogRef<TestDialog> | null;
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
-  constructor(private _dialog: MatLegacyDialog) {}
+  constructor(private _dialog: MatDialog) {}
 
-  private _openDialog(config?: MatLegacyDialogConfig) {
+  private _openDialog(config?: MatDialogConfig) {
     this.dialogRef = this._dialog.open(TestDialog, config);
     this.dialogRef.afterClosed().subscribe(() => (this.dialogRef = null));
   }
@@ -44,5 +40,5 @@ export class LegacyDialogE2e {
   <button type="button" (click)="dialogRef.close()" id="close">CLOSE</button>`,
 })
 export class TestDialog {
-  constructor(public dialogRef: MatLegacyDialogRef<TestDialog>) {}
+  constructor(public dialogRef: MatDialogRef<TestDialog>) {}
 }
