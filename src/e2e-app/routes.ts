@@ -7,7 +7,6 @@ import {Home} from './e2e-app/e2e-app-layout';
 import {ExpansionE2e} from './expansion/expansion-e2e';
 import {GridListE2E} from './grid-list/grid-list-e2e';
 import {IconE2E} from './icon/icon-e2e';
-import {LegacyProgressSpinnerE2e} from './legacy-progress-spinner/legacy-progress-spinner-e2e';
 import {LegacyRadioE2e} from './legacy-radio/legacy-radio-e2e';
 import {LegacySlideToggleE2e} from './legacy-slide-toggle/legacy-slide-toggle-e2e';
 import {LegacyTabsE2e} from './legacy-tabs/legacy-tabs-e2e';
@@ -18,7 +17,7 @@ import {DialogE2E} from './dialog/dialog-e2e';
 import {InputE2E} from './input/input-e2e';
 import {MenuE2e} from './menu/menu-e2e';
 import {ProgressBarE2E} from './progress-bar/progress-bar-e2e';
-import {MdcProgressSpinnerE2e} from './mdc-progress-spinner/mdc-progress-spinner-e2e';
+import {ProgressSpinnerE2e} from './progress-spinner/progress-spinner-e2e';
 import {MdcRadioE2e} from './mdc-radio/mdc-radio-e2e';
 import {MdcSlideToggleE2e} from './mdc-slide-toggle/mdc-slide-toggle-e2e';
 import {MdcSliderE2e} from './mdc-slider/mdc-slider-e2e';
@@ -43,14 +42,13 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'input', component: InputE2E},
   {path: 'menu', component: MenuE2e},
   {path: 'progress-bar', component: ProgressBarE2E},
-  {path: 'legacy-progress-spinner', component: LegacyProgressSpinnerE2e},
+  {path: 'progress-spinner', component: ProgressSpinnerE2e},
   {path: 'legacy-radio', component: LegacyRadioE2e},
   {path: 'legacy-slide-toggle', component: LegacySlideToggleE2e},
   {path: 'legacy-tabs', component: LegacyTabsE2e},
   {path: 'list', component: ListE2e},
   {path: 'button', component: ButtonE2e},
   {path: 'dialog', component: DialogE2E},
-  {path: 'mdc-progress-spinner', component: MdcProgressSpinnerE2e},
   {path: 'mdc-radio', component: MdcRadioE2e},
   {path: 'mdc-slide-toggle', component: MdcSlideToggleE2e},
   {path: 'mdc-slider', component: MdcSliderE2e},

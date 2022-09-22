@@ -9,10 +9,10 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'mdc-progress-spinner-e2e',
-  templateUrl: 'mdc-progress-spinner-e2e.html',
+  selector: 'progress-spinner-e2e',
+  templateUrl: 'progress-spinner-e2e.html',
 })
-export class MdcProgressSpinnerE2e {
+export class ProgressSpinnerE2e {
   value = 65;
   diameter = 37;
   strokeWidth = 6;
