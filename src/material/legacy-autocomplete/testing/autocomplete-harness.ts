@@ -10,8 +10,8 @@ import {HarnessPredicate} from '@angular/cdk/testing';
 import {
   MatLegacyOptgroupHarness,
   MatLegacyOptionHarness,
-  OptgroupHarnessFilters,
-  OptionHarnessFilters,
+  LegacyOptgroupHarnessFilters,
+  LegacyOptionHarnessFilters,
 } from '@angular/material/legacy-core/testing';
 import {_MatAutocompleteHarnessBase} from '@angular/material/autocomplete/testing';
 import {LegacyAutocompleteHarnessFilters} from './autocomplete-harness-filters';
@@ -24,10 +24,10 @@ import {LegacyAutocompleteHarnessFilters} from './autocomplete-harness-filters';
 export class MatLegacyAutocompleteHarness extends _MatAutocompleteHarnessBase<
   typeof MatLegacyOptionHarness,
   MatLegacyOptionHarness,
-  OptionHarnessFilters,
+  LegacyOptionHarnessFilters,
   typeof MatLegacyOptgroupHarness,
   MatLegacyOptgroupHarness,
-  OptgroupHarnessFilters
+  LegacyOptgroupHarnessFilters
 > {
   protected _prefix = 'mat';
   protected _optionClass = MatLegacyOptionHarness;

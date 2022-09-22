@@ -8,13 +8,27 @@ import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
+// @public @deprecated (undocumented)
+export interface LegacyOptgroupHarnessFilters extends BaseHarnessFilters {
+    // (undocumented)
+    labelText?: string | RegExp;
+}
+
+// @public @deprecated (undocumented)
+export interface LegacyOptionHarnessFilters extends BaseHarnessFilters {
+    // (undocumented)
+    isSelected?: boolean;
+    // (undocumented)
+    text?: string | RegExp;
+}
+
 // @public @deprecated
 export class MatLegacyOptgroupHarness extends ComponentHarness {
     getLabelText(): Promise<string>;
-    getOptions(filter?: OptionHarnessFilters): Promise<MatLegacyOptionHarness[]>;
+    getOptions(filter?: LegacyOptionHarnessFilters): Promise<MatLegacyOptionHarness[]>;
     static hostSelector: string;
     isDisabled(): Promise<boolean>;
-    static with(options?: OptgroupHarnessFilters): HarnessPredicate<MatLegacyOptgroupHarness>;
+    static with(options?: LegacyOptgroupHarnessFilters): HarnessPredicate<MatLegacyOptgroupHarness>;
 }
 
 // @public @deprecated
@@ -26,21 +40,7 @@ export class MatLegacyOptionHarness extends ComponentHarness {
     isDisabled(): Promise<boolean>;
     isMultiple(): Promise<boolean>;
     isSelected(): Promise<boolean>;
-    static with(options?: OptionHarnessFilters): HarnessPredicate<MatLegacyOptionHarness>;
-}
-
-// @public @deprecated (undocumented)
-export interface OptgroupHarnessFilters extends BaseHarnessFilters {
-    // (undocumented)
-    labelText?: string | RegExp;
-}
-
-// @public @deprecated (undocumented)
-export interface OptionHarnessFilters extends BaseHarnessFilters {
-    // (undocumented)
-    isSelected?: boolean;
-    // (undocumented)
-    text?: string | RegExp;
+    static with(options?: LegacyOptionHarnessFilters): HarnessPredicate<MatLegacyOptionHarness>;
 }
 
 // (No @packageDocumentation comment for this package)

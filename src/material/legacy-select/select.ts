@@ -18,11 +18,10 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {
-  _countGroupLabelsBeforeOption,
-  _getOptionScrollPosition,
-  MAT_OPTGROUP,
-  MAT_OPTION_PARENT_COMPONENT,
-  _MatOptionBase,
+  _countGroupLabelsBeforeLegacyOption,
+  _getLegacyOptionScrollPosition,
+  MAT_LEGACY_OPTGROUP,
+  MAT_LEGACY_OPTION_PARENT_COMPONENT,
   MatLegacyOption,
   MatLegacyOptgroup,
 } from '@angular/material/legacy-core';
@@ -157,7 +156,7 @@ export class MatLegacySelectTrigger {}
   ],
   providers: [
     {provide: MatLegacyFormFieldControl, useExisting: MatLegacySelect},
-    {provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatLegacySelect},
+    {provide: MAT_LEGACY_OPTION_PARENT_COMPONENT, useExisting: MatLegacySelect},
   ],
 })
 export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> implements OnInit {
@@ -182,7 +181,8 @@ export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> imple
 
   @ContentChildren(MatLegacyOption, {descendants: true}) options: QueryList<MatLegacyOption>;
 
-  @ContentChildren(MAT_OPTGROUP, {descendants: true}) optionGroups: QueryList<MatLegacyOptgroup>;
+  @ContentChildren(MAT_LEGACY_OPTGROUP, {descendants: true})
+  optionGroups: QueryList<MatLegacyOptgroup>;
 
   @ContentChild(MAT_SELECT_TRIGGER) customTrigger: MatLegacySelectTrigger;
 
@@ -260,7 +260,7 @@ export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> imple
 
   /** Scrolls the active option into view. */
   protected _scrollOptionIntoView(index: number): void {
-    const labelCount = _countGroupLabelsBeforeOption(index, this.options, this.optionGroups);
+    const labelCount = _countGroupLabelsBeforeLegacyOption(index, this.options, this.optionGroups);
     const itemHeight = this._getItemHeight();
 
     if (index === 0 && labelCount === 1) {
@@ -269,7 +269,7 @@ export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> imple
       // top of the option, because it allows the user to read the top group's label.
       this.panel.nativeElement.scrollTop = 0;
     } else {
-      this.panel.nativeElement.scrollTop = _getOptionScrollPosition(
+      this.panel.nativeElement.scrollTop = _getLegacyOptionScrollPosition(
         (index + labelCount) * itemHeight,
         itemHeight,
         this.panel.nativeElement.scrollTop,
@@ -493,7 +493,7 @@ export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> imple
       );
     }
 
-    selectedOptionOffset += _countGroupLabelsBeforeOption(
+    selectedOptionOffset += _countGroupLabelsBeforeLegacyOption(
       selectedOptionOffset,
       this.options,
       this.optionGroups,

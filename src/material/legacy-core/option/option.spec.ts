@@ -8,7 +8,7 @@ import {
   dispatchEvent,
 } from '../../../cdk/testing/private';
 import {SPACE, ENTER} from '@angular/cdk/keycodes';
-import {MatLegacyOption, MatLegacyOptionModule, MAT_OPTION_PARENT_COMPONENT} from './index';
+import {MatLegacyOption, MatLegacyOptionModule, MAT_LEGACY_OPTION_PARENT_COMPONENT} from './index';
 
 describe('MatLegacyOption component', () => {
   beforeEach(waitForAsync(() => {
@@ -217,7 +217,7 @@ describe('MatLegacyOption component', () => {
         declarations: [InsideGroup],
         providers: [
           {
-            provide: MAT_OPTION_PARENT_COMPONENT,
+            provide: MAT_LEGACY_OPTION_PARENT_COMPONENT,
             useValue: {inertGroups: true},
           },
         ],

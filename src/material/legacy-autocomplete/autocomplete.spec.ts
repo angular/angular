@@ -36,7 +36,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyOption, MatOptionSelectionChange} from '@angular/material/legacy-core';
+import {MatLegacyOption, MatLegacyOptionSelectionChange} from '@angular/material/legacy-core';
 import {MatLegacyFormField, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -2352,7 +2352,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
       zone.simulateZoneExit();
 
-      expect(spy).toHaveBeenCalledWith(jasmine.any(MatOptionSelectionChange));
+      expect(spy).toHaveBeenCalledWith(jasmine.any(MatLegacyOptionSelectionChange));
       subscription!.unsubscribe();
     }));
 
@@ -2483,7 +2483,7 @@ describe('MatAutocomplete', () => {
 
       expect(closingActionSpy).not.toHaveBeenCalled();
       option.click();
-      expect(closingActionSpy).toHaveBeenCalledWith(jasmine.any(MatOptionSelectionChange));
+      expect(closingActionSpy).toHaveBeenCalledWith(jasmine.any(MatLegacyOptionSelectionChange));
     });
 
     it('should close the panel when pressing escape', () => {

@@ -11,8 +11,8 @@ import {_MatSelectHarnessBase} from '@angular/material/select/testing';
 import {
   MatLegacyOptionHarness,
   MatLegacyOptgroupHarness,
-  OptionHarnessFilters,
-  OptgroupHarnessFilters,
+  LegacyOptionHarnessFilters,
+  LegacyOptgroupHarnessFilters,
 } from '@angular/material/legacy-core/testing';
 import {LegacySelectHarnessFilters} from './select-harness-filters';
 
@@ -24,10 +24,10 @@ import {LegacySelectHarnessFilters} from './select-harness-filters';
 export class MatLegacySelectHarness extends _MatSelectHarnessBase<
   typeof MatLegacyOptionHarness,
   MatLegacyOptionHarness,
-  OptionHarnessFilters,
+  LegacyOptionHarnessFilters,
   typeof MatLegacyOptgroupHarness,
   MatLegacyOptgroupHarness,
-  OptgroupHarnessFilters
+  LegacyOptgroupHarnessFilters
 > {
   static hostSelector = '.mat-select';
   protected _prefix = 'mat';

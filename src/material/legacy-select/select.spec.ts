@@ -52,7 +52,7 @@ import {
   FormBuilder,
 } from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
-import {MatLegacyOption, MatOptionSelectionChange} from '@angular/material/legacy-core';
+import {MatLegacyOption, MatLegacyOptionSelectionChange} from '@angular/material/legacy-core';
 import {
   LegacyFloatLabelType,
   MatLegacyFormFieldModule,
@@ -1865,7 +1865,7 @@ describe('MatSelect', () => {
         fixture.detectChanges();
         flush();
 
-        expect(spy).toHaveBeenCalledWith(jasmine.any(MatOptionSelectionChange));
+        expect(spy).toHaveBeenCalledWith(jasmine.any(MatLegacyOptionSelectionChange));
 
         subscription.unsubscribe();
       }));
@@ -1894,7 +1894,7 @@ describe('MatSelect', () => {
         fixture.detectChanges();
         flush();
 
-        expect(spy).toHaveBeenCalledWith(jasmine.any(MatOptionSelectionChange));
+        expect(spy).toHaveBeenCalledWith(jasmine.any(MatLegacyOptionSelectionChange));
 
         subscription!.unsubscribe();
       }));
@@ -1929,9 +1929,9 @@ describe('MatSelect', () => {
       }));
 
       it('should not indicate programmatic value changes as user interactions', () => {
-        const events: MatOptionSelectionChange[] = [];
+        const events: MatLegacyOptionSelectionChange[] = [];
         const subscription = fixture.componentInstance.select.optionSelectionChanges.subscribe(
-          (event: MatOptionSelectionChange) => events.push(event),
+          (event: MatLegacyOptionSelectionChange) => events.push(event),
         );
 
         fixture.componentInstance.control.setValue('eggs-5');

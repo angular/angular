@@ -4,136 +4,182 @@
 
 ```ts
 
-import { AnimationCurves } from '@angular/material/core';
-import { AnimationDurations } from '@angular/material/core';
-import { CanColor } from '@angular/material/core';
-import { CanDisable } from '@angular/material/core';
-import { CanDisableRipple } from '@angular/material/core';
-import { CanUpdateErrorState } from '@angular/material/core';
 import { ChangeDetectorRef } from '@angular/core';
-import { _countGroupLabelsBeforeOption } from '@angular/material/core';
-import { DateAdapter } from '@angular/material/core';
-import { defaultRippleAnimationConfig } from '@angular/material/core';
+import { _countGroupLabelsBeforeOption as _countGroupLabelsBeforeLegacyOption } from '@angular/material/core';
 import { ElementRef } from '@angular/core';
-import { ErrorStateMatcher } from '@angular/material/core';
-import { _getOptionScrollPosition } from '@angular/material/core';
-import { GranularSanityChecks } from '@angular/material/core';
-import { HasInitialized } from '@angular/material/core';
-import { HasTabIndex } from '@angular/material/core';
+import { _getOptionScrollPosition as _getLegacyOptionScrollPosition } from '@angular/material/core';
 import * as i0 from '@angular/core';
 import * as i3 from '@angular/material/core';
 import * as i4 from '@angular/common';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
-import { MAT_DATE_LOCALE_FACTORY } from '@angular/material/core';
-import { MAT_NATIVE_DATE_FORMATS } from '@angular/material/core';
-import { MAT_OPTGROUP } from '@angular/material/core';
-import { MAT_OPTION_PARENT_COMPONENT } from '@angular/material/core';
-import { MAT_RIPPLE_GLOBAL_OPTIONS } from '@angular/material/core';
-import { MATERIAL_SANITY_CHECKS } from '@angular/material/core';
+import { VERSION as LEGACY_VERSION } from '@angular/material/core';
+import { AnimationCurves as LegacyAnimationCurves } from '@angular/material/core';
+import { AnimationDurations as LegacyAnimationDurations } from '@angular/material/core';
+import { CanColor as LegacyCanColor } from '@angular/material/core';
+import { CanDisable as LegacyCanDisable } from '@angular/material/core';
+import { CanDisableRipple as LegacyCanDisableRipple } from '@angular/material/core';
+import { CanUpdateErrorState as LegacyCanUpdateErrorState } from '@angular/material/core';
+import { DateAdapter as LegacyDateAdapter } from '@angular/material/core';
+import { defaultRippleAnimationConfig as legacyDefaultRippleAnimationConfig } from '@angular/material/core';
+import { ErrorStateMatcher as LegacyErrorStateMatcher } from '@angular/material/core';
+import { GranularSanityChecks as LegacyGranularSanityChecks } from '@angular/material/core';
+import { HasInitialized as LegacyHasInitialized } from '@angular/material/core';
+import { HasTabIndex as LegacyHasTabIndex } from '@angular/material/core';
+import { mixinColor as legacyMixinColor } from '@angular/material/core';
+import { mixinDisabled as legacyMixinDisabled } from '@angular/material/core';
+import { mixinDisableRipple as legacyMixinDisableRipple } from '@angular/material/core';
+import { mixinErrorState as legacyMixinErrorState } from '@angular/material/core';
+import { mixinInitialized as legacyMixinInitialized } from '@angular/material/core';
+import { mixinTabIndex as legacyMixinTabIndex } from '@angular/material/core';
+import { NativeDateAdapter as LegacyNativeDateAdapter } from '@angular/material/core';
+import { NativeDateModule as LegacyNativeDateModule } from '@angular/material/core';
+import { RippleAnimationConfig as LegacyRippleAnimationConfig } from '@angular/material/core';
+import { RippleConfig as LegacyRippleConfig } from '@angular/material/core';
+import { RippleGlobalOptions as LegacyRippleGlobalOptions } from '@angular/material/core';
+import { RippleRef as LegacyRippleRef } from '@angular/material/core';
+import { RippleRenderer as LegacyRippleRenderer } from '@angular/material/core';
+import { RippleState as LegacyRippleState } from '@angular/material/core';
+import { RippleTarget as LegacyRippleTarget } from '@angular/material/core';
+import { SanityChecks as LegacySanityChecks } from '@angular/material/core';
+import { setLines as legacySetLines } from '@angular/material/core';
+import { ShowOnDirtyErrorStateMatcher as LegacyShowOnDirtyErrorStateMatcher } from '@angular/material/core';
+import { ThemePalette as LegacyThemePalette } from '@angular/material/core';
+import { MAT_DATE_FORMATS as MAT_LEGACY_DATE_FORMATS } from '@angular/material/core';
+import { MAT_DATE_LOCALE as MAT_LEGACY_DATE_LOCALE } from '@angular/material/core';
+import { MAT_DATE_LOCALE_FACTORY as MAT_LEGACY_DATE_LOCALE_FACTORY } from '@angular/material/core';
+import { MAT_NATIVE_DATE_FORMATS as MAT_LEGACY_NATIVE_DATE_FORMATS } from '@angular/material/core';
+import { MAT_OPTGROUP as MAT_LEGACY_OPTGROUP } from '@angular/material/core';
+import { MAT_OPTION_PARENT_COMPONENT as MAT_LEGACY_OPTION_PARENT_COMPONENT } from '@angular/material/core';
+import { MAT_RIPPLE_GLOBAL_OPTIONS as MAT_LEGACY_RIPPLE_GLOBAL_OPTIONS } from '@angular/material/core';
+import { MATERIAL_SANITY_CHECKS as MATERIAL_LEGACY_SANITY_CHECKS } from '@angular/material/core';
 import { MatCommonModule as MatLegacyCommonModule } from '@angular/material/core';
 import { MatDateFormats as MatLegacyDateFormats } from '@angular/material/core';
+import { MatLine as MatLegacyLine } from '@angular/material/core';
 import { MatLineModule as MatLegacyLineModule } from '@angular/material/core';
 import { MatNativeDateModule as MatLegacyNativeDateModule } from '@angular/material/core';
+import { _MatOptgroupBase as _MatLegacyOptgroupBase } from '@angular/material/core';
+import { _MatOptionBase as _MatLegacyOptionBase } from '@angular/material/core';
+import { MatOptionParentComponent as MatLegacyOptionParentComponent } from '@angular/material/core';
+import { MatOptionSelectionChange as MatLegacyOptionSelectionChange } from '@angular/material/core';
 import { MatPseudoCheckbox as MatLegacyPseudoCheckbox } from '@angular/material/core';
 import { MatPseudoCheckboxModule as MatLegacyPseudoCheckboxModule } from '@angular/material/core';
 import { MatPseudoCheckboxState as MatLegacyPseudoCheckboxState } from '@angular/material/core';
 import { MatRipple as MatLegacyRipple } from '@angular/material/core';
 import { MatRippleModule as MatLegacyRippleModule } from '@angular/material/core';
-import { MatLine } from '@angular/material/core';
-import { _MatOptgroupBase } from '@angular/material/core';
-import { _MatOptionBase } from '@angular/material/core';
-import { MatOptionParentComponent } from '@angular/material/core';
-import { MatOptionSelectionChange } from '@angular/material/core';
-import { mixinColor } from '@angular/material/core';
-import { mixinDisabled } from '@angular/material/core';
-import { mixinDisableRipple } from '@angular/material/core';
-import { mixinErrorState } from '@angular/material/core';
-import { mixinInitialized } from '@angular/material/core';
-import { mixinTabIndex } from '@angular/material/core';
-import { NativeDateAdapter } from '@angular/material/core';
-import { NativeDateModule } from '@angular/material/core';
-import { RippleAnimationConfig } from '@angular/material/core';
-import { RippleConfig } from '@angular/material/core';
-import { RippleGlobalOptions } from '@angular/material/core';
-import { RippleRef } from '@angular/material/core';
-import { RippleRenderer } from '@angular/material/core';
-import { RippleState } from '@angular/material/core';
-import { RippleTarget } from '@angular/material/core';
-import { SanityChecks } from '@angular/material/core';
-import { setLines } from '@angular/material/core';
-import { ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
-import { ThemePalette } from '@angular/material/core';
-import { VERSION } from '@angular/material/core';
 
-export { AnimationCurves }
+export { _countGroupLabelsBeforeLegacyOption }
 
-export { AnimationDurations }
+export { _getLegacyOptionScrollPosition }
 
-export { CanColor }
+export { LEGACY_VERSION }
 
-export { CanDisable }
+export { LegacyAnimationCurves }
 
-export { CanDisableRipple }
+export { LegacyAnimationDurations }
 
-export { CanUpdateErrorState }
+export { LegacyCanColor }
 
-export { _countGroupLabelsBeforeOption }
+export { LegacyCanDisable }
 
-export { DateAdapter }
+export { LegacyCanDisableRipple }
 
-export { defaultRippleAnimationConfig }
+export { LegacyCanUpdateErrorState }
 
-export { ErrorStateMatcher }
+export { LegacyDateAdapter }
 
-export { _getOptionScrollPosition }
+export { legacyDefaultRippleAnimationConfig }
 
-export { GranularSanityChecks }
+export { LegacyErrorStateMatcher }
 
-export { HasInitialized }
+export { LegacyGranularSanityChecks }
 
-export { HasTabIndex }
+export { LegacyHasInitialized }
 
-export { MAT_DATE_FORMATS }
+export { LegacyHasTabIndex }
 
-export { MAT_DATE_LOCALE }
+export { legacyMixinColor }
 
-export { MAT_DATE_LOCALE_FACTORY }
+export { legacyMixinDisabled }
 
-export { MAT_NATIVE_DATE_FORMATS }
+export { legacyMixinDisableRipple }
 
-export { MAT_OPTGROUP }
+export { legacyMixinErrorState }
 
-export { MAT_OPTION_PARENT_COMPONENT }
+export { legacyMixinInitialized }
 
-export { MAT_RIPPLE_GLOBAL_OPTIONS }
+export { legacyMixinTabIndex }
 
-export { MATERIAL_SANITY_CHECKS }
+export { LegacyNativeDateAdapter }
+
+export { LegacyNativeDateModule }
+
+export { LegacyRippleAnimationConfig }
+
+export { LegacyRippleConfig }
+
+export { LegacyRippleGlobalOptions }
+
+export { LegacyRippleRef }
+
+export { LegacyRippleRenderer }
+
+export { LegacyRippleState }
+
+export { LegacyRippleTarget }
+
+export { LegacySanityChecks }
+
+export { legacySetLines }
+
+export { LegacyShowOnDirtyErrorStateMatcher }
+
+export { LegacyThemePalette }
+
+export { MAT_LEGACY_DATE_FORMATS }
+
+export { MAT_LEGACY_DATE_LOCALE }
+
+export { MAT_LEGACY_DATE_LOCALE_FACTORY }
+
+export { MAT_LEGACY_NATIVE_DATE_FORMATS }
+
+export { MAT_LEGACY_OPTGROUP }
+
+export { MAT_LEGACY_OPTION_PARENT_COMPONENT }
+
+export { MAT_LEGACY_RIPPLE_GLOBAL_OPTIONS }
+
+export { MATERIAL_LEGACY_SANITY_CHECKS }
 
 export { MatLegacyCommonModule }
 
 export { MatLegacyDateFormats }
+
+export { MatLegacyLine }
 
 export { MatLegacyLineModule }
 
 export { MatLegacyNativeDateModule }
 
 // @public @deprecated
-export class MatLegacyOptgroup extends _MatOptgroupBase {
+export class MatLegacyOptgroup extends _MatLegacyOptgroupBase {
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyOptgroup, "mat-optgroup", ["matOptgroup"], { "disabled": "disabled"; }, {}, never, ["*", "mat-option, ng-container"], false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyOptgroup, never>;
 }
 
+export { _MatLegacyOptgroupBase }
+
 // @public @deprecated
-export class MatLegacyOption<T = any> extends _MatOptionBase<T> {
-    constructor(element: ElementRef<HTMLElement>, changeDetectorRef: ChangeDetectorRef, parent: MatOptionParentComponent, group: MatLegacyOptgroup);
+export class MatLegacyOption<T = any> extends _MatLegacyOptionBase<T> {
+    constructor(element: ElementRef<HTMLElement>, changeDetectorRef: ChangeDetectorRef, parent: MatLegacyOptionParentComponent, group: MatLegacyOptgroup);
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyOption<any>, "mat-option", ["matOption"], {}, {}, never, ["*"], false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyOption<any>, [null, null, { optional: true; }, { optional: true; }]>;
 }
+
+export { _MatLegacyOptionBase }
 
 // @public @deprecated (undocumented)
 export class MatLegacyOptionModule {
@@ -145,6 +191,10 @@ export class MatLegacyOptionModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacyOptionModule, [typeof i1.MatLegacyOption, typeof i2.MatLegacyOptgroup], [typeof i3.MatRippleModule, typeof i4.CommonModule, typeof i3.MatCommonModule, typeof i3.MatPseudoCheckboxModule], [typeof i1.MatLegacyOption, typeof i2.MatLegacyOptgroup]>;
 }
 
+export { MatLegacyOptionParentComponent }
+
+export { MatLegacyOptionSelectionChange }
+
 export { MatLegacyPseudoCheckbox }
 
 export { MatLegacyPseudoCheckboxModule }
@@ -154,56 +204,6 @@ export { MatLegacyPseudoCheckboxState }
 export { MatLegacyRipple }
 
 export { MatLegacyRippleModule }
-
-export { MatLine }
-
-export { _MatOptgroupBase }
-
-export { _MatOptionBase }
-
-export { MatOptionParentComponent }
-
-export { MatOptionSelectionChange }
-
-export { mixinColor }
-
-export { mixinDisabled }
-
-export { mixinDisableRipple }
-
-export { mixinErrorState }
-
-export { mixinInitialized }
-
-export { mixinTabIndex }
-
-export { NativeDateAdapter }
-
-export { NativeDateModule }
-
-export { RippleAnimationConfig }
-
-export { RippleConfig }
-
-export { RippleGlobalOptions }
-
-export { RippleRef }
-
-export { RippleRenderer }
-
-export { RippleState }
-
-export { RippleTarget }
-
-export { SanityChecks }
-
-export { setLines }
-
-export { ShowOnDirtyErrorStateMatcher }
-
-export { ThemePalette }
-
-export { VERSION }
 
 // (No @packageDocumentation comment for this package)
 

@@ -7,7 +7,7 @@
  */
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
-import {OptionHarnessFilters} from './option-harness-filters';
+import {LegacyOptionHarnessFilters} from './option-harness-filters';
 
 /**
  * Harness for interacting with a `mat-option` in tests.
@@ -27,7 +27,7 @@ export class MatLegacyOptionHarness extends ComponentHarness {
    * @param options Options for filtering which option instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: OptionHarnessFilters = {}) {
+  static with(options: LegacyOptionHarnessFilters = {}) {
     return new HarnessPredicate(MatLegacyOptionHarness, options)
       .addOption('text', options.text, async (harness, title) =>
         HarnessPredicate.stringMatches(await harness.getText(), title),

@@ -7,9 +7,9 @@
  */
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
-import {OptgroupHarnessFilters} from './optgroup-harness-filters';
+import {LegacyOptgroupHarnessFilters} from './optgroup-harness-filters';
 import {MatLegacyOptionHarness} from './option-harness';
-import {OptionHarnessFilters} from './option-harness-filters';
+import {LegacyOptionHarnessFilters} from './option-harness-filters';
 
 /**
  * Harness for interacting with a `mat-optgroup` in tests.
@@ -27,7 +27,7 @@ export class MatLegacyOptgroupHarness extends ComponentHarness {
    * @param options Options for filtering which option instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: OptgroupHarnessFilters = {}) {
+  static with(options: LegacyOptgroupHarnessFilters = {}) {
     return new HarnessPredicate(MatLegacyOptgroupHarness, options).addOption(
       'labelText',
       options.labelText,
@@ -49,7 +49,7 @@ export class MatLegacyOptgroupHarness extends ComponentHarness {
    * Gets the options that are inside the group.
    * @param filter Optionally filters which options are included.
    */
-  async getOptions(filter: OptionHarnessFilters = {}): Promise<MatLegacyOptionHarness[]> {
+  async getOptions(filter: LegacyOptionHarnessFilters = {}): Promise<MatLegacyOptionHarness[]> {
     return this.locatorForAll(MatLegacyOptionHarness.with(filter))();
   }
 }

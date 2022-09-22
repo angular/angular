@@ -6,11 +6,11 @@
 
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { LegacyOptgroupHarnessFilters } from '@angular/material/legacy-core/testing';
+import { LegacyOptionHarnessFilters } from '@angular/material/legacy-core/testing';
 import { _MatAutocompleteHarnessBase } from '@angular/material/autocomplete/testing';
 import { MatLegacyOptgroupHarness } from '@angular/material/legacy-core/testing';
 import { MatLegacyOptionHarness } from '@angular/material/legacy-core/testing';
-import { OptgroupHarnessFilters } from '@angular/material/legacy-core/testing';
-import { OptionHarnessFilters } from '@angular/material/legacy-core/testing';
 
 // @public @deprecated
 export interface LegacyAutocompleteHarnessFilters extends BaseHarnessFilters {
@@ -18,7 +18,7 @@ export interface LegacyAutocompleteHarnessFilters extends BaseHarnessFilters {
 }
 
 // @public @deprecated
-export class MatLegacyAutocompleteHarness extends _MatAutocompleteHarnessBase<typeof MatLegacyOptionHarness, MatLegacyOptionHarness, OptionHarnessFilters, typeof MatLegacyOptgroupHarness, MatLegacyOptgroupHarness, OptgroupHarnessFilters> {
+export class MatLegacyAutocompleteHarness extends _MatAutocompleteHarnessBase<typeof MatLegacyOptionHarness, MatLegacyOptionHarness, LegacyOptionHarnessFilters, typeof MatLegacyOptgroupHarness, MatLegacyOptgroupHarness, LegacyOptgroupHarnessFilters> {
     static hostSelector: string;
     // (undocumented)
     protected _optionClass: typeof MatLegacyOptionHarness;
