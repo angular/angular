@@ -17,7 +17,7 @@ import {ProgressBarE2E} from './progress-bar/progress-bar-e2e';
 import {ProgressSpinnerE2e} from './progress-spinner/progress-spinner-e2e';
 import {RadioE2e} from './radio/radio-e2e';
 import {SliderE2e} from './slider/slider-e2e';
-import {MdcTableE2e} from './mdc-table/mdc-table-e2e';
+import {TableE2e} from './table/table-e2e';
 import {TabsE2e} from './tabs/tabs-e2e';
 import {SelectE2e} from './select/select-e2e';
 import {SidenavE2E} from './sidenav/sidenav-e2e';
@@ -47,7 +47,7 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'list', component: ListE2e},
   {path: 'button', component: ButtonE2e},
   {path: 'dialog', component: DialogE2E},
-  {path: 'mdc-table', component: MdcTableE2e},
+  {path: 'table', component: TableE2e},
   {path: 'select', component: SelectE2e},
   {path: 'sidenav', component: SidenavE2E},
   {path: 'stepper', component: StepperE2e},

@@ -29,10 +29,10 @@ const ELEMENT_DATA: PeriodicElement[] = [
 ];
 
 @Component({
-  selector: 'mdc-table-e2e',
-  templateUrl: 'mdc-table-e2e.html',
+  selector: 'table-e2e',
+  templateUrl: 'table-e2e.html',
 })
-export class MdcTableE2e {
+export class TableE2e {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = ELEMENT_DATA;
 }

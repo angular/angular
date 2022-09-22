@@ -8,10 +8,10 @@
 
 import {NgModule} from '@angular/core';
 import {MatTableModule} from '@angular/material/table';
-import {MdcTableE2e} from './mdc-table-e2e';
+import {TableE2e} from './table-e2e';
 
 @NgModule({
   imports: [MatTableModule],
-  declarations: [MdcTableE2e],
+  declarations: [TableE2e],
 })
-export class MdcTableE2eModule {}
+export class TableE2eModule {}

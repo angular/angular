@@ -32,10 +32,10 @@ export class E2eAppLayout {
     {path: 'slider', title: 'Slider'},
     {path: 'slide-toggle', title: 'Slide Toggle'},
     {path: 'stepper', title: 'Stepper'},
+    {path: 'table', title: 'Table'},
     {path: 'tabs', title: 'Tabs'},
     {path: 'cards', title: 'Cards'},
     {path: 'toolbar', title: 'Toolbar'},
     {path: 'virtual-scroll', title: 'Virtual Scroll'},
-    {path: 'mdc-table', title: 'MDC Table'},
   ];
 }

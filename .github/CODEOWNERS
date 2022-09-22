@@ -251,7 +251,6 @@
 /src/e2e-app/icon/**                                        @andrewseguin
 /src/e2e-app/list/**                                        @andrewseguin
 /src/e2e-app/button/**                                      @andrewseguin
-/src/e2e-app/mdc-card/**                                    @mmalerba
 /src/e2e-app/checkbox/**                                    @mmalerba
 /src/e2e-app/dialog/**                                      @devversion
 /src/e2e-app/input/**                                       @devversion
@@ -261,7 +260,7 @@
 /src/e2e-app/radio/**                                       @mmalerba
 /src/e2e-app/slide-toggle/**                                @crisbeto
 /src/e2e-app/slider/**                                      @andrewseguin
-/src/e2e-app/mdc-table/**                                   @andrewseguin
+/src/e2e-app/table/**                                       @andrewseguin
 /src/e2e-app/tabs/**                                        @crisbeto
 /src/e2e-app/select/**                                      @crisbeto
 /src/e2e-app/sidenav/**                                     @mmalerba
