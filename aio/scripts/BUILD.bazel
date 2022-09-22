@@ -1,5 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("@aio_npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_outputs")
+load("@aio_npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_first_output")
 load("//tools:defaults.bzl", "nodejs_binary", "nodejs_test")
 
 package(default_visibility = ["//visibility:public"])
@@ -55,10 +55,14 @@ nodejs_binary(
 
 # Extract the executable audit script from DefaultInfo so that we can use
 # $(rootpath) on it.
-filter_outputs(
+filter_first_output(
     name = "audit-web-app-script",
     testonly = True,
-    filters = ["audit-web-app.sh"],
+    filters = [
+        # On Windows select the batch script
+        "audit-web-app.bat",
+        "audit-web-app.sh",
+    ],
     target = ":audit-web-app",
 )
 
@@ -86,5 +90,7 @@ nodejs_test(
     env = {
         "AUDIT_SCRIPT_PATH": "$(rootpath :audit-web-app-script)",
     },
-    tags = ["manual"],
+    tags = [
+        "manual",
+    ],
 )
