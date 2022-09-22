@@ -9,10 +9,10 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'mdc-radio-e2e',
-  templateUrl: 'mdc-radio-e2e.html',
+  selector: 'radio-e2e',
+  templateUrl: 'radio-e2e.html',
 })
-export class MdcRadioE2e {
+export class RadioE2e {
   isGroupDisabled: boolean = false;
   groupValue: string;
 }

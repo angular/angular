@@ -11,7 +11,6 @@ import {E2eAppModule} from './e2e-app/e2e-app-module';
 import {ExpansionE2eModule} from './expansion/expansion-e2e-module';
 import {GridListE2eModule} from './grid-list/grid-list-e2e-module';
 import {IconE2eModule} from './icon/icon-e2e-module';
-import {LegacyRadioE2eModule} from './legacy-radio/legacy-radio-e2e-module';
 import {LegacySlideToggleE2eModule} from './legacy-slide-toggle/legacy-slide-toggle-e2e-module';
 import {LegacyTabsE2eModule} from './legacy-tabs/legacy-tabs-e2e-module';
 import {ListE2eModule} from './list/list-e2e-module';
@@ -21,7 +20,7 @@ import {DialogE2eModule} from './dialog/dialog-e2e-module';
 import {MenuE2eModule} from './menu/menu-e2e-module';
 import {ProgressBarE2eModule} from './progress-bar/progress-bar-e2e-module';
 import {ProgressSpinnerE2eModule} from './progress-spinner/progress-spinner-module';
-import {MdcRadioE2eModule} from './mdc-radio/mdc-radio-e2e-module';
+import {RadioE2eModule} from './radio/radio-e2e-module';
 import {MdcSlideToggleE2eModule} from './mdc-slide-toggle/mdc-slide-toggle-e2e-module';
 import {MdcSliderE2eModule} from './mdc-slider/mdc-slider-e2e-module';
 import {MdcTableE2eModule} from './mdc-table/mdc-table-e2e-module';
@@ -50,7 +49,6 @@ const enableAnimations = window.location.search.includes('animations=true');
     ExpansionE2eModule,
     GridListE2eModule,
     IconE2eModule,
-    LegacyRadioE2eModule,
     LegacySlideToggleE2eModule,
     LegacyTabsE2eModule,
     ListE2eModule,
@@ -60,7 +58,7 @@ const enableAnimations = window.location.search.includes('animations=true');
     MenuE2eModule,
     ProgressBarE2eModule,
     ProgressSpinnerE2eModule,
-    MdcRadioE2eModule,
+    RadioE2eModule,
     MdcSliderE2eModule,
     MdcSlideToggleE2eModule,
     MdcTableE2eModule,

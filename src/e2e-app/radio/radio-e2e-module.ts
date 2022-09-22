@@ -8,10 +8,10 @@
 
 import {NgModule} from '@angular/core';
 import {MatRadioModule} from '@angular/material/radio';
-import {MdcRadioE2e} from './mdc-radio-e2e';
+import {RadioE2e} from './radio-e2e';
 
 @NgModule({
   imports: [MatRadioModule],
-  declarations: [MdcRadioE2e],
+  declarations: [RadioE2e],
 })
-export class MdcRadioE2eModule {}
+export class RadioE2eModule {}
