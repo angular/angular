@@ -1,6 +1,6 @@
 load("//tools:defaults.bzl", "nodejs_test")
 
-def local_server_test(name, entry_point, serve_target, data = [], args = []):
+def local_server_test(name, entry_point, serve_target, data = [], args = [], **kwargs):
     """Run a test script alongside a locally running http server.
 
     Args:
@@ -10,6 +10,7 @@ def local_server_test(name, entry_point, serve_target, data = [], args = []):
         data: Additional data required by the test script
         args: Args to pass to the test script. Note: The special argument LOCALHOST_URL
           will be substituted with the url pointing to the served contents.
+        **kwargs: remaining args to pass to test
     """
     nodejs_test(
         name = name,
@@ -29,4 +30,5 @@ def local_server_test(name, entry_point, serve_target, data = [], args = []):
             "@aio_npm//tree-kill",
         ] + data,
         entry_point = "//aio/scripts:run-with-local-server.mjs",
+        **kwargs
     )
