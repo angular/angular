@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'mdc-tabs-e2e',
-  templateUrl: 'mdc-tabs-e2e.html',
+  selector: 'tabs-e2e',
+  templateUrl: 'tabs-e2e.html',
 })
-export class MdcTabsE2e {}
+export class TabsE2e {}

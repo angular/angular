@@ -10,10 +10,10 @@ import {NgModule} from '@angular/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatTabsModule} from '@angular/material/tabs';
-import {MdcTabsE2e} from './mdc-tabs-e2e';
+import {TabsE2e} from './tabs-e2e';
 
 @NgModule({
   imports: [MatTabsModule, MatFormFieldModule, MatInputModule],
-  declarations: [MdcTabsE2e],
+  declarations: [TabsE2e],
 })
-export class MdcTabsE2eModule {}
+export class TabsE2eModule {}

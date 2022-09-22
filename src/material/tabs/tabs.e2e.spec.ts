@@ -1,13 +1,13 @@
 import {browser, by, element, ElementArrayFinder, Key, ExpectedConditions} from 'protractor';
 import {pressKeys} from '../../cdk/testing/private/e2e';
 
-describe('MDC-based tabs', () => {
+describe('tabs', () => {
   describe('basic behavior', () => {
     let tabLabels: ElementArrayFinder;
     let tabBodies: ElementArrayFinder;
 
     beforeEach(async () => {
-      await browser.get('/mdc-tabs');
+      await browser.get('/tabs');
       tabLabels = element.all(by.css('.mat-mdc-tab'));
       tabBodies = element.all(by.css('mat-tab-body'));
     });

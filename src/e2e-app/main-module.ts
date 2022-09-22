@@ -11,7 +11,6 @@ import {E2eAppModule} from './e2e-app/e2e-app-module';
 import {ExpansionE2eModule} from './expansion/expansion-e2e-module';
 import {GridListE2eModule} from './grid-list/grid-list-e2e-module';
 import {IconE2eModule} from './icon/icon-e2e-module';
-import {LegacyTabsE2eModule} from './legacy-tabs/legacy-tabs-e2e-module';
 import {ListE2eModule} from './list/list-e2e-module';
 import {ButtonE2eModule} from './button/button-e2e-module';
 import {CheckboxE2eModule} from './checkbox/checkbox-e2e-module';
@@ -23,7 +22,7 @@ import {RadioE2eModule} from './radio/radio-e2e-module';
 import {SlideToggleE2eModule} from './slide-toggle/slide-toggle-e2e-module';
 import {MdcSliderE2eModule} from './mdc-slider/mdc-slider-e2e-module';
 import {MdcTableE2eModule} from './mdc-table/mdc-table-e2e-module';
-import {MdcTabsE2eModule} from './mdc-tabs/mdc-tabs-e2e-module';
+import {TabsE2eModule} from './tabs/tabs-e2e-module';
 import {E2E_APP_ROUTES} from './routes';
 import {SidenavE2eModule} from './sidenav/sidenav-e2e-module';
 import {StepperE2eModule} from './stepper/stepper-e2e-module';
@@ -48,7 +47,6 @@ const enableAnimations = window.location.search.includes('animations=true');
     ExpansionE2eModule,
     GridListE2eModule,
     IconE2eModule,
-    LegacyTabsE2eModule,
     ListE2eModule,
     ButtonE2eModule,
     CheckboxE2eModule,
@@ -60,7 +58,7 @@ const enableAnimations = window.location.search.includes('animations=true');
     MdcSliderE2eModule,
     SlideToggleE2eModule,
     MdcTableE2eModule,
-    MdcTabsE2eModule,
+    TabsE2eModule,
     SidenavE2eModule,
     StepperE2eModule,
     ToolbarE2eModule,
