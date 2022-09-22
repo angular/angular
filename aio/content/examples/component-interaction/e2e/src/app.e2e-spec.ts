@@ -7,7 +7,7 @@ describe('Component Communication Cookbook Tests', () => {
   describe('Parent-to-child communication', () => {
     // #docregion parent-to-child
     // ...
-    const heroNames = ['Dr IQ', 'Magneta', 'Bombasto'];
+    const heroNames = ['Dr. IQ', 'Magneta', 'Bombasto'];
     const masterName = 'Master';
 
     it('should pass properties to children properly', async () => {
@@ -30,7 +30,7 @@ describe('Component Communication Cookbook Tests', () => {
     // ...
     it('should display trimmed, non-empty names', async () => {
       const nonEmptyNameIndex = 0;
-      const nonEmptyName = '"Dr IQ"';
+      const nonEmptyName = '"Dr. IQ"';
       const parent = element(by.tagName('app-name-parent'));
       const hero = parent.all(by.tagName('app-name-child')).get(nonEmptyNameIndex);
 
