@@ -8,6 +8,7 @@ EXAMPLE_BOILERPLATE_SRCS = [
     "example-boilerplate.js",
     "constants.js",
     "//aio/tools/examples/shared",
+    "//aio/content/examples",
 ]
 
 EXAMPLE_BOILERPLATE_DEPS = [
