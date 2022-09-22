@@ -5,9 +5,16 @@ const path = require('canonical-path');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
 const buildozer = require('@bazel/buildozer');
-
-const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, PROJECT_ROOT, SHARED_PATH, STACKBLITZ_CONFIG_FILENAME} =
+const {RUNFILES_ROOT, getExamplesBasePath, getSharedPath, EXAMPLE_CONFIG_FILENAME, STACKBLITZ_CONFIG_FILENAME} =
     require('./constants');
+
+// BUILD_WORKSPACE_DIRECTORY is set by Bazel when calling `bazel run` and points to the
+// root of the source tree (e.g., for creating a new example in the source tree). Otherwise,
+// we are in a test so use the runfiles root.
+const PROJECT_ROOT = path.resolve(process.env.BUILD_WORKSPACE_DIRECTORY || RUNFILES_ROOT);
+const EXAMPLES_BASE_PATH = getExamplesBasePath(PROJECT_ROOT);
+const SHARED_PATH = getSharedPath(PROJECT_ROOT);
+
 const BASIC_SOURCE_PATH = path.resolve(SHARED_PATH, 'example-scaffold');
 
 shelljs.set('-e');

@@ -3,7 +3,7 @@ import path from 'node:path';
 import sh from 'shelljs';
 import treeKill from 'tree-kill';
 
-const RUNFILES_ROOT = path.resolve('.');
+const RUNFILES_ROOT = path.resolve(process.env.RUNFILES, 'angular');
 
 sh.set('-e');
 
