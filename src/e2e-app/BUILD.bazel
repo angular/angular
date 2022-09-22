@@ -50,8 +50,6 @@ ng_module(
         "//src/material/grid-list",
         "//src/material/icon",
         "//src/material/input",
-        "//src/material/legacy-form-field",
-        "//src/material/legacy-list",
         "//src/material/menu",
         "//src/material/progress-bar",
         "//src/material/progress-spinner",

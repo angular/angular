@@ -8,12 +8,12 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MatLegacyListModule} from '@angular/material/legacy-list';
+import {MatListModule} from '@angular/material/list';
 import {RouterModule} from '@angular/router';
 import {E2eAppLayout, Home} from './e2e-app-layout';
 
 @NgModule({
-  imports: [CommonModule, MatLegacyListModule, RouterModule],
+  imports: [CommonModule, MatListModule, RouterModule],
   declarations: [E2eAppLayout, Home],
   exports: [E2eAppLayout],
 })

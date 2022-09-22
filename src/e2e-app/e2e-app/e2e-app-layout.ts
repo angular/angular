@@ -12,19 +12,19 @@ export class E2eAppLayout {
   showLinks = false;
 
   navLinks = [
-    {path: 'block-scroll-strategy', title: 'Block scroll strategy'},
+    {path: 'block-scroll-strategy', title: 'Block Scroll Strategy'},
     {path: 'button', title: 'Button'},
     {path: 'button-toggle', title: 'Button Toggle'},
     {path: 'checkbox', title: 'Checkbox'},
     {path: 'component-harness', title: 'Component Harness'},
     {path: 'dialog', title: 'Dialog'},
     {path: 'expansion', title: 'Expansion'},
-    {path: 'grid-list', title: 'Grid list'},
+    {path: 'grid-list', title: 'Grid List'},
     {path: 'icon', title: 'Icon'},
     {path: 'input', title: 'Input'},
     {path: 'list', title: 'List'},
     {path: 'menu', title: 'Menu'},
-    {path: 'progress-bar', title: 'Progress bar'},
+    {path: 'progress-bar', title: 'Progress Bar'},
     {path: 'progress-spinner', title: 'Progress Spinner'},
     {path: 'radio', title: 'Radio'},
     {path: 'select', title: 'Select'},
