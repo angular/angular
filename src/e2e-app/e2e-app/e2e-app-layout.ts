@@ -35,7 +35,6 @@ export class E2eAppLayout {
     {path: 'cards', title: 'Cards'},
     {path: 'toolbar', title: 'Toolbar'},
     {path: 'virtual-scroll', title: 'Virtual Scroll'},
-    {path: 'mdc-checkbox', title: 'MDC Checkbox'},
     {path: 'mdc-chips', title: 'MDC Chips'},
     {path: 'mdc-dialog', title: 'MDC Dialog'},
     {path: 'mdc-input', title: 'MDC Input'},

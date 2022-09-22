@@ -11,7 +11,6 @@ import {E2eAppModule} from './e2e-app/e2e-app-module';
 import {ExpansionE2eModule} from './expansion/expansion-e2e-module';
 import {GridListE2eModule} from './grid-list/grid-list-e2e-module';
 import {IconE2eModule} from './icon/icon-e2e-module';
-import {LegacyCheckboxE2eModule} from './legacy-checkbox/legacy-checkbox-e2e-module';
 import {LegacyDialogE2eModule} from './legacy-dialog/legacy-dialog-e2e-module';
 import {LegacyInputE2eModule} from './legacy-input/legacy-input-e2e-module';
 import {LegacyMenuE2eModule} from './legacy-menu/legacy-menu-e2e-module';
@@ -22,7 +21,7 @@ import {LegacySlideToggleE2eModule} from './legacy-slide-toggle/legacy-slide-tog
 import {LegacyTabsE2eModule} from './legacy-tabs/legacy-tabs-e2e-module';
 import {ListE2eModule} from './list/list-e2e-module';
 import {ButtonE2eModule} from './button/button-e2e-module';
-import {MdcCheckboxE2eModule} from './mdc-checkbox/mdc-checkbox-e2e-module';
+import {CheckboxE2eModule} from './checkbox/checkbox-e2e-module';
 import {MdcChipsE2eModule} from './mdc-chips/mdc-chips-e2e-module';
 import {MdcDialogE2eModule} from './mdc-dialog/mdc-dialog-e2e-module';
 import {MdcMenuE2eModule} from './mdc-menu/mdc-menu-e2e-module';
@@ -57,7 +56,6 @@ const enableAnimations = window.location.search.includes('animations=true');
     ExpansionE2eModule,
     GridListE2eModule,
     IconE2eModule,
-    LegacyCheckboxE2eModule,
     LegacyDialogE2eModule,
     LegacyInputE2eModule,
     LegacyMenuE2eModule,
@@ -68,7 +66,7 @@ const enableAnimations = window.location.search.includes('animations=true');
     LegacyTabsE2eModule,
     ListE2eModule,
     ButtonE2eModule,
-    MdcCheckboxE2eModule,
+    CheckboxE2eModule,
     MdcChipsE2eModule,
     MdcDialogE2eModule,
     MdcMenuE2eModule,

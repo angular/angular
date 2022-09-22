@@ -9,9 +9,9 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'mdc-checkbox-e2e',
-  templateUrl: 'mdc-checkbox-e2e.html',
+  selector: 'checkbox-e2e',
+  templateUrl: 'checkbox-e2e.html',
 })
-export class MdcCheckboxE2e {
+export class CheckboxE2e {
   selected: string = '';
 }
