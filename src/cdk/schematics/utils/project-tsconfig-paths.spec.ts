@@ -16,7 +16,12 @@ describe('project tsconfig paths', () => {
       '/angular.json',
       JSON.stringify({
         version: 1,
-        projects: {my_name: {architect: {build: {options: {tsConfig: './my-custom-config.json'}}}}},
+        projects: {
+          my_name: {
+            architect: {build: {options: {tsConfig: './my-custom-config.json'}}},
+            root: 'projects/my_name',
+          },
+        },
       }),
     );
 
@@ -43,6 +48,7 @@ describe('project tsconfig paths', () => {
               }
             }
           }
+          "root": "projects/with_tests"
         }
       }
     }`,
@@ -61,7 +67,12 @@ describe('project tsconfig paths', () => {
       '/angular.json',
       JSON.stringify({
         version: 1,
-        projects: {my_name: {architect: {test: {options: {tsConfig: './my-test-config.json'}}}}},
+        projects: {
+          my_name: {
+            architect: {test: {options: {tsConfig: './my-test-config.json'}}},
+            root: 'projects/my_name',
+          },
+        },
       }),
     );
 
@@ -78,7 +89,12 @@ describe('project tsconfig paths', () => {
       '/.angular.json',
       JSON.stringify({
         version: 1,
-        projects: {with_tests: {architect: {test: {options: {tsConfig: './my-test-config.json'}}}}},
+        projects: {
+          with_tests: {
+            architect: {test: {options: {tsConfig: './my-test-config.json'}}},
+            root: 'projects/with_tests',
+          },
+        },
       }),
     );
 
