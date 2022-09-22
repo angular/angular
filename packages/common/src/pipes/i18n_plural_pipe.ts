@@ -39,7 +39,7 @@ export class I18nPluralPipe implements PipeTransform {
   /**
    * @param value the number to be formatted
    * @param pluralMap an object that mimics the ICU format, see
-   * http://userguide.icu-project.org/formatparse/messages.
+   * https://unicode-org.github.io/icu/userguide/format_parse/messages/.
    * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
    * default).
    */
