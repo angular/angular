@@ -9,10 +9,10 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'mdc-button-e2e',
-  templateUrl: 'mdc-button-e2e.html',
+  selector: 'button-e2e',
+  templateUrl: 'button-e2e.html',
 })
-export class MdcButtonE2e {
+export class ButtonE2e {
   isDisabled: boolean = false;
   clickCounter: number = 0;
 }

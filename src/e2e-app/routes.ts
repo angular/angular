@@ -7,7 +7,6 @@ import {Home} from './e2e-app/e2e-app-layout';
 import {ExpansionE2e} from './expansion/expansion-e2e';
 import {GridListE2E} from './grid-list/grid-list-e2e';
 import {IconE2E} from './icon/icon-e2e';
-import {LegacyButtonE2e} from './legacy-button/legacy-button-e2e';
 import {LegacyCheckboxE2e} from './legacy-checkbox/legacy-checkbox-e2e';
 import {LegacyDialogE2e} from './legacy-dialog/legacy-dialog-e2e';
 import {LegacyInputE2e} from './legacy-input/legacy-input-e2e';
@@ -18,7 +17,7 @@ import {LegacyRadioE2e} from './legacy-radio/legacy-radio-e2e';
 import {LegacySlideToggleE2e} from './legacy-slide-toggle/legacy-slide-toggle-e2e';
 import {LegacyTabsE2e} from './legacy-tabs/legacy-tabs-e2e';
 import {ListE2e} from './list/list-e2e';
-import {MdcButtonE2e} from './mdc-button/mdc-button-e2e';
+import {ButtonE2e} from './button/button-e2e';
 import {MdcCheckboxE2e} from './mdc-checkbox/mdc-checkbox-e2e';
 import {MdcChipsE2e} from './mdc-chips/mdc-chips-e2e';
 import {MdcDialogE2E} from './mdc-dialog/mdc-dialog-e2e';
@@ -46,7 +45,6 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'expansion', component: ExpansionE2e},
   {path: 'grid-list', component: GridListE2E},
   {path: 'icon', component: IconE2E},
-  {path: 'legacy-button', component: LegacyButtonE2e},
   {path: 'legacy-checkbox', component: LegacyCheckboxE2e},
   {path: 'legacy-dialog', component: LegacyDialogE2e},
   {path: 'legacy-input', component: LegacyInputE2e},
@@ -57,7 +55,7 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'legacy-slide-toggle', component: LegacySlideToggleE2e},
   {path: 'legacy-tabs', component: LegacyTabsE2e},
   {path: 'list', component: ListE2e},
-  {path: 'mdc-button', component: MdcButtonE2e},
+  {path: 'button', component: ButtonE2e},
   {path: 'mdc-checkbox', component: MdcCheckboxE2e},
   {path: 'mdc-chips', component: MdcChipsE2e},
   {path: 'mdc-dialog', component: MdcDialogE2E},
