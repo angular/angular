@@ -259,7 +259,6 @@
 /src/e2e-app/button/**                                      @andrewseguin
 /src/e2e-app/mdc-card/**                                    @mmalerba
 /src/e2e-app/checkbox/**                                    @mmalerba
-/src/e2e-app/mdc-chips/**                                   @mmalerba
 /src/e2e-app/dialog/**                                      @devversion
 /src/e2e-app/input/**                                       @devversion
 /src/e2e-app/mdc-menu/**                                    @crisbeto

@@ -20,7 +20,6 @@ import {LegacyTabsE2eModule} from './legacy-tabs/legacy-tabs-e2e-module';
 import {ListE2eModule} from './list/list-e2e-module';
 import {ButtonE2eModule} from './button/button-e2e-module';
 import {CheckboxE2eModule} from './checkbox/checkbox-e2e-module';
-import {MdcChipsE2eModule} from './mdc-chips/mdc-chips-e2e-module';
 import {DialogE2eModule} from './dialog/dialog-e2e-module';
 import {MdcMenuE2eModule} from './mdc-menu/mdc-menu-e2e-module';
 import {MdcProgressBarE2eModule} from './mdc-progress-bar/mdc-progress-bar-e2e-module';
@@ -63,7 +62,6 @@ const enableAnimations = window.location.search.includes('animations=true');
     ListE2eModule,
     ButtonE2eModule,
     CheckboxE2eModule,
-    MdcChipsE2eModule,
     DialogE2eModule,
     MdcMenuE2eModule,
     MdcProgressBarE2eModule,

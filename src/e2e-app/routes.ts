@@ -16,7 +16,6 @@ import {LegacyTabsE2e} from './legacy-tabs/legacy-tabs-e2e';
 import {ListE2e} from './list/list-e2e';
 import {ButtonE2e} from './button/button-e2e';
 import {CheckboxE2e} from './checkbox/checkbox-e2e';
-import {MdcChipsE2e} from './mdc-chips/mdc-chips-e2e';
 import {DialogE2E} from './dialog/dialog-e2e';
 import {InputE2E} from './input/input-e2e';
 import {MdcMenuE2e} from './mdc-menu/mdc-menu-e2e';
@@ -52,7 +51,6 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'legacy-tabs', component: LegacyTabsE2e},
   {path: 'list', component: ListE2e},
   {path: 'button', component: ButtonE2e},
-  {path: 'mdc-chips', component: MdcChipsE2e},
   {path: 'dialog', component: DialogE2E},
   {path: 'mdc-menu', component: MdcMenuE2e},
   {path: 'mdc-progress-bar', component: MdcProgressBarE2E},
