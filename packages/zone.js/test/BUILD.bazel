@@ -289,11 +289,6 @@ karma_tests = {
         "//packages/zone.js/fesm2015:zone.js",
         "//packages/zone.js/fesm2015:zone-testing.js",
     ],
-    "browser_legacy_test": [
-        "//packages/zone.js/bundles:zone-legacy.umd.js",
-        "//packages/zone.js/bundles:zone.umd.js",
-        "//packages/zone.js/bundles:zone-testing.umd.js",
-    ],
 }
 
 karma_test(

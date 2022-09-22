@@ -35,8 +35,6 @@ filegroup(
         "//packages/zone.js/plugins:zone-bluebird/package.json",
         "//packages/zone.js/plugins:zone-error.min/package.json",
         "//packages/zone.js/plugins:zone-error/package.json",
-        "//packages/zone.js/plugins:zone-legacy.min/package.json",
-        "//packages/zone.js/plugins:zone-legacy/package.json",
         "//packages/zone.js/plugins:zone-patch-canvas.min/package.json",
         "//packages/zone.js/plugins:zone-patch-canvas/package.json",
         "//packages/zone.js/plugins:zone-patch-cordova.min/package.json",

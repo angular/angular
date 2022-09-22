@@ -165,6 +165,15 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
     };
   }
 
+  // patch Object.defineProperty to make sure spyOnProperty can work with
+  // non configuratble property.
+  const defineProperty = Object.defineProperty;
+  Object.defineProperty = function<T>(obj: T, p: PropertyKey, attributes: any) {
+    return attributes?.configurable === false ?
+        defineProperty.call(this, obj, p, attributes) as T :
+        defineProperty.call(this, obj, p, {...attributes, configurable: true}) as T;
+  };
+
   // monkey patch createSpyObj to make properties enumerable to true
   if (!(jasmine as any)[Zone.__symbol__('createSpyObj')]) {
     const originalCreateSpyObj = jasmine.createSpyObj;
@@ -176,8 +185,7 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       if (propertyNames) {
         const defineProperty = Object.defineProperty;
         Object.defineProperty = function<T>(obj: T, p: PropertyKey, attributes: any) {
-          return defineProperty.call(
-                     this, obj, p, {...attributes, configurable: true, enumerable: true}) as T;
+          return defineProperty.call(this, obj, p, {...attributes, enumerable: true}) as T;
         };
         try {
           spyObj = originalCreateSpyObj.apply(this, args);

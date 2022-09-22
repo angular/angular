@@ -83,8 +83,6 @@ filegroup(
         ":zone-evergreen.min.js",
         ":zone-evergreen-testing-bundle.js",
         ":zone-evergreen-testing-bundle.min.js",
-        ":zone-legacy.js",
-        ":zone-legacy.min.js",
         ":zone-mix.js",
         ":zone-mix.min.js",
         ":zone-node.js",

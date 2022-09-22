@@ -87,4 +87,16 @@ ifEnvSupports(supportJasmineSpec, () => {
       expect(desc.configurable).toBe(true);
     });
   });
+
+  describe('spyOnObject', () => {
+    it('spyOnObject with properties should be able to be retrieved from the spy', () => {
+      const obj: any = {};
+      Object.defineProperty(obj, 'db', {
+        set: (db: unknown) => {},
+        get: () => undefined,
+      });
+      const spy = spyOnProperty(obj, 'db', 'set');  // errors here...
+      expect(() => obj.db = 'foo').not.toThrow();
+    });
+  });
 })();
