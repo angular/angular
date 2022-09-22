@@ -16,6 +16,7 @@ import {
   COMPONENT_THEME_MIXINS,
   CUSTOM_SASS_MIXIN_RENAMINGS,
   CUSTOM_SASS_FUNCTION_RENAMINGS,
+  MIGRATED_CORE_SYMBOLS,
 } from './constants';
 import {Migration, ResolvedResource, TargetVersion, WorkspacePath} from '@angular/cdk/schematics';
 
@@ -128,20 +129,105 @@ export class LegacyComponentsMigration extends Migration<null> {
    */
   private _handleImportDeclaration(node: ts.ImportDeclaration): void {
     const moduleSpecifier = node.moduleSpecifier as ts.StringLiteral;
-
     const matImportChange = this._findMatImportChange(moduleSpecifier);
-    if (matImportChange) {
+    const mdcImportChange = this._findMdcImportChange(moduleSpecifier);
+
+    if (this._isCoreImport(moduleSpecifier.text)) {
+      this._handleCoreImportDeclaration(node);
+    } else if (matImportChange) {
       this._tsReplaceAt(node, matImportChange);
 
       if (node.importClause?.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
         this._handleNamedImportBindings(node.importClause.namedBindings);
       }
-    }
-
-    const mdcImportChange = this._findMdcImportChange(moduleSpecifier);
-    if (mdcImportChange) {
+    } else if (mdcImportChange) {
       this._tsReplaceAt(node, mdcImportChange);
     }
+  }
+
+  private _isCoreImport(importPath: string) {
+    return ['@angular/material/core', '@angular/material/core/testing'].includes(importPath);
+  }
+
+  private _handleCoreImportDeclaration(node: ts.ImportDeclaration) {
+    const moduleSpecifier = node.moduleSpecifier as ts.StringLiteral;
+
+    if (node.importClause?.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
+      this._splitCoreImport(node, node.importClause.namedBindings);
+    } else {
+      this._tsReplaceAt(node, {
+        old: moduleSpecifier.text,
+        new: moduleSpecifier.text.replace(
+          '@angular/material/core',
+          '@angular/material/legacy-core',
+        ),
+      });
+    }
+  }
+
+  private _splitCoreImport(
+    node: ts.Node,
+    namedBindings: ts.NamedImports | ts.ObjectBindingPattern,
+  ) {
+    const migratedSymbols = [];
+    const unmigratedSymbols = [];
+    for (const element of namedBindings.elements) {
+      if (this._isMigratedCoreSymbol(element)) {
+        migratedSymbols.push(element);
+      } else {
+        unmigratedSymbols.push(element);
+      }
+    }
+    const unmigratedImportDeclaration = unmigratedSymbols.length
+      ? [this._stripImports(node.getText(), migratedSymbols)]
+      : [];
+    const migratedImportDeclaration = migratedSymbols.length
+      ? [
+          this._updateImportedCoreSymbols(
+            this._stripImports(node.getText(), unmigratedSymbols).replace(
+              '@angular/material/core',
+              '@angular/material/legacy-core',
+            ),
+            migratedSymbols,
+          ),
+        ]
+      : [];
+    this._tsReplaceAt(node, {
+      old: node.getText(),
+      new: [...unmigratedImportDeclaration, ...migratedImportDeclaration].join('\n'),
+    });
+  }
+
+  private _isMigratedCoreSymbol(node: ts.ImportSpecifier | ts.BindingElement): boolean {
+    const name = node.propertyName ? node.propertyName : node.name;
+    if (!ts.isIdentifier(name)) {
+      return false;
+    }
+
+    return !!MIGRATED_CORE_SYMBOLS[name.escapedText.toString()];
+  }
+
+  private _stripImports(importString: string, remove: (ts.ImportSpecifier | ts.BindingElement)[]) {
+    for (const symbol of remove) {
+      importString = importString
+        .replace(new RegExp(`,\\s*${symbol.getText()}`), '')
+        .replace(new RegExp(`${symbol.getText()},\\s*`), '')
+        .replace(symbol.getText(), '');
+    }
+    return importString;
+  }
+
+  private _updateImportedCoreSymbols(
+    importString: string,
+    rename: (ts.ImportSpecifier | ts.BindingElement)[],
+  ) {
+    return rename.reduce((result, symbol) => {
+      const oldName = symbol.propertyName ? symbol.propertyName.getText() : symbol.name.getText();
+      const newName = MIGRATED_CORE_SYMBOLS[oldName];
+      const aliasedName = symbol.propertyName ? symbol.name.getText() : oldName;
+      const separator = ts.isImportSpecifier(symbol) ? ' as ' : ': ';
+      return result.replace(symbol.getText(), `${newName}${separator}${aliasedName}`);
+    }, importString);
   }
 
   /**
@@ -167,8 +253,13 @@ export class LegacyComponentsMigration extends Migration<null> {
   private _handleDestructuredAsyncImport(
     node: ts.VariableDeclaration & {name: ts.ObjectBindingPattern},
   ): void {
-    for (let i = 0; i < node.name.elements.length; i++) {
-      this._handleNamedBindings(node.name.elements[i]);
+    const importPath = (node!.initializer as any).expression.arguments[0].text;
+    if (ts.isVariableStatement(node.parent.parent) && this._isCoreImport(importPath)) {
+      this._splitCoreImport(node.parent.parent, node.name);
+    } else {
+      for (let i = 0; i < node.name.elements.length; i++) {
+        this._handleNamedBindings(node.name.elements[i]);
+      }
     }
   }
 

@@ -118,9 +118,30 @@ describe('v15 legacy components migration', () => {
           old: `import {MatButtonToggleModule} from '@angular/material/button-toggle';`,
           new: `import {MatButtonToggleModule} from '@angular/material/button-toggle';`,
         });
-        await runTypeScriptMigrationTest('non-legacy symbol', {
-          old: `import {VERSION} from '@angular/material/core`,
-          new: `import {VERSION} from '@angular/material/legacy-core`,
+      });
+
+      it('splits @angular/material/core imports', async () => {
+        await runMultilineTypeScriptMigrationTest('core imports', {
+          old: [
+            `import {VERSION, MatOption} from '@angular/material/core';`,
+            `import {CanDisable} from '@angular/material/core';`,
+            `import {MatOptionHarness} from '@angular/material/core/testing';`,
+            `import {VERSION as a, MatOption as b} from '@angular/material/core';`,
+            `const {mixinDisable, MatOptgroup} = await import('@angular/material/core');`,
+            `const {mixinDisable: c, MatOptgroup: d} = await import('@angular/material/core');`,
+          ],
+          new: [
+            `import {VERSION} from '@angular/material/core';`,
+            `import {MatLegacyOption as MatOption} from '@angular/material/legacy-core';`,
+            `import {CanDisable} from '@angular/material/core';`,
+            `import {MatLegacyOptionHarness as MatOptionHarness} from '@angular/material/legacy-core/testing';`,
+            `import {VERSION as a} from '@angular/material/core';`,
+            `import {MatLegacyOption as b} from '@angular/material/legacy-core';`,
+            `const {mixinDisable} = await import('@angular/material/core');`,
+            `const {MatLegacyOptgroup: MatOptgroup} = await import('@angular/material/legacy-core');`,
+            `const {mixinDisable: c} = await import('@angular/material/core');`,
+            `const {MatLegacyOptgroup: d} = await import('@angular/material/legacy-core');`,
+          ],
         });
       });
     });

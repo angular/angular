@@ -109,3 +109,21 @@ export const CUSTOM_SASS_MIXIN_RENAMINGS: {[key: string]: string} = {
 export const CUSTOM_SASS_FUNCTION_RENAMINGS: {[key: string]: string} = {
   'define-typography-config': 'define-legacy-typography-config',
 };
+
+export const MIGRATED_CORE_SYMBOLS: {[key: string]: string} = {
+  'MAT_OPTGROUP': 'MAT_LEGACY_OPTGROUP',
+  'MatOptionSelectionChange': 'MatLegacyOptionSelectionChange',
+  'MatOptionParentComponent': 'MatLegacyOptionParentComponent',
+  'MAT_OPTION_PARENT_COMPONENT': 'MAT_LEGACY_OPTION_PARENT_COMPONENT',
+  '_countGroupLabelsBeforeOption': '_countGroupLabelsBeforeLegacyOption',
+  '_getOptionScrollPosition': '_getLegacyOptionScrollPosition',
+  '_MatOptionBase': '_MatLegacyOptionBase',
+  '_MatOptgroupBase': '_MatLegacyOptgroupBase',
+  'MatOptionModule': 'MatLegacyOptionModule',
+  'MatOption': 'MatLegacyOption',
+  'MatOptgroup': 'MatLegacyOptgroup',
+  'MatOptionHarness': 'MatLegacyOptionHarness',
+  'OptionHarnessFilters': 'LegacyOptionHarnessFilters',
+  'MatOptgroupHarness': 'MatLegacyOptgroupHarness',
+  'OptgroupHarnessFilters': 'LegacyOptgroupHarnessFilters',
+};
