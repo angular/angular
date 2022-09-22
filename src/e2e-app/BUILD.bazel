@@ -51,7 +51,6 @@ ng_module(
         "//src/material/icon",
         "//src/material/input",
         "//src/material/legacy-form-field",
-        "//src/material/legacy-input",
         "//src/material/legacy-list",
         "//src/material/legacy-menu",
         "//src/material/legacy-progress-bar",

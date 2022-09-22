@@ -9,10 +9,10 @@
 import {NgModule} from '@angular/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
-import {MdcInputE2E} from './mdc-input-e2e';
+import {InputE2E} from './input-e2e';
 
 @NgModule({
   imports: [MatFormFieldModule, MatInputModule],
-  declarations: [MdcInputE2E],
+  declarations: [InputE2E],
 })
-export class MdcInputE2eModule {}
+export class InputE2eModule {}

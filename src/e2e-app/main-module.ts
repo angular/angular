@@ -11,7 +11,6 @@ import {E2eAppModule} from './e2e-app/e2e-app-module';
 import {ExpansionE2eModule} from './expansion/expansion-e2e-module';
 import {GridListE2eModule} from './grid-list/grid-list-e2e-module';
 import {IconE2eModule} from './icon/icon-e2e-module';
-import {LegacyInputE2eModule} from './legacy-input/legacy-input-e2e-module';
 import {LegacyMenuE2eModule} from './legacy-menu/legacy-menu-e2e-module';
 import {LegacyProgressBarE2eModule} from './legacy-progress-bar/legacy-progress-bar-e2e-module';
 import {LegacyProgressSpinnerE2eModule} from './legacy-progress-spinner/legacy-progress-spinner-e2e-module';
@@ -55,7 +54,6 @@ const enableAnimations = window.location.search.includes('animations=true');
     ExpansionE2eModule,
     GridListE2eModule,
     IconE2eModule,
-    LegacyInputE2eModule,
     LegacyMenuE2eModule,
     LegacyProgressBarE2eModule,
     LegacyProgressSpinnerE2eModule,
