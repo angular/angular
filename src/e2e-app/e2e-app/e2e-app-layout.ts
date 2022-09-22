@@ -35,7 +35,6 @@ export class E2eAppLayout {
     {path: 'cards', title: 'Cards'},
     {path: 'toolbar', title: 'Toolbar'},
     {path: 'virtual-scroll', title: 'Virtual Scroll'},
-    {path: 'mdc-slide-toggle', title: 'MDC Slide Toggle'},
     {path: 'mdc-table', title: 'MDC Table'},
     {path: 'mdc-tabs', title: 'MDC Tabs'},
   ];

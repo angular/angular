@@ -7,7 +7,6 @@ import {Home} from './e2e-app/e2e-app-layout';
 import {ExpansionE2e} from './expansion/expansion-e2e';
 import {GridListE2E} from './grid-list/grid-list-e2e';
 import {IconE2E} from './icon/icon-e2e';
-import {LegacySlideToggleE2e} from './legacy-slide-toggle/legacy-slide-toggle-e2e';
 import {LegacyTabsE2e} from './legacy-tabs/legacy-tabs-e2e';
 import {ListE2e} from './list/list-e2e';
 import {ButtonE2e} from './button/button-e2e';
@@ -18,7 +17,6 @@ import {MenuE2e} from './menu/menu-e2e';
 import {ProgressBarE2E} from './progress-bar/progress-bar-e2e';
 import {ProgressSpinnerE2e} from './progress-spinner/progress-spinner-e2e';
 import {RadioE2e} from './radio/radio-e2e';
-import {MdcSlideToggleE2e} from './mdc-slide-toggle/mdc-slide-toggle-e2e';
 import {MdcSliderE2e} from './mdc-slider/mdc-slider-e2e';
 import {MdcTableE2e} from './mdc-table/mdc-table-e2e';
 import {MdcTabsE2e} from './mdc-tabs/mdc-tabs-e2e';
@@ -27,6 +25,7 @@ import {SidenavE2E} from './sidenav/sidenav-e2e';
 import {StepperE2e} from './stepper/stepper-e2e';
 import {ToolbarE2e} from './toolbar/toolbar-e2e';
 import {VirtualScrollE2E} from './virtual-scroll/virtual-scroll-e2e';
+import {SlideToggleE2e} from './slide-toggle/slide-toggle-e2e';
 
 export const E2E_APP_ROUTES: Routes = [
   {path: '', component: Home},
@@ -43,12 +42,11 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'progress-bar', component: ProgressBarE2E},
   {path: 'progress-spinner', component: ProgressSpinnerE2e},
   {path: 'radio', component: RadioE2e},
-  {path: 'legacy-slide-toggle', component: LegacySlideToggleE2e},
+  {path: 'slide-toggle', component: SlideToggleE2e},
   {path: 'legacy-tabs', component: LegacyTabsE2e},
   {path: 'list', component: ListE2e},
   {path: 'button', component: ButtonE2e},
   {path: 'dialog', component: DialogE2E},
-  {path: 'mdc-slide-toggle', component: MdcSlideToggleE2e},
   {path: 'mdc-slider', component: MdcSliderE2e},
   {path: 'mdc-table', component: MdcTableE2e},
   {path: 'mdc-tabs', component: MdcTabsE2e},

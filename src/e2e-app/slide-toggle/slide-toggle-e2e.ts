@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'mdc-slide-toggle-e2e',
-  templateUrl: 'mdc-slide-toggle-e2e.html',
+  selector: 'slide-toggle-e2e',
+  templateUrl: 'slide-toggle-e2e.html',
 })
-export class MdcSlideToggleE2e {}
+export class SlideToggleE2e {}

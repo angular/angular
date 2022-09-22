@@ -1,11 +1,11 @@
 import {browser, element, by, Key} from 'protractor';
 import {expectToExist} from '../../cdk/testing/private/e2e';
 
-describe('MDC-based slide-toggle', () => {
+describe('slide-toggle', () => {
   const getButton = () => element(by.css('#normal-slide-toggle button'));
   const getNormalToggle = () => element(by.css('#normal-slide-toggle'));
 
-  beforeEach(async () => await browser.get('mdc-slide-toggle'));
+  beforeEach(async () => await browser.get('/slide-toggle'));
 
   it('should render a slide-toggle', async () => {
     await expectToExist('mat-slide-toggle');
