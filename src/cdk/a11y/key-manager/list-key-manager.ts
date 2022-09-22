@@ -21,6 +21,8 @@ import {
   hasModifierKey,
   HOME,
   END,
+  PAGE_UP,
+  PAGE_DOWN,
 } from '@angular/cdk/keycodes';
 import {debounceTime, filter, map, tap} from 'rxjs/operators';
 
@@ -50,6 +52,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   private _horizontal: 'ltr' | 'rtl' | null;
   private _allowedModifierKeys: ListKeyManagerModifierKey[] = [];
   private _homeAndEnd = false;
+  private _pageUpAndDown = {enabled: false, delta: 10};
 
   /**
    * Predicate function that can be used to check whether an item should be skipped
@@ -195,6 +198,17 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   }
 
   /**
+   * Configures the key manager to activate every 10th, configured or first/last element in up/down direction
+   * respectively when the Page-Up or Page-Down key is pressed.
+   * @param enabled Whether pressing the Page-Up or Page-Down key activates the first/last item.
+   * @param delta Whether pressing the Home or End key activates the first/last item.
+   */
+  withPageUpDown(enabled: boolean = true, delta: number = 10): this {
+    this._pageUpAndDown = {enabled, delta};
+    return this;
+  }
+
+  /**
    * Sets the active item to the item at the index specified.
    * @param index The index of the item to be set as active.
    */
@@ -275,6 +289,25 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
       case END:
         if (this._homeAndEnd && isModifierAllowed) {
           this.setLastItemActive();
+          break;
+        } else {
+          return;
+        }
+
+      case PAGE_UP:
+        if (this._pageUpAndDown.enabled && isModifierAllowed) {
+          const targetIndex = this._activeItemIndex - this._pageUpAndDown.delta;
+          this._setActiveItemByIndex(targetIndex > 0 ? targetIndex : 0, 1);
+          break;
+        } else {
+          return;
+        }
+
+      case PAGE_DOWN:
+        if (this._pageUpAndDown.enabled && isModifierAllowed) {
+          const targetIndex = this._activeItemIndex + this._pageUpAndDown.delta;
+          const itemsLength = this._getItemsArray().length;
+          this._setActiveItemByIndex(targetIndex < itemsLength ? targetIndex : itemsLength - 1, -1);
           break;
         } else {
           return;

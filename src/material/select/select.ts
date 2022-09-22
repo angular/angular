@@ -914,6 +914,7 @@ export abstract class _MatSelectBase<C>
       .withVerticalOrientation()
       .withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr')
       .withHomeAndEnd()
+      .withPageUpDown()
       .withAllowedModifierKeys(['shiftKey']);
 
     this._keyManager.tabOut.pipe(takeUntil(this._destroy)).subscribe(() => {
