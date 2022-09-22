@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'mdc-slider-e2e',
+  selector: 'slider-e2e',
   template: `
     <mat-slider id="standard-slider" discrete>
       <input aria-label="Standard slider" matSliderThumb>
@@ -25,4 +25,4 @@ import {Component} from '@angular/core';
     </mat-slider>
     `,
 })
-export class MdcSliderE2e {}
+export class SliderE2e {}

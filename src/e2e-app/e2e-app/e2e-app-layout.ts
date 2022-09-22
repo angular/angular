@@ -29,6 +29,7 @@ export class E2eAppLayout {
     {path: 'radio', title: 'Radio'},
     {path: 'select', title: 'Select'},
     {path: 'sidenav', title: 'Sidenav'},
+    {path: 'slider', title: 'Slider'},
     {path: 'slide-toggle', title: 'Slide Toggle'},
     {path: 'stepper', title: 'Stepper'},
     {path: 'tabs', title: 'Tabs'},

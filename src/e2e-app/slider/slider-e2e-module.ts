@@ -8,10 +8,10 @@
 
 import {NgModule} from '@angular/core';
 import {MatSliderModule} from '@angular/material/slider';
-import {MdcSliderE2e} from './mdc-slider-e2e';
+import {SliderE2e} from './slider-e2e';
 
 @NgModule({
   imports: [MatSliderModule],
-  declarations: [MdcSliderE2e],
+  declarations: [SliderE2e],
 })
-export class MdcSliderE2eModule {}
+export class SliderE2eModule {}

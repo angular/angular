@@ -11,12 +11,12 @@ import {Thumb} from '@material/slider';
 import {$, browser, by, element, ElementFinder} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
-describe('MDC-based MatSlider', () => {
+describe('MatSlider', () => {
   const getStandardSlider = () => element(by.id('standard-slider'));
   const getDisabledSlider = () => element(by.id('disabled-slider'));
   const getRangeSlider = () => element(by.id('range-slider'));
 
-  beforeEach(async () => await browser.get('mdc-slider'));
+  beforeEach(async () => await browser.get('/slider'));
 
   describe('standard slider', async () => {
     let slider: ElementFinder;

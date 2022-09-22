@@ -260,7 +260,7 @@
 /src/e2e-app/progress-spinner/**                            @mmalerba
 /src/e2e-app/radio/**                                       @mmalerba
 /src/e2e-app/slide-toggle/**                                @crisbeto
-/src/e2e-app/mdc-slider/**                                  @andrewseguin
+/src/e2e-app/slider/**                                      @andrewseguin
 /src/e2e-app/mdc-table/**                                   @andrewseguin
 /src/e2e-app/tabs/**                                        @crisbeto
 /src/e2e-app/select/**                                      @crisbeto

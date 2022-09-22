@@ -20,7 +20,7 @@ import {ProgressBarE2eModule} from './progress-bar/progress-bar-e2e-module';
 import {ProgressSpinnerE2eModule} from './progress-spinner/progress-spinner-module';
 import {RadioE2eModule} from './radio/radio-e2e-module';
 import {SlideToggleE2eModule} from './slide-toggle/slide-toggle-e2e-module';
-import {MdcSliderE2eModule} from './mdc-slider/mdc-slider-e2e-module';
+import {SliderE2eModule} from './slider/slider-e2e-module';
 import {MdcTableE2eModule} from './mdc-table/mdc-table-e2e-module';
 import {TabsE2eModule} from './tabs/tabs-e2e-module';
 import {E2E_APP_ROUTES} from './routes';
@@ -55,7 +55,7 @@ const enableAnimations = window.location.search.includes('animations=true');
     ProgressBarE2eModule,
     ProgressSpinnerE2eModule,
     RadioE2eModule,
-    MdcSliderE2eModule,
+    SliderE2eModule,
     SlideToggleE2eModule,
     MdcTableE2eModule,
     TabsE2eModule,
