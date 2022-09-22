@@ -1,6 +1,9 @@
 import getPort from 'get-port';
+import path from 'node:path';
 import sh from 'shelljs';
 import treeKill from 'tree-kill';
+
+const RUNFILES_ROOT = path.resolve('.');
 
 sh.set('-e');
 
@@ -15,16 +18,16 @@ sh.set('-e');
 //      will be substituted with the url of the served contents
 
 async function main(args) {
-  const lightserver = args[0];
-  const distDir = args[1];
-  const testScript = args[2];
+  const lightserver = path.join(RUNFILES_ROOT, args[0]);
+  const distDir = path.join(RUNFILES_ROOT, args[1]);
+  const testScript = path.join(RUNFILES_ROOT, args[2]);
   const testScriptArgs = args.slice(3);
   const port = await getPort();
 
   const lightserverCmd = [
     lightserver,
     '--bind=localhost',
-    '--historyindex=/index.html',
+    `--historyindex=${path.sep}index.html`,
     '--no-reload',
     '-s',
     distDir,
@@ -40,8 +43,12 @@ async function main(args) {
   ].join(' ').replace('LOCALHOST_URL', `http://localhost:${port}`);
 
   sh.exec(command);
-    
+  
   await killProcess(lightserverProcess);
+
+  // TODO: On Windows something remains unresolved and node does not exit.
+  // It does not appear to be the lightserver process.
+  process.exit(0);
 }
 
 (async() => await main(process.argv.slice(2)))();
@@ -51,6 +58,7 @@ function killProcess(childProcess) {
     treeKill(childProcess.pid, error => {
       if (error) {
         reject(error);
+        return;
       }
       resolve();
     });
