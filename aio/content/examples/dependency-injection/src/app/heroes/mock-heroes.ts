@@ -8,7 +8,7 @@ export const HEROES: Hero[] = [
   { id: 15, isSecret: false, name: 'Magneta' },
   { id: 16, isSecret: false, name: 'RubberMan' },
   { id: 17, isSecret: false, name: 'Dynama' },
-  { id: 18, isSecret: true,  name: 'Dr IQ' },
+  { id: 18, isSecret: true,  name: 'Dr. IQ' },
   { id: 19, isSecret: true,  name: 'Magma' },
   { id: 20, isSecret: true,  name: 'Tornado' }
 ];
