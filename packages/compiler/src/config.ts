@@ -12,7 +12,6 @@ import {noUndefined} from './util';
 export class CompilerConfig {
   public defaultEncapsulation: ViewEncapsulation|null;
   public useJit: boolean;
-  public jitDevMode: boolean;
   public missingTranslation: MissingTranslationStrategy|null;
   public preserveWhitespaces: boolean;
   public strictInjectionParameters: boolean;
@@ -20,21 +19,18 @@ export class CompilerConfig {
   constructor({
     defaultEncapsulation = ViewEncapsulation.Emulated,
     useJit = true,
-    jitDevMode = false,
     missingTranslation = null,
     preserveWhitespaces,
     strictInjectionParameters
   }: {
     defaultEncapsulation?: ViewEncapsulation,
     useJit?: boolean,
-    jitDevMode?: boolean,
     missingTranslation?: MissingTranslationStrategy|null,
     preserveWhitespaces?: boolean,
     strictInjectionParameters?: boolean,
   } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
     this.useJit = !!useJit;
-    this.jitDevMode = !!jitDevMode;
     this.missingTranslation = missingTranslation;
     this.preserveWhitespaces = preserveWhitespacesDefault(noUndefined(preserveWhitespaces));
     this.strictInjectionParameters = strictInjectionParameters === true;

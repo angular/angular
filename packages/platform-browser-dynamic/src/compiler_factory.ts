@@ -7,7 +7,7 @@
  */
 
 import {CompilerConfig} from '@angular/compiler';
-import {Compiler, CompilerFactory, CompilerOptions, InjectionToken, Injector, isDevMode, MissingTranslationStrategy, PACKAGE_ROOT_URL, StaticProvider, ViewEncapsulation} from '@angular/core';
+import {Compiler, CompilerFactory, CompilerOptions, InjectionToken, Injector, MissingTranslationStrategy, PACKAGE_ROOT_URL, StaticProvider, ViewEncapsulation} from '@angular/core';
 
 export const ERROR_COLLECTOR_TOKEN = new InjectionToken('ErrorCollector');
 
@@ -52,7 +52,6 @@ export class JitCompilerFactory implements CompilerFactory {
             // let explicit values from the compiler options overwrite options
             // from the app providers
             useJit: opts.useJit,
-            jitDevMode: isDevMode(),
             // let explicit values from the compiler options overwrite options
             // from the app providers
             defaultEncapsulation: opts.defaultEncapsulation,
