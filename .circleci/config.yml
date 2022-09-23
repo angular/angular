@@ -149,7 +149,7 @@ orbs:
   # to make sure that snapshot builds are not deployed out of order, resulting in Git
   # push conflicts.
   queue: eddiewebb/queue@1.5.0
-  devinfra: angular/dev-infra@1.0.2
+  devinfra: angular/dev-infra@1.0.3
 
 commands:
   checkout_and_rebase:
