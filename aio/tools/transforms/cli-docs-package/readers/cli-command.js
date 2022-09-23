@@ -64,7 +64,7 @@ module.exports = function cliCommandFileReader() {
         docType: 'content',
         startingLine: 0,
         fileInfo: {
-          realProjectRelativePath: doc.longDescriptionRelativePath.replace(/^@/, 'packages/'),
+          projectRelativePath: doc.longDescriptionRelativePath.replace(/^@/, 'packages/'),
         },
       };
     }
