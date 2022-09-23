@@ -960,6 +960,9 @@
     "name": "executeCheckHooks"
   },
   {
+    "name": "executeContentQueries"
+  },
+  {
     "name": "executeInitAndCheckHooks"
   },
   {
@@ -1248,10 +1251,7 @@
     "name": "inheritedParamsDataResolve"
   },
   {
-    "name": "initTNodeFlags"
-  },
-  {
-    "name": "initializeInputAndOutputAliases"
+    "name": "initializeDirectives"
   },
   {
     "name": "inject"
@@ -1294,6 +1294,9 @@
   },
   {
     "name": "invertObject"
+  },
+  {
+    "name": "invokeDirectivesHostBindings"
   },
   {
     "name": "invokeHostBindingsInCreationMode"
@@ -1584,9 +1587,6 @@
     "name": "refreshView"
   },
   {
-    "name": "registerHostBindingOpCodes"
-  },
-  {
     "name": "registerPostOrderHooks"
   },
   {
@@ -1690,6 +1690,9 @@
   },
   {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "setupStaticAttributes"
   },
   {
     "name": "shallowEqual"
@@ -1813,9 +1816,6 @@
   },
   {
     "name": "writeDirectClass"
-  },
-  {
-    "name": "writeDirectStyle"
   },
   {
     "name": "ɵEmptyOutletComponent"
