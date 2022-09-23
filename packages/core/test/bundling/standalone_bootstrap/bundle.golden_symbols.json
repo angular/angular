@@ -390,6 +390,9 @@
     "name": "config"
   },
   {
+    "name": "configureViewWithDirective"
+  },
+  {
     "name": "connectableObservableDescriptor"
   },
   {
@@ -615,6 +618,9 @@
     "name": "invertObject"
   },
   {
+    "name": "invokeHostBindingsInCreationMode"
+  },
+  {
     "name": "isArray"
   },
   {
@@ -682,6 +688,12 @@
   },
   {
     "name": "maybeWrapInNotSelector"
+  },
+  {
+    "name": "mergeHostAttribute"
+  },
+  {
+    "name": "mergeHostAttrs"
   },
   {
     "name": "mergeMap"

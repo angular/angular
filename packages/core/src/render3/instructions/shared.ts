@@ -1028,32 +1028,6 @@ export function setNgReflectProperties(
 }
 
 /**
- * Instantiate a root component.
- */
-export function instantiateRootComponent<T>(tView: TView, lView: LView, def: ComponentDef<T>): T {
-  const rootTNode = getCurrentTNode()!;
-  if (tView.firstCreatePass) {
-    if (def.providersResolver) def.providersResolver(def);
-    const directiveIndex = allocExpando(tView, lView, 1, null);
-    ngDevMode &&
-        assertEqual(
-            directiveIndex, rootTNode.directiveStart,
-            'Because this is a root component the allocated expando should match the TNode component.');
-    configureViewWithDirective(tView, rootTNode, lView, directiveIndex, def);
-    initializeInputAndOutputAliases(tView, rootTNode);
-  }
-  const directive = getNodeInjectable(
-      lView, tView, rootTNode.directiveStart + rootTNode.componentOffset,
-      rootTNode as TElementNode);
-  attachPatchData(directive, lView);
-  const native = getNativeByTNode(rootTNode, lView);
-  if (native) {
-    attachPatchData(native, lView);
-  }
-  return directive;
-}
-
-/**
  * Resolve the matched directives on a node.
  */
 export function resolveDirectives(
@@ -1143,13 +1117,12 @@ export function resolveDirectives(
  *
  * @param tView `TView` to which the `hostBindings` should be added.
  * @param tNode `TNode` the element which contains the directive
- * @param lView `LView` current `LView`
  * @param directiveIdx Directive index in view.
  * @param directiveVarsIdx Where will the directive's vars be stored
  * @param def `ComponentDef`/`DirectiveDef`, which contains the `hostVars`/`hostBindings` to add.
  */
 export function registerHostBindingOpCodes(
-    tView: TView, tNode: TNode, lView: LView, directiveIdx: number, directiveVarsIdx: number,
+    tView: TView, tNode: TNode, directiveIdx: number, directiveVarsIdx: number,
     def: ComponentDef<any>|DirectiveDef<any>): void {
   ngDevMode && assertFirstCreatePass(tView);
 
@@ -1406,7 +1379,7 @@ export function initTNodeFlags(tNode: TNode, index: number, numberOfDirectives: 
  * @param directiveIndex Index where the directive will be stored in the Expando.
  * @param def `DirectiveDef`
  */
-function configureViewWithDirective<T>(
+export function configureViewWithDirective<T>(
     tView: TView, tNode: TNode, lView: LView, directiveIndex: number, def: DirectiveDef<T>): void {
   ngDevMode &&
       assertGreaterThanOrEqual(directiveIndex, HEADER_OFFSET, 'Must be in Expando section');
@@ -1422,8 +1395,7 @@ function configureViewWithDirective<T>(
   lView[directiveIndex] = nodeInjectorFactory;
 
   registerHostBindingOpCodes(
-      tView, tNode, lView, directiveIndex, allocExpando(tView, lView, def.hostVars, NO_CHANGE),
-      def);
+      tView, tNode, directiveIndex, allocExpando(tView, lView, def.hostVars, NO_CHANGE), def);
 }
 
 function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: ComponentDef<T>): void {

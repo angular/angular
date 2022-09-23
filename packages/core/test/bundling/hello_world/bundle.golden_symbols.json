@@ -321,6 +321,9 @@
     "name": "config"
   },
   {
+    "name": "configureViewWithDirective"
+  },
+  {
     "name": "connectableObservableDescriptor"
   },
   {
@@ -531,6 +534,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "invokeHostBindingsInCreationMode"
+  },
+  {
     "name": "isArray"
   },
   {
@@ -595,6 +601,12 @@
   },
   {
     "name": "maybeWrapInNotSelector"
+  },
+  {
+    "name": "mergeHostAttribute"
+  },
+  {
+    "name": "mergeHostAttrs"
   },
   {
     "name": "mergeMap"
