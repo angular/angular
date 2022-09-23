@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export const IMPORT_REPLACEMENTS: {[component: string]: {old: string; new: string}} = {
+export interface ImportReplacement {
+  old: string;
+  new: string;
+  additionalMatModuleNamePrefixes?: string[];
+  customReplacements?: {old: string; new: string}[];
+}
+
+// TODO: Add rest of custom replacements for components here
+export const REPLACEMENTS: {[component: string]: ImportReplacement} = {
   'button': {
     old: '@angular/material/legacy-button',
     new: '@angular/material/button',
@@ -22,10 +30,12 @@ export const IMPORT_REPLACEMENTS: {[component: string]: {old: string; new: strin
   'chips': {
     old: '@angular/material/legacy-chips',
     new: '@angular/material/chips',
+    additionalMatModuleNamePrefixes: ['chip'],
   },
   'dialog': {
     old: '@angular/material/legacy-dialog',
     new: '@angular/material/dialog',
+    customReplacements: [{old: 'LegacyDialogRole', new: 'DialogRole'}],
   },
   'autocomplete': {
     old: '@angular/material/legacy-autocomplete',

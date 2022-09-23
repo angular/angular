@@ -17,7 +17,11 @@ describe('button runtime code', () => {
 
   async function runMigrationTest(oldFileContent: string, newFileContent: string) {
     cliAppTree.overwrite(APP_MODULE_FILE, oldFileContent);
-    const tree = await migrateComponents(['button', 'card', 'dialog'], runner, cliAppTree);
+    const tree = await migrateComponents(
+      ['button', 'card', 'chips', 'dialog', 'progress-bar'],
+      runner,
+      cliAppTree,
+    );
     expect(tree.readContent(APP_MODULE_FILE)).toBe(newFileContent);
   }
 
@@ -41,6 +45,25 @@ describe('button runtime code', () => {
       );
     });
 
+    it('should replace the old import with the new one for hyphenated component names', async () => {
+      await runMigrationTest(
+        `
+        import {NgModule} from '@angular/core';
+        import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
+
+        @NgModule({imports: [MatLegacyProgressBarModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
+        import {MatProgressBarModule} from '@angular/material/progress-bar';
+
+        @NgModule({imports: [MatProgressBarModule]})
+        export class AppModule {}
+      `,
+      );
+    });
+
     it('should replace the old imports with the new ones', async () => {
       await runMigrationTest(
         `
@@ -53,6 +76,44 @@ describe('button runtime code', () => {
         `
         import {NgModule} from '@angular/core';
         import {MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
+
+        @NgModule({imports: [MatDialogModule]})
+        export class AppModule {}
+      `,
+      );
+    });
+
+    it('should replace the old imports with the new ones including different specified module name prefixes', async () => {
+      await runMigrationTest(
+        `
+        import {NgModule} from '@angular/core';
+        import {MatLegacyChipsModule, MatLegacyChipEvent} from '@angular/material/legacy-chips';
+
+        @NgModule({imports: [MatLegacyChipsModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
+        import {MatChipsModule, MatChipEvent} from '@angular/material/chips';
+
+        @NgModule({imports: [MatChipsModule]})
+        export class AppModule {}
+      `,
+      );
+    });
+
+    it('should replace the old imports with the new ones including custom replacements', async () => {
+      await runMigrationTest(
+        `
+        import {NgModule} from '@angular/core';
+        import {MatLegacyDialogModule, LegacyDialogRole} from '@angular/material/legacy-dialog';
+
+        @NgModule({imports: [MatLegacyDialogModule]})
+        export class AppModule {}
+      `,
+        `
+        import {NgModule} from '@angular/core';
+        import {MatDialogModule, DialogRole} from '@angular/material/dialog';
 
         @NgModule({imports: [MatDialogModule]})
         export class AppModule {}

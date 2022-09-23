@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {IMPORT_REPLACEMENTS} from './import-replacements';
+import {ImportReplacement, REPLACEMENTS} from './import-replacements';
 
 export class RuntimeMigrator {
   oldImportModule: string;
@@ -15,13 +15,39 @@ export class RuntimeMigrator {
   importSpecifierReplacements: {old: string; new: string}[];
 
   constructor(component: string) {
-    const replacements = IMPORT_REPLACEMENTS[component];
+    const replacements = REPLACEMENTS[component];
     this.oldImportModule = replacements.old;
     this.newImportModule = replacements.new;
 
-    const firstLetterCapitalizedComponent = component[0].toUpperCase() + component.slice(1);
-    const capitalizedComponent = component.toUpperCase();
-    this.importSpecifierReplacements = [
+    this.importSpecifierReplacements = this.getReplacementsFromComponentName(component);
+
+    replacements.additionalMatModuleNamePrefixes?.forEach(prefix => {
+      this.importSpecifierReplacements = this.importSpecifierReplacements.concat(
+        this.getReplacementsFromComponentName(prefix),
+      );
+    });
+
+    replacements.customReplacements?.forEach(replacement => {
+      this.importSpecifierReplacements = this.importSpecifierReplacements.concat(replacement);
+    });
+
+    console.log(this.importSpecifierReplacements);
+  }
+
+  getReplacementsFromComponentName(componentName: string): ImportReplacement[] {
+    const words = componentName.split('-');
+
+    let firstLetterCapitalizedComponent = '';
+    let capitalizedComponent = '';
+    words.forEach(word => {
+      firstLetterCapitalizedComponent += word[0].toUpperCase() + word.slice(1);
+      capitalizedComponent += word.toUpperCase() + '_';
+    });
+
+    /// Remove trailing underscore at the end
+    capitalizedComponent = capitalizedComponent.slice(0, -1);
+
+    const specifierReplacements = [
       {
         old: 'MatLegacy' + firstLetterCapitalizedComponent,
         new: 'Mat' + firstLetterCapitalizedComponent,
@@ -31,6 +57,8 @@ export class RuntimeMigrator {
         new: 'MAT_' + capitalizedComponent,
       },
     ];
+
+    return specifierReplacements;
   }
 
   updateImportOrExportSpecifier(specifier: ts.Identifier): ts.Identifier | null {
