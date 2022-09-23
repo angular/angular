@@ -19,7 +19,7 @@ import {createElementRef, ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
-import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
+import {assertDefined, assertIndexInRange} from '../util/assert';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 
@@ -30,18 +30,17 @@ import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode, N
 import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
 import {reportUnknownPropertyError} from './instructions/element_validation';
-import {addToViewTree, allocExpando, configureViewWithDirective, createLView, createTView, getOrCreateComponentTView, getOrCreateTNode, initializeInputAndOutputAliases, initTNodeFlags, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, markDirtyIfOnPush, registerHostBindingOpCodes, renderView, setInputsForProperty} from './instructions/shared';
-import {ComponentDef, DirectiveDef, RenderFlags} from './interfaces/definition';
+import {addToViewTree, createLView, createTView, executeContentQueries, getOrCreateComponentTView, getOrCreateTNode, initializeDirectives, invokeDirectivesHostBindings, locateHostElement, markAsComponentHost, markDirtyIfOnPush, renderView, setInputsForProperty} from './instructions/shared';
+import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {Renderer, RendererFactory} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
-import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, TView, TVIEW, TViewType} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {createElementNode, writeDirectClass, writeDirectStyle} from './node_manipulation';
+import {createElementNode, setupStaticAttributes, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
-import {enterView, getCurrentTNode, getLView, leaveView, setSelectedIndex} from './state';
+import {enterView, getCurrentTNode, getLView, leaveView} from './state';
 import {computeStaticStyling} from './styling/static_styling';
-import {NO_CHANGE} from './tokens';
 import {mergeHostAttrs, setUpAttributes} from './util/attrs_utils';
 import {stringifyForError} from './util/stringify_utils';
 import {getNativeByTNode, getTNode} from './util/view_utils';
@@ -347,7 +346,6 @@ function createRootComponentView(
     diPublicInInjector(
         getOrCreateNodeInjectorForNode(tNode, rootView), tView, rootComponentDef.type);
     markAsComponentHost(tView, tNode, 0);
-    initTNodeFlags(tNode, rootView.length, rootDirectives.length);
   }
 
   addToViewTree(rootView, componentView);
@@ -366,14 +364,9 @@ function applyRootComponentStyling(
 
   if (tNode.mergedAttrs !== null) {
     computeStaticStyling(tNode, tNode.mergedAttrs, true);
+
     if (rNode !== null) {
-      setUpAttributes(hostRenderer, rNode, tNode.mergedAttrs);
-      if (tNode.classes !== null) {
-        writeDirectClass(hostRenderer, rNode, tNode.classes);
-      }
-      if (tNode.styles !== null) {
-        writeDirectStyle(hostRenderer, rNode, tNode.styles);
-      }
+      setupStaticAttributes(hostRenderer, rNode, tNode);
     }
   }
 }
@@ -385,13 +378,27 @@ function applyRootComponentStyling(
 function createRootComponent<T>(
     componentView: LView, rootComponentDef: ComponentDef<T>, rootDirectives: DirectiveDef<any>[],
     rootLView: LView, hostFeatures: HostFeature[]|null): any {
-  const tView = rootLView[TVIEW];
   const rootTNode = getCurrentTNode() as TElementNode;
   ngDevMode && assertDefined(rootTNode, 'tNode should have been already created');
+  const tView = rootLView[TVIEW];
+  const native = getNativeByTNode(rootTNode, rootLView);
 
-  instantiateRootDirectives(rootTNode, tView, rootLView, rootDirectives);
+  initializeDirectives(tView, rootLView, rootTNode, rootDirectives, null);
 
-  // We're guaranteed for the `componentOffset` to be positive here.
+  for (let i = 0; i < rootDirectives.length; i++) {
+    const directiveIndex = rootTNode.directiveStart + i;
+    const directiveInstance = getNodeInjectable(rootLView, tView, directiveIndex, rootTNode);
+    attachPatchData(directiveInstance, rootLView);
+  }
+
+  invokeDirectivesHostBindings(tView, rootLView, rootTNode);
+
+  if (native) {
+    attachPatchData(native, rootLView);
+  }
+
+  // We're guaranteed for the `componentOffset` to be positive here
+  // since a root component always matches a component def.
   const component = getNodeInjectable(
       rootLView, tView, rootTNode.directiveStart + rootTNode.componentOffset, rootTNode);
   componentView[CONTEXT] = rootLView[CONTEXT] = component;
@@ -404,22 +411,9 @@ function createRootComponent<T>(
 
   // We want to generate an empty QueryList for root content queries for backwards
   // compatibility with ViewEngine.
-  executeContentQueries(rootTNode, rootLView, rootDirectives);
+  executeContentQueries(tView, rootTNode, componentView);
 
   return component;
-}
-
-/** Executes the content queries on a root component. */
-function executeContentQueries(
-    rootTNode: TElementNode, rootLView: LView<unknown>, rootDirectives: DirectiveDef<any>[]) {
-  for (let i = 0; i < rootDirectives.length; i++) {
-    const def = rootDirectives[i];
-    if (def.contentQueries) {
-      const directiveIndex = rootTNode.directiveStart + i;
-      const instance = rootLView[directiveIndex];
-      def.contentQueries(RenderFlags.Create, instance, directiveIndex);
-    }
-  }
 }
 
 /** Sets the static attributes on a root component. */
@@ -440,54 +434,6 @@ function setRootNodeAttributes(
       writeDirectClass(hostRenderer, hostRNode, classes.join(' '));
     }
   }
-}
-
-/** Instantiates all of the directives on the root component. */
-function instantiateRootDirectives(
-    rootTNode: TElementNode, tView: TView, lView: LView,
-    rootDirectives: DirectiveDef<any>[]): void {
-  if (!tView.firstCreatePass) {
-    return;
-  }
-
-  // Needs to be run before we allocate the expando or the directive indexes will be wrong.
-  for (const def of rootDirectives) {
-    if (def.providersResolver) def.providersResolver(def);
-  }
-
-  const directiveStart = allocExpando(tView, lView, rootDirectives.length, null);
-  ngDevMode &&
-      assertEqual(
-          directiveStart, rootTNode.directiveStart,
-          'Because this is a root component the allocated expando should match the TNode component.');
-
-  // We need to configure the directive and instantiate it in two passes so that
-  // the host directives and the root component are able to inject each other.
-  for (let i = 0; i < rootDirectives.length; i++) {
-    configureViewWithDirective(tView, rootTNode, lView, directiveStart + i, rootDirectives[i]);
-  }
-
-  for (let i = 0; i < rootDirectives.length; i++) {
-    const def = rootDirectives[i];
-    const directiveIndex = directiveStart + i;
-    const directiveInstance = getNodeInjectable(lView, tView, directiveIndex, rootTNode);
-    attachPatchData(directiveInstance, lView);
-
-    if (def.hostBindings !== null || def.hostAttrs !== null) {
-      setSelectedIndex(directiveIndex);
-      registerHostBindingOpCodes(
-          tView, rootTNode, directiveIndex, allocExpando(tView, lView, def.hostVars, NO_CHANGE),
-          def);
-      invokeHostBindingsInCreationMode(def, directiveInstance);
-    }
-  }
-
-  const native = getNativeByTNode(rootTNode, lView);
-  if (native) {
-    attachPatchData(native, lView);
-  }
-
-  initializeInputAndOutputAliases(tView, rootTNode);
 }
 
 /** Projects the `projectableNodes` that were specified when creating a root component. */

@@ -666,9 +666,6 @@
     "name": "refreshView"
   },
   {
-    "name": "registerHostBindingOpCodes"
-  },
-  {
     "name": "rememberChangeHistoryAndInvokeOnChangesHook"
   },
   {
@@ -693,6 +690,9 @@
     "name": "rxSubscriber"
   },
   {
+    "name": "saveNameToExportMap"
+  },
+  {
     "name": "scheduleArray"
   },
   {
@@ -700,6 +700,9 @@
   },
   {
     "name": "setBindingRootForHostBindings"
+  },
+  {
+    "name": "setCurrentDirectiveIndex"
   },
   {
     "name": "setCurrentInjector"

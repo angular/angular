@@ -750,6 +750,9 @@
     "name": "executeCheckHooks"
   },
   {
+    "name": "executeContentQueries"
+  },
+  {
     "name": "executeInitAndCheckHooks"
   },
   {
@@ -1017,10 +1020,7 @@
     "name": "inheritViewQuery"
   },
   {
-    "name": "initTNodeFlags"
-  },
-  {
-    "name": "initializeInputAndOutputAliases"
+    "name": "initializeDirectives"
   },
   {
     "name": "injectArgs"
@@ -1054,6 +1054,9 @@
   },
   {
     "name": "invertObject"
+  },
+  {
+    "name": "invokeDirectivesHostBindings"
   },
   {
     "name": "invokeHostBindingsInCreationMode"
@@ -1326,9 +1329,6 @@
     "name": "registerDestroyHooksIfSupported"
   },
   {
-    "name": "registerHostBindingOpCodes"
-  },
-  {
     "name": "registerOnValidatorChange"
   },
   {
@@ -1443,6 +1443,9 @@
     "name": "setUpValidators"
   },
   {
+    "name": "setupStaticAttributes"
+  },
+  {
     "name": "shareSubjectFactory"
   },
   {
@@ -1504,9 +1507,6 @@
   },
   {
     "name": "writeDirectClass"
-  },
-  {
-    "name": "writeDirectStyle"
   },
   {
     "name": "ɵInternalFormsSharedModule"

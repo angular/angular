@@ -1051,65 +1051,74 @@ export function resolveDirectives(
       }
 
       hasDirectives = true;
-      initTNodeFlags(tNode, tView.data.length, directiveDefs.length);
-      // When the same token is provided by several directives on the same node, some rules apply in
-      // the viewEngine:
-      // - viewProviders have priority over providers
-      // - the last directive in NgModule.declarations has priority over the previous one
-      // So to match these rules, the order in which providers are added in the arrays is very
-      // important.
-      for (let i = 0; i < directiveDefs.length; i++) {
-        const def = directiveDefs[i];
-        if (def.providersResolver) def.providersResolver(def);
-      }
-      let preOrderHooksFound = false;
-      let preOrderCheckHooksFound = false;
-      let directiveIdx = allocExpando(tView, lView, directiveDefs.length, null);
-      ngDevMode &&
-          assertSame(
-              directiveIdx, tNode.directiveStart,
-              'TNode.directiveStart should point to just allocated space');
-
-      for (let i = 0; i < directiveDefs.length; i++) {
-        const def = directiveDefs[i];
-        // Merge the attrs in the order of matches. This assumes that the first directive is the
-        // component itself, so that the component has the least priority.
-        tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, def.hostAttrs);
-
-        configureViewWithDirective(tView, tNode, lView, directiveIdx, def);
-        saveNameToExportMap(directiveIdx, def, exportsMap);
-
-        if (def.contentQueries !== null) tNode.flags |= TNodeFlags.hasContentQuery;
-        if (def.hostBindings !== null || def.hostAttrs !== null || def.hostVars !== 0)
-          tNode.flags |= TNodeFlags.hasHostBindings;
-
-        const lifeCycleHooks: OnChanges&OnInit&DoCheck = def.type.prototype;
-        // Only push a node index into the preOrderHooks array if this is the first
-        // pre-order hook found on this node.
-        if (!preOrderHooksFound &&
-            (lifeCycleHooks.ngOnChanges || lifeCycleHooks.ngOnInit || lifeCycleHooks.ngDoCheck)) {
-          // We will push the actual hook function into this array later during dir instantiation.
-          // We cannot do it now because we must ensure hooks are registered in the same
-          // order that directives are created (i.e. injection order).
-          (tView.preOrderHooks || (tView.preOrderHooks = [])).push(tNode.index);
-          preOrderHooksFound = true;
-        }
-
-        if (!preOrderCheckHooksFound && (lifeCycleHooks.ngOnChanges || lifeCycleHooks.ngDoCheck)) {
-          (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(tNode.index);
-          preOrderCheckHooksFound = true;
-        }
-
-        directiveIdx++;
-      }
-
-      initializeInputAndOutputAliases(tView, tNode);
+      initializeDirectives(tView, lView, tNode, directiveDefs, exportsMap);
     }
     if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
   }
   // Merge the template attrs last so that they have the highest priority.
   tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
   return hasDirectives;
+}
+
+/** Initializes the data structures necessary for a list of directives to be instantiated. */
+export function initializeDirectives(
+    tView: TView, lView: LView<unknown>, tNode: TElementNode|TContainerNode|TElementContainerNode,
+    directives: DirectiveDef<unknown>[], exportsMap: {[key: string]: number;}|null) {
+  ngDevMode && assertFirstCreatePass(tView);
+  initTNodeFlags(tNode, tView.data.length, directives.length);
+
+  // When the same token is provided by several directives on the same node, some rules apply in
+  // the viewEngine:
+  // - viewProviders have priority over providers
+  // - the last directive in NgModule.declarations has priority over the previous one
+  // So to match these rules, the order in which providers are added in the arrays is very
+  // important.
+  for (let i = 0; i < directives.length; i++) {
+    const def = directives[i];
+    if (def.providersResolver) def.providersResolver(def);
+  }
+  let preOrderHooksFound = false;
+  let preOrderCheckHooksFound = false;
+  let directiveIdx = allocExpando(tView, lView, directives.length, null);
+  ngDevMode &&
+      assertSame(
+          directiveIdx, tNode.directiveStart,
+          'TNode.directiveStart should point to just allocated space');
+
+  for (let i = 0; i < directives.length; i++) {
+    const def = directives[i];
+    // Merge the attrs in the order of matches. This assumes that the first directive is the
+    // component itself, so that the component has the least priority.
+    tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, def.hostAttrs);
+
+    configureViewWithDirective(tView, tNode, lView, directiveIdx, def);
+    saveNameToExportMap(directiveIdx, def, exportsMap);
+
+    if (def.contentQueries !== null) tNode.flags |= TNodeFlags.hasContentQuery;
+    if (def.hostBindings !== null || def.hostAttrs !== null || def.hostVars !== 0)
+      tNode.flags |= TNodeFlags.hasHostBindings;
+
+    const lifeCycleHooks: OnChanges&OnInit&DoCheck = def.type.prototype;
+    // Only push a node index into the preOrderHooks array if this is the first
+    // pre-order hook found on this node.
+    if (!preOrderHooksFound &&
+        (lifeCycleHooks.ngOnChanges || lifeCycleHooks.ngOnInit || lifeCycleHooks.ngDoCheck)) {
+      // We will push the actual hook function into this array later during dir instantiation.
+      // We cannot do it now because we must ensure hooks are registered in the same
+      // order that directives are created (i.e. injection order).
+      (tView.preOrderHooks || (tView.preOrderHooks = [])).push(tNode.index);
+      preOrderHooksFound = true;
+    }
+
+    if (!preOrderCheckHooksFound && (lifeCycleHooks.ngOnChanges || lifeCycleHooks.ngDoCheck)) {
+      (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(tNode.index);
+      preOrderCheckHooksFound = true;
+    }
+
+    directiveIdx++;
+  }
+
+  initializeInputAndOutputAliases(tView, tNode);
 }
 
 /**
@@ -1200,7 +1209,7 @@ function instantiateAllDirectives(
   }
 }
 
-function invokeDirectivesHostBindings(tView: TView, lView: LView, tNode: TNode) {
+export function invokeDirectivesHostBindings(tView: TView, lView: LView, tNode: TNode) {
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
   const elementIndex = tNode.index;
