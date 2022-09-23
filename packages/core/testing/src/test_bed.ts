@@ -90,10 +90,10 @@ export interface TestBed {
   compileComponents(): Promise<any>;
 
   inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions&{
-    optional: true
-  }): T|null;
+    optional?: false
+  }): T;
+  inject<T>(token: ProviderToken<T>, notFoundValue: null|undefined, options: InjectOptions): T|null;
   inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
-  inject<T>(token: ProviderToken<T>, notFoundValue: null, options?: InjectOptions): T|null;
   /** @deprecated use object-based flags (`InjectOptions`) instead. */
   inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /** @deprecated use object-based flags (`InjectOptions`) instead. */
@@ -299,11 +299,12 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.overrideProvider(token, provider);
   }
 
-  static inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
-  static inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions&{
+  static inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions&{
     optional?: false
   }): T;
-  static inject<T>(token: ProviderToken<T>, notFoundValue: null, options?: InjectOptions): T|null;
+  static inject<T>(token: ProviderToken<T>, notFoundValue: null|undefined, options: InjectOptions):
+      T|null;
+  static inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
   /** @deprecated use object-based flags (`InjectOptions`) instead. */
   static inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /** @deprecated use object-based flags (`InjectOptions`) instead. */

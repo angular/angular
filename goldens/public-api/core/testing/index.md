@@ -117,12 +117,12 @@ export interface TestBed {
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {
-        optional: true;
-    }): T | null;
+        optional?: false;
+    }): T;
+    // (undocumented)
+    inject<T>(token: ProviderToken<T>, notFoundValue: null | undefined, options: InjectOptions): T | null;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
-    // (undocumented)
-    inject<T>(token: ProviderToken<T>, notFoundValue: null, options?: InjectOptions): T | null;
     // @deprecated (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     // @deprecated (undocumented)
