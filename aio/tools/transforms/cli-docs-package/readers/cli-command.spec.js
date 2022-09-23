@@ -106,7 +106,7 @@ describe('cli-command reader', () => {
       expect(doc.longDescriptionDoc).toEqual({
         docType: 'content',
         startingLine: 0,
-        fileInfo: {realProjectRelativePath: 'packages/angular/cli/src/commands/add/long-description.md'}
+        fileInfo: {projectRelativePath: 'packages/angular/cli/src/commands/add/long-description.md'}
       });
     });
   });
