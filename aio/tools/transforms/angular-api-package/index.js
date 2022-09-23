@@ -42,7 +42,7 @@ module.exports =
         .processor(require('./processors/collectPackageContentDocs'))
         .processor(require('./processors/processPackages'))
         .processor(require('./processors/processNgModuleDocs'))
-        .processor(require('./processors/fixupRealProjectRelativePath'))
+        .processor(require('./processors/fixupProjectRelativePath'))
         .processor(require('./processors/processAliasDocs'))
         .processor(require('./processors/mergeOverriddenImplementation'))
 
