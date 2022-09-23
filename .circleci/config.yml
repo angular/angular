@@ -149,6 +149,7 @@ orbs:
   # to make sure that snapshot builds are not deployed out of order, resulting in Git
   # push conflicts.
   queue: eddiewebb/queue@1.5.0
+  devinfra: angular/dev-infra@1.0.2
 
 commands:
   checkout_and_rebase:
@@ -156,18 +157,9 @@ commands:
     steps:
       - checkout
       # After checkout, rebase on top of target branch.
-      - run:
-          name: Rebase PR on target branch
-          environment:
-            CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
-            CIRCLE_GIT_REVISION: << pipeline.git.revision >>
-          command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              # User is required for rebase.
-              git config user.name "angular-ci"
-              git config user.email "angular-ci"
-              node .circleci/rebase-pr.js
-            fi
+      - devinfra/rebase-pr-on-target-branch:
+          base_revision: << pipeline.git.base_revision >>
+          head_revision: << pipeline.git.revision >>
 
 # -----------------------------------------------------------------------------------------
 # Job definitions. Jobs which are defined just here, will not run automatically. Each job
