@@ -13,8 +13,8 @@ Usage analytics may include the following information:
 *   Node and Angular CLI version \(local version only\).
 *   How long each command took to initialize and execute.
 *   Command name that was run.
-*   For Schematics commands \(add, generate, new and update\), a list of selected flags.
-*   For build commands \(build, serve\), the number and size of bundles \(initial and lazy\), compilation units, the time it took to build and rebuild, and basic Angular-specific API usage.
+*   For Schematics commands \(add, generate and new\), the schematic collection and name and a list of selected flags.
+*   For build commands \(build, serve\), the builder name, the number and size of bundles \(initial and lazy\), compilation units, the time it took to build and rebuild, and basic Angular-specific API usage.
 *   Error code of exceptions and crash data. No stack trace is collected.
 
 Only Angular owned and developed schematics and builders are reported.
@@ -35,7 +35,7 @@ To disable analytics gathering, run the following command:
 <code-example format="shell" language="shell">
 
 &num; Disable all usage analytics.
-ng analytics off
+ng analytics disable
 
 </code-example>
 
@@ -46,7 +46,7 @@ To enable usage analytics, run the following command:
 <code-example format="shell" language="shell">
 
 &num; Enable all usage analytics.
-ng analytics on
+ng analytics enable
 
 </code-example>
 
