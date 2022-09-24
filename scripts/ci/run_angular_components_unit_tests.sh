@@ -13,6 +13,16 @@ cd ${COMPONENTS_REPO_TMP_DIR}
 # Create a symlink for the Bazel binary installed through NPM, as running through Yarn introduces OOM errors.
 ./scripts/circleci/setup_bazel_binary.sh
 
+
+# Properly wire up the components repo CircleCI Bazel configuration
+# Also enable RBE. The credentials are expected to be set up already.
+echo "import %workspace%/.circleci/bazel.rc" >> ./.bazelrc.user
+echo "build --config=remote" >> ./.bazelrc.user
+
 # Now actually run the tests. The dev-app and all its subpackages are excluded as they fail
 # to compile due to limitations in Ivy's type checker (see FW-1352 and FW-1433)
-bazel test --build_tag_filters=-docs-package,-e2e,-browser:firefox-local --test_tag_filters=-e2e,-browser:firefox-local --config=ivy -- src/... -src/dev-app/...
+bazel test \
+  --build_tag_filters=-docs-package,-e2e,-browser:firefox \
+  --test_tag_filters=-e2e,-browser:firefox \
+  --build_tests_only \
+  -- src/...

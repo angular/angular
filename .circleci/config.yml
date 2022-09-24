@@ -78,6 +78,9 @@ var_11: &only_release_branches
         - master
         - /\d+\.\d+\.x/
 
+orbs:
+  devinfra: angular/dev-infra@1.0.8
+
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
 # **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
@@ -162,6 +165,7 @@ commands:
             CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
             CIRCLE_GIT_REVISION: << pipeline.git.revision >>
           command: ./.circleci/env.sh
+      - devinfra/setup-bazel-remote-exec
       - run:
           # Configure git as the CircleCI `checkout` command does.
           # This is needed because we only checkout on the setup job.

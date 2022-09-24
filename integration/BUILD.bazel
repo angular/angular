@@ -82,7 +82,7 @@ INTEGRATION_TESTS = {
     "ng_elements": {"tags": ["no-ivy-aot"]},
     "ng_elements_schematics": {"tags": ["ivy-only"]},
     "ng_update": {},
-    "ng_update_migrations": {"tags": ["no-ivy-aot"]},
+    "ng_update_migrations": {"tags": ["manual", "no-ivy-aot"]},
     "ngcc": {"tags": ["no-ivy-aot"]},
     "platform-server": {"tags": ["no-ivy-aot"]},
     "service-worker-schema": {},
