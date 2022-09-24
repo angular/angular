@@ -25,6 +25,10 @@ $_legacy-theme-warning: 'Angular Material themes should be created from a map co
 // comprehensive theme configurations.
 $_enable-strict-theme-config: false;
 
+// Flag whether to disable theme definitions copying color values to the top-level theme config.
+// This copy is to preserve backwards compatibility.
+$_disable-color-backwards-compatibility: false;
+
 // These variable are not intended to be overridden externally. They use `!default` to
 // avoid being reset every time this file is imported.
 $_emitted-color: () !default;
@@ -436,7 +440,7 @@ $_emitted-density: () !default;
 // is stored in `$theme.color` which contains a property for `primary`. This method copies
 // the map from `$theme.color` to `$theme` for backwards compatibility.
 @function private-create-backwards-compatibility-theme($theme) {
-  @if not map.get($theme, color) {
+  @if ($_disable-color-backwards-compatibility or not map.get($theme, color)) {
     @return $theme;
   }
   $color: map.get($theme, color);
