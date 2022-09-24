@@ -77,6 +77,7 @@ var_11: &only_release_branches
 # https://circleci.com/developer/orbs.
 orbs:
   node: circleci/node@5.0.1
+  devinfra: angular/dev-infra@1.0.8
 
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
@@ -91,7 +92,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: cimg/node:16.10.0
+      - image: cimg/node:16.13.0
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -101,7 +102,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: cimg/node:16.10.0-browsers
+      - image: cimg/node:16.13.0-browsers
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -144,6 +145,7 @@ commands:
             CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
             CIRCLE_GIT_REVISION: << pipeline.git.revision >>
           command: ./.circleci/env.sh
+      - devinfra/setup-bazel-remote-exec
       - run:
           # Configure git as the CircleCI `checkout` command does.
           # This is needed because we only checkout on the setup job.
@@ -700,16 +702,18 @@ jobs:
     executor: windows-executor
     steps:
       - checkout
-      - save_month_to_file
-      - init_environment
 
       # Setup the proper NodeJS version. The image comes pre-installed with `nvm-windows`.
+      # Note: This happens immediately after checkout because environment initialization logic
+      # might rely on Node and shouldn't use the older image-provided NodeJS version.
       - run:
           name: Install NodeJS version from `.nvmrc`.
           command: |
             nvm install $(cat .nvmrc)
             nvm use $(cat .nvmrc)
 
+      - save_month_to_file
+      - init_environment
       - restore_cache:
           keys:
             - *cache_key_win
