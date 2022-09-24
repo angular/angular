@@ -9,6 +9,7 @@
 import {HttpClient} from '@angular/common/http/src/client';
 import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '@angular/common/http/src/response';
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
+import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {toArray} from 'rxjs/operators';
 
 {
@@ -223,7 +224,9 @@ import {toArray} from 'rxjs/operators';
         client.request('GET', '/test', {headers: {foo: null!}}).subscribe();
         expect(() => backend.expectOne('/test').request.headers.has('random-header'))
             .toThrowError(
-                'Unexpected value of the `foo` header provided. ' +
+                `NG0${
+                    RuntimeErrorCode
+                        .INVAILD_HTTP_HEADER}: Unexpected value of the \`foo\` header provided. ` +
                 'Expecting either a string or an array, but got: `null`.');
       });
     });

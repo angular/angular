@@ -10,6 +10,7 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
 import {JSONP_ERR_HEADERS_NOT_SUPPORTED, JSONP_ERR_NO_CALLBACK, JSONP_ERR_WRONG_METHOD, JSONP_ERR_WRONG_RESPONSE_TYPE, JsonpClientBackend} from '@angular/common/http/src/jsonp';
 import {HttpRequest} from '@angular/common/http/src/request';
 import {HttpErrorResponse, HttpEventType} from '@angular/common/http/src/response';
+import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {toArray} from 'rxjs/operators';
 
 import {MockDocument} from './jsonp_mock';
@@ -78,14 +79,18 @@ const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
     describe('throws an error', () => {
       it('when request method is not JSONP',
          () => expect(() => backend.handle(SAMPLE_REQ.clone<never>({method: 'GET'})))
-                   .toThrowError(JSONP_ERR_WRONG_METHOD));
+                   .toThrowError(`NG0${RuntimeErrorCode.INVALID_HTTP_REQUEST_METHOD}: ${
+                       JSONP_ERR_WRONG_METHOD}`));
       it('when response type is not json',
          () => expect(() => backend.handle(SAMPLE_REQ.clone<never>({responseType: 'text'})))
-                   .toThrowError(JSONP_ERR_WRONG_RESPONSE_TYPE));
+                   .toThrowError(`NG0${RuntimeErrorCode.INVALID_HTTP_RESPONSE}: ${
+                       JSONP_ERR_WRONG_RESPONSE_TYPE}`));
       it('when headers are set in request',
-         () => expect(() => backend.handle(SAMPLE_REQ.clone<never>({
-                 headers: new HttpHeaders({'Content-Type': 'application/json'})
-               }))).toThrowError(JSONP_ERR_HEADERS_NOT_SUPPORTED));
+         () => expect(
+                   () => backend.handle(SAMPLE_REQ.clone<never>(
+                       {headers: new HttpHeaders({'Content-Type': 'application/json'})})))
+                   .toThrowError(`NG0${RuntimeErrorCode.UNEXPECTED_HTTP_JSON_HEADER}: ${
+                       JSONP_ERR_HEADERS_NOT_SUPPORTED}`));
       it('when callback is never called', done => {
         backend.handle(SAMPLE_REQ).subscribe(undefined, (err: HttpErrorResponse) => {
           expect(err.status).toBe(0);

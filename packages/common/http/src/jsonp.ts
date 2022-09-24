@@ -10,10 +10,12 @@ import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
+import {RuntimeError} from '../../../core/src/errors';
+import {RuntimeErrorCode} from '../../src/errors';
+
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpRequest} from './request';
 import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response';
-
 
 // Every request made through JSONP needs a callback name that's unique across the
 // whole page. Each request is assigned an id and the callback name is constructed
@@ -85,15 +87,21 @@ export class JsonpClientBackend implements HttpBackend {
     // Firstly, check both the method and response type. If either doesn't match
     // then the request was improperly routed here and cannot be handled.
     if (req.method !== 'JSONP') {
-      throw new Error(JSONP_ERR_WRONG_METHOD);
+      const errorMessage =
+          (typeof ngDevMode === 'undefined' || ngDevMode) ? JSONP_ERR_WRONG_METHOD : '';
+      throw new RuntimeError(RuntimeErrorCode.INVALID_HTTP_REQUEST_METHOD, errorMessage);
     } else if (req.responseType !== 'json') {
-      throw new Error(JSONP_ERR_WRONG_RESPONSE_TYPE);
+      const errorMessage =
+          (typeof ngDevMode === 'undefined' || ngDevMode) ? JSONP_ERR_WRONG_RESPONSE_TYPE : '';
+      throw new RuntimeError(RuntimeErrorCode.INVALID_HTTP_RESPONSE, errorMessage);
     }
 
     // Check the request headers. JSONP doesn't support headers and
     // cannot set any that were supplied.
     if (req.headers.keys().length > 0) {
-      throw new Error(JSONP_ERR_HEADERS_NOT_SUPPORTED);
+      const errorMessage =
+          (typeof ngDevMode === 'undefined' || ngDevMode) ? JSONP_ERR_HEADERS_NOT_SUPPORTED : '';
+      throw new RuntimeError(RuntimeErrorCode.UNEXPECTED_HTTP_JSON_HEADER, errorMessage);
     }
 
     // Everything else happens inside the Observable boundary.

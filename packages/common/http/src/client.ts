@@ -10,6 +10,9 @@ import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {concatMap, filter, map} from 'rxjs/operators';
 
+import {RuntimeError} from '../../../core/src/errors';
+import {RuntimeErrorCode} from '../../src/errors';
+
 import {HttpHandler} from './backend';
 import {HttpContext} from './context';
 import {HttpHeaders} from './headers';
@@ -568,7 +571,10 @@ export class HttpClient {
             return res$.pipe(map((res: HttpResponse<any>) => {
               // Validate that the body is an ArrayBuffer.
               if (res.body !== null && !(res.body instanceof ArrayBuffer)) {
-                throw new Error('Response is not an ArrayBuffer.');
+                const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+                    'Response is not an ArrayBuffer.' :
+                    '';
+                throw new RuntimeError(RuntimeErrorCode.INVALID_HTTP_RESPONSE, errorMessage);
               }
               return res.body;
             }));
@@ -576,7 +582,10 @@ export class HttpClient {
             return res$.pipe(map((res: HttpResponse<any>) => {
               // Validate that the body is a Blob.
               if (res.body !== null && !(res.body instanceof Blob)) {
-                throw new Error('Response is not a Blob.');
+                const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+                    'Response is not a Blob.' :
+                    '';
+                throw new RuntimeError(RuntimeErrorCode.INVALID_HTTP_RESPONSE, errorMessage);
               }
               return res.body;
             }));
@@ -584,7 +593,10 @@ export class HttpClient {
             return res$.pipe(map((res: HttpResponse<any>) => {
               // Validate that the body is a string.
               if (res.body !== null && typeof res.body !== 'string') {
-                throw new Error('Response is not a string.');
+                const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+                    'Response is not a string.' :
+                    '';
+                throw new RuntimeError(RuntimeErrorCode.INVALID_HTTP_RESPONSE, errorMessage);
               }
               return res.body;
             }));
@@ -598,7 +610,10 @@ export class HttpClient {
         return res$;
       default:
         // Guard against new future observe types being added.
-        throw new Error(`Unreachable: unhandled observe type ${options.observe}}`);
+        const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+            `Unreachable: unhandled observe type ${options.observe}}` :
+            '';
+        throw new RuntimeError(RuntimeErrorCode.UNHANDLED_HTTP_OBSERVE_TYPE, errorMessage);
     }
   }
 
