@@ -7,6 +7,7 @@
  */
 
 import {HttpHeaders} from '@angular/common/http/src/headers';
+import {RuntimeErrorCode} from '@angular/common/src/errors';
 
 {
   describe('HttpHeaders', () => {
@@ -53,7 +54,9 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
         const headers = new HttpHeaders({foo: null!});
         expect(() => headers.get('foo'))
             .toThrowError(
-                'Unexpected value of the `foo` header provided. ' +
+                `NG0${
+                    RuntimeErrorCode
+                        .INVAILD_HTTP_HEADER}: Unexpected value of the \`foo\` header provided. ` +
                 'Expecting either a string or an array, but got: `null`.');
       });
 
@@ -63,7 +66,9 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
         const headers = new HttpHeaders({bar: undefined!});
         expect(() => headers.get('bar'))
             .toThrowError(
-                'Unexpected value of the `bar` header provided. ' +
+                `NG0${
+                    RuntimeErrorCode
+                        .INVAILD_HTTP_HEADER}: Unexpected value of the \`bar\` header provided. ` +
                 'Expecting either a string or an array, but got: `undefined`.');
       });
     });
