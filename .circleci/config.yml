@@ -100,9 +100,8 @@ var_15: &ignore_presubmit_branch_filter
 # Runs a script that sets up the Bazel remote execution. This will be used by jobs that run
 # Bazel primarily and should benefit from remote caching and execution.
 var_16: &setup_bazel_remote_execution
-  run:
-    name: 'Setup bazel RBE remote execution'
-    command: ./scripts/bazel/setup-remote-execution.sh
+  devinfra/setup-bazel-remote-exec:
+    bazelrc: ./.bazelrc.user
 
 # Sets up the bazel binary globally. We don't want to access bazel through Yarn and NodeJS
 # because it could mean that the Bazel child process only has access to limited memory.
@@ -149,7 +148,7 @@ orbs:
   # to make sure that snapshot builds are not deployed out of order, resulting in Git
   # push conflicts.
   queue: eddiewebb/queue@1.5.0
-  devinfra: angular/dev-infra@1.0.3
+  devinfra: angular/dev-infra@1.0.6
 
 commands:
   checkout_and_rebase:
