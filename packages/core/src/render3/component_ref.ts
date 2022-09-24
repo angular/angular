@@ -19,7 +19,7 @@ import {createElementRef, ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
-import {assertDefined, assertIndexInRange} from '../util/assert';
+import {assertDefined, assertGreaterThan, assertIndexInRange} from '../util/assert';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 
@@ -399,6 +399,8 @@ function createRootComponent<T>(
 
   // We're guaranteed for the `componentOffset` to be positive here
   // since a root component always matches a component def.
+  ngDevMode &&
+      assertGreaterThan(rootTNode.componentOffset, -1, 'componentOffset must be great than -1');
   const component = getNodeInjectable(
       rootLView, tView, rootTNode.directiveStart + rootTNode.componentOffset, rootTNode);
   componentView[CONTEXT] = rootLView[CONTEXT] = component;
