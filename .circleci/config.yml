@@ -145,6 +145,7 @@ commands:
             CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
             CIRCLE_GIT_REVISION: << pipeline.git.revision >>
           command: ./.circleci/env.sh
+      - devinfra/setup-bazel-remote-exec
       - run:
           # Configure git as the CircleCI `checkout` command does.
           # This is needed because we only checkout on the setup job.
