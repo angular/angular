@@ -79,10 +79,6 @@ Zone.__load_patch('IntersectionObserver', (global: any, Zone: ZoneType, api: _Zo
   patchClass('IntersectionObserver');
 });
 
-Zone.__load_patch('FileReader', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  patchClass('FileReader');
-});
-
 Zone.__load_patch('on_property', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   propertyDescriptorPatch(api, global);
 });
