@@ -31,6 +31,10 @@ Zone.__symbol__ = function(name) {};
 
 Zone.__load_patch = function(name, fn) {};
 
+Zone.enablePatch = function() {};
+Zone.disablePatch = function() {};
+Zone.isPatchEnabled = function() {};
+
 /**
  * @type {!Zone} Returns the current [Zone]. Returns the current zone. The only way to change
  * the current zone is by invoking a run() method, which will update the current zone for the
