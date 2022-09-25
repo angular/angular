@@ -47,7 +47,7 @@ import {matBottomSheetAnimations} from './bottom-sheet-animations';
     'class': 'mat-bottom-sheet-container',
     'tabindex': '-1',
     '[attr.role]': '_config.role',
-    '[attr.aria-modal]': '_config.isModal',
+    '[attr.aria-modal]': '_config.ariaModal',
     '[attr.aria-label]': '_config.ariaLabel',
     '[@state]': '_animationState',
     '(@state.start)': '_onAnimationStart($event)',

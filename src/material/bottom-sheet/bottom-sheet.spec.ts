@@ -156,6 +156,7 @@ describe('MatBottomSheet', () => {
 
     const containerElement = overlayContainerElement.querySelector('mat-bottom-sheet-container')!;
     expect(containerElement.getAttribute('role')).toBe('dialog');
+    expect(containerElement.getAttribute('aria-modal')).toBe('true');
   });
 
   it('should close a bottom sheet via the escape key', fakeAsync(() => {

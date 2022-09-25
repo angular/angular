@@ -66,6 +66,7 @@ export const matBottomSheetAnimations: {
 // @public
 export class MatBottomSheetConfig<D = any> {
     ariaLabel?: string | null;
+    ariaModal?: boolean;
     autoFocus?: AutoFocusTarget | string | boolean;
     backdropClass?: string;
     closeOnNavigation?: boolean;
