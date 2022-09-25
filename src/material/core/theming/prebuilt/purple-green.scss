@@ -2,6 +2,7 @@
 @use '../../core';
 @use '../palette';
 @use '../theming';
+@use '../../typography/all-typography';
 
 
 // Include non-theme styles for core.
@@ -16,7 +17,7 @@ $theme: theming.define-dark-theme((
     primary: $primary,
     accent: $accent
   ),
-  typography: null,
+  typography: all-typography.define-typography-config(),
   density: 0,
 ));
 
