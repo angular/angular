@@ -328,7 +328,7 @@ export class ShadowCss {
   private _scopeAnimationRule(
       rule: CssRule, scopeSelector: string, unscopedKeyframesSet: ReadonlySet<string>): CssRule {
     let content = rule.content.replace(
-        /((?:^|\s+)(?:-webkit-)?animation(?:\s*):(?:\s*))([^;]+)/g,
+        /((?:^|\s+|;)(?:-webkit-)?animation(?:\s*):(?:\s*))([^;]+)/g,
         (_, start, animationDeclarations) => start +
             animationDeclarations.replace(
                 this._animationDeclarationKeyframesRe,
@@ -347,7 +347,7 @@ export class ShadowCss {
                   }
                 }));
     content = content.replace(
-        /((?:^|\s+)(?:-webkit-)?animation-name(?:\s*):(?:\s*))([^;]+)/g,
+        /((?:^|\s+|;)(?:-webkit-)?animation-name(?:\s*):(?:\s*))([^;]+)/g,
         (_match, start, commaSeparatedKeyframes) => `${start}${
             commaSeparatedKeyframes.split(',')
                 .map(
