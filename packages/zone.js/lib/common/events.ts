@@ -10,7 +10,7 @@
  * @suppress {missingRequire}
  */
 
-import {ADD_EVENT_LISTENER_STR, attachOriginToPatched, FALSE_STR, isNode, ObjectGetPrototypeOf, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, zoneSymbol} from './utils';
+import {ADD_EVENT_LISTENER_STR, FALSE_STR, isNode, ObjectGetPrototypeOf, patchMethod, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, zoneSymbol} from './utils';
 
 
 /** @internal **/
@@ -236,19 +236,12 @@ export function patchEventTarget(
     // so we do not need to create a new object just for pass some data
     const taskData: any = {};
 
-    const nativeAddEventListener = proto[zoneSymbolAddEventListener] = proto[ADD_EVENT_LISTENER];
-    const nativeRemoveEventListener = proto[zoneSymbol(REMOVE_EVENT_LISTENER)] =
-        proto[REMOVE_EVENT_LISTENER];
-
-    const nativeListeners = proto[zoneSymbol(LISTENERS_EVENT_LISTENER)] =
-        proto[LISTENERS_EVENT_LISTENER];
-    const nativeRemoveAllListeners = proto[zoneSymbol(REMOVE_ALL_LISTENERS_EVENT_LISTENER)] =
-        proto[REMOVE_ALL_LISTENERS_EVENT_LISTENER];
+    const nativeAddEventListener = proto[ADD_EVENT_LISTENER];
+    const nativeRemoveEventListener = proto[REMOVE_EVENT_LISTENER];
 
     let nativePrependEventListener: any;
     if (patchOptions && patchOptions.prepend) {
-      nativePrependEventListener = proto[zoneSymbol(patchOptions.prepend)] =
-          proto[patchOptions.prepend];
+      nativePrependEventListener = proto[patchOptions.prepend];
     }
 
     /**
@@ -361,19 +354,19 @@ export function patchEventTarget(
     const makeAddListener = function(
         nativeListener: any, addSource: string, customScheduleFn: any, customCancelFn: any,
         returnTarget = false, prepend = false) {
-      return function(this: unknown) {
-        const target = this || _global;
-        let eventName = arguments[0];
+      return function(self: any, args: any[]) {
+        const target = self || _global;
+        let eventName = args[0];
         if (patchOptions && patchOptions.transferEventName) {
           eventName = patchOptions.transferEventName(eventName);
         }
-        let delegate = arguments[1];
+        let delegate = args[1];
         if (!delegate) {
-          return nativeListener.apply(this, arguments);
+          return nativeListener.apply(self, args);
         }
         if (isNode && eventName === 'uncaughtException') {
           // don't patch uncaughtException of nodejs to prevent endless loop
-          return nativeListener.apply(this, arguments);
+          return nativeListener.apply(self, args);
         }
 
         // don't create the bind delegate function for handleEvent
@@ -382,18 +375,18 @@ export function patchEventTarget(
         let isHandleEvent = false;
         if (typeof delegate !== 'function') {
           if (!delegate.handleEvent) {
-            return nativeListener.apply(this, arguments);
+            return nativeListener.apply(self, args);
           }
           isHandleEvent = true;
         }
 
-        if (validateHandler && !validateHandler(nativeListener, delegate, target, arguments)) {
+        if (validateHandler && !validateHandler(nativeListener, delegate, target, args)) {
           return;
         }
 
         const passive =
             passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
-        const options = buildEventListenerOptions(arguments[2], passive);
+        const options = buildEventListenerOptions(args[2], passive);
 
         if (unpatchedEvents) {
           // check unpatched list
@@ -402,7 +395,7 @@ export function patchEventTarget(
               if (passive) {
                 return nativeListener.call(target, eventName, delegate, options);
               } else {
-                return nativeListener.apply(this, arguments);
+                return nativeListener.apply(self, args);
               }
             }
           }
@@ -506,31 +499,36 @@ export function patchEventTarget(
       };
     };
 
-    proto[ADD_EVENT_LISTENER] = makeAddListener(
-        nativeAddEventListener, ADD_EVENT_LISTENER_SOURCE, customSchedule, customCancel,
-        returnTarget);
+
+    patchMethod(
+        proto, ADD_EVENT_LISTENER,
+        () => makeAddListener(
+            nativeAddEventListener, ADD_EVENT_LISTENER_SOURCE, customSchedule, customCancel,
+            returnTarget));
+
     if (nativePrependEventListener) {
-      proto[PREPEND_EVENT_LISTENER] = makeAddListener(
-          nativePrependEventListener, PREPEND_EVENT_LISTENER_SOURCE, customSchedulePrepend,
-          customCancel, returnTarget, true);
+      patchMethod(
+          proto, PREPEND_EVENT_LISTENER,
+          () => makeAddListener(
+              nativePrependEventListener, PREPEND_EVENT_LISTENER_SOURCE, customSchedulePrepend,
+              customCancel, returnTarget, true));
     }
 
-    proto[REMOVE_EVENT_LISTENER] = function() {
-      const target = this || _global;
-      let eventName = arguments[0];
+    patchMethod(proto, REMOVE_EVENT_LISTENER, () => (self: any, args: any[]) => {
+      const target = self || _global;
+      let eventName = args[0];
       if (patchOptions && patchOptions.transferEventName) {
         eventName = patchOptions.transferEventName(eventName);
       }
-      const options = arguments[2];
+      const options = args[2];
 
       const capture = !options ? false : typeof options === 'boolean' ? true : options.capture;
-      const delegate = arguments[1];
+      const delegate = args[1];
       if (!delegate) {
-        return nativeRemoveEventListener.apply(this, arguments);
+        return nativeRemoveEventListener.apply(self, args);
       }
 
-      if (validateHandler &&
-          !validateHandler(nativeRemoveEventListener, delegate, target, arguments)) {
+      if (validateHandler && !validateHandler(nativeRemoveEventListener, delegate, target, args)) {
         return;
       }
 
@@ -572,12 +570,17 @@ export function patchEventTarget(
       // from zone kept existingTasks, the callback maybe
       // added outside of zone, we need to call native removeEventListener
       // to try to remove it.
-      return nativeRemoveEventListener.apply(this, arguments);
-    };
+      return nativeRemoveEventListener.apply(self, args);
+    });
 
-    proto[LISTENERS_EVENT_LISTENER] = function() {
-      const target = this || _global;
-      let eventName = arguments[0];
+    if (!proto[LISTENERS_EVENT_LISTENER]) {
+      proto[LISTENERS_EVENT_LISTENER] = function() {
+        return [];
+      };
+    }
+    patchMethod(proto, LISTENERS_EVENT_LISTENER, () => (self: any, args: any[]) => {
+      const target = self || _global;
+      let eventName = args[0];
       if (patchOptions && patchOptions.transferEventName) {
         eventName = patchOptions.transferEventName(eventName);
       }
@@ -592,12 +595,15 @@ export function patchEventTarget(
         listeners.push(delegate);
       }
       return listeners;
-    };
+    });
 
-    proto[REMOVE_ALL_LISTENERS_EVENT_LISTENER] = function() {
-      const target = this || _global;
+    if (!proto[REMOVE_ALL_LISTENERS_EVENT_LISTENER]) {
+      proto[REMOVE_ALL_LISTENERS_EVENT_LISTENER] = function() {};
+    }
+    patchMethod(proto, REMOVE_ALL_LISTENERS_EVENT_LISTENER, () => (self: any, args: any[]) => {
+      const target = self || _global;
 
-      let eventName = arguments[0];
+      let eventName = args[0];
       if (!eventName) {
         const keys = Object.keys(target);
         for (let i = 0; i < keys.length; i++) {
@@ -609,11 +615,11 @@ export function patchEventTarget(
           // so just keep removeListener eventListener until
           // all other eventListeners are removed
           if (evtName && evtName !== 'removeListener') {
-            this[REMOVE_ALL_LISTENERS_EVENT_LISTENER].call(this, evtName);
+            self[REMOVE_ALL_LISTENERS_EVENT_LISTENER].call(self, evtName);
           }
         }
         // remove removeListener listener finally
-        this[REMOVE_ALL_LISTENERS_EVENT_LISTENER].call(this, 'removeListener');
+        self[REMOVE_ALL_LISTENERS_EVENT_LISTENER].call(self, 'removeListener');
       } else {
         if (patchOptions && patchOptions.transferEventName) {
           eventName = patchOptions.transferEventName(eventName);
@@ -631,7 +637,7 @@ export function patchEventTarget(
             for (let i = 0; i < removeTasks.length; i++) {
               const task = removeTasks[i];
               let delegate = task.originalDelegate ? task.originalDelegate : task.callback;
-              this[REMOVE_EVENT_LISTENER].call(this, eventName, delegate, task.options);
+              self[REMOVE_EVENT_LISTENER].call(self, eventName, delegate, task.options);
             }
           }
 
@@ -640,26 +646,16 @@ export function patchEventTarget(
             for (let i = 0; i < removeTasks.length; i++) {
               const task = removeTasks[i];
               let delegate = task.originalDelegate ? task.originalDelegate : task.callback;
-              this[REMOVE_EVENT_LISTENER].call(this, eventName, delegate, task.options);
+              self[REMOVE_EVENT_LISTENER].call(self, eventName, delegate, task.options);
             }
           }
         }
       }
 
       if (returnTarget) {
-        return this;
+        return self;
       }
-    };
-
-    // for native toString patch
-    attachOriginToPatched(proto[ADD_EVENT_LISTENER], nativeAddEventListener);
-    attachOriginToPatched(proto[REMOVE_EVENT_LISTENER], nativeRemoveEventListener);
-    if (nativeRemoveAllListeners) {
-      attachOriginToPatched(proto[REMOVE_ALL_LISTENERS_EVENT_LISTENER], nativeRemoveAllListeners);
-    }
-    if (nativeListeners) {
-      attachOriginToPatched(proto[LISTENERS_EVENT_LISTENER], nativeListeners);
-    }
+    });
     return true;
   }
 
@@ -703,10 +699,10 @@ export function findEventTasks(target: any, eventName: string): Task[] {
   }
 }
 
-export function patchEventPrototype(global: any, api: _ZonePrivate) {
+export function patchEventPrototype(global: any) {
   const Event = global['Event'];
   if (Event && Event.prototype) {
-    api.patchMethod(
+    patchMethod(
         Event.prototype, 'stopImmediatePropagation',
         (delegate: Function) => function(self: any, args: any[]) {
           self[IMMEDIATE_PROPAGATION_SYMBOL] = true;
