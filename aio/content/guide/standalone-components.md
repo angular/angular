@@ -220,7 +220,7 @@ This pattern is useful for Angular libraries that publish a set of cooperating d
 As an alternative to publishing a `NgModule`, library authors might want to export an array of cooperating directives:
 
 ```ts
-export CAROUSEL_DIRECTIVES = [ImageCarouselComponent, ImageSlideComponent] as const;
+export const CAROUSEL_DIRECTIVES = [ImageCarouselComponent, ImageSlideComponent] as const;
 ```
 
 Such an array could be imported by applications using `NgModule`s and added to the `@NgModule.imports`. Please note the presence of the TypeScript’s `as const` construct: it gives Angular compiler additional information required for proper compilation and is a recommended practice (as it makes the exported array immutable from the TypeScript point of view).
