@@ -72,20 +72,9 @@ export function patchPrototype(prototype: any, fnNames: string[]) {
   const source = prototype.constructor['name'];
   for (let i = 0; i < fnNames.length; i++) {
     const name = fnNames[i];
-    const delegate = prototype[name];
-    if (delegate) {
-      const prototypeDesc = ObjectGetOwnPropertyDescriptor(prototype, name);
-      if (!isPropertyWritable(prototypeDesc)) {
-        continue;
-      }
-      prototype[name] = ((delegate: Function) => {
-        const patched: any = function(this: unknown) {
-          return delegate.apply(this, bindArguments(<any>arguments, source + '.' + name));
-        };
-        attachOriginToPatched(patched, delegate);
-        return patched;
-      })(delegate);
-    }
+    patchMethod(prototype, name, (delegate) => (self, args) => {
+      return delegate.apply(self, bindArguments(<any>args, source + '.' + name));
+    });
   }
 }
 
@@ -278,8 +267,6 @@ export function patchOnProperties(obj: any, properties: string[]|null, prototype
   }
 }
 
-const originalInstanceKey = zoneSymbol('originalInstance');
-
 // wrap some native API on `window`
 export function patchClass(className: string) {
   const OriginalClass = _global[className];
@@ -288,64 +275,15 @@ export function patchClass(className: string) {
   _global[zoneSymbol(className)] = OriginalClass;
 
   _global[className] = function() {
-    const a = bindArguments(<any>arguments, className);
-    switch (a.length) {
-      case 0:
-        this[originalInstanceKey] = new OriginalClass();
-        break;
-      case 1:
-        this[originalInstanceKey] = new OriginalClass(a[0]);
-        break;
-      case 2:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1]);
-        break;
-      case 3:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1], a[2]);
-        break;
-      case 4:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1], a[2], a[3]);
-        break;
-      default:
-        throw new Error('Arg list too long.');
-    }
+    const a = Zone.isPatchEnabled() ? bindArguments(<any>arguments, className) : arguments;
+    return new OriginalClass(...a);
   };
+  _global[className].prototype = OriginalClass.prototype;
 
   // attach original delegate to patched function
   attachOriginToPatched(_global[className], OriginalClass);
 
-  const instance = new OriginalClass(function() {});
-
-  let prop;
-  for (prop in instance) {
-    // https://bugs.webkit.org/show_bug.cgi?id=44721
-    if (className === 'XMLHttpRequest' && prop === 'responseBlob') continue;
-    (function(prop) {
-      if (typeof instance[prop] === 'function') {
-        _global[className].prototype[prop] = function() {
-          return this[originalInstanceKey][prop].apply(this[originalInstanceKey], arguments);
-        };
-      } else {
-        ObjectDefineProperty(_global[className].prototype, prop, {
-          set: function(fn) {
-            if (typeof fn === 'function') {
-              this[originalInstanceKey][prop] = wrapWithCurrentZone(fn, className + '.' + prop);
-              // keep callback in wrapped function so we can
-              // use it in Function.prototype.toString to return
-              // the native one.
-              attachOriginToPatched(this[originalInstanceKey][prop], fn);
-            } else {
-              this[originalInstanceKey][prop] = fn;
-            }
-          },
-          get: function() {
-            return this[originalInstanceKey][prop];
-          }
-        });
-      }
-    }(prop));
-  }
-
-  for (prop in OriginalClass) {
+  for (let prop in OriginalClass) {
     if (prop !== 'prototype' && OriginalClass.hasOwnProperty(prop)) {
       _global[className][prop] = OriginalClass[prop];
     }
