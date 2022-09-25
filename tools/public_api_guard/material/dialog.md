@@ -165,6 +165,7 @@ export class MatDialogConfig<D = any> {
     ariaDescribedBy?: string | null;
     ariaLabel?: string | null;
     ariaLabelledBy?: string | null;
+    ariaModal?: boolean;
     autoFocus?: AutoFocusTarget | string | boolean;
     backdropClass?: string | string[];
     closeOnNavigation?: boolean;

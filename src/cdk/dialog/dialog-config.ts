@@ -93,7 +93,7 @@ export class DialogConfig<D = unknown, R = unknown, C extends BasePortalOutlet =
   /** Dialog label applied via `aria-label` */
   ariaLabel?: string | null = null;
 
-  /** Whether this a modal dialog. Used to set the `aria-modal` attribute. */
+  /** Whether this is a modal dialog. Used to set the `aria-modal` attribute. */
   ariaModal?: boolean = true;
 
   /**
