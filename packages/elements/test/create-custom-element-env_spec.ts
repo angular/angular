@@ -8,45 +8,42 @@
 
 import {Component} from '@angular/core';
 import {createApplication} from '@angular/platform-browser';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {createCustomElement} from '../public_api';
 
-if (browserDetection.supportsCustomElements) {
-  describe('createCustomElement with env injector', () => {
-    let testContainer: HTMLDivElement;
+describe('createCustomElement with env injector', () => {
+  let testContainer: HTMLDivElement;
 
-    beforeEach(() => {
-      testContainer = document.createElement('div');
-      document.body.appendChild(testContainer);
-    });
-
-    afterEach(() => {
-      document.body.removeChild(testContainer);
-      (testContainer as any) = null;
-    });
-
-    it('should use provided EnvironmentInjector to create a custom element', async () => {
-      @Component({
-        standalone: true,
-        template: `Hello, standalone element!`,
-      })
-      class TestStandaloneCmp {
-      }
-
-      const appRef = await createApplication();
-
-      try {
-        const NgElementCtor = createCustomElement(TestStandaloneCmp, {injector: appRef.injector});
-
-        customElements.define('test-standalone-cmp', NgElementCtor);
-        const customEl = document.createElement('test-standalone-cmp');
-        testContainer.appendChild(customEl);
-
-        expect(testContainer.innerText).toBe('Hello, standalone element!');
-      } finally {
-        appRef.destroy();
-      }
-    });
+  beforeEach(() => {
+    testContainer = document.createElement('div');
+    document.body.appendChild(testContainer);
   });
-}
+
+  afterEach(() => {
+    document.body.removeChild(testContainer);
+    (testContainer as any) = null;
+  });
+
+  it('should use provided EnvironmentInjector to create a custom element', async () => {
+    @Component({
+      standalone: true,
+      template: `Hello, standalone element!`,
+    })
+    class TestStandaloneCmp {
+    }
+
+    const appRef = await createApplication();
+
+    try {
+      const NgElementCtor = createCustomElement(TestStandaloneCmp, {injector: appRef.injector});
+
+      customElements.define('test-standalone-cmp', NgElementCtor);
+      const customEl = document.createElement('test-standalone-cmp');
+      testContainer.appendChild(customEl);
+
+      expect(testContainer.innerText).toBe('Hello, standalone element!');
+    } finally {
+      appRef.destroy();
+    }
+  });
+});

@@ -9,7 +9,6 @@ import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {NAMESPACE_URIS} from '@angular/platform-browser/src/dom/dom_renderer';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
@@ -103,44 +102,40 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       });
     });
 
-    if (browserDetection.supportsShadowDom) {
-      it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',
-         () => {
-           const fixture = TestBed.createComponent(SomeApp);
-           const cmp = fixture.debugElement.query(By.css('cmp-shadow')).nativeElement;
-           const shadow = cmp.shadowRoot.querySelector('.shadow');
+    it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',
+       () => {
+         const fixture = TestBed.createComponent(SomeApp);
+         const cmp = fixture.debugElement.query(By.css('cmp-shadow')).nativeElement;
+         const shadow = cmp.shadowRoot.querySelector('.shadow');
 
-           expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');
+         expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');
 
-           const emulated = cmp.shadowRoot.querySelector('.emulated');
-           expect(window.getComputedStyle(emulated).color).toEqual('rgb(0, 0, 255)');
+         const emulated = cmp.shadowRoot.querySelector('.emulated');
+         expect(window.getComputedStyle(emulated).color).toEqual('rgb(0, 0, 255)');
 
-           const none = cmp.shadowRoot.querySelector('.none');
-           expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
-         });
-    }
+         const none = cmp.shadowRoot.querySelector('.none');
+         expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
+       });
 
-    if (browserDetection.supportsTemplateElement) {
-      it('should be able to append children to a <template> element', () => {
-        const template = document.createElement('template');
-        const child = document.createElement('div');
+    it('should be able to append children to a <template> element', () => {
+      const template = document.createElement('template');
+      const child = document.createElement('div');
 
-        renderer.appendChild(template, child);
+      renderer.appendChild(template, child);
 
-        expect(child.parentNode).toBe(template.content);
-      });
+      expect(child.parentNode).toBe(template.content);
+    });
 
-      it('should be able to insert children before others in a <template> element', () => {
-        const template = document.createElement('template');
-        const child = document.createElement('div');
-        const otherChild = document.createElement('div');
-        template.content.appendChild(child);
+    it('should be able to insert children before others in a <template> element', () => {
+      const template = document.createElement('template');
+      const child = document.createElement('div');
+      const otherChild = document.createElement('div');
+      template.content.appendChild(child);
 
-        renderer.insertBefore(template, otherChild, child);
+      renderer.insertBefore(template, otherChild, child);
 
-        expect(otherChild.parentNode).toBe(template.content);
-      });
-    }
+      expect(otherChild.parentNode).toBe(template.content);
+    });
   });
 }
 
