@@ -67,31 +67,9 @@ export class BrowserDetection {
         this._ua.indexOf('Edge') == -1;
   }
 
-  get supportsCustomElements() {
-    return (typeof (<any>global).customElements !== 'undefined');
-  }
-
-  get supportsDeprecatedCustomCustomElementsV0() {
-    return (typeof (document as any).registerElement !== 'undefined');
-  }
-
-  get supportsRegExUnicodeFlag(): boolean {
-    return RegExp.prototype.hasOwnProperty('unicode');
-  }
-
   get supportsShadowDom() {
     const testEl = document.createElement('div');
     return (typeof testEl.attachShadow !== 'undefined');
-  }
-
-  get supportsDeprecatedShadowDomV0() {
-    const testEl = document.createElement('div') as any;
-    return (typeof testEl.createShadowRoot !== 'undefined');
-  }
-
-  get supportsTemplateElement() {
-    const testEl = document.createElement('template') as any;
-    return (typeof testEl.content !== 'undefined');
   }
 }
 
@@ -201,10 +179,6 @@ export function setCookie(name: string, value: string) {
   // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does
   // not clear other cookies.
   document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
-}
-
-export function supportsWebAnimation(): boolean {
-  return typeof (<any>Element).prototype['animate'] === 'function';
 }
 
 export function hasStyle(element: any, styleName: string, styleValue?: string|null): boolean {
