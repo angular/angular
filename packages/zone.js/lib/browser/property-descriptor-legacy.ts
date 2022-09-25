@@ -10,8 +10,6 @@
  * @suppress {globalThis}
  */
 
-import * as webSocketPatch from './websocket';
-
 export function propertyDescriptorLegacyPatch(api: _ZonePrivate, _global: any) {
   const {isNode, isMix} = api.getGlobalObjects()!;
   if (isNode && !isMix) {
@@ -19,13 +17,9 @@ export function propertyDescriptorLegacyPatch(api: _ZonePrivate, _global: any) {
   }
 
   if (!canPatchViaPropertyDescriptor(api, _global)) {
-    const supportsWebSocket = typeof WebSocket !== 'undefined';
     // Safari, Android browsers (Jelly Bean)
     patchViaCapturingAllTheEvents(api);
     api.patchClass('XMLHttpRequest');
-    if (supportsWebSocket) {
-      webSocketPatch.apply(api, _global);
-    }
     (Zone as any)[api.symbol('patchEvents')] = true;
   }
 }
