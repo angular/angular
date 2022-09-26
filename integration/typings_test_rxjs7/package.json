@@ -18,6 +18,7 @@
     "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/node": "file:../../node_modules/@types/node",
     "rxjs": "^7.4.0",
     "typescript": "file:../../node_modules/typescript",
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
