@@ -1,4 +1,5 @@
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatErrorHarness} from './error-harness';
 import {MatInputModule} from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatInputHarness} from '@angular/material/input/testing';
@@ -30,6 +31,7 @@ describe('MDC-based MatFormFieldHarness', () => {
       datepickerInputHarness: MatDatepickerInputHarness,
       dateRangeInputHarness: MatDateRangeInputHarness,
       isMdcImplementation: true,
+      errorHarness: MatErrorHarness,
     },
   );
 });

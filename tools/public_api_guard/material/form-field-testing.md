@@ -17,6 +17,11 @@ import { MatSelectHarness } from '@angular/material/select/testing';
 import { TestElement } from '@angular/cdk/testing';
 
 // @public
+export interface ErrorHarnessFilters extends BaseHarnessFilters {
+    text?: string | RegExp;
+}
+
+// @public
 export type FormFieldControlHarness = MatInputHarness | MatSelectHarness | MatDatepickerInputHarness | MatDateRangeInputHarness;
 
 // @public
@@ -25,16 +30,30 @@ export interface FormFieldHarnessFilters extends BaseHarnessFilters {
     hasErrors?: boolean;
 }
 
+// @public
+export class MatErrorHarness extends _MatErrorHarnessBase {
+    // (undocumented)
+    static hostSelector: string;
+    static with<T extends MatErrorHarness>(this: ComponentHarnessConstructor<T>, options?: ErrorHarnessFilters): HarnessPredicate<T>;
+}
+
+// @public (undocumented)
+export abstract class _MatErrorHarnessBase extends ComponentHarness {
+    // (undocumented)
+    protected static _getErrorPredicate<T extends MatErrorHarness>(type: ComponentHarnessConstructor<T>, options: ErrorHarnessFilters): HarnessPredicate<T>;
+    getText(): Promise<string>;
+}
+
 export { MatFormFieldControlHarness }
 
 // @public
-export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness> {
+export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness, typeof MatErrorHarness> {
     // (undocumented)
     protected _datepickerInputControl: AsyncFactoryFn<MatDatepickerInputHarness | null>;
     // (undocumented)
     protected _dateRangeInputControl: AsyncFactoryFn<MatDateRangeInputHarness | null>;
     // (undocumented)
-    protected _errors: AsyncFactoryFn<TestElement[]>;
+    protected _errorHarness: typeof MatErrorHarness;
     getAppearance(): Promise<'fill' | 'outline'>;
     hasLabel(): Promise<boolean>;
     // (undocumented)
@@ -56,17 +75,20 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
 }
 
 // @public (undocumented)
-export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFieldControlHarness> extends ComponentHarness {
+export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFieldControlHarness, ErrorType extends ComponentHarnessConstructor<ErrorBase> & {
+    with: (options?: ErrorHarnessFilters) => HarnessPredicate<ErrorBase>;
+}> extends ComponentHarness {
     // (undocumented)
     protected abstract _datepickerInputControl: AsyncFactoryFn<ControlHarness | null>;
     // (undocumented)
     protected abstract _dateRangeInputControl: AsyncFactoryFn<ControlHarness | null>;
     // (undocumented)
-    protected abstract _errors: AsyncFactoryFn<TestElement[]>;
+    protected abstract _errorHarness: ErrorType;
     abstract getAppearance(): Promise<string>;
     getControl(): Promise<ControlHarness | null>;
     getControl<X extends MatFormFieldControlHarness>(type: ComponentHarnessConstructor<X>): Promise<X | null>;
     getControl<X extends MatFormFieldControlHarness>(type: HarnessPredicate<X>): Promise<X | null>;
+    getErrors(filter?: ErrorHarnessFilters): Promise<MatErrorHarness[]>;
     getLabel(): Promise<string | null>;
     getPrefixText(): Promise<string>;
     getSuffixText(): Promise<string>;

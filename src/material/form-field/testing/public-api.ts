@@ -13,3 +13,4 @@ export {MatFormFieldControlHarness} from '@angular/material/form-field/testing/c
 
 export * from './form-field-harness-filters';
 export * from './form-field-harness';
+export * from './error-harness';

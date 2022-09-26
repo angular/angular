@@ -15,6 +15,7 @@ import {
   parallel,
   TestElement,
 } from '@angular/cdk/testing';
+import {ErrorHarnessFilters, MatErrorHarness} from './error-harness';
 import {MatInputHarness} from '@angular/material/input/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {MatSelectHarness} from '@angular/material/select/testing';
@@ -24,18 +25,25 @@ import {
 } from '@angular/material/datepicker/testing';
 import {FormFieldHarnessFilters} from './form-field-harness-filters';
 
+interface ErrorBase extends ComponentHarness {
+  getText(): Promise<string>;
+}
+
 export abstract class _MatFormFieldHarnessBase<
   ControlHarness extends MatFormFieldControlHarness,
+  ErrorType extends ComponentHarnessConstructor<ErrorBase> & {
+    with: (options?: ErrorHarnessFilters) => HarnessPredicate<ErrorBase>;
+  },
 > extends ComponentHarness {
   protected abstract _prefixContainer: AsyncFactoryFn<TestElement | null>;
   protected abstract _suffixContainer: AsyncFactoryFn<TestElement | null>;
   protected abstract _label: AsyncFactoryFn<TestElement | null>;
-  protected abstract _errors: AsyncFactoryFn<TestElement[]>;
   protected abstract _hints: AsyncFactoryFn<TestElement[]>;
   protected abstract _inputControl: AsyncFactoryFn<ControlHarness | null>;
   protected abstract _selectControl: AsyncFactoryFn<ControlHarness | null>;
   protected abstract _datepickerInputControl: AsyncFactoryFn<ControlHarness | null>;
   protected abstract _dateRangeInputControl: AsyncFactoryFn<ControlHarness | null>;
+  protected abstract _errorHarness: ErrorType;
 
   /** Gets the appearance of the form-field. */
   abstract getAppearance(): Promise<string>;
@@ -122,8 +130,13 @@ export abstract class _MatFormFieldHarnessBase<
 
   /** Gets error messages which are currently displayed in the form-field. */
   async getTextErrors(): Promise<string[]> {
-    const errors = await this._errors();
-    return parallel(() => errors.map(e => e.text()));
+    const errors = await this.getErrors();
+    return parallel(() => errors.map(e => e.getText()));
+  }
+
+  /** Gets all of the error harnesses in the form field. */
+  async getErrors(filter: ErrorHarnessFilters = {}): Promise<MatErrorHarness[]> {
+    return this.locatorForAll(this._errorHarness.with(filter))();
   }
 
   /** Gets hint messages which are currently displayed in the form-field. */
@@ -211,7 +224,10 @@ export type FormFieldControlHarness =
   | MatDateRangeInputHarness;
 
 /** Harness for interacting with a MDC-based form-field's in tests. */
-export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness> {
+export class MatFormFieldHarness extends _MatFormFieldHarnessBase<
+  FormFieldControlHarness,
+  typeof MatErrorHarness
+> {
   static hostSelector = '.mat-mdc-form-field';
 
   /**
@@ -238,12 +254,12 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
   protected _prefixContainer = this.locatorForOptional('.mat-mdc-form-field-text-prefix');
   protected _suffixContainer = this.locatorForOptional('.mat-mdc-form-field-text-suffix');
   protected _label = this.locatorForOptional('.mdc-floating-label');
-  protected _errors = this.locatorForAll('.mat-mdc-form-field-error');
   protected _hints = this.locatorForAll('.mat-mdc-form-field-hint');
   protected _inputControl = this.locatorForOptional(MatInputHarness);
   protected _selectControl = this.locatorForOptional(MatSelectHarness);
   protected _datepickerInputControl = this.locatorForOptional(MatDatepickerInputHarness);
   protected _dateRangeInputControl = this.locatorForOptional(MatDateRangeInputHarness);
+  protected _errorHarness = MatErrorHarness;
   private _mdcTextField = this.locatorFor('.mat-mdc-text-field-wrapper');
 
   /** Gets the appearance of the form-field. */
