@@ -408,13 +408,8 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
 
   /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */
   show(delay: number = this.showDelay, origin?: {x: number; y: number}): void {
-    if (
-      this.disabled ||
-      !this.message ||
-      (this._isTooltipVisible() &&
-        !this._tooltipInstance!._showTimeoutId &&
-        !this._tooltipInstance!._hideTimeoutId)
-    ) {
+    if (this.disabled || !this.message || this._isTooltipVisible()) {
+      this._tooltipInstance?._cancelPendingHide();
       return;
     }
 
@@ -436,8 +431,14 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
 
   /** Hides the tooltip after the delay in ms, defaults to tooltip-delay-hide or 0ms if no input */
   hide(delay: number = this.hideDelay): void {
-    if (this._tooltipInstance) {
-      this._tooltipInstance.hide(delay);
+    const instance = this._tooltipInstance;
+
+    if (instance) {
+      if (instance.isVisible()) {
+        instance.hide(delay);
+      } else {
+        this._detach();
+      }
     }
   }
 
@@ -908,13 +909,10 @@ export abstract class _TooltipComponentBase implements OnDestroy {
   tooltipClass: string | string[] | Set<string> | {[key: string]: any};
 
   /** The timeout ID of any current timer set to show the tooltip */
-  _showTimeoutId: number | undefined;
+  private _showTimeoutId: number | undefined;
 
   /** The timeout ID of any current timer set to hide the tooltip */
-  _hideTimeoutId: number | undefined;
-
-  /** Property watched by the animation framework to show or hide the tooltip */
-  _visibility: TooltipVisibility = 'initial';
+  private _hideTimeoutId: number | undefined;
 
   /** Element that caused the tooltip to open. */
   _triggerElement: HTMLElement;
@@ -1033,6 +1031,12 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     if (animationName === this._showAnimation || animationName === this._hideAnimation) {
       this._finalizeAnimation(animationName === this._showAnimation);
     }
+  }
+
+  /** Cancels any pending hiding sequences. */
+  _cancelPendingHide() {
+    clearTimeout(this._hideTimeoutId);
+    this._hideTimeoutId = undefined;
   }
 
   /** Handles the cleanup after an animation has finished. */

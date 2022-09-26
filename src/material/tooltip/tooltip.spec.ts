@@ -591,7 +591,6 @@ describe('MDC-based MatTooltip', () => {
       const tooltipDelay = 1000;
       tooltipDirective.hide();
       tick(tooltipDelay); // Change the tooltip state to hidden and trigger animation start
-      finishCurrentTooltipAnimation(overlayContainerElement, false);
 
       fixture.componentInstance.showButton = false;
       fixture.detectChanges();
@@ -610,7 +609,6 @@ describe('MDC-based MatTooltip', () => {
       tooltipDirective.hide(0);
       tick(0);
       fixture.detectChanges();
-      finishCurrentTooltipAnimation(overlayContainerElement, false);
 
       expect(spy).toHaveBeenCalled();
       subscription.unsubscribe();

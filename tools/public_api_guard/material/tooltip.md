@@ -188,13 +188,13 @@ export class TooltipComponent extends _TooltipComponentBase {
 export abstract class _TooltipComponentBase implements OnDestroy {
     constructor(_changeDetectorRef: ChangeDetectorRef, animationMode?: string);
     afterHidden(): Observable<void>;
+    _cancelPendingHide(): void;
     _handleAnimationEnd({ animationName }: AnimationEvent): void;
     _handleBodyInteraction(): void;
     // (undocumented)
     _handleMouseLeave({ relatedTarget }: MouseEvent): void;
     hide(delay: number): void;
     protected abstract readonly _hideAnimation: string;
-    _hideTimeoutId: number | undefined;
     isVisible(): boolean;
     _markForCheck(): void;
     message: string;
@@ -204,13 +204,11 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     protected _onShow(): void;
     show(delay: number): void;
     protected abstract readonly _showAnimation: string;
-    _showTimeoutId: number | undefined;
     abstract _tooltip: ElementRef<HTMLElement>;
     tooltipClass: string | string[] | Set<string> | {
         [key: string]: any;
     };
     _triggerElement: HTMLElement;
-    _visibility: TooltipVisibility;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<_TooltipComponentBase, never, never, {}, {}, never, never, false, never>;
     // (undocumented)
