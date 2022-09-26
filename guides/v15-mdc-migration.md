@@ -1,6 +1,6 @@
 # Migrating to MDC-based Angular Material Components
 
-In Angular Material v15, many of the components have been refactored to be based on the official 
+In Angular Material v15, many of the components have been refactored to be based on the official
 [Material Design Components for Web (MDC)](https://github.com/material-components/material-components-web).
 The components from the following imports have been refactored:
 
@@ -32,7 +32,7 @@ The components from the following imports have been refactored:
 The refactored components offer several benefits over the old implementations, including:
 * Improved accessibility
 * Better adherence to the Material Design spec
-* Faster adoption of future versions of the Material Design spec, due to being based on common 
+* Faster adoption of future versions of the Material Design spec, due to being based on common
   infrastructure
 
 ## What has changed?
@@ -109,7 +109,7 @@ much as it can automatically.
 #### Running a Partial Migration
 
 Depending on the size and complexity of your application, you may want to migrate a single component
-(or small group of components) at a time, rather than all at once. 
+(or small group of components) at a time, rather than all at once.
 TODO(wagnermaciel): Add details on this: script params, which components need to move together
 
 You may also want to migrate your app one module at a time instead of all together. You can use both
@@ -133,7 +133,7 @@ TODO(amysorto): Can we have the schematic generate a CSV of TODOs that can be im
 ### 4. Verify Your Application
 
 After running the migration and addressing the TODOs, manually verify that everything is working
-correctly. 
+correctly.
 
 Run your tests and confirm that they pass. It's possible that your tests depended on internal DOM or
 async timing details of the old component implementations and may need to be updated. If you find
@@ -166,7 +166,7 @@ DOM and CSS of the components, you may need to tweak some of your application's 
 
   @include mat.all-component-typographies();
   ```
-  
+
   or individually for components your application uses:
 
   ```scss
@@ -176,7 +176,7 @@ DOM and CSS of the components, you may need to tweak some of your application's 
   @include mat.card-typography();
   // ...
   ```
-  
+
 * Default typography levels defined by `mat.define-typography-config` have been updated to reflect
   changes to the Material Design spec.
 
@@ -185,15 +185,15 @@ DOM and CSS of the components, you may need to tweak some of your application's 
 
   ```scss
   @import '@angular/material' as mat;
-  
+
   $theme: mat.define-light-theme((
     color: ...
   ));
-  
+
   // Adds density level 0 styles
   @include mat.all-component-themes($theme);
   ```
-  
+
   If you prefer a different default density level, you can set it in your theme config:
 
   ```scss
@@ -213,7 +213,7 @@ TODO(mmalerba): link to density docs once they exist.
 
 * Accessibility: Icon buttons are now 48px instead of 40px.
 
-* Accessibility: Buttons have a slightly different hover/focus/active colors, improving contrast 
+* Accessibility: Buttons have a slightly different hover/focus/active colors, improving contrast
   ratios.
 
 * Flat buttons have a different padding than raised buttons (this is apparent if you manually apply
@@ -282,10 +282,10 @@ TODO(mmalerba): link to density docs once they exist.
     pattern. This is the only variant that supports selection state for chips. This pattern aligns
     with the filter chips pattern specified in the Material Design spec. This pattern should be used
     when you want the user to select one or more values from a list of options.
-  
+
   * `<mat-chip-grid>` with `<mat-chip-row>` - this pattern should be used for any text input + chips
     interaction.
-  
+
   * `<mat-chip-set>` with `<mat-chip>` - this variant has no accessibility pattern and assumes one
     will be applied at the application level. This allows the application to implement a custom
     accessibility pattern with the chips visuals.
@@ -301,8 +301,8 @@ TODO(mmalerba): link to density docs once they exist.
   not use any of the directives like `mat-dialog-content`.
 
 * `mat-dialog-content` uses the font-settings specified by the Material Design spec, which includes
-  a rather roomy line-height. If you have an information-dense dialog that doesn't look good with 
-  these settings, you can avoid using `<mat-dialog-content>` and just use a div with custom padding, 
+  a rather roomy line-height. If you have an information-dense dialog that doesn't look good with
+  these settings, you can avoid using `<mat-dialog-content>` and just use a div with custom padding,
   or use custom typography settings that can be applied with the `mat.mdc-dialog-typography` mixin.
 
 * The old dialog triggered an extra change detection, which may have masked change detection issues
@@ -326,7 +326,7 @@ TODO(mmalerba): link to density docs once they exist.
 
 * The text inside `<mat-hint>` is larger and darker in order to meet W3C text guidelines.
 
-* While the previous form-field had a single directive for prefixes (`matPrefix`) and a single 
+* While the previous form-field had a single directive for prefixes (`matPrefix`) and a single
   directive for suffixes (`matSuffix`), the MDC-based form-field distinguishes between text
   prefix/suffixes which are baseline aligned with the input text, and icon prefix/suffixes which are
   center aligned in the form-field. Use `matTextPrefix` or `matTextSuffix` to indicate a text
@@ -364,7 +364,7 @@ TODO(mmalerba): link to density docs once they exist.
   directives:
   * `matListItemTitle`
   * `matListItemLine`
-  
+
 * Text outside of a `matListItemLine` (so-called "unscoped content") will result in an additional
   line being acquired (as if the content was put into a line).
 
@@ -374,7 +374,7 @@ TODO(mmalerba): link to density docs once they exist.
     Second line
   </mat-list-item>
   ```
-  
+
 * The amount of lines is automatically inferred. e.g. in the snippet above the list item will
   acquire space for two lines. With the new API you can now set an explicit number of lines on the
   `<mat-list-item>` to activate wrapping.
@@ -382,8 +382,8 @@ TODO(mmalerba): link to density docs once they exist.
   ```html
   <mat-list-item lines="3">
     <span matListItemTitle>Title</span>
-    This will text will wrap into the third line. Space for three lines is acquired by the list
-    item.
+    This text will wrap into the third line. Space for three lines is acquired by the
+    list item.
   </mat-list-item>
   ```
 
@@ -396,7 +396,7 @@ TODO(mmalerba): link to density docs once they exist.
   * `matListAvatar` is now `matListItemAvatar`
 
 * Lastly, also a new directive (`matListItemMeta`) is available to put content into the meta section
-  of a list item (usually the end of the list item). Previously unscoped content in a list item was 
+  of a list item (usually the end of the list item). Previously unscoped content in a list item was
   put into the meta section.
 
 * Recommended migration steps for common use of a list item:
@@ -412,7 +412,7 @@ TODO(mmalerba): link to density docs once they exist.
 
   * If you have a piece of content such as an `<img>` that you want to use in place of a
     `<mat-icon>` use `ngProjectAs="mat-icon"` to project it into the icon slot.
-  
+
   * If you need your icon to appear at the end of the item (not officially supported by the spec)
     you can wrap both the text and your icon in a span, e.g.
 
@@ -422,7 +422,7 @@ TODO(mmalerba): link to density docs once they exist.
       <mat-icon>end_icon</mat-icon>
     </span>
     ```
-    
+
 * The text in menu items wrap instead of being hidden with an ellipses.
 
 ### Option / Optgroup
