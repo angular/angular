@@ -274,10 +274,11 @@ export function patchClass(className: string) {
   // keep original class in global
   _global[zoneSymbol(className)] = OriginalClass;
 
-  _global[className] = function() {
-    const a = Zone.isPatchEnabled() ? bindArguments(<any>arguments, className) : arguments;
+  patchFunctionProperty(_global, className, function() {
+    const a = bindArguments(<any>arguments, className);
     return new OriginalClass(...a);
-  };
+  });
+
   _global[className].prototype = OriginalClass.prototype;
 
   // attach original delegate to patched function
@@ -342,9 +343,12 @@ export function patchMethod(
     const desc = proto && ObjectGetOwnPropertyDescriptor(proto, name);
     if (isPropertyWritable(desc)) {
       const patchDelegate = patchFn(delegate!, delegateName, name);
-      proto[name] = function() {
+      const namedPatchDelegate = function(this: unknown) {
         return patchDelegate(this, arguments as any);
       };
+      if (!patchFunctionProperty(proto, name, namedPatchDelegate)) {
+        proto[name] = namedPatchDelegate;
+      }
       attachOriginToPatched(proto[name], delegate);
       if (shouldCopySymbolProperties) {
         copySymbolProperties(delegate, proto[name]);
@@ -352,6 +356,37 @@ export function patchMethod(
     }
   }
   return delegate;
+}
+
+const UNSET_SYMBOL = zoneSymbol('unset_property_value');
+export function patchFunctionProperty(target: any, name: string, patchFn: Function) {
+  const desc = ObjectGetOwnPropertyDescriptor(target, name);
+  if (!desc || !desc.configurable || !isPropertyWritable(desc)) {
+    return false;
+  }
+  const override = zoneSymbol(`${name}_override`);
+  const original = target[name];
+  Object.defineProperty(
+      target, override,
+      {configurable: true, enumerable: false, writable: true, value: UNSET_SYMBOL});
+  Object.defineProperty(target, name, {
+    configurable: true,
+    enumerable: desc?.enumerable === false ? false : true,
+    get: function() {
+      return this[override] !== UNSET_SYMBOL ? this[override] :
+          Zone.isPatchEnabled()              ? patchFn :
+                                               original;
+    },
+    set: function(newFn: any) {
+      if ((Zone.isPatchEnabled() && newFn === patchFn) ||
+          ((!Zone.isPatchEnabled()) && newFn === original)) {
+        this[override] = UNSET_SYMBOL;
+      } else {
+        this[override] = newFn;
+      }
+    },
+  });
+  return true;
 }
 
 export interface MacroTaskMeta extends TaskData {

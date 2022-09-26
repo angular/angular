@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bindArguments, patchMacroTask, patchMethod, patchOnProperties, setShouldCopySymbolProperties} from '../common/utils';
+import {bindArguments, patchFunctionProperty, patchMacroTask, patchMethod, patchOnProperties, setShouldCopySymbolProperties} from '../common/utils';
 
 Zone.__load_patch('node_util', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   api.patchOnProperties = patchOnProperties;
   api.patchMethod = patchMethod;
+  api.patchFunctionProprety = patchFunctionProperty;
   api.bindArguments = bindArguments;
   api.patchMacroTask = patchMacroTask;
   setShouldCopySymbolProperties(true);

@@ -7,7 +7,7 @@
  */
 
 import {globalSources, patchEventPrototype, patchEventTarget, zoneSymbolEventNames} from '../common/events';
-import {ADD_EVENT_LISTENER_STR, ArraySlice, attachOriginToPatched, bindArguments, FALSE_STR, isBrowser, isIEOrEdge, isMix, isNode, ObjectCreate, ObjectDefineProperty, ObjectGetOwnPropertyDescriptor, patchClass, patchMacroTask, patchMethod, patchOnProperties, REMOVE_EVENT_LISTENER_STR, TRUE_STR, wrapWithCurrentZone, ZONE_SYMBOL_PREFIX} from '../common/utils';
+import {ADD_EVENT_LISTENER_STR, ArraySlice, attachOriginToPatched, bindArguments, FALSE_STR, isBrowser, isIEOrEdge, isMix, isNode, ObjectCreate, ObjectDefineProperty, ObjectGetOwnPropertyDescriptor, patchClass, patchFunctionProperty, patchMacroTask, patchMethod, patchOnProperties, REMOVE_EVENT_LISTENER_STR, TRUE_STR, wrapWithCurrentZone, ZONE_SYMBOL_PREFIX} from '../common/utils';
 
 import {patchCallbacks} from './browser-util';
 import {filterProperties, getOnEventNames} from './property-descriptor';
@@ -18,6 +18,7 @@ Zone.__load_patch('util', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const eventNames: string[] = getOnEventNames(global);
   api.patchOnProperties = patchOnProperties;
   api.patchMethod = patchMethod;
+  api.patchFunctionProprety = patchFunctionProperty;
   api.bindArguments = bindArguments;
   api.patchMacroTask = patchMacroTask;
   // In earlier version of zone.js (<0.9.0), we use env name `__zone_symbol__BLACK_LISTED_EVENTS` to
