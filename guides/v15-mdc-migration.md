@@ -570,9 +570,19 @@ TODO(mmalerba): link to density docs once they exist.
 
 ### Tabs
 
-* Accessibility: `MatTabNav` now throws an error if the `[tabPanel]` input is not provided. The
-  `[tabPanel]` input and associated `mat-tab-nav-panel` component improve accessibility.
-  TODO(crisbeto): This point needs further elaboration.
+* Accessibility: `<mat-tab-nav-bar>` now requires an additional `<mat-tab-nav-panel>` element to
+  be wrapped around the content that it is connected to. A refernece to the tab panel has to be
+  passed in to the `tabPanel` or an error will be thrown. The addition of the tab panel allows
+  for better labelling for assistive technology.
+
+```html
+<!-- Before -->
+<mat-tab-nav-bar>...</mat-tab-nav-bar>
+
+<!-- After -->
+<mat-tab-nav-bar [tabPanel]="tabPanel">...</mat-tab-nav-bar>
+<mat-tab-nav-panel #tabPanel>...</mat-tab-nav-panel>
+```
 
 * The selected tab label now uses a text color from the theme, matching the selection indicator.
 
