@@ -455,8 +455,21 @@ TODO(mmalerba): link to density docs once they exist.
 
 ### Radio
 
-* Radio-button labels are no longer `width: 100%`. This helps prevent users from accidentally
+* Radio button labels are no longer `width: 100%`. This helps prevent users from accidentally
   selecting a radio when clicking on whitespace that appears inert on the page.
+
+* Labels are smaller and further away from the radio button to align with the Material Design spec.
+
+* Accessibility: The touch target is much larger than the radio button; to match the legacy size,
+  you can provide a `-5` density to the radio button's theme mixin:
+
+```scss
+@use '@angular/material' as mat;
+
+@include mat.radio-theme(
+  map-merge($theme, (density: -5))
+);
+```
 
 ### Select
 
