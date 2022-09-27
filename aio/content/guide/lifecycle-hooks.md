@@ -139,7 +139,7 @@ The input properties are available to the `onInit()` method for further initiali
 
 </div>
 
-Had the user clicked the *Update Hero* button, the log would show another `OnChanges` and two more triplets of `DoCheck`, `AfterContentChecked` and `AfterViewChecked`.
+Had the user clicked the *Update Hero* button, the log would show another `OnChanges` and two more triplets of `DoCheck`, `AfterContentChecked`, and `AfterViewChecked`.
 Notice that these three hooks fire *often*, so it is important to keep their logic as lean as possible.
 
 <a id="spy"></a>

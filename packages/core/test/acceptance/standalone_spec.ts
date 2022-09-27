@@ -10,7 +10,7 @@ import {CommonModule} from '@angular/common';
 import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-describe('standalone components, directives and pipes', () => {
+describe('standalone components, directives, and pipes', () => {
   it('should render a standalone component', () => {
     @Component({
       standalone: true,
@@ -98,7 +98,7 @@ describe('standalone components, directives and pipes', () => {
         .toEqual('<inner-cmp>Look at me, no NgModule (kinda)!</inner-cmp>');
   });
 
-  it('should allow exporting standalone components, directives and pipes from NgModule', () => {
+  it('should allow exporting standalone components, directives, and pipes from NgModule', () => {
     @Component({
       selector: 'standalone-cmp',
       standalone: true,

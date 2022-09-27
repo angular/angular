@@ -417,7 +417,7 @@ Look again at the TypeScript `MinimalLogger` class to confirm that it has no imp
 
 ### 'InjectionToken' objects
 
-Dependency objects can be simple values like dates, numbers and strings, or shapeless objects like arrays and functions.
+Dependency objects can be simple values like dates, numbers, and strings, or shapeless objects like arrays and functions.
 
 Such objects don't have application interfaces and therefore aren't well represented by a class.
 They're better represented by a token that is both unique and symbolic, a JavaScript object that has a friendly name but won't conflict with another token that happens to have the same name.
