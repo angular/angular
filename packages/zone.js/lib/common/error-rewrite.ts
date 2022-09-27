@@ -50,7 +50,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   let zoneAwareFrame2WithoutNew: string;
   let zoneAwareFrame3WithoutNew: string;
 
-  global['Error'] = ZoneAwareError;
+  api.patchFunctionProprety(global, 'Error', ZoneAwareError);
   const stackRewrite = 'stackRewrite';
 
   type ZoneJsInternalStackFramesPolicy = 'default'|'disable'|'lazy';
