@@ -59,7 +59,7 @@ As you create more components, add them to `declarations`.
 You must declare every component in exactly one `NgModule` class.
 If you use a component without declaring it, Angular returns an error message.
 
-The `declarations` array only takes declarables. Declarables are components, [directives](guide/attribute-directives) and [pipes](guide/pipes).
+The `declarations` array only takes declarables. Declarables are components, [directives](guide/attribute-directives), and [pipes](guide/pipes).
 All of a module's declarables must be in the `declarations` array.
 Declarables must belong to exactly one module. The compiler emits an error if you try to declare the same class in more than one module.
 

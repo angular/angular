@@ -99,7 +99,7 @@ The preceding example calls a method, which is defined in the component class:
 
 <code-example format="typescript" language="typescript" path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.ts" region="method"></code-example>
 
-The following is a combined example of Interpolation, Property Binding and Event Binding within an Angular template:
+The following is a combined example of Interpolation, Property Binding, and Event Binding within an Angular template:
 
 <code-tabs linenums="true">
     <code-pane header="hello-world-bindings.component.ts" path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.ts"></code-pane>
@@ -197,7 +197,7 @@ This topic is intended to give you a brief overview of what Angular is, the adva
 To see Angular in action, see our [Getting Started](start) tutorial.
 This tutorial uses [stackblitz.com](https://stackblitz.com), for you to explore a working example of Angular without any installation requirements.
 
-To explore Angular's capabilities further, we recommend reading through the sections, Understanding Angular and Developer Guides.
+To explore Angular's capabilities further, we recommend reading through the sections, Understanding Angular, and Developer Guides.
 
 <!-- links -->
 
