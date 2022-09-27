@@ -209,7 +209,7 @@ function verifySemanticsOfNgModuleDef(
     importingModule?: NgModuleType): void {
   if (verifiedNgModule.get(moduleType)) return;
 
-  // skip verifications of standalone components, directives and pipes
+  // skip verifications of standalone components, directives, and pipes
   if (isStandalone(moduleType)) return;
 
   verifiedNgModule.set(moduleType, true);

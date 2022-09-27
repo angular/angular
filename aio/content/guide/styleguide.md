@@ -1387,7 +1387,7 @@ This is acceptable here because the service is stateless;that is, the consumers 
 <div class="s-why">
 
 **Why**? <br />
-`SharedModule` will contain components, directives and pipes that may need features from another common module; for example, `ngFor` in `CommonModule`.
+`SharedModule` will contain components, directives, and pipes that may need features from another common module; for example, `ngFor` in `CommonModule`.
 
 </div>
 
@@ -1406,7 +1406,7 @@ This is acceptable here because the service is stateless;that is, the consumers 
 <div class="s-why">
 
 **Why**? <br />
-`SharedModule` exists to make commonly used components, directives and pipes available for use in the templates of components in many other modules.
+`SharedModule` exists to make commonly used components, directives, and pipes available for use in the templates of components in many other modules.
 
 </div>
 
