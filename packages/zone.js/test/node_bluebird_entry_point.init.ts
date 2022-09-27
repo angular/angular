@@ -12,7 +12,9 @@ import './test_fake_polyfill';
 import '../lib/zone';
 import '../lib/common/promise';
 import '../lib/common/to-string';
+import '../lib/node/node_util';
 import '../lib/node/node';
+
 // Setup test environment
 import './test-env-setup-jasmine';
 import './wtf_mock';

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './node_util';
 import './events';
 import './fs';
 

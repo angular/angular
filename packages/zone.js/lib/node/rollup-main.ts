@@ -7,6 +7,7 @@
  */
 
 import '../zone';
+import './node_util';
 import '../common/promise';
 import '../common/to-string';
 import './node';
