@@ -85,8 +85,14 @@ export class RouterScroller implements OnDestroy {
   }
 
   private scheduleScrollEvent(routerEvent: NavigationEnd, anchor: string|null): void {
-    this.router.triggerEvent(new Scroll(
-        routerEvent, this.lastSource === 'popstate' ? this.store[this.restoredId] : null, anchor));
+    // The scroll event needs to be delayed until after change detection. Otherwise, we may attempt
+    // to restore the scroll position before the router outlet has fully rendered the component by
+    // executing its update block of the template function.
+    setTimeout(() => {
+      this.router.triggerEvent(new Scroll(
+          routerEvent, this.lastSource === 'popstate' ? this.store[this.restoredId] : null,
+          anchor));
+    }, 0);
   }
 
   /** @nodoc */
