@@ -28,13 +28,15 @@ The instructions in this section assume that you are using the software in this 
 Some software in this list, such as the integrated development environment (IDE), can be substituted with similar software.
 If you use a substitute program, you might need to adapt the instructions in this section to your IDE.
 
+For more information about the required software, see [Setting up the local environment and workspace](guide/setup-local).
+
 * **Version control software**
   * [Git command line](https://github.com/git-guides/install-git)
   * [GitHub desktop](https://desktop.github.com/) (optional)
 * **Integrated development environment**
   * [Visual Studio Code](https://code.visualstudio.com/)
 * **Utility software**
-  * [node.js](https://nodejs.org/en/download/)
+  * [node.js](https://nodejs.org/en/download/)<br />Angular requires an [active long-term-support (LTS) or maintenance LTS version](https://nodejs.org/about/releases) of Node.js.
   * [Yarn](https://yarnpkg.com/getting-started/install)
   * [Homebrew](https://brew.sh/) (macOS) or [Chocolatey](https://chocolatey.org/install) (Windows)
   * [Vale][GithubAngularAngularTreeMainAioToolsDocLinterInstallValeOnYourDevelopmentSystemReadmeMd] (see note)
