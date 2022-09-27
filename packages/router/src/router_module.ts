@@ -7,7 +7,7 @@
  */
 
 import {HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, ComponentRef, inject, Inject, InjectionToken, ModuleWithProviders, NgModule, NgProbeToken, Optional, Provider, SkipSelf, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ComponentRef, inject, Inject, InjectionToken, ModuleWithProviders, NgModule, NgProbeToken, NgZone, Optional, Provider, SkipSelf, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
 import {RouterLink} from './directives/router_link';
@@ -154,11 +154,12 @@ export function provideRouterScroller(): Provider {
     useFactory: () => {
       const router = inject(Router);
       const viewportScroller = inject(ViewportScroller);
+      const zone = inject(NgZone);
       const config: ExtraOptions = inject(ROUTER_CONFIGURATION);
       if (config.scrollOffset) {
         viewportScroller.setOffset(config.scrollOffset);
       }
-      return new RouterScroller(router, viewportScroller, config);
+      return new RouterScroller(router, viewportScroller, zone, config);
     },
   };
 }
