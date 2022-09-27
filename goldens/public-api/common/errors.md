@@ -7,6 +7,14 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    INVAILD_HTTP_HEADER = 2801,
+    // (undocumented)
+    INVALID_HTTP_PARAMS = 2803,
+    // (undocumented)
+    INVALID_HTTP_REQUEST_METHOD = 2802,
+    // (undocumented)
+    INVALID_HTTP_RESPONSE = 2800,
+    // (undocumented)
     INVALID_INPUT = 2952,
     // (undocumented)
     INVALID_LOADER_ARGUMENTS = 2959,
@@ -16,6 +24,8 @@ export const enum RuntimeErrorCode {
     INVALID_PRECONNECT_CHECK_BLOCKLIST = 2957,
     // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
+    // (undocumented)
+    MISSING_HTTP_CLIENT_JSON_MODULE = 2806,
     // (undocumented)
     NG_FOR_MISSING_DIFFER = -2200,
     // (undocumented)
@@ -29,11 +39,15 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNEXPECTED_DEV_MODE_CHECK_IN_PROD_MODE = 2958,
     // (undocumented)
+    UNEXPECTED_HTTP_JSON_HEADER = 2805,
+    // (undocumented)
     UNEXPECTED_INPUT_CHANGE = 2953,
     // (undocumented)
     UNEXPECTED_SRC_ATTR = 2950,
     // (undocumented)
-    UNEXPECTED_SRCSET_ATTR = 2951
+    UNEXPECTED_SRCSET_ATTR = 2951,
+    // (undocumented)
+    UNHANDLED_HTTP_OBSERVE_TYPE = 2804
 }
 
 // (No @packageDocumentation comment for this package)
