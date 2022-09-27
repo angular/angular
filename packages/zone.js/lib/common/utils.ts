@@ -347,9 +347,12 @@ export function patchMethod(
         return patchDelegate(this, arguments as any);
       };
       if (!patchFunctionProperty(proto, name, namedPatchDelegate)) {
-        proto[name] = namedPatchDelegate;
+        proto[name] = function(this: unknown) {
+          return Zone.isPatchEnabled() ? patchDelegate(this, arguments as any) :
+                                         delegate!.apply(this, arguments);
+        };
+        attachOriginToPatched(proto[name], delegate);
       }
-      attachOriginToPatched(proto[name], delegate);
       if (shouldCopySymbolProperties) {
         copySymbolProperties(delegate, proto[name]);
       }
@@ -386,6 +389,7 @@ export function patchFunctionProperty(target: any, name: string, patchFn: Functi
       }
     },
   });
+  attachOriginToPatched(patchFn, original);
   return true;
 }
 
