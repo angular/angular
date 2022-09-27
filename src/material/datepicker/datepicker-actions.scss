@@ -5,7 +5,7 @@
   align-items: center;
   padding: 0 $spacing $spacing $spacing;
 
-  .mat-button-base + .mat-button-base {
+  .mat-mdc-button-base + .mat-mdc-button-base {
     margin-left: $spacing;
 
     [dir='rtl'] & {

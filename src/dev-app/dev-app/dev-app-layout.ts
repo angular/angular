@@ -109,6 +109,7 @@ export class DevAppLayout {
     {name: 'Legacy Button', route: '/legacy-button'},
     {name: 'Legacy Card', route: '/legacy-card'},
     {name: 'Legacy Checkbox', route: '/legacy-checkbox'},
+    {name: 'Legacy Datepicker', route: '/legacy-datepicker'},
     {name: 'Legacy Dialog', route: '/legacy-dialog'},
     {name: 'Legacy Input', route: '/legacy-input'},
     {name: 'Legacy List', route: '/legacy-list'},

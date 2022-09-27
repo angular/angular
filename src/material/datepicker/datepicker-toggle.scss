@@ -1,29 +1,5 @@
 @use '@angular/cdk';
 
-.mat-form-field-appearance-legacy {
-  .mat-form-field-prefix,
-  .mat-form-field-suffix {
-    .mat-datepicker-toggle-default-icon {
-      width: 1em;
-    }
-  }
-}
-
-.mat-form-field:not(.mat-form-field-appearance-legacy) {
-  .mat-form-field-prefix,
-  .mat-form-field-suffix {
-    .mat-datepicker-toggle-default-icon {
-      display: block;
-      width: 1.5em;
-      height: 1.5em;
-    }
-
-    .mat-icon-button .mat-datepicker-toggle-default-icon {
-      margin: auto;
-    }
-  }
-}
-
 @include cdk.high-contrast(active, off) {
   .mat-datepicker-toggle-default-icon {
     // On Chromium-based browsers the icon doesn't appear to inherit the text color in high

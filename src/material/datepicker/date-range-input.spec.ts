@@ -14,8 +14,8 @@ import {Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {ErrorStateMatcher, MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from './datepicker-module';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {BACKSPACE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
@@ -34,8 +34,8 @@ describe('MatDateRangeInput', () => {
       imports: [
         FormsModule,
         MatDatepickerModule,
-        MatLegacyFormFieldModule,
-        MatLegacyInputModule,
+        MatFormFieldModule,
+        MatInputModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
         MatNativeDateModule,
@@ -163,7 +163,7 @@ describe('MatDateRangeInput', () => {
   it('should point the label aria-owns to the <mat-date-range-input/>', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
-    const label = fixture.nativeElement.querySelector('label.mat-form-field-label');
+    const label = fixture.nativeElement.querySelector('label');
     const rangeInput = fixture.componentInstance.rangeInput;
 
     expect(rangeInput.id).toBeTruthy();
@@ -173,7 +173,7 @@ describe('MatDateRangeInput', () => {
   it('should point the range input aria-labelledby to the form field label', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
-    const labelId = fixture.nativeElement.querySelector('label.mat-form-field-label').id;
+    const labelId = fixture.nativeElement.querySelector('label').id;
     const rangeInput = fixture.nativeElement.querySelector('.mat-date-range-input');
 
     expect(labelId).toBeTruthy();
@@ -183,7 +183,7 @@ describe('MatDateRangeInput', () => {
   it('should point the range input aria-labelledby to the form field hint element', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
-    const labelId = fixture.nativeElement.querySelector('.mat-hint').id;
+    const labelId = fixture.nativeElement.querySelector('.mat-mdc-form-field-hint').id;
     const rangeInput = fixture.nativeElement.querySelector('.mat-date-range-input');
 
     expect(labelId).toBeTruthy();
@@ -203,7 +203,7 @@ describe('MatDateRangeInput', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
 
-    const label: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field-label');
+    const label: HTMLElement = fixture.nativeElement.querySelector('label');
     expect(label).toBeTruthy();
     expect(label.getAttribute('id')).toBeTruthy();
 
@@ -417,7 +417,7 @@ describe('MatDateRangeInput', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
     const startInput = fixture.componentInstance.start.nativeElement;
-    const formFieldContainer = fixture.nativeElement.querySelector('.mat-form-field-flex');
+    const formFieldContainer = fixture.nativeElement.querySelector('.mat-mdc-text-field-wrapper');
 
     spyOn(startInput, 'focus').and.callThrough();
 
@@ -432,7 +432,7 @@ describe('MatDateRangeInput', () => {
     fixture.detectChanges();
     tick();
     const endInput = fixture.componentInstance.end.nativeElement;
-    const formFieldContainer = fixture.nativeElement.querySelector('.mat-form-field-flex');
+    const formFieldContainer = fixture.nativeElement.querySelector('.mat-mdc-text-field-wrapper');
 
     spyOn(endInput, 'focus').and.callThrough();
 

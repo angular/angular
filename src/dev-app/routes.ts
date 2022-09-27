@@ -83,6 +83,11 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./datepicker/datepicker-demo').then(m => m.DatepickerDemo),
   },
   {
+    path: 'legacy-datepicker',
+    loadComponent: () =>
+      import('./legacy-datepicker/datepicker-demo').then(m => m.LegacyDatepickerDemo),
+  },
+  {
     path: 'dialog',
     loadComponent: () => import('./dialog/dialog-demo').then(m => m.DialogDemo),
   },

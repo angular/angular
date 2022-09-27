@@ -1,0 +1,85 @@
+@use '../button/button-theme';
+@use '../button/icon-button-theme';
+
+@mixin legacy-button-compat-theme($theme) {
+  .mat-datepicker-content {
+    @include button-theme.theme($theme);
+    @include icon-button-theme.theme($theme);
+  }
+}
+
+@mixin legacy-button-compat() {
+  .mat-datepicker-toggle .mat-mdc-button-base {
+    width: 40px;
+    height: 40px;
+    padding: 8px 0;
+  }
+
+  .mat-datepicker-actions {
+    $spacing: 8px;
+
+    .mat-button-base + .mat-button-base {
+      margin-left: $spacing;
+
+      [dir='rtl'] & {
+        margin-left: 0;
+        margin-right: $spacing;
+      }
+    }
+  }
+}
+
+@mixin legacy-form-field-compat() {
+  .mat-form-field {
+    .mat-form-field-prefix,
+    .mat-form-field-suffix {
+      .mat-datepicker-toggle .mat-mdc-button-base {
+        width: 40px;
+        height: 40px;
+        padding: 8px 0;
+      }
+    }
+
+    .mat-datepicker-toggle .mat-mdc-icon-button .mat-icon {
+      font-size: 1em;
+      display: inline-block;
+      margin: -2px 0 1px;
+    }
+  }
+
+  .mat-form-field-type-mat-date-range-input .mat-form-field-infix {
+    // Bump the default width slightly since it's somewhat cramped with two inputs and a separator.
+    width: 200px;
+  }
+
+  .mat-form-field-appearance-legacy {
+    .mat-form-field-prefix,
+    .mat-form-field-suffix {
+      .mat-datepicker-toggle .mat-mdc-icon-button {
+        font-size: inherit;
+        width: 1.5em;
+        height: 1.5em;
+        padding: 0;
+      }
+
+      .mat-datepicker-toggle-default-icon {
+        width: 1em;
+      }
+
+      .mat-datepicker-toggle .mat-mdc-icon-button .mat-icon {
+        line-height: 1.5em;
+        margin: 0;
+      }
+    }
+  }
+
+  .mat-form-field {
+    .mat-datepicker-toggle .mat-mdc-button-base {
+      vertical-align: middle;
+    }
+
+    &:not(.mat-form-field-appearance-legacy) .mat-datepicker-toggle .mat-mdc-button-base {
+      vertical-align: baseline;
+    }
+  }
+}

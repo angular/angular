@@ -331,4 +331,22 @@
   <mat-datepicker-toggle matSuffix [for]="ci3">
     <mat-icon matDatepickerToggleIcon>add</mat-icon>
   </mat-datepicker-toggle>
+  <br>
+  <mat-form-field appearance="legacy">
+    <mat-label>Custom icon</mat-label>
+    <input matInput [matDatepicker]="ci4">
+    <mat-datepicker-toggle matSuffix [for]="ci4">
+      <mat-icon matDatepickerToggleIcon>add</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #ci4></mat-datepicker>
+  </mat-form-field>
+  <br>
+  <mat-form-field appearance="standard">
+    <mat-label>Custom icon</mat-label>
+    <input matInput [matDatepicker]="ci5">
+    <mat-datepicker-toggle matSuffix [for]="ci5">
+      <mat-icon matDatepickerToggleIcon>add</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #ci5></mat-datepicker>
+  </mat-form-field>
 </p>

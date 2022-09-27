@@ -4,6 +4,7 @@
 @use '../core/style/private';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
+@use '../datepicker/datepicker-legacy-compat';
 
 $_ripple-opacity: 0.1;
 
@@ -163,6 +164,12 @@ $_ripple-opacity: 0.1;
       @include private.private-theme-overridable-elevation(0, $config);
     }
   }
+
+  @include datepicker-legacy-compat.legacy-button-compat-theme((
+      color: $config,
+      typography: null,
+      density: null,
+  ));
 }
 
 /// @deprecated Use `mat.button-typography` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
@@ -178,9 +185,21 @@ $_ripple-opacity: 0.1;
       weight: typography-utils.font-weight($config, button);
     }
   }
+
+  @include datepicker-legacy-compat.legacy-button-compat-theme((
+      color: null,
+      typography: $config,
+      density: null,
+  ));
 }
 
-@mixin _density($config-or-theme) {}
+@mixin _density($config-or-theme) {
+  @include datepicker-legacy-compat.legacy-button-compat-theme((
+      color: null,
+      typography: null,
+      density: theming.get-density-config($config-or-theme)
+  ));
+}
 
 /// @deprecated Use `mat.button-theme` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
 /// @breaking-change 17.0.0

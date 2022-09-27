@@ -30,13 +30,13 @@ import {
   NG_VALIDATORS,
 } from '@angular/forms';
 import {MAT_DATE_LOCALE, MatNativeDateModule, NativeDateModule} from '@angular/material/core';
-import {MatLegacyFormField, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {DEC, JAN, JUL, JUN, SEP} from '../testing';
 import {By} from '@angular/platform-browser';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
-import {MatLegacyInputModule} from '../legacy-input/index';
+import {MatInputModule} from '@angular/material/input';
 import {MatDatepicker} from './datepicker';
 import {MatDatepickerInput} from './datepicker-input';
 import {MatDatepickerToggle} from './datepicker-toggle';
@@ -62,8 +62,8 @@ describe('MatDatepicker', () => {
       imports: [
         FormsModule,
         MatDatepickerModule,
-        MatLegacyFormFieldModule,
-        MatLegacyInputModule,
+        MatFormFieldModule,
+        MatInputModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
         ...imports,
@@ -1443,9 +1443,9 @@ describe('MatDatepicker', () => {
         fixture.debugElement.nativeElement.querySelector('input').value = 'totally-not-a-date';
         fixture.detectChanges();
 
-        expect(
-          fixture.debugElement.nativeElement.querySelector('mat-form-field').classList,
-        ).toContain('mat-form-field-should-float');
+        expect(fixture.debugElement.nativeElement.querySelector('label').classList).toContain(
+          'mdc-floating-label--float-above',
+        );
       });
 
       it('should pass the form field theme color to the overlay', fakeAsync(() => {
@@ -1490,7 +1490,7 @@ describe('MatDatepicker', () => {
       }));
 
       it('should set aria-labelledby of the overlay to the form field label', fakeAsync(() => {
-        const label: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field-label');
+        const label: HTMLElement = fixture.nativeElement.querySelector('label');
 
         expect(label).toBeTruthy();
         expect(label.getAttribute('id')).toBeTruthy();
@@ -2597,7 +2597,7 @@ class DatepickerWithCustomIcon {}
 class FormFieldDatepicker {
   @ViewChild('d') datepicker: MatDatepicker<Date>;
   @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
-  @ViewChild(MatLegacyFormField) formField: MatLegacyFormField;
+  @ViewChild(MatFormField) formField: MatFormField;
 }
 
 @Component({

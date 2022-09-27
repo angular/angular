@@ -50,6 +50,7 @@ sass_binary(
     deps = [
         "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
+        "//src/material/datepicker:datepicker_scss_lib",
     ],
 )
 

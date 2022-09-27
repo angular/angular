@@ -6,7 +6,7 @@
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-
+@use '../button/icon-button-theme';
 
 $selected-today-box-shadow-width: 1px;
 $selected-fade-amount: 0.6;
@@ -252,7 +252,13 @@ $calendar-weekday-table-font-size: 11px !default;
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin _density($config-or-theme) {
+  // Regardless of the user-passed density, we want the calendar previous/next buttons to remain at
+  // density -2
+  .mat-calendar-controls {
+    @include icon-button-theme.density(-2);
+  }
+}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);

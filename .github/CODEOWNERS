@@ -186,6 +186,7 @@
 /src/dev-app/layout/**                                      @andrewseguin
 /src/dev-app/legacy-card/**                                 @mmalerba
 /src/dev-app/legacy-checkbox/**                             @mmalerba
+/src/dev-app/legacy-datepicker/**                           @mmalerba
 /src/dev-app/legacy-dialog/**                               @devversion
 /src/dev-app/legacy-input/**                                @mmalerba
 /src/dev-app/legacy-list/**                                 @mmalerba

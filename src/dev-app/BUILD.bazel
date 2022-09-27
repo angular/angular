@@ -52,6 +52,7 @@ ng_module(
         "//src/dev-app/legacy-button",
         "//src/dev-app/legacy-card",
         "//src/dev-app/legacy-checkbox",
+        "//src/dev-app/legacy-datepicker",
         "//src/dev-app/legacy-dialog",
         "//src/dev-app/legacy-input",
         "//src/dev-app/legacy-list",

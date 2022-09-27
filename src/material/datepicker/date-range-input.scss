@@ -141,7 +141,7 @@ $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spaci
   max-width: $date-range-input-part-max-width;
 }
 
-.mat-form-field-type-mat-date-range-input .mat-form-field-infix {
+.mat-mdc-form-field-type-mat-date-range-input .mat-mdc-form-field-infix {
   // Bump the default width slightly since it's somewhat cramped with two inputs and a separator.
   width: 200px;
 }

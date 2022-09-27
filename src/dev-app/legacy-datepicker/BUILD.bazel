@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "ng_module", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "datepicker",
+    name = "legacy-datepicker",
     srcs = glob(["**/*.ts"]),
     assets = [
         "datepicker-demo.html",
@@ -12,14 +12,14 @@ ng_module(
         ":custom_header_scss",
     ],
     deps = [
-        "//src/material/button",
-        "//src/material/checkbox",
         "//src/material/core",
         "//src/material/datepicker",
-        "//src/material/form-field",
         "//src/material/icon",
-        "//src/material/input",
-        "//src/material/select",
+        "//src/material/legacy-button",
+        "//src/material/legacy-checkbox",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
+        "//src/material/legacy-select",
     ],
 )
 

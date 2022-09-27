@@ -20,8 +20,8 @@ import {
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {
   DateAdapter,
   MAT_DATE_FORMATS,
@@ -38,10 +38,10 @@ import {
   DateRange,
   MatDatepickerModule,
 } from '@angular/material/datepicker';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -176,7 +176,7 @@ export class CustomHeaderNgContent<D> {
 }
 
 @Component({
-  selector: 'datepicker-demo',
+  selector: 'legacy-datepicker-demo',
   templateUrl: 'datepicker-demo.html',
   styleUrls: ['datepicker-demo.css'],
   encapsulation: ViewEncapsulation.None,
@@ -185,21 +185,21 @@ export class CustomHeaderNgContent<D> {
   imports: [
     CommonModule,
     FormsModule,
-    MatButtonModule,
-    MatCheckboxModule,
+    MatLegacyButtonModule,
+    MatLegacyCheckboxModule,
     MatDatepickerModule,
-    MatFormFieldModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatNativeDateModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     ReactiveFormsModule,
     CustomHeader,
     CustomHeaderNgContent,
     CustomRangeStrategy,
   ],
 })
-export class DatepickerDemo {
+export class LegacyDatepickerDemo {
   touch: boolean;
   filterOdd: boolean;
   yearView: boolean;

@@ -1,6 +1,7 @@
 @use '@angular/cdk';
 
 @use '../core/style/variables';
+@use '../datepicker/datepicker-legacy-compat';
 
 // Styles that apply to all appearances of the form-field.
 
@@ -251,3 +252,5 @@ $default-infix-width: 180px !default;
     transition: none;
   }
 }
+
+@include datepicker-legacy-compat.legacy-form-field-compat();

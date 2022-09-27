@@ -3,6 +3,7 @@
 @use './button-base';
 @use '../core/style/layout-common';
 @use '../core/focus-indicators/private';
+@use '../datepicker/datepicker-legacy-compat';
 
 // TODO(jelbourn): Measure perf benefits for translate3d and will-change.
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
@@ -182,3 +183,5 @@
     outline: solid 1px;
   }
 }
+
+@include datepicker-legacy-compat.legacy-button-compat();

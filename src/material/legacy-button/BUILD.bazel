@@ -28,7 +28,10 @@ ng_module(
 sass_library(
     name = "legacy_button_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//src/material/core:core_scss_lib",
+        "//src/material/datepicker:datepicker_scss_lib",
+    ],
 )
 
 sass_binary(
@@ -38,6 +41,7 @@ sass_binary(
         ":legacy_button_scss_lib",
         "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
+        "//src/material/datepicker:datepicker_scss_lib",
     ],
 )
 
