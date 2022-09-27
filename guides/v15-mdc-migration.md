@@ -429,7 +429,11 @@ TODO(mmalerba): link to density docs once they exist.
     </span>
     ```
 
-* The text in menu items wrap instead of being hidden with an ellipses.
+* The text in menu items wraps instead of being hidden with an ellipses.
+
+* Menu item heights are no longer capped at `48px`.
+
+* Menu elevation starts from level 8, instead of level 4.
 
 ### Option / Optgroup
 
