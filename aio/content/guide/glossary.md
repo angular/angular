@@ -739,7 +739,7 @@ To learn more, see [Introduction to Services and Dependency Injection][AioGuideA
 
 A configuration of [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe] to indicate that this class can be imported directly without declaring it in any [NgModule][AioGuideGlossaryNgmodule].
 
-Standalone components, directives and pipes mainly differ from non-standalone ones by:
+Standalone components, directives, and pipes differ from non-standalone ones by:
  - having the `standalone` field of their decorator set to `true`.
  - allowing their direct importing without the need to pass through NgModules.
  - specifying their dependencies directly in their decorator.

@@ -855,7 +855,7 @@
         {
           "url": "guide/standalone-components",
           "title": "Standalone components",
-          "tooltip": "Standalone components, directives and pipes"
+          "tooltip": "Standalone components, directives, and pipes"
         },
         {
           "url": "guide/image-directive",
