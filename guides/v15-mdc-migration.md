@@ -207,7 +207,13 @@ TODO(mmalerba): link to density docs once they exist.
 
 ### Autocomplete
 
-* Long options now wrap by default instead of truncating.
+* Long options now wrap instead of truncating.
+
+* Option heights are no longer capped at `48px`.
+
+* Option list now has an `8px` top and bottom padding.
+
+* Options list now has an animation when opening and closing.
 
 ### Button
 
@@ -454,9 +460,15 @@ TODO(mmalerba): link to density docs once they exist.
 
 ### Select
 
-* MatSelect no longer aligns the selected option in the dropdown menu with the trigger text.
+* `MatSelect` no longer aligns the selected option in the dropdown menu with the trigger text.
 
-* Long options now wrap by default instead of truncating.
+* Long options now wrap instead of truncating.
+
+* Option heights are no longer capped at `48px`.
+
+* Option list now has an `8px` top and bottom padding.
+
+* Option list animation has changed.
 
 * Previously the dropdown menu width could be wider than the parent form-field, but now the dropdown
   is the same width as the form-field
