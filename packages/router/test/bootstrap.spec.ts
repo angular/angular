@@ -205,21 +205,13 @@ describe('bootstrap', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     class TestModule {
-      constructor(router: Router) {
-        log.push('TestModule');
-        router.events.subscribe(e => log.push(e.constructor.name));
-      }
+      constructor(router: Router) {}
     }
 
     platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
       const router = res.injector.get(Router);
       const data = router.routerState.snapshot.root.firstChild!.data;
       expect(data['test']).toEqual('test-data');
-      expect(log).toEqual([
-        'TestModule', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
-        'ChildActivationStart', 'ActivationStart', 'GuardsCheckEnd', 'ResolveStart', 'ResolveEnd',
-        'RootCmp', 'ActivationEnd', 'ChildActivationEnd', 'NavigationEnd', 'Scroll'
-      ]);
       done();
     });
   });
@@ -432,6 +424,14 @@ describe('bootstrap', () => {
     class TestModule {
     }
 
+    function resolveAfter(milliseconds: number) {
+      return new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, milliseconds);
+      });
+    }
+
     const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
     const router = res.injector.get(Router);
 
@@ -447,13 +447,16 @@ describe('bootstrap', () => {
     expect(window.pageYOffset).toEqual(3000);
 
     await router.navigateByUrl('/cc');
+    await resolveAfter(100);
     expect(window.pageYOffset).toEqual(0);
 
     await router.navigateByUrl('/aa#marker2');
+    await resolveAfter(100);
     expect(window.pageYOffset).toBeGreaterThanOrEqual(5900);
     expect(window.pageYOffset).toBeLessThan(6000);  // offset
 
     await router.navigateByUrl('/aa#marker3');
+    await resolveAfter(100);
     expect(window.pageYOffset).toBeGreaterThanOrEqual(8900);
     expect(window.pageYOffset).toBeLessThan(9000);
   });
@@ -506,9 +509,6 @@ describe('bootstrap', () => {
     (async () => {
       const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
       const router = res.injector.get(Router);
-      router.events.subscribe(() => {
-        expect(router.getCurrentNavigation()?.id).toBeDefined();
-      });
       router.events.subscribe(async (e) => {
         if (e instanceof NavigationEnd && e.url === '/b') {
           await router.navigate(['a']);

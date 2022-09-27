@@ -7,7 +7,7 @@
  */
 
 import {LOCATION_INITIALIZED, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, Provider, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 
@@ -155,7 +155,8 @@ export function withInMemoryScrolling(options: InMemoryScrollingOptions = {}):
     useFactory: () => {
       const router = inject(Router);
       const viewportScroller = inject(ViewportScroller);
-      return new RouterScroller(router, viewportScroller, options);
+      const zone = inject(NgZone);
+      return new RouterScroller(router, viewportScroller, zone, options);
     },
   }];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
