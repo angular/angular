@@ -545,28 +545,26 @@ TODO(mmalerba): link to density docs once they exist.
 
 ### Table
 
-* Every cell has `16px` left and right padding. Previously only a `24px` padding applied to the
-  leftmost and rightmost cells.
+* All cells have a `16px` left and right padding instead of just the leftmost and rightmost cells having a padding of `24px`.
 
-* Header text size and color matches the data rows.
+* Header cells have the same color and text size as the data rows instead of having more grayish and smaller text.
 
-* Text will not wrap by default; to enable text wrapping, apply the `white-space: normal` style to
-  the table cell.
+* Cell text no longer wraps by default. Cell wrapping can be enabled by applying `white-space: normal` to
+  the table cells.
 
 * Row height is `52px` instead of `48px`.
 
-* Cells have box-sizing `border-box` instead of `content-box`. This may affect custom width styles.
+* Cell box-sizing is `border-box` instead of `content-box`. This may affect custom width styles.
+
+* The table's last row does not include a bottom border row because the table is expected to have a border.
 
 * The paginator property of the `MatTableDataSource` has a generic interface that matches most of
   the paginator API. You may need to explicitly type the paginator to access the full API, e.g.
   `new MatTableDataSource<MyData, MatPaginator>();`
 
-* MDC-based flex tables (`<mat-table>`) display borders on their cells instead of the rows.
+* Flex tables (`<mat-table>`) display a border on the cells instead of rows.
 
-* The last row of the table no longer has a bottom border since the table is assumed to be
-  surrounded by a border.
-
-* Flex table row height is set using `height` instead of `min-height`.
+* Flex table (`<mat-table>`) row height is set with `height` instead of `min-height`.
 
 ### Tabs
 
