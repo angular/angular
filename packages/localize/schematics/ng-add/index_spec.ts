@@ -11,18 +11,11 @@ import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/test
 
 import {localizePolyfill} from './index';
 
-
 describe('ng-add schematic', () => {
-  const countInstances = (str: string, substr: string) => str.split(substr).length - 1;
   const defaultOptions = {project: 'demo'};
   let host: UnitTestTree;
   let schematicRunner: SchematicTestRunner;
-  // The real polyfills file is bigger than this, but for the test it shouldn't matter.
-  const polyfillsContent =
-      `/***************************************************************************************************
- * Zone JS is required by default for Angular itself.
- */
-import 'zone.js';`;
+  const polyfillsContent = '';
   const mainServerContent = `import { enableProdMode } from '@angular/core';
 import { environment } from './environments/environment';
 if (environment.production) {
@@ -38,7 +31,7 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
         // The default (according to `ng-add` in its package.json) is for `@angular/localize` to be
         // saved to `devDependencies`.
         '@angular/localize': '~0.0.0-PLACEHOLDER',
-      }
+      },
     }));
     host.create('src/polyfills.ts', polyfillsContent);
     host.create('src/another-polyfills.ts', polyfillsContent);
@@ -62,19 +55,26 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
               configurations: {
                 production: {
                   polyfills: 'src/another-polyfills.ts',
-                }
-              }
+                },
+              },
             },
-            'another-build': {
-              builder: '@angular-devkit/build-angular:browser',
+            test: {
+              builder: '@angular-devkit/build-angular:karma',
               options: {
-                polyfills: 'src/polyfills.ts',
+                polyfills: ['src/polyfills.ts'],
               },
               configurations: {
                 production: {
-                  polyfills: 'src/another-polyfills.ts',
-                }
-              }
+                  polyfills: ['src/another-polyfills.ts'],
+                },
+                dev: {
+                  polyfills: [localizePolyfill],
+                },
+              },
+            },
+            'another-test': {
+              builder: '@angular-devkit/build-angular:karma',
+              options: {},
             },
             server: {
               builder: '@angular-devkit/build-angular:server',
@@ -84,8 +84,8 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
               configurations: {
                 production: {
                   main: 'src/another-main.server.ts',
-                }
-              }
+                },
+              },
             },
             'another-server': {
               builder: '@angular-devkit/build-angular:server',
@@ -95,8 +95,8 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
               configurations: {
                 production: {
                   main: 'src/another-main.server.ts',
-                }
-              }
+                },
+              },
             },
             'not-browser-or-server': {
               builder: '@angular-devkit/build-angular:something-else',
@@ -106,36 +106,68 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
               },
               configurations: {
                 production: {
-                  polyfills: 'src/other-unrelated-polyfills.ts',
+                  polyfills: ['src/other-unrelated-polyfills.ts'],
                   main: 'src/another-unrelated-main.server.ts',
-                }
-              }
+                },
+              },
             },
           },
-        }
+        },
       },
-      defaultProject: 'demo',
     }));
     schematicRunner =
         new SchematicTestRunner('@angular/localize', require.resolve('../collection.json'));
   });
 
-  it('should add localize polyfill to polyfill files', async () => {
+  it(`should add localize polyfill to polyfill option when it's a string`, async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
-    expect(host.readContent('/src/polyfills.ts')).toContain(localizePolyfill);
-    expect(host.readContent('/src/another-polyfills.ts')).toContain(localizePolyfill);
+    const demoProjectBuild =
+        (host.readJson('angular.json') as any)['projects']['demo']['architect']['build'];
+    expect(demoProjectBuild['options']['polyfills']).toEqual([
+      'src/polyfills.ts',
+      localizePolyfill,
+    ]);
+    expect(demoProjectBuild['configurations']['production']['polyfills']).toEqual([
+      'src/another-polyfills.ts',
+      localizePolyfill,
+    ]);
+  });
+
+  it(`should add localize polyfill to polyfill option when it's a array`, async () => {
+    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+    const demoProjectAnotherTest =
+        (host.readJson('angular.json') as any)['projects']['demo']['architect']['test'];
+    expect(demoProjectAnotherTest['options']['polyfills']).toEqual([
+      'src/polyfills.ts',
+      localizePolyfill,
+    ]);
+    expect(demoProjectAnotherTest['configurations']['production']['polyfills']).toEqual([
+      'src/another-polyfills.ts',
+      localizePolyfill,
+    ]);
+  });
+
+  it(`should not add localize polyfill to polyfill option when it's already set`, async () => {
+    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+    const demoProjectAnotherTest =
+        (host.readJson('angular.json') as any)['projects']['demo']['architect']['test'];
+    expect(demoProjectAnotherTest['configurations']['dev']['polyfills']).toEqual([
+      localizePolyfill,
+    ]);
+  });
+  it(`should add localize polyfill when polyfills options is not set`, async () => {
+    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+    const demoProjectAnotherTest =
+        (host.readJson('angular.json') as any)['projects']['demo']['architect']['another-test'];
+    expect(demoProjectAnotherTest['options']['polyfills']).toEqual([
+      localizePolyfill,
+    ]);
   });
 
   it('should add localize polyfill to server main files', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     expect(host.readContent('/src/main.server.ts')).toContain(localizePolyfill);
     expect(host.readContent('/src/another-main.server.ts')).toContain(localizePolyfill);
-  });
-
-  it('should add localize polyfill at the start of file', async () => {
-    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
-    const content = host.readContent('/src/polyfills.ts');
-    expect(content.indexOf(localizePolyfill)).toBeLessThan(content.indexOf(polyfillsContent));
   });
 
   it('should not add localize polyfill to files referenced in other targets files', async () => {
@@ -145,21 +177,14 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
     expect(host.readContent('/src/unrelated-main.server.ts')).not.toContain(localizePolyfill);
     expect(host.readContent('/src/another-unrelated-main.server.ts'))
         .not.toContain(localizePolyfill);
-  });
 
-  it('should only add localize polyfill once if multiple builds reference it', async () => {
-    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
-    const content = host.readContent('/src/polyfills.ts');
-    expect(countInstances(content, localizePolyfill)).toBe(1);
-  });
-
-  it('should not add localize polyfill if it\'s already there', async () => {
-    const polyfillVariation = localizePolyfill.replace(/'/g, '"');
-    host.overwrite('/src/polyfills.ts', `${localizePolyfill}\n${polyfillsContent}`);
-    host.overwrite('/src/another-polyfills.ts', `${polyfillVariation}\n${polyfillsContent}`);
-    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
-    expect(countInstances(host.readContent('/src/polyfills.ts'), localizePolyfill)).toBe(1);
-    expect(countInstances(host.readContent('/src/another-polyfills.ts'), localizePolyfill)).toBe(0);
+    const demoProjectBuild =
+        (host.readJson('angular.json') as
+         any)['projects']['demo']['architect']['not-browser-or-server'];
+    expect(demoProjectBuild['options']['polyfills']).toBe('src/unrelated-polyfills.ts');
+    expect(demoProjectBuild['configurations']['production']['polyfills']).toEqual([
+      'src/other-unrelated-polyfills.ts',
+    ]);
   });
 
   it('should not break when there are no polyfills', async () => {
@@ -169,7 +194,7 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
         'demo': {
           root: '',
           architect: {},
-        }
+        },
       },
       defaultProject: 'demo',
     }));
@@ -179,8 +204,10 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
   it('should add package to `devDependencies` by default', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const packageJsonText = host.readContent('/package.json');
-    const packageJsonObj = JSON.parse(packageJsonText) as
-        {devDependencies: {[key: string]: string}, dependencies: {[key: string]: string}};
+    const packageJsonObj = JSON.parse(packageJsonText) as {
+      devDependencies: {[key: string]: string};
+      dependencies: {[key: string]: string};
+    };
     expect(packageJsonObj.devDependencies?.['@angular/localize']).toBe('~0.0.0-PLACEHOLDER');
     expect(packageJsonObj.dependencies?.['@angular/localize']).toBeUndefined();
   });
@@ -190,8 +217,10 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
                .runSchematicAsync('ng-add', {...defaultOptions, useAtRuntime: true}, host)
                .toPromise();
     const packageJsonText = host.readContent('/package.json');
-    const packageJsonObj = JSON.parse(packageJsonText) as
-        {devDependencies: {[key: string]: string}, dependencies: {[key: string]: string}};
+    const packageJsonObj = JSON.parse(packageJsonText) as {
+      devDependencies: {[key: string]: string};
+      dependencies: {[key: string]: string};
+    };
     expect(packageJsonObj.dependencies?.['@angular/localize']).toBe('~0.0.0-PLACEHOLDER');
     expect(packageJsonObj.devDependencies?.['@angular/localize']).toBeUndefined();
   });
