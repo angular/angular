@@ -1,3 +1,32 @@
+<a name="15.0.0-next.4"></a>
+# 15.0.0-next.4 (2022-09-28)
+## Breaking Changes
+### router
+- The title property is now required on ActivatedRouteSnapshot
+## Deprecations
+### core
+- The bit field signature of `Injector.get()` has been deprecated, in favor of the new options object.
+- The bit field signature of `TestBed.inject()` has been deprecated, in favor of the new options object.
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [841c8e5138](https://github.com/angular/angular/commit/841c8e51386645d7fd26642f41952ed8f0a2dbe5) | feat | support object-based DI flags in Injector.get() ([#46761](https://github.com/angular/angular/pull/46761)) |
+| [120555a626](https://github.com/angular/angular/commit/120555a626d66523e46ce01681b11a0f38e3a40a) | feat | support object-based DI flags in TestBed.inject() ([#46761](https://github.com/angular/angular/pull/46761)) |
+| [aef8d0bb02](https://github.com/angular/angular/commit/aef8d0bb020931e0b44e067b074a449fc66f6ff7) | fix | correctly check for `typeof` of undefined in `ngDevMode` check ([#47480](https://github.com/angular/angular/pull/47480)) |
+| [85330f3fd9](https://github.com/angular/angular/commit/85330f3fd9ac6381ce3aa18479ed8195d2ac215e) | fix | update `isDevMode` to rely on `ngDevMode` ([#47475](https://github.com/angular/angular/pull/47475)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e7ee53c541](https://github.com/angular/angular/commit/e7ee53c541da0a1f85c217354ec9901010ae0de9) | feat | support to fix invalid banana in box ([#47393](https://github.com/angular/angular/pull/47393)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6a88bad019](https://github.com/angular/angular/commit/6a88bad0192516f26a5a008c0634b73456b9447c) | fix | Ensure ActivatedRouteSnapshot#title has correct value ([#47481](https://github.com/angular/angular/pull/47481)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Ashley Hunter, Doug Parker, Jessica Janiuk, JiaLiPassion, Kristiyan Kostadinov, Rokas Brazdžionis, Simona Cotin and ivanwonder
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.4"></a>
 # 14.2.4 (2022-09-28)
 ### compiler-cli
