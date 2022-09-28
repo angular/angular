@@ -273,6 +273,9 @@
     "name": "_wrapInTimeout"
   },
   {
+    "name": "addPropertyAlias"
+  },
+  {
     "name": "allocExpando"
   },
   {
