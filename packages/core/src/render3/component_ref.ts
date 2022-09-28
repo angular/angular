@@ -385,7 +385,7 @@ function createRootComponent<T>(
   const tView = rootLView[TVIEW];
   const native = getNativeByTNode(rootTNode, rootLView);
 
-  initializeDirectives(tView, rootLView, rootTNode, rootDirectives, null);
+  initializeDirectives(tView, rootLView, rootTNode, rootDirectives, null, null);
 
   for (let i = 0; i < rootDirectives.length; i++) {
     const directiveIndex = rootTNode.directiveStart + i;
