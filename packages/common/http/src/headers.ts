@@ -9,6 +9,8 @@
 import {RuntimeError} from '../../../core/src/errors';
 import {RuntimeErrorCode} from '../../src/errors';
 
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
+
 interface Update {
   name: string;
   value?: string|string[];
@@ -274,11 +276,10 @@ function assertValidHeaders(headers: Record<string, unknown>):
     asserts headers is Record<string, string|string[]> {
   for (const [key, value] of Object.entries(headers)) {
     if (typeof value !== 'string' && !Array.isArray(value)) {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          `Unexpected value of the \`${key}\` header provided. ` +
-              `Expecting either a string or an array, but got: \`${value}\`.` :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.INVAILD_HTTP_HEADER, errorMessage);
+      const errorMessage = `Unexpected value of the \`${key}\` header provided. ` +
+          `Expecting either a string or an array, but got: \`${value}\`.`;
+
+      throw new RuntimeError(RuntimeErrorCode.INVAILD_HTTP_HEADER, NG_DEV_MODE && errorMessage);
     }
   }
 }

@@ -18,6 +18,8 @@ import {HttpHeaders} from './headers';
 import {HttpRequest} from './request';
 import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpJsonParseError, HttpResponse, HttpStatusCode, HttpUploadProgressEvent} from './response';
 
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
+
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
 /**
@@ -54,10 +56,10 @@ export class HttpXhrBackend implements HttpBackend {
     // Quick check to give a better error message when a user attempts to use
     // HttpClient.jsonp() without installing the HttpClientJsonpModule
     if (req.method === 'JSONP') {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          'Attempted to construct Jsonp request without HttpClientJsonpModule installed.' :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.MISSING_HTTP_CLIENT_JSON_MODULE, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.MISSING_HTTP_CLIENT_JSON_MODULE,
+          NG_DEV_MODE &&
+              'Attempted to construct Jsonp request without HttpClientJsonpModule installed.');
     }
 
     // Everything happens on Observable subscription.

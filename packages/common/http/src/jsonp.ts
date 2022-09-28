@@ -17,6 +17,8 @@ import {HttpBackend, HttpHandler} from './backend';
 import {HttpRequest} from './request';
 import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response';
 
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
+
 // Every request made through JSONP needs a callback name that's unique across the
 // whole page. Each request is assigned an id and the callback name is constructed
 // from that. The next id to be assigned is tracked in a global variable here that
@@ -87,21 +89,19 @@ export class JsonpClientBackend implements HttpBackend {
     // Firstly, check both the method and response type. If either doesn't match
     // then the request was improperly routed here and cannot be handled.
     if (req.method !== 'JSONP') {
-      const errorMessage =
-          (typeof ngDevMode === 'undefined' || ngDevMode) ? JSONP_ERR_WRONG_METHOD : '';
-      throw new RuntimeError(RuntimeErrorCode.INVALID_HTTP_REQUEST_METHOD, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_HTTP_REQUEST_METHOD, NG_DEV_MODE && JSONP_ERR_WRONG_METHOD);
     } else if (req.responseType !== 'json') {
-      const errorMessage =
-          (typeof ngDevMode === 'undefined' || ngDevMode) ? JSONP_ERR_WRONG_RESPONSE_TYPE : '';
-      throw new RuntimeError(RuntimeErrorCode.INVALID_HTTP_RESPONSE, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_HTTP_RESPONSE, NG_DEV_MODE && JSONP_ERR_WRONG_RESPONSE_TYPE);
     }
 
     // Check the request headers. JSONP doesn't support headers and
     // cannot set any that were supplied.
     if (req.headers.keys().length > 0) {
-      const errorMessage =
-          (typeof ngDevMode === 'undefined' || ngDevMode) ? JSONP_ERR_HEADERS_NOT_SUPPORTED : '';
-      throw new RuntimeError(RuntimeErrorCode.UNEXPECTED_HTTP_JSON_HEADER, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.UNEXPECTED_HTTP_JSON_HEADER,
+          NG_DEV_MODE && JSONP_ERR_HEADERS_NOT_SUPPORTED);
     }
 
     // Everything else happens inside the Observable boundary.
