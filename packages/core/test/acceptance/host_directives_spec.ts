@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewChecked, AfterViewInit, Component, Directive, ElementRef, forwardRef, inject, Inject, InjectionToken, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, Directive, ElementRef, EventEmitter, forwardRef, inject, Inject, InjectionToken, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -861,6 +861,882 @@ describe('host directives', () => {
          TestBed.configureTestingModule({declarations: [App, Host]});
          expect(() => TestBed.createComponent(App))
              .toThrowError(/NG0200: Circular dependency in DI detected for HostDir/);
+       });
+  });
+
+  describe('outputs', () => {
+    it('should not emit to an output of a host directive that has not been exposed', () => {
+      let hostDirectiveInstance: HostDir|undefined;
+
+      @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit()'}})
+      class HostDir {
+        @Output() hasBeenClicked = new EventEmitter<void>();
+
+        constructor() {
+          hostDirectiveInstance = this;
+        }
+      }
+
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir (hasBeenClicked)="spy()"></button>'})
+      class App {
+        spy = jasmine.createSpy('click spy');
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(hostDirectiveInstance instanceof HostDir).toBe(true);
+      expect(fixture.componentInstance.spy).not.toHaveBeenCalled();
+    });
+
+    it('should emit to an output of a host directive that has been exposed', () => {
+      @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit("hello")'}})
+      class HostDir {
+        @Output() hasBeenClicked = new EventEmitter<string>();
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{
+          directive: HostDir,
+          outputs: ['hasBeenClicked'],
+        }]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      class App {
+        spy = jasmine.createSpy('click spy');
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.spy).toHaveBeenCalledOnceWith('hello');
+    });
+
+    it('should emit to an output of a host directive that has been exposed under an alias', () => {
+      @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit("hello")'}})
+      class HostDir {
+        @Output() hasBeenClicked = new EventEmitter<string>();
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked: wasClicked']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({
+        template: `
+          <button dir (wasClicked)="validSpy($event)" (hasBeenClicked)="invalidSpy($event)"></button>`
+      })
+      class App {
+        validSpy = jasmine.createSpy('valid spy');
+        invalidSpy = jasmine.createSpy('invalid spy');
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.validSpy).toHaveBeenCalledOnceWith('hello');
+      expect(fixture.componentInstance.invalidSpy).not.toHaveBeenCalled();
+    });
+
+    it('should alias to the public name of the host directive output, not the private one', () => {
+      @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit("hello")'}})
+      class HostDir {
+        @Output('wasClicked') hasBeenClicked = new EventEmitter<string>();
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [
+          {directive: HostDir, outputs: ['wasClicked: clickOccurred']},
+        ]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({
+        template: `
+          <button
+            dir
+            (clickOccurred)="validSpy($event)"
+            (hasBeenClicked)="invalidSpy($event)"></button>`
+      })
+      class App {
+        validSpy = jasmine.createSpy('valid spy');
+        invalidSpy = jasmine.createSpy('invalid spy');
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.validSpy).toHaveBeenCalledOnceWith('hello');
+      expect(fixture.componentInstance.invalidSpy).not.toHaveBeenCalled();
+    });
+
+    it('should emit to an output of a host that has the same name as a non-exposed output of a host directive',
+       () => {
+         @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit("HostDir")'}})
+         class HostDir {
+           @Output() hasBeenClicked = new EventEmitter<string>();
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [HostDir],
+           host: {'(click)': 'hasBeenClicked.emit("Dir")'}
+         } as HostDirectiveAny)
+         class Dir {
+           @Output() hasBeenClicked = new EventEmitter<string>();
+         }
+
+         @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+         class App {
+           spy = jasmine.createSpy('click spy');
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.spy).toHaveBeenCalledOnceWith('Dir');
+       });
+
+    it('should emit to an output of a host that has the same name as an exposed output of a host directive',
+       () => {
+         @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit("HostDir")'}})
+         class HostDir {
+           @Output() hasBeenClicked = new EventEmitter<string>();
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked']}],
+           host: {'(click)': 'hasBeenClicked.emit("Dir")'}
+         } as HostDirectiveAny)
+         class Dir {
+           @Output() hasBeenClicked = new EventEmitter<string>();
+         }
+
+         @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+         class App {
+           spy = jasmine.createSpy('click spy');
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.spy).toHaveBeenCalledTimes(2);
+         expect(fixture.componentInstance.spy).toHaveBeenCalledWith('HostDir');
+         expect(fixture.componentInstance.spy).toHaveBeenCalledWith('Dir');
+       });
+
+    it('should emit to an output of a host that has the same name as the alias of a host directive output',
+       () => {
+         @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit("HostDir")'}})
+         class HostDir {
+           @Output() hasBeenClicked = new EventEmitter<string>();
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked: wasClicked']}],
+           host: {'(click)': 'wasClicked.emit("Dir")'}
+         } as HostDirectiveAny)
+         class Dir {
+           @Output() wasClicked = new EventEmitter<string>();
+         }
+
+         @Component({template: '<button dir (wasClicked)="spy($event)"></button>'})
+         class App {
+           spy = jasmine.createSpy('click spy');
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.spy).toHaveBeenCalledTimes(2);
+         expect(fixture.componentInstance.spy).toHaveBeenCalledWith('HostDir');
+         expect(fixture.componentInstance.spy).toHaveBeenCalledWith('Dir');
+       });
+
+    it('should not expose the same output more than once', () => {
+      @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit()'}})
+      class HostDir {
+        @Output() hasBeenClicked = new EventEmitter<void>();
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked', 'hasBeenClicked']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      class App {
+        spy = jasmine.createSpy('click spy');
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should emit to an inherited output of a host directive', () => {
+      @Directive({host: {'(click)': 'hasBeenClicked.emit("hello")'}})
+      class ParentDir {
+        @Output() hasBeenClicked = new EventEmitter<string>();
+      }
+
+      @Directive({standalone: true})
+      class HostDir extends ParentDir {
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked']}],
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      class App {
+        spy = jasmine.createSpy('click spy');
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.spy).toHaveBeenCalledOnceWith('hello');
+    });
+
+    it('should emit to an output that was exposed from one host directive, but not another', () => {
+      @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit("ExposedHostDir")'}})
+      class ExposedHostDir {
+        @Output() hasBeenClicked = new EventEmitter<string>();
+      }
+
+      @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit("UnExposedHostDir")'}})
+      class UnExposedHostDir {
+        @Output() hasBeenClicked = new EventEmitter<string>();
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: ExposedHostDir, outputs: ['hasBeenClicked']}, UnExposedHostDir]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      class App {
+        spy = jasmine.createSpy('click spy');
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.spy).toHaveBeenCalledOnceWith('ExposedHostDir');
+      expect(fixture.componentInstance.spy).not.toHaveBeenCalledWith('UnExposedHostDir');
+    });
+
+    it('should emit to outputs from different host directives that have been aliased to the same name',
+       () => {
+         @Directive({
+           standalone: true,
+           host: {'(click)': 'firstHasBeenClicked.emit("FirstHostDir")'},
+         })
+         class FirstHostDir {
+           @Output() firstHasBeenClicked = new EventEmitter<string>();
+         }
+
+         @Directive({
+           standalone: true,
+           host: {'(click)': 'secondHasBeenClicked.emit("SecondHostDir")'},
+         })
+         class SecondHostDir {
+           @Output() secondHasBeenClicked = new EventEmitter<string>();
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [
+             {directive: FirstHostDir, outputs: ['firstHasBeenClicked: wasClicked']},
+             {directive: SecondHostDir, outputs: ['secondHasBeenClicked: wasClicked']}
+           ]
+         } as HostDirectiveAny)
+         class Dir {
+         }
+
+         @Component({template: '<button dir (wasClicked)="spy($event)"></button>'})
+         class App {
+           spy = jasmine.createSpy('click spy');
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         fixture.nativeElement.querySelector('button').click();
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.spy).toHaveBeenCalledTimes(2);
+         expect(fixture.componentInstance.spy).toHaveBeenCalledWith('FirstHostDir');
+         expect(fixture.componentInstance.spy).toHaveBeenCalledWith('SecondHostDir');
+       });
+  });
+
+  describe('inputs', () => {
+    it('should not set an input of a host directive that has not been exposed', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input() color?: string;
+      }
+
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir [color]="color"></button>'})
+      class App {
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir], errorOnUnknownProperties: true});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      }).toThrowError(/Can't bind to 'color' since it isn't a known property/);
+    });
+
+    it('should set the input of a host directive that has been exposed', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input() color?: string;
+      }
+
+      @Directive(
+          {selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]} as
+          HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir [color]="color"></button>'})
+      class App {
+        @ViewChild(HostDir) hostDir!: HostDir;
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('red');
+
+      fixture.componentInstance.color = 'green';
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('green');
+    });
+
+    it('should set an input of a host directive that has been exposed under an alias', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input() color?: string;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir [buttonColor]="color"></button>'})
+      class App {
+        @ViewChild(HostDir) hostDir!: HostDir;
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('red');
+
+      fixture.componentInstance.color = 'green';
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('green');
+    });
+
+    it('should alias to the public name of the host directive input, not the private one', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input('colorAlias') color?: string;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir [buttonColor]="color"></button>'})
+      class App {
+        @ViewChild(HostDir) hostDir!: HostDir;
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('red');
+
+      fixture.componentInstance.color = 'green';
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('green');
+    });
+
+    it('should set an input of a host that has the same name as a non-exposed input of a host directive',
+       () => {
+         @Directive({standalone: true})
+         class HostDir {
+           @Input() color?: string;
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [HostDir],
+         } as HostDirectiveAny)
+         class Dir {
+           @Input() color?: string;
+         }
+
+         @Component({template: '<button dir [color]="color"></button>'})
+         class App {
+           @ViewChild(Dir) dir!: Dir;
+           @ViewChild(HostDir) hostDir!: HostDir;
+           color = 'red';
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         const {dir, hostDir} = fixture.componentInstance;
+
+         expect(dir.color).toBe('red');
+         expect(hostDir.color).toBe(undefined);
+
+         fixture.componentInstance.color = 'green';
+         fixture.detectChanges();
+
+         expect(dir.color).toBe('green');
+         expect(hostDir.color).toBe(undefined);
+       });
+
+    it('should set an input of a host that has the same name as an exposed input of a host directive',
+       () => {
+         @Directive({standalone: true})
+         class HostDir {
+           @Input() color?: string;
+         }
+
+         @Directive(
+             {selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]} as
+             HostDirectiveAny)
+         class Dir {
+           @Input() color?: string;
+         }
+
+         @Component({template: '<button dir [color]="color"></button>'})
+         class App {
+           @ViewChild(Dir) dir!: Dir;
+           @ViewChild(HostDir) hostDir!: HostDir;
+           color = 'red';
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         const {dir, hostDir} = fixture.componentInstance;
+
+         expect(dir.color).toBe('red');
+         expect(hostDir.color).toBe('red');
+
+         fixture.componentInstance.color = 'green';
+         fixture.detectChanges();
+
+         expect(dir.color).toBe('green');
+         expect(hostDir.color).toBe('green');
+       });
+
+    it('should set an input of a host that has the same name as the alias of a host directive input',
+       () => {
+         @Directive({standalone: true})
+         class HostDir {
+           @Input() color?: string;
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}]
+         } as HostDirectiveAny)
+         class Dir {
+           @Input() buttonColor?: string;
+         }
+
+         @Component({template: '<button dir [buttonColor]="color"></button>'})
+         class App {
+           @ViewChild(Dir) dir!: Dir;
+           @ViewChild(HostDir) hostDir!: HostDir;
+           color = 'red';
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         const {dir, hostDir} = fixture.componentInstance;
+
+         expect(dir.buttonColor).toBe('red');
+         expect(hostDir.color).toBe('red');
+
+         fixture.componentInstance.color = 'green';
+         fixture.detectChanges();
+
+         expect(dir.buttonColor).toBe('green');
+         expect(hostDir.color).toBe('green');
+       });
+
+    it('should set an inherited input of a host directive', () => {
+      @Directive()
+      class ParentDir {
+        @Input() color?: string;
+      }
+
+      @Directive({standalone: true})
+      class HostDir extends ParentDir {
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['color']}],
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir [color]="color"></button>'})
+      class App {
+        @ViewChild(HostDir) hostDir!: HostDir;
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.hostDir.color).toBe('red');
+
+      fixture.componentInstance.color = 'green';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.hostDir.color).toBe('green');
+    });
+
+    it('should set an input that was exposed from one host directive, but not another', () => {
+      @Directive({standalone: true})
+      class ExposedHostDir {
+        @Input() color?: string;
+      }
+
+      @Directive({standalone: true})
+      class UnExposedHostDir {
+        @Input() color?: string;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: ExposedHostDir, inputs: ['color']}, UnExposedHostDir]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir [color]="color"></button>'})
+      class App {
+        @ViewChild(ExposedHostDir) exposedHostDir!: ExposedHostDir;
+        @ViewChild(UnExposedHostDir) unExposedHostDir!: UnExposedHostDir;
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const {exposedHostDir, unExposedHostDir} = fixture.componentInstance;
+
+      expect(exposedHostDir.color).toBe('red');
+      expect(unExposedHostDir.color).toBe(undefined);
+
+      fixture.componentInstance.color = 'green';
+      fixture.detectChanges();
+
+      expect(exposedHostDir.color).toBe('green');
+      expect(unExposedHostDir.color).toBe(undefined);
+    });
+
+    it('should set inputs from different host directives that have been aliased to the same name',
+       () => {
+         @Directive({standalone: true})
+         class FirstHostDir {
+           @Input() firstColor?: string;
+         }
+
+         @Directive({standalone: true})
+         class SecondHostDir {
+           @Input() secondColor?: string;
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [
+             {directive: FirstHostDir, inputs: ['firstColor: buttonColor']},
+             {directive: SecondHostDir, inputs: ['secondColor: buttonColor']}
+           ]
+         } as HostDirectiveAny)
+         class Dir {
+         }
+
+         @Component({template: '<button dir [buttonColor]="color"></button>'})
+         class App {
+           @ViewChild(FirstHostDir) firstHostDir!: FirstHostDir;
+           @ViewChild(SecondHostDir) secondHostDir!: SecondHostDir;
+           color = 'red';
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         const {firstHostDir, secondHostDir} = fixture.componentInstance;
+
+         expect(firstHostDir.firstColor).toBe('red');
+         expect(secondHostDir.secondColor).toBe('red');
+
+         fixture.componentInstance.color = 'green';
+         fixture.detectChanges();
+
+         expect(firstHostDir.firstColor).toBe('green');
+         expect(secondHostDir.secondColor).toBe('green');
+       });
+
+    it('should not set a static input of a host directive that has not been exposed', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input() color?: string;
+      }
+
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir color="red"></button>'})
+      class App {
+        @ViewChild(HostDir) hostDir!: HostDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.hostDir.color).toBe(undefined);
+    });
+
+    it('should set a static input of a host directive that has been exposed', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input() color?: string;
+      }
+
+      @Directive(
+          {selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]} as
+          HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir color="red"></button>'})
+      class App {
+        @ViewChild(HostDir) hostDir!: HostDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('red');
+    });
+
+    it('should set a static input of a host directive that has been exposed under an alias', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input() color?: string;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir buttonColor="red"></button>'})
+      class App {
+        @ViewChild(HostDir) hostDir!: HostDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('red');
+    });
+
+    it('should alias to the public name of a static host directive input, not the private one',
+       () => {
+         @Directive({standalone: true})
+         class HostDir {
+           @Input('colorAlias') color?: string;
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
+         } as HostDirectiveAny)
+         class Dir {
+         }
+
+         @Component({template: '<button dir buttonColor="red"></button>'})
+         class App {
+           @ViewChild(HostDir) hostDir!: HostDir;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         expect(fixture.componentInstance.hostDir.color).toBe('red');
+       });
+
+    it('should set a static input that was exposed from one host directive, but not another',
+       () => {
+         @Directive({standalone: true})
+         class ExposedHostDir {
+           @Input() color?: string;
+         }
+
+         @Directive({standalone: true})
+         class UnExposedHostDir {
+           @Input() color?: string;
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [{directive: ExposedHostDir, inputs: ['color']}, UnExposedHostDir]
+         } as HostDirectiveAny)
+         class Dir {
+         }
+
+         @Component({template: '<button dir color="red"></button>'})
+         class App {
+           @ViewChild(ExposedHostDir) exposedHostDir!: ExposedHostDir;
+           @ViewChild(UnExposedHostDir) unExposedHostDir!: UnExposedHostDir;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.exposedHostDir.color).toBe('red');
+         expect(fixture.componentInstance.unExposedHostDir.color).toBe(undefined);
+       });
+
+    it('should set static inputs from different host directives that have been aliased to the same name',
+       () => {
+         @Directive({standalone: true})
+         class FirstHostDir {
+           @Input() firstColor?: string;
+         }
+
+         @Directive({standalone: true})
+         class SecondHostDir {
+           @Input() secondColor?: string;
+         }
+
+         @Directive({
+           selector: '[dir]',
+           hostDirectives: [
+             {directive: FirstHostDir, inputs: ['firstColor: buttonColor']},
+             {directive: SecondHostDir, inputs: ['secondColor: buttonColor']}
+           ]
+         } as HostDirectiveAny)
+         class Dir {
+         }
+
+         @Component({template: '<button dir buttonColor="red"></button>'})
+         class App {
+           @ViewChild(FirstHostDir) firstHostDir!: FirstHostDir;
+           @ViewChild(SecondHostDir) secondHostDir!: SecondHostDir;
+           color = 'red';
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.firstHostDir.firstColor).toBe('red');
+         expect(fixture.componentInstance.secondHostDir.secondColor).toBe('red');
        });
   });
 

@@ -9,9 +9,7 @@ import {resolveForwardRef} from '../../di';
 import {Type} from '../../interface/type';
 import {EMPTY_OBJ} from '../../util/empty';
 import {getDirectiveDef} from '../definition';
-import {DirectiveDef} from '../interfaces/definition';
-import {TContainerNode, TElementContainerNode, TElementNode} from '../interfaces/node';
-import {LView, TView} from '../interfaces/view';
+import {DirectiveDef, HostDirectiveBindingMap, HostDirectiveDefs} from '../interfaces/definition';
 
 /** Values that can be used to define a host directive through the `HostDirectivesFeature`. */
 type HostDirectiveConfig = Type<unknown>|{
@@ -58,17 +56,18 @@ export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig
 }
 
 function findHostDirectiveDefs(
-    matches: DirectiveDef<unknown>[], def: DirectiveDef<unknown>, tView: TView, lView: LView,
-    tNode: TElementNode|TContainerNode|TElementContainerNode): void {
-  if (def.hostDirectives !== null) {
-    for (const hostDirectiveConfig of def.hostDirectives) {
+    currentDef: DirectiveDef<unknown>, matchedDefs: DirectiveDef<unknown>[],
+    hostDirectiveDefs: HostDirectiveDefs): void {
+  if (currentDef.hostDirectives !== null) {
+    for (const hostDirectiveConfig of currentDef.hostDirectives) {
       const hostDirectiveDef = getDirectiveDef(hostDirectiveConfig.directive)!;
 
       // TODO(crisbeto): assert that the def exists.
 
       // Host directives execute before the host so that its host bindings can be overwritten.
-      findHostDirectiveDefs(matches, hostDirectiveDef, tView, lView, tNode);
-      matches.push(hostDirectiveDef);
+      findHostDirectiveDefs(hostDirectiveDef, matchedDefs, hostDirectiveDefs);
+      hostDirectiveDefs.set(hostDirectiveDef, hostDirectiveConfig);
+      matchedDefs.push(hostDirectiveDef);
     }
   }
 }
@@ -77,12 +76,12 @@ function findHostDirectiveDefs(
  * Converts an array in the form of `['publicName', 'alias', 'otherPublicName', 'otherAlias']` into
  * a map in the form of `{publicName: 'alias', otherPublicName: 'otherAlias'}`.
  */
-function bindingArrayToMap(bindings: string[]|undefined) {
+function bindingArrayToMap(bindings: string[]|undefined): HostDirectiveBindingMap {
   if (bindings === undefined || bindings.length === 0) {
     return EMPTY_OBJ;
   }
 
-  const result: {[publicName: string]: string} = {};
+  const result: HostDirectiveBindingMap = {};
 
   for (let i = 0; i < bindings.length; i += 2) {
     result[bindings[i]] = bindings[i + 1];

@@ -25,7 +25,7 @@ import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} f
 import {throwMultipleComponentError} from '../errors';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, HostBindingsFunction, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, HostBindingsFunction, HostDirectiveDefs, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {NodeInjectorFactory} from '../interfaces/injector';
 import {getUniqueLViewId} from '../interfaces/lview_tracking';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
@@ -861,30 +861,57 @@ export function createTNode(
   return tNode;
 }
 
-
+/**
+ * Generates the `PropertyAliases` data structure from the provided input/output mapping.
+ * @param aliasMap Input/output mapping from the directive definition.
+ * @param directiveIndex Index of the directive.
+ * @param propertyAliases Object in which to store the results.
+ * @param hostDirectiveAliasMap Object used to alias or filter out properties for host directives.
+ * If the mapping is provided, it'll act as an allowlist, as well as a mapping of what public
+ * name inputs/outputs should be exposed under.
+ */
 function generatePropertyAliases(
-    inputAliasMap: {[publicName: string]: string}, directiveDefIdx: number,
-    propStore: PropertyAliases|null): PropertyAliases|null {
-  for (let publicName in inputAliasMap) {
-    if (inputAliasMap.hasOwnProperty(publicName)) {
-      propStore = propStore === null ? {} : propStore;
-      const internalName = inputAliasMap[publicName];
+    aliasMap: {[publicName: string]: string}, directiveIndex: number,
+    propertyAliases: PropertyAliases|null,
+    hostDirectiveAliasMap: {[internalName: string]: string}|null): PropertyAliases|null {
+  for (let publicName in aliasMap) {
+    if (aliasMap.hasOwnProperty(publicName)) {
+      propertyAliases = propertyAliases === null ? {} : propertyAliases;
+      const internalName = aliasMap[publicName];
 
-      if (propStore.hasOwnProperty(publicName)) {
-        propStore[publicName].push(directiveDefIdx, internalName);
-      } else {
-        (propStore[publicName] = [directiveDefIdx, internalName]);
+      // If there are no host directive mappings, we want to remap using the alias map from the
+      // definition itself. If there is an alias map, it has two functions:
+      // 1. It serves as an allowlist of bindings that are exposed by the host directives. Only the
+      // ones inside the host directive map will be exposed on the host.
+      // 2. The public name of the property is aliased using the host directive alias map, rather
+      // than the alias map from the definition.
+      if (hostDirectiveAliasMap === null) {
+        addPropertyAlias(propertyAliases, directiveIndex, publicName, internalName);
+      } else if (hostDirectiveAliasMap.hasOwnProperty(publicName)) {
+        addPropertyAlias(
+            propertyAliases, directiveIndex, hostDirectiveAliasMap[publicName], internalName);
       }
     }
   }
-  return propStore;
+  return propertyAliases;
+}
+
+function addPropertyAlias(
+    propertyAliases: PropertyAliases, directiveIndex: number, publicName: string,
+    internalName: string) {
+  if (propertyAliases.hasOwnProperty(publicName)) {
+    propertyAliases[publicName].push(directiveIndex, internalName);
+  } else {
+    propertyAliases[publicName] = [directiveIndex, internalName];
+  }
 }
 
 /**
  * Initializes data structures required to work with directive inputs and outputs.
  * Initialization is done for all directives matched on a given TNode.
  */
-export function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
+export function initializeInputAndOutputAliases(
+    tView: TView, tNode: TNode, hostDirectiveDefinitionMap: HostDirectiveDefs|null): void {
   ngDevMode && assertFirstCreatePass(tView);
 
   const start = tNode.directiveStart;
@@ -896,17 +923,24 @@ export function initializeInputAndOutputAliases(tView: TView, tNode: TNode): voi
   let inputsStore: PropertyAliases|null = null;
   let outputsStore: PropertyAliases|null = null;
 
-  for (let i = start; i < end; i++) {
-    const directiveDef = tViewData[i] as DirectiveDef<any>;
-    inputsStore = generatePropertyAliases(directiveDef.inputs, i, inputsStore);
-    outputsStore = generatePropertyAliases(directiveDef.outputs, i, outputsStore);
+  for (let directiveIndex = start; directiveIndex < end; directiveIndex++) {
+    const directiveDef = tViewData[directiveIndex] as DirectiveDef<any>;
+    const aliasData =
+        hostDirectiveDefinitionMap ? hostDirectiveDefinitionMap.get(directiveDef) : null;
+    const aliasedInputs = aliasData ? aliasData.inputs : null;
+    const aliasedOutputs = aliasData ? aliasData.outputs : null;
+
+    inputsStore =
+        generatePropertyAliases(directiveDef.inputs, directiveIndex, inputsStore, aliasedInputs);
+    outputsStore =
+        generatePropertyAliases(directiveDef.outputs, directiveIndex, outputsStore, aliasedOutputs);
     // Do not use unbound attributes as inputs to structural directives, since structural
     // directive inputs can only be set using microsyntax (e.g. `<div *dir="exp">`).
     // TODO(FW-1930): microsyntax expressions may also contain unbound/static attributes, which
     // should be set for inline templates.
     const initialInputs =
         (inputsStore !== null && tNodeAttrs !== null && !isInlineTemplate(tNode)) ?
-        generateInitialInputs(inputsStore, i, tNodeAttrs) :
+        generateInitialInputs(inputsStore, directiveIndex, tNodeAttrs) :
         null;
     inputsFromAttrs.push(initialInputs);
   }
@@ -1039,8 +1073,16 @@ export function resolveDirectives(
 
   let hasDirectives = false;
   if (getBindingsEnabled()) {
-    const directiveDefs = findDirectiveDefMatches(tView, lView, tNode);
     const exportsMap: ({[key: string]: number}|null) = localRefs === null ? null : {'': -1};
+    const matchResult = findDirectiveDefMatches(tView, lView, tNode);
+    let directiveDefs: DirectiveDef<unknown>[]|null;
+    let hostDirectiveDefs: HostDirectiveDefs|null;
+
+    if (matchResult === null) {
+      directiveDefs = hostDirectiveDefs = null;
+    } else {
+      [directiveDefs, hostDirectiveDefs] = matchResult;
+    }
 
     if (directiveDefs !== null) {
       // Publishes the directive types to DI so they can be injected. Needs to
@@ -1051,7 +1093,7 @@ export function resolveDirectives(
       }
 
       hasDirectives = true;
-      initializeDirectives(tView, lView, tNode, directiveDefs, exportsMap);
+      initializeDirectives(tView, lView, tNode, directiveDefs, exportsMap, hostDirectiveDefs);
     }
     if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
   }
@@ -1063,7 +1105,8 @@ export function resolveDirectives(
 /** Initializes the data structures necessary for a list of directives to be instantiated. */
 export function initializeDirectives(
     tView: TView, lView: LView<unknown>, tNode: TElementNode|TContainerNode|TElementContainerNode,
-    directives: DirectiveDef<unknown>[], exportsMap: {[key: string]: number;}|null) {
+    directives: DirectiveDef<unknown>[], exportsMap: {[key: string]: number;}|null,
+    hostDirectiveDefs: HostDirectiveDefs|null) {
   ngDevMode && assertFirstCreatePass(tView);
   initTNodeFlags(tNode, tView.data.length, directives.length);
 
@@ -1118,7 +1161,7 @@ export function initializeDirectives(
     directiveIdx++;
   }
 
-  initializeInputAndOutputAliases(tView, tNode);
+  initializeInputAndOutputAliases(tView, tNode, hostDirectiveDefs);
 }
 
 /**
@@ -1247,13 +1290,14 @@ export function invokeHostBindingsInCreationMode(def: DirectiveDef<any>, directi
  * If a component is matched (at most one), it is returned in first position in the array.
  */
 function findDirectiveDefMatches(
-    tView: TView, lView: LView,
-    tNode: TElementNode|TContainerNode|TElementContainerNode): DirectiveDef<unknown>[]|null {
+    tView: TView, lView: LView, tNode: TElementNode|TContainerNode|TElementContainerNode):
+    [matches: DirectiveDef<unknown>[], hostDirectiveDefs: HostDirectiveDefs|null]|null {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
 
   const registry = tView.directiveRegistry;
   let matches: DirectiveDef<unknown>[]|null = null;
+  let hostDirectiveDefs: HostDirectiveDefs|null = null;
   if (registry) {
     for (let i = 0; i < registry.length; i++) {
       const def = registry[i] as ComponentDef<any>| DirectiveDef<any>;
@@ -1284,7 +1328,8 @@ function findDirectiveDefMatches(
           // 4. Selector-matched directives.
           if (def.findHostDirectiveDefs !== null) {
             const hostDirectiveMatches: DirectiveDef<unknown>[] = [];
-            def.findHostDirectiveDefs(hostDirectiveMatches, def, tView, lView, tNode);
+            hostDirectiveDefs = hostDirectiveDefs || new Map();
+            def.findHostDirectiveDefs(def, hostDirectiveMatches, hostDirectiveDefs);
             // Add all host directives declared on this component, followed by the component itself.
             // Host directives should execute first so the host has a chance to override changes
             // to the DOM made by them.
@@ -1300,13 +1345,14 @@ function findDirectiveDefMatches(
           }
         } else {
           // Append any host directives to the matches first.
-          def.findHostDirectiveDefs?.(matches, def, tView, lView, tNode);
+          hostDirectiveDefs = hostDirectiveDefs || new Map();
+          def.findHostDirectiveDefs?.(def, matches, hostDirectiveDefs);
           matches.push(def);
         }
       }
     }
   }
-  return matches;
+  return matches === null ? null : [matches, hostDirectiveDefs];
 }
 
 /**
