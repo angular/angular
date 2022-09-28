@@ -5,8 +5,7 @@
     "stripInternal": false,
     "target": "es2015",
     "lib": [
-      "es2015",
-      "es2017.object",
+      "es2017",
     ],
   },
   "bazelOptions": {
