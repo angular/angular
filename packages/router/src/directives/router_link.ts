@@ -131,6 +131,10 @@ export class RouterLink implements OnChanges, OnDestroy {
    */
   href: string|null = null;
 
+  /**
+   * Represents the `target` attribute on a host element.
+   * This is only used when the host element is an `<a>` tag.
+   */
   @HostBinding('attr.target') @Input() target?: string;
 
   /**
@@ -317,6 +321,10 @@ export class RouterLink implements OnChanges, OnDestroy {
       state: this.state,
     };
     this.router.navigateByUrl(this.urlTree, extras);
+
+    // Return `false` for `<a>` elements to prevent default action
+    // and cancel the native behavior, since the navigation is handled
+    // by the Router.
     return !this.isAnchorElement;
   }
 

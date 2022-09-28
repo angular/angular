@@ -739,7 +739,6 @@ export class RouterLink implements OnChanges, OnDestroy {
     state?: {
         [k: string]: any;
     };
-    // (undocumented)
     target?: string;
     // (undocumented)
     get urlTree(): UrlTree | null;
