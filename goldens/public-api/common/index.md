@@ -791,24 +791,16 @@ export { PopStateEvent_2 as PopStateEvent }
 export const PRECONNECT_CHECK_BLOCKLIST: InjectionToken<(string | string[])[]>;
 
 // @public
-export const provideCloudflareLoader: (path: string, options?: {
-    ensurePreconnect?: boolean | undefined;
-}) => Provider[];
+export const provideCloudflareLoader: (path: string) => Provider[];
 
 // @public
-export const provideCloudinaryLoader: (path: string, options?: {
-    ensurePreconnect?: boolean | undefined;
-}) => Provider[];
+export const provideCloudinaryLoader: (path: string) => Provider[];
 
 // @public
-export const provideImageKitLoader: (path: string, options?: {
-    ensurePreconnect?: boolean | undefined;
-}) => Provider[];
+export const provideImageKitLoader: (path: string) => Provider[];
 
 // @public
-export const provideImgixLoader: (path: string, options?: {
-    ensurePreconnect?: boolean | undefined;
-}) => Provider[];
+export const provideImgixLoader: (path: string) => Provider[];
 
 // @public
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
