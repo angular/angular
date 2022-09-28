@@ -1,3 +1,17 @@
+<a name="14.2.3"></a>
+# 14.2.3 "wool-wombat" (2022-09-28)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8c3d79156](https://github.com/angular/components/commit/8c3d791562e28902aded5c4e73b2337b74452ebc) | fix | **bottom-sheet:** aria-modal not being set |
+| [7d314a87b](https://github.com/angular/components/commit/7d314a87bfe2cd75a7569341c4339442a3ad2352) | fix | **dialog:** aria-modal not being set |
+| [bc978445b](https://github.com/angular/components/commit/bc978445bb52f4d0cc21bc714555cb9705af1f96) | fix | **stepper:** remove invalid aria attribute ([#25644](https://github.com/angular/components/pull/25644)) |
+| [a9d3bc580](https://github.com/angular/components/commit/a9d3bc5801342583443029cf8d4f71120719e850) | fix | **tooltip:** animations running when timeouts haven't elapsed ([#25699](https://github.com/angular/components/pull/25699)) ([#25701](https://github.com/angular/components/pull/25701)) |
+## Special Thanks
+James Skinner, Kristiyan Kostadinov and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-next.1"></a>
 # 15.0.0-next.1 "ferrofluid-flounder" (2022-09-14)
 ### cdk
