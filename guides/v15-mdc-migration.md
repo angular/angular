@@ -589,15 +589,14 @@ TODO(mmalerba): link to density docs once they exist.
 
 ### Tooltip
 
-* Accessibility: the background color is now completely opaque, preventing text bleed-through.
+* Background color is opaque instead of slightly transparent. This improves accessibility.
 
-* The default font-size has changed from `10px` to `12px`.
+* Default font-size is `12px` instead of `10px`.
 
-* The line height has changed from `normal` to `16px`.
+* Line height is `normal` instead of `16px`.
 
-* Text overflow has changed from `ellipsis` to `clip`.
+* Text overflow is `ellipsis` instead of `clip`.
 
-* The tooltip now has a min-width of 40px.
+* There is a new minimum width of `40px`.
 
-* The text alignment for single line tooltips is now `center` and changes to `left` for multiline
-  tooltips.
+* Text alignment for single line tooltips is `center`. Multi-line tooltips use `left` alignment.
