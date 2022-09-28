@@ -9,7 +9,6 @@
 import {InjectionToken, Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../../errors';
-import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
 import {isAbsoluteUrl, isValidPath, normalizePath, normalizeSrc} from '../url';
 
 /**
@@ -73,8 +72,7 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
  */
 export function createImageLoader(
     buildUrlFn: (path: string, config: ImageLoaderConfig) => string, exampleUrls?: string[]) {
-  return function provideImageLoader(
-      path: string, options: {ensurePreconnect?: boolean} = {ensurePreconnect: true}) {
+  return function provideImageLoader(path: string) {
     if (!isValidPath(path)) {
       throwInvalidPathError(path, exampleUrls || []);
     }
@@ -95,12 +93,8 @@ export function createImageLoader(
 
       return buildUrlFn(path, {...config, src: normalizeSrc(config.src)});
     };
+
     const providers: Provider[] = [{provide: IMAGE_LOADER, useValue: loaderFn}];
-
-    if (ngDevMode && options.ensurePreconnect === false) {
-      providers.push({provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [path], multi: true});
-    }
-
     return providers;
   };
 }
