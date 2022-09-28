@@ -16,10 +16,6 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * https://res.cloudinary.com/mysite
  * https://mysite.cloudinary.com
  * https://subdomain.mysite.com
- * @param options An object with extra configuration:
- * - `ensurePreconnect`: boolean flag indicating whether the NgOptimizedImage directive
- *                       should verify that there is a corresponding `<link rel="preconnect">`
- *                       present in the document's `<head>`.
  * @returns Set of providers to configure the Cloudinary loader.
  *
  * @publicApi

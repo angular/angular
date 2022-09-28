@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IMAGE_LOADER, ImageLoader, PRECONNECT_CHECK_BLOCKLIST} from '@angular/common/src/directives/ng_optimized_image';
+import {IMAGE_LOADER, ImageLoader} from '@angular/common/src/directives/ng_optimized_image';
 import {provideCloudflareLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudflare_loader';
 import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
 import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
 import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
 import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/url';
-import {createEnvironmentInjector, EnvironmentInjector, ValueProvider} from '@angular/core';
+import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 const absoluteUrlError = (src: string, path: string) =>
@@ -181,44 +181,6 @@ describe('Built-in image directive loaders', () => {
       const src = 'https://angular.io/img.png';
       const loader = createCloudflareLoader(path);
       expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
-    });
-  });
-
-  describe('ensurePreconnect option', () => {
-    const path = 'https://some.host/base';
-
-    [provideImgixLoader,
-     provideCloudinaryLoader,
-     provideImageKitLoader,
-     provideCloudflareLoader,
-    ].forEach(provideImageLoader => {
-      it(`${provideImageLoader.name} should _not_ block-list path by default`, () => {
-        const providers = provideImageLoader(path);
-
-        expect(providers.length).toBe(1);
-        const valueProvider = providers[0] as ValueProvider;
-        expect(valueProvider.provide).not.toBe(PRECONNECT_CHECK_BLOCKLIST);
-      });
-
-      it(`${provideImageLoader.name} should _not_ block-list path when ensurePreconnect is true`,
-         () => {
-           const providers = provideImageLoader(path, {ensurePreconnect: true});
-
-           expect(providers.length).toBe(1);
-           const valueProvider = providers[0] as ValueProvider;
-           expect(valueProvider.provide).not.toBe(PRECONNECT_CHECK_BLOCKLIST);
-         });
-
-      it('`${provideImageLoader.name} should block-list path when ensurePreconnect is false',
-         () => {
-           const providers = provideImageLoader(path, {ensurePreconnect: false});
-           expect(providers.length).toBe(2);
-
-           const valueProvider = providers[1] as ValueProvider;
-           expect(valueProvider.multi).toBeTrue();
-           expect(valueProvider.useValue).toEqual([path]);
-           expect(valueProvider.provide).toBe(PRECONNECT_CHECK_BLOCKLIST);
-         });
     });
   });
 
