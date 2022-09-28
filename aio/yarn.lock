@@ -15,13 +15,13 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@angular-devkit/architect-cli@0.1500.0-next.0":
-  version "0.1500.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect-cli/-/architect-cli-0.1500.0-next.0.tgz#3faff912d92306dfab8398af776d90262df22762"
-  integrity sha512-Y90ZMjOSxYvsWV8tLWz0aABWLuOYpFesaFGedE8VFmAY6uONSOMY+u42auUefX0JLk7DeW/znDQm7DCjyVzwug==
+"@angular-devkit/architect-cli@0.1500.0-next.3":
+  version "0.1500.0-next.3"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect-cli/-/architect-cli-0.1500.0-next.3.tgz#fd2a09f5c716225c2565b6c41f6bf1795dbc93c6"
+  integrity sha512-w+AWzdQfn3udQ0GsMPzxuAdQmrxX33Hjfthz2Z6BLHayLUyMPgdnCftSltSQtrjwe7aD2TYh6CBgpAhVDEoJnA==
   dependencies:
-    "@angular-devkit/architect" "0.1500.0-next.0"
-    "@angular-devkit/core" "15.0.0-next.0"
+    "@angular-devkit/architect" "0.1500.0-next.3"
+    "@angular-devkit/core" "15.0.0-next.3"
     ansi-colors "4.1.3"
     progress "2.0.3"
     symbol-observable "4.0.0"
@@ -35,12 +35,12 @@
     "@angular-devkit/core" "14.2.1"
     rxjs "6.6.7"
 
-"@angular-devkit/architect@0.1500.0-next.0":
-  version "0.1500.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1500.0-next.0.tgz#71bb79523f5bbff7745d1ecee6aab831589c7dd6"
-  integrity sha512-xXxgzkDeD5H1Ia7sKXIekYfeMgSArxB6TOhyDd3F8h/ku7hQaMVnpV98g5ZOU8vIFpXGJ1YiH9al7rq6w+yGWw==
+"@angular-devkit/architect@0.1500.0-next.3":
+  version "0.1500.0-next.3"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1500.0-next.3.tgz#63353a006e510b8888218ee499856ff14ac33f50"
+  integrity sha512-nP0ggLKC7M7RZb5G0YCO9lLutedA68FLF2DlV9gfX3DQFqTo/fGHpxApJmPiKeT9hIWup4pvESGxYnnI5Z4/+w==
   dependencies:
-    "@angular-devkit/core" "15.0.0-next.0"
+    "@angular-devkit/core" "15.0.0-next.3"
     rxjs "6.6.7"
 
 "@angular-devkit/build-angular@^14.2.1":
@@ -132,10 +132,10 @@
     rxjs "6.6.7"
     source-map "0.7.4"
 
-"@angular-devkit/core@15.0.0-next.0":
-  version "15.0.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-15.0.0-next.0.tgz#fc8a78db96a21e105c1948ef65e5210edca223ea"
-  integrity sha512-QNLLgMKSGBNh5iy99F0lzUYBkERft2Qk5CQvYe07AWuQkvzIp+SYDfjugiSnBJbzK79Wja728KETtIz6X9bLaA==
+"@angular-devkit/core@15.0.0-next.3":
+  version "15.0.0-next.3"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-15.0.0-next.3.tgz#33db0667aba3dad17b36147426ab02796160f2d6"
+  integrity sha512-T1I2rD2p2We1NlwHy0j6kKo0e2ht0rlyyXQaSHAj+nkapzXTCMzBLbIaIAZWsV3Ro25IwmLir41Sze/5eFRjfw==
   dependencies:
     ajv "8.11.0"
     ajv-formats "2.1.1"
