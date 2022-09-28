@@ -1,3 +1,18 @@
+<a name="14.2.4"></a>
+# 14.2.4 (2022-09-28)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4b66fe1e5](https://github.com/angular/angular/commit/a4b66fe1e5acaf148069933720499652f21a7bce) | perf | cache source file for reporting type-checking diagnostics ([#47508](https://github.com/angular/angular/pull/47508)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2c46b5ab24](https://github.com/angular/angular/commit/2c46b5ab24e209381bca70d875bf0e98a2846ef5) | fix | correctly check for `typeof` of undefined in `ngDevMode` check ([#47480](https://github.com/angular/angular/pull/47480)) |
+## Special Thanks
+Alan Agius, Ashley Hunter, Doug Parker, Jessica Janiuk, JoostK, Kristiyan Kostadinov, Rokas Brazdžionis and Simona Cotin
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-next.3"></a>
 # 15.0.0-next.3 (2022-09-21)
 ### animations
