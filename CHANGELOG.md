@@ -1,3 +1,44 @@
+<a name="15.0.0-next.2"></a>
+# 15.0.0-next.2 "bamboo-bear" (2022-09-28)
+## Breaking Changes
+### material
+- Buttons inside the datepicker popup and datepicker toggle now use the
+  MDC-based button implementation. They have different CSS classes and
+  styles, so custom style overrides may need to be updated
+### material-luxon-adapter
+- The `MatLuxonDateModule` now requires at least version 3 of Luxon.
+### material-luxon-adapter
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e1c0c5528](https://github.com/angular/components/commit/e1c0c5528a32d2ac49772137f1aec4c6f65245ac) | feat | update to luxon 3 ([#25660](https://github.com/angular/components/pull/25660)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73ef52ce1](https://github.com/angular/components/commit/73ef52ce17d469990d98b52e0a72849185eed721) | feat | **core:** add option to disable core typography ([#25706](https://github.com/angular/components/pull/25706)) |
+| [ca5428383](https://github.com/angular/components/commit/ca542838370259b1602ba874b97932e9cb52e12b) | feat | **datepicker:** make compatible with MDC & legacy components ([#25648](https://github.com/angular/components/pull/25648)) |
+| [36af2a3fb](https://github.com/angular/components/commit/36af2a3fbec56ef96b0f0f4fa93f770464e92a7d) | feat | **form-field:** add error harness ([#25698](https://github.com/angular/components/pull/25698)) |
+| [8ca3155db](https://github.com/angular/components/commit/8ca3155db71026db8e05056d323c58176efe4f9c) | feat | **select:** add page down/up button functionality ([#25508](https://github.com/angular/components/pull/25508)) |
+| [90e644634](https://github.com/angular/components/commit/90e6446348f466554874a788d6747600990e9948) | fix | **bottom-sheet:** aria-modal not being set |
+| [1e969dd6a](https://github.com/angular/components/commit/1e969dd6a1fe8b59daa4466e5588358617677799) | fix | **core:** add flag whether to copy color theme values ([#25695](https://github.com/angular/components/pull/25695)) |
+| [c14d17684](https://github.com/angular/components/commit/c14d17684238ace5c80548ee4f3c63024784d684) | fix | **core:** add optional warning for incomplete themes ([#25654](https://github.com/angular/components/pull/25654)) |
+| [c35763be9](https://github.com/angular/components/commit/c35763be97a46a0817f94024d96dda76bc114ae9) | fix | **core:** add typography to prebuilt themes ([#25696](https://github.com/angular/components/pull/25696)) |
+| [e3adcfe69](https://github.com/angular/components/commit/e3adcfe69abc9f997a777d93ea2b9297fdee97e8) | fix | **core:** use full theme config definitions to prebuilt themes ([#25656](https://github.com/angular/components/pull/25656)) |
+| [2704c310a](https://github.com/angular/components/commit/2704c310a3aeecc0d6723d8a062789d6137dd8c3) | fix | **datepicker:** announce the "to" when reading year range ([#24958](https://github.com/angular/components/pull/24958)) |
+| [9d6cc6fe2](https://github.com/angular/components/commit/9d6cc6fe260c1cf7dabb67e0e8b1dc9e54807758) | fix | **dialog:** aria-modal not being set |
+| [9bd852330](https://github.com/angular/components/commit/9bd852330ef885633afc8d7e4049a34d87f4dc52) | fix | **legacy-core:** name all ts symbols to reflect legacy-ness ([#25673](https://github.com/angular/components/pull/25673)) |
+| [7b7ad32eb](https://github.com/angular/components/commit/7b7ad32eb227e6bef29949db8d2fdd52317c5dbe) | fix | **schematics:** add missing legacy sass mixin transforms |
+| [69904a078](https://github.com/angular/components/commit/69904a078e782f3bfda71bfdcd9b5a199e4acd13) | fix | **schematics:** add missing legacy TS symbol transforms |
+| [abb177b4e](https://github.com/angular/components/commit/abb177b4eb21b5ecc394038e3870fad2a5542598) | fix | **schematics:** split core imports in ng update ([#25678](https://github.com/angular/components/pull/25678)) |
+| [15288a9aa](https://github.com/angular/components/commit/15288a9aad14c1f856aada7f0d0e3363f4622bbb) | fix | **schematics:** update and handle import statements for the MDC migration |
+| [af72eda18](https://github.com/angular/components/commit/af72eda18155488361e3de2fcc9a0a513d4366ea) | fix | **schematics:** update sass function names |
+| [b88e2ee17](https://github.com/angular/components/commit/b88e2ee178368d3fc4e3674c1b4aab053f185797) | fix | **schematics:** update typescript symbols in test code |
+| [94c773dbc](https://github.com/angular/components/commit/94c773dbc926e689a5087e3b12047d28fb162375) | fix | **stepper:** remove invalid aria attribute ([#25644](https://github.com/angular/components/pull/25644)) |
+| [218297aae](https://github.com/angular/components/commit/218297aaee92ce2300184414344214060b8eec5b) | fix | **tooltip:** animations running when timeouts haven't elapsed ([#25699](https://github.com/angular/components/pull/25699)) |
+## Special Thanks
+Amy Sorto, Andrew Seguin, James Skinner, Kristiyan Kostadinov, Martin Forstner, Miles Malerba, Paul Gschwendtner, Zach Arend and angular-robot[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.3"></a>
 # 14.2.3 "wool-wombat" (2022-09-28)
 ### material
