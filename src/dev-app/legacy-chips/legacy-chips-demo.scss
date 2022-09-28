@@ -1,10 +1,10 @@
 .demo-chips {
-  .mat-mdc-chip-set-stacked {
+  .mat-chip-list-stacked {
     display: block;
     max-width: 200px;
   }
 
-  .mat-mdc-card {
+  .mat-card {
     padding: 0;
     margin: 16px;
 
@@ -17,11 +17,11 @@
     }
   }
 
-  mat-basic-chip {
+  .mat-basic-chip {
     margin: auto 10px;
   }
 
-  mat-chip-grid input {
+  mat-chip-list input {
     width: 150px;
   }
 }

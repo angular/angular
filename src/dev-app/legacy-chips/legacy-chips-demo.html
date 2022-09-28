@@ -1,0 +1,226 @@
+<div class="demo-chips">
+  <mat-card>
+    <mat-toolbar color="primary">Static Chips</mat-toolbar>
+
+    <mat-card-content>
+      <h4>Simple</h4>
+
+      <mat-chip-list>
+        <mat-chip>Chip 1</mat-chip>
+        <mat-chip>Chip 2</mat-chip>
+        <mat-chip disabled>Chip 3</mat-chip>
+      </mat-chip-list>
+
+      <h4>Unstyled</h4>
+
+      <mat-chip-list>
+        <mat-basic-chip>Basic Chip 1</mat-basic-chip>
+        <mat-basic-chip>Basic Chip 2</mat-basic-chip>
+        <mat-basic-chip>Basic Chip 3</mat-basic-chip>
+      </mat-chip-list>
+
+      <h4>Advanced</h4>
+
+      <mat-chip-list selectable="false">
+        <mat-chip color="accent" selected="true">Selected/Colored</mat-chip>
+
+        <mat-chip color="warn" selected="true" *ngIf="visible"
+                 (destroyed)="displayMessage('chip destroyed')" (removed)="toggleVisible()">
+          With Events
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      </mat-chip-list>
+      <div>{{message}}</div>
+
+      <h4>With avatar and icons</h4>
+
+
+      <mat-chip-list>
+        <mat-chip disabled>
+          <mat-icon matChipAvatar>home</mat-icon>
+          Home
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+        <mat-chip color="accent" selected="true">
+          <mat-chip-avatar>P</mat-chip-avatar>
+          Portel
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+
+        <mat-chip>
+          <mat-chip-avatar>M</mat-chip-avatar>
+          Molly
+        </mat-chip>
+
+        <mat-chip>
+          Koby
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+
+        <mat-chip>
+          Razzle
+        </mat-chip>
+
+        <mat-chip>
+          <img src="https://material.angular.io/assets/img/examples/shiba2.jpg" matChipAvatar>
+          Mal
+        </mat-chip>
+
+        <mat-chip selected="true" color="warn">
+          <img src="https://material.angular.io/assets/img/examples/shiba2.jpg" matChipAvatar>
+          Husi
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+
+        <mat-chip>
+          Good
+          <mat-icon matChipTrailingIcon>star</mat-icon>
+        </mat-chip>
+        <mat-chip>
+          Bad
+          <mat-icon matChipTrailingIcon>star_border</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-toolbar color="primary">Dynamic Chips</mat-toolbar>
+
+    <mat-card-content>
+      <h4>Form Field</h4>
+
+      <p>
+        You can easily put the <code>&lt;mat-chip-list&gt;</code> inside of an
+        <code>&lt;mat-form-field&gt;</code>.
+      </p>
+
+      <button mat-button (click)="tabIndex = (tabIndex === 0 ? -1 : 0)">
+        Set tabIndex to {{tabIndex === 0 ? -1 : 0}}
+      </button>
+      <mat-form-field class="demo-has-chip-list">
+        <mat-label>Contributors</mat-label>
+        <mat-chip-list [tabIndex]="tabIndex" #chipList1 [(ngModel)]="selectedPeople" required>
+          <mat-chip  *ngFor="let person of people" [color]="color" [selectable]="selectable"
+                   [removable]="removable" (removed)="remove(person)">
+            {{person.name}}
+            <button matChipRemove *ngIf="removable">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+          <input placeholder="New Contributor..."
+                 [matChipInputFor]="chipList1"
+                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 [matChipInputAddOnBlur]="addOnBlur"
+                 (matChipInputTokenEnd)="add($event)" />
+        </mat-chip-list>
+      </mat-form-field>
+
+
+
+      <p>
+        You can also put <code>&lt;mat-form-field&gt;</code> outside of an <code>mat-chip-list</code>.
+        With <code>matChipInput</code> the input work with chip-list
+      </p>
+
+      <mat-form-field class="demo-has-chip-list">
+        <mat-label>Contributors</mat-label>
+        <mat-chip-list [tabIndex]="tabIndex"  #chipList2 [(ngModel)]="selectedPeople" required>
+          <mat-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
+                   [removable]="removable" (removed)="remove(person)">
+            {{person.name}}
+            <button matChipRemove *ngIf="removable">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+        </mat-chip-list>
+        <input placeholder="New Contributor..."
+               [matChipInputFor]="chipList2"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [matChipInputAddOnBlur]="addOnBlur"
+               (matChipInputTokenEnd)="add($event)" />
+      </mat-form-field>
+
+      <p>
+        Chips list without input
+      </p>
+
+
+      <mat-form-field class="demo-has-chip-list">
+        <mat-label>Contributors</mat-label>
+        <mat-chip-list #chipList3>
+          <mat-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
+                   [removable]="removable" (removed)="remove(person)">
+            {{person.name}}
+            <button matChipRemove *ngIf="removable">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+        </mat-chip-list>
+      </mat-form-field>
+
+
+      <p>
+        The example above has overridden the <code>[separatorKeys]</code> input to allow for
+        <code>ENTER</code>, <code>COMMA</code> and <code>SEMI COLON</code> keys.
+      </p>
+
+      <h4>Options</h4>
+      <p>
+        <mat-checkbox name="selectable" [(ngModel)]="selectable">Selectable</mat-checkbox>
+        <mat-checkbox name="removable" [(ngModel)]="removable">Removable</mat-checkbox>
+        <mat-checkbox name="addOnBlur" [(ngModel)]="addOnBlur">Add on Blur</mat-checkbox>
+      </p>
+
+      <h4>Stacked Chips</h4>
+
+      <p>
+        You can also stack the chips if you want them on top of each other and/or use the
+        <code>(focus)</code> event to run custom code.
+      </p>
+
+      <mat-chip-list class="mat-chip-list-stacked" aria-orientation="vertical" [tabIndex]="-1">
+        <mat-chip *ngFor="let aColor of availableColors"
+                 (focus)="color = aColor.color" [color]="aColor.color" selected="true">
+          {{aColor.name}}
+        </mat-chip>
+      </mat-chip-list>
+
+      <h4>NgModel with chip list</h4>
+      <mat-chip-list [multiple]="true" [(ngModel)]="selectedColors">
+        <mat-chip *ngFor="let aColor of availableColors" [color]="aColor.color"
+                 [value]="aColor.name" (removed)="removeColor(aColor)">
+          {{aColor.name}}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      </mat-chip-list>
+
+      The selected colors are <span *ngFor="let color of selectedColors">{{color}}</span>.
+
+      <h4>NgModel with single selection chip list</h4>
+      <mat-chip-list [(ngModel)]="selectedColor">
+        <mat-chip *ngFor="let aColor of availableColors" [color]="aColor.color"
+                 [value]="aColor.name" (removed)="removeColor(aColor)">
+          {{aColor.name}}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      </mat-chip-list>
+
+      The selected color is {{selectedColor}}.
+    </mat-card-content>
+  </mat-card>
+</div>

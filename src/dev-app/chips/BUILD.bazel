@@ -10,12 +10,13 @@ ng_module(
         ":chips_demo_scss",
     ],
     deps = [
+        "//src/material/button",
+        "//src/material/card",
+        "//src/material/checkbox",
+        "//src/material/chips",
+        "//src/material/core",
+        "//src/material/form-field",
         "//src/material/icon",
-        "//src/material/legacy-button",
-        "//src/material/legacy-card",
-        "//src/material/legacy-checkbox",
-        "//src/material/legacy-chips",
-        "//src/material/legacy-form-field",
         "//src/material/toolbar",
     ],
 )

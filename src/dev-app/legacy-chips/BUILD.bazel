@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-chips",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-chips-demo.html",
+        ":legacy_chips_demo_scss",
+    ],
+    deps = [
+        "//src/material/icon",
+        "//src/material/legacy-button",
+        "//src/material/legacy-card",
+        "//src/material/legacy-checkbox",
+        "//src/material/legacy-chips",
+        "//src/material/legacy-form-field",
+        "//src/material/toolbar",
+    ],
+)
+
+sass_binary(
+    name = "legacy_chips_demo_scss",
+    src = "legacy-chips-demo.scss",
+)

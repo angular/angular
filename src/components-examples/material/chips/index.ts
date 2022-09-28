@@ -2,9 +2,9 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyAutocompleteModule} from '@angular/material/legacy-autocomplete';
-import {MatLegacyChipsModule} from '@angular/material/legacy-chips';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {ChipsAutocompleteExample} from './chips-autocomplete/chips-autocomplete-example';
 import {ChipsDragDropExample} from './chips-drag-drop/chips-drag-drop-example';
@@ -14,7 +14,7 @@ import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';
 import {ChipsHarnessExample} from './chips-harness/chips-harness-example';
 import {ChipsFormControlExample} from './chips-form-control/chips-form-control-example';
 import {ChipsAvatarExample} from './chips-avatar/chips-avatar-example';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatButtonModule} from '@angular/material/button';
 
 export {
   ChipsAutocompleteExample,
@@ -42,11 +42,11 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     DragDropModule,
-    MatLegacyAutocompleteModule,
-    MatLegacyButtonModule,
-    MatLegacyChipsModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatChipsModule,
     MatIconModule,
-    MatLegacyFormFieldModule,
+    MatFormFieldModule,
     ReactiveFormsModule,
   ],
   declarations: EXAMPLES,

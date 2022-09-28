@@ -9,15 +9,15 @@
 import {Component} from '@angular/core';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyChipInputEvent, MatLegacyChipsModule} from '@angular/material/legacy-chips';
 import {ThemePalette} from '@angular/material/core';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatIconModule} from '@angular/material/icon';
+import {MatChipInputEvent, MatChipEditedEvent, MatChipsModule} from '@angular/material/chips';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
 
 export interface Person {
   name: string;
@@ -36,22 +36,24 @@ export interface DemoColor {
   imports: [
     CommonModule,
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCardModule,
-    MatLegacyCheckboxModule,
-    MatLegacyChipsModule,
-    MatLegacyFormFieldModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatFormFieldModule,
     MatIconModule,
     MatToolbarModule,
+    ReactiveFormsModule,
   ],
 })
 export class ChipsDemo {
-  tabIndex = 0;
   visible = true;
-  color: ThemePalette;
   selectable = true;
   removable = true;
   addOnBlur = true;
+  disabledListboxes = false;
+  disableInputs = false;
+  editable = false;
   message = '';
 
   // Enter, comma, semi-colon
@@ -79,7 +81,7 @@ export class ChipsDemo {
     this.message = message;
   }
 
-  add(event: MatLegacyChipInputEvent): void {
+  add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
 
     // Add our person
@@ -99,23 +101,22 @@ export class ChipsDemo {
     }
   }
 
-  removeColor(color: DemoColor) {
-    let index = this.availableColors.indexOf(color);
-
-    if (index >= 0) {
-      this.availableColors.splice(index, 1);
+  edit(person: Person, event: MatChipEditedEvent): void {
+    if (!event.value.trim().length) {
+      this.remove(person);
+      return;
     }
 
-    index = this.selectedColors.indexOf(color.name);
-
-    if (index >= 0) {
-      this.selectedColors.splice(index, 1);
-    }
+    const index = this.people.indexOf(person);
+    const newPeople = this.people.slice();
+    newPeople[index] = {...newPeople[index], name: event.value};
+    this.people = newPeople;
   }
 
   toggleVisible(): void {
     this.visible = false;
   }
+
   selectedColors: string[] = ['Primary', 'Warn'];
   selectedColor = 'Accent';
 }

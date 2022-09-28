@@ -1,7 +1,10 @@
-<mat-chip-list
+<mat-chip-listbox
     [disabled]="isDisabled"
     [aria-orientation]="'horizontal'">
-  <mat-chip (removed)="remove()">Chip 1</mat-chip>
-  <mat-chip (removed)="remove()">Chip 2 <span matChipRemove>remove_icon</span></mat-chip>
-  <mat-chip (removed)="remove()"><mat-chip-avatar>C</mat-chip-avatar>Chip 4</mat-chip>
-</mat-chip-list>
+  <mat-chip-option (removed)="remove()">Chip 1</mat-chip-option>
+  <mat-chip-option (removed)="remove()">
+    Chip 2
+    <button matChipRemove aria-label="remove Chip 2"><mat-icon>remove_icon</mat-icon></button>
+  </mat-chip-option>
+  <mat-chip-option (removed)="remove()"><mat-chip-avatar>C</mat-chip-avatar>Chip 4</mat-chip-option>
+</mat-chip-listbox>

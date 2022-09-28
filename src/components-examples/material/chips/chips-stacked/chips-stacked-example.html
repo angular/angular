@@ -1,5 +1,5 @@
-<mat-chip-list class="mat-chip-list-stacked" aria-label="Color selection">
-  <mat-chip *ngFor="let chip of availableColors" selected [color]="chip.color">
+<mat-chip-listbox class="mat-mdc-chip-set-stacked" aria-label="Color selection">
+  <mat-chip-option *ngFor="let chip of availableColors" selected [color]="chip.color">
     {{chip.name}}
-  </mat-chip>
-</mat-chip-list>
+  </mat-chip-option>
+</mat-chip-listbox>

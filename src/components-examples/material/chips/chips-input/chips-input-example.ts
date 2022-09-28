@@ -1,6 +1,6 @@
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Component} from '@angular/core';
-import {MatLegacyChipInputEvent} from '@angular/material/legacy-chips';
+import {MatChipEditedEvent, MatChipInputEvent} from '@angular/material/chips';
 
 export interface Fruit {
   name: string;
@@ -19,7 +19,7 @@ export class ChipsInputExample {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   fruits: Fruit[] = [{name: 'Lemon'}, {name: 'Lime'}, {name: 'Apple'}];
 
-  add(event: MatLegacyChipInputEvent): void {
+  add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
 
     // Add our fruit
@@ -36,6 +36,22 @@ export class ChipsInputExample {
 
     if (index >= 0) {
       this.fruits.splice(index, 1);
+    }
+  }
+
+  edit(fruit: Fruit, event: MatChipEditedEvent) {
+    const value = event.value.trim();
+
+    // Remove fruit if it no longer has a name
+    if (!value) {
+      this.remove(fruit);
+      return;
+    }
+
+    // Edit existing fruit
+    const index = this.fruits.indexOf(fruit);
+    if (index > 0) {
+      this.fruits[index].name = value;
     }
   }
 }

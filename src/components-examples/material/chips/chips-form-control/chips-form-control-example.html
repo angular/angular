@@ -2,28 +2,24 @@
   <button mat-raised-button (click)="formControl.disable()">Disable form control</button>
   <button mat-raised-button (click)="formControl.enable()">Enable form control</button>
 </div>
-
 <p>
-  <i>Select a focused chip by pressing <code>SPACE</code></i>
+  <i>Enter video keywords</i>
 </p>
-
-<mat-form-field class="example-chip-list" appearance="fill">
+<mat-form-field appearance="fill" class="example-form-field">
   <mat-label>Video keywords</mat-label>
-  <mat-chip-list #chipList aria-label="Video keywords" multiple [formControl]="formControl">
-    <mat-chip
-        *ngFor="let keyword of keywords"
-        [selected]="keyword"
-        [value]="keyword"
-        (removed)="removeKeyword(keyword)">
+  <mat-chip-grid #chipGrid aria-label="Enter keywords" [formControl]="formControl" >
+    <mat-chip-row *ngFor="let keyword of keywords" (removed)="removeKeyword(keyword)">
       {{keyword}}
-    </mat-chip>
-    <input
-      placeholder="New keyword..."
-      [matChipInputFor]="chipList"
-      (matChipInputTokenEnd)="addKeywordFromInput($event)">
-  </mat-chip-list>
+      <button matChipRemove aria-label="'remove ' + keyword">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-chip-row>
+  </mat-chip-grid>
+  <input placeholder="New keyword..."
+          [matChipInputFor]="chipGrid"
+          (matChipInputTokenEnd)="add($event)"/>
 </mat-form-field>
 
 <p>
-  <b>The following keywords are selected:</b> {{formControl.value}}
+  <b>The following keywords are entered:</b> {{formControl.value}}
 </p>

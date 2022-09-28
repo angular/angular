@@ -9,15 +9,15 @@
 import {Component} from '@angular/core';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatLegacyChipInputEvent, MatLegacyChipsModule} from '@angular/material/legacy-chips';
 import {ThemePalette} from '@angular/material/core';
-import {MatChipInputEvent, MatChipEditedEvent, MatChipsModule} from '@angular/material/chips';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 export interface Person {
   name: string;
@@ -29,31 +29,29 @@ export interface DemoColor {
 }
 
 @Component({
-  selector: 'mdc-chips-demo',
-  templateUrl: 'mdc-chips-demo.html',
-  styleUrls: ['mdc-chips-demo.css'],
+  selector: 'legacy-chips-demo',
+  templateUrl: 'legacy-chips-demo.html',
+  styleUrls: ['legacy-chips-demo.css'],
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatChipsModule,
-    MatFormFieldModule,
+    MatLegacyButtonModule,
+    MatLegacyCardModule,
+    MatLegacyCheckboxModule,
+    MatLegacyChipsModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
     MatToolbarModule,
-    ReactiveFormsModule,
   ],
 })
-export class MdcChipsDemo {
+export class LegacyChipsDemo {
+  tabIndex = 0;
   visible = true;
+  color: ThemePalette;
   selectable = true;
   removable = true;
   addOnBlur = true;
-  disabledListboxes = false;
-  disableInputs = false;
-  editable = false;
   message = '';
 
   // Enter, comma, semi-colon
@@ -81,7 +79,7 @@ export class MdcChipsDemo {
     this.message = message;
   }
 
-  add(event: MatChipInputEvent): void {
+  add(event: MatLegacyChipInputEvent): void {
     const value = (event.value || '').trim();
 
     // Add our person
@@ -101,22 +99,23 @@ export class MdcChipsDemo {
     }
   }
 
-  edit(person: Person, event: MatChipEditedEvent): void {
-    if (!event.value.trim().length) {
-      this.remove(person);
-      return;
+  removeColor(color: DemoColor) {
+    let index = this.availableColors.indexOf(color);
+
+    if (index >= 0) {
+      this.availableColors.splice(index, 1);
     }
 
-    const index = this.people.indexOf(person);
-    const newPeople = this.people.slice();
-    newPeople[index] = {...newPeople[index], name: event.value};
-    this.people = newPeople;
+    index = this.selectedColors.indexOf(color.name);
+
+    if (index >= 0) {
+      this.selectedColors.splice(index, 1);
+    }
   }
 
   toggleVisible(): void {
     this.visible = false;
   }
-
   selectedColors: string[] = ['Primary', 'Warn'];
   selectedColor = 'Accent';
 }
