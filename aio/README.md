@@ -30,6 +30,8 @@ Here are the most important tasks you might need to use:
 * `yarn docs-lint` - check that the doc gen code follows our style rules.
 
 * `yarn create-example` - create a new example directory containing initial source files.
+* `yarn example-playground <exampleName>` - set up a playground to manually test an example combined with its boilerplate files
+  - `--local` - link locally build Angular packages as deps
 
 * `yarn example-e2e` - run all e2e tests for examples. Available options:
   - `--local`: run e2e tests against locally built Angular packages.
