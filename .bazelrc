@@ -125,16 +125,6 @@ test:saucelabs --flaky_test_attempts=1
 # --ng_perf will ask the Ivy compiler to produce performance results for each build.
 build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
 
-#####################################################################
-# Folders to ignore for integration tests (nested Bazel workspaces) #
-#####################################################################
-
-# The nested Bazel integration test workspace should not be analysed as part of
-# Skyframe, but should also not be ignored in order to be able to glob for its files.
-# TODO: Simplify this once https://github.com/bazelbuild/bazel/issues/12034 is fixed
-build --deleted_packages=integration/bazel_workspace_tests/bazel_ngtsc_plugin,integration/bazel_workspace_tests/bazel_ngtsc_plugin/src,integration/bazel_workspace_tests/bazel_ngtsc_plugin/src/hello-world,integration/bazel_workspace_tests/bazel_ngtsc_plugin/test,integration/bazel_workspace_tests/bazel_ngtsc_plugin/test/e2e,integration/bazel_workspace_tests/bazel_ngtsc_plugin/tools,integration/bazel_workspace_tests/bazel_ngtsc_plugin/tools/angular
-query --deleted_packages=integration/bazel_workspace_tests/bazel_ngtsc_plugin,integration/bazel_workspace_tests/bazel_ngtsc_plugin/src,integration/bazel_workspace_tests/bazel_ngtsc_plugin/src/hello-world,integration/bazel_workspace_tests/bazel_ngtsc_plugin/test,integration/bazel_workspace_tests/bazel_ngtsc_plugin/test/e2e,integration/bazel_workspace_tests/bazel_ngtsc_plugin/tools,integration/bazel_workspace_tests/bazel_ngtsc_plugin/tools/angular
-
 ####################################################
 # User bazel configuration
 # NOTE: This needs to be the *last* entry in the config.

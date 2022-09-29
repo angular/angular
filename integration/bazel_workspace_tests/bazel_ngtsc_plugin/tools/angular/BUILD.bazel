@@ -1,5 +1,0 @@
-load(":index.bzl", "create_angular_bundle_targets")
-
-package(default_visibility = ["//visibility:public"])
-
-create_angular_bundle_targets()
