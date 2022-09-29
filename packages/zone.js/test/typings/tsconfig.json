@@ -8,7 +8,7 @@
     "moduleResolution": "node",
     "outDir": "./build",
     "rootDir": ".",
-    "target": "es5",
+    "target": "ES2015",
     "noEmitOnError": false,
     "stripInternal": false,
     "strict": true,
