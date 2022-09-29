@@ -150,7 +150,7 @@
     "ngx-flamegraph": "0.0.11",
     "nodejs-websocket": "^1.7.2",
     "protractor": "^7.0.0",
-    "puppeteer": "10.2.0",
+    "puppeteer": "18.0.5",
     "reflect-metadata": "^0.1.3",
     "requirejs": "^2.3.6",
     "rollup": "~2.79.0",
