@@ -148,6 +148,25 @@ export const ADMIN_ROUTES: Route[] = [
 ];
 ```
 
+### Lazy loading and default exports
+
+When using `loadChildren` and `loadComponent`, the router understands and automatically unwraps dynamic `import()` calls with `default` exports. You can take advantage of this to skip the `.then()` for such lazy loading operations.
+
+```ts
+// In the main application:
+export const ROUTES: Route[] = [
+  {path: 'admin', loadChildren: () => import('./admin/routes')},
+  // ...
+];
+
+// In admin/routes.ts:
+export default [
+  {path: 'home', component: AdminHomeComponent},
+  {path: 'users', component: AdminUsersComponent},
+  // ...
+] as Route[];
+```
+
 ### Providing services to a subset of routes
 
 The lazy loading API for `NgModule`s (`loadChildren`) creates a new "module" injector when it loads the lazily loaded children of a route. This feature was often useful to provide services only to a subset of routes in the application. For example, if all routes under `/admin` were scoped using a `loadChildren` boundary, then admin-only services could be provided only to those routes. Doing this required using the `loadChildren` API, even if lazy loading of the routes in question was unnecessary.

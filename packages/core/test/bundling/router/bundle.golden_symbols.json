@@ -1482,6 +1482,9 @@
     "name": "matrixParamsMatch"
   },
   {
+    "name": "maybeUnwrapDefaultExport"
+  },
+  {
     "name": "maybeUnwrapEmpty"
   },
   {
