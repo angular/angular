@@ -411,6 +411,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this._keyManager?.destroy();
     this.steps.destroy();
     this._sortedHeaders.destroy();
     this._destroyed.next();

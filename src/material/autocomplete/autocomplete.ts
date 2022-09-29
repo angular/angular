@@ -249,6 +249,7 @@ export abstract class _MatAutocompleteBase
   }
 
   ngOnDestroy() {
+    this._keyManager?.destroy();
     this._activeOptionChanges.unsubscribe();
   }
 

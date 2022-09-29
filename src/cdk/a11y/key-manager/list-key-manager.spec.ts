@@ -82,6 +82,11 @@ describe('Key managers', () => {
       spyOn(keyManager, 'setActiveItem').and.callThrough();
     });
 
+    afterEach(() => {
+      keyManager.destroy();
+      keyManager = null!;
+    });
+
     it('should maintain the active item if the amount of items changes', () => {
       expect(keyManager.activeItemIndex).toBe(0);
       expect(keyManager.activeItem!.getLabel()).toBe('one');
@@ -110,6 +115,14 @@ describe('Key managers', () => {
         expect(spy).toHaveBeenCalled();
       });
 
+      it('should complete the tabOut stream on destroy', () => {
+        const spy = jasmine.createSpy('complete spy');
+        keyManager.tabOut.pipe(take(1)).subscribe({complete: spy});
+        keyManager.destroy();
+
+        expect(spy).toHaveBeenCalled();
+      });
+
       it('should emit tabOut when the tab key is pressed with a modifier', () => {
         const spy = jasmine.createSpy('tabOut spy');
         keyManager.tabOut.pipe(take(1)).subscribe(spy);
@@ -122,27 +135,33 @@ describe('Key managers', () => {
 
       it('should emit an event whenever the active item changes', () => {
         const spy = jasmine.createSpy('change spy');
-        const subscription = keyManager.change.subscribe(spy);
+        keyManager.change.subscribe(spy);
 
         keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(spy).toHaveBeenCalledTimes(1);
 
         keyManager.onKeydown(fakeKeyEvents.upArrow);
         expect(spy).toHaveBeenCalledTimes(2);
-
-        subscription.unsubscribe();
       });
 
       it('should emit if the active item changed, but not the active index', () => {
         const spy = jasmine.createSpy('change spy');
-        const subscription = keyManager.change.subscribe(spy);
+        keyManager.change.subscribe(spy);
 
         keyManager.setActiveItem(0);
         itemList.reset([new FakeFocusable('zero'), ...itemList.toArray()]);
         keyManager.setActiveItem(0);
 
         expect(spy).toHaveBeenCalledTimes(1);
-        subscription.unsubscribe();
+      });
+
+      it('should complete the change stream on destroy', () => {
+        const spy = jasmine.createSpy('change spy');
+
+        keyManager.change.subscribe({complete: spy});
+        keyManager.destroy();
+
+        expect(spy).toHaveBeenCalled();
       });
 
       it('should activate the first item when pressing down on a clean key manager', () => {
@@ -448,7 +467,7 @@ describe('Key managers', () => {
       ) {
         const initialActiveIndex = keyManager.activeItemIndex;
         const spy = jasmine.createSpy('change spy');
-        const subscription = keyManager.change.subscribe(spy);
+        keyManager.change.subscribe(spy);
 
         expect(context.nextKeyEvent.defaultPrevented).toBe(false);
         expect(context.prevKeyEvent.defaultPrevented).toBe(false);
@@ -465,8 +484,6 @@ describe('Key managers', () => {
         expect(context.prevKeyEvent.defaultPrevented).toBe(false);
         expect(keyManager.activeItemIndex).toBe(initialActiveIndex);
         expect(spy).not.toHaveBeenCalled();
-
-        subscription.unsubscribe();
       }
     });
 
@@ -495,7 +512,7 @@ describe('Key managers', () => {
 
       it('should be able to set the active item without emitting an event', () => {
         const spy = jasmine.createSpy('change spy');
-        const subscription = keyManager.change.subscribe(spy);
+        keyManager.change.subscribe(spy);
 
         expect(keyManager.activeItemIndex).toBe(0);
 
@@ -503,8 +520,6 @@ describe('Key managers', () => {
 
         expect(keyManager.activeItemIndex).toBe(2);
         expect(spy).not.toHaveBeenCalled();
-
-        subscription.unsubscribe();
       });
 
       it('should expose the active item correctly', () => {
@@ -629,14 +644,12 @@ describe('Key managers', () => {
 
       it('should not emit an event if the item did not change', () => {
         const spy = jasmine.createSpy('change spy');
-        const subscription = keyManager.change.subscribe(spy);
+        keyManager.change.subscribe(spy);
 
         keyManager.setActiveItem(2);
         keyManager.setActiveItem(2);
 
         expect(spy).toHaveBeenCalledTimes(1);
-
-        subscription.unsubscribe();
       });
     });
 
@@ -935,6 +948,16 @@ describe('Key managers', () => {
 
         expect(keyManager.isTyping()).toBe(false);
       }));
+
+      it('should reset isTyping if the key manager is destroyed', fakeAsync(() => {
+        expect(keyManager.isTyping()).toBe(false);
+
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, 'o')); // types "o"
+        expect(keyManager.isTyping()).toBe(true);
+
+        keyManager.destroy();
+        expect(keyManager.isTyping()).toBe(false);
+      }));
     });
   });
 
@@ -951,6 +974,11 @@ describe('Key managers', () => {
       spyOn(itemList.toArray()[0], 'focus');
       spyOn(itemList.toArray()[1], 'focus');
       spyOn(itemList.toArray()[2], 'focus');
+    });
+
+    afterEach(() => {
+      keyManager.destroy();
+      keyManager = null!;
     });
 
     it('should focus subsequent items when down arrow is pressed', () => {

@@ -40,7 +40,7 @@ import {
   UP_ARROW,
   hasModifierKey,
 } from '@angular/cdk/keycodes';
-import {merge, Observable, Subject, Subscription} from 'rxjs';
+import {merge, Observable, Subject} from 'rxjs';
 import {startWith, switchMap, take} from 'rxjs/operators';
 import {MatMenuItem} from './menu-item';
 import {MatMenuPanel, MAT_MENU_PANEL} from './menu-panel';
@@ -111,9 +111,6 @@ export class _MatMenuBase
 
   /** Only the direct descendant menu items. */
   _directDescendantItems = new QueryList<MatMenuItem>();
-
-  /** Subscription to tab events on the menu panel */
-  private _tabSubscription = Subscription.EMPTY;
 
   /** Config object to be passed into the menu's ngClass */
   _classList: {[key: string]: boolean} = {};
@@ -305,7 +302,7 @@ export class _MatMenuBase
       .withWrap()
       .withTypeAhead()
       .withHomeAndEnd();
-    this._tabSubscription = this._keyManager.tabOut.subscribe(() => this.closed.emit('tab'));
+    this._keyManager.tabOut.subscribe(() => this.closed.emit('tab'));
 
     // If a user manually (programmatically) focuses a menu item, we need to reflect that focus
     // change back to the key manager. Note that we don't need to unsubscribe here because _focused
@@ -337,8 +334,8 @@ export class _MatMenuBase
   }
 
   ngOnDestroy() {
+    this._keyManager?.destroy();
     this._directDescendantItems.destroy();
-    this._tabSubscription.unsubscribe();
     this.closed.complete();
   }
 

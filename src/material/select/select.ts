@@ -581,6 +581,7 @@ export abstract class _MatSelectBase<C>
   }
 
   ngOnDestroy() {
+    this._keyManager?.destroy();
     this._destroy.next();
     this._destroy.complete();
     this.stateChanges.complete();
@@ -917,7 +918,7 @@ export abstract class _MatSelectBase<C>
       .withPageUpDown()
       .withAllowedModifierKeys(['shiftKey']);
 
-    this._keyManager.tabOut.pipe(takeUntil(this._destroy)).subscribe(() => {
+    this._keyManager.tabOut.subscribe(() => {
       if (this.panelOpen) {
         // Select the active item when tabbing away. This is consistent with how the native
         // select behaves. Note that we only want to do this in single selection mode.
@@ -932,7 +933,7 @@ export abstract class _MatSelectBase<C>
       }
     });
 
-    this._keyManager.change.pipe(takeUntil(this._destroy)).subscribe(() => {
+    this._keyManager.change.subscribe(() => {
       if (this._panelOpen && this.panel) {
         this._scrollOptionIntoView(this._keyManager.activeItemIndex || 0);
       } else if (!this._panelOpen && !this.multiple && this._keyManager.activeItem) {

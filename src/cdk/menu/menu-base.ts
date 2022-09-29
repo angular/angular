@@ -111,6 +111,7 @@ export abstract class CdkMenuBase
   }
 
   ngOnDestroy() {
+    this.keyManager?.destroy();
     this.destroyed.next();
     this.destroyed.complete();
     this.pointerTracker?.destroy();
