@@ -103,7 +103,6 @@ export const CUSTOM_SASS_MIXIN_RENAMINGS: {[key: string]: string} = {
   'all-component-colors': 'all-legacy-component-colors',
   'all-component-typographies': 'all-legacy-component-typographies',
   'private-all-component-densities': 'private-all-legacy-component-densities',
-  'core': 'legacy-core',
 };
 
 export const CUSTOM_SASS_FUNCTION_RENAMINGS: {[key: string]: string} = {

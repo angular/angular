@@ -57,8 +57,31 @@ export class LegacyComponentsMigration extends Migration<null> {
     if (!namespace || !node.source?.start) {
       return;
     }
-    const mixinName = node.params.split(/[.(;]/)[1];
-    if (CUSTOM_SASS_MIXIN_RENAMINGS[mixinName]) {
+    const original = node.toString();
+    const [atInclude, delim, mixinName, ...rest] = original.split(/([.(;])/);
+    if (mixinName === 'core') {
+      // The parameters may include function calls that need to be renamed.
+      const updatedFunctionsRest = Object.keys(CUSTOM_SASS_FUNCTION_RENAMINGS).reduce(
+        (s, r) => s.replace(new RegExp(r, 'g'), CUSTOM_SASS_FUNCTION_RENAMINGS[r]),
+        rest.join(''),
+      );
+      // The parameters are moved from the core include to the typography include.
+      const includeTypography = [atInclude, delim, mixinName, updatedFunctionsRest]
+        .join('')
+        .replace(`${namespace}.core`, `${namespace}.all-legacy-component-typographies`);
+      const indent = original.match(/^\s*/)?.[0] || '';
+      // Replace the whole original with a comment, typography include, and legacy-core include.
+      this._replaceAt(filePath, node.source.start.offset, {
+        old: original,
+        new: [
+          `${indent}// TODO(v15): As of v15 ${namespace}.legacy-core no longer includes default typography styles.`,
+          `${indent}//  Instead an explicit typography include has been automatically added here.`,
+          `${indent}//  If you add typography styles elsewhere, you may want to remove this.`,
+          `${includeTypography};`,
+          `${indent}@include ${namespace}.legacy-core()`,
+        ].join('\n'),
+      });
+    } else if (CUSTOM_SASS_MIXIN_RENAMINGS[mixinName]) {
       this._replaceAt(filePath, node.source.start.offset, {
         old: `${namespace}.${mixinName}`,
         new: `${namespace}.${CUSTOM_SASS_MIXIN_RENAMINGS[mixinName]}`,

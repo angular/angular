@@ -279,5 +279,28 @@ describe('v15 legacy components migration', () => {
         ],
       });
     });
+
+    it('updates mat.core mixin', async () => {
+      await runSassMigrationTest('mat.core mixin', {
+        old: [
+          `@use '@angular/material' as mat;`,
+          `@include mat.core();`,
+          `@include mat.core(mat.define-typography-config());`,
+        ],
+        new: [
+          `@use '@angular/material' as mat;`,
+          `// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.`,
+          `//  Instead an explicit typography include has been automatically added here.`,
+          `//  If you add typography styles elsewhere, you may want to remove this.`,
+          `@include mat.all-legacy-component-typographies();`,
+          `@include mat.legacy-core();`,
+          `// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.`,
+          `//  Instead an explicit typography include has been automatically added here.`,
+          `//  If you add typography styles elsewhere, you may want to remove this.`,
+          `@include mat.all-legacy-component-typographies(mat.define-legacy-typography-config());`,
+          `@include mat.legacy-core();`,
+        ],
+      });
+    });
   });
 });
