@@ -3,15 +3,10 @@
 // Core styles that can be used to apply material design treatments to any element.
 @use './ripple/ripple';
 @use './focus-indicators/private';
-@use './typography/all-typography';
 
 // Mixin that renders all of the core styles that are not theme-dependent.
-// TODO: Remove the `$exclude-typography` parameter once `ng update` automatically migrates
-// client theme applications to manually include the typography mixin.
+// TODO: Remove the mixin's parameters after all internal clients migrated
 @mixin core($typography-config: null, $exclude-typography: false) {
-  @if not $exclude-typography {
-    @include all-typography.all-component-typographies($typography-config);
-  }
   @include ripple.ripple();
   @include cdk.a11y-visually-hidden();
   @include cdk.overlay();
