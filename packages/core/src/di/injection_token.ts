@@ -35,8 +35,11 @@ import {ɵɵdefineInjectable} from './interface/defs';
  * As you can see in the Tree-shakable InjectionToken example below.
  *
  * Additionally, if a `factory` is specified you can also specify the `providedIn` option, which
- * overrides the above behavior and marks the token as belonging to a particular `@NgModule`. As
- * mentioned above, `'root'` is the default value for `providedIn`.
+ * overrides the above behavior and marks the token as belonging to a particular `@NgModule` (note:
+ * this option is now deprecated). As mentioned above, `'root'` is the default value for
+ * `providedIn`.
+ *
+ * The `providedIn: NgModule` and `providedIn: 'any'` options are deprecated.
  *
  * @usageNotes
  * ### Basic Examples
