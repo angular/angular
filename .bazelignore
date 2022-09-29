@@ -6,6 +6,7 @@
 node_modules
 dist
 aio/node_modules
+aio/content/example-playground
 aio/tools/examples/shared/node_modules
 aio/tools/examples/shared/example-scaffold
 packages/bazel/node_modules
