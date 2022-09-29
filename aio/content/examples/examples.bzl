@@ -182,7 +182,7 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}):
 
         # Local package deps are passed as args to the test script in the form "@package/name#path/to/package"
         # for the script's convenience.
-        LOCAL_PACKAGE_ARGS = ["%s#$(rootpath %s)" % (dep, to_package_label(dep)) for dep in AIO_EXAMPLE_PACKAGES]
+        LOCAL_PACKAGE_ARGS = ["--localPackage=%s#$(rootpath %s)" % (dep, to_package_label(dep)) for dep in AIO_EXAMPLE_PACKAGES]
 
         nodejs_test(
             name = "e2e",
@@ -206,7 +206,7 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}):
                 "//conditions:default": [],
             }),
             configuration_env_vars = ["NG_BUILD_CACHE"],
-            entry_point = "//aio/tools/examples:run-example-e2e",
+            entry_point = "//aio/tools/examples:run-example-e2e.mjs",
             env = {
                 "CHROME_BIN": "$(CHROMIUM)",
                 "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
