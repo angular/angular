@@ -53,7 +53,7 @@
     "ci-notify-slack-failure": "ts-node --esm --project scripts/tsconfig.json scripts/circleci/notify-slack-job-failure.mts",
     "prepare": "husky install"
   },
-  "version": "15.0.0-next.2",
+  "version": "15.0.0-next.3",
   "dependencies": {
     "@angular/animations": "^15.0.0-next.0",
     "@angular/common": "^15.0.0-next.0",
