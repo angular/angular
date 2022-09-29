@@ -243,7 +243,7 @@ Besides the configuration file, you can also use [`tsc` command line options](ht
 
 <!-- links -->
 
-[AioGuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n-common-prepare#mark-text-in-component-template "Mark text in component template - Prepare templates for translations | Angular"
+[AioGuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n-common-prepare#mark-text-in-component-template "Mark text in component template - Prepare component for translation | Angular"
 
 <!-- end links -->
 
