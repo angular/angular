@@ -62,6 +62,7 @@ ng_package(
     visibility = [
         "//aio:__pkg__",
         "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
         "//integration:__subpackages__",
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
@@ -121,8 +122,9 @@ filegroup(
     srcs = glob([
         "*.ts",
         "src/**/*.ts",
+    ]) + [
         "PACKAGE.md",
         "global/index.ts",
         "global/PACKAGE.md",
-    ]),
+    ],
 )

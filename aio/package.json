@@ -33,6 +33,7 @@
     "example-e2e": "node --experimental-import-meta-resolve tools/examples/run-filtered-example-e2es.mjs",
     "example-list-overrides": "bazel run //aio/tools/examples:example-boilerplate list-overrides",
     "example-lint": "eslint content/examples",
+    "example-playground": "node ./tools/examples/create-example-playground-wrapper.mjs",
     "deploy-production": "bazel run //aio/scripts/deploy-to-firebase",
     "check-env": "yarn ~~check-env",
     "payload-size": "scripts/payload.sh",
