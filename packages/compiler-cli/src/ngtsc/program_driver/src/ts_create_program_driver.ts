@@ -52,6 +52,11 @@ export class DelegatingCompilerHost implements
   trace = this.delegateMethod('trace');
   useCaseSensitiveFileNames = this.delegateMethod('useCaseSensitiveFileNames');
   getModuleResolutionCache = this.delegateMethod('getModuleResolutionCache');
+  // @ts-expect-error 'hasInvalidatedResolutions' is visible (and thus required here) in latest TSC
+  // main. It's already present, so the code works at runtime.
+  // TODO: remove this comment including the suppression once Angular uses a TSC version that
+  // includes this change (github.com/microsoft/TypeScript@a455955).
+  hasInvalidatedResolutions = this.delegateMethod('hasInvalidatedResolutions');
 }
 
 /**
