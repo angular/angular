@@ -17,7 +17,7 @@ import {concat, defer, EMPTY, from, Observable, Observer, of, Subscription} from
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
 import {CanActivateChildFn, CanActivateFn, CanMatch, CanMatchFn, ResolveFn} from '../src/models';
-import {withRouterConfig} from '../src/provide_router';
+import {withLocationStrategy, withRouterConfig} from '../src/provide_router';
 import {forEach, wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
 import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
@@ -6984,6 +6984,21 @@ describe('Testing router options', () => {
       const router: Router = TestBed.inject(Router);
       expect(router.urlUpdateStrategy).toBe('eager');
     });
+  });
+
+  describe('should use the appropriate location strategy', () => {
+    it('using hash location',
+       () => {fakeAsync(() => {
+         TestBed.configureTestingModule({
+           declarations: [RootCmp],
+           providers: [provideRouterForTesting([], withLocationStrategy({useHash: true}))]
+         });
+         const router: Router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+         router.navigateByUrl('/someUrl');
+         advance(fixture);
+         expect(router.url).toBe('/#/someUrl');
+       })});
   });
 });
 

@@ -164,6 +164,14 @@ export interface InMemoryScrollingOptions {
 }
 
 /**
+ * A set of configuration options for a location strategy,
+ * either enabling HashLocationStrategy or PathlocationStrategy
+ */
+export interface LocationStrategyOptions {
+  useHash: boolean;
+}
+
+/**
  * A set of configuration options for a router module, provided in the
  * `forRoot()` method.
  *

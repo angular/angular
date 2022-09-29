@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 export {createUrlTreeFromSnapshot} from './create_url_tree';
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
@@ -14,7 +13,7 @@ export {RouterOutlet, RouterOutletContract} from './directives/router_outlet';
 export {ActivationEnd, ActivationStart, ChildActivationEnd, ChildActivationStart, Event, EventType, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode as NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouterEvent, RoutesRecognized, Scroll} from './events';
 export {CanActivate, CanActivateChild, CanActivateChildFn, CanActivateFn, CanDeactivate, CanDeactivateFn, CanLoad, CanLoadFn, CanMatch, CanMatchFn, Data, LoadChildren, LoadChildrenCallback, NavigationBehaviorOptions, QueryParamsHandling, Resolve, ResolveData, ResolveFn, Route, Routes, RunGuardsAndResolvers, UrlMatcher, UrlMatchResult} from './models';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
-export {DebugTracingFeature, DisabledInitialNavigationFeature, EnabledBlockingInitialNavigationFeature, InitialNavigationFeature, InMemoryScrollingFeature, PreloadingFeature, provideRouter, provideRoutes, RouterConfigurationFeature, RouterFeature, RouterFeatures, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withPreloading, withRouterConfig} from './provide_router';
+export {DebugTracingFeature, DisabledInitialNavigationFeature, EnabledBlockingInitialNavigationFeature, InitialNavigationFeature, InMemoryScrollingFeature, PreloadingFeature, provideRouter, provideRoutes, RouterConfigurationFeature, RouterFeature, RouterFeatures, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withLocationStrategy, withPreloading, withRouterConfig} from './provide_router';
 export {BaseRouteReuseStrategy, DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
 export {Navigation, NavigationExtras, Router, UrlCreationOptions} from './router';
 export {ExtraOptions, InitialNavigation, InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';

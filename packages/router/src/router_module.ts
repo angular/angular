@@ -166,13 +166,13 @@ export function provideRouterScroller(): Provider {
 
 // Note: For internal use only with `RouterModule`. Standalone setup via `provideRouter` should
 // provide hash location directly via `{provide: LocationStrategy, useClass: HashLocationStrategy}`.
-function provideHashLocationStrategy(): Provider {
+export function provideHashLocationStrategy(): Provider {
   return {provide: LocationStrategy, useClass: HashLocationStrategy};
 }
 
 // Note: For internal use only with `RouterModule`. Standalone setup via `provideRouter` does not
 // need this at all because `PathLocationStrategy` is the default factory for `LocationStrategy`.
-function providePathLocationStrategy(): Provider {
+export function providePathLocationStrategy(): Provider {
   return {provide: LocationStrategy, useClass: PathLocationStrategy};
 }
 

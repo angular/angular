@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LOCATION_INITIALIZED, ViewportScroller} from '@angular/common';
+import {HashLocationStrategy, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, ViewportScroller} from '@angular/common';
 import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, inject, InjectFlags, InjectionToken, Injector, Provider, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
@@ -14,8 +14,9 @@ import {filter, map, take} from 'rxjs/operators';
 import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, stringifyEvent} from './events';
 import {Routes} from './models';
 import {Router} from './router';
-import {InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
+import {InMemoryScrollingOptions, LocationStrategyOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
 import {ROUTES} from './router_config_loader';
+import {provideHashLocationStrategy, providePathLocationStrategy} from './router_module';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
@@ -110,9 +111,7 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
  * @publicApi
  */
 export function provideRoutes(routes: Routes): Provider[] {
-  return [
-    {provide: ROUTES, multi: true, useValue: routes},
-  ];
+  return [{provide: ROUTES, multi: true, useValue: routes}];
 }
 
 /**
@@ -478,6 +477,39 @@ export function withDebugTracing(): DebugTracingFeature {
   return routerFeature(RouterFeatureKind.DebugTracingFeature, providers);
 }
 
+/**
+ * Indicates whether Hash or Path strategy should be used
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable location strategy;
+ * ```
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withLocationStrategy({useHash: true}))
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * @see `provideRouter`
+ *
+ * @returns A set of providers for use with `provideRouter`.
+ *
+ * @publicApi
+ * @developerPreview
+ */
+export function withLocationStrategy(options: LocationStrategyOptions):
+    RouterLocationStrategyFeature {
+  let providers: Provider[] = [];
+  options.useHash ? providers.push(provideHashLocationStrategy()) :
+                    providers.push(providePathLocationStrategy());
+
+  return routerFeature(RouterFeatureKind.RouterLocationStrategyFeature, providers);
+}
+
 const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(NG_DEV_MODE ? 'router preloader' : '');
 
 /**
@@ -539,6 +571,8 @@ export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): Pr
 export type RouterConfigurationFeature =
     RouterFeature<RouterFeatureKind.RouterConfigurationFeature>;
 
+export type RouterLocationStrategyFeature =
+    RouterFeature<RouterFeatureKind.RouterLocationStrategyFeature>;
 /**
  * Allows to provide extra parameters to configure Router.
  *
@@ -568,9 +602,7 @@ export type RouterConfigurationFeature =
  * @developerPreview
  */
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature {
-  const providers = [
-    {provide: ROUTER_CONFIGURATION, useValue: options},
-  ];
+  const providers = [{provide: ROUTER_CONFIGURATION, useValue: options}];
   return routerFeature(RouterFeatureKind.RouterConfigurationFeature, providers);
 }
 
@@ -586,7 +618,7 @@ export function withRouterConfig(options: RouterConfigOptions): RouterConfigurat
  * @developerPreview
  */
 export type RouterFeatures = PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|
-    InMemoryScrollingFeature|RouterConfigurationFeature;
+    InMemoryScrollingFeature|RouterConfigurationFeature|RouterLocationStrategyFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -597,5 +629,6 @@ export const enum RouterFeatureKind {
   EnabledBlockingInitialNavigationFeature,
   DisabledInitialNavigationFeature,
   InMemoryScrollingFeature,
-  RouterConfigurationFeature
+  RouterConfigurationFeature,
+  RouterLocationStrategyFeature
 }
