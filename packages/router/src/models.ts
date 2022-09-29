@@ -90,6 +90,22 @@ export type ResolveData = {
 };
 
 /**
+ * An ES Module object with a default export of the given type.
+ *
+ * @see `Route#loadComponent`
+ * @see `LoadChildrenCallback`
+ *
+ * @publicApi
+ */
+export interface DefaultExport<T> {
+  /**
+   * Default exports are bound under the name `"default"`, per the ES Module spec:
+   * https://tc39.es/ecma262/#table-export-forms-mapping-to-exportentry-records
+   */
+  default: T;
+}
+
+/**
  *
  * A function that is called to resolve a collection of lazy-loaded routes.
  * Must be an arrow function of the following form:
@@ -113,11 +129,19 @@ export type ResolveData = {
  * }];
  * ```
  *
+ * If the lazy-loaded routes are exported via a `default` export, the `.then` can be omitted:
+ * ```
+ * [{
+ *   path: 'lazy',
+ *   loadChildren: () => import('./lazy-route/lazy.routes'),
+ * }];
+ *
  * @see [Route.loadChildren](api/router/Route#loadChildren)
  * @publicApi
  */
 export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Routes|
-    Observable<Type<any>|Routes>|Promise<NgModuleFactory<any>|Type<any>|Routes>;
+    Observable<Type<any>|Routes|DefaultExport<Type<any>>|DefaultExport<Routes>>|
+    Promise<NgModuleFactory<any>|Type<any>|Routes|DefaultExport<Type<any>>|DefaultExport<Routes>>;
 
 /**
  *
@@ -439,7 +463,8 @@ export interface Route {
   /**
    * An object specifying a lazy-loaded component.
    */
-  loadComponent?: () => Type<unknown>| Observable<Type<unknown>>| Promise<Type<unknown>>;
+  loadComponent?: () => Type<unknown>| Observable<Type<unknown>|DefaultExport<Type<unknown>>>|
+      Promise<Type<unknown>|DefaultExport<Type<unknown>>>;
   /**
    * Filled for routes `loadComponent` once the component is loaded.
    * @internal

@@ -213,6 +213,11 @@ export type Data = {
 export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFeature>;
 
 // @public
+export interface DefaultExport<T> {
+    default: T;
+}
+
+// @public
 export class DefaultTitleStrategy extends TitleStrategy {
     constructor(title: Title);
     // (undocumented)
@@ -359,7 +364,7 @@ export interface IsActiveMatchOptions {
 export type LoadChildren = LoadChildrenCallback | ɵDeprecatedLoadChildren;
 
 // @public
-export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Routes | Observable<Type<any> | Routes> | Promise<NgModuleFactory<any> | Type<any> | Routes>;
+export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Routes | Observable<Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>> | Promise<NgModuleFactory<any> | Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>>;
 
 // @public
 export interface Navigation {
@@ -588,7 +593,7 @@ export interface Route {
     component?: Type<any>;
     data?: Data;
     loadChildren?: LoadChildren;
-    loadComponent?: () => Type<unknown> | Observable<Type<unknown>> | Promise<Type<unknown>>;
+    loadComponent?: () => Type<unknown> | Observable<Type<unknown> | DefaultExport<Type<unknown>>> | Promise<Type<unknown> | DefaultExport<Type<unknown>>>;
     matcher?: UrlMatcher;
     outlet?: string;
     path?: string;
