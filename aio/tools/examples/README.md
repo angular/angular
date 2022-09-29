@@ -140,6 +140,16 @@ By default the script will place basic scaffold files into the new example (from
 But you can also specify the path to a separate CLI project, from which the script will copy files that would not be considered "boilerplate".
 See the [Boilerplate overview](#boilerplate-overview) for more information.
 
+### `create-example-playground.mjs`
+
+The [create-example-playground.mjs](./create-example-playground.mjs) script combines example sources, boilerplate, and shared node_modules deps into git-ignored playground directory `content/example-playground/{{EXAMPLE}}` that can be used for manual testing. This should be invoked via the yarn script:
+
+```bash
+yarn example-playground <exampleName> [--local]
+```
+
+The `--local` flag links in locally-built angular packages as dependencies.
+
 ### Updating example dependencies
 
 With every major Angular release, we update the examples to be on the latest version.
