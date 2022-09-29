@@ -52,6 +52,7 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
       version: 1,
       projects: {
         'demo': {
+          root: '',
           architect: {
             build: {
               builder: '@angular-devkit/build-angular:browser',
@@ -166,6 +167,7 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
       version: 1,
       projects: {
         'demo': {
+          root: '',
           architect: {},
         }
       },
