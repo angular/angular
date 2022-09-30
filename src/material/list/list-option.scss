@@ -1,12 +1,11 @@
 @use 'sass:map';
-@use '@angular/cdk';
 @use '@material/checkbox/checkbox' as mdc-checkbox;
-@use '@material/list/evolution-variables' as mdc-list-variables;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
 
 @use '../core/mdc-helpers/mdc-helpers';
 @use '../checkbox/checkbox-private';
 @use './list-option-trailing-avatar-compat';
+@use './list-item-hcm-indicator';
 
 // For compatibility with the non-MDC list, we support avatars that are shown at the end
 // of the list option. We create a class similar to MDC's `--trailing-icon` one.
@@ -53,25 +52,8 @@
   }
 }
 
-@include cdk.high-contrast(active, off) {
-  // In single selection mode, the selected option is indicated by changing its
-  // background color, but that doesn't work in high contrast mode. We add an
-  // alternate indication by rendering out a circle.
-  .mat-mdc-list-option.mdc-list-item--selected::after {
-    $size: 10px;
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: mdc-list-variables.$side-padding;
-    transform: translateY(-50%);
-    width: $size;
-    height: 0;
-    border-bottom: solid $size;
-    border-radius: $size;
-  }
-
-  [dir='rtl'] .mat-mdc-list-option.mdc-list-item--selected::after {
-    right: auto;
-    left: mdc-list-variables.$side-padding;
-  }
+.mat-mdc-list-option.mdc-list-item--selected {
+  // Improve accessibility for Window High Contrast Mode (HCM) by adding an idicator on the selected
+  // option.
+  @include list-item-hcm-indicator.private-high-contrast-list-item-indicator();
 }

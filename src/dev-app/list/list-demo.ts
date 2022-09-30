@@ -53,10 +53,10 @@ export class ListDemo {
   ];
 
   links: {name: string; href: string}[] = [
-    {name: 'Inbox', href: '/mdc-list#inbox'},
-    {name: 'Outbox', href: '/mdc-list#outbox'},
-    {name: 'Spam', href: '/mdc-list#spam'},
-    {name: 'Trash', href: '/mdc-list#trash'},
+    {name: 'Inbox', href: '/list#inbox'},
+    {name: 'Outbox', href: '/list#outbox'},
+    {name: 'Spam', href: '/list#spam'},
+    {name: 'Trash', href: '/list#trash'},
   ];
 
   thirdLine = false;

@@ -1,0 +1,30 @@
+@use '@angular/cdk';
+@use '@material/list/evolution-variables' as mdc-list-variables;
+
+// Renders a circle indicator when Windows Hich Constrast mode (HCM) is enabled. In some
+// situations, such as a selected option, the list item communicates the selected state by changing
+// its background color. Since that doesn't work in HCM, this mixin provides an alternative by
+// rendering a circle.
+@mixin private-high-contrast-list-item-indicator() {
+    @include cdk.high-contrast(active, off) {
+        &::after {
+            $size: 10px;
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: mdc-list-variables.$side-padding;
+            transform: translateY(-50%);
+            width: $size;
+            height: 0;
+            border-bottom: solid $size;
+            border-radius: $size;
+        }
+
+        [dir='rtl'] {
+            &::after {
+                right: auto;
+                left: mdc-list-variables.$side-padding;
+            }
+        }
+    }
+}

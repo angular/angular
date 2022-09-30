@@ -1,9 +1,16 @@
 @use '@material/list/evolution-mixins' as mdc-list;
 @use '../core/style/layout-common';
 @use '../core/mdc-helpers/mdc-helpers';
+@use './list-item-hcm-indicator';
 
 @include mdc-helpers.disable-mdc-fallback-declarations {
   @include mdc-list.without-ripple($query: mdc-helpers.$mdc-base-styles-query);
+}
+
+a.mdc-list-item--activated {
+  // Improve accessibility for Window High Contrast Mode (HCM) by adding an idicator on active
+  // links.
+  @include list-item-hcm-indicator.private-high-contrast-list-item-indicator();
 }
 
 // MDC expects the list element to be a `<ul>`, since we use `<mat-list>` instead we need to
