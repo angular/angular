@@ -25,11 +25,23 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
+    DUPLICATE_DIRECTITVE = 309,
+    // (undocumented)
     ERROR_HANDLER_NOT_FOUND = 402,
     // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
+    // (undocumented)
+    HOST_DIRECTIVE_COMPONENT = 310,
+    // (undocumented)
+    HOST_DIRECTIVE_CONFLICTING_ALIAS = 312,
+    // (undocumented)
+    HOST_DIRECTIVE_NOT_STANDALONE = 308,
+    // (undocumented)
+    HOST_DIRECTIVE_UNDEFINED_BINDING = 311,
+    // (undocumented)
+    HOST_DIRECTIVE_UNRESOLVABLE = 307,
     // (undocumented)
     IMPORT_PROVIDERS_FROM_STANDALONE = 800,
     // (undocumented)
