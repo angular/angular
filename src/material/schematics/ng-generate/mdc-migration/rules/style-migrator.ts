@@ -75,7 +75,7 @@ export abstract class StyleMigrator {
     // Check if mixin replacements already exist in the stylesheet
     const replacements = [...change.new];
     if (change.checkForDuplicates) {
-      const mixinArgumentMatches = atRule.params.match(MIXIN_ARGUMENTS_REGEX);
+      const mixinArgumentMatches = atRule.params?.match(MIXIN_ARGUMENTS_REGEX);
       atRule.root().walkAtRules(rule => {
         for (const index in replacements) {
           // Include arguments if applicable since there can be multiple themes.
@@ -143,7 +143,7 @@ export abstract class StyleMigrator {
     // Since a legacy class can also have the deprecated prefix, we also
     // check that a match isn't actually a longer deprecated class.
     return this.classChanges.some(
-      change => rule.selector.match(change.old + END_OF_SELECTOR_REGEX) !== null,
+      change => rule.selector?.match(change.old + END_OF_SELECTOR_REGEX) !== null,
     );
   }
 
@@ -155,7 +155,7 @@ export abstract class StyleMigrator {
   replaceLegacySelector(rule: postcss.Rule): void {
     for (let i = 0; i < this.classChanges.length; i++) {
       const change = this.classChanges[i];
-      if (rule.selector.match(change.old + END_OF_SELECTOR_REGEX)) {
+      if (rule.selector?.match(change.old + END_OF_SELECTOR_REGEX)) {
         rule.selector = rule.selector.replace(change.old, change.new);
       }
     }

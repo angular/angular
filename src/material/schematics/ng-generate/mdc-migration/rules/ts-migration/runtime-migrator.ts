@@ -92,7 +92,7 @@ export class RuntimeMigrator {
     let newImport = null;
 
     this.importSpecifierReplacements.forEach(replacement => {
-      if (node.text.match(replacement.old)) {
+      if (node.text?.match(replacement.old)) {
         newImport = node.text.replace(replacement.old, replacement.new);
       }
     });
