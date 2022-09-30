@@ -1884,4 +1884,365 @@ describe('host directives', () => {
       expect(result).toBe(expected);
     });
   });
+
+  describe('invalid usage validations', () => {
+    it('should throw an error if the metadata of a host directive cannot be resolved', () => {
+      class HostDir {}
+
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              'NG0307: Could not resolve metadata for host directive HostDir. ' +
+              'Make sure that the HostDir class is annotated with an @Directive decorator.');
+    });
+
+    it('should throw an error if a host directive is not standalone', () => {
+      @Directive({standalone: false})
+      class HostDir {
+      }
+
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError('NG0308: Host directive HostDir must be standalone.');
+    });
+
+    it('should throw an error if a host directive matches multiple times in a template', () => {
+      @Directive({standalone: true, selector: '[dir]'})
+      class HostDir {
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir],
+        standalone: true,
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<div dir></div>', standalone: true, imports: [HostDir, Dir]})
+      class App {
+      }
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              'NG0309: Directive HostDir matches multiple times on the same element. Directives can only match an element once.');
+    });
+
+    it('should throw an error if a host directive appears multiple times in a chain', () => {
+      @Directive({standalone: true})
+      class DuplicateHostDir {
+      }
+
+      @Directive({standalone: true, hostDirectives: [DuplicateHostDir]} as HostDirectiveAny)
+      class HostDir {
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir, DuplicateHostDir],
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              'NG0309: Directive DuplicateHostDir matches multiple times on the same element. Directives can only match an element once.');
+    });
+
+    it('should throw an error if a host directive is a component', () => {
+      @Component({standalone: true, template: '', selector: 'host-comp'})
+      class HostComp {
+      }
+
+      @Directive({selector: '[dir]', hostDirectives: [HostComp]} as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError('NG0310: Host directive HostComp cannot be a component.');
+    });
+
+    it('should throw an error if a host directive output does not exist', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Output() foo = new EventEmitter();
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{
+          directive: HostDir,
+          outputs: ['doesNotExist'],
+        }]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              'NG0311: Directive HostDir does not have an output with a public name of doesNotExist.');
+    });
+
+    it('should throw an error if a host directive output alias does not exist', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Output('alias') foo = new EventEmitter();
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{
+          directive: HostDir,
+          outputs: ['foo'],
+        }]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              'NG0311: Directive HostDir does not have an output with a public name of foo.');
+    });
+
+    it('should throw an error if a host directive input does not exist', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input() foo: any;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{
+          directive: HostDir,
+          inputs: ['doesNotExist'],
+        }]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              'NG0311: Directive HostDir does not have an input with a public name of doesNotExist.');
+    });
+
+    it('should throw an error if a host directive input alias does not exist', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input('alias') foo: any;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['foo']}],
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              'NG0311: Directive HostDir does not have an input with a public name of foo.');
+    });
+
+    it('should throw an error if a host directive tries to alias to an existing input', () => {
+      @Directive({selector: '[host-dir]', standalone: true})
+      class HostDir {
+        @Input('colorAlias') color?: string;
+        @Input() buttonColor?: string;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({imports: [Dir, HostDir], template: '<button dir buttonColor="red"></button>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG0312: Cannot alias input colorAlias of host directive HostDir ' +
+              'to buttonColor, because it already has a different input with the same public name.');
+    });
+
+    it('should throw an error if a host directive tries to alias to an existing input alias', () => {
+      @Directive({selector: '[host-dir]', standalone: true})
+      class HostDir {
+        @Input('colorAlias') color?: string;
+        @Input('buttonColorAlias') buttonColor?: string;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColorAlias']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({
+        imports: [Dir, HostDir],
+        template: '<button dir buttonColorAlias="red"></button>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG0312: Cannot alias input colorAlias of host directive HostDir ' +
+              'to buttonColorAlias, because it already has a different input with the same public name.');
+    });
+
+    it('should not throw if a host directive input aliases to the same name', () => {
+      @Directive({selector: '[host-dir]', standalone: true})
+      class HostDir {
+        @Input('color') color?: string;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({imports: [Dir, HostDir], template: '<button dir buttonColor="red"></button>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
+    it('should throw an error if a host directive tries to alias to an existing output alias', () => {
+      @Directive({selector: '[host-dir]', standalone: true})
+      class HostDir {
+        @Output('clickedAlias') clicked = new EventEmitter();
+        @Output('tappedAlias') tapped = new EventEmitter();
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, outputs: ['clickedAlias: tappedAlias']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({
+        imports: [Dir, HostDir],
+        template: '<button dir (tappedAlias)="handleTap()"></button>',
+      })
+      class App {
+        handleTap() {}
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG0312: Cannot alias output clickedAlias of host directive HostDir ' +
+              'to tappedAlias, because it already has a different output with the same public name.');
+    });
+
+    it('should not throw if a host directive output aliases to the same name', () => {
+      @Directive({selector: '[host-dir]', standalone: true})
+      class HostDir {
+        @Output('clicked') clicked = new EventEmitter();
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, outputs: ['clicked: wasClicked']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({
+        imports: [Dir, HostDir],
+        template: '<button dir (wasClicked)="handleClick()"></button>',
+      })
+      class App {
+        handleClick() {}
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+  });
 });
