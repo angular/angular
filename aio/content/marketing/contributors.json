@@ -654,6 +654,14 @@
     "mentor": "mgechev",
     "groups": ["GDE", "Collaborators"]
   },
+  "markostanimirovic": {
+    "name": "Marko Stanimirović",
+    "picture": "marko.jpg",
+    "twitter": "MarkoStDev",
+    "website": "https://github.com/markostanimirovic",
+    "bio": "Marko is a core member of the NgRx team, a Google Developer Expert in Angular, and an organizer of the Angular Belgrade group. He enjoys contributing to open source software, sharing knowledge through technical articles and talks, and playing guitar. He is also a Master of Science in Software Engineering from the University of Belgrade.",
+    "groups": ["GDE"]
+  },
   "marsibarsi": {
     "name": "Roman Sedov",
     "picture": "sedov.jpg",
