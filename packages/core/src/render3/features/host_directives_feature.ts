@@ -10,7 +10,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {EMPTY_OBJ} from '../../util/empty';
 import {getComponentDef, getDirectiveDef} from '../definition';
-import {DirectiveDef, HostDirectiveBindingMap, HostDirectiveDefs} from '../interfaces/definition';
+import {DirectiveDef, HostDirectiveBindingMap, HostDirectiveDef, HostDirectiveDefs} from '../interfaces/definition';
 
 /** Values that can be used to define a host directive through the `HostDirectivesFeature`. */
 type HostDirectiveConfig = Type<unknown>|{
@@ -61,16 +61,10 @@ function findHostDirectiveDefs(
     hostDirectiveDefs: HostDirectiveDefs): void {
   if (currentDef.hostDirectives !== null) {
     for (const hostDirectiveConfig of currentDef.hostDirectives) {
-      const {
-        directive: hostDirectiveReference,
-        inputs: exposedInputs,
-        outputs: exposedOutputs,
-      } = hostDirectiveConfig;
-      const hostDirectiveDef = getDirectiveDef(hostDirectiveReference)!;
+      const hostDirectiveDef = getDirectiveDef(hostDirectiveConfig.directive)!;
 
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        validateHostDirective(
-            hostDirectiveReference, hostDirectiveDef, exposedInputs, exposedOutputs, matchedDefs);
+        validateHostDirective(hostDirectiveConfig, hostDirectiveDef, matchedDefs);
       }
 
       // Host directives execute before the host so that its host bindings can be overwritten.
@@ -101,18 +95,17 @@ function bindingArrayToMap(bindings: string[]|undefined): HostDirectiveBindingMa
 
 /**
  * Verifies that the host directive has been configured correctly.
- * @param type Reference to the class that defines the host directive.
- * @param def Directive definition of the host directive.
- * @param exposedInputs Inputs that have been exposed on the host.
- * @param exposedOutputs Outputs that have been exposed on the host.
+ * @param hostDirectiveConfig Host directive configuration object.
+ * @param directiveDef Directive definition of the host directive.
  * @param matchedDefs Directives that have been matched so far.
  */
 function validateHostDirective(
-    type: Type<unknown>, def: DirectiveDef<any>|null, exposedInputs: HostDirectiveBindingMap,
-    exposedOutputs: HostDirectiveBindingMap,
-    matchedDefs: DirectiveDef<unknown>[]): asserts def is DirectiveDef<unknown> {
+    hostDirectiveConfig: HostDirectiveDef<unknown>, directiveDef: DirectiveDef<any>|null,
+    matchedDefs: DirectiveDef<unknown>[]): asserts directiveDef is DirectiveDef<unknown> {
   // TODO(crisbeto): implement more of these checks in the compiler.
-  if (def === null) {
+  const type = hostDirectiveConfig.directive;
+
+  if (directiveDef === null) {
     if (getComponentDef(type) !== null) {
       throw new RuntimeError(
           RuntimeErrorCode.HOST_DIRECTIVE_COMPONENT,
@@ -121,24 +114,25 @@ function validateHostDirective(
 
     throw new RuntimeError(
         RuntimeErrorCode.HOST_DIRECTIVE_UNRESOLVABLE,
-        `Could not resolve metadata for host directive ${type.name}.`);
+        `Could not resolve metadata for host directive ${type.name}. ` +
+            `Make sure that the ${type.name} class is annotated with an @Directive decorator.`);
   }
 
-  if (!def.standalone) {
+  if (!directiveDef.standalone) {
     throw new RuntimeError(
         RuntimeErrorCode.HOST_DIRECTIVE_NOT_STANDALONE,
-        `Host directive ${def.type.name} must be standalone.`);
+        `Host directive ${directiveDef.type.name} must be standalone.`);
   }
 
-  if (matchedDefs.indexOf(def) > -1) {
+  if (matchedDefs.indexOf(directiveDef) > -1) {
     throw new RuntimeError(
         RuntimeErrorCode.DUPLICATE_DIRECTITVE,
-        `Directive ${def.type.name} matches multiple times on the same element. ` +
+        `Directive ${directiveDef.type.name} matches multiple times on the same element. ` +
             `Directives can only match an element once.`);
   }
 
-  validateMappings('input', def, exposedInputs);
-  validateMappings('output', def, exposedOutputs);
+  validateMappings('input', directiveDef, hostDirectiveConfig.inputs);
+  validateMappings('output', directiveDef, hostDirectiveConfig.outputs);
 }
 
 /**

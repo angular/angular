@@ -1900,7 +1900,9 @@ describe('host directives', () => {
       TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => TestBed.createComponent(App))
-          .toThrowError('NG0307: Could not resolve metadata for host directive HostDir.');
+          .toThrowError(
+              'NG0307: Could not resolve metadata for host directive HostDir. ' +
+              'Make sure that the HostDir class is annotated with an @Directive decorator.');
     });
 
     it('should throw an error if a host directive is not standalone', () => {
