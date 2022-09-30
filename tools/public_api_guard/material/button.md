@@ -5,6 +5,7 @@
 ```ts
 
 import { _AbstractConstructor } from '@angular/material/core';
+import { AfterViewInit } from '@angular/core';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CanColor } from '@angular/material/core';
 import { CanDisable } from '@angular/material/core';

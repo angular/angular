@@ -6,8 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {Platform} from '@angular/cdk/platform';
-import {Directive, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Directive,
+  ElementRef,
+  inject,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   CanColor,
   CanDisable,
@@ -17,7 +27,6 @@ import {
   mixinDisabled,
   mixinDisableRipple,
 } from '@angular/material/core';
-import {FocusOrigin} from '@angular/cdk/a11y';
 
 /** Inputs common to all buttons. */
 export const MAT_BUTTON_INPUTS = ['disabled', 'disableRipple', 'color'];
@@ -83,8 +92,10 @@ export const _MatButtonMixin = mixinColor(
 @Directive()
 export class MatButtonBase
   extends _MatButtonMixin
-  implements CanDisable, CanColor, CanDisableRipple
+  implements CanDisable, CanColor, CanDisableRipple, AfterViewInit, OnDestroy
 {
+  private readonly _focusMonitor = inject(FocusMonitor);
+
   /** Whether this button is a FAB. Used to apply the correct class on the ripple. */
   _isFab = false;
 
@@ -112,9 +123,21 @@ export class MatButtonBase
     }
   }
 
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this._elementRef, true);
+  }
+
+  ngOnDestroy() {
+    this._focusMonitor.stopMonitoring(this._elementRef);
+  }
+
   /** Focuses the button. */
   focus(_origin: FocusOrigin = 'program', options?: FocusOptions): void {
-    this._elementRef.nativeElement.focus(options);
+    if (_origin) {
+      this._focusMonitor.focusVia(this._elementRef.nativeElement, _origin, options);
+    } else {
+      this._elementRef.nativeElement.focus(options);
+    }
   }
 
   /** Gets whether the button has one of the given attributes. */
@@ -166,7 +189,8 @@ export class MatAnchorBase extends MatButtonBase implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
     this._elementRef.nativeElement.removeEventListener('click', this._haltDisabledEvents);
   }
 
