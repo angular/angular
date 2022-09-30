@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatRadioModule} from '@angular/material/radio';
+import {MatLegacyRadioModule as MatRadioModule} from '@angular/material/legacy-radio';
 import {RadioComponent} from './radio.component';
 
 describe('RadioComponent', () => {

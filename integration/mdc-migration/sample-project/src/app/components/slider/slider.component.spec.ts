@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatSliderModule} from '@angular/material/slider';
+import {MatLegacySliderModule as MatSliderModule} from '@angular/material/legacy-slider';
 import {SliderComponent} from './slider.component';
 
 describe('SliderComponent', () => {

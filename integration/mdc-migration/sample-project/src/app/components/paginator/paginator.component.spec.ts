@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatLegacyPaginatorModule as MatPaginatorModule} from '@angular/material/legacy-paginator';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {PaginatorComponent} from './paginator.component';
 

@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
 import {TooltipComponent} from './tooltip.component';
 
 describe('TooltipComponent', () => {

@@ -7,7 +7,8 @@
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat.core();
+@include mat.all-component-typographies();
+@include mat.legacy-core();
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
@@ -29,51 +30,28 @@ $sample-project-theme: mat.define-light-theme((
 ));
 
 @include mat.autocomplete-theme($sample-project-theme);
-@include mat.autocomplete-typography($sample-project-theme);
 @include mat.button-theme($sample-project-theme);
-@include mat.button-typography($sample-project-theme);
 @include mat.fab-theme($sample-project-theme);
-@include mat.fab-typography($sample-project-theme);
 @include mat.icon-button-theme($sample-project-theme);
-@include mat.icon-button-typography($sample-project-theme);
 @include mat.card-theme($sample-project-theme);
-@include mat.card-typography($sample-project-theme);
 @include mat.checkbox-theme($sample-project-theme);
-@include mat.checkbox-typography($sample-project-theme);
 @include mat.chips-theme($sample-project-theme);
-@include mat.chips-typography($sample-project-theme);
 @include mat.form-field-theme($sample-project-theme);
-@include mat.form-field-typography($sample-project-theme);
 @include mat.input-theme($sample-project-theme);
-@include mat.input-typography($sample-project-theme);
 @include mat.list-theme($sample-project-theme);
-@include mat.list-typography($sample-project-theme);
 @include mat.menu-theme($sample-project-theme);
-@include mat.menu-typography($sample-project-theme);
 @include mat.paginator-theme($sample-project-theme);
-@include mat.paginator-typography($sample-project-theme);
-@include mat.progress-bar-theme($sample-project-theme);
-@include mat.progress-bar-typography($sample-project-theme);
-@include mat.progress-spinner-theme($sample-project-theme);
-@include mat.progress-spinner-typography($sample-project-theme);
-@include mat.radio-theme($sample-project-theme);
-@include mat.radio-typography($sample-project-theme);
 @include mat.select-theme($sample-project-theme);
-@include mat.select-typography($sample-project-theme);
-@include mat.core-theme($sample-project-theme);
-@include mat.core-typography($sample-project-theme);
+@include mat.progress-bar-theme($sample-project-theme);
+@include mat.progress-spinner-theme($sample-project-theme);
+@include mat.radio-theme($sample-project-theme);
+@include mat.legacy-select-theme($sample-project-theme);
 @include mat.slide-toggle-theme($sample-project-theme);
-@include mat.slide-toggle-typography($sample-project-theme);
 @include mat.slider-theme($sample-project-theme);
-@include mat.slider-typography($sample-project-theme);
 @include mat.snack-bar-theme($sample-project-theme);
-@include mat.snack-bar-typography($sample-project-theme);
 @include mat.table-theme($sample-project-theme);
-@include mat.table-typography($sample-project-theme);
 @include mat.tabs-theme($sample-project-theme);
-@include mat.tabs-typography($sample-project-theme);
 @include mat.tooltip-theme($sample-project-theme);
-@include mat.tooltip-typography($sample-project-theme);
 
 /* You can add global styles to this file, and also import other style files */
 

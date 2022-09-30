@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatLegacyProgressBarModule as MatProgressBarModule} from '@angular/material/legacy-progress-bar';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ProgressBarComponent} from './progress-bar.component';
 

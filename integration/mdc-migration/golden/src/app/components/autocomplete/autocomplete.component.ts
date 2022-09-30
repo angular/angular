@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {Observable, of} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -9,7 +9,7 @@ import {map, startWith} from 'rxjs/operators';
   styleUrls: ['./autocomplete.component.scss'],
 })
 export class AutocompleteComponent implements OnInit {
-  myControl = new FormControl('');
+  myControl = new UntypedFormControl('');
   options: string[] = ['One', 'Two', 'Three'];
   filteredOptions: Observable<string[]> = of([]);
 
