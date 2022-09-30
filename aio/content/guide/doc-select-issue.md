@@ -1,4 +1,4 @@
-# Selecting a documentation issue
+# Select a documentation issue
 
 This topic describes how to select an Angular documentation issue to fix.
 
@@ -13,14 +13,14 @@ If you're new to open source software, maybe a lower priority issue or a `good f
 Every contribution helps improve the documentation.
 
 | Links to documentation issues |
-|:--- |
-| [All open documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22) |
+|:---                           |
+| [All open documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22)                                  |
 | [Good first documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3A%22good+first+issue%22) |
-| [Priority 1 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap1) |
-| [Priority 2 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap2) |
-| [Priority 3 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap3) |
-| [Priority 4 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap4) |
-| [Priority 5 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap5) |
+| [Priority 1 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap1)                     |
+| [Priority 2 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap2)                     |
+| [Priority 3 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap3)                     |
+| [Priority 4 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap4)                     |
+| [Priority 5 documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22+label%3Ap5)                     |
 
 After you select an issue to resolve, continue to [Starting to edit a documentation topic](guide/doc-update-start).
 

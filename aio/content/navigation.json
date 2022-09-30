@@ -1202,20 +1202,20 @@
               "tooltip": "Overview of common tasks used to maintain angular.io."
             },
             {
-              "url": "guide/reviewing-content",
-              "title": "Reviewing documentation",
+              "url": "guide/review-content",
+              "title": "Review documentation",
               "tooltip": "Keep Angular content up-to-date by reviewing topics for accuracy."
             },
             {
-              "url": "guide/updating-search-keywords",
-              "title": "Updating search keywords",
+              "url": "guide/update-search-keywords",
+              "title": "Update search keywords",
               "tooltip": "Help users find the content they need by adding additional search keywords."
             }
           ]
         },
         {
-          "title": "Documentation editing workflow",
-          "tooltip": "Describes the documentation editing processes in detail.",
+          "title": "Documentation editorial workflow",
+          "tooltip": "Describes the documentation editorial processes in detail.",
           "children": [
             {
               "url": "guide/doc-update-overview",
@@ -1224,53 +1224,53 @@
             },
             {
               "url": "guide/doc-prepare-to-edit",
-              "title": "Preparing to edit documentation",
+              "title": "Prepare to edit documentation",
               "tooltip": "Set up your development system to edit angular.io."
             },
             {
               "url": "guide/doc-select-issue",
-              "title": "Selecting a documentation issue",
+              "title": "Select a documentation issue",
               "tooltip": "The procedures used to identify and select a documenation issue."
             },
             {
               "url": "guide/doc-update-start",
-              "title": "Starting to edit a documentation topic",
-              "tooltip": "The procedures used to start editing a documentation topic."
+              "title": "Start to edit a documentation topic",
+              "tooltip": "The procedures used to start to edit a documentation topic."
             },
             {
-              "url": "guide/doc-editing",
-              "title": "Making and saving changes to a documentation topic",
-              "tooltip": "Making and saving changes to a documentation topic."
+              "url": "guide/doc-edit",
+              "title": "Make and save changes to a documentation topic",
+              "tooltip": "Make and save changes to a documentation topic."
             },
             {
               "url": "guide/docs-lint-errors",
-              "title": "Resolving documentation linter messages",
+              "title": "Resolve documentation linter messages",
               "tooltip": "More information about documentation lint errors."
             },
             {
               "url": "guide/doc-build-test",
-              "title": "Building and testing documentation",
-              "tooltip": "Building and testing documentation."
+              "title": "Build and test documentation",
+              "tooltip": "Build and test documentation."
             },
             {
               "url": "guide/doc-pr-prep",
-              "title": "Preparing documentation for a pull request",
-              "tooltip": "Preparing documentation for a pull request."
+              "title": "Prepare documentation for a pull request",
+              "tooltip": "Prepare documentation for a pull request."
             },
             {
               "url": "guide/doc-pr-open",
-              "title": "Opening a documentation pull request",
-              "tooltip": "Opening a documentation pull request."
+              "title": "Open a documentation pull request",
+              "tooltip": "Open a documentation pull request."
             },
             {
               "url": "guide/doc-pr-update",
-              "title": "Updating a documentation pull request in progress",
-              "tooltip": "Updating a documentation pull request in progress."
+              "title": "Update a documentation pull request in progress",
+              "tooltip": "Update a documentation pull request in progress."
             },
             {
               "url": "guide/doc-edit-finish",
-              "title": "Finishing up a documentation pull request",
-              "tooltip": "Finishing up a documentation pull request."
+              "title": "Finish a documentation pull request",
+              "tooltip": "Finish a documentation pull request."
             }
           ]
         },
@@ -1280,9 +1280,9 @@
           "tooltip": "Style guide for documentation authors."
         },
         {
-          "url": "guide/localizing-angular",
+          "url": "guide/localize-angular",
           "title": "Angular doc localization guidelines",
-          "tooltip": "Learn about the guidelines for localizing Angular documentation."
+          "tooltip": "Learn about the guidelines to localize Angular documentation."
         },
         {
           "url": "guide/localized-documentation",

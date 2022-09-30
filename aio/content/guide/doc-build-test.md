@@ -1,52 +1,52 @@
-# Testing a documentation update
+# Test a documentation update
 
 <!-- markdownLint-disable MD033 -->
 
-After you have completed your documentation update, you want to run the continuous integration/continuous delivery (CI/CD) end-to-end tests on your local computer.
+After you have completed your documentation update, you want to run the continuous integration/continuous delivery \(CI/CD\) end-to-end tests on your local computer.
 This procedure runs most, but not all, of the tests that are performed after you open a pull request.
 It's faster to test your update locally than it is to run them in the GitHub workflow.
 
-<h2 class="no-toc">To run the angular.io end-to-end test on your local computer</h3>
+## To run the angular.io end-to-end test on your local computer
 
 On your local computer, in a command line tool or the **Terminal** pane of your IDE:
 
-1. Run this command from your [workspace directory](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer) to navigate to your [working directory](guide/doc-prepare-to-edit#doc-working-directory).
-  
-    <code-example language="shell">
+1.  Run this command from your [workspace](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer) directory to navigate to your [working](guide/doc-prepare-to-edit#doc-working-directory) directory.
+
+    <code-example format="shell" language="shell">
 
     cd personal/angular
 
     </code-example>
 
-2. Replace `working-branch` with the name of your working branch and run this command to check out your working branch.
+1.  Replace `working-branch` with the name of your `working` branch and run this command to check out your `working` branch.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     git checkout working-branch
 
     </code-example>
 
-3. Run this command to navigate to the documentation.
+1.  Run this command to navigate to the documentation.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     cd aio
 
     </code-example>
 
-4. Run this command to start the end-to-end tests.
+1.  Run this command to start the end-to-end tests.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     yarn e2e
 
     </code-example>
 
-5. Watch for errors that the test might report.
+1.  Watch for errors that the test might report.
 
 ## No errors reported
 
-If end-to-end tests report no errors and your reviewers have given you the "OK," your documentation update is ready for a pull request.
+If end-to-end tests report no errors and you received the "OK" from your reviewers, your documentation update is ready for a pull request.
 
 Note, that after you open your pull request, GitHub runs the CI/CD tests.
 The CI/CD tests that GitHub runs include the end-to-end tests that you just ran and other tests that only run in the GitHub repo.

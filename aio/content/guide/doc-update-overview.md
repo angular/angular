@@ -1,4 +1,4 @@
-# Overview of Angular documentation editing workflow
+# Overview of Angular documentation editorial workflow
 
 This section describes the process of making major changes to the Angular documentation.
 It also describes how Angular documentation is stored, built, revised, and tested.
@@ -6,7 +6,11 @@ It also describes how Angular documentation is stored, built, revised, and teste
 The following diagram illustrates the workflow for revising Angular documentation.
 The steps are summarized below and described in the topics of this section.
 
+<div class="lightbox">
+
 <img alt="A block diagram that shows the steps in the writing workflow" src="generated/images/guide/doc-update-overview/writing-workflow.png">
+
+</div>
 
 ## Prepare to edit the docs
 
@@ -17,7 +21,7 @@ For more information about how to prepare to edit the docs, see [Preparing to ed
 ## Select a documentation issue
 
 The first step in resolving a documentation issue is to select one to fix.
-The issue that you fix can be one from [the list of documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22) in the `angular/angular` repo or one you create.
+The issue that you fix can be one from the [list of documentation issues](https://github.com/angular/angular/issues?q=is%3Aissue+is%3Aopen+label%3A%22comp%3A+docs%22) in the `angular/angular` repo or one you create.
 
 For more information about how to select an issue to fix, see [Selecting a documentation issue](guide/doc-select-issue).
 
@@ -28,16 +32,16 @@ When you can relate an issue to your pull request, reviewers can understand the 
 
 ### Create a working branch
 
-After you select an issue to resolve, create a *working branch* in the working directory on your local computer.
+After you select an issue to resolve, create a `working` branch in the `working` directory on your local computer.
 You need to make your changes in this branch to save and test them while you edit.
 After you fix the issue, you use this branch when you open the pull request for your solution to be merged into `angular/angular`.
 
-For more information about how to create a working branch, see [Starting to edit a documentation topic](guide/doc-update-start).
+For more information about how to create a `working` branch, see [Starting to edit a documentation topic](guide/doc-update-start).
 
 ## Revise topics
 
-In your working branch, you edit and create the documentation topics necessary to resolve the issue.
-You perform most of this work in your integrated development environment (IDE).
+In your `working` branch, you edit and create the documentation topics necessary to resolve the issue.
+You perform most of this work in your integrated development environment \(IDE\).
 
 For more information about how to revise a documentation topic, see [Revising a documentation topic](guide/doc-editing).
 
@@ -55,7 +59,7 @@ For more information about how to resolve lint problems in a documentation topic
 As you edit documentation topics to resolve the issue you selected, you want to build a local version of the updated documentation.
 This is the easiest way to review your changes in the same context as the documentation's users.
 
-You can also run some of the continuous integration/continuous delivery (CI/CD) tests used by `angular/angular` on your local computer to catch other errors.
+You can also run some of the continuous integration/continuous delivery \(CI/CD\) tests used by `angular/angular` on your local computer to catch other errors.
 Running these tests on your local computer before you open a pull request speeds up the pull-request approval process.
 
 For more information about how to build and test your changes before you open a pull request, see [Building and testing documentation](guide/doc-build-test).
@@ -63,7 +67,7 @@ For more information about how to build and test your changes before you open a 
 ## Prepare your pull request
 
 Before your documentation changes are ready to be added to the `angular/angular` repo, there are a few things to do before you open a pull request.
-For example, to make your pull request easy to review and approve, the commits and commit messages in your working branch must be formatted correctly.
+For example, to make your pull request easy to review and approve, the commits and commit messages in your `working` branch must be formatted correctly.
 
 For information about how to prepare your branch for a pull request, see [Preparing documentation for a pull request](guide/doc-pr-prep).
 
@@ -85,9 +89,9 @@ For information about how to update your topics and respond to feedback on your 
 
 After your pull request is approved and merged into `angular/angular`, it becomes part of the official Angular documentation.
 At that point, your changes are now in the `main` branch of `angular/angular`.
-This means that you can safely delete your working branch.
+This means that you can safely delete your `working` branch.
 
-It is generally a good practice to delete working branches after their changes are merged into the `main` branch of `angular/angular`.
+It is generally a good practice to delete `working` branches after their changes are merged into the `main` branch of `angular/angular`.
 This prevents your personal fork from collecting lots of branches that could be confusing in the future.
 
 For information about how to clean up safely after your pull request is merged, see [Finishing up a documentation pull request](guide/doc-edit-finish).

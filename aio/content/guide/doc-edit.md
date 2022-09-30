@@ -6,6 +6,7 @@ This topic describes tasks that you perform while making changes to the document
 
 <div class="alert is-important">
 
+**IMPORTANT**: <br />
 Only perform these tasks after you have created a working branch in which to work as described in [Create a working branch for editing](guide/doc-update-start#create-a-working-branch-for-editing).
 
 </div>
@@ -14,22 +15,23 @@ Only perform these tasks after you have created a working branch in which to wor
 
 Before you change any files, make sure that you are working in the correct working branch.
 
-<h3 class="no-toc">To set the correct working branch for editing</h3>
+### To set the correct working branch for editing
 
 Perform these steps from a command-line tool on your local computer.
 
-1. From your [workspace directory](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer), run this command to navigate to your [working directory](guide/doc-prepare-to-edit#doc-working-directory). Remember to replace `personal` with your GitHub username.
-  
-    <code-example language="shell">
+1.  From your [workspace](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer) directory, run this command to navigate to your [working](guide/doc-prepare-to-edit#doc-working-directory) directory.
+    Remember to replace `personal` with your GitHub user name.
+
+    <code-example format="shell" language="shell">
 
     cd personal/angular
 
     </code-example>
 
-2. Run this command to check out your working branch.
-Replace `working-branch` with the name of the branch that you created for the documentation issue.
+1.  Run this command to check out your working branch.
+    Replace `working-branch` with the name of the branch that you created for the documentation issue.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     git checkout working-branch
 
@@ -39,7 +41,8 @@ Replace `working-branch` with the name of the branch that you created for the do
 
 Review the [Angular documentation style guide](guide/styleguide) before you start editing to understand how to write and format the text in the documentation.
 
-In your working branch, edit the files that need to be changed. Most documentation source files are found in the `aio/content/guide` directory of the `angular` repo.
+In your working branch, edit the files that need to be changed.
+Most documentation source files are found in the `aio/content/guide` directory of the `angular` repo.
 
 Angular development tools can render the documentation as you work on your changes.
 
@@ -51,7 +54,7 @@ The errors are also reflected in the documentation source code, as close to the 
 
 For more information about documentation linting and resolving lint problems, see [Resolving documentation linter messages](guide/docs-lint-errors).
 
-<h3 class="no-toc">To view the rendered documentation while you are editing</h3>
+### To view the rendered documentation while you are editing
 
 <!-- vale Angular.Google_WordListSuggestions = NO -->
 
@@ -59,18 +62,19 @@ Perform these steps from a command-line tool on your local computer or in the **
 
 <!-- vale Angular.Google_WordListSuggestions = YES -->
 
-1. Navigate to your [working directory](guide/doc-prepare-to-edit#doc-working-directory).
-2. From your working directory, run this command to navigate to the `aio` directory. The `aio` directory contains Angular's documentation files and tools.
+1.  Navigate to your [working](guide/doc-prepare-to-edit#doc-working-directory) directory.
+1.  From your `working` directory, run this command to navigate to the `aio` directory.
+    The `aio` directory contains the documentation files and tools for `angular.io`.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     cd aio
 
     </code-example>
 
-3. Run this command to build the documentation locally.
+1.  Run this command to locally build the documentation.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     yarn build
 
@@ -78,9 +82,9 @@ Perform these steps from a command-line tool on your local computer or in the **
 
     This builds the documentation from scratch, but does not serve it.
 
-4. Run this command to serve and sync the documentation.
+1.  Run this command to serve and sync the documentation.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     yarn serve-and-sync
 
@@ -94,24 +98,43 @@ Perform these steps from a command-line tool on your local computer or in the **
 
 As you make changes to the documentation source files on your local computer, your changes can be:
 
-* **Made but not saved**<br>This is the state of your changes as you edit a file in your integrated development environment (IDE).
-* **Saved but not committed**<br>After you save changes to a file from the IDE, they are saved to your local computer. While the changes have been saved, they have not been recorded as a change by `git`, the version control software. Your files are typically in this state as you review your work in progress.
-* **Committed but not pushed**<br>After you commit your changes to `git`, your changes are recorded as a *commit* on your local computer, but they are not saved in the cloud. This is the state of your files when you've made some progress and you want to save that progress as a commit.
-* **Committed and pushed**<br>After you push your commits to your personal repo in `github.com`, your changes are recorded by `git` and saved to the cloud, but they are not part of the `angular/angular` repo. This is the state your files must be in before you can open a pull request for them to become part of the `angular/angular` repo.
-* **Merged into Angular**<br>After your pull request is approved and merged, the changes you made are now part of the `angular/angular` repo and appear in the [angular.io](https://angular.io) web site. Your documentation update is complete.
+*   **Made but not saved**
 
-This section describes how to save the changes you make to files in your working directory.
+    This is the state of your changes as you edit a file in your integrated development environment \(IDE\).
+
+*   **Saved but not committed**
+
+    After you save changes to a file from the IDE, they are saved to your local computer.
+    While the changes have been saved, they have not been recorded as a change by `git`, the version control software.
+    Your files are typically in this state as you review your work in progress.
+
+*   **Committed but not pushed**
+    After you commit your changes to `git`, your changes are recorded as a commit on your local computer, but they are not saved in the cloud.
+    This is the state of your files when you've made some progress and you want to save that progress as a commit.
+
+*   **Committed and pushed**
+    After you push your commits to your personal repo in `github.com`, your changes are recorded by `git` and saved to the cloud, but they are not part of the `angular/angular` repo.
+    This is the state your files must be in before you can open a pull request for them to become part of the `angular/angular` repo.
+
+*   **Merged into Angular**
+
+    After your pull request is approved and merged, the changes you made are now part of the `angular/angular` repo and appear in the [angular.io](https://angular.io) website.
+    Your documentation update is complete.
+
+This section describes how to save the changes you make to files in your `working` directory.
 If you are new to using `git` and GitHub, review this section carefully to understand how to save your changes as you make them.
 
 ### Save your changes to your local computer
 
-How to save changes that you make to a file on your local computer is determined by your IDE. Refer to your IDE for the specific procedure of saving changes. This process makes your changes *saved but not committed*.
+How to save changes that you make to a file on your local computer is determined by your IDE.
+Refer to your IDE for the specific procedure of saving changes.
+This process makes your changes *saved but not committed*.
 
 ### Review your rendered topics
 
 After you save changes to a documentation topic, and before you commit those changes on your local computer, review the rendered topic in a browser.
 
-<h4 class="no-toc">To render your changes in a browser on your local computer</h4>
+#### To render your changes in a browser on your local computer
 
 <!-- vale Angular.Google_WordListSuggestions = NO -->
 
@@ -119,18 +142,18 @@ Perform these steps from a command-line tool on your local computer or in the **
 
 <!-- vale Angular.Google_WordListSuggestions = YES -->
 
-1. From your [workspace directory](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer), run this command to navigate to the `aio` directory in your [working directory](guide/doc-prepare-to-edit#doc-working-directory).
-Remember to replace `personal` with your GitHub username.
+1.  From your [workspace](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer) directory, run this command to navigate to the `aio` directory in your [working](guide/doc-prepare-to-edit#doc-working-directory) directory.
+    Remember to replace `personal` with your GitHub user name.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     cd personal/angular/aio
 
     </code-example>
 
-2. Run this command to build the documentation using the files on your local computer.
+1.  Run this command to build the documentation using the files on your local computer.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     yarn build
 
@@ -138,9 +161,9 @@ Remember to replace `personal` with your GitHub username.
 
     This command builds the documentation from scratch, but does not serve it for viewing.
 
-3. Run this command to serve the documentation locally and rebuild it after it changes.
+1.  Run this command to serve the documentation locally and rebuild it after it changes.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     yarn serve-and-sync
 
@@ -155,7 +178,7 @@ After you are satisfied with the changes, commit them on your local computer.
 
 Perform this procedure after you save the changes on your local computer and you are ready to commit changes on your local computer.
 
-<h4 class="no-toc">To commit your changes on your local computer</h4>
+#### To commit your changes on your local computer
 
 <!-- vale Angular.Google_WordListSuggestions = NO -->
 
@@ -163,18 +186,18 @@ Perform these steps from a command-line tool on your local computer or in the **
 
 <!-- vale Angular.Google_WordListSuggestions = YES -->
 
-1. From your [workspace directory](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer), run this command to navigate to the `aio` directory in your [working directory](guide/doc-prepare-to-edit#doc-working-directory).
-Remember to replace `personal` with your GitHub username.
-  
-    <code-example language="shell">
+1.  From your [workspace](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer) directory, run this command to navigate to the `aio` directory in your [working](guide/doc-prepare-to-edit#doc-working-directory) directory.
+    Remember to replace `personal` with your GitHub user name.
+
+    <code-example format="shell" language="shell">
 
     cd personal/angular/aio
 
     </code-example>
 
-2. Run this command to confirm that you are using the correct working branch.
+1.  Run this command to confirm that you are using the correct working branch.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     git status
 
@@ -182,9 +205,9 @@ Remember to replace `personal` with your GitHub username.
 
     If you aren't in the correct working branch, replace `working-branch` with the name of your working branch and then run `git checkout working-branch` to select the correct branch.
 
-3. Run this command to review the list of files to add to the commit and confirm that it is correct.
+1.  Run this command to review the list of files to add to the commit and confirm that it is correct.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     git status
 
@@ -194,13 +217,13 @@ Remember to replace `personal` with your GitHub username.
     The modified files in the list are those that you have changed and saved, but not committed.
     The list of modified files varies, depending on what you have edited.
 
-    <code-example language="output">
+    <code-example format="shell" language="output">
 
     On branch working-branch
     Your branch is up to date with 'origin/working-branch
     Changes not staged for commit:
-      (use "git add <file>..." to update what will be committed)
-      (use "git restore <file>..." to discard changes in working directory)
+      (use "git add &lt;file&gt;..." to update what will be committed)
+      (use "git restore &lt;file&gt;..." to discard changes in working directory)
             modified:   content/guide/doc-build-test.md
             modified:   content/guide/doc-edit-finish.md
             modified:   content/guide/doc-editing.md
@@ -211,19 +234,22 @@ Remember to replace `personal` with your GitHub username.
             modified:   content/guide/doc-update-start.md
 
     no changes added to commit (use "git add" and/or "git commit -a")
-    </code-example>
-
-4. Run this command to add a file that you want to commit. Replace `filename` with the filename with a filename from the `git status` output.
-
-    <code-example language="shell">
-
-    git add filename
 
     </code-example>
 
-    You can add multiple files in a single command by using wildcard characters in the filename parameter. You can also run this command to add all changed files that are being tracked by `git` to the commit by using `*` filename as this example shows.
+1.  Run this command to add a file that you want to commit.
+    Replace `file-name.ext` with the file name from the `git status` output.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
+
+    git add file-name.ext
+
+    </code-example>
+
+    You can add multiple files in a single command by using wildcard characters in the filename parameter.
+    You can also run this command to add all changed files that are being tracked by `git` to the commit by using `*` filename as this example shows.
+
+    <code-example format="shell" language="shell">
 
     git add *
 
@@ -231,20 +257,21 @@ Remember to replace `personal` with your GitHub username.
 
     <div class="alert is-important">
 
+    **IMPORTANT**: <br />
     Files that are not tracked by `git` are not committed or pushed to your repo on `github.com` and they do not appear in your pull request.
 
     </div>
 
-5. Run `git status` again, to confirm the files that are ready to be committed.
+1.  Run `git status` again, to confirm the files that are ready to be committed.
 
-    <code-example language="output">
+    <code-example format="shell" language="output">
 
-    > git status
+    &dollar; git status
     On branch working-branch
     Your branch is up to date with 'origin/working-branch'.
 
     Changes to be committed:
-      (use "git restore --staged <file>..." to unstage)
+      (use "git restore --staged &lt;file&gt;..." to unstage)
       modified:   content/guide/doc-build-test.md
       modified:   content/guide/doc-edit-finish.md
       modified:   content/guide/doc-editing.md
@@ -256,10 +283,11 @@ Remember to replace `personal` with your GitHub username.
 
     </code-example>
 
-6. Run this command to commit the changed files to your local computer.
-The commit message that follows the `-m` parameter must start with `docs:` followed by space, and your message. Replace `detailed commit message` with a message that describes the changes you made.
+1.  Run this command to commit the changed files to your local computer.
+    The commit message that follows the `-m` parameter must start with `docs:` followed by space, and your message.
+    Replace `detailed commit message` with a message that describes the changes you made.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     git commit -m 'docs: detailed commit message'
 
@@ -273,7 +301,7 @@ Your changes to the documentation are now *committed but not pushed*.
 
 After you commit the changes to your local computer, this procedure pushes those commits to your `origin` repo in the cloud.
 
-<h4 class="no-toc">To push your changes to your <code>origin</code> repo in the cloud</h4>
+#### To push your changes to your `origin` repo in the cloud
 
 <!-- vale Angular.Google_WordListSuggestions = NO -->
 
@@ -281,23 +309,24 @@ Perform these steps from a command-line tool on your local computer or in the **
 
 <!-- vale Angular.Google_WordListSuggestions = YES -->
 
-1. From your [workspace directory](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer), run this command to navigate to the `aio` directory in your [working directory](guide/doc-prepare-to-edit#doc-working-directory). Remember to replace `personal` with your GitHub username.
-  
-    <code-example language="shell">
+1.  From your [workspace](guide/doc-prepare-to-edit#create-a-git-workspace-on-your-local-computer) directory, run this command to navigate to the `aio` directory in your [working](guide/doc-prepare-to-edit#doc-working-directory) directory.
+    Remember to replace `personal` with your GitHub user name.
+
+    <code-example format="shell" language="shell">
 
     cd personal/angular/aio
 
     </code-example>
 
-2. Run this command to confirm that you are using the correct branch.
+1.  Run this command to confirm that you are using the correct branch.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     git status
 
     </code-example>
 
-    If you aren't in the correct branch, replace `working-branch` with the name of your working branch and run `git checkout working-branch` to select the correct branch.
+    If you aren't in the correct branch, replace `working-branch` with the name of your `working` branch and run `git checkout working-branch` to select the correct branch.
 
     Git status also shows whether you have changes on your local computer that have not been pushed to the cloud.
 
@@ -309,11 +338,13 @@ Perform these steps from a command-line tool on your local computer or in the **
 
     </code-example>
 
-    This example output says that there is one commit on the local computer that's not in the `working-branch` branch on the `origin` repo. The `origin` is the `personal/angular` repo in GitHub. The next command pushes that commit to the `origin` repo.
+    This example output says that there is one commit on the local computer that's not in the `working-branch` branch on the `origin` repo.
+    The `origin` is the `personal/angular` repo in GitHub.
+    The next command pushes that commit to the `origin` repo.
 
-3. Run this command to push the commits on your local computer to your account on GitHub in the cloud.
+1.  Run this command to push the commits on your local computer to your account on GitHub in the cloud.
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     git push
 
@@ -335,23 +366,34 @@ Perform these steps from a command-line tool on your local computer or in the **
 
     If you get this message, copy the command that the message provides and run it as shown here:
 
-    <code-example language="shell">
+    <code-example format="shell" language="shell">
 
     git push --set-upstream origin working-branch
 
     </code-example>
 
 The changes that you made in the `working-branch` branch on your local computer have been saved on `github.com`.
-Your changes to the documentation are now *committed and pushed*.
+Your changes to the documentation are now committed and pushed.
 
 ## Test your documentation
 
 After you update the documentation to fix the issue that you picked, you are ready to test the documentation.
 Testing documentation consists of:
 
-* **Documentation linting**<br>Each time you open and save a documentation topic, the documentation linter checks for common errors. For more information about documentation linting, see [Resolving documentation linter messages](guide/docs-lint-errors).
-* **Manual review**<br>When your documentation update is complete, have another person review your changes. If you have updated technical content, have a subject matter expert on the topic review your update, as well.
-* **Automated testing**<br>The Angular documentation has continuous integration/continuous delivery (CI/CD) tests that test formatting and consistency before a change can be merged. For more information about automated documentation testing, see [Testing a documentation update](/guide/doc-build-test).
+*   **Documentation linting**
+
+    Each time you open and save a documentation topic, the documentation linter checks for common errors.
+    For more information about documentation linting, see [Resolving documentation linter messages](guide/docs-lint-errors).
+
+*   **Manual review**
+
+    When your documentation update is complete, have another person review your changes.
+    If you have updated technical content, have a subject matter expert on the topic review your update, as well.
+
+*   **Automated testing**
+
+    The Angular documentation has continuous integration/continuous delivery \(CI/CD\) tests that test formatting and consistency before a change can be merged.
+    For more information about automated documentation testing, see [Testing a documentation update](/guide/doc-build-test).
 
 <!-- links -->
 
