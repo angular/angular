@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewChecked, AfterViewInit, Component, Directive, ElementRef, EventEmitter, forwardRef, inject, Inject, InjectionToken, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, Directive, ElementRef, EventEmitter, forwardRef, inject, Inject, InjectionToken, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -311,7 +311,6 @@ describe('host directives', () => {
     expect(fixture.nativeElement.textContent).toContain('FirstHost | SecondHost');
   });
 
-  // TODO(crisbeto): add a test for `ngOnChanges`.
   describe('lifecycle hooks', () => {
     it('should invoke lifecycle hooks from the host directives', () => {
       const logs: string[] = [];
@@ -469,6 +468,72 @@ describe('host directives', () => {
         'OtherParentHostDir - ngAfterViewInit',
         'Parent - ngAfterViewInit',
         'PlainDir on parent - ngAfterViewInit',
+      ]);
+    });
+
+    it('should invoke host directive ngOnChanges hooks before the host component', () => {
+      let logs: string[] = [];
+
+      // Utility so we don't have to repeat the logging code.
+      @Directive({standalone: true})
+      abstract class LogsLifecycles implements OnChanges {
+        @Input() someInput: any;
+        abstract name: string;
+
+        ngOnChanges(changes: SimpleChanges) {
+          logs.push(`${this.name} - ${changes.someInput.currentValue}`);
+        }
+      }
+
+      @Directive({standalone: true})
+      class HostDir extends LogsLifecycles {
+        override name = 'HostDir';
+      }
+
+      @Directive({standalone: true})
+      class OtherHostDir extends LogsLifecycles {
+        override name = 'OtherHostDir';
+      }
+
+      @Component({
+        selector: 'host-comp',
+        hostDirectives: [
+          {directive: HostDir, inputs: ['someInput']},
+          {directive: OtherHostDir, inputs: ['someInput']},
+        ],
+      } as HostDirectiveAny)
+      class HostComp extends LogsLifecycles {
+        override name = 'HostComp';
+      }
+
+      @Directive({selector: '[plain-dir]'})
+      class PlainDir extends LogsLifecycles {
+        override name = 'PlainDir';
+      }
+
+      @Component({
+        template: '<host-comp plain-dir="PlainDir" [someInput]="inputValue"></host-comp>',
+      })
+      class App {
+        inputValue = 'hello';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, HostComp, PlainDir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(logs).toEqual(
+          ['HostDir - hello', 'OtherHostDir - hello', 'HostComp - hello', 'PlainDir - hello']);
+
+      logs = [];
+      fixture.componentInstance.inputValue = 'changed';
+      fixture.detectChanges();
+
+      expect(logs).toEqual([
+        'HostDir - changed',
+        'OtherHostDir - changed',
+        'HostComp - changed',
+        'PlainDir - changed',
       ]);
     });
   });
@@ -1738,6 +1803,303 @@ describe('host directives', () => {
          expect(fixture.componentInstance.firstHostDir.firstColor).toBe('red');
          expect(fixture.componentInstance.secondHostDir.secondColor).toBe('red');
        });
+
+    it('should not expose an input under its host directive alias if a host directive is not applied',
+       () => {
+         const logs: string[] = [];
+
+         @Directive({selector: '[host-dir]', standalone: true})
+         class HostDir implements OnChanges {
+           @Input('colorAlias') color?: string;
+
+           ngOnChanges(changes: SimpleChanges) {
+             logs.push(changes.color.currentValue);
+           }
+         }
+
+         @Directive({
+           selector: '[dir]',
+           standalone: true,
+           hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
+         } as HostDirectiveAny)
+         class Dir {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [Dir, HostDir],
+           // Note that `[dir]` doesn't match on the `button` on purpose.
+           // The wrong behavior would be if the `buttonColor` binding worked on `host-dir`.
+           template: `
+              <span dir [buttonColor]="spanValue"></span>
+              <button host-dir [buttonColor]="buttonValue"></button>
+            `
+         })
+         class App {
+           spanValue = 'spanValue';
+           buttonValue = 'buttonValue';
+         }
+
+         TestBed.configureTestingModule({errorOnUnknownProperties: true});
+
+         expect(() => {
+           const fixture = TestBed.createComponent(App);
+           fixture.detectChanges();
+         }).toThrowError(/Can't bind to 'buttonColor' since it isn't a known property of 'button'/);
+
+         // The input on the button instance should not have been written to.
+         expect(logs).toEqual(['spanValue']);
+       });
+  });
+
+  describe('ngOnChanges', () => {
+    it('should invoke ngOnChanges when an input is set on a host directive', () => {
+      let firstDirChangeEvent: SimpleChanges|undefined;
+      let secondDirChangeEvent: SimpleChanges|undefined;
+
+      @Directive({standalone: true})
+      class FirstHostDir implements OnChanges {
+        @Input() color?: string;
+
+        ngOnChanges(changes: SimpleChanges) {
+          firstDirChangeEvent = changes;
+        }
+      }
+
+      @Directive({standalone: true})
+      class SecondHostDir implements OnChanges {
+        @Input() color?: string;
+
+        ngOnChanges(changes: SimpleChanges) {
+          secondDirChangeEvent = changes;
+        }
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [
+          {directive: FirstHostDir, inputs: ['color']},
+          {directive: SecondHostDir, inputs: ['color']}
+        ],
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir [color]="color"></button>'})
+      class App {
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(firstDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: true,
+          previousValue: undefined,
+          currentValue: 'red',
+        })
+      }));
+
+      expect(secondDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: true,
+          previousValue: undefined,
+          currentValue: 'red',
+        })
+      }));
+
+      fixture.componentInstance.color = 'green';
+      fixture.detectChanges();
+
+      expect(firstDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: false,
+          previousValue: 'red',
+          currentValue: 'green',
+        })
+      }));
+      expect(secondDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: false,
+          previousValue: 'red',
+          currentValue: 'green',
+        })
+      }));
+    });
+
+    it('should invoke ngOnChanges when an aliased property is set on a host directive', () => {
+      let firstDirChangeEvent: SimpleChanges|undefined;
+      let secondDirChangeEvent: SimpleChanges|undefined;
+
+      @Directive({standalone: true})
+      class FirstHostDir implements OnChanges {
+        @Input('firstAlias') color?: string;
+
+        ngOnChanges(changes: SimpleChanges) {
+          firstDirChangeEvent = changes;
+        }
+      }
+
+      @Directive({standalone: true})
+      class SecondHostDir implements OnChanges {
+        @Input('secondAlias') color?: string;
+
+        ngOnChanges(changes: SimpleChanges) {
+          secondDirChangeEvent = changes;
+        }
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [
+          {directive: FirstHostDir, inputs: ['firstAlias: buttonColor']},
+          {directive: SecondHostDir, inputs: ['secondAlias: buttonColor']}
+        ],
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir [buttonColor]="color"></button>'})
+      class App {
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(firstDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: true,
+          previousValue: undefined,
+          currentValue: 'red',
+        })
+      }));
+
+      expect(secondDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: true,
+          previousValue: undefined,
+          currentValue: 'red',
+        })
+      }));
+
+      fixture.componentInstance.color = 'green';
+      fixture.detectChanges();
+
+      expect(firstDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: false,
+          previousValue: 'red',
+          currentValue: 'green',
+        })
+      }));
+      expect(secondDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: false,
+          previousValue: 'red',
+          currentValue: 'green',
+        })
+      }));
+    });
+
+    it('should only invoke ngOnChanges on the directives that have exposed an input', () => {
+      let firstDirChangeEvent: SimpleChanges|undefined;
+      let secondDirChangeEvent: SimpleChanges|undefined;
+
+      @Directive({standalone: true})
+      class FirstHostDir implements OnChanges {
+        @Input() color?: string;
+
+        ngOnChanges(changes: SimpleChanges) {
+          firstDirChangeEvent = changes;
+        }
+      }
+
+      @Directive({standalone: true})
+      class SecondHostDir implements OnChanges {
+        @Input() color?: string;
+
+        ngOnChanges(changes: SimpleChanges) {
+          secondDirChangeEvent = changes;
+        }
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [FirstHostDir, {directive: SecondHostDir, inputs: ['color']}],
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir [color]="color"></button>'})
+      class App {
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(firstDirChangeEvent).toBe(undefined);
+      expect(secondDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: true,
+          previousValue: undefined,
+          currentValue: 'red',
+        })
+      }));
+
+      fixture.componentInstance.color = 'green';
+      fixture.detectChanges();
+
+      expect(firstDirChangeEvent).toBe(undefined);
+      expect(secondDirChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: false,
+          previousValue: 'red',
+          currentValue: 'green',
+        })
+      }));
+    });
+
+    it('should invoke ngOnChanges when a static aliased host directive input is set', () => {
+      let latestChangeEvent: SimpleChanges|undefined;
+
+      @Directive({standalone: true})
+      class HostDir implements OnChanges {
+        @Input('colorAlias') color?: string;
+
+        ngOnChanges(changes: SimpleChanges) {
+          latestChangeEvent = changes;
+        }
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
+      } as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({template: '<button dir buttonColor="red"></button>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(latestChangeEvent).toEqual(jasmine.objectContaining({
+        color: jasmine.objectContaining({
+          firstChange: true,
+          previousValue: undefined,
+          currentValue: 'red',
+        })
+      }));
+    });
   });
 
   describe('debugging and testing utilities', () => {
