@@ -160,7 +160,7 @@ async function copyFiles(
   const destinationFile = path.join(destinationDirectory, file);
   const stats = await fsPromises.stat(sourceFile);
   if (stats.isDirectory()) {
-    await fsPromises.mkdir(destinationFile);
+    await fsPromises.mkdir(destinationFile).catch(() => {});
     const subFiles = await fsPromises.readdir(sourceFile);
     await Promise.all(
       subFiles.map(subFile =>
@@ -169,6 +169,24 @@ async function copyFiles(
     );
   } else {
     await fsPromises.writeFile(destinationFile, await fsPromises.readFile(sourceFile));
+  }
+}
+
+/** Deletes all files recursively, except ignoredFiles */
+async function deleteFiles(file: string, ignoredFiles: Set<string>) {
+  if (ignoredFiles.has(file)) {
+    return;
+  }
+
+  const stats = await fsPromises.stat(file);
+  if (stats.isDirectory()) {
+    const subFiles = await fsPromises.readdir(file);
+    await Promise.all(subFiles.map(subFile => deleteFiles(path.join(file, subFile), ignoredFiles)));
+    if (!(await fsPromises.readdir(file)).length) {
+      await fsPromises.rm(file, {recursive: true, force: true});
+    }
+  } else {
+    await fsPromises.rm(file, {force: true});
   }
 }
 
@@ -182,7 +200,10 @@ async function copyFiles(
           process.env.BUILD_WORKSPACE_DIRECTORY!,
           process.argv[4],
         );
-        await fsPromises.rm(APPROVED_GOLDEN_DIRECTORY, {recursive: true, force: true});
+        await deleteFiles(
+          APPROVED_GOLDEN_DIRECTORY,
+          new Set([...IGNORED_FILES].map(f => path.join(APPROVED_GOLDEN_DIRECTORY, f))),
+        );
         await copyFiles(TEST_DIRECTORY, APPROVED_GOLDEN_DIRECTORY, '.', IGNORED_FILES);
         process.exit(0);
       } else {
