@@ -445,7 +445,8 @@ function encodeUriString(s: string): string {
       .replace(/%40/g, '@')
       .replace(/%3A/gi, ':')
       .replace(/%24/g, '$')
-      .replace(/%2C/gi, ',');
+      .replace(/%2C/gi, ',')
+      .replace(/%3D/gi, '=');
 }
 
 /**
