@@ -29,9 +29,6 @@ describe('select styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.select-theme($theme);
-        @include mat.select-typography($theme);
-        @include mat.core-theme($theme);
-        @include mat.core-typography($theme);
       `,
       );
     });
@@ -47,9 +44,6 @@ describe('select styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.select-theme($theme);
-        @include arbitrary.select-typography($theme);
-        @include arbitrary.core-theme($theme);
-        @include arbitrary.core-typography($theme);
       `,
       );
     });
@@ -68,13 +62,7 @@ describe('select styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.select-theme($light-theme);
-        @include mat.select-typography($light-theme);
-        @include mat.core-theme($light-theme);
-        @include mat.core-typography($light-theme);
         @include mat.select-theme($dark-theme);
-        @include mat.select-typography($dark-theme);
-        @include mat.core-theme($dark-theme);
-        @include mat.core-typography($dark-theme);
       `,
       );
     });
@@ -96,11 +84,38 @@ describe('select styles', () => {
 
 
         @include mat.select-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-select-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.select-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-select-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
         @include mat.select-typography($theme);
-        @include mat.core-theme($theme);
-        @include mat.core-typography($theme);
-
-
       `,
       );
     });

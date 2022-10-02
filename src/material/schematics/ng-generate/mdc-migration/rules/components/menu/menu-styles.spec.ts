@@ -29,7 +29,6 @@ describe('menu styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.menu-theme($theme);
-        @include mat.menu-typography($theme);
       `,
       );
     });
@@ -45,7 +44,6 @@ describe('menu styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.menu-theme($theme);
-        @include arbitrary.menu-typography($theme);
       `,
       );
     });
@@ -64,9 +62,7 @@ describe('menu styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.menu-theme($light-theme);
-        @include mat.menu-typography($light-theme);
         @include mat.menu-theme($dark-theme);
-        @include mat.menu-typography($dark-theme);
       `,
       );
     });
@@ -88,9 +84,38 @@ describe('menu styles', () => {
 
 
         @include mat.menu-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-menu-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.menu-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-menu-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
         @include mat.menu-typography($theme);
-
-
       `,
       );
     });

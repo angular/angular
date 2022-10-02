@@ -18,7 +18,15 @@ export class ProgressSpinnerStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-progress-spinner-theme',
-      new: ['progress-spinner-theme', 'progress-spinner-typography'],
+      new: ['progress-spinner-theme'],
+    },
+    {
+      old: 'legacy-progress-spinner-color',
+      new: ['progress-spinner-color'],
+    },
+    {
+      old: 'legacy-progress-spinner-typography',
+      new: ['progress-spinner-typography'],
     },
   ];
 

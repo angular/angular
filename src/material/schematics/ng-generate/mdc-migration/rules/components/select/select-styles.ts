@@ -16,7 +16,18 @@ export class SelectStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-select-theme',
-      new: ['select-theme', 'select-typography', 'core-theme', 'core-typography'],
+      new: ['select-theme'],
+      checkForDuplicates: true,
+    },
+    {
+      old: 'legacy-select-color',
+      new: ['select-color'],
+      checkForDuplicates: true,
+    },
+    {
+      old: 'legacy-select-typography',
+      new: ['select-typography'],
+      checkForDuplicates: true,
     },
   ];
 

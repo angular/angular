@@ -49,13 +49,17 @@ export const REPLACEMENTS: {[component: string]: ImportReplacement} = {
     old: '@angular/material/legacy-input',
     new: '@angular/material/input',
   },
+  'optgroup': {
+    old: '@angular/material/legacy-core',
+    new: '@angular/material/core',
+  },
+  'option': {
+    old: '@angular/material/legacy-core',
+    new: '@angular/material/core',
+  },
   'select': {
     old: '@angular/material/legacy-select',
     new: '@angular/material/select',
-  },
-  'core': {
-    old: '@angular/material/legacy-core',
-    new: '@angular/material/core',
   },
   'list': {
     old: '@angular/material/legacy-list',

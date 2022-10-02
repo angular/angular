@@ -29,7 +29,9 @@ describe('paginator styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.paginator-theme($theme);
-        @include mat.paginator-typography($theme);
+        @include mat.icon-button-theme($theme);
+        @include mat.form-field-theme($theme);
+        @include mat.select-theme($theme);
       `,
       );
     });
@@ -45,7 +47,9 @@ describe('paginator styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.paginator-theme($theme);
-        @include arbitrary.paginator-typography($theme);
+        @include arbitrary.icon-button-theme($theme);
+        @include arbitrary.form-field-theme($theme);
+        @include arbitrary.select-theme($theme);
       `,
       );
     });
@@ -64,9 +68,13 @@ describe('paginator styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.paginator-theme($light-theme);
-        @include mat.paginator-typography($light-theme);
+        @include mat.icon-button-theme($light-theme);
+        @include mat.form-field-theme($light-theme);
+        @include mat.select-theme($light-theme);
         @include mat.paginator-theme($dark-theme);
-        @include mat.paginator-typography($dark-theme);
+        @include mat.icon-button-theme($dark-theme);
+        @include mat.form-field-theme($dark-theme);
+        @include mat.select-theme($dark-theme);
       `,
       );
     });
@@ -88,9 +96,47 @@ describe('paginator styles', () => {
 
 
         @include mat.paginator-theme($theme);
+        @include mat.icon-button-theme($theme);
+        @include mat.form-field-theme($theme);
+        @include mat.select-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-paginator-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.paginator-color($theme);
+        @include mat.icon-button-color($theme);
+        @include mat.form-field-color($theme);
+        @include mat.select-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-paginator-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
         @include mat.paginator-typography($theme);
-
-
+        @include mat.icon-button-typography($theme);
+        @include mat.form-field-typography($theme);
+        @include mat.select-typography($theme);
       `,
       );
     });

@@ -16,7 +16,15 @@ export class CheckboxStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-checkbox-theme',
-      new: ['checkbox-theme', 'checkbox-typography'],
+      new: ['checkbox-theme'],
+    },
+    {
+      old: 'legacy-checkbox-color',
+      new: ['checkbox-color'],
+    },
+    {
+      old: 'legacy-checkbox-typography',
+      new: ['checkbox-typography'],
     },
   ];
 

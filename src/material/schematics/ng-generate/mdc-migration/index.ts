@@ -18,7 +18,7 @@ import {dirname} from 'path';
 
 /** Groups of components that must be migrated together. */
 const migrationGroups = [
-  ['autocomplete', 'form-field', 'input', 'select'],
+  ['autocomplete', 'form-field', 'input', 'option', 'optgroup', 'select'],
   ['button'],
   ['card'],
   ['checkbox'],

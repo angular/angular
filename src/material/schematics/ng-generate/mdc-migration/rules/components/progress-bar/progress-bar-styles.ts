@@ -16,7 +16,15 @@ export class ProgressBarStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-progress-bar-theme',
-      new: ['progress-bar-theme', 'progress-bar-typography'],
+      new: ['progress-bar-theme'],
+    },
+    {
+      old: 'legacy-progress-bar-color',
+      new: ['progress-bar-color'],
+    },
+    {
+      old: 'legacy-progress-bar-typography',
+      new: ['progress-bar-typography'],
     },
   ];
 

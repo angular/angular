@@ -16,7 +16,15 @@ export class SliderStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-slider-theme',
-      new: ['slider-theme', 'slider-typography'],
+      new: ['slider-theme'],
+    },
+    {
+      old: 'legacy-slider-color',
+      new: ['slider-color'],
+    },
+    {
+      old: 'legacy-slider-typography',
+      new: ['slider-typography'],
     },
   ];
 

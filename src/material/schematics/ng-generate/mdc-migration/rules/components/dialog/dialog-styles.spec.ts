@@ -29,7 +29,6 @@ describe('dialog styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.dialog-theme($theme);
-        @include mat.dialog-typography($theme);
       `,
       );
     });
@@ -45,7 +44,6 @@ describe('dialog styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.dialog-theme($theme);
-        @include arbitrary.dialog-typography($theme);
       `,
       );
     });
@@ -64,9 +62,7 @@ describe('dialog styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.dialog-theme($light-theme);
-        @include mat.dialog-typography($light-theme);
         @include mat.dialog-theme($dark-theme);
-        @include mat.dialog-typography($dark-theme);
       `,
       );
     });
@@ -88,9 +84,38 @@ describe('dialog styles', () => {
 
 
         @include mat.dialog-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-dialog-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.dialog-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-dialog-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
         @include mat.dialog-typography($theme);
-
-
       `,
       );
     });

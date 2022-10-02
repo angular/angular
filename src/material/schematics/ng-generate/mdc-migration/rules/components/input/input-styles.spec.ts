@@ -29,7 +29,6 @@ describe('input styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.input-theme($theme);
-        @include mat.input-typography($theme);
       `,
       );
     });
@@ -45,7 +44,6 @@ describe('input styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.input-theme($theme);
-        @include arbitrary.input-typography($theme);
       `,
       );
     });
@@ -64,9 +62,7 @@ describe('input styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.input-theme($light-theme);
-        @include mat.input-typography($light-theme);
         @include mat.input-theme($dark-theme);
-        @include mat.input-typography($dark-theme);
       `,
       );
     });
@@ -88,9 +84,38 @@ describe('input styles', () => {
 
 
         @include mat.input-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-input-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.input-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-input-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
         @include mat.input-typography($theme);
-
-
       `,
       );
     });

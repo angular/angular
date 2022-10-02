@@ -32,6 +32,8 @@
           "input",
           "list",
           "menu",
+          "optgroup",
+          "option",
           "paginator",
           "progress-bar",
           "progress-spinner",

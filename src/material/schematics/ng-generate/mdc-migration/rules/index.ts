@@ -33,6 +33,8 @@ import {SnackBarMigrator} from './components/snack-bar/snack-bar-styles';
 import {TableStylesMigrator} from './components/table/table-styles';
 import {TabsStylesMigrator} from './components/tabs/tabs-styles';
 import {TooltipStylesMigrator} from './components/tooltip/tooltip-styles';
+import {OptgroupStylesMigrator} from './components/optgroup/optgroup-styles';
+import {OptionStylesMigrator} from './components/option/option-styles';
 
 /** Contains the migrators to migrate a single component. */
 export interface ComponentMigrator {
@@ -94,6 +96,16 @@ export const MIGRATORS: ComponentMigrator[] = [
     component: 'menu',
     styles: new MenuStylesMigrator(),
     runtime: new RuntimeMigrator('menu'),
+  },
+  {
+    component: 'optgroup',
+    styles: new OptgroupStylesMigrator(),
+    runtime: new RuntimeMigrator('optgroup'),
+  },
+  {
+    component: 'option',
+    styles: new OptionStylesMigrator(),
+    runtime: new RuntimeMigrator('option'),
   },
   {
     component: 'paginator',

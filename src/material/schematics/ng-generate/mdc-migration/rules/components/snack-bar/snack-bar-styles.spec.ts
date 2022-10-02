@@ -29,9 +29,7 @@ describe('snack-bar styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.snack-bar-theme($theme);
-        @include mat.snack-bar-typography($theme);
         @include mat.button-theme($theme);
-        @include mat.button-typography($theme);
       `,
       );
     });
@@ -49,9 +47,7 @@ describe('snack-bar styles', () => {
         $theme: ();
         @include mat.legacy-button-theme($theme);
         @include mat.snack-bar-theme($theme);
-        @include mat.snack-bar-typography($theme);
         @include mat.button-theme($theme);
-        @include mat.button-typography($theme);
       `,
       );
     });
@@ -69,7 +65,6 @@ describe('snack-bar styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.snack-bar-theme($theme);
-        @include mat.snack-bar-typography($theme);
         @include mat.button-theme($theme);
         @include mat.button-typography($theme);
       `,
@@ -87,9 +82,7 @@ describe('snack-bar styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.snack-bar-theme($theme);
-        @include arbitrary.snack-bar-typography($theme);
         @include arbitrary.button-theme($theme);
-        @include arbitrary.button-typography($theme);
       `,
       );
     });
@@ -108,13 +101,9 @@ describe('snack-bar styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.snack-bar-theme($light-theme);
-        @include mat.snack-bar-typography($light-theme);
         @include mat.button-theme($light-theme);
-        @include mat.button-typography($light-theme);
         @include mat.snack-bar-theme($dark-theme);
-        @include mat.snack-bar-typography($dark-theme);
         @include mat.button-theme($dark-theme);
-        @include mat.button-typography($dark-theme);
       `,
       );
     });
@@ -136,11 +125,41 @@ describe('snack-bar styles', () => {
 
 
         @include mat.snack-bar-theme($theme);
-        @include mat.snack-bar-typography($theme);
         @include mat.button-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-snack-bar-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.snack-bar-color($theme);
+        @include mat.button-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-snack-bar-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.snack-bar-typography($theme);
         @include mat.button-typography($theme);
-
-
       `,
       );
     });

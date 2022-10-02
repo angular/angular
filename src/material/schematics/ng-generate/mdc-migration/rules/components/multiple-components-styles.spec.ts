@@ -35,9 +35,7 @@ describe('multiple component styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.checkbox-theme($theme);
-        @include mat.checkbox-typography($theme);
         @include mat.radio-theme($theme);
-        @include mat.radio-typography($theme);
       `,
       );
     });
@@ -55,13 +53,9 @@ describe('multiple component styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.button-theme($theme);
-        @include mat.button-typography($theme);
         @include mat.fab-theme($theme);
-        @include mat.fab-typography($theme);
         @include mat.icon-button-theme($theme);
-        @include mat.icon-button-typography($theme);
         @include mat.snack-bar-theme($theme);
-        @include mat.snack-bar-typography($theme);
       `,
       );
     });

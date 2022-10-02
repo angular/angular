@@ -16,7 +16,15 @@ export class TabsStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-tabs-theme',
-      new: ['tabs-theme', 'tabs-typography'],
+      new: ['tabs-theme'],
+    },
+    {
+      old: 'legacy-tabs-color',
+      new: ['tabs-color'],
+    },
+    {
+      old: 'legacy-tabs-typography',
+      new: ['tabs-typography'],
     },
   ];
 

@@ -34,7 +34,6 @@ describe('card styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.card-theme($theme);
-        @include mat.card-typography($theme);
       `,
       );
     });
@@ -50,7 +49,6 @@ describe('card styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.card-theme($theme);
-        @include arbitrary.card-typography($theme);
       `,
       );
     });
@@ -69,9 +67,7 @@ describe('card styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.card-theme($light-theme);
-        @include mat.card-typography($light-theme);
         @include mat.card-theme($dark-theme);
-        @include mat.card-typography($dark-theme);
       `,
       );
     });
@@ -93,9 +89,38 @@ describe('card styles', () => {
 
 
         @include mat.card-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-card-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.card-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-card-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
         @include mat.card-typography($theme);
-
-
       `,
       );
     });

@@ -18,7 +18,15 @@ export class TableStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-table-theme',
-      new: ['table-theme', 'table-typography'],
+      new: ['table-theme'],
+    },
+    {
+      old: 'legacy-table-color',
+      new: ['table-color'],
+    },
+    {
+      old: 'legacy-table-typography',
+      new: ['table-typography'],
     },
   ];
 

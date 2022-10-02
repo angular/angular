@@ -16,7 +16,15 @@ export class MenuStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-menu-theme',
-      new: ['menu-theme', 'menu-typography'],
+      new: ['menu-theme'],
+    },
+    {
+      old: 'legacy-menu-color',
+      new: ['menu-color'],
+    },
+    {
+      old: 'legacy-menu-typography',
+      new: ['menu-typography'],
     },
   ];
 

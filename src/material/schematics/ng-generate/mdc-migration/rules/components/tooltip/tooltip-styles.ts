@@ -16,7 +16,15 @@ export class TooltipStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-tooltip-theme',
-      new: ['tooltip-theme', 'tooltip-typography'],
+      new: ['tooltip-theme'],
+    },
+    {
+      old: 'legacy-tooltip-color',
+      new: ['tooltip-color'],
+    },
+    {
+      old: 'legacy-tooltip-typography',
+      new: ['tooltip-typography'],
     },
   ];
 

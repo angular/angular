@@ -2,13 +2,13 @@ import {createTestApp, patchDevkitTreeToExposeTypeScript} from '@angular/cdk/sch
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import {createNewTestRunner, migrateComponents, THEME_FILE} from '../test-setup-helper';
 
-describe('tabs styles', () => {
+describe('option styles', () => {
   let runner: SchematicTestRunner;
   let cliAppTree: UnitTestTree;
 
   async function runMigrationTest(oldFileContent: string, newFileContent: string) {
     cliAppTree.create(THEME_FILE, oldFileContent);
-    const tree = await migrateComponents(['tabs'], runner, cliAppTree);
+    const tree = await migrateComponents(['option'], runner, cliAppTree);
     expect(tree.readContent(THEME_FILE)).toBe(newFileContent);
   }
 
@@ -23,12 +23,12 @@ describe('tabs styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.legacy-tabs-theme($theme);
+        @include mat.legacy-option-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.tabs-theme($theme);
+        @include mat.option-theme($theme);
       `,
       );
     });
@@ -38,12 +38,12 @@ describe('tabs styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.legacy-tabs-theme($theme);
+        @include arbitrary.legacy-option-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.tabs-theme($theme);
+        @include arbitrary.option-theme($theme);
       `,
       );
     });
@@ -54,15 +54,15 @@ describe('tabs styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.legacy-tabs-theme($light-theme);
-        @include mat.legacy-tabs-theme($dark-theme);
+        @include mat.legacy-option-theme($light-theme);
+        @include mat.legacy-option-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.tabs-theme($light-theme);
-        @include mat.tabs-theme($dark-theme);
+        @include mat.option-theme($light-theme);
+        @include mat.option-theme($dark-theme);
       `,
       );
     });
@@ -74,7 +74,7 @@ describe('tabs styles', () => {
         $theme: ();
 
 
-        @include mat.legacy-tabs-theme($theme);
+        @include mat.legacy-option-theme($theme);
 
 
       `,
@@ -83,7 +83,7 @@ describe('tabs styles', () => {
         $theme: ();
 
 
-        @include mat.tabs-theme($theme);
+        @include mat.option-theme($theme);
 
 
       `,
@@ -95,12 +95,12 @@ describe('tabs styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.legacy-tabs-color($theme);
+        @include mat.legacy-option-color($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.tabs-color($theme);
+        @include mat.option-color($theme);
       `,
       );
     });
@@ -110,80 +110,29 @@ describe('tabs styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.legacy-tabs-typography($theme);
+        @include mat.legacy-option-typography($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.tabs-typography($theme);
+        @include mat.option-typography($theme);
       `,
       );
     });
   });
 
   describe('selector migrations', () => {
-    it('should update the legacy mat-tab classname', async () => {
+    it('should update the legacy mat-option classname', async () => {
       await runMigrationTest(
         `
-        .mat-tab {
-          height: 50px;
+        .mat-option {
+          width: 50%;
         }
       `,
         `
-        .mat-mdc-tab {
-          height: 50px;
+        .mat-mdc-option {
+          width: 50%;
         }
-      `,
-      );
-    });
-
-    it('should update multiple legacy classnames', async () => {
-      await runMigrationTest(
-        `
-        .mat-tab {
-          height: 50px;
-        }
-        .mat-tab-body {
-          padding: 25px;
-        }
-      `,
-        `
-        .mat-mdc-tab {
-          height: 50px;
-        }
-        .mat-mdc-tab-body {
-          padding: 25px;
-        }
-      `,
-      );
-    });
-
-    it('should update a legacy classname w/ multiple selectors', async () => {
-      await runMigrationTest(
-        `
-        .some-class.mat-tab, .another-class {
-          height: 50px;
-        }
-      `,
-        `
-        .some-class.mat-mdc-tab, .another-class {
-          height: 50px;
-        }
-      `,
-      );
-    });
-
-    it('should preserve the whitespace of multiple selectors', async () => {
-      await runMigrationTest(
-        `
-        .some-class,
-        .mat-tab,
-        .another-class { height: 50px; }
-      `,
-        `
-        .some-class,
-        .mat-mdc-tab,
-        .another-class { height: 50px; }
       `,
       );
     });
@@ -191,14 +140,14 @@ describe('tabs styles', () => {
     it('should add comment for potentially deprecated selector', async () => {
       await runMigrationTest(
         `
-        .mat-tab-label-content {
-          color: red;
+        .mat-option-text {
+          background-color: red;
         }
       `,
         `
-        /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
-        .mat-tab-label-content {
-          color: red;
+        /* TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version. */
+        .mat-option-text {
+          background-color: red;
         }
       `,
       );
@@ -208,31 +157,31 @@ describe('tabs styles', () => {
       await runMigrationTest(
         `
         .some-class
-        .mat-tab-label-content {
-          color: red;
+        .mat-option-text {
+          background-color: red;
         }
       `,
         `
-        /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version. */
         .some-class
-        .mat-tab-label-content {
-          color: red;
+        .mat-option-text {
+          background-color: red;
         }
       `,
       );
     });
 
-    it('should update the legacy mat-tab class and add comment for potentially deprecated selector', async () => {
+    it('should update the legacy mat-option class and add comment for potentially deprecated selector', async () => {
       await runMigrationTest(
         `
-        .mat-tab.some-class, .mat-tab-label-content {
-          padding: 25px;
+        .mat-option.some-class, .mat-option-text {
+          width: 50%;
         }
       `,
         `
-        /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
-        .mat-mdc-tab.some-class, .mat-tab-label-content {
-          padding: 25px;
+        /* TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version. */
+        .mat-mdc-option.some-class, .mat-option-text {
+          width: 50%;
         }
       `,
       );

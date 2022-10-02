@@ -29,7 +29,6 @@ describe('slider styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.slider-theme($theme);
-        @include mat.slider-typography($theme);
       `,
       );
     });
@@ -45,7 +44,6 @@ describe('slider styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.slider-theme($theme);
-        @include arbitrary.slider-typography($theme);
       `,
       );
     });
@@ -64,9 +62,7 @@ describe('slider styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.slider-theme($light-theme);
-        @include mat.slider-typography($light-theme);
         @include mat.slider-theme($dark-theme);
-        @include mat.slider-typography($dark-theme);
       `,
       );
     });
@@ -88,9 +84,38 @@ describe('slider styles', () => {
 
 
         @include mat.slider-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-slider-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.slider-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-slider-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
         @include mat.slider-typography($theme);
-
-
       `,
       );
     });

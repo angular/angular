@@ -16,7 +16,15 @@ export class ListStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-list-theme',
-      new: ['list-theme', 'list-typography'],
+      new: ['list-theme'],
+    },
+    {
+      old: 'legacy-list-color',
+      new: ['list-color'],
+    },
+    {
+      old: 'legacy-list-typography',
+      new: ['list-typography'],
     },
   ];
 

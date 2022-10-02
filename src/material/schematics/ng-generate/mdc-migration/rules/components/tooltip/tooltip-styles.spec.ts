@@ -29,7 +29,6 @@ describe('tooltip styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.tooltip-theme($theme);
-        @include mat.tooltip-typography($theme);
       `,
       );
     });
@@ -45,7 +44,6 @@ describe('tooltip styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.tooltip-theme($theme);
-        @include arbitrary.tooltip-typography($theme);
       `,
       );
     });
@@ -64,9 +62,7 @@ describe('tooltip styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.tooltip-theme($light-theme);
-        @include mat.tooltip-typography($light-theme);
         @include mat.tooltip-theme($dark-theme);
-        @include mat.tooltip-typography($dark-theme);
       `,
       );
     });
@@ -88,9 +84,38 @@ describe('tooltip styles', () => {
 
 
         @include mat.tooltip-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-tooltip-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.tooltip-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-tooltip-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
         @include mat.tooltip-typography($theme);
-
-
       `,
       );
     });

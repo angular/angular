@@ -16,7 +16,15 @@ export class InputStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-input-theme',
-      new: ['input-theme', 'input-typography'],
+      new: ['input-theme'],
+    },
+    {
+      old: 'legacy-input-color',
+      new: ['input-color'],
+    },
+    {
+      old: 'legacy-input-typography',
+      new: ['input-typography'],
     },
   ];
 

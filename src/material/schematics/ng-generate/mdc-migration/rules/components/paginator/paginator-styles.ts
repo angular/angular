@@ -16,7 +16,23 @@ export class PaginatorStylesMigrator extends StyleMigrator {
   mixinChanges = [
     {
       old: 'legacy-paginator-theme',
-      new: ['paginator-theme', 'paginator-typography'],
+      new: ['paginator-theme', 'icon-button-theme', 'form-field-theme', 'select-theme'],
+      checkForDuplicates: true,
+    },
+    {
+      old: 'legacy-paginator-color',
+      new: ['paginator-color', 'icon-button-color', 'form-field-color', 'select-color'],
+      checkForDuplicates: true,
+    },
+    {
+      old: 'legacy-paginator-typography',
+      new: [
+        'paginator-typography',
+        'icon-button-typography',
+        'form-field-typography',
+        'select-typography',
+      ],
+      checkForDuplicates: true,
     },
   ];
 

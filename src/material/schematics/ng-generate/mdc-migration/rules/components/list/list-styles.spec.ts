@@ -29,7 +29,6 @@ describe('list styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.list-theme($theme);
-        @include mat.list-typography($theme);
       `,
       );
     });
@@ -45,7 +44,6 @@ describe('list styles', () => {
         @use '@angular/material' as arbitrary;
         $theme: ();
         @include arbitrary.list-theme($theme);
-        @include arbitrary.list-typography($theme);
       `,
       );
     });
@@ -64,9 +62,7 @@ describe('list styles', () => {
         $light-theme: ();
         $dark-theme: ();
         @include mat.list-theme($light-theme);
-        @include mat.list-typography($light-theme);
         @include mat.list-theme($dark-theme);
-        @include mat.list-typography($dark-theme);
       `,
       );
     });
@@ -88,9 +84,38 @@ describe('list styles', () => {
 
 
         @include mat.list-theme($theme);
+
+
+      `,
+      );
+    });
+
+    it('should update color mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-list-color($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.list-color($theme);
+      `,
+      );
+    });
+
+    it('should update typography mixin', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.legacy-list-typography($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
         @include mat.list-typography($theme);
-
-
       `,
       );
     });
