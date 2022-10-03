@@ -42,4 +42,4 @@ You put the trigger that defines an animation within the `animations` metadata p
 
 * [Animate a transition](guide/animate-a-transition.md)
 
-@reviewed 2022-09-16
+@reviewed 2022-10-03
