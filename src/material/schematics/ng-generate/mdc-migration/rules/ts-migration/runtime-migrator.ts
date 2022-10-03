@@ -44,7 +44,7 @@ export class RuntimeMigrator {
       capitalizedComponent += word.toUpperCase() + '_';
     });
 
-    /// Remove trailing underscore at the end
+    // Remove trailing underscore at the end
     capitalizedComponent = capitalizedComponent.slice(0, -1);
 
     const specifierReplacements = [
