@@ -717,6 +717,9 @@
     "name": "allocLFrame"
   },
   {
+    "name": "allowSanitizationBypassAndThrow"
+  },
+  {
     "name": "appendChild"
   },
   {
@@ -1188,6 +1191,9 @@
     "name": "getResolve"
   },
   {
+    "name": "getSanitizer"
+  },
+  {
     "name": "getSelectedIndex"
   },
   {
@@ -1572,6 +1578,9 @@
     "name": "pipeFromArray"
   },
   {
+    "name": "policy"
+  },
+  {
     "name": "prioritizedGuardValue"
   },
   {
@@ -1797,6 +1806,9 @@
     "name": "tree"
   },
   {
+    "name": "trustedScriptURLFromStringBypass"
+  },
+  {
     "name": "uniqueIdCounter"
   },
   {
@@ -1804,6 +1816,9 @@
   },
   {
     "name": "unwrapRNode"
+  },
+  {
+    "name": "unwrapSafeValue"
   },
   {
     "name": "updateMicroTaskStatus"
@@ -1888,6 +1903,9 @@
   },
   {
     "name": "ɵɵqueryRefresh"
+  },
+  {
+    "name": "ɵɵsanitizeResourceUrl"
   },
   {
     "name": "ɵɵsanitizeUrl"
