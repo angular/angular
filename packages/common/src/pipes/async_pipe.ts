@@ -111,16 +111,17 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   transform<T>(obj: null|undefined): null;
   transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null;
   transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null {
-    if (!this._obj) {
-      if (obj) {
-        this._subscribe(obj);
+    if (obj !== this._obj) {
+      // reference to the previous observable / promise changed - dispose the old one if available
+      if (this._obj != null) {
+        this._dispose();
       }
-      return this._latestValue;
     }
 
-    if (obj !== this._obj) {
-      this._dispose();
-      return this.transform(obj);
+    // got an observable / promise and previous subscription doesn't exist (it was cleared or we
+    // might be subscribing for the first time)
+    if (this._obj == null && obj != null) {
+      this._subscribe(obj);
     }
 
     return this._latestValue;
