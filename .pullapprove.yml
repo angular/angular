@@ -54,7 +54,6 @@
 # =========================================================
 #  Used for approving minor documentation-only changes that don't require engineering review.
 #
-# gkalpak
 # josmar-crwdstffng
 # ileil
 # TeriGlover
@@ -177,7 +176,6 @@ groups:
     reviewers:
       users:
         - alxhub
-        - gkalpak
         - JoostK
 
   # =========================================================
@@ -438,7 +436,6 @@ groups:
         - andrewseguin
         - atscott
         - dylhunn
-        - gkalpak
         - jessicajaniuk
         - pkozlowski-opensource
 
@@ -589,7 +586,6 @@ groups:
     reviewers:
       users:
         - alxhub
-        - gkalpak
 
   # =========================================================
   #  Framework: Upgrade
@@ -617,7 +613,6 @@ groups:
     reviewers:
       users:
         - alxhub
-        - gkalpak
         - jessicajaniuk
 
   # =========================================================
@@ -1092,7 +1087,6 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
-        - gkalpak
         - jessicajaniuk
         - josephperrott
 
@@ -1159,7 +1153,6 @@ groups:
     reviewers:
       users:
         - devversion
-        - gkalpak
         - josephperrott
 
   # =========================================================
@@ -1357,7 +1350,6 @@ groups:
         - dgp1130 # Doug Parker
         - dylhunn # Dylan Hunn
         - filipesilva # Filipe Silva
-        - gkalpak # Georgios Kalpakas
         - jelbourn # Jeremy Elbourn
         - jessicajaniuk # Jessica Janiuk
         - JiaLiPassion # Jia Li
