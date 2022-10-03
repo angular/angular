@@ -45,21 +45,6 @@ The CLI project is now set up to use the Angular service worker.
 This section demonstrates a service worker in action,
 using an example application.
 
-### Serving with `http-server`
-
-Because `ng serve` does not work with service workers, you must use a separate HTTP server to test your project locally.
-Use any HTTP server.
-The following example uses the [http-server](https://www.npmjs.com/package/http-server) package from npm.
-To reduce the possibility of conflicts and avoid serving stale content, test on a dedicated port and disable caching.
-
-To serve the directory containing your web files with `http-server`, run the following command:
-
-<code-example format="shell" language="shell">
-
-http-server -p 8080 -c-1 dist/&lt;project-name&gt;
-
-</code-example>
-
 ### Initial load
 
 With the server running, point your browser at `http://localhost:8080`.
