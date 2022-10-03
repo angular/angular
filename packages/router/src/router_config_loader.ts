@@ -10,7 +10,8 @@ import {Compiler, EnvironmentInjector, Injectable, InjectFlags, InjectionToken, 
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
 import {catchError, finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
-import {LoadChildren, LoadedRouterConfig, Route, Routes} from './models';
+import {deprecatedLoadChildrenString} from './deprecated_load_children';
+import {LoadChildren, LoadChildrenCallback, LoadedRouterConfig, Route, Routes} from './models';
 import {flatten, wrapIntoObservable} from './utils/collection';
 import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
 
@@ -122,7 +123,12 @@ export class RouterConfigLoader {
 
   private loadModuleFactoryOrRoutes(loadChildren: LoadChildren):
       Observable<NgModuleFactory<any>|Routes> {
-    return wrapIntoObservable(loadChildren()).pipe(mergeMap((t) => {
+    const deprecatedResult = deprecatedLoadChildrenString(this.injector, loadChildren);
+    if (deprecatedResult) {
+      return deprecatedResult;
+    }
+
+    return wrapIntoObservable((loadChildren as LoadChildrenCallback)()).pipe(mergeMap((t) => {
       if (t instanceof NgModuleFactory || Array.isArray(t)) {
         return of(t);
       } else {

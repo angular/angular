@@ -356,7 +356,7 @@ export interface IsActiveMatchOptions {
 }
 
 // @public
-export type LoadChildren = LoadChildrenCallback;
+export type LoadChildren = LoadChildrenCallback | ɵDeprecatedLoadChildren;
 
 // @public
 export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Routes | Observable<Type<any> | Routes> | Promise<NgModuleFactory<any> | Type<any> | Routes>;
