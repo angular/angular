@@ -779,7 +779,6 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 // @public
 export class RouterLinkWithHref extends RouterLink {
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
-    href: string | null;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkWithHref, "a[routerLink],area[routerLink]", never, {}, {}, never, never, true, never>;
     // (undocumented)

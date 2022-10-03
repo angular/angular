@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, inject, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, inject, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean, ɵɵsanitizeUrlOrResourceUrl} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
 import {Event, NavigationEnd} from '../events';
@@ -125,9 +125,8 @@ export class RouterLink implements OnChanges, OnDestroy {
   private _replaceUrl = false;
 
   /**
-   * Base class property that represents an `href` attribute binding on
-   * an `<a>` element. The property is overridden by the `RouterLinkWithHref`
-   * class using a @HostBinding.
+   * Represents an `href` attribute value applied to a host element,
+   * when a host element is `<a>`. For other tags, the value is `null`.
    */
   href: string|null = null;
 
@@ -197,7 +196,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     if (this.isAnchorElement) {
       this.subscription = router.events.subscribe((s: Event) => {
         if (s instanceof NavigationEnd) {
-          this.updateTargetUrlAndHref();
+          this.updateHref();
         }
       });
     } else {
@@ -258,19 +257,13 @@ export class RouterLink implements OnChanges, OnDestroy {
     if (this.tabIndexAttribute != null /* both `null` and `undefined` */ || this.isAnchorElement) {
       return;
     }
-    const renderer = this.renderer;
-    const nativeElement = this.el.nativeElement;
-    if (newTabIndex !== null) {
-      renderer.setAttribute(nativeElement, 'tabindex', newTabIndex);
-    } else {
-      renderer.removeAttribute(nativeElement, 'tabindex');
-    }
+    this.applyAttributeValue('tabindex', newTabIndex);
   }
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     if (this.isAnchorElement) {
-      this.updateTargetUrlAndHref();
+      this.updateHref();
     }
     // This is subscribed to by `RouterLinkActive` so that it knows to update when there are changes
     // to the RouterLinks it's tracking.
@@ -333,10 +326,35 @@ export class RouterLink implements OnChanges, OnDestroy {
     this.subscription?.unsubscribe();
   }
 
-  private updateTargetUrlAndHref(): void {
+  private updateHref(): void {
     this.href = this.urlTree !== null && this.locationStrategy ?
         this.locationStrategy?.prepareExternalUrl(this.router.serializeUrl(this.urlTree)) :
         null;
+
+    const sanitizedValue = this.href === null ?
+        null :
+        // This class represents a directive that can be added to both `<a>` elements,
+        // as well as other elements. As a result, we can't define security context at
+        // compile time. So the security context is deferred to runtime.
+        // The `ɵɵsanitizeUrlOrResourceUrl` selects the necessary sanitizer function
+        // based on the tag and property names. The logic mimics the one from
+        // `packages/compiler/src/schema/dom_security_schema.ts`, which is used at compile time.
+        //
+        // Note: we should investigate whether we can switch to using `@HostBinding('attr.href')`
+        // instead of applying a value via a renderer, after a final merge of the
+        // `RouterLinkWithHref` directive.
+        ɵɵsanitizeUrlOrResourceUrl(this.href, this.el.nativeElement.tagName.toLowerCase(), 'href');
+    this.applyAttributeValue('href', sanitizedValue);
+  }
+
+  private applyAttributeValue(attrName: string, attrValue: string|null) {
+    const renderer = this.renderer;
+    const nativeElement = this.el.nativeElement;
+    if (attrValue !== null) {
+      renderer.setAttribute(nativeElement, attrName, attrValue);
+    } else {
+      renderer.removeAttribute(nativeElement, attrName);
+    }
   }
 
   get urlTree(): UrlTree|null {
@@ -371,17 +389,6 @@ export class RouterLink implements OnChanges, OnDestroy {
   standalone: true,
 })
 export class RouterLinkWithHref extends RouterLink {
-  /**
-   * The url displayed on the anchor element.
-   * @HostBinding('attr.href') is used rather than @HostBinding() because
-   * it removes the href attribute when it becomes `null`.
-   *
-   * Note: this host binding is retained in the `RouterLinkWithHref` to
-   * make sure the right security context is selected (which also takes
-   * into account an element name from the selector).
-   */
-  @HostBinding('attr.href') override href: string|null = null;
-
   // For backwards compatibility, constructor arguments retained an old shape.
   constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy) {
     super(
