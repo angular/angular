@@ -92,6 +92,7 @@ export class MatChipOption extends MatChip implements OnInit {
   }
   set selectable(value: BooleanInput) {
     this._selectable = coerceBooleanProperty(value);
+    this._changeDetectorRef.markForCheck();
   }
   protected _selectable: boolean = true;
 
@@ -168,6 +169,8 @@ export class MatChipOption extends MatChip implements OnInit {
           selected: this.selected,
         });
       }
+
+      this._changeDetectorRef.markForCheck();
     }
   }
 }

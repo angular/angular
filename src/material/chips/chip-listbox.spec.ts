@@ -5,7 +5,7 @@ import {
   dispatchKeyboardEvent,
   MockNgZone,
   patchElementFocus,
-} from '../../cdk/testing/private';
+} from '@angular/cdk/testing/private';
 import {
   Component,
   DebugElement,
@@ -412,11 +412,8 @@ describe('MDC-based MatChipListbox', () => {
     });
 
     describe('selection logic', () => {
-      beforeEach(() => {
-        fixture = createComponent(BasicChipListbox);
-      });
-
       it('should remove selection if chip has been removed', fakeAsync(() => {
+        fixture = createComponent(BasicChipListbox);
         const instanceChips = fixture.componentInstance.chips;
         const chipListbox = fixture.componentInstance.chipListbox;
         dispatchKeyboardEvent(primaryActions[0], 'keydown', SPACE);
@@ -439,6 +436,7 @@ describe('MDC-based MatChipListbox', () => {
       }));
 
       it('should select an option that was added after initialization', () => {
+        fixture = createComponent(BasicChipListbox);
         fixture.componentInstance.foods.push({viewValue: 'Potatoes', value: 'potatoes-8'});
         fixture.detectChanges();
 
@@ -458,6 +456,7 @@ describe('MDC-based MatChipListbox', () => {
       });
 
       it('should not select disabled chips', () => {
+        fixture = createComponent(BasicChipListbox);
         const array = chips.toArray();
         dispatchKeyboardEvent(primaryActions[2], 'keydown', SPACE);
         fixture.detectChanges();
@@ -472,9 +471,6 @@ describe('MDC-based MatChipListbox', () => {
       });
 
       it('should not select when is not selectable', fakeAsync(() => {
-        fixture.destroy();
-        TestBed.resetTestingModule();
-
         const falsyFixture = createComponent(FalsyBasicChipListbox);
         falsyFixture.detectChanges();
         tick();
@@ -497,6 +493,78 @@ describe('MDC-based MatChipListbox', () => {
         expect(_chips.first.selected)
           .withContext('Expected first option not to be selected.')
           .toBe(false);
+      }));
+
+      it('should set `aria-selected` based on the selection state in single selection mode', fakeAsync(() => {
+        const getAriaSelected = () =>
+          Array.from(primaryActions).map(action => action.getAttribute('aria-selected'));
+
+        fixture = createComponent(BasicChipListbox);
+        // Use a shorter list so we can keep the assertions smaller
+        fixture.componentInstance.foods = [
+          {value: 'steak-0', viewValue: 'Steak'},
+          {value: 'pizza-1', viewValue: 'Pizza'},
+          {value: 'tacos-2', viewValue: 'Tacos'},
+        ];
+        fixture.componentInstance.selectable = true;
+        fixture.detectChanges();
+
+        primaryActions = chipListboxNativeElement.querySelectorAll<HTMLElement>(
+          '.mdc-evolution-chip__action--primary',
+        );
+
+        expect(getAriaSelected()).toEqual([null, null, null]);
+
+        primaryActions[1].click();
+        fixture.detectChanges();
+        expect(getAriaSelected()).toEqual([null, 'true', null]);
+
+        primaryActions[2].click();
+        fixture.detectChanges();
+        expect(getAriaSelected()).toEqual([null, null, 'true']);
+
+        primaryActions[0].click();
+        fixture.detectChanges();
+        expect(getAriaSelected()).toEqual(['true', null, null]);
+      }));
+
+      it('should set `aria-selected` based on the selection state in multi-selection mode', fakeAsync(() => {
+        const getAriaSelected = () =>
+          Array.from(primaryActions).map(action => action.getAttribute('aria-selected'));
+
+        fixture = createComponent(MultiSelectionChipListbox);
+        fixture.detectChanges();
+
+        // Use a shorter list so we can keep the assertions smaller
+        fixture.componentInstance.foods = [
+          {value: 'steak-0', viewValue: 'Steak'},
+          {value: 'pizza-1', viewValue: 'Pizza'},
+          {value: 'tacos-2', viewValue: 'Tacos'},
+        ];
+        fixture.componentInstance.selectable = true;
+        fixture.detectChanges();
+
+        primaryActions = chipListboxNativeElement.querySelectorAll<HTMLElement>(
+          '.mdc-evolution-chip__action--primary',
+        );
+
+        expect(getAriaSelected()).toEqual([null, null, null]);
+
+        primaryActions[1].click();
+        fixture.detectChanges();
+        expect(getAriaSelected()).toEqual([null, 'true', null]);
+
+        primaryActions[2].click();
+        fixture.detectChanges();
+        expect(getAriaSelected()).toEqual([null, 'true', 'true']);
+
+        primaryActions[0].click();
+        fixture.detectChanges();
+        expect(getAriaSelected()).toEqual(['true', 'true', 'true']);
+
+        primaryActions[1].click();
+        fixture.detectChanges();
+        expect(getAriaSelected()).toEqual(['true', null, 'true']);
       }));
     });
 
