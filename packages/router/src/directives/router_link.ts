@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, inject, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean, ɵɵsanitizeUrlOrResourceUrl} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean, ɵɵsanitizeUrlOrResourceUrl} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
 import {Event, NavigationEnd} from '../events';
@@ -389,10 +389,4 @@ export class RouterLink implements OnChanges, OnDestroy {
   standalone: true,
 })
 export class RouterLinkWithHref extends RouterLink {
-  // For backwards compatibility, constructor arguments retained an old shape.
-  constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy) {
-    super(
-        router, route, undefined /* tabIndexAttribute */, inject(Renderer2), inject(ElementRef),
-        locationStrategy);
-  }
 }
