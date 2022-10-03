@@ -3,6 +3,7 @@
 @use '../palette';
 @use '../theming';
 @use '../../typography/all-typography';
+@use '../../typography/typography';
 
 
 // Include non-theme styles for core.
@@ -23,3 +24,5 @@ $theme: theming.define-light-theme((
 
 // Include all theme styles for the components.
 @include all-theme.all-component-themes($theme);
+
+@include typography.typography-hierarchy($theme);

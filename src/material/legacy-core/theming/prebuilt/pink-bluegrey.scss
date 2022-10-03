@@ -2,6 +2,7 @@
 @use '../../core';
 @use '../../../core/theming/palette';
 @use '../../../core/theming/theming';
+@use '../../../core/typography/typography';
 @use '../../../core/typography/all-typography';
 
 
@@ -23,3 +24,5 @@ $theme: theming.define-dark-theme((
 
 // Include all theme styles for the components.
 @include all-theme.all-legacy-component-themes($theme);
+
+@include typography.typography-hierarchy($theme);
