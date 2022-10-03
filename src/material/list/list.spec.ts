@@ -19,6 +19,7 @@ describe('MDC-based MatList', () => {
         ListWithMultipleItems,
         ListWithManyLines,
         NavListWithOneAnchorItem,
+        NavListWithActivatedItem,
         ActionListWithoutType,
         ActionListWithType,
         ListWithDisabledItems,
@@ -131,6 +132,21 @@ describe('MDC-based MatList', () => {
     expect(list.nativeElement.getAttribute('role'))
       .withContext('Expect mat-action-list to have group role')
       .toBe('group');
+  });
+
+  it('should apply aria-current="page" to activated list items', () => {
+    const fixture = TestBed.createComponent(NavListWithActivatedItem);
+    fixture.detectChanges();
+
+    const items = fixture.componentInstance.listItems;
+    expect(items.length)
+      .withContext('expected list to have at least two items')
+      .toBeGreaterThanOrEqual(2);
+    const inactiveItem = items.get(0)!._elementRef.nativeElement;
+    const activeItem = items.get(1)!._elementRef.nativeElement;
+
+    expect(inactiveItem.hasAttribute('aria-current')).toBe(false);
+    expect(activeItem.getAttribute('aria-current')).toBe('page');
   });
 
   it('should not show ripples for non-nav lists', fakeAsync(() => {
@@ -390,6 +406,24 @@ class NavListWithOneAnchorItem extends BaseTestList {
   @ViewChildren(MatListItem) listItems: QueryList<MatListItem>;
   disableItemRipple: boolean = false;
   disableListRipple: boolean = false;
+}
+
+@Component({
+  template: `
+  <mat-nav-list [disableRipple]="disableListRipple">
+    <a *ngFor="let item of items; let index = index" mat-list-item [disableRipple]="disableItemRipple"
+      [activated]="index === activatedIndex">
+      {{item.name}}
+    </a>
+  </mat-nav-list>`,
+})
+class NavListWithActivatedItem extends BaseTestList {
+  @ViewChildren(MatListItem) listItems: QueryList<MatListItem>;
+  disableItemRipple: boolean = false;
+  disableListRipple: boolean = false;
+
+  /** Index of the activated list item in `this.items`. Set to -1 if no item is selected. */
+  activatedIndex = 1;
 }
 
 @Component({

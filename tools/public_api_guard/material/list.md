@@ -63,6 +63,7 @@ export class MatListItem extends MatListItemBase {
     set activated(activated: boolean);
     // (undocumented)
     _activated: boolean;
+    _getAriaCurrent(): string | null;
     // (undocumented)
     _itemText: ElementRef<HTMLElement>;
     // (undocumented)

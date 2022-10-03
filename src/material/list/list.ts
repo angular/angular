@@ -58,6 +58,7 @@ export class MatList extends MatListBase {}
     '[class.mdc-list-item--with-leading-icon]': '_icons.length !== 0',
     '[class.mdc-list-item--with-trailing-meta]': '_meta.length !== 0',
     '[class._mat-animation-noopable]': '_noopAnimations',
+    '[attr.aria-current]': '_getAriaCurrent()',
   },
   templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None,
@@ -89,5 +90,13 @@ export class MatListItem extends MatListItemBase {
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
   ) {
     super(element, ngZone, listBase, platform, globalRippleOptions, animationMode);
+  }
+
+  /**
+   * Determine the value of `aria-current`. Return 'page' if this item is an activated anchor tag.
+   * Otherwise, return `null`. This method is safe to use with server-side rendering.
+   */
+  _getAriaCurrent(): string | null {
+    return this._hostElement.nodeName === 'A' && this._activated ? 'page' : null;
   }
 }
