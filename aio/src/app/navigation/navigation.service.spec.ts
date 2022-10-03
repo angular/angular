@@ -223,7 +223,7 @@ describe('NavigationService', () => {
   });
 
   describe('versionInfo', () => {
-    const expectedVersionInfo = { raw: '4.0.0' } as VersionInfo;
+    const expectedVersionInfo = { major: 4 } as VersionInfo;
     let versionInfo: VersionInfo;
 
     beforeEach(() => {

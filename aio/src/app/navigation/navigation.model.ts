@@ -43,16 +43,6 @@ export interface CurrentNodes {
 }
 
 export interface VersionInfo {
-  raw: string;
   major: number;
-  minor: number;
-  patch: number;
-  prerelease: string[];
-  build: string;
-  version: string;
-  codeName: string;
-  isSnapshot: boolean;
   full: string;
-  branch: string;
-  commitSHA: string;
 }
