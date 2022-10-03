@@ -15,6 +15,7 @@ pkg_npm(
     deps = [
         "//packages/core/schematics/migrations/entry-components",
         "//packages/core/schematics/migrations/path-match-type",
+        "//packages/core/schematics/migrations/relative-link-resolution",
         "//packages/core/schematics/migrations/router-link-with-href",
         "//packages/core/schematics/migrations/typed-forms",
     ],
