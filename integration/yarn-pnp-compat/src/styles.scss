@@ -8,7 +8,7 @@ $theme: mat.define-light-theme((
   density: 0
 ));
 
-@include mat.core($theme);
+@include mat.core();
 
 @include mat.all-legacy-component-themes($theme);
 @include mat.all-component-themes($theme);

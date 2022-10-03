@@ -5,10 +5,9 @@
 @use '../core/focus-indicators/private';
 
 // Mixin that renders all of the core styles that are not theme-dependent.
-// TODO: Remove the mixin's parameters after all internal clients migrated
 /// @deprecated Use `mat.core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
 /// @breaking-change 17.0.0
-@mixin core($typography-config: null, $exclude-typography: false) {
+@mixin core() {
   @include ripple.ripple();
   @include cdk.a11y-visually-hidden();
   @include cdk.overlay();
