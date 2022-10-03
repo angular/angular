@@ -1,6 +1,11 @@
 import {createTestApp, patchDevkitTreeToExposeTypeScript} from '@angular/cdk/schematics/testing';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {createNewTestRunner, migrateComponents, THEME_FILE} from '../test-setup-helper';
+import {
+  APP_MODULE_FILE,
+  createNewTestRunner,
+  migrateComponents,
+  THEME_FILE,
+} from '../test-setup-helper';
 
 describe('card styles', () => {
   let runner: SchematicTestRunner;
@@ -214,6 +219,32 @@ describe('card styles', () => {
         }
       `,
       );
+    });
+
+    it('should migrate inline styles', async () => {
+      const oldContent = `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '',
+          styles: ['.mat-card { color: red; }'],
+        })
+        export class MyComp {}
+      `;
+
+      const newContent = `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '',
+          styles: ['.mat-mdc-card { color: red; }'],
+        })
+        export class MyComp {}
+      `;
+
+      cliAppTree.overwrite(APP_MODULE_FILE, oldContent);
+      const tree = await migrateComponents(['card'], runner, cliAppTree);
+      expect(tree.readContent(APP_MODULE_FILE)).toBe(newContent);
     });
   });
 });

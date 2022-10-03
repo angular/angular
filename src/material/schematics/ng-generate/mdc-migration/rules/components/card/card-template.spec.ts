@@ -1,6 +1,11 @@
 import {createTestApp, patchDevkitTreeToExposeTypeScript} from '@angular/cdk/schematics/testing';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {createNewTestRunner, migrateComponents, TEMPLATE_FILE} from '../test-setup-helper';
+import {
+  APP_MODULE_FILE,
+  createNewTestRunner,
+  migrateComponents,
+  TEMPLATE_FILE,
+} from '../test-setup-helper';
 
 describe('card template migrator', () => {
   let runner: SchematicTestRunner;
@@ -109,5 +114,29 @@ describe('card template migrator', () => {
         ></mat-card>
       `,
     );
+  });
+
+  it('should migrate inline templates', async () => {
+    const oldContent = `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<mat-card></mat-card>'
+      })
+      export class MyComp {}
+    `;
+
+    const newContent = `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<mat-card appearance="outlined"></mat-card>'
+      })
+      export class MyComp {}
+    `;
+
+    cliAppTree.overwrite(APP_MODULE_FILE, oldContent);
+    const tree = await migrateComponents(['card'], runner, cliAppTree);
+    expect(tree.readContent(APP_MODULE_FILE)).toBe(newContent);
   });
 });
