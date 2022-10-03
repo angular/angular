@@ -7,9 +7,9 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {ChangeDetectorRef, Component, EventEmitter} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {of, Subscribable, Unsubscribable} from 'rxjs';
+import {Observable, of, Subscribable, Unsubscribable} from 'rxjs';
 
 describe('AsyncPipe', () => {
   function getChangeDetectorRefSpy() {
@@ -58,6 +58,19 @@ describe('AsyncPipe', () => {
         }, 0);
       });
 
+      it('should return default value when specified', () => {
+        const testEmitter = new EventEmitter<string>();
+        const testPipe = new AsyncPipe(ref);
+
+        // explicitly specifying type `string` to assure that `null` is not part of the transform's
+        // return value
+        const beforeEmit: string = testPipe.transform(testEmitter, 'default');
+        expect(beforeEmit).toBe('default');
+
+        testEmitter.emit('actual');
+        const afterEmit: string = testPipe.transform(testEmitter, 'default');
+        expect(afterEmit).toBe('actual');
+      });
 
       it('should return same value when nothing has changed since the last call', done => {
         pipe.transform(subscribable);
@@ -170,6 +183,18 @@ describe('AsyncPipe', () => {
         }, timer);
       });
 
+      it('should return default value when specified', done => {
+        expect(pipe.transform(promise, 'default')).toBe('default');
+
+        resolve(message);
+        resolve(message);
+
+        setTimeout(() => {
+          expect(pipe.transform(promise, 'default')).toEqual(message);
+          done();
+        }, timer);
+      });
+
       it('should return value when nothing has changed since the last call', done => {
         pipe.transform(promise);
         resolve(message);
@@ -260,21 +285,50 @@ describe('AsyncPipe', () => {
     });
   });
 
-  it('should be available as a standalone pipe', () => {
-    @Component({
-      selector: 'test-component',
-      imports: [AsyncPipe],
-      template: '{{ value | async }}',
-      standalone: true,
-    })
-    class TestComponent {
-      value = of('foo');
-    }
+  describe('integration', () => {
+    it('should be available as a standalone pipe', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [AsyncPipe],
+        template: '{{ value | async }}',
+        standalone: true,
+      })
+      class TestComponent {
+        value = of('foo');
+      }
 
-    const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
 
-    const content = fixture.nativeElement.textContent;
-    expect(content).toBe('foo');
+      const content = fixture.nativeElement.textContent;
+      expect(content).toBe('foo');
+    });
+
+    it('should support default values for inputs', () => {
+      @Component({
+        selector: 'with-input',
+        template: '{{ in }}',
+        standalone: true,
+      })
+      class WithInputComponent {
+        @Input() in = 'initial';
+      }
+
+      @Component({
+        selector: 'test-component',
+        imports: [WithInputComponent, AsyncPipe],
+        template: `<with-input [in]="(value | async:'default')"></with-input>`,
+        standalone: true,
+      })
+      class TestComponent {
+        values = new Observable();
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const content = fixture.nativeElement.textContent;
+      expect(content).toBe('default');
+    });
   });
 });

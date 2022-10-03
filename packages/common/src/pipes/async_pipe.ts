@@ -107,10 +107,12 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   // TypeScript has a hard time matching Observable to Subscribable, for more information
   // see https://github.com/microsoft/TypeScript/issues/43643
 
+  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>, defaultValue: T): T;
   transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>): T|null;
   transform<T>(obj: null|undefined): null;
   transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null;
-  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null {
+  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined, defaultValue = null): T
+      |null {
     if (obj !== this._obj) {
       // reference to the previous observable / promise changed - dispose the old one if available
       if (this._obj != null) {
@@ -124,7 +126,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
       this._subscribe(obj);
     }
 
-    return this._latestValue;
+    return this._latestValue == null ? defaultValue : this._latestValue;
   }
 
   private _subscribe(obj: Subscribable<any>|Promise<any>|EventEmitter<any>): void {
