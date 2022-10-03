@@ -1,8 +1,9 @@
 @use '@material/slider/slider' as mdc-slider;
+@use '@material/slider/slider-theme' as mdc-slider-theme;
 @use '../core/mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-mdc-fallback-declarations {
-  @include mdc-slider.without-ripple($query: mdc-helpers.$mdc-base-styles-query);
+  @include mdc-slider.static-styles($query: mdc-helpers.$mdc-base-styles-query);
 }
 
 $mat-slider-min-size: 128px !default;
@@ -13,6 +14,10 @@ $mat-slider-horizontal-margin: 8px !default;
 // element, aligning it in the vertical middle of a line, specifying a default minimum
 // width and adding horizontal margin.
 .mat-mdc-slider {
+  @include mdc-helpers.disable-mdc-fallback-declarations {
+    @include mdc-slider-theme.theme-styles(mdc-slider-theme.$light-theme);
+  }
+
   display: inline-block;
   box-sizing: border-box;
   outline: none;
@@ -26,6 +31,28 @@ $mat-slider-horizontal-margin: 8px !default;
   // the slider to automatically expand horizontally for backwards compatibility.
   width: auto;
   min-width: $mat-slider-min-size - (2 * $mat-slider-horizontal-margin);
+
+  .mdc-slider__value-indicator {
+    // There's no token to control this opacity so we have to do it ourselves.
+    opacity: var(--mat-mdc-slider-value-indicator-opacity, 1);
+  }
+
+  // The `.mat-ripple` wrapper here is redundant, but we need it to
+  // increase the specificity due to how some styles are setup in g3.
+  .mat-ripple {
+    // These ripple colors are custom so we have to introduce our own tokens.
+    .mat-ripple-element {
+      background-color: var(--mat-mdc-slider-ripple-color, transparent);
+    }
+
+    .mat-mdc-slider-hover-ripple {
+      background-color: var(--mat-mdc-slider-hover-ripple-color, transparent);
+    }
+
+    .mat-mdc-slider-focus-ripple, .mat-mdc-slider-active-ripple {
+      background-color: var(--mat-mdc-slider-focus-ripple-color, transparent);
+    }
+  }
 
   &._mat-animation-noopable {
     &.mdc-slider--discrete .mdc-slider__thumb,

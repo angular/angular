@@ -1,47 +1,46 @@
 @use 'sass:map';
 
-@use '@material/slider/slider' as mdc-slider;
-@use '@material/slider/slider-theme';
-@use '@material/theme/variables' as theme-variables;
+@use '@material/slider/slider-theme' as mdc-slider-theme;
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/typography/typography' as mdc-typography;
+@use '@material/theme/variables' as mdc-theme-variables;
 @use '../core/mdc-helpers/mdc-helpers';
 @use '../core/theming/theming';
 @use '../core/typography/typography';
-@use '../core/ripple/ripple-theme';
 
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
+
   @include mdc-helpers.using-mdc-theme($config) {
-    @include mdc-slider.without-ripple($query: mdc-helpers.$mdc-theme-styles-query);
-
     .mat-mdc-slider {
-      &.mat-primary, &.mat-accent, &.mat-warn {
-        $is-dark: map.get($config, is-dark);
-        $indicator-color: if($is-dark, white, black);
-        $indicator-text-color: if($is-dark, black, white);
-        $indicator-opacity: if($is-dark, 0.9, 0.6);
+      $is-dark: map.get($config, is-dark);
+      $on-surface: mdc-theme-color.prop-value(on-surface);
 
-        @include slider-theme.value-indicator-color(
-          $color: $indicator-color,
-          $opacity: $indicator-opacity,
-          $query: mdc-helpers.$mdc-theme-styles-query
-        );
-        @include slider-theme.value-indicator-text-color(
-          $color: $indicator-text-color,
-          $query: mdc-helpers.$mdc-theme-styles-query
-        );
-      }
+      @include mdc-slider-theme.theme((
+        label-container-color: if($is-dark, white, black),
+        label-label-text-color: if($is-dark, black, white),
+        disabled-handle-color: $on-surface,
+        disabled-active-track-color: $on-surface,
+        disabled-inactive-track-color: $on-surface,
+        with-tick-marks-disabled-container-color: $on-surface,
+      ));
+
+      // Note that technically we can control this using an `rgba` color in `label-container-color`.
+      // We don't do it, because the shapes MDC uses to construct the indicator overlap which causes
+      // their color opacities to stack with an `rgba` color.
+      --mat-mdc-slider-value-indicator-opacity: #{if($is-dark, 0.9, 0.6)};
 
       &.mat-primary {
-        @include _custom-slider-color(primary, on-primary);
+        @include _slider-color(primary, on-primary);
       }
 
       &.mat-accent {
-        @include _custom-slider-color(secondary, on-secondary);
+        @include _slider-color(secondary, on-secondary);
       }
 
       &.mat-warn {
-        @include _custom-slider-color(error, on-error);
+        @include _slider-color(error, on-error);
       }
     }
   }
@@ -51,7 +50,15 @@
   $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
   @include mdc-helpers.using-mdc-typography($config) {
-    @include mdc-slider.without-ripple($query: mdc-helpers.$mdc-typography-styles-query);
+    .mat-mdc-slider {
+      @include mdc-slider-theme.theme((
+        label-label-text-font: mdc-typography.get-font(subtitle2),
+        label-label-text-font-size: mdc-typography.get-size(subtitle2),
+        label-label-text-line-height: mdc-typography.get-line-height(subtitle2),
+        label-label-text-tracking: mdc-typography.get-tracking(subtitle2),
+        label-label-text-weight: mdc-typography.get-weight(subtitle2),
+      ));
+    }
   }
 }
 
@@ -76,52 +83,22 @@
   }
 }
 
-@mixin _custom-slider-color($color, $on-color) {
-  @include slider-theme.thumb-color(
-    $color-or-map: (
-      default: $color,
-      disabled: on-surface,
-    ),
-    $query: mdc-helpers.$mdc-theme-styles-query
-  );
-  @include slider-theme.track-active-color(
-    $color-or-map: (
-      default: $color,
-      disabled: on-surface,
-    ),
-    $query: mdc-helpers.$mdc-theme-styles-query
-  );
-  @include slider-theme.track-inactive-color(
-    $color-or-map: (
-      default: $color,
-      disabled: on-surface,
-    ),
-    $query: mdc-helpers.$mdc-theme-styles-query
-  );
-  @include slider-theme.tick-mark-active-color(
-    $color-or-map: (
-      default: $on-color,
-      disabled: surface,
-    ),
-    $query: mdc-helpers.$mdc-theme-styles-query
-  );
-  @include slider-theme.tick-mark-inactive-color(
-    $color-or-map: (
-      default: $color,
-      disabled: on-surface,
-    ),
-    $query: mdc-helpers.$mdc-theme-styles-query
-  );
-  $ripple-color: map.get(theme-variables.$property-values, $color);
-  @include ripple-theme.color((
-    foreground: (
-      base: $ripple-color
-    ),
+@mixin _slider-color($color, $on-color) {
+  $ripple-color: map.get(mdc-theme-variables.$property-values, $color);
+  $resolved-color: mdc-theme-color.prop-value($color);
+  $resolved-on-color: mdc-theme-color.prop-value($on-color);
+
+  @include mdc-slider-theme.theme((
+    handle-color: $resolved-color,
+    focus-handle-color: $resolved-color,
+    hover-handle-color: $resolved-color,
+    active-track-color: $resolved-color,
+    inactive-track-color: $resolved-color,
+    with-tick-marks-active-container-color: $resolved-on-color,
+    with-tick-marks-inactive-container-color: $resolved-color,
   ));
-  .mat-mdc-slider-hover-ripple {
-    background-color: rgba($ripple-color, 0.05);
-  }
-  .mat-mdc-slider-focus-ripple, .mat-mdc-slider-active-ripple {
-    background-color: rgba($ripple-color, 0.2);
-  }
+
+  --mat-mdc-slider-ripple-color: #{$ripple-color};
+  --mat-mdc-slider-hover-ripple-color: #{rgba($ripple-color, 0.05)};
+  --mat-mdc-slider-focus-ripple-color: #{rgba($ripple-color, 0.2)};
 }

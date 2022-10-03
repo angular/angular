@@ -103,7 +103,6 @@ export class DevAppLayout {
     {name: 'Typography', route: '/typography'},
     {name: 'Virtual Scrolling', route: '/virtual-scroll'},
     {name: 'YouTube Player', route: '/youtube-player'},
-    {name: 'MDC Slider', route: '/mdc-slider'},
     {name: 'Legacy Autocomplete', route: '/legacy-autocomplete'},
     {name: 'Legacy Button', route: '/legacy-button'},
     {name: 'Legacy Card', route: '/legacy-card'},
