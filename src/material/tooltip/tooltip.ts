@@ -49,7 +49,6 @@ import {
   ScrollStrategy,
   VerticalConnectionPos,
 } from '@angular/cdk/overlay';
-import {numbers} from '@material/tooltip';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {Observable, Subject} from 'rxjs';
 
@@ -155,6 +154,13 @@ const passiveListenerOptions = normalizePassiveListenerOptions({passive: true});
  * trigger and the long press event being fired.
  */
 const LONGPRESS_DELAY = 500;
+
+// These constants were taken from MDC's `numbers` object. We can't import them from MDC,
+// because they have some top-level references to `window` which break during SSR.
+const MIN_VIEWPORT_TOOLTIP_THRESHOLD = 8;
+const UNBOUNDED_ANCHOR_GAP = 8;
+const MIN_HEIGHT = 24;
+const MAX_WIDTH = 200;
 
 @Directive()
 export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
@@ -880,11 +886,11 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
       defaultOptions,
       _document,
     );
-    this._viewportMargin = numbers.MIN_VIEWPORT_TOOLTIP_THRESHOLD;
+    this._viewportMargin = MIN_VIEWPORT_TOOLTIP_THRESHOLD;
   }
 
   protected override _addOffset(position: ConnectedPosition): ConnectedPosition {
-    const offset = numbers.UNBOUNDED_ANCHOR_GAP;
+    const offset = UNBOUNDED_ANCHOR_GAP;
     const isLtr = !this._dir || this._dir.value == 'ltr';
 
     if (position.originY === 'top') {
@@ -1138,6 +1144,6 @@ export class TooltipComponent extends _TooltipComponentBase {
   /** Whether the tooltip text has overflown to the next line */
   private _isTooltipMultiline() {
     const rect = this._elementRef.nativeElement.getBoundingClientRect();
-    return rect.height > numbers.MIN_HEIGHT && rect.width >= numbers.MAX_WIDTH;
+    return rect.height > MIN_HEIGHT && rect.width >= MAX_WIDTH;
   }
 }

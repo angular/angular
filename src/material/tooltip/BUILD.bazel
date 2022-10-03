@@ -26,7 +26,6 @@ ng_module(
         "//src/cdk/overlay",
         "//src/cdk/portal",
         "//src/material/core",
-        "@npm//@material/tooltip",
     ],
 )
 
