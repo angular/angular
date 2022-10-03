@@ -1,4 +1,4 @@
-module.exports = function processNavigationMap(versionInfo, getPreviousMajorVersions, log) {
+module.exports = function processNavigationMap(versionInfo, bazelStampedProperties, getPreviousMajorVersions, log) {
   return {
     $runAfter: ['paths-computed'],
     $runBefore: ['rendering-docs'],
@@ -26,8 +26,15 @@ module.exports = function processNavigationMap(versionInfo, getPreviousMajorVers
       navigationDoc.data['docVersions'] = getPreviousMajorVersions().map(
           v => ({title: `v${v.major}`, url: `https://v${v.major}.angular.io/`}));
 
-      // Add in the version data in a "secret" field to be extracted in the docs app
-      navigationDoc.data['__versionInfo'] = versionInfo.currentVersion;
+      // Add in version data in a "secret" field to be extracted in the docs app
+      navigationDoc.data['__versionInfo'] = {
+        major: versionInfo.currentVersion.major,
+
+        // The 'full' version needs the source tree SHA but this is not available in
+        // the execroot where Bazel runs this build. Get the SHA from Bazel-stamped
+        // workspace status information.
+        full: `${versionInfo.currentVersion.version}+sha.${bazelStampedProperties.BUILD_SCM_ABBREV_HASH}`
+      };
     }
   };
 };

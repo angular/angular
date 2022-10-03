@@ -40,6 +40,7 @@ npm_package_bin(
     },
     exec_properties = ENABLE_NETWORK,
     output_dir = True,
+    stamp = "@rules_nodejs//nodejs/stamp:always",
     # Makes remote git calls to get previous versions
     tags = ["requires-network"],
     tool = "@aio_npm//dgeni/bin:dgeni",
@@ -213,6 +214,7 @@ copy_to_directory(
     replace_prefixes = {
         "build-app": "",
     },
+    visibility = ["//aio/scripts/deploy-to-firebase:__pkg__"],
 )
 
 TEST_DATA = TEST_FILES + select({

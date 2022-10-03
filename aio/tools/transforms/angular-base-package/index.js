@@ -43,6 +43,7 @@ module.exports = new Package('angular-base', [
   .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
   .factory(require('./readers/json'))
   .factory(require('./services/copyFolder'))
+  .factory(require('./services/bazelStampedProperties'))
   .factory(require('./services/getImageDimensions'))
   .factory(require('./services/getPreviousMajorVersions'))
   .factory(require('./services/auto-link-filters/filterPipes'))
