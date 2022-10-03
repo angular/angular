@@ -339,6 +339,10 @@ export class RouterLink implements OnChanges, OnDestroy {
         // The `ɵɵsanitizeUrlOrResourceUrl` selects the necessary sanitizer function
         // based on the tag and property names. The logic mimics the one from
         // `packages/compiler/src/schema/dom_security_schema.ts`, which is used at compile time.
+        //
+        // Note: we should investigate whether we can switch to using `@HostBinding('attr.href')`
+        // instead of applying a value via a renderer, after a final merge of the
+        // `RouterLinkWithHref` directive.
         ɵɵsanitizeUrlOrResourceUrl(this.href, this.el.nativeElement.tagName.toLowerCase(), 'href');
     this.applyAttributeValue('href', sanitizedValue);
   }
