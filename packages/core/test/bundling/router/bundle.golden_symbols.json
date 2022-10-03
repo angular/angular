@@ -1092,6 +1092,9 @@
     "name": "getFactoryDef"
   },
   {
+    "name": "getFactoryOf"
+  },
+  {
     "name": "getFirstLContainer"
   },
   {
@@ -1356,6 +1359,9 @@
     "name": "isEmptyError"
   },
   {
+    "name": "isForwardRef"
+  },
+  {
     "name": "isFunction"
   },
   {
@@ -1540,6 +1546,9 @@
   },
   {
     "name": "noMatch2"
+  },
+  {
+    "name": "noSideEffects"
   },
   {
     "name": "nodeChildrenAsMap"
