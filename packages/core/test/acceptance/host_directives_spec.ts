@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewChecked, AfterViewInit, Component, Directive, ElementRef, EventEmitter, forwardRef, inject, Inject, InjectionToken, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, Directive, ElementRef, EventEmitter, forwardRef, inject, Inject, InjectionToken, Input, OnChanges, OnInit, Output, SimpleChanges, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -2244,6 +2244,596 @@ describe('host directives', () => {
       const result = fixture.debugElement.query(By.directive(HostDir)).nativeElement;
 
       expect(result).toBe(expected);
+    });
+  });
+
+  describe('root component with host directives', () => {
+    function createRootComponent<T>(componentType: Type<T>) {
+      @Component({template: '<ng-container #insertionPoint></ng-container>'})
+      class App {
+        @ViewChild('insertionPoint', {read: ViewContainerRef}) insertionPoint!: ViewContainerRef;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, componentType],
+        errorOnUnknownProperties: true,
+      });
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const ref = fixture.componentInstance.insertionPoint.createComponent(componentType);
+
+      return {ref, fixture};
+    }
+
+    it('should apply a basic host directive to the root component', () => {
+      const logs: string[] = [];
+
+      @Directive({
+        standalone: true,
+        host: {'host-dir-attr': '', 'class': 'host-dir', 'style': 'height: 50px'}
+      })
+      class HostDir {
+        constructor() {
+          logs.push('HostDir');
+        }
+      }
+
+      @Component({
+        selector: 'host',
+        host: {'host-attr': '', 'class': 'dir', 'style': 'width: 50px'},
+        hostDirectives: [HostDir],
+        template: '',
+      } as HostDirectiveAny)
+      class HostComp {
+        constructor() {
+          logs.push('HostComp');
+        }
+      }
+
+      const {fixture} = createRootComponent(HostComp);
+
+      expect(logs).toEqual(['HostDir', 'HostComp']);
+      expect(fixture.nativeElement.innerHTML)
+          .toContain(
+              '<host host-dir-attr="" host-attr="" class="host-dir dir" ' +
+              'style="height: 50px; width: 50px;"></host>');
+    });
+
+    it('should invoke lifecycle hooks on host directives applied to a root component', () => {
+      const logs: string[] = [];
+
+      @Directive({standalone: true})
+      class HostDir implements OnInit, AfterViewInit, AfterViewChecked {
+        ngOnInit() {
+          logs.push('HostDir - ngOnInit');
+        }
+
+        ngAfterViewInit() {
+          logs.push('HostDir - ngAfterViewInit');
+        }
+
+        ngAfterViewChecked() {
+          logs.push('HostDir - ngAfterViewChecked');
+        }
+      }
+
+      @Directive({standalone: true})
+      class OtherHostDir implements OnInit, AfterViewInit, AfterViewChecked {
+        ngOnInit() {
+          logs.push('OtherHostDir - ngOnInit');
+        }
+
+        ngAfterViewInit() {
+          logs.push('OtherHostDir - ngAfterViewInit');
+        }
+
+        ngAfterViewChecked() {
+          logs.push('OtherHostDir - ngAfterViewChecked');
+        }
+      }
+
+      @Component({template: '', hostDirectives: [HostDir, OtherHostDir]} as HostDirectiveAny)
+      class HostComp implements OnInit, AfterViewInit, AfterViewChecked {
+        ngOnInit() {
+          logs.push('HostComp - ngOnInit');
+        }
+
+        ngAfterViewInit() {
+          logs.push('HostComp - ngAfterViewInit');
+        }
+
+        ngAfterViewChecked() {
+          logs.push('HostComp - ngAfterViewChecked');
+        }
+      }
+
+      const {fixture} = createRootComponent(HostComp);
+      fixture.detectChanges();
+
+      expect(logs).toEqual([
+        'HostDir - ngOnInit',
+        'OtherHostDir - ngOnInit',
+        'HostComp - ngOnInit',
+        'HostDir - ngAfterViewInit',
+        'HostDir - ngAfterViewChecked',
+        'OtherHostDir - ngAfterViewInit',
+        'OtherHostDir - ngAfterViewChecked',
+        'HostComp - ngAfterViewInit',
+        'HostComp - ngAfterViewChecked',
+      ]);
+    });
+
+    describe('host bindings', () => {
+      it('should support host attribute bindings coming from the host directives', () => {
+        @Directive({
+          standalone: true,
+          host: {
+            '[attr.host-dir-only]': 'value',
+            '[attr.shadowed-attr]': 'value',
+          }
+        })
+        class HostDir {
+          value = 'host-dir';
+        }
+
+        @Directive({
+          standalone: true,
+          host: {
+            '[attr.other-host-dir-only]': 'value',
+            '[attr.shadowed-attr]': 'value',
+          }
+        })
+        class OtherHostDir {
+          value = 'other-host-dir';
+        }
+
+        @Component({
+          selector: 'host-comp',
+          host: {
+            '[attr.shadowed-attr]': 'value',
+          },
+          hostDirectives: [HostDir, OtherHostDir]
+        } as HostDirectiveAny)
+        class HostComp {
+          value = 'host';
+          hostDir = inject(HostDir);
+          otherHostDir = inject(OtherHostDir);
+        }
+
+        const {fixture, ref} = createRootComponent(HostComp);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.innerHTML)
+            .toContain(
+                '<host-comp host-dir-only="host-dir" shadowed-attr="host" ' +
+                'other-host-dir-only="other-host-dir"></host-comp>');
+
+        ref.instance.hostDir.value = 'host-dir-changed';
+        ref.instance.otherHostDir.value = 'other-host-dir-changed';
+        ref.instance.value = 'host-changed';
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.innerHTML)
+            .toContain(
+                '<host-comp host-dir-only="host-dir-changed" shadowed-attr="host-changed" ' +
+                'other-host-dir-only="other-host-dir-changed"></host-comp>');
+      });
+
+      it('should support host event bindings coming from the host directives', () => {
+        const logs: string[] = [];
+
+        @Directive({standalone: true, host: {'(click)': 'handleClick()'}})
+        class HostDir {
+          handleClick() {
+            logs.push('HostDir');
+          }
+        }
+
+        @Directive({standalone: true, host: {'(click)': 'handleClick()'}})
+        class OtherHostDir {
+          handleClick() {
+            logs.push('OtherHostDir');
+          }
+        }
+
+        @Component({
+          selector: 'host-comp',
+          host: {'(click)': 'handleClick()'},
+          hostDirectives: [HostDir, OtherHostDir]
+        } as HostDirectiveAny)
+        class HostComp {
+          handleClick() {
+            logs.push('HostComp');
+          }
+        }
+
+        const {fixture, ref} = createRootComponent(HostComp);
+
+        ref.location.nativeElement.click();
+        fixture.detectChanges();
+
+        expect(logs).toEqual(['HostDir', 'OtherHostDir', 'HostComp']);
+      });
+
+      it('should have the host bindings of the root component take precedence over the ones from the host directives',
+         () => {
+           @Directive({standalone: true, host: {'id': 'host-dir'}})
+           class HostDir {
+           }
+
+           @Directive({standalone: true, host: {'id': 'other-host-dir'}})
+           class OtherHostDir {
+           }
+
+           @Component({
+             template: '',
+             host: {'id': 'host'},
+             hostDirectives: [HostDir, OtherHostDir],
+           } as HostDirectiveAny)
+           class HostComp {
+           }
+
+           const {ref, fixture} = createRootComponent(HostComp);
+           fixture.detectChanges();
+           expect(ref.location.nativeElement.getAttribute('id')).toBe('host');
+         });
+    });
+
+    describe('dependency injection', () => {
+      it('should allow the host directive to inject the root component', () => {
+        let hostDirInstance!: HostDir;
+
+        @Directive({standalone: true})
+        class HostDir {
+          host = inject(HostComp);
+
+          constructor() {
+            hostDirInstance = this;
+          }
+        }
+
+        @Component({hostDirectives: [HostDir], template: ''} as HostDirectiveAny)
+        class HostComp {
+        }
+
+        const {ref} = createRootComponent(HostComp);
+
+        expect(hostDirInstance instanceof HostDir).toBe(true);
+        expect(hostDirInstance.host).toBe(ref.instance);
+      });
+
+      it('should allow the root component to inject the host directive', () => {
+        let hostDirInstance!: HostDir;
+
+        @Directive({standalone: true})
+        class HostDir {
+          constructor() {
+            hostDirInstance = this;
+          }
+        }
+
+        @Component({hostDirectives: [HostDir], template: ''} as HostDirectiveAny)
+        class HostComp {
+          hostDir = inject(HostDir);
+        }
+
+        const {ref} = createRootComponent(HostComp);
+        expect(hostDirInstance instanceof HostDir).toBe(true);
+        expect(ref.instance.hostDir).toBe(hostDirInstance);
+      });
+
+      it('should give precedence to the DI tokens from the root component over the host directive tokens',
+         () => {
+           const token = new InjectionToken<string>('token');
+           let hostInstance!: HostComp;
+           let firstHostDirInstance!: FirstHostDir;
+           let secondHostDirInstance!: SecondHostDir;
+
+           @Directive({standalone: true, providers: [{provide: token, useValue: 'SecondDir'}]})
+           class SecondHostDir {
+             tokenValue = inject(token);
+
+             constructor() {
+               secondHostDirInstance = this;
+             }
+           }
+
+           @Directive({
+             standalone: true,
+             hostDirectives: [SecondHostDir],
+             providers: [{provide: token, useValue: 'FirstDir'}]
+           } as HostDirectiveAny)
+           class FirstHostDir {
+             tokenValue = inject(token);
+
+             constructor() {
+               firstHostDirInstance = this;
+             }
+           }
+
+           @Component({
+             template: '',
+             hostDirectives: [FirstHostDir],
+             providers: [{provide: token, useValue: 'HostDir'}]
+           } as HostDirectiveAny)
+           class HostComp {
+             tokenValue = inject(token);
+
+             constructor() {
+               hostInstance = this;
+             }
+           }
+
+           createRootComponent(HostComp);
+
+           expect(hostInstance instanceof HostComp).toBe(true);
+           expect(firstHostDirInstance instanceof FirstHostDir).toBe(true);
+           expect(secondHostDirInstance instanceof SecondHostDir).toBe(true);
+
+           expect(hostInstance.tokenValue).toBe('HostDir');
+           expect(firstHostDirInstance.tokenValue).toBe('HostDir');
+           expect(secondHostDirInstance.tokenValue).toBe('HostDir');
+         });
+
+      it('should allow the root component to inject tokens from the host directives', () => {
+        const firstToken = new InjectionToken<string>('firstToken');
+        const secondToken = new InjectionToken<string>('secondToken');
+
+        @Directive({standalone: true, providers: [{provide: secondToken, useValue: 'SecondDir'}]})
+        class SecondHostDir {
+        }
+
+        @Directive({
+          standalone: true,
+          hostDirectives: [SecondHostDir],
+          providers: [{provide: firstToken, useValue: 'FirstDir'}]
+        } as HostDirectiveAny)
+        class FirstHostDir {
+        }
+
+        @Component({template: '', hostDirectives: [FirstHostDir]} as HostDirectiveAny)
+        class HostComp {
+          firstTokenValue = inject(firstToken);
+          secondTokenValue = inject(secondToken);
+        }
+
+        const {ref} = createRootComponent(HostComp);
+        expect(ref.instance.firstTokenValue).toBe('FirstDir');
+        expect(ref.instance.secondTokenValue).toBe('SecondDir');
+      });
+    });
+
+    describe('inputs', () => {
+      it('should set inputs on root component and all host directive instances using `setInput`',
+         () => {
+           let hostDirInstance!: HostDir;
+           let otherHostDirInstance!: OtherHostDir;
+
+           @Directive({standalone: true})
+           class HostDir {
+             @Input() color?: string;
+
+             constructor() {
+               hostDirInstance = this;
+             }
+           }
+
+           @Directive({standalone: true})
+           class OtherHostDir {
+             @Input() color?: string;
+
+             constructor() {
+               otherHostDirInstance = this;
+             }
+           }
+
+           @Component({
+             selector: 'host-comp',
+             hostDirectives: [
+               {
+                 directive: HostDir,
+                 inputs: ['color'],
+               },
+               {
+                 directive: OtherHostDir,
+                 inputs: ['color'],
+               }
+             ]
+           } as HostDirectiveAny)
+           class HostComp {
+             @Input() color?: string;
+           }
+
+           const {fixture, ref} = createRootComponent(HostComp);
+           fixture.detectChanges();
+
+           expect(hostDirInstance.color).toBe(undefined);
+           expect(otherHostDirInstance.color).toBe(undefined);
+           expect(ref.instance.color).toBe(undefined);
+
+           ref.setInput('color', 'green');
+
+           expect(hostDirInstance.color).toBe('green');
+           expect(otherHostDirInstance.color).toBe('green');
+           expect(ref.instance.color).toBe('green');
+         });
+
+      it('should set inputs that only exist on a host directive when using `setInput`', () => {
+        let hostDirInstance!: HostDir;
+
+        @Directive({standalone: true})
+        class HostDir {
+          @Input() color?: string;
+
+          constructor() {
+            hostDirInstance = this;
+          }
+        }
+
+        @Component({
+          selector: 'host-comp',
+          hostDirectives: [{
+            directive: HostDir,
+            inputs: ['color'],
+          }]
+        } as HostDirectiveAny)
+        class HostComp {
+          color?: string;  // Note: intentionally not marked as @Input.
+        }
+
+        const {ref} = createRootComponent(HostComp);
+
+        expect(hostDirInstance.color).toBe(undefined);
+        expect(ref.instance.color).toBe(undefined);
+
+        ref.setInput('color', 'color');
+
+        expect(hostDirInstance.color).toBe('color');
+        expect(ref.instance.color).toBe(undefined);
+      });
+
+      it('should set inputs that only exist on the root component when using `setInput`', () => {
+        let hostDirInstance!: HostDir;
+
+        @Directive({standalone: true})
+        class HostDir {
+          @Input() color?: string;
+
+          constructor() {
+            hostDirInstance = this;
+          }
+        }
+
+        @Component({
+          selector: 'host-comp',
+          hostDirectives: [HostDir]  // Note: `color` input has intentionally not been exposed.
+        } as HostDirectiveAny)
+        class HostComp {
+          @Input() color?: string;
+        }
+
+        const {ref, fixture} = createRootComponent(HostComp);
+        fixture.detectChanges();
+
+        expect(hostDirInstance.color).toBe(undefined);
+        expect(ref.instance.color).toBe(undefined);
+
+        ref.setInput('color', 'green');
+
+        expect(hostDirInstance.color).toBe(undefined);
+        expect(ref.instance.color).toBe('green');
+      });
+
+      it('should use the input name alias in `setInput`', () => {
+        let hostDirInstance!: HostDir;
+
+        @Directive({standalone: true})
+        class HostDir {
+          @Input('alias') color?: string;
+
+          constructor() {
+            hostDirInstance = this;
+          }
+        }
+
+        @Component({
+          selector: 'host-comp',
+          hostDirectives: [{
+            directive: HostDir,
+            inputs: ['alias: customAlias'],
+          }]
+        } as HostDirectiveAny)
+        class HostComp {
+        }
+
+        const {ref, fixture} = createRootComponent(HostComp);
+        fixture.detectChanges();
+
+        expect(hostDirInstance.color).toBe(undefined);
+
+        // Check that the old alias or the original name aren't available first.
+        expect(() => ref.setInput('color', 'hello'))
+            .toThrowError(/NG0303: Can't set value of the 'color' input/);
+        expect(() => ref.setInput('alias', 'hello'))
+            .toThrowError(/NG0303: Can't set value of the 'alias' input/);
+        expect(hostDirInstance.color).toBe(undefined);
+
+        // Check the alias.
+        ref.setInput('customAlias', 'hello');
+        expect(hostDirInstance.color).toBe('hello');
+      });
+
+      it('should invoke ngOnChanges when setting host directive inputs using setInput', () => {
+        let latestChanges: SimpleChanges|undefined;
+
+        @Directive({standalone: true})
+        class HostDir implements OnChanges {
+          @Input('alias') color?: string;
+
+          ngOnChanges(changes: SimpleChanges) {
+            latestChanges = changes;
+          }
+        }
+
+        @Component({
+          selector: 'host-comp',
+          hostDirectives: [{directive: HostDir, inputs: ['alias: customAlias']}],
+        } as HostDirectiveAny)
+        class HostComp {
+        }
+
+        const {ref, fixture} = createRootComponent(HostComp);
+
+        expect(latestChanges).toBe(undefined);
+
+        ref.setInput('customAlias', 'red');
+        fixture.detectChanges();
+
+        expect(latestChanges).toEqual(jasmine.objectContaining({
+          color: jasmine.objectContaining({
+            previousValue: undefined,
+            currentValue: 'red',
+            firstChange: true,
+          })
+        }));
+
+        ref.setInput('customAlias', 'green');
+        fixture.detectChanges();
+
+        expect(latestChanges).toEqual(jasmine.objectContaining({
+          color: jasmine.objectContaining({
+            previousValue: 'red',
+            currentValue: 'green',
+            firstChange: false,
+          })
+        }));
+      });
+    });
+
+    it('should throw an error if a host directive is applied multiple times to a root component', () => {
+      @Directive({standalone: true})
+      class DuplicateHostDir {
+      }
+
+      @Directive({standalone: true, hostDirectives: [DuplicateHostDir]} as HostDirectiveAny)
+      class HostDir {
+      }
+
+      @Directive(
+          {standalone: true, hostDirectives: [HostDir, DuplicateHostDir]} as HostDirectiveAny)
+      class Dir {
+      }
+
+      @Component({
+        hostDirectives: [Dir],
+      } as HostDirectiveAny)
+      class HostComp {
+      }
+
+      expect(() => createRootComponent(HostComp))
+          .toThrowError(
+              'NG0309: Directive DuplicateHostDir matches multiple times on the same element. Directives can only match an element once.');
     });
   });
 
