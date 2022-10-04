@@ -349,6 +349,7 @@ describe('standalone in Router API', () => {
       });
 
       const root = TestBed.createComponent(RootCmp);
+      root.detectChanges();
       await TestBed.inject(Router).navigateByUrl('/home');
 
       expect(root.nativeElement.innerHTML).toContain('default exported');
@@ -363,6 +364,7 @@ describe('standalone in Router API', () => {
       });
 
       const root = TestBed.createComponent(RootCmp);
+      root.detectChanges();
       await TestBed.inject(Router).navigateByUrl('/home');
 
       expect(root.nativeElement.innerHTML).toContain('default exported');
