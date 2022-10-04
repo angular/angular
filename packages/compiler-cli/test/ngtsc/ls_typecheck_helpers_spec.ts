@@ -170,5 +170,36 @@ runInEachFileSystem(() => {
         expect(ngModuleRetrievedClass).toEqual(ngModuleKnownClass);
       });
     });
+
+    describe('can retrieve candidate directives` ', () => {
+      it('which are out of scope', () => {
+        env.write('one.ts', `
+		   import {Component} from '@angular/core';
+   
+		   @Component({
+			   standalone: true,
+			   selector: 'one-cmp',
+			   template: '<div></div>',
+		   })
+		   export class OneCmp {}
+		   `);
+
+        env.write('two.ts', `
+		   import {Component} from '@angular/core';
+   
+		   @Component({
+			   standalone: true,
+			   selector: 'two-cmp',
+			   template: '<div></div>',
+		   })
+		   export class TwoCmp {}
+		   `);
+        const {program, checker} = env.driveTemplateTypeChecker();
+        const sf = program.getSourceFile(_('/one.ts'));
+        expect(sf).not.toBeNull();
+        const directives = checker.getPotentialTemplateDirectives(getClass(sf!, 'OneCmp'));
+        expect(directives.map(d => d.selector)).toContain('two-cmp');
+      });
+    });
   });
 });
