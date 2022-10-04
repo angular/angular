@@ -12,11 +12,6 @@ import {By} from '@angular/platform-browser';
 
 import {getComponent, getDirectives} from '../../src/render3/util/discovery_utils';
 
-/**
- * Temporary `any` used for metadata until `hostDirectives` is enabled publicly.
- * TODO(crisbeto): remove this once host directives are enabled in the public API.
- */
-type HostDirectiveAny = any;
 
 describe('host directives', () => {
   it('should apply a basic host directive', () => {
@@ -36,7 +31,7 @@ describe('host directives', () => {
       selector: '[dir]',
       host: {'host-attr': '', 'class': 'dir', 'style': 'width: 50px'},
       hostDirectives: [HostDir]
-    } as HostDirectiveAny)
+    })
     class Dir {
       constructor() {
         logs.push('Dir');
@@ -64,7 +59,7 @@ describe('host directives', () => {
     @Directive({
       selector: '[dir]',
       hostDirectives: [forwardRef(() => HostDir), {directive: forwardRef(() => OtherHostDir)}]
-    } as HostDirectiveAny)
+    })
     class Dir {
       constructor() {
         logs.push('Dir');
@@ -119,7 +114,7 @@ describe('host directives', () => {
     @Directive({
       standalone: true,
       hostDirectives: [Chain1_3],
-    } as HostDirectiveAny)
+    })
     class Chain1_2 {
       constructor() {
         logs.push('Chain1 - level 2');
@@ -129,7 +124,7 @@ describe('host directives', () => {
     @Directive({
       standalone: true,
       hostDirectives: [Chain1_2],
-    } as HostDirectiveAny)
+    })
     class Chain1 {
       constructor() {
         logs.push('Chain1 - level 1');
@@ -153,7 +148,7 @@ describe('host directives', () => {
     @Directive({
       standalone: true,
       hostDirectives: [Chain2_2],
-    } as HostDirectiveAny)
+    })
     class Chain2 {
       constructor() {
         logs.push('Chain2 - level 1');
@@ -167,7 +162,7 @@ describe('host directives', () => {
       }
     }
 
-    @Directive({standalone: true, hostDirectives: [Chain3_2]} as HostDirectiveAny)
+    @Directive({standalone: true, hostDirectives: [Chain3_2]})
     class Chain3 {
       constructor() {
         logs.push('Chain3 - level 1');
@@ -183,7 +178,7 @@ describe('host directives', () => {
       template: '',
       hostDirectives: [Chain1, Chain2, Chain3],
       providers: [{provide: token, useValue: 'host value'}],
-    } as HostDirectiveAny)
+    })
     class MyComp {
       constructor() {
         logs.push('MyComp');
@@ -200,7 +195,7 @@ describe('host directives', () => {
     @Directive({
       selector: '[selector-matched-dir]',
       hostDirectives: [SelectorMatchedHostDir],
-    } as HostDirectiveAny)
+    })
     class SelectorMatchedDir {
       constructor() {
         logs.push('SelectorMatchedDir');
@@ -244,14 +239,14 @@ describe('host directives', () => {
       }
     }
 
-    @Directive({standalone: true, hostDirectives: [SecondHostDir]} as HostDirectiveAny)
+    @Directive({standalone: true, hostDirectives: [SecondHostDir]})
     class FirstHostDir {
       constructor() {
         firstHostDirInstance = this;
       }
     }
 
-    @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]} as HostDirectiveAny)
+    @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
     class Host {
       constructor() {
         hostInstance = this;
@@ -282,14 +277,12 @@ describe('host directives', () => {
       name = 'SecondHost';
     }
 
-    @Directive(
-        {standalone: true, hostDirectives: [SecondHostDir], exportAs: 'firstHost'} as
-        HostDirectiveAny)
+    @Directive({standalone: true, hostDirectives: [SecondHostDir], exportAs: 'firstHost'})
     class FirstHostDir {
       name = 'FirstHost';
     }
 
-    @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]} as HostDirectiveAny)
+    @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
     class Host {
     }
 
@@ -345,7 +338,7 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir, OtherHostDir]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [HostDir, OtherHostDir]})
       class Dir implements OnInit, AfterViewInit, AfterViewChecked {
         ngOnInit() {
           logs.push('Dir - ngOnInit');
@@ -414,7 +407,7 @@ describe('host directives', () => {
       @Component({
         selector: 'child',
         hostDirectives: [ChildHostDir, OtherChildHostDir],
-      } as HostDirectiveAny)
+      })
       class Child extends LogsLifecycles {
         override name = 'Child';
       }
@@ -433,7 +426,7 @@ describe('host directives', () => {
         selector: 'parent',
         hostDirectives: [ParentHostDir, OtherParentHostDir],
         template: '<child plain-dir="PlainDir on child"></child>',
-      } as HostDirectiveAny)
+      })
       class Parent extends LogsLifecycles {
         override name = 'Parent';
       }
@@ -501,7 +494,7 @@ describe('host directives', () => {
           {directive: HostDir, inputs: ['someInput']},
           {directive: OtherHostDir, inputs: ['someInput']},
         ],
-      } as HostDirectiveAny)
+      })
       class HostComp extends LogsLifecycles {
         override name = 'HostComp';
       }
@@ -561,7 +554,7 @@ describe('host directives', () => {
         selector: '[dir]',
         host: {'host-attr': 'true', '(click)': 'handleClick()'},
         hostDirectives: [HostDir, OtherHostDir]
-      } as HostDirectiveAny)
+      })
       class Dir {
         handleClick() {
           clicks.push('Dir');
@@ -599,8 +592,7 @@ describe('host directives', () => {
          }
 
          @Directive(
-             {selector: '[dir]', host: {'id': 'host'}, hostDirectives: [HostDir, OtherHostDir]} as
-             HostDirectiveAny)
+             {selector: '[dir]', host: {'id': 'host'}, hostDirectives: [HostDir, OtherHostDir]})
          class Dir {
          }
 
@@ -629,14 +621,14 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({standalone: true, hostDirectives: [SecondHostDir]} as HostDirectiveAny)
+      @Directive({standalone: true, hostDirectives: [SecondHostDir]})
       class FirstHostDir {
         constructor() {
           firstHostDirInstance = this;
         }
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
       class Host {
         firstHostDir = inject(FirstHostDir);
         secondHostDir = inject(SecondHostDir);
@@ -681,7 +673,7 @@ describe('host directives', () => {
         selector: 'host',
         template: '<child></child>',
         hostDirectives: [HostDir],
-      } as HostDirectiveAny)
+      })
       class Host {
         @ViewChild(Child) child!: Child;
       }
@@ -714,7 +706,7 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({standalone: true, hostDirectives: [SecondHostDir]} as HostDirectiveAny)
+      @Directive({standalone: true, hostDirectives: [SecondHostDir]})
       class FirstHostDir {
         host = inject(Host);
 
@@ -723,7 +715,7 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
       class Host {
         constructor() {
           hostInstance = this;
@@ -766,7 +758,7 @@ describe('host directives', () => {
            standalone: true,
            hostDirectives: [SecondHostDir],
            providers: [{provide: token, useValue: 'FirstDir'}]
-         } as HostDirectiveAny)
+         })
          class FirstHostDir {
            tokenValue = inject(token);
 
@@ -779,7 +771,7 @@ describe('host directives', () => {
            selector: '[dir]',
            hostDirectives: [FirstHostDir],
            providers: [{provide: token, useValue: 'HostDir'}]
-         } as HostDirectiveAny)
+         })
          class Host {
            tokenValue = inject(token);
 
@@ -817,11 +809,11 @@ describe('host directives', () => {
         standalone: true,
         hostDirectives: [SecondHostDir],
         providers: [{provide: firstToken, useValue: 'FirstDir'}]
-      } as HostDirectiveAny)
+      })
       class FirstHostDir {
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
       class Host {
         firstTokenValue = inject(firstToken);
         secondTokenValue = inject(secondToken);
@@ -854,7 +846,7 @@ describe('host directives', () => {
            hostDirectives: [HostDir],
            providers: [{provide: token, useValue: 'host'}],
            template: '<span child></span>',
-         } as HostDirectiveAny)
+         })
          class Host {
          }
 
@@ -892,7 +884,7 @@ describe('host directives', () => {
         hostDirectives: [HostDir],
         viewProviders: [{provide: token, useValue: 'host'}],
         template: '',
-      } as HostDirectiveAny)
+      })
       class Host {
       }
 
@@ -914,7 +906,7 @@ describe('host directives', () => {
            host = inject(Host);
          }
 
-         @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+         @Directive({selector: '[dir]', hostDirectives: [HostDir]})
          class Host {
            hostDir = inject(HostDir);
          }
@@ -942,7 +934,7 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
       class Dir {
       }
 
@@ -974,7 +966,7 @@ describe('host directives', () => {
           directive: HostDir,
           outputs: ['hasBeenClicked'],
         }]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1002,7 +994,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked: wasClicked']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1037,7 +1029,7 @@ describe('host directives', () => {
         hostDirectives: [
           {directive: HostDir, outputs: ['wasClicked: clickOccurred']},
         ]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1075,7 +1067,7 @@ describe('host directives', () => {
            selector: '[dir]',
            hostDirectives: [HostDir],
            host: {'(click)': 'hasBeenClicked.emit("Dir")'}
-         } as HostDirectiveAny)
+         })
          class Dir {
            @Output() hasBeenClicked = new EventEmitter<string>();
          }
@@ -1106,7 +1098,7 @@ describe('host directives', () => {
            selector: '[dir]',
            hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked']}],
            host: {'(click)': 'hasBeenClicked.emit("Dir")'}
-         } as HostDirectiveAny)
+         })
          class Dir {
            @Output() hasBeenClicked = new EventEmitter<string>();
          }
@@ -1139,7 +1131,7 @@ describe('host directives', () => {
            selector: '[dir]',
            hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked: wasClicked']}],
            host: {'(click)': 'wasClicked.emit("Dir")'}
-         } as HostDirectiveAny)
+         })
          class Dir {
            @Output() wasClicked = new EventEmitter<string>();
          }
@@ -1170,7 +1162,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked', 'hasBeenClicked']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1202,7 +1194,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked']}],
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1235,7 +1227,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: ExposedHostDir, outputs: ['hasBeenClicked']}, UnExposedHostDir]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1279,7 +1271,7 @@ describe('host directives', () => {
              {directive: FirstHostDir, outputs: ['firstHasBeenClicked: wasClicked']},
              {directive: SecondHostDir, outputs: ['secondHasBeenClicked: wasClicked']}
            ]
-         } as HostDirectiveAny)
+         })
          class Dir {
          }
 
@@ -1308,7 +1300,7 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
       class Dir {
       }
 
@@ -1331,9 +1323,7 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive(
-          {selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]} as
-          HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]})
       class Dir {
       }
 
@@ -1362,7 +1352,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1391,7 +1381,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1421,7 +1411,7 @@ describe('host directives', () => {
          @Directive({
            selector: '[dir]',
            hostDirectives: [HostDir],
-         } as HostDirectiveAny)
+         })
          class Dir {
            @Input() color?: string;
          }
@@ -1455,9 +1445,7 @@ describe('host directives', () => {
            @Input() color?: string;
          }
 
-         @Directive(
-             {selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]} as
-             HostDirectiveAny)
+         @Directive({selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]})
          class Dir {
            @Input() color?: string;
          }
@@ -1494,7 +1482,7 @@ describe('host directives', () => {
          @Directive({
            selector: '[dir]',
            hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}]
-         } as HostDirectiveAny)
+         })
          class Dir {
            @Input() buttonColor?: string;
          }
@@ -1534,7 +1522,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color']}],
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1570,7 +1558,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: ExposedHostDir, inputs: ['color']}, UnExposedHostDir]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1614,7 +1602,7 @@ describe('host directives', () => {
              {directive: FirstHostDir, inputs: ['firstColor: buttonColor']},
              {directive: SecondHostDir, inputs: ['secondColor: buttonColor']}
            ]
-         } as HostDirectiveAny)
+         })
          class Dir {
          }
 
@@ -1646,7 +1634,7 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
       class Dir {
       }
 
@@ -1668,9 +1656,7 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive(
-          {selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]} as
-          HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]})
       class Dir {
       }
 
@@ -1694,7 +1680,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1719,7 +1705,7 @@ describe('host directives', () => {
          @Directive({
            selector: '[dir]',
            hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
-         } as HostDirectiveAny)
+         })
          class Dir {
          }
 
@@ -1749,7 +1735,7 @@ describe('host directives', () => {
          @Directive({
            selector: '[dir]',
            hostDirectives: [{directive: ExposedHostDir, inputs: ['color']}, UnExposedHostDir]
-         } as HostDirectiveAny)
+         })
          class Dir {
          }
 
@@ -1785,7 +1771,7 @@ describe('host directives', () => {
              {directive: FirstHostDir, inputs: ['firstColor: buttonColor']},
              {directive: SecondHostDir, inputs: ['secondColor: buttonColor']}
            ]
-         } as HostDirectiveAny)
+         })
          class Dir {
          }
 
@@ -1821,7 +1807,7 @@ describe('host directives', () => {
            selector: '[dir]',
            standalone: true,
            hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
-         } as HostDirectiveAny)
+         })
          class Dir {
          }
 
@@ -1881,7 +1867,7 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['color']},
           {directive: SecondHostDir, inputs: ['color']}
         ],
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -1957,7 +1943,7 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['firstAlias: buttonColor']},
           {directive: SecondHostDir, inputs: ['secondAlias: buttonColor']}
         ],
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -2030,7 +2016,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [FirstHostDir, {directive: SecondHostDir, inputs: ['color']}],
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -2080,7 +2066,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -2133,7 +2119,7 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir, OtherHostDir],
-      } as HostDirectiveAny)
+      })
       class Comp {
       }
 
@@ -2166,7 +2152,7 @@ describe('host directives', () => {
            selector: 'comp',
            template: '',
            hostDirectives: [HostDir],
-         } as HostDirectiveAny)
+         })
          class Comp {
            constructor() {
              compInstance = this;
@@ -2198,7 +2184,7 @@ describe('host directives', () => {
            selector: 'comp',
            template: '',
            hostDirectives: [HostDir],
-         } as HostDirectiveAny)
+         })
          class Comp {
            constructor() {
              compInstance = this;
@@ -2227,7 +2213,7 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
-      } as HostDirectiveAny)
+      })
       class Comp {
         constructor(public elementRef: ElementRef<HTMLElement>) {}
       }
@@ -2284,7 +2270,7 @@ describe('host directives', () => {
         host: {'host-attr': '', 'class': 'dir', 'style': 'width: 50px'},
         hostDirectives: [HostDir],
         template: '',
-      } as HostDirectiveAny)
+      })
       class HostComp {
         constructor() {
           logs.push('HostComp');
@@ -2333,7 +2319,7 @@ describe('host directives', () => {
         }
       }
 
-      @Component({template: '', hostDirectives: [HostDir, OtherHostDir]} as HostDirectiveAny)
+      @Component({template: '', hostDirectives: [HostDir, OtherHostDir]})
       class HostComp implements OnInit, AfterViewInit, AfterViewChecked {
         ngOnInit() {
           logs.push('HostComp - ngOnInit');
@@ -2394,7 +2380,7 @@ describe('host directives', () => {
             '[attr.shadowed-attr]': 'value',
           },
           hostDirectives: [HostDir, OtherHostDir]
-        } as HostDirectiveAny)
+        })
         class HostComp {
           value = 'host';
           hostDir = inject(HostDir);
@@ -2441,7 +2427,7 @@ describe('host directives', () => {
           selector: 'host-comp',
           host: {'(click)': 'handleClick()'},
           hostDirectives: [HostDir, OtherHostDir]
-        } as HostDirectiveAny)
+        })
         class HostComp {
           handleClick() {
             logs.push('HostComp');
@@ -2470,7 +2456,7 @@ describe('host directives', () => {
              template: '',
              host: {'id': 'host'},
              hostDirectives: [HostDir, OtherHostDir],
-           } as HostDirectiveAny)
+           })
            class HostComp {
            }
 
@@ -2493,7 +2479,7 @@ describe('host directives', () => {
           }
         }
 
-        @Component({hostDirectives: [HostDir], template: ''} as HostDirectiveAny)
+        @Component({hostDirectives: [HostDir], template: ''})
         class HostComp {
         }
 
@@ -2513,7 +2499,7 @@ describe('host directives', () => {
           }
         }
 
-        @Component({hostDirectives: [HostDir], template: ''} as HostDirectiveAny)
+        @Component({hostDirectives: [HostDir], template: ''})
         class HostComp {
           hostDir = inject(HostDir);
         }
@@ -2543,7 +2529,7 @@ describe('host directives', () => {
              standalone: true,
              hostDirectives: [SecondHostDir],
              providers: [{provide: token, useValue: 'FirstDir'}]
-           } as HostDirectiveAny)
+           })
            class FirstHostDir {
              tokenValue = inject(token);
 
@@ -2556,7 +2542,7 @@ describe('host directives', () => {
              template: '',
              hostDirectives: [FirstHostDir],
              providers: [{provide: token, useValue: 'HostDir'}]
-           } as HostDirectiveAny)
+           })
            class HostComp {
              tokenValue = inject(token);
 
@@ -2588,11 +2574,11 @@ describe('host directives', () => {
           standalone: true,
           hostDirectives: [SecondHostDir],
           providers: [{provide: firstToken, useValue: 'FirstDir'}]
-        } as HostDirectiveAny)
+        })
         class FirstHostDir {
         }
 
-        @Component({template: '', hostDirectives: [FirstHostDir]} as HostDirectiveAny)
+        @Component({template: '', hostDirectives: [FirstHostDir]})
         class HostComp {
           firstTokenValue = inject(firstToken);
           secondTokenValue = inject(secondToken);
@@ -2640,7 +2626,7 @@ describe('host directives', () => {
                  inputs: ['color'],
                }
              ]
-           } as HostDirectiveAny)
+           })
            class HostComp {
              @Input() color?: string;
            }
@@ -2677,7 +2663,7 @@ describe('host directives', () => {
             directive: HostDir,
             inputs: ['color'],
           }]
-        } as HostDirectiveAny)
+        })
         class HostComp {
           color?: string;  // Note: intentionally not marked as @Input.
         }
@@ -2708,7 +2694,7 @@ describe('host directives', () => {
         @Component({
           selector: 'host-comp',
           hostDirectives: [HostDir]  // Note: `color` input has intentionally not been exposed.
-        } as HostDirectiveAny)
+        })
         class HostComp {
           @Input() color?: string;
         }
@@ -2743,7 +2729,7 @@ describe('host directives', () => {
             directive: HostDir,
             inputs: ['alias: customAlias'],
           }]
-        } as HostDirectiveAny)
+        })
         class HostComp {
         }
 
@@ -2779,7 +2765,7 @@ describe('host directives', () => {
         @Component({
           selector: 'host-comp',
           hostDirectives: [{directive: HostDir, inputs: ['alias: customAlias']}],
-        } as HostDirectiveAny)
+        })
         class HostComp {
         }
 
@@ -2816,18 +2802,17 @@ describe('host directives', () => {
       class DuplicateHostDir {
       }
 
-      @Directive({standalone: true, hostDirectives: [DuplicateHostDir]} as HostDirectiveAny)
+      @Directive({standalone: true, hostDirectives: [DuplicateHostDir]})
       class HostDir {
       }
 
-      @Directive(
-          {standalone: true, hostDirectives: [HostDir, DuplicateHostDir]} as HostDirectiveAny)
+      @Directive({standalone: true, hostDirectives: [HostDir, DuplicateHostDir]})
       class Dir {
       }
 
       @Component({
         hostDirectives: [Dir],
-      } as HostDirectiveAny)
+      })
       class HostComp {
       }
 
@@ -2841,7 +2826,7 @@ describe('host directives', () => {
     it('should throw an error if the metadata of a host directive cannot be resolved', () => {
       class HostDir {}
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
       class Dir {
       }
 
@@ -2862,7 +2847,7 @@ describe('host directives', () => {
       class HostDir {
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
       class Dir {
       }
 
@@ -2885,7 +2870,7 @@ describe('host directives', () => {
         selector: '[dir]',
         hostDirectives: [HostDir],
         standalone: true,
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -2903,14 +2888,14 @@ describe('host directives', () => {
       class DuplicateHostDir {
       }
 
-      @Directive({standalone: true, hostDirectives: [DuplicateHostDir]} as HostDirectiveAny)
+      @Directive({standalone: true, hostDirectives: [DuplicateHostDir]})
       class HostDir {
       }
 
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir, DuplicateHostDir],
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -2930,7 +2915,7 @@ describe('host directives', () => {
       class HostComp {
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostComp]} as HostDirectiveAny)
+      @Directive({selector: '[dir]', hostDirectives: [HostComp]})
       class Dir {
       }
 
@@ -2956,7 +2941,7 @@ describe('host directives', () => {
           directive: HostDir,
           outputs: ['doesNotExist'],
         }]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -2983,7 +2968,7 @@ describe('host directives', () => {
           directive: HostDir,
           outputs: ['foo'],
         }]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -3010,7 +2995,7 @@ describe('host directives', () => {
           directive: HostDir,
           inputs: ['doesNotExist'],
         }]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -3034,7 +3019,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['foo']}],
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -3059,7 +3044,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -3088,7 +3073,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColorAlias']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -3119,7 +3104,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -3145,7 +3130,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['clickedAlias: tappedAlias']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 
@@ -3177,7 +3162,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['clicked: wasClicked']}]
-      } as HostDirectiveAny)
+      })
       class Dir {
       }
 

@@ -332,6 +332,17 @@ export interface Directive {
    * @developerPreview
    */
   standalone?: boolean;
+
+  /**
+   * Standalone directives that should be applied to the host whenever the directive is matched.
+   * By default none of the inputs or outputs of the host directives will be available on the host,
+   * unless they are specified in the `inputs` or `outputs` properties.
+   */
+  hostDirectives?: (Type<unknown>|{
+    directive: Type<unknown>,
+    inputs?: string[],
+    outputs?: string[],
+  })[];
 }
 
 /**
