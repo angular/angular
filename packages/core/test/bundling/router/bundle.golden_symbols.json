@@ -483,9 +483,6 @@
     "name": "RouterLinkActive"
   },
   {
-    "name": "RouterLinkWithHref"
-  },
-  {
     "name": "RouterOutlet"
   },
   {
@@ -984,9 +981,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "fillProperties"
-  },
-  {
     "name": "filter"
   },
   {
@@ -1090,9 +1084,6 @@
   },
   {
     "name": "getFactoryDef"
-  },
-  {
-    "name": "getFactoryOf"
   },
   {
     "name": "getFirstLContainer"
@@ -1263,15 +1254,6 @@
     "name": "incrementInitPhaseFlags"
   },
   {
-    "name": "inheritContentQueries"
-  },
-  {
-    "name": "inheritHostBindings"
-  },
-  {
-    "name": "inheritViewQuery"
-  },
-  {
     "name": "inheritedParamsDataResolve"
   },
   {
@@ -1357,9 +1339,6 @@
   },
   {
     "name": "isEmptyError"
-  },
-  {
-    "name": "isForwardRef"
   },
   {
     "name": "isFunction"
@@ -1491,9 +1470,6 @@
     "name": "maybeUnwrapDefaultExport"
   },
   {
-    "name": "maybeUnwrapEmpty"
-  },
-  {
     "name": "maybeUnwrapFn"
   },
   {
@@ -1546,9 +1522,6 @@
   },
   {
     "name": "noMatch2"
-  },
-  {
-    "name": "noSideEffects"
   },
   {
     "name": "nodeChildrenAsMap"
@@ -1866,9 +1839,6 @@
     "name": "ɵEmptyOutletComponent"
   },
   {
-    "name": "ɵɵInheritDefinitionFeature"
-  },
-  {
     "name": "ɵɵNgOnChangesFeature"
   },
   {
@@ -1876,9 +1846,6 @@
   },
   {
     "name": "ɵɵattribute"
-  },
-  {
-    "name": "ɵɵcontentQuery"
   },
   {
     "name": "ɵɵdefineComponent"
@@ -1906,9 +1873,6 @@
   },
   {
     "name": "ɵɵlistener"
-  },
-  {
-    "name": "ɵɵloadQuery"
   },
   {
     "name": "ɵɵqueryRefresh"
