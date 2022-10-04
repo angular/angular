@@ -98,30 +98,9 @@ $my-custom-typography-config: mat.define-typography-config(
 );
 ```
 
-To customize component typography for your entire application, you can pass your custom typography
-config to the `core` mixin described in the [theming guide][theming-system].
-
-```scss
-@use '@angular/material' as mat;
-
-$my-custom-typography: mat.define-typography-config(
-  $headline:  mat.define-typography-level(3rem, 1, 700),
-);
-
-@include mat.core($my-custom-typography);
-```
-
-Passing your typography config to `core` mixin will apply your specified values to all Angular
-Material components. If a config is not specified, `core` will emit the default Material Design
-typography styles.
-
 ### Typography configs and theming
 
-In addition to the `core` mixin, you can specify your typography config when including any `theme`
-mixin, as described in the [theming guide][theming-system]. Because the `core` mixin always emits
-typography styles, specifying a typography config to a theme mixin results in duplicate typography
-CSS. You should only provide a typography config when applying your theme if you need to specify
-multiple typography styles that are conditionally applied based on your application's behavior.
+You can provide a typography config when defining a theme to customize typographic styles. See the [theming guide][theming-system] for details on custom themes.
 
 The following example shows a typical theme definition and a "kids theme" that only applies when
 the `".kids-theme"` CSS class is present. You can [see the theming guide for more guidance on
@@ -134,12 +113,14 @@ defining multiple themes](https://material.angular.io/guide/theming#defining-mul
 
 $my-primary: mat.define-palette(mat.$indigo-palette, 500);
 $my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$my-typography: mat.define-typography-config();
 
 $my-theme: mat.define-light-theme((
  color: (
    primary: $my-primary,
    accent: $my-accent,
- )
+ ),
+  typography: $my-typography,
 ));
 
 @include mat.all-component-themes($my-theme);
@@ -147,8 +128,10 @@ $my-theme: mat.define-light-theme((
 .kids-theme {
   $kids-primary: mat.define-palette(mat.$cyan-palette);
   $kids-accent: mat.define-palette(mat.$yellow-palette);
+
+  // Typography config based on the default, but using "Comic Sans" as the 
+  // default font family for all levels.
   $kids-typography: mat.define-typography-config(
-    // Specify "Comic Sans" as the default font family for all levels.
     $font-family: 'Comic Sans',
   );
 
