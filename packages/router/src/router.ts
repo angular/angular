@@ -310,10 +310,6 @@ export function assignExtraOptionsToRouter(opts: ExtraOptions, router: Router): 
     router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
   }
 
-  if (opts.relativeLinkResolution) {
-    router.relativeLinkResolution = opts.relativeLinkResolution;
-  }
-
   if (opts.urlUpdateStrategy) {
     router.urlUpdateStrategy = opts.urlUpdateStrategy;
   }
@@ -531,10 +527,9 @@ export class Router {
   urlUpdateStrategy: 'deferred'|'eager' = 'deferred';
 
   /**
-   * Enables a bug fix that corrects relative link resolution in components with empty paths.
-   * @see `RouterModule`
-   *
-   * @deprecated
+   * TODO(atscott): Remove all references to relativeLinkResolution when internal cleanup is
+   * finished.
+   * @internal
    */
   relativeLinkResolution: 'legacy'|'corrected' = 'corrected';
 
