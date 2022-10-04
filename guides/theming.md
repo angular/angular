@@ -356,7 +356,7 @@ hue's number identifier with `-contrast`.
 $my-palette: mat.define-palette(mat.$indigo-palette);
 
 .my-custom-style {
- background: mat.get-color-from-palette($my-palette, '500');
+ background: mat.get-color-from-palette($my-palette, 500);
  color: mat.get-color-from-palette($my-palette, '500-contrast');
 }
 ```
