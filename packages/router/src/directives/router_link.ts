@@ -116,7 +116,7 @@ import {UrlTree} from '../url_tree';
  * @publicApi
  */
 @Directive({
-  selector: ':not(a):not(area)[routerLink]',
+  selector: ':not(a):not(area)[routerLink],a[routerLink],area[routerLink]',
   standalone: true,
 })
 export class RouterLink implements OnChanges, OnDestroy {
@@ -375,18 +375,10 @@ export class RouterLink implements OnChanges, OnDestroy {
 
 /**
  * @description
+ * An alias for the `RouterLink` directive.
+ * Deprecated since v15, use `RouterLink` directive instead.
  *
- * Lets you link to specific routes in your app.
- *
- * See `RouterLink` for more information.
- *
- * @ngModule RouterModule
- *
+ * @deprecated use `RouterLink` directive instead.
  * @publicApi
  */
-@Directive({
-  selector: 'a[routerLink],area[routerLink]',
-  standalone: true,
-})
-export class RouterLinkWithHref extends RouterLink {
-}
+export {RouterLink as RouterLinkWithHref};
