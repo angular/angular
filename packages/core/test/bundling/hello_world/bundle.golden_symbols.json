@@ -366,6 +366,9 @@
     "name": "detectChangesInternal"
   },
   {
+    "name": "diPublicInInjector"
+  },
+  {
     "name": "empty"
   },
   {
@@ -460,6 +463,9 @@
   },
   {
     "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateNodeInjectorForNode"
   },
   {
     "name": "getOrCreateTNode"
