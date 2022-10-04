@@ -15,6 +15,10 @@ import {Scroll} from '../src/events';
 import {RouterScroller} from '../src/router_scroller';
 
 // TODO: add tests that exercise the `withInMemoryScrolling` feature of the provideRouter function
+const fakeZone = {
+  runOutsideAngular: (fn: any) => fn(),
+  run: (fn: any) => fn()
+};
 describe('RouterScroller', () => {
   it('defaults to disabled', () => {
     const events = new Subject<Event>();
@@ -28,7 +32,7 @@ describe('RouterScroller', () => {
         'viewportScroller',
         ['getScrollPosition', 'scrollToPosition', 'scrollToAnchor', 'setHistoryScrollRestoration']);
     setScroll(viewportScroller, 0, 0);
-    const scroller = new RouterScroller(router, router);
+    const scroller = new RouterScroller(router, router, fakeZone as any);
 
     expect((scroller as any).options.scrollPositionRestoration).toBe('disabled');
     expect((scroller as any).options.anchorScrolling).toBe('disabled');
@@ -195,8 +199,8 @@ describe('RouterScroller', () => {
         ['getScrollPosition', 'scrollToPosition', 'scrollToAnchor', 'setHistoryScrollRestoration']);
     setScroll(viewportScroller, 0, 0);
 
-    const scroller =
-        new RouterScroller(router, viewportScroller, {scrollPositionRestoration, anchorScrolling});
+    const scroller = new RouterScroller(
+        router, viewportScroller, fakeZone as any, {scrollPositionRestoration, anchorScrolling});
     scroller.init();
 
     return {events, viewportScroller, router};
