@@ -416,12 +416,8 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     providers: metadata.providers || null,
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
     isStandalone: !!metadata.standalone,
-    hostDirectives:
-        // TODO(crisbeto): remove the `as any` usage here and down in the `map` call once
-        // host directives are exposed in the public API.
-        (metadata as any)
-            .hostDirectives?.map(
-                (directive: any) => typeof directive === 'function' ? {directive} : directive) ||
+    hostDirectives: metadata.hostDirectives?.map(
+                        directive => typeof directive === 'function' ? {directive} : directive) ||
         null
   };
 }
