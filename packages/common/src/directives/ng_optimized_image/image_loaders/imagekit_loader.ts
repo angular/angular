@@ -15,10 +15,6 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * This URL should match one of the following formats:
  * https://ik.imagekit.io/myaccount
  * https://subdomain.mysite.com
- * @param options An object with extra configuration:
- * - `ensurePreconnect`: boolean flag indicating whether the NgOptimizedImage directive
- *                       should verify that there is a corresponding `<link rel="preconnect">`
- *                       present in the document's `<head>`.
  * @returns Set of providers to configure the ImageKit loader.
  *
  * @publicApi

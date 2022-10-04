@@ -33,7 +33,7 @@ describe('entryComponents migration', () => {
     }));
     writeFile('/angular.json', JSON.stringify({
       version: 1,
-      projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
+      projects: {t: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
 
     previousWorkingDir = shx.pwd();

@@ -336,6 +336,9 @@
     "name": "_wrapInTimeout"
   },
   {
+    "name": "addPropertyAlias"
+  },
+  {
     "name": "allocExpando"
   },
   {
@@ -390,7 +393,13 @@
     "name": "config"
   },
   {
+    "name": "configureViewWithDirective"
+  },
+  {
     "name": "connectableObservableDescriptor"
+  },
+  {
+    "name": "convertToBitFlags"
   },
   {
     "name": "createElementRef"
@@ -424,6 +433,9 @@
   },
   {
     "name": "detectChangesInternal"
+  },
+  {
+    "name": "diPublicInInjector"
   },
   {
     "name": "empty"
@@ -534,6 +546,9 @@
     "name": "getOrCreateInjectable"
   },
   {
+    "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
     "name": "getOrCreateTNode"
   },
   {
@@ -615,6 +630,9 @@
     "name": "invertObject"
   },
   {
+    "name": "invokeHostBindingsInCreationMode"
+  },
+  {
     "name": "isArray"
   },
   {
@@ -684,6 +702,12 @@
     "name": "maybeWrapInNotSelector"
   },
   {
+    "name": "mergeHostAttribute"
+  },
+  {
+    "name": "mergeHostAttrs"
+  },
+  {
     "name": "mergeMap"
   },
   {
@@ -741,9 +765,6 @@
     "name": "refreshView"
   },
   {
-    "name": "registerHostBindingOpCodes"
-  },
-  {
     "name": "rememberChangeHistoryAndInvokeOnChangesHook"
   },
   {
@@ -771,6 +792,9 @@
     "name": "rxSubscriber"
   },
   {
+    "name": "saveNameToExportMap"
+  },
+  {
     "name": "scheduleArray"
   },
   {
@@ -778,6 +802,9 @@
   },
   {
     "name": "setBindingRootForHostBindings"
+  },
+  {
+    "name": "setCurrentDirectiveIndex"
   },
   {
     "name": "setCurrentInjector"

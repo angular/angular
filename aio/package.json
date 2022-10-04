@@ -19,7 +19,7 @@
     "build-local": "yarn ~~build",
     "prebuild-local-ci": "yarn setup-local-ci",
     "build-local-ci": "yarn ~~build --progress=false",
-    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js 4a6e62d46",
+    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js 77c70052e",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint && yarn tools-lint && yarn security-lint",
     "test": "yarn check-env && ng test",
     "test:bazel": "bazelisk test //aio:test",
@@ -105,7 +105,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/architect-cli": "0.1500.0-next.0",
+    "@angular-devkit/architect-cli": "0.1500.0-next.3",
     "@angular-devkit/build-angular": "^14.2.1",
     "@angular-eslint/builder": "^14.0.0",
     "@angular-eslint/eslint-plugin": "^14.0.0",

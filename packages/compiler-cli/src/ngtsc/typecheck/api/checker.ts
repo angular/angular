@@ -14,7 +14,7 @@ import {ErrorCode} from '../../diagnostics';
 
 import {FullTemplateMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
-import {DirectiveInScope, PipeInScope} from './scope';
+import {PotentialDirective, PotentialPipe} from './scope';
 import {ElementSymbol, Symbol, TcbLocation, TemplateSymbol} from './symbols';
 
 /**
@@ -129,21 +129,22 @@ export interface TemplateTypeChecker {
       |null;
 
   /**
-   * Get basic metadata on the directives which are in scope for the given component.
+   * Get basic metadata on the directives which are in scope or can be imported for the given
+   * component.
    */
-  getDirectivesInScope(component: ts.ClassDeclaration): DirectiveInScope[]|null;
+  getPotentialTemplateDirectives(component: ts.ClassDeclaration): PotentialDirective[];
 
   /**
    * Get basic metadata on the pipes which are in scope for the given component.
    */
-  getPipesInScope(component: ts.ClassDeclaration): PipeInScope[]|null;
+  getPipesInScope(component: ts.ClassDeclaration): PotentialPipe[]|null;
 
   /**
-   * Retrieve a `Map` of potential template element tags, to either the `DirectiveInScope` that
+   * Retrieve a `Map` of potential template element tags, to either the `PotentialDirective` that
    * declares them (if the tag is from a directive/component), or `null` if the tag originates from
    * the DOM schema.
    */
-  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, DirectiveInScope|null>;
+  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, PotentialDirective|null>;
 
   /**
    * Get the primary decorator for an Angular class (such as @Component). This does not work for

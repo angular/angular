@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ElementRef, ErrorHandler, getNgModuleById, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelementEnd as elementEnd, ɵɵelementStart as elementStart, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
+import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ElementRef, ErrorHandler, getNgModuleById, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelementEnd as elementEnd, ɵɵelementStart as elementStart, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
 import {TestBed, TestBedImpl} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -1852,6 +1852,46 @@ describe('TestBed', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     expect(fixture!.nativeElement.textContent).toContain('changed');
+  });
+
+  describe('TestBed.inject', () => {
+    describe('injection flags', () => {
+      it('should be able to optionally inject a token', () => {
+        const TOKEN = new InjectionToken<string>('TOKEN');
+
+        expect(TestBed.inject(TOKEN, undefined, {optional: true})).toBeNull();
+        expect(TestBed.inject(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
+
+        expect(TestBed.inject(TOKEN, undefined, {optional: true})).toBeNull();
+        expect(TestBed.inject(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
+      });
+
+      it('should include `null` into the result type when the optional flag is used', () => {
+        const TOKEN = new InjectionToken<string>('TOKEN');
+
+        const flags: InjectOptions = {optional: true};
+        let result = TestBed.inject(TOKEN, undefined, flags);
+        expect(result).toBe(null);
+
+        // Verify that `null` can be a valid value (from typing standpoint),
+        // the line below would fail a type check in case the result doesn't
+        // have `null` in the type.
+        result = null;
+      });
+
+      it('should be able to use skipSelf injection', () => {
+        const TOKEN = new InjectionToken<string>('TOKEN');
+        TestBed.configureTestingModule({
+          providers: [{provide: TOKEN, useValue: 'from TestBed'}],
+        });
+
+        expect(TestBed.inject(TOKEN)).toBe('from TestBed');
+
+        expect(TestBed.inject(TOKEN, undefined, {skipSelf: true, optional: true})).toBeNull();
+        expect(TestBed.inject(TOKEN, undefined, InjectFlags.SkipSelf | InjectFlags.Optional))
+            .toBeNull();
+      });
+    });
   });
 });
 

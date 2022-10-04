@@ -12,6 +12,7 @@ import {global} from '../util/global';
 import {noop} from '../util/noop';
 import {getNativeRequestAnimationFrame} from '../util/raf';
 
+import {AsyncStackTaggingZoneSpec} from './async-stack-tagging';
 
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
@@ -138,8 +139,12 @@ export class NgZone {
 
     self._outer = self._inner = Zone.current;
 
-    if ((Zone as any)['AsyncStackTaggingZoneSpec']) {
-      const AsyncStackTaggingZoneSpec = (Zone as any)['AsyncStackTaggingZoneSpec'];
+    // AsyncStackTaggingZoneSpec provides `linked stack traces` to show
+    // where the async operation is scheduled. For more details, refer
+    // to this article, https://developer.chrome.com/blog/devtools-better-angular-debugging/
+    // And we only import this AsyncStackTaggingZoneSpec in development mode,
+    // in the production mode, the AsyncStackTaggingZoneSpec will be tree shaken away.
+    if (ngDevMode) {
       self._inner = self._inner.fork(new AsyncStackTaggingZoneSpec('Angular'));
     }
 

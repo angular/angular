@@ -362,6 +362,7 @@ The following route guards are available in Angular:
 *   [`CanActivate`](api/router/CanActivate)
 *   [`CanActivateChild`](api/router/CanActivateChild)
 *   [`CanDeactivate`](api/router/CanDeactivate)
+*   [`CanMatch`](api/router/CanMatch)
 *   [`Resolve`](api/router/Resolve)
 *   [`CanLoad`](api/router/CanLoad)
 

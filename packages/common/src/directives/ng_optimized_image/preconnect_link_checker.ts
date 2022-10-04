@@ -19,18 +19,18 @@ import {extractHostname, getUrl} from './url';
 const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
 
 /**
- * Multi-provider injection token to configure which origins should be excluded
+ * Injection token to configure which origins should be excluded
  * from the preconnect checks. It can either be a single string or an array of strings
  * to represent a group of origins, for example:
  *
  * ```typescript
- *  {provide: PRECONNECT_CHECK_BLOCKLIST, multi: true, useValue: 'https://your-domain.com'}
+ *  {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://your-domain.com'}
  * ```
  *
  * or:
  *
  * ```typescript
- *  {provide: PRECONNECT_CHECK_BLOCKLIST, multi: true,
+ *  {provide: PRECONNECT_CHECK_BLOCKLIST,
  *   useValue: ['https://your-domain-1.com', 'https://your-domain-2.com']}
  * ```
  *
@@ -78,16 +78,13 @@ export class PreconnectLinkChecker {
     }
   }
 
-  private populateBlocklist(origins: Array<string|string[]>) {
+  private populateBlocklist(origins: Array<string|string[]>|string) {
     if (Array.isArray(origins)) {
       deepForEach(origins, origin => {
         this.blocklist.add(extractHostname(origin));
       });
     } else {
-      throw new RuntimeError(
-          RuntimeErrorCode.INVALID_PRECONNECT_CHECK_BLOCKLIST,
-          `The blocklist for the preconnect check was not provided as an array. ` +
-              `Check that the \`PRECONNECT_CHECK_BLOCKLIST\` token is configured as a \`multi: true\` provider.`);
+      this.blocklist.add(extractHostname(origins));
     }
   }
 

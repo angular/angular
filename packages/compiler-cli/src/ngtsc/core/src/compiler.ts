@@ -17,7 +17,7 @@ import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracke
 import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, HostDirectivesResolver, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, PipeMeta, ResourceRegistry} from '../../metadata';
+import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, HostDirectivesResolver, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, MetadataReaderWithIndex, PipeMeta, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf';
 import {FileUpdate, ProgramDriver, UpdateMode} from '../../program_driver';
@@ -966,7 +966,7 @@ export class NgCompiler {
         new PartialEvaluator(reflector, checker, this.incrementalCompilation.depGraph);
     const dtsReader = new DtsMetadataReader(checker, reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
-    const localMetaReader: MetadataReader = localMetaRegistry;
+    const localMetaReader: MetadataReaderWithIndex = localMetaRegistry;
     const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasingHost);
     const metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
     const ngModuleScopeRegistry = new LocalModuleScopeRegistry(
@@ -1069,8 +1069,8 @@ export class NgCompiler {
 
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.inputProgram, notifyingDriver, traitCompiler, this.getTypeCheckingConfig(), refEmitter,
-        reflector, this.adapter, this.incrementalCompilation, metaReader, scopeReader,
-        typeCheckScopeRegistry, this.delegatingPerfRecorder);
+        reflector, this.adapter, this.incrementalCompilation, metaReader, localMetaReader,
+        scopeReader, typeCheckScopeRegistry, this.delegatingPerfRecorder);
 
     // Only construct the extended template checker if the configuration is valid and usable.
     const extendedTemplateChecker = this.constructionDiagnostics.length === 0 ?

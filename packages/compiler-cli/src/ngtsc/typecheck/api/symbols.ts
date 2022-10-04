@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {AbsoluteFsPath} from '../../file_system';
 import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 
-import {DirectiveInScope} from './scope';
+import {PotentialDirective} from './scope';
 
 export enum SymbolKind {
   Input,
@@ -262,7 +262,7 @@ export interface TemplateSymbol {
  * A representation of a directive/component whose selector matches a node in a component
  * template.
  */
-export interface DirectiveSymbol extends DirectiveInScope {
+export interface DirectiveSymbol extends PotentialDirective {
   kind: SymbolKind.Directive;
 
   /** The `ts.Type` for the class declaration. */

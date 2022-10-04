@@ -21,7 +21,6 @@ import '../lib/browser/webapis-media-query';
 import '../lib/testing/zone-testing';
 import '../lib/zone-spec/task-tracking';
 import '../lib/zone-spec/wtf';
-import '../lib/zone-spec/async-stack-tagging';
 import '../lib/extra/cordova';
 import '../lib/testing/promise-testing';
 import '../lib/testing/async-testing';

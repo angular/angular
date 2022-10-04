@@ -71,3 +71,15 @@ Hello, we reviewed this issue and determined that it doesn't fall into the bug r
 
 If you are wondering why we don't resolve support issues via the issue tracker, please [check out this explanation](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#question).
 ```
+
+## Angular: Commit Header
+```
+It looks like you need to update your commit header to match our requirements. This is different from the PR title. To update the commit header, use the command `git commit --amend` and update the header there.
+
+Once you've finished that update, you will need to force push using `git push [origin name] [branch name] --force`. That should address this.
+```
+
+## Angular: Rebase and Squash
+```
+Please rebase and squash your commits. To do this, make sure to `git fetch upstream` to get the latest changes from the angular repository. Then in your branch run `git rebase upstream/main -i` to do an interactive rebase. This should allow you to fixup or drop any unnecessary commits. After you finish the rebase, force push using `git push [origin name] [branch name] --force`.
+```

@@ -98,7 +98,6 @@
 
     {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
 
-    {"matchPaths": ["integration/**"], "enabled": false},
-    {"matchPaths": ["integration/bazel_workspace_tests/**/WORKSPACE"], "enabled": true}
+    {"matchPaths": ["integration/**"], "enabled": false}
   ]
 }
