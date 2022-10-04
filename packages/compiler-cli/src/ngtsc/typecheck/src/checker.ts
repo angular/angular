@@ -20,7 +20,7 @@ import {ClassDeclaration, DeclarationNode, isNamedClassDeclaration, ReflectionHo
 import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, PotentialDirective, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
+import {ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PotentialDirective, PotentialPipe, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
@@ -572,7 +572,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return Array.from(resultingDirectives.values());
   }
 
-  getPipesInScope(component: ts.ClassDeclaration): PipeInScope[]|null {
+  getPipesInScope(component: ts.ClassDeclaration): PotentialPipe[]|null {
     const data = this.getScopeData(component);
     if (data === null) {
       return null;
@@ -910,6 +910,6 @@ class SingleShimTypeCheckingHost extends SingleFileTypeCheckingHost {
  */
 interface ScopeData {
   directives: PotentialDirective[];
-  pipes: PipeInScope[];
+  pipes: PotentialPipe[];
   isPoisoned: boolean;
 }
