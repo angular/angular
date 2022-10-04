@@ -27,12 +27,12 @@ import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 import {assertComponentType} from './assert';
 import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './definition';
-import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode, NodeInjector} from './di';
+import {getNodeInjectable, NodeInjector} from './di';
 import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
 import {reportUnknownPropertyError} from './instructions/element_validation';
 import {addToViewTree, createLView, createTView, executeContentQueries, getOrCreateComponentTView, getOrCreateTNode, initializeDirectives, invokeDirectivesHostBindings, locateHostElement, markAsComponentHost, markDirtyIfOnPush, renderView, setInputsForProperty} from './instructions/shared';
-import {ComponentDef, DirectiveDef} from './interfaces/definition';
+import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/definition';
 import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {Renderer, RendererFactory} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
@@ -193,10 +193,22 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     let tElementNode: TElementNode;
 
     try {
-      const rootDirectives = [this.componentDef];
+      const rootComponentDef = this.componentDef;
+      let rootDirectives: DirectiveDef<unknown>[];
+      let hostDirectiveDefs: HostDirectiveDefs|null = null;
+
+      if (rootComponentDef.findHostDirectiveDefs) {
+        rootDirectives = [];
+        hostDirectiveDefs = new Map();
+        rootComponentDef.findHostDirectiveDefs(rootComponentDef, rootDirectives, hostDirectiveDefs);
+        rootDirectives.push(rootComponentDef);
+      } else {
+        rootDirectives = [rootComponentDef];
+      }
+
       const hostTNode = createRootComponentTNode(rootLView, hostRNode);
       const componentView = createRootComponentView(
-          hostTNode, hostRNode, this.componentDef, rootDirectives, rootLView, rendererFactory,
+          hostTNode, hostRNode, rootComponentDef, rootDirectives, rootLView, rendererFactory,
           hostRenderer);
 
       tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
@@ -205,7 +217,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       // where the renderer is mocked out and `undefined` is returned. We should update the tests so
       // that this check can be removed.
       if (hostRNode) {
-        setRootNodeAttributes(hostRenderer, this.componentDef, hostRNode, rootSelectorOrNode);
+        setRootNodeAttributes(hostRenderer, rootComponentDef, hostRNode, rootSelectorOrNode);
       }
 
       if (projectableNodes !== undefined) {
@@ -216,7 +228,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       // executed here?
       // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
       component = createRootComponent(
-          componentView, this.componentDef, rootDirectives, rootLView, [LifecycleHooksFeature]);
+          componentView, rootComponentDef, rootDirectives, hostDirectiveDefs, rootLView,
+          [LifecycleHooksFeature]);
       renderView(rootTView, rootLView, null);
     } finally {
       leaveView();
@@ -345,9 +358,7 @@ function createRootComponentView(
       tNode, rendererFactory, viewRenderer, sanitizer || null, null, null);
 
   if (tView.firstCreatePass) {
-    diPublicInInjector(
-        getOrCreateNodeInjectorForNode(tNode, rootView), tView, rootComponentDef.type);
-    markAsComponentHost(tView, tNode, 0);
+    markAsComponentHost(tView, tNode, rootDirectives.length - 1);
   }
 
   addToViewTree(rootView, componentView);
@@ -379,13 +390,14 @@ function applyRootComponentStyling(
  */
 function createRootComponent<T>(
     componentView: LView, rootComponentDef: ComponentDef<T>, rootDirectives: DirectiveDef<any>[],
-    rootLView: LView, hostFeatures: HostFeature[]|null): any {
+    hostDirectiveDefs: HostDirectiveDefs|null, rootLView: LView,
+    hostFeatures: HostFeature[]|null): any {
   const rootTNode = getCurrentTNode() as TElementNode;
   ngDevMode && assertDefined(rootTNode, 'tNode should have been already created');
   const tView = rootLView[TVIEW];
   const native = getNativeByTNode(rootTNode, rootLView);
 
-  initializeDirectives(tView, rootLView, rootTNode, rootDirectives, null, null);
+  initializeDirectives(tView, rootLView, rootTNode, rootDirectives, null, hostDirectiveDefs);
 
   for (let i = 0; i < rootDirectives.length; i++) {
     const directiveIndex = rootTNode.directiveStart + i;

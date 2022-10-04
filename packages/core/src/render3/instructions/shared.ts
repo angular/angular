@@ -694,10 +694,6 @@ function createViewBlueprint(bindingStartIndex: number, initialViewLength: numbe
   return blueprint as LView;
 }
 
-function createError(text: string, token: any) {
-  return new Error(`Renderer: ${text} [${stringifyForError(token)}]`);
-}
-
 /**
  * Locates the host native element, used for bootstrapping existing nodes into rendering pipeline.
  *
@@ -910,7 +906,7 @@ function addPropertyAlias(
  * Initializes data structures required to work with directive inputs and outputs.
  * Initialization is done for all directives matched on a given TNode.
  */
-export function initializeInputAndOutputAliases(
+function initializeInputAndOutputAliases(
     tView: TView, tNode: TNode, hostDirectiveDefinitionMap: HostDirectiveDefs|null): void {
   ngDevMode && assertFirstCreatePass(tView);
 
@@ -1074,7 +1070,7 @@ export function resolveDirectives(
   let hasDirectives = false;
   if (getBindingsEnabled()) {
     const exportsMap: ({[key: string]: number}|null) = localRefs === null ? null : {'': -1};
-    const matchResult = findDirectiveDefMatches(tView, lView, tNode);
+    const matchResult = findDirectiveDefMatches(tView, tNode);
     let directiveDefs: DirectiveDef<unknown>[]|null;
     let hostDirectiveDefs: HostDirectiveDefs|null;
 
@@ -1085,13 +1081,6 @@ export function resolveDirectives(
     }
 
     if (directiveDefs !== null) {
-      // Publishes the directive types to DI so they can be injected. Needs to
-      // happen in a separate pass before the TNode flags have been initialized.
-      for (let i = 0; i < directiveDefs.length; i++) {
-        diPublicInInjector(
-            getOrCreateNodeInjectorForNode(tNode, lView), tView, directiveDefs[i].type);
-      }
-
       hasDirectives = true;
       initializeDirectives(tView, lView, tNode, directiveDefs, exportsMap, hostDirectiveDefs);
     }
@@ -1108,6 +1097,13 @@ export function initializeDirectives(
     directives: DirectiveDef<unknown>[], exportsMap: {[key: string]: number;}|null,
     hostDirectiveDefs: HostDirectiveDefs|null) {
   ngDevMode && assertFirstCreatePass(tView);
+
+  // Publishes the directive types to DI so they can be injected. Needs to
+  // happen in a separate pass before the TNode flags have been initialized.
+  for (let i = 0; i < directives.length; i++) {
+    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, lView), tView, directives[i].type);
+  }
+
   initTNodeFlags(tNode, tView.data.length, directives.length);
 
   // When the same token is provided by several directives on the same node, some rules apply in
@@ -1290,7 +1286,7 @@ export function invokeHostBindingsInCreationMode(def: DirectiveDef<any>, directi
  * If a component is matched (at most one), it is returned in first position in the array.
  */
 function findDirectiveDefMatches(
-    tView: TView, lView: LView, tNode: TElementNode|TContainerNode|TElementContainerNode):
+    tView: TView, tNode: TElementNode|TContainerNode|TElementContainerNode):
     [matches: DirectiveDef<unknown>[], hostDirectiveDefs: HostDirectiveDefs|null]|null {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
