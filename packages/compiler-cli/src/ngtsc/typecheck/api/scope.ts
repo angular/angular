@@ -13,7 +13,7 @@ import {ClassDeclaration} from '../../reflection';
 import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 
 /**
- * Metadata on a directive which is available in the scope of a template.
+ * Metadata on a directive which is available in a template.
  */
 export interface PotentialDirective {
   ref: Reference<ClassDeclaration>;
@@ -50,9 +50,9 @@ export interface PotentialDirective {
 }
 
 /**
- * Metadata for a pipe which is available in the scope of a template.
+ * Metadata for a pipe which is available in a template.
  */
-export interface PipeInScope {
+export interface PotentialPipe {
   /**
    * The `ts.Symbol` for the pipe class.
    */

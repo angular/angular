@@ -14,7 +14,7 @@ import {ErrorCode} from '../../diagnostics';
 
 import {FullTemplateMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
-import {PipeInScope, PotentialDirective} from './scope';
+import {PotentialDirective, PotentialPipe} from './scope';
 import {ElementSymbol, Symbol, TcbLocation, TemplateSymbol} from './symbols';
 
 /**
@@ -137,7 +137,7 @@ export interface TemplateTypeChecker {
   /**
    * Get basic metadata on the pipes which are in scope for the given component.
    */
-  getPipesInScope(component: ts.ClassDeclaration): PipeInScope[]|null;
+  getPipesInScope(component: ts.ClassDeclaration): PotentialPipe[]|null;
 
   /**
    * Retrieve a `Map` of potential template element tags, to either the `PotentialDirective` that
