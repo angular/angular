@@ -13,7 +13,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} f
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, MatchSource, MetadataReader, MetaKind} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, MatchSource, MetadataReader, MetadataReaderWithIndex, MetaKind} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -556,8 +556,8 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
 
   const templateTypeChecker = new TemplateTypeCheckerImpl(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
-      NOOP_INCREMENTAL_BUILD, fakeMetadataReader, fakeScopeReader, typeCheckScopeRegistry,
-      NOOP_PERF_RECORDER);
+      NOOP_INCREMENTAL_BUILD, fakeMetadataReader, fakeMetadataReader, fakeScopeReader,
+      typeCheckScopeRegistry, NOOP_PERF_RECORDER);
   return {
     templateTypeChecker,
     program,
@@ -570,13 +570,17 @@ function createTypeCheckAdapter(fn: (sf: ts.SourceFile, ctx: TypeCheckContext) =
   return {typeCheck: fn};
 }
 
-function getFakeMetadataReader(fakeMetadataRegistry: Map<any, DirectiveMeta|null>) {
+function getFakeMetadataReader(fakeMetadataRegistry: Map<any, DirectiveMeta|null>):
+    MetadataReaderWithIndex {
   return {
     getDirectiveMetadata(node: Reference<ClassDeclaration>): DirectiveMeta |
-    null {
-      return fakeMetadataRegistry.get(node.debugName) ?? null;
+        null {
+          return fakeMetadataRegistry.get(node.debugName) ?? null;
+        },
+    getKnownDirectives(): Iterable<ClassDeclaration> {
+      return fakeMetadataRegistry.keys();
     }
-  } as MetadataReader;
+  } as MetadataReaderWithIndex;
 }
 
 type DeclarationResolver = (decl: TestDeclaration) => ClassDeclaration<ts.ClassDeclaration>;

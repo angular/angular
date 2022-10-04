@@ -129,9 +129,10 @@ export interface TemplateTypeChecker {
       |null;
 
   /**
-   * Get basic metadata on the directives which are in scope for the given component.
+   * Get basic metadata on the directives which are in scope or can be imported for the given
+   * component.
    */
-  getDirectivesInScope(component: ts.ClassDeclaration): PotentialDirective[]|null;
+  getPotentialTemplateDirectives(component: ts.ClassDeclaration): PotentialDirective[];
 
   /**
    * Get basic metadata on the pipes which are in scope for the given component.
