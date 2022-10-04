@@ -283,14 +283,12 @@ export const enum EventType {
 }
 
 // @public
-export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
+export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions, InternalExtraOptions {
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;
     malformedUriErrorHandler?: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
     preloadingStrategy?: any;
-    // @deprecated
-    relativeLinkResolution?: 'legacy' | 'corrected';
     scrollOffset?: [number, number] | (() => [number, number]);
     useHash?: boolean;
 }
@@ -648,8 +646,6 @@ export class Router {
     onSameUrlNavigation: 'reload' | 'ignore';
     paramsInheritanceStrategy: 'emptyOnly' | 'always';
     parseUrl(url: string): UrlTree;
-    // @deprecated
-    relativeLinkResolution: 'legacy' | 'corrected';
     resetConfig(config: Routes): void;
     routeReuseStrategy: RouteReuseStrategy;
     readonly routerState: RouterState;
