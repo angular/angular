@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router, RouterLink, RouterLinkWithHref} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
 describe('RouterLink', () => {
@@ -93,7 +93,7 @@ describe('RouterLink', () => {
     });
   });
 
-  describe('RouterLinkWithHref', () => {
+  describe('RouterLink for elements with `href` attributes', () => {
     @Component({template: `<a [routerLink]="link"></a>`})
     class LinkComponent {
       link: string|null|undefined = '/';
@@ -124,8 +124,7 @@ describe('RouterLink', () => {
     });
 
     it('should coerce boolean input values', () => {
-      const dir = fixture.debugElement.query(By.directive(RouterLinkWithHref))
-                      .injector.get(RouterLinkWithHref);
+      const dir = fixture.debugElement.query(By.directive(RouterLink)).injector.get(RouterLink);
 
       for (const truthy of [true, '', 'true', 'anything']) {
         dir.preserveFragment = truthy;

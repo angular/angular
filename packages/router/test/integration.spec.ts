@@ -8,11 +8,11 @@
 
 import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreInject, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, ViewChild, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreInject, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterLinkWithHref, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {concat, defer, EMPTY, from, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
@@ -22,7 +22,7 @@ import {forEach, wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
 import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
 
-const ROUTER_DIRECTIVES = [RouterLink, RouterLinkWithHref, RouterLinkActive, RouterOutlet];
+const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
 
 describe('Integration', () => {
   const noopConsole: Console = {log() {}, warn() {}};
@@ -6419,8 +6419,7 @@ describe('Integration', () => {
             `
          })
          class RelativeLinkCmp {
-           @ViewChild(RouterLink) buttonLink!: RouterLink;
-           @ViewChild(RouterLinkWithHref) aLink!: RouterLink;
+           @ViewChildren(RouterLink) links!: QueryList<RouterLink>;
 
            constructor(readonly route: ActivatedRoute) {}
          }
@@ -6447,8 +6446,8 @@ describe('Integration', () => {
          // Then
          const relativeLinkCmp =
              fixture.debugElement.query(By.directive(RelativeLinkCmp)).componentInstance;
-         expect(relativeLinkCmp.aLink.urlTree.toString()).toEqual('/root/childRoot');
-         expect(relativeLinkCmp.buttonLink.urlTree.toString()).toEqual('/root/childRoot');
+         expect(relativeLinkCmp.links.first.urlTree.toString()).toEqual('/root/childRoot');
+         expect(relativeLinkCmp.links.last.urlTree.toString()).toEqual('/root/childRoot');
        }));
 
     it('should ignore empty path for relative links',
