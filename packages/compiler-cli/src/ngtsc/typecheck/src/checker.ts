@@ -20,7 +20,7 @@ import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../r
 import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
+import {ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, PotentialDirective, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
@@ -75,7 +75,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    * destroyed when the `ts.Program` changes and the `TemplateTypeCheckerImpl` as a whole is
    * destroyed and replaced.
    */
-  private elementTagCache = new Map<ts.ClassDeclaration, Map<string, DirectiveInScope|null>>();
+  private elementTagCache = new Map<ts.ClassDeclaration, Map<string, PotentialDirective|null>>();
 
   private isComplete = false;
 
@@ -549,7 +549,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return builder;
   }
 
-  getDirectivesInScope(component: ts.ClassDeclaration): DirectiveInScope[]|null {
+  getDirectivesInScope(component: ts.ClassDeclaration): PotentialDirective[]|null {
     const data = this.getScopeData(component);
     if (data === null) {
       return null;
@@ -572,12 +572,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return this.typeCheckScopeRegistry.getTypeCheckDirectiveMetadata(new Reference(dir));
   }
 
-  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, DirectiveInScope|null> {
+  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, PotentialDirective|null> {
     if (this.elementTagCache.has(component)) {
       return this.elementTagCache.get(component)!;
     }
 
-    const tagMap = new Map<string, DirectiveInScope|null>();
+    const tagMap = new Map<string, PotentialDirective|null>();
 
     for (const tag of REGISTRY.allKnownElementNames()) {
       tagMap.set(tag, null);
@@ -886,7 +886,7 @@ class SingleShimTypeCheckingHost extends SingleFileTypeCheckingHost {
  * Cached scope information for a component.
  */
 interface ScopeData {
-  directives: DirectiveInScope[];
+  directives: PotentialDirective[];
   pipes: PipeInScope[];
   isPoisoned: boolean;
 }

@@ -14,7 +14,7 @@ import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 /**
  * Metadata on a directive which is available in the scope of a template.
  */
-export interface DirectiveInScope {
+export interface PotentialDirective {
   /**
    * The `ts.Symbol` for the directive class.
    */
