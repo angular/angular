@@ -7,14 +7,20 @@
  */
 
 import {ComponentMigrator, MIGRATORS} from './rules';
-import {DevkitFileSystem, UpdateProject, findStylesheetFiles} from '@angular/cdk/schematics';
+import {
+  DevkitFileSystem,
+  UpdateProject,
+  findStylesheetFiles,
+  WorkspacePath,
+  getWorkspaceConfigGracefully,
+  getTargetTsconfigPath,
+} from '@angular/cdk/schematics';
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 
 import {RuntimeCodeMigration} from './rules/ts-migration/runtime-migration';
 import {Schema} from './schema';
 import {TemplateMigration} from './rules/template-migration';
 import {ThemingStylesMigration} from './rules/theming-styles';
-import {dirname} from 'path';
 
 /** Groups of components that must be migrated together. */
 const migrationGroups = [
@@ -55,48 +61,86 @@ function getComponentsToMigrate(requested: string[]): Set<string> {
   return componentsToMigrate;
 }
 
+function runMigrations(
+  context: SchematicContext,
+  fileSystem: DevkitFileSystem,
+  tsconfigPath: WorkspacePath,
+  migrators: ComponentMigrator[],
+  analyzedFiles: Set<WorkspacePath>,
+  additionalStylesheetPaths: string[],
+): boolean {
+  const program = UpdateProject.createProgramFromTsconfig(tsconfigPath, fileSystem);
+  const project = new UpdateProject(context, program, fileSystem, analyzedFiles, context.logger);
+  return !project.migrate(
+    [ThemingStylesMigration, TemplateMigration, RuntimeCodeMigration],
+    null,
+    migrators,
+    additionalStylesheetPaths,
+  ).hasFailures;
+}
+
 export default function (options: Schema): Rule {
-  const componentsToMigrate = getComponentsToMigrate(options.components);
-  const tsconfigPath = options.tsconfig;
-  const migrationDir = options.directory ?? dirname(tsconfigPath);
-
-  console.log('Migrating:', [...componentsToMigrate]);
-  console.log('Directory:', migrationDir);
-
-  const migrators: ComponentMigrator[] = [];
-  for (let i = 0; i < MIGRATORS.length; i++) {
-    if (componentsToMigrate.has(MIGRATORS[i].component)) {
-      migrators.push(MIGRATORS[i]);
+  return async (tree: Tree, context: SchematicContext) => {
+    const logger = context.logger;
+    const workspace = await getWorkspaceConfigGracefully(tree);
+    if (workspace === null) {
+      logger.error('Could not find workspace configuration file.');
+      return;
     }
-  }
 
-  return (tree: Tree, context: SchematicContext) => {
+    const projectNames = workspace.projects.keys();
     const fileSystem = new DevkitFileSystem(tree);
-    const program = UpdateProject.createProgramFromTsconfig(
-      fileSystem.resolve(tsconfigPath),
-      fileSystem,
-    );
+    const analyzedFiles = new Set<WorkspacePath>();
+    const componentsToMigrate = getComponentsToMigrate(options.components);
+    const migrators = MIGRATORS.filter(m => componentsToMigrate.has(m.component));
+    let additionalStylesheetPaths = options.directory
+      ? findStylesheetFiles(tree, options.directory)
+      : [];
+    let success = true;
 
-    const additionalStylesheetPaths = findStylesheetFiles(tree, migrationDir);
-    const project = new UpdateProject(context, program, fileSystem, new Set(), context.logger);
-    const {hasFailures} = project.migrate(
-      [ThemingStylesMigration, TemplateMigration, RuntimeCodeMigration],
-      null,
-      migrators,
-      additionalStylesheetPaths,
-    );
+    logger.info(`Migrating components:\n${[...componentsToMigrate].join('\n')}`);
+
+    for (const projectName of projectNames) {
+      const project = workspace.projects.get(projectName)!;
+      const tsconfigPaths = [
+        getTargetTsconfigPath(project, 'build'),
+        getTargetTsconfigPath(project, 'test'),
+      ].filter((p): p is WorkspacePath => !!p);
+
+      if (!tsconfigPaths.length) {
+        logger.warn(
+          `Skipping migration for project ${projectName}. Unable to determine 'tsconfig.json' file in workspace config.`,
+        );
+        continue;
+      }
+
+      if (!options.directory) {
+        additionalStylesheetPaths = findStylesheetFiles(tree, project.root);
+      }
+
+      logger.info(`Migrating project: ${projectName}`);
+
+      for (const tsconfigPath of tsconfigPaths) {
+        success &&= runMigrations(
+          context,
+          fileSystem,
+          tsconfigPath,
+          migrators,
+          analyzedFiles,
+          additionalStylesheetPaths,
+        );
+      }
+    }
 
     // Commit all recorded edits in the update recorder. We apply the edits after all
     // migrations ran because otherwise offsets in the TypeScript program would be
     // shifted and individual migrations could no longer update the same source file.
     fileSystem.commitEdits();
 
-    if (hasFailures) {
-      context.logger.error('Unable to migrate project. See errors above.');
+    if (!success) {
+      logger.error('Unable to migrate project. See errors above.');
     } else {
-      context.logger.info('Successfully migrated the project.');
+      logger.info('Successfully migrated the project.');
     }
-
-    return tree;
   };
 }

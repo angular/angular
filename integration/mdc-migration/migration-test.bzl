@@ -31,7 +31,7 @@ def migration_test(name, srcs, approve):
             # See: https://github.com/yarnpkg/yarn/issues/2165.
             # TODO(devversion): determine if a solution/workaround could live in the test runner.
             "yarn install --cache-folder .yarn_cache_folder/",
-            "yarn ng generate @angular/material:mdc-migration --components all --tsconfig tsconfig.app.json",
+            "yarn ng generate @angular/material:mdc-migration --components all",
             # TODO(amysorto): add back once MDC components are in @angular/material
             # "yarn test",
             " ".join([

@@ -8,10 +8,6 @@
 
 export interface Schema {
   /**
-   * Workspace-relative path to the TypeScript project that should be migrated.
-   */
-  tsconfig: string;
-  /**
    * Workspace-relative path to a directory which will be migrated.
    *
    * Source files determined outside of this directory will be ignored,
