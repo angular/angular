@@ -1288,7 +1288,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
 
-  private _calculateStatus(): FormControlStatus {
+  protected _calculateStatus(): FormControlStatus {
     if (this._allControlsDisabled()) return DISABLED;
     if (this.errors) return INVALID;
     if (this._hasOwnPendingAsyncValidator || this._anyControlsHaveStatus(PENDING)) return PENDING;
