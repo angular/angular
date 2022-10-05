@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, resolveForwardRef, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
+import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, resolveForwardRef, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵInternalEnvironmentProviders as InternalEnvironmentProviders, ɵisEnvironmentProviders as isEnvironmentProviders, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 import {ComponentDef, ComponentType} from '../../src/render3';
@@ -470,7 +470,7 @@ export class TestBedCompiler {
         this.applyProviderOverridesInScope(dependency);
       }
     } else {
-      const providers = [
+      const providers: Array<Provider|InternalEnvironmentProviders> = [
         ...injectorDef.providers,
         ...(this.providerOverridesByModule.get(type as InjectorType<any>) || [])
       ];
@@ -496,7 +496,8 @@ export class TestBedCompiler {
             fieldName: 'providers',
             originalValue: importedModule.providers
           });
-          importedModule.providers = this.getOverriddenProviders(importedModule.providers);
+          importedModule.providers = this.getOverriddenProviders(
+              importedModule.providers as Array<Provider|InternalEnvironmentProviders>);
         }
       }
     }
@@ -797,21 +798,23 @@ export class TestBedCompiler {
     return this.providerOverridesByToken.get(token) || null;
   }
 
-  private getProviderOverrides(providers?: Provider[]): Provider[] {
+  private getProviderOverrides(providers?: Array<Provider|InternalEnvironmentProviders>):
+      Provider[] {
     if (!providers || !providers.length || this.providerOverridesByToken.size === 0) return [];
-    // There are two flattening operations here. The inner flatten() operates on the metadata's
-    // providers and applies a mapping function which retrieves overrides for each incoming
-    // provider. The outer flatten() then flattens the produced overrides array. If this is not
-    // done, the array can contain other empty arrays (e.g. `[[], []]`) which leak into the
+    // There are two flattening operations here. The inner flattenProviders() operates on the
+    // metadata's providers and applies a mapping function which retrieves overrides for each
+    // incoming provider. The outer flatten() then flattens the produced overrides array. If this is
+    // not done, the array can contain other empty arrays (e.g. `[[], []]`) which leak into the
     // providers array and contaminate any error messages that might be generated.
-    return flatten(flatten(
+    return flatten(flattenProviders(
         providers, (provider: Provider) => this.getSingleProviderOverrides(provider) || []));
   }
 
-  private getOverriddenProviders(providers?: Provider[]): Provider[] {
+  private getOverriddenProviders(providers?: Array<Provider|InternalEnvironmentProviders>):
+      Provider[] {
     if (!providers || !providers.length || this.providerOverridesByToken.size === 0) return [];
 
-    const flattenedProviders = flatten<Provider[]>(providers);
+    const flattenedProviders = flattenProviders(providers);
     const overrides = this.getProviderOverrides(flattenedProviders);
     const overriddenProviders = [...flattenedProviders, ...overrides];
     const final: Provider[] = [];
@@ -838,7 +841,7 @@ export class TestBedCompiler {
     return final;
   }
 
-  private hasProviderOverrides(providers?: Provider[]): boolean {
+  private hasProviderOverrides(providers?: Array<Provider|InternalEnvironmentProviders>): boolean {
     return this.getProviderOverrides(providers).length > 0;
   }
 
@@ -887,15 +890,39 @@ function maybeUnwrapFn<T>(maybeFn: (() => T)|T): T {
   return maybeFn instanceof Function ? maybeFn() : maybeFn;
 }
 
-function flatten<T>(values: any[], mapFn?: (value: T) => any): T[] {
+function flatten<T>(values: any[]): T[] {
   const out: T[] = [];
   values.forEach(value => {
     if (Array.isArray(value)) {
-      out.push(...flatten<T>(value, mapFn));
+      out.push(...flatten<T>(value));
     } else {
-      out.push(mapFn ? mapFn(value) : value);
+      out.push(value);
     }
   });
+  return out;
+}
+
+function identityFn<T>(value: T): T {
+  return value;
+}
+
+function flattenProviders<T>(
+    providers: Array<Provider|InternalEnvironmentProviders>, mapFn: (provider: Provider) => T): T[];
+function flattenProviders(providers: Array<Provider|InternalEnvironmentProviders>): Provider[];
+function flattenProviders(
+    providers: Array<Provider|InternalEnvironmentProviders>,
+    mapFn: (provider: Provider) => any = identityFn): any[] {
+  const out: any[] = [];
+  for (let provider of providers) {
+    if (isEnvironmentProviders(provider)) {
+      provider = provider.ɵproviders;
+    }
+    if (Array.isArray(provider)) {
+      out.push(...flattenProviders(provider, mapFn));
+    } else {
+      out.push(mapFn(provider));
+    }
+  }
   return out;
 }
 

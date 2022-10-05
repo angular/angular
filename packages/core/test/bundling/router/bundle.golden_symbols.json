@@ -885,6 +885,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "defaultErrorFactory"
   },
   {
@@ -1339,6 +1342,9 @@
   },
   {
     "name": "isEmptyError"
+  },
+  {
+    "name": "isEnvironmentProviders"
   },
   {
     "name": "isFunction"

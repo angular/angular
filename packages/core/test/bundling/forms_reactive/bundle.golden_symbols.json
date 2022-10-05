@@ -723,6 +723,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "defaultIterableDiffersFactory"
   },
   {
@@ -1096,6 +1099,9 @@
   },
   {
     "name": "isEmptyInputValue"
+  },
+  {
+    "name": "isEnvironmentProviders"
   },
   {
     "name": "isFormControlState"
