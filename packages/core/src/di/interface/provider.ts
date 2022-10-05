@@ -384,7 +384,7 @@ export type ProcessProvidersFunction = (providers: Provider[]) => Provider[];
  */
 export interface ModuleWithProviders<T> {
   ngModule: Type<T>;
-  providers?: Provider[];
+  providers?: Array<Provider|EnvironmentProviders>;
 }
 
 /**
@@ -399,8 +399,6 @@ export interface ModuleWithProviders<T> {
  * @see `importProvidersFrom`
  *
  * @publicApi
- * @developerPreview
+ * @deprecated replaced by `EnvironmentProviders`
  */
-export interface ImportedNgModuleProviders {
-  ɵproviders: Provider[];
-}
+export type ImportedNgModuleProviders = EnvironmentProviders;

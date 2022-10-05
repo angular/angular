@@ -567,9 +567,6 @@
     "name": "isFunction"
   },
   {
-    "name": "isImportedNgModuleProviders"
-  },
-  {
     "name": "isInlineTemplate"
   },
   {

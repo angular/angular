@@ -18,7 +18,7 @@ import {Console} from './console';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
 import {Injector} from './di/injector';
-import {ImportedNgModuleProviders, Provider, StaticProvider} from './di/interface/provider';
+import {EnvironmentProviders, Provider, StaticProvider} from './di/interface/provider';
 import {EnvironmentInjector} from './di/r3_injector';
 import {INJECTOR_SCOPE} from './di/scope';
 import {ErrorHandler} from './error_handler';
@@ -189,7 +189,7 @@ export function runPlatformInitializers(injector: Injector): void {
  */
 export function internalCreateApplication(config: {
   rootComponent?: Type<unknown>,
-  appProviders?: Array<Provider|ImportedNgModuleProviders>,
+  appProviders?: Array<Provider|EnvironmentProviders>,
   platformProviders?: Provider[],
 }): Promise<ApplicationRef> {
   const {rootComponent, appProviders, platformProviders} = config;

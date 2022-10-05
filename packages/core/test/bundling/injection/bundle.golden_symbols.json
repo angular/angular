@@ -129,9 +129,6 @@
     "name": "isEnvironmentProviders"
   },
   {
-    "name": "isImportedNgModuleProviders"
-  },
-  {
     "name": "isTypeProvider"
   },
   {
