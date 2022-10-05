@@ -711,6 +711,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "detachMovedView"
   },
   {
@@ -1000,6 +1003,9 @@
   },
   {
     "name": "isElementNode"
+  },
+  {
+    "name": "isEnvironmentProviders"
   },
   {
     "name": "isFunction"

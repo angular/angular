@@ -27,7 +27,7 @@ import {catchInjectorError, convertToBitFlags, injectArgs, NG_TEMP_TOKEN_PATH, s
 import {INJECTOR} from './injector_token';
 import {getInheritedInjectableDef, getInjectableDef, InjectorType, ɵɵInjectableDeclaration} from './interface/defs';
 import {InjectFlags, InjectOptions} from './interface/injector';
-import {ClassProvider, ConstructorProvider, ImportedNgModuleProviders, Provider, StaticClassProvider} from './interface/provider';
+import {ClassProvider, ConstructorProvider, EnvironmentProviders, ImportedNgModuleProviders, InternalEnvironmentProviders, isEnvironmentProviders, Provider, StaticClassProvider} from './interface/provider';
 import {INJECTOR_DEF_TYPES} from './internal_tokens';
 import {NullInjector} from './null_injector';
 import {isExistingProvider, isFactoryProvider, isTypeProvider, isValueProvider, SingleProvider} from './provider_collection';
@@ -157,11 +157,14 @@ export class R3Injector extends EnvironmentInjector {
   private injectorDefTypes: Set<Type<unknown>>;
 
   constructor(
-      providers: Array<Provider|ImportedNgModuleProviders>, readonly parent: Injector,
-      readonly source: string|null, readonly scopes: Set<InjectorScope>) {
+      providers: Array<Provider|ImportedNgModuleProviders|EnvironmentProviders>,
+      readonly parent: Injector, readonly source: string|null,
+      readonly scopes: Set<InjectorScope>) {
     super();
     // Start off by creating Records for every provider.
-    forEachSingleProvider(providers, provider => this.processProvider(provider));
+    forEachSingleProvider(
+        providers as Array<Provider|ImportedNgModuleProviders|InternalEnvironmentProviders>,
+        provider => this.processProvider(provider));
 
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));
@@ -460,7 +463,7 @@ function providerToRecord(provider: SingleProvider): Record<any> {
 export function providerToFactory(
     provider: SingleProvider, ngModuleType?: InjectorType<any>, providers?: any[]): () => any {
   let factory: (() => any)|undefined = undefined;
-  if (ngDevMode && isImportedNgModuleProviders(provider)) {
+  if (ngDevMode && (isImportedNgModuleProviders(provider) || isEnvironmentProviders(provider))) {
     throwInvalidProviderError(undefined, providers, provider);
   }
 
@@ -517,19 +520,20 @@ function couldBeInjectableType(value: any): value is ProviderToken<any> {
 
 function isImportedNgModuleProviders(provider: Provider|ImportedNgModuleProviders):
     provider is ImportedNgModuleProviders {
-  return !!(provider as ImportedNgModuleProviders).ɵproviders;
+  return provider && !!(provider as ImportedNgModuleProviders).ɵproviders;
 }
 
 function forEachSingleProvider(
-    providers: Array<Provider|ImportedNgModuleProviders>,
+    providers: Array<Provider|ImportedNgModuleProviders|InternalEnvironmentProviders>,
     fn: (provider: SingleProvider) => void): void {
   for (const provider of providers) {
     if (Array.isArray(provider)) {
       forEachSingleProvider(provider, fn);
-    } else if (isImportedNgModuleProviders(provider)) {
+    } else if (
+        provider && (isImportedNgModuleProviders(provider) || isEnvironmentProviders(provider))) {
       forEachSingleProvider(provider.ɵproviders, fn);
     } else {
-      fn(provider);
+      fn(provider as SingleProvider);
     }
   }
 }

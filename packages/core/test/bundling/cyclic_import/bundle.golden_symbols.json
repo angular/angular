@@ -498,6 +498,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "detachMovedView"
   },
   {
@@ -748,6 +751,9 @@
   },
   {
     "name": "isCurrentTNodeParent"
+  },
+  {
+    "name": "isEnvironmentProviders"
   },
   {
     "name": "isFunction"

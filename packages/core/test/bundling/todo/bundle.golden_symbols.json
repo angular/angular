@@ -603,6 +603,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "defaultIterableDiffersFactory"
   },
   {
@@ -925,6 +928,9 @@
   },
   {
     "name": "isDirectiveHost"
+  },
+  {
+    "name": "isEnvironmentProviders"
   },
   {
     "name": "isFunction"
