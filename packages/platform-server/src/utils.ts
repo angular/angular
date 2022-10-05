@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ImportedNgModuleProviders, importProvidersFrom, InjectionToken, NgModuleFactory, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵinternalCreateApplication as internalCreateApplication, ɵisPromise} from '@angular/core';
+import {ApplicationRef, EnvironmentProviders, importProvidersFrom, InjectionToken, NgModuleFactory, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵinternalCreateApplication as internalCreateApplication, ɵisPromise} from '@angular/core';
 import {BrowserModule, ɵTRANSITION_ID} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
@@ -190,7 +190,7 @@ export function renderApplication<T>(rootComponent: Type<T>, options: {
   appId: string,
   document?: string|Document,
   url?: string,
-  providers?: Array<Provider|ImportedNgModuleProviders>,
+  providers?: Array<Provider|EnvironmentProviders>,
   platformProviders?: Provider[],
 }): Promise<string> {
   const {document, url, platformProviders, appId} = options;

@@ -1356,9 +1356,6 @@
     "name": "isImmediateMatch"
   },
   {
-    "name": "isImportedNgModuleProviders"
-  },
-  {
     "name": "isInlineTemplate"
   },
   {

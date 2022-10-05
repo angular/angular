@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -24,7 +24,7 @@ const collectEnvironmentInitializerProviders = (providers: Provider[]) =>
     getProvidersByToken(providers, ENVIRONMENT_INITIALIZER);
 
 function unwrappedImportProvidersFrom(...sources: ImportProvidersSource[]): Provider[] {
-  return importProvidersFrom(...sources).ɵproviders;
+  return (importProvidersFrom(...sources) as unknown as InternalEnvironmentProviders).ɵproviders;
 }
 
 describe('importProvidersFrom', () => {
@@ -273,6 +273,96 @@ describe('importProvidersFrom', () => {
     })
         .toThrowError(
             'NG0800: Importing providers supports NgModule or ModuleWithProviders but got a standalone component "StandaloneCmp"');
+  });
+});
+
+describe('EnvironmentProviders', () => {
+  const TOKEN = new InjectionToken<string>('TOKEN');
+  const environmentProviders = makeEnvironmentProviders([{
+    provide: TOKEN,
+    useValue: 'token!',
+  }]);
+
+  it('should be accepted by TestBed providers', () => {
+    TestBed.configureTestingModule({
+      providers: [environmentProviders],
+    });
+
+    expect(TestBed.inject(TOKEN)).toEqual('token!');
+  });
+
+  it('should be accepted by @NgModule & createNgModule', () => {
+    @NgModule({
+      providers: [environmentProviders],
+    })
+    class TestModule {
+    }
+
+    const inj = createNgModule(TestModule).injector;
+    expect(inj.get(TOKEN)).toEqual('token!');
+  });
+
+  it('should be accepted by @NgModule & TestBed imports', () => {
+    @NgModule({
+      providers: [environmentProviders],
+    })
+    class TestModule {
+    }
+
+    TestBed.configureTestingModule({
+      imports: [TestModule],
+    });
+
+    expect(TestBed.inject(TOKEN)).toEqual('token!');
+  });
+
+  it('should be accepted in ModuleWithProviders & createNgModule', () => {
+    @NgModule({})
+    class EmptyModule {
+    }
+
+    const mwp: ModuleWithProviders<EmptyModule> = {
+      ngModule: EmptyModule,
+      providers: [environmentProviders],
+    };
+
+    @NgModule({
+      imports: [mwp],
+    })
+    class TestModule {
+    }
+
+    const inj = createNgModule(TestModule).injector;
+    expect(inj.get(TOKEN)).toEqual('token!');
+  });
+
+  it('should be accepted by createEnvironmentInjector', () => {
+    TestBed.configureTestingModule({});
+    const inj =
+        createEnvironmentInjector([environmentProviders], TestBed.inject(EnvironmentInjector));
+    expect(inj.get(TOKEN)).toEqual('token!');
+  });
+
+  it('should be overridable by TestBed overrides', () => {
+    TestBed.configureTestingModule({
+      providers: [environmentProviders],
+    });
+    TestBed.overrideProvider(TOKEN, {
+      useValue: 'overridden!',
+    });
+
+    expect(TestBed.inject(TOKEN)).toEqual('overridden!');
+  });
+
+  it('should be rejected by @Component.providers', () => {
+    @Component({
+      providers: [environmentProviders as any],
+    })
+    class TestCmp {
+      readonly token = inject(TOKEN);
+    }
+
+    expect(() => TestBed.createComponent(TestCmp)).toThrowError(/NG0207/);
   });
 });
 
