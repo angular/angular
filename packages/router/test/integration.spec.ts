@@ -7,20 +7,19 @@
  */
 
 import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@angular/common';
-import {SpyLocation} from '@angular/common/testing';
+import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreInject, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
-import {concat, defer, EMPTY, from, Observable, Observer, of, Subscription} from 'rxjs';
+import {concat, EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
 import {CanActivateChildFn, CanActivateFn, CanMatch, CanMatchFn, ResolveFn} from '../src/models';
-import {withRouterConfig} from '../src/provide_router';
+import {provideRouter, withRouterConfig} from '../src/provide_router';
 import {forEach, wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
-import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
 
 const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
 
@@ -32,7 +31,8 @@ describe('Integration', () => {
       imports: [...ROUTER_DIRECTIVES, TestModule],
       providers: [
         {provide: Console, useValue: noopConsole},
-        provideRouterForTesting([{path: 'simple', component: SimpleCmp}])
+        provideLocationMocks(),
+        provideRouter([{path: 'simple', component: SimpleCmp}]),
       ]
     });
   });
@@ -5451,7 +5451,8 @@ describe('Integration', () => {
              ...ROUTER_DIRECTIVES,
            ],
            providers: [
-             provideRouterForTesting([{path: '', component: SimpleComponent}]),
+             provideLocationMocks(),
+             provideRouter([{path: '', component: SimpleComponent}]),
            ],
            declarations: [LinkComponent, SimpleComponent]
          });
@@ -6532,7 +6533,8 @@ describe('Integration', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-          provideRouterForTesting()
+          provideLocationMocks(),
+          provideRouter([]),
         ]
       });
 
@@ -6698,10 +6700,13 @@ describe('Integration', () => {
          @NgModule({
            declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
            imports: [CommonModule, ...ROUTER_DIRECTIVES],
-           providers: [provideRouterForTesting([
-             {path: 'a', outlet: 'toolpanel', component: Tool1Component},
-             {path: 'b', outlet: 'toolpanel', component: Tool2Component},
-           ])]
+           providers: [
+             provideLocationMocks(),
+             provideRouter([
+               {path: 'a', outlet: 'toolpanel', component: Tool1Component},
+               {path: 'b', outlet: 'toolpanel', component: Tool2Component},
+             ]),
+           ]
          })
          class TestModule {
          }
@@ -6756,7 +6761,8 @@ describe('Integration', () => {
            ],
            providers: [
              {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-             provideRouterForTesting([
+             provideLocationMocks(),
+             provideRouter([
                {path: 'a', component: SimpleCmp},
                {path: 'b', component: BlankCmp},
              ]),
@@ -6825,7 +6831,8 @@ describe('Integration', () => {
            providers: [
              {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
              {provide: CREATED_COMPS, useValue: []},
-             provideRouterForTesting([
+             provideLocationMocks(),
+             provideRouter([
                {path: 'a', component: Parent, children: [{path: 'b', component: Child}]},
                {path: 'c', component: SimpleCmp}
              ]),
@@ -6882,9 +6889,10 @@ describe('Integration', () => {
            imports: [ROUTER_DIRECTIVES],
            providers: [
              {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-             provideRouterForTesting([
+             provideLocationMocks(),
+             provideRouter([
                {path: 'a', loadChildren: () => LoadedModule}, {path: 'b', component: ComponentB}
-             ])
+             ]),
            ]
          })
          class TestModule {
@@ -6914,7 +6922,10 @@ describe('Testing router options', () => {
   describe('should configure the router', () => {
     it('assigns onSameUrlNavigation', () => {
       TestBed.configureTestingModule({
-        providers: [provideRouterForTesting([], withRouterConfig({onSameUrlNavigation: 'reload'}))]
+        providers: [
+          provideLocationMocks(),
+          provideRouter([], withRouterConfig({onSameUrlNavigation: 'reload'})),
+        ]
       });
       const router: Router = TestBed.inject(Router);
       expect(router.onSameUrlNavigation).toBe('reload');
@@ -6922,8 +6933,10 @@ describe('Testing router options', () => {
 
     it('assigns paramsInheritanceStrategy', () => {
       TestBed.configureTestingModule({
-        providers:
-            [provideRouterForTesting([], withRouterConfig({paramsInheritanceStrategy: 'always'}))]
+        providers: [
+          provideLocationMocks(),
+          provideRouter([], withRouterConfig({paramsInheritanceStrategy: 'always'})),
+        ]
       });
       const router: Router = TestBed.inject(Router);
       expect(router.paramsInheritanceStrategy).toBe('always');
@@ -6931,7 +6944,10 @@ describe('Testing router options', () => {
 
     it('assigns urlUpdateStrategy', () => {
       TestBed.configureTestingModule({
-        providers: [provideRouterForTesting([], withRouterConfig({urlUpdateStrategy: 'eager'}))]
+        providers: [
+          provideLocationMocks(),
+          provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'})),
+        ]
       });
       const router: Router = TestBed.inject(Router);
       expect(router.urlUpdateStrategy).toBe('eager');

@@ -10,6 +10,7 @@ import { Location as Location_2 } from '@angular/common';
 import { LocationChangeListener } from '@angular/common';
 import { LocationStrategy } from '@angular/common';
 import { PlatformLocation } from '@angular/common';
+import { Provider } from '@angular/core';
 import { SubscriptionLike } from 'rxjs';
 
 // @public
@@ -104,6 +105,9 @@ export interface MockPlatformLocationConfig {
     // (undocumented)
     startUrl?: string;
 }
+
+// @public
+export function provideLocationMocks(): Provider[];
 
 // @public
 export class SpyLocation implements Location_2 {

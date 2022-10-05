@@ -7,11 +7,12 @@
  */
 
 import {DOCUMENT} from '@angular/common';
+import {provideLocationMocks} from '@angular/common/testing';
 import {Component, Inject, Injectable, NgModule} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {NavigationEnd, Router, RouterModule, RouterStateSnapshot, TitleStrategy} from '@angular/router';
+import {Router, RouterModule, RouterStateSnapshot, TitleStrategy} from '@angular/router';
 
-import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
+import {provideRouter} from '../src/provide_router';
 
 describe('title strategy', () => {
   describe('DefaultTitleStrategy', () => {
@@ -23,7 +24,10 @@ describe('title strategy', () => {
         imports: [
           TestModule,
         ],
-        providers: [provideRouterForTesting()]
+        providers: [
+          provideLocationMocks(),
+          provideRouter([]),
+        ]
       });
       router = TestBed.inject(Router);
       document = TestBed.inject(DOCUMENT);
@@ -133,8 +137,9 @@ describe('title strategy', () => {
              TestModule,
            ],
            providers: [
-             provideRouterForTesting(),
-             {provide: TitleStrategy, useClass: TemplatePageTitleStrategy}
+             provideLocationMocks(),
+             provideRouter([]),
+             {provide: TitleStrategy, useClass: TemplatePageTitleStrategy},
            ]
          });
          const router = TestBed.inject(Router);
