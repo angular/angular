@@ -19,6 +19,46 @@ export function findTightestNode(node: ts.Node, position: number): ts.Node|undef
   return undefined;
 }
 
+export interface FindOptions<T extends ts.Node> {
+  filter: (node: ts.Node) => node is T;
+}
+
+/**
+ * Finds TypeScript nodes descending from the provided root which match the given filter.
+ */
+export function findAllMatchingNodes<T extends ts.Node>(root: ts.Node, opts: FindOptions<T>): T[] {
+  const matches: T[] = [];
+  const explore = (currNode: ts.Node) => {
+    if (opts.filter(currNode)) {
+      matches.push(currNode);
+    }
+    currNode.forEachChild(descendent => explore(descendent));
+  };
+  explore(root);
+  return matches;
+}
+
+/**
+ * Finds TypeScript nodes descending from the provided root which match the given filter.
+ */
+export function findFirstMatchingNode<T extends ts.Node>(root: ts.Node, opts: FindOptions<T>): T|
+    null {
+  let match: T|null = null;
+  const explore = (currNode: ts.Node) => {
+    if (match !== null) {
+      return;
+    }
+    if (opts.filter(currNode)) {
+      match = currNode;
+      return;
+    }
+    currNode.forEachChild(descendent => explore(descendent));
+  };
+  explore(root);
+  return match;
+}
+
+
 export function getParentClassDeclaration(startNode: ts.Node): ts.ClassDeclaration|undefined {
   while (startNode) {
     if (ts.isClassDeclaration(startNode)) {
@@ -128,4 +168,186 @@ export function updateObjectValueForKey(
     ...obj.properties.filter(p => p !== existingProp),
     newProp,
   ]);
+}
+
+/**
+ * Create a new ArrayLiteralExpression, or accept an existing one.
+ * Ensure the array contains the provided identifier.
+ * Returns the array, either updated or newly created.
+ * If no update is needed, returns `null`.
+ */
+export function ensureArrayWithIdentifier(
+    identifier: ts.Identifier, arr?: ts.ArrayLiteralExpression): ts.ArrayLiteralExpression|null {
+  if (arr === undefined) {
+    return ts.factory.createArrayLiteralExpression([identifier]);
+  }
+  if (arr.elements.find(v => ts.isIdentifier(v) && v.text === identifier.text)) {
+    return null;
+  }
+  return ts.factory.updateArrayLiteralExpression(arr, [...arr.elements, identifier]);
+}
+
+export function moduleSpecifierPointsToFile(
+    tsChecker: ts.TypeChecker, moduleSpecifier: ts.Expression, file: ts.SourceFile): boolean {
+  const specifierSymbol = tsChecker.getSymbolAtLocation(moduleSpecifier);
+  if (specifierSymbol === undefined) {
+    console.error(`Undefined symbol for module specifier ${moduleSpecifier.getText()}`);
+    return false;
+  }
+  const symbolDeclarations = specifierSymbol.declarations;
+  if (symbolDeclarations === undefined || symbolDeclarations.length === 0) {
+    console.error(`Unknown symbol declarations for module specifier ${moduleSpecifier.getText()}`);
+    return false;
+  }
+  for (const symbolDeclaration of symbolDeclarations) {
+    if (symbolDeclaration.getSourceFile().fileName === file.fileName) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Determine whether this an import of the given `propertyName` from a particular module
+ * specifier already exists. If so, return the local name for that import, which might be an
+ * alias.
+ */
+export function hasImport(
+    tsChecker: ts.TypeChecker, importDeclarations: ts.ImportDeclaration[], propName: string,
+    origin: ts.SourceFile): string|null {
+  return importDeclarations
+             .filter(
+                 declaration =>
+                     moduleSpecifierPointsToFile(tsChecker, declaration.moduleSpecifier, origin))
+             .map(declaration => importHas(declaration, propName))
+             .find(prop => prop !== null) ??
+      null;
+}
+
+function nameInExportScope(importSpecifier: ts.ImportSpecifier): string {
+  return importSpecifier.propertyName?.text ?? importSpecifier.name.text;
+}
+
+/**
+ * Determine whether this import declaration already contains an import of the given
+ * `propertyName`, and if so, the name it can be referred to with in the local scope.
+ */
+function importHas(importDecl: ts.ImportDeclaration, propName: string): string|null {
+  const bindings = importDecl.importClause?.namedBindings;
+  if (bindings === undefined) {
+    return null;
+  }
+  // First, we handle the case of explicit named imports.
+  if (ts.isNamedImports(bindings)) {
+    // Find any import specifier whose property name in the *export* scope equals the expected
+    // name.
+    const specifier =
+        bindings.elements.find(importSpecifier => propName == nameInExportScope(importSpecifier));
+    // Return the name of the property in the *local* scope.
+    if (specifier === undefined) {
+      return null;
+    }
+    return specifier.name.text;
+  }
+  // The other case is a namespace import.
+  return `${bindings.name.text}.${propName}`;
+}
+
+/**
+ * Given an unqualified name, determine whether an existing import is already using this name in
+ * the current scope.
+ * TODO: It would be better to check if *any* symbol uses this name in the current scope.
+ */
+function importCollisionExists(importDeclaration: ts.ImportDeclaration[], name: string): boolean {
+  const bindings = importDeclaration.map(declaration => declaration.importClause?.namedBindings);
+  const namedBindings: ts.NamedImports[] =
+      bindings.filter(binding => binding !== undefined && ts.isNamedImports(binding)) as
+      ts.NamedImports[];
+  const specifiers = namedBindings.flatMap(b => b.elements);
+  return specifiers.some(s => s.name.text === name);
+}
+
+/**
+ * Generator function that yields an infinite sequence of alternative aliases for a given symbol
+ * name.
+ */
+function* suggestAlternativeSymbolNames(name: string): Iterator<string> {
+  for (let i = 1; true; i++) {
+    yield `${name}_${i}`;  // The _n suffix is the same style as TS generated aliases
+  }
+}
+
+/**
+ * Transform the given import name into an alias that does not collide with any other import
+ * symbol.
+ */
+export function nonCollidingImportName(
+    importDeclarations: ts.ImportDeclaration[], name: string): string {
+  const possibleNames = suggestAlternativeSymbolNames(name);
+  while (importCollisionExists(importDeclarations, name)) {
+    name = possibleNames.next().value;
+  }
+  return name;
+}
+
+/**
+ * Generate a new import. Follows the format:
+ * ```
+ * import {exportedSpecifierName as localName} from 'rawModuleSpecifier';
+ * ```
+ *
+ * If `exportedSpecifierName` is null, or is equal to `name`, then the qualified import alias will
+ * be omitted.
+ */
+export function generateImport(
+    localName: string, exportedSpecifierName: string|null,
+    rawModuleSpecifier: string): ts.ImportDeclaration {
+  let propName: ts.Identifier|undefined;
+  if (exportedSpecifierName !== null && exportedSpecifierName !== localName) {
+    propName = ts.factory.createIdentifier(exportedSpecifierName);
+  }
+  const name = ts.factory.createIdentifier(localName);
+  const moduleSpec = ts.factory.createStringLiteral(rawModuleSpecifier);
+  return ts.factory.createImportDeclaration(
+      undefined,
+      ts.factory.createImportClause(
+          false, undefined,
+          ts.factory.createNamedImports([ts.factory.createImportSpecifier(false, propName, name)])),
+      moduleSpec, undefined);
+}
+
+/**
+ * Update an existing named import with a new member.
+ * If `exportedSpecifierName` is null, or is equal to `name`, then the qualified import alias will
+ * be omitted.
+ */
+export function updateImport(
+    imp: ts.NamedImports, localName: string, exportedSpecifierName: string|null): ts.NamedImports {
+  let propertyName: ts.Identifier|undefined;
+  if (exportedSpecifierName !== null && exportedSpecifierName !== localName) {
+    propertyName = ts.factory.createIdentifier(exportedSpecifierName);
+  }
+  const name = ts.factory.createIdentifier(localName);
+  const newImport = ts.factory.createImportSpecifier(false, propertyName, name);
+  return ts.factory.updateNamedImports(imp, [...imp.elements, newImport]);
+}
+
+let printer: ts.Printer|null = null;
+
+/**
+ * Get a ts.Printer for printing AST nodes, reusing the previous Printer if already created.
+ */
+function getOrCreatePrinter(): ts.Printer {
+  if (printer === null) {
+    printer = ts.createPrinter();
+  }
+  return printer;
+}
+
+/**
+ * Print a given TypeScript node into a string. Used to serialize entirely synthetic generated AST,
+ * which will not have `.text` or `.fullText` set.
+ */
+export function printNode(node: ts.Node, sourceFile: ts.SourceFile): string {
+  return getOrCreatePrinter().printNode(ts.EmitHint.Unspecified, node, sourceFile);
 }
