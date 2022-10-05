@@ -524,7 +524,7 @@ export abstract class PreloadingStrategy {
 export const PRIMARY_OUTLET = "primary";
 
 // @public
-export function provideRouter(routes: Routes, ...features: RouterFeatures[]): Provider[];
+export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders;
 
 // @public
 export function provideRoutes(routes: Routes): Provider[];
