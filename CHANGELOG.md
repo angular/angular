@@ -1,3 +1,13 @@
+<a name="14.2.5"></a>
+# 14.2.5 (2022-10-05)
+
+This release contains various API docs improvements.
+
+## Special Thanks
+Alexander Wiebe, Ciprian Sauliuc, Dmytro Mezhenskyi, George Kalpakas, Joe Martin (Crowdstaffing), Jordan, Ole M, Paul Gschwendtner, Pawel Kozlowski and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.4"></a>
 # 14.2.4 (2022-09-28)
 ### compiler-cli
