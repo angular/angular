@@ -118,6 +118,14 @@ describe('#visitElements', () => {
       });
       expect(html).toBe('<a attr2="val2" attr1="val1"></a>');
     });
+
+    it('should replace value of existing attribute', async () => {
+      runAddAttributeTest('<a attr="default"></a>', '<a attr="val"></a>');
+    });
+
+    it('should add value to existing attribute that does not have a value', async () => {
+      runAddAttributeTest('<a attr></a>', '<a attr="val"></a>');
+    });
   });
 
   it('should match indentation', async () => {

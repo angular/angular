@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as compiler from '@angular/compiler';
+import {
+  ParsedTemplate,
+  TmplAstElement,
+  TmplAstNode,
+  parseTemplate as parseTemplateUsingCompiler,
+} from '@angular/compiler';
 
 /**
  * Traverses the given tree of nodes and runs the given callbacks for each Element node encountered.
@@ -20,14 +25,14 @@ import * as compiler from '@angular/compiler';
  * @param postorderCallback A function that gets run for each Element node in a postorder traversal.
  */
 export function visitElements(
-  nodes: compiler.TmplAstNode[],
-  preorderCallback: (node: compiler.TmplAstElement) => void = () => {},
-  postorderCallback: (node: compiler.TmplAstElement) => void = () => {},
+  nodes: TmplAstNode[],
+  preorderCallback: (node: TmplAstElement) => void = () => {},
+  postorderCallback: (node: TmplAstElement) => void = () => {},
 ): void {
   nodes.reverse();
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    if (node instanceof compiler.TmplAstElement) {
+    if (node instanceof TmplAstElement) {
       preorderCallback(node);
       visitElements(node.children, preorderCallback, postorderCallback);
       postorderCallback(node);
@@ -45,8 +50,8 @@ export function visitElements(
  * @param filePath URL to use for source mapping of the parsed template
  * @returns the updated template html.
  */
-export function parseTemplate(template: string, templateUrl: string = ''): compiler.ParsedTemplate {
-  return compiler.parseTemplate(template, templateUrl, {
+export function parseTemplate(template: string, templateUrl: string = ''): ParsedTemplate {
+  return parseTemplateUsingCompiler(template, templateUrl, {
     preserveWhitespaces: true,
     preserveLineEndings: true,
     leadingTriviaChars: [],
@@ -61,7 +66,7 @@ export function parseTemplate(template: string, templateUrl: string = ''): compi
  * @param tag A new tag name.
  * @returns an updated html document.
  */
-export function replaceStartTag(html: string, node: compiler.TmplAstElement, tag: string): string {
+export function replaceStartTag(html: string, node: TmplAstElement, tag: string): string {
   return replaceAt(html, node.startSourceSpan.start.offset + 1, node.name, tag);
 }
 
@@ -73,7 +78,7 @@ export function replaceStartTag(html: string, node: compiler.TmplAstElement, tag
  * @param tag A new tag name.
  * @returns an updated html document.
  */
-export function replaceEndTag(html: string, node: compiler.TmplAstElement, tag: string): string {
+export function replaceEndTag(html: string, node: TmplAstElement, tag: string): string {
   if (!node.endSourceSpan) {
     return html;
   }
@@ -91,10 +96,32 @@ export function replaceEndTag(html: string, node: compiler.TmplAstElement, tag: 
  */
 export function addAttribute(
   html: string,
-  node: compiler.TmplAstElement,
+  node: TmplAstElement,
   name: string,
   value: string,
 ): string {
+  const existingAttr = node.attributes.find(currentAttr => currentAttr.name === name);
+
+  if (existingAttr) {
+    // If the attribute has a value already, replace it.
+    if (existingAttr.valueSpan) {
+      return (
+        html.slice(0, existingAttr.valueSpan.start.offset) +
+        value +
+        html.slice(existingAttr.valueSpan.end.offset)
+      );
+    } else if (existingAttr.keySpan) {
+      // Otherwise add a value to a value-less attribute. Note that the `keySpan` null check is
+      // only necessary for the compiler. Technically an attribute should always have a key.
+      return (
+        html.slice(0, existingAttr.keySpan.end.offset) +
+        `="${value}"` +
+        html.slice(existingAttr.keySpan.end.offset)
+      );
+    }
+  }
+
+  // Otherwise insert a new attribute.
   const index = node.startSourceSpan.start.offset + node.name.length + 1;
   const prefix = html.slice(0, index);
   const suffix = html.slice(index);
