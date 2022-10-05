@@ -65,7 +65,7 @@ function formatNumberToLocaleString(
         if (minIntPart != null) {
           minInt = parseIntAutoRadix(minIntPart);
         }
-        var allowedFractionDigits: number[] = [];
+        let allowedFractionDigits: number[] = [];
         partsExtended[0].replace('.', ',').split(',').splice(1).forEach((value) => {
           allowedFractionDigits.push(parseIntAutoRadix(value));
         });
