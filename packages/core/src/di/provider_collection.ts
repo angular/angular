@@ -21,8 +21,18 @@ import {resolveForwardRef} from './forward_ref';
 import {ENVIRONMENT_INITIALIZER} from './initializer_token';
 import {ɵɵinject as inject} from './injector_compatibility';
 import {getInjectorDef, InjectorType, InjectorTypeWithProviders} from './interface/defs';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, ImportedNgModuleProviders, ModuleWithProviders, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
+import {ClassProvider, ConstructorProvider, EnvironmentProviders, ExistingProvider, FactoryProvider, ImportedNgModuleProviders, ModuleWithProviders, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {INJECTOR_DEF_TYPES} from './internal_tokens';
+
+/**
+ * Wrap an array of `Provider`s into `EnvironmentProviders`, preventing them from being accidentally
+ * referenced in `@Component in a component injector.
+ */
+export function makeEnvironmentProviders(providers: Provider[]): EnvironmentProviders {
+  return {
+    ɵproviders: providers,
+  } as unknown as EnvironmentProviders;
+}
 
 /**
  * A source of providers for the `importProvidersFrom` function.
