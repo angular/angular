@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location, LocationStrategy} from '@angular/common';
-import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
+import {Location} from '@angular/common';
+import {provideLocationMocks} from '@angular/common/testing';
 import {Compiler, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {ChildrenOutletContexts, ExtraOptions, NoPreloading, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
 
@@ -106,8 +106,7 @@ export function setupTestingRouter(
   providers: [
     ROUTER_PROVIDERS,
     EXTRA_ROUTER_TESTING_PROVIDERS,
-    {provide: Location, useClass: SpyLocation},
-    {provide: LocationStrategy, useClass: MockLocationStrategy},
+    provideLocationMocks(),
     {
       provide: Router,
       useFactory: setupTestingRouterInternal,

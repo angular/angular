@@ -7,15 +7,15 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
-import {SpyLocation} from '@angular/common/testing';
+import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {Component, Injectable, NgModule} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {CanActivate, CanDeactivate, Resolve, Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '@angular/router';
 import {EMPTY, Observable, of} from 'rxjs';
 
+import {provideRouter} from '../src/provide_router';
 import {isUrlTree} from '../src/url_tree';
-import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
 
 describe('`restoredState#ɵrouterPageId`', () => {
   @Injectable({providedIn: 'root'})
@@ -490,7 +490,8 @@ function advance(fixture: ComponentFixture<any>, millis?: number): void {
     CommonModule,
   ],
   providers: [
-    provideRouterForTesting([], withRouterConfig({canceledNavigationResolution: 'computed'})),
+    provideLocationMocks(),
+    provideRouter([], withRouterConfig({canceledNavigationResolution: 'computed'})),
   ],
   exports: [SimpleCmp, RootCmp, ThrowingCmp],
   declarations: [SimpleCmp, RootCmp, ThrowingCmp]
