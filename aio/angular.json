@@ -49,9 +49,29 @@
             "sourceMap": true,
             "namedChunks": true,
             "assets": [
-              "src/assets",
-              "src/pwa-manifest.json",
-              "src/google385281288605d160.html",
+              // Architect on Windows has difficulty service assets files within a
+              // Bazel runfiles symlink forest. Using "followSymlinks" seems to
+              // fix this. Note that the assets below don't need this workaround as
+              // symlinked tree artifacts pointing to the output tree don't appear
+              // to have the same issue.
+              {
+                "followSymlinks": true,
+                "input": "src/assets",
+                "glob": "**/*",
+                "output": "/assets/"
+              },
+              {
+                "followSymlinks": true,
+                "input": "src/",
+                "glob": "**/pwa-manifest.json",
+                "output": "/"
+              },
+              {
+                "followSymlinks": true,
+                "input": "src/",
+                "glob": "**/google385281288605d160.html",
+                "output": "/"
+              },
               {
                 "input": "stackblitz/generated",
                 "output": "generated",
