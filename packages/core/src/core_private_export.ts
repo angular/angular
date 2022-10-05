@@ -14,6 +14,7 @@ export {Console as ɵConsole} from './console';
 export {getDebugNodeR2 as ɵgetDebugNodeR2} from './debug/debug_node';
 export {convertToBitFlags as ɵconvertToBitFlags, setCurrentInjector as ɵsetCurrentInjector} from './di/injector_compatibility';
 export {getInjectableDef as ɵgetInjectableDef, ɵɵInjectableDeclaration, ɵɵInjectorDef} from './di/interface/defs';
+export {InternalEnvironmentProviders as ɵInternalEnvironmentProviders, isEnvironmentProviders as ɵisEnvironmentProviders} from './di/interface/provider';
 export {INJECTOR_SCOPE as ɵINJECTOR_SCOPE} from './di/scope';
 export {formatRuntimeError as ɵformatRuntimeError, RuntimeError as ɵRuntimeError} from './errors';
 export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleDataIndex, findLocaleData as ɵfindLocaleData, getLocaleCurrencyCode as ɵgetLocaleCurrencyCode, getLocalePluralCase as ɵgetLocalePluralCase, LocaleDataIndex as ɵLocaleDataIndex, registerLocaleData as ɵregisterLocaleData, unregisterAllLocaleData as ɵunregisterLocaleData} from './i18n/locale_data_api';
