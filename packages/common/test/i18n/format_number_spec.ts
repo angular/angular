@@ -60,13 +60,13 @@ describe('Format number', () => {
         // see issue #20136
         expect(formatPercent(0.12345674, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('12.345674%');
         expect(formatPercent(0, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('0%');
-        expect(formatPercent(0.00, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('0%');
+        expect(formatPercent(0.0, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('0%');
         expect(formatPercent(1, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('100%');
         expect(formatPercent(0.1, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('10%');
         expect(formatPercent(0.12, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('12%');
         expect(formatPercent(0.123, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('12.3%');
         expect(formatPercent(12.3456, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('1,234.56%');
-        expect(formatPercent(12.345600, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('1,234.56%');
+        expect(formatPercent(12.3456, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('1,234.56%');
         expect(formatPercent(12.345699999, ɵDEFAULT_LOCALE_ID, '0.0-6')).toEqual('1,234.57%');
         expect(formatPercent(12.345699999, ɵDEFAULT_LOCALE_ID, '0.4-6')).toEqual('1,234.5700%');
         expect(formatPercent(100, ɵDEFAULT_LOCALE_ID, '0.4-6')).toEqual('10,000.0000%');
@@ -92,6 +92,10 @@ describe('Format number', () => {
         expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, '$')).toEqual('$5.12');
         expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, '$', defaultCurrencyCode, '5.2-2'))
             .toEqual('$00,005.12');
+        expect(formatCurrency(3, ɵDEFAULT_LOCALE_ID, '$', defaultCurrencyCode, '1.0,2'))
+            .toEqual('$3');
+        expect(formatCurrency(3.1, ɵDEFAULT_LOCALE_ID, '$', defaultCurrencyCode, '1.0,2'))
+            .toEqual('$3.10');
         expect(formatCurrency(5.1234, 'fr', '$', defaultCurrencyCode, '5.2-2'))
             .toEqual('00\u202f005,12 $');
         expect(formatCurrency(5, 'fr', '$US', defaultCurrencyCode)).toEqual('5,00 $US');

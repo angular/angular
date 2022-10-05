@@ -13,7 +13,6 @@ import {getCurrencySymbol} from '../i18n/locale_data_api';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
-
 /**
  * @ngModule CommonModule
  * @description
@@ -258,6 +257,11 @@ export class CurrencyPipe implements PipeTransform {
    * If not provided, the number will be formatted with the proper amount of digits,
    * depending on what the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) specifies.
    * For example, the Canadian dollar has 2 digits, whereas the Chilean peso has none.
+   * Alternatively, digitsInfo can be specified in the format:<br>
+   * <code>{minIntegerDigits}.{allowedFractionDigits1},{allowedFractionDigits2}[,...]</code>.
+   *   - `minIntegerDigits`: The minimum number of integer digits before the decimal point.
+   *   - `{allowedFractionDigits1},{allowedFractionDigits2}[,...]`: The allowed digits numbers
+   * after the decimal point.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n-common-locale-id).

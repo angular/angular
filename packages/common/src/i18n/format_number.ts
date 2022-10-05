@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getLocaleNumberFormat, getLocaleNumberSymbol, getNumberOfCurrencyDigits, NumberFormatStyle, NumberSymbol} from './locale_data_api';
+import {getLocaleNumberFormat, getLocaleNumberSymbol, getNumberOfCurrencyDigits, NumberFormatStyle, NumberSymbol,} from './locale_data_api';
 
 export const NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
+export const NUMBER_FORMAT_EXTENDED_REGEXP = /^(\d+)?\.\d+(,\d+)*$/;
 const MAX_DIGITS = 22;
 const DECIMAL_SEP = '.';
 const ZERO_CHAR = '0';
@@ -42,32 +43,45 @@ function formatNumberToLocaleString(
 
     if (digitsInfo) {
       const parts = digitsInfo.match(NUMBER_FORMAT_REGEXP);
-      if (parts === null) {
+      const partsExtended = digitsInfo.match(NUMBER_FORMAT_EXTENDED_REGEXP);
+      if (parts !== null) {
+        const minIntPart = parts[1];
+        const minFractionPart = parts[3];
+        const maxFractionPart = parts[5];
+        if (minIntPart != null) {
+          minInt = parseIntAutoRadix(minIntPart);
+        }
+        if (minFractionPart != null) {
+          minFraction = parseIntAutoRadix(minFractionPart);
+        }
+        if (maxFractionPart != null) {
+          maxFraction = parseIntAutoRadix(maxFractionPart);
+        } else if (minFractionPart != null && minFraction > maxFraction) {
+          maxFraction = minFraction;
+        }
+        roundNumber(parsedNumber, minFraction, maxFraction);
+      } else if (partsExtended !== null) {
+        const minIntPart = partsExtended[1];
+        if (minIntPart != null) {
+          minInt = parseIntAutoRadix(minIntPart);
+        }
+        var allowedFractionDigits: number[] = [];
+        partsExtended[0].replace('.', ',').split(',').splice(1).forEach((value) => {
+          allowedFractionDigits.push(parseIntAutoRadix(value));
+        });
+        dropDigits(parsedNumber, allowedFractionDigits);
+      } else {
         throw new Error(`${digitsInfo} is not a valid digit info`);
       }
-      const minIntPart = parts[1];
-      const minFractionPart = parts[3];
-      const maxFractionPart = parts[5];
-      if (minIntPart != null) {
-        minInt = parseIntAutoRadix(minIntPart);
-      }
-      if (minFractionPart != null) {
-        minFraction = parseIntAutoRadix(minFractionPart);
-      }
-      if (maxFractionPart != null) {
-        maxFraction = parseIntAutoRadix(maxFractionPart);
-      } else if (minFractionPart != null && minFraction > maxFraction) {
-        maxFraction = minFraction;
-      }
+    } else {
+      roundNumber(parsedNumber, minFraction, maxFraction);
     }
-
-    roundNumber(parsedNumber, minFraction, maxFraction);
 
     let digits = parsedNumber.digits;
     let integerLen = parsedNumber.integerLen;
     const exponent = parsedNumber.exponent;
     let decimals = [];
-    isZero = digits.every(d => !d);
+    isZero = digits.every((d) => !d);
 
     // pad zeros for small numbers
     for (; integerLen < minInt; integerLen++) {
@@ -158,15 +172,14 @@ export function formatCurrency(
 
   const res = formatNumberToLocaleString(
       value, pattern, locale, NumberSymbol.CurrencyGroup, NumberSymbol.CurrencyDecimal, digitsInfo);
-  return res
-      .replace(CURRENCY_CHAR, currency)
-      // if we have 2 time the currency character, the second one is ignored
-      .replace(CURRENCY_CHAR, '')
-      // If there is a spacing between currency character and the value and
-      // the currency character is suppressed by passing an empty string, the
-      // spacing character would remain as part of the string. Then we
-      // should remove it.
-      .trim();
+  return (res.replace(CURRENCY_CHAR, currency)
+              // if we have 2 time the currency character, the second one is ignored
+              .replace(CURRENCY_CHAR, '')
+              // If there is a spacing between currency character and the value and
+              // the currency character is suppressed by passing an empty string, the
+              // spacing character would remain as part of the string. Then we
+              // should remove it.
+              .trim());
 }
 
 /**
@@ -251,7 +264,7 @@ function parseNumberFormat(format: string, minusSign = '-'): ParsedNumberFormat 
     negPre: '',
     negSuf: '',
     gSize: 0,
-    lgSize: 0
+    lgSize: 0,
   };
 
   const patternParts = format.split(PATTERN_SEP);
@@ -262,7 +275,7 @@ function parseNumberFormat(format: string, minusSign = '-'): ParsedNumberFormat 
       positive.split(DECIMAL_SEP) :
       [
         positive.substring(0, positive.lastIndexOf(ZERO_CHAR) + 1),
-        positive.substring(positive.lastIndexOf(ZERO_CHAR) + 1)
+        positive.substring(positive.lastIndexOf(ZERO_CHAR) + 1),
       ],
         integer = positiveParts[0], fraction = positiveParts[1] || '';
 
@@ -281,7 +294,7 @@ function parseNumberFormat(format: string, minusSign = '-'): ParsedNumberFormat 
 
   const groups = integer.split(GROUP_SEP);
   p.gSize = groups[1] ? groups[1].length : 0;
-  p.lgSize = (groups[2] || groups[1]) ? (groups[2] || groups[1]).length : 0;
+  p.lgSize = groups[2] || groups[1] ? (groups[2] || groups[1]).length : 0;
 
   if (negative) {
     const trunkLen = positive.length - p.posPre.length - p.posSuf.length,
@@ -355,7 +368,8 @@ function parseNumber(num: number): ParsedNumber {
   }
 
   // Count the number of leading zeros.
-  for (i = 0; numStr.charAt(i) === ZERO_CHAR; i++) { /* empty */
+  for (i = 0; numStr.charAt(i) === ZERO_CHAR; i++) {
+    /* empty */
   }
 
   if (i === (zeros = numStr.length)) {
@@ -416,7 +430,7 @@ function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: numbe
     // We rounded to zero so reset the parsedNumber
     fractionLen = Math.max(0, fractionLen);
     parsedNumber.integerLen = 1;
-    digits.length = Math.max(1, roundAt = fractionSize + 1);
+    digits.length = Math.max(1, (roundAt = fractionSize + 1));
     digits[0] = 0;
     for (let i = 1; i < roundAt; i++) digits[i] = 0;
   }
@@ -459,6 +473,38 @@ function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: numbe
     digits.unshift(carry);
     parsedNumber.integerLen++;
   }
+}
+
+function dropDigits(parsedNumber: ParsedNumber, allowedFractionDigits: number[]) {
+  let digits = parsedNumber.digits;
+  let fractionLen = digits.length - parsedNumber.integerLen;
+  allowedFractionDigits.sort((a: number, b: number) => a - b);
+  const fractionSize = allowedFractionDigits.find((x: number) => x >= fractionLen)! >= 0 ?
+      allowedFractionDigits.find((x: number) => x >= fractionLen) :
+      allowedFractionDigits[allowedFractionDigits.length - 1];
+
+  // The index of the digit to where droping is to occur
+  let dropFrom = fractionSize! + parsedNumber.integerLen;
+
+  if (dropFrom > 0) {
+    // Drop fractional digits beyond `dropFrom`
+    digits.splice(Math.max(parsedNumber.integerLen, dropFrom));
+
+    // Set non-fractional digits beyond `dropFrom` to 0
+    for (let j = dropFrom; j < digits.length; j++) {
+      digits[j] = 0;
+    }
+  } else {
+    // We rounded to zero so reset the parsedNumber
+    fractionLen = Math.max(0, fractionLen);
+    parsedNumber.integerLen = 1;
+    digits.length = Math.max(1, (dropFrom = fractionSize! + 1));
+    digits[0] = 0;
+    for (let i = 1; i < dropFrom; i++) digits[i] = 0;
+  }
+
+  // Pad out with zeros to get the required fraction length
+  for (; fractionLen < Math.max(0, fractionSize!); fractionLen++) digits.push(0);
 }
 
 export function parseIntAutoRadix(text: string): number {
