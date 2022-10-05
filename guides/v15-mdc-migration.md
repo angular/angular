@@ -568,10 +568,14 @@ TODO(mmalerba): link to density docs once they exist.
 
 ### Tabs
 
-* Accessibility: `<mat-tab-nav-bar>` now requires an additional `<mat-tab-nav-panel>` element to
-  be wrapped around the content that it is connected to. A refernece to the tab panel has to be
-  passed in to the `tabPanel` or an error will be thrown. The addition of the tab panel allows
-  for better labelling for assistive technology.
+* Header label text color matches the theme color when the tab header is selected.
+
+* Header labels stretch to fill the container's width. This can be turned off by
+  setting the `<mat-tab-group>` input `mat-stretch-tabs` to `false`.
+
+* The `<mat-tab-nav-bar>` requires a reference to a `<mat-tab-nav-panel>` using the `tabPanel` input. 
+  The `<mat-tab-nav-panel>` must wrap the content connected to the nav-bar. This allows
+  the component to provide correct labeling for assistive technology.
 
 ```html
 <!-- Before -->
@@ -581,11 +585,6 @@ TODO(mmalerba): link to density docs once they exist.
 <mat-tab-nav-bar [tabPanel]="tabPanel">...</mat-tab-nav-bar>
 <mat-tab-nav-panel #tabPanel>...</mat-tab-nav-panel>
 ```
-
-* The selected tab label now uses a text color from the theme, matching the selection indicator.
-
-* Tab header labels default to stretching the width of the container. This can be turned off by
-  providing `mat-stretch-tabs="false"`.
 
 ### Tooltip
 
