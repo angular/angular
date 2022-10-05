@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, ImportedNgModuleProviders, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalCreateApplication as internalCreateApplication, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
+import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, EnvironmentProviders, ErrorHandler, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalCreateApplication as internalCreateApplication, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
@@ -31,7 +31,7 @@ export interface ApplicationConfig {
   /**
    * List of providers that should be available to the root component and all its children.
    */
-  providers: Array<Provider|ImportedNgModuleProviders>;
+  providers: Array<Provider|EnvironmentProviders>;
 }
 
 /**

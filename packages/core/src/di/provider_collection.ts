@@ -84,9 +84,11 @@ export type ImportProvidersSource =
  * @publicApi
  * @developerPreview
  */
-export function importProvidersFrom(...sources: ImportProvidersSource[]):
-    ImportedNgModuleProviders {
-  return {ɵproviders: internalImportProvidersFrom(true, sources)};
+export function importProvidersFrom(...sources: ImportProvidersSource[]): EnvironmentProviders {
+  return {
+    ɵproviders: internalImportProvidersFrom(true, sources),
+    ɵfromNgModule: true,
+  } as InternalEnvironmentProviders;
 }
 
 export function internalImportProvidersFrom(
