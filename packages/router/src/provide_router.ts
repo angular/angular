@@ -7,7 +7,7 @@
  */
 
 import {LOCATION_INITIALIZED, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, inject, InjectFlags, InjectionToken, Injector, Provider, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, Provider, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 
@@ -59,8 +59,8 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to setup a Router.
  */
-export function provideRouter(routes: Routes, ...features: RouterFeatures[]): Provider[] {
-  return [
+export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
+  return makeEnvironmentProviders([
     provideRoutes(routes), {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map(feature => feature.ɵproviders),
@@ -68,7 +68,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): Pr
     // how we want them to be configured. This API doesn't currently have a way to configure them
     // and we should decide what the _best_ way to do that is rather than just sticking with the
     // status quo of how it's done today.
-  ];
+  ]);
 }
 
 export function rootRoute(router: Router): ActivatedRoute {
