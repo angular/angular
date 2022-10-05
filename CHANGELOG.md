@@ -1,3 +1,14 @@
+<a name="14.2.4"></a>
+# 14.2.4 "calcium-coconut" (2022-10-05)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9909f2a33](https://github.com/angular/components/commit/9909f2a33844c8dfe0a481f3aa0895b8dbb3be9a) | fix | **tooltip:** animation not cancelled when mouseleave goes through tooltip ([#25740](https://github.com/angular/components/pull/25740)) |
+## Special Thanks
+Joey Perrott, Kristiyan Kostadinov and Titos Chaniotakis
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-next.3"></a>
 # 15.0.0-next.3 "blubber-blabber" (2022-09-29)
 ### cdk
