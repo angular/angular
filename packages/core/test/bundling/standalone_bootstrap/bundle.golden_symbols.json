@@ -429,6 +429,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "detachMovedView"
   },
   {
@@ -640,6 +643,9 @@
   },
   {
     "name": "isComponentDef"
+  },
+  {
+    "name": "isEnvironmentProviders"
   },
   {
     "name": "isFunction"
