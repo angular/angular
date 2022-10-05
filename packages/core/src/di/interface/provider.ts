@@ -333,6 +333,41 @@ export type Provider = TypeProvider|ValueProvider|ClassProvider|ConstructorProvi
     ExistingProvider|FactoryProvider|any[];
 
 /**
+ * Encapsulated `Provider`s that are only accepted during creation of an `EnvironmentInjector` (e.g.
+ * in an `NgModule`).
+ *
+ * Using this wrapper type prevents providers which are only designed to work in
+ * application/environment injectors from being accidentally included in
+ * `@Component.providers` and ending up in a component injector.
+ *
+ * This wrapper type prevents access to the `Provider`s inside.
+ *
+ * @see `makeEnvironmentProviders`
+ * @see `importProvidersFrom`
+ *
+ * @publicApi
+ */
+export type EnvironmentProviders = {
+  ɵbrand: 'EnvironmentProviders';
+};
+
+export interface InternalEnvironmentProviders extends EnvironmentProviders {
+  ɵproviders: Provider[];
+
+  /**
+   * If present, indicates that the `EnvironmentProviders` were derived from NgModule providers.
+   *
+   * This is used to produce clearer error messages.
+   */
+  ɵfromNgModule?: true;
+}
+
+export function isEnvironmentProviders(value: Provider|InternalEnvironmentProviders):
+    value is InternalEnvironmentProviders {
+  return value && !!(value as InternalEnvironmentProviders).ɵproviders;
+}
+
+/**
  * Describes a function that is used to process provider lists (such as provider
  * overrides).
  */
