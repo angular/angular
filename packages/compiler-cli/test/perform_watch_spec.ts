@@ -121,7 +121,6 @@ describe('perform watch', () => {
     expectNoDiagnostics(config.options, host.diagnostics);
 
     expect(fileExistsSpy!).not.toHaveBeenCalledWith(mainTsPath);
-    expect(fileExistsSpy!).toHaveBeenCalledWith(utilTsPath);
     expect(getSourceFileSpy!).not.toHaveBeenCalledWith(mainTsPath, jasmine.anything());
     expect(getSourceFileSpy!).toHaveBeenCalledWith(utilTsPath, jasmine.anything());
 
