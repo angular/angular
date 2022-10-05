@@ -1,0 +1,5 @@
+/* Does not compile (missing semicolons) */
+.mat-button {
+  width: 100
+  height: 100
+}

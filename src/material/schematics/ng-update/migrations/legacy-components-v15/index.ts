@@ -37,7 +37,12 @@ export class LegacyComponentsMigration extends Migration<null> {
         RootExit: root => this._handleRootNode(root, stylesheet.filePath, namespace),
       },
     ]);
-    processor.process(stylesheet.content, {syntax: scss}).sync();
+    try {
+      processor.process(stylesheet.content, {syntax: scss}).sync();
+    } catch (e) {
+      this.logger.error(`${e}`);
+      this.logger.warn(`Failed to process stylesheet: ${stylesheet.filePath} (see error above).`);
+    }
   }
 
   /** Returns the namespace of the given at-rule if it is importing from @angular/material. */

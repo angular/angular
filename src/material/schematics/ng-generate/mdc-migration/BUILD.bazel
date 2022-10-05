@@ -91,6 +91,7 @@ jasmine_node_test(
         "//src/material/schematics:collection_assets",
         "//src/material/schematics:ng_generate_assets",
     ],
+    shard_count = 10,
     deps = [
         ":unit_tests_bundle",
         # Runtime dependencies needed by the test and actual migration sources. These need

@@ -22,10 +22,10 @@ export class ThemingStylesMigration extends Migration<ComponentMigrator[], Schem
     this.fileSystem
       .edit(stylesheet.filePath)
       .remove(stylesheet.start, stylesheet.content.length)
-      .insertRight(stylesheet.start, this.migrate(stylesheet.content));
+      .insertRight(stylesheet.start, this.migrate(stylesheet.content, stylesheet.filePath));
   }
 
-  migrate(styles: string): string {
+  migrate(styles: string, filename: string): string {
     const processor = new postcss.Processor([
       {
         postcssPlugin: 'theming-styles-migration-plugin',
@@ -37,7 +37,13 @@ export class ThemingStylesMigration extends Migration<ComponentMigrator[], Schem
       },
     ]);
 
-    return processor.process(styles, {syntax: scss}).toString();
+    try {
+      return processor.process(styles, {syntax: scss}).toString();
+    } catch (e) {
+      this.context.logger.error(`${e}`);
+      this.context.logger.warn(`Failed to process stylesheet: ${filename} (see error above).`);
+      return styles;
+    }
   }
 
   atUseHandler(atRule: postcss.AtRule) {

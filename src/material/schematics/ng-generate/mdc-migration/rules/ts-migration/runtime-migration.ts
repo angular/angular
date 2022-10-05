@@ -134,7 +134,7 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
     node: ts.StringLiteralLike | ts.Identifier,
     migration: TemplateMigration | ThemingStylesMigration,
   ) {
-    let migratedText = migration.migrate(node.text);
+    let migratedText = migration.migrate(node.text, node.getSourceFile().fileName);
     let migratedTextLines = migratedText.split('\n');
 
     // Update quotes based on if its multiline or not to avoid compilation errors

@@ -10,7 +10,7 @@ import {join, Path} from '@angular-devkit/core';
 import {Tree} from '@angular-devkit/schematics';
 
 /** Regular expression that matches stylesheet paths */
-const STYLESHEET_REGEX = /.*\.(css|scss)/;
+const STYLESHEET_REGEX = /.*\.(css|scss)$/;
 
 /**
  * Finds stylesheets in the given directory from within the specified tree.
