@@ -14,7 +14,7 @@ import {ErrorCode} from '../../diagnostics';
 
 import {FullTemplateMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
-import {PotentialDirective, PotentialPipe} from './scope';
+import {PotentialDirective, PotentialImport, PotentialPipe} from './scope';
 import {ElementSymbol, Symbol, TcbLocation, TemplateSymbol} from './symbols';
 
 /**
@@ -145,6 +145,12 @@ export interface TemplateTypeChecker {
    * the DOM schema.
    */
   getPotentialElementTags(component: ts.ClassDeclaration): Map<string, PotentialDirective|null>;
+
+  /**
+   * In the context of an Angular trait, generate potential imports for a directive.
+   */
+  getPotentialImportsFor(directive: PotentialDirective, inComponent: ts.ClassDeclaration):
+      ReadonlyArray<PotentialImport>;
 
   /**
    * Get the primary decorator for an Angular class (such as @Component). This does not work for
