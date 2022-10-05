@@ -1,3 +1,29 @@
+<a name="15.0.0-next.4"></a>
+# 15.0.0-next.4 "quartz-quill" (2022-10-05)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9f0071dc4](https://github.com/angular/components/commit/9f0071dc4c4848ea440907e016a12a5cba48a1a9) | fix | **button:** cdk-focus classes not being applied ([#25619](https://github.com/angular/components/pull/25619)) |
+| [17e217acd](https://github.com/angular/components/commit/17e217acd82afb99d70cbb36be31184db09d13d2) | fix | **chips:** aria-selected not reflecting selection state ([#25742](https://github.com/angular/components/pull/25742)) |
+| [9dbc4fd70](https://github.com/angular/components/commit/9dbc4fd703d0504ffc19378dfb474026cd6c0ab5) | fix | **core:** add typography hierarchy to prebuilt ([#25746](https://github.com/angular/components/pull/25746)) |
+| [e73ba59d7](https://github.com/angular/components/commit/e73ba59d7bdc09042ff58835871bedbf3f1f20b4) | fix | **core:** remove core style parameters ([#25738](https://github.com/angular/components/pull/25738)) |
+| [a106eba5a](https://github.com/angular/components/commit/a106eba5a654f06f12d2b7e77c693a7d69f59882) | fix | **list:** communicate current active page with aria-current ([#25681](https://github.com/angular/components/pull/25681)) |
+| [2686bfef3](https://github.com/angular/components/commit/2686bfef39bdc298ae3b0c55023b541489d86060) | fix | **list:** visually indicate active links in HCM ([#25679](https://github.com/angular/components/pull/25679)) |
+| [4a512cf29](https://github.com/angular/components/commit/4a512cf29a3e8b20c6067857b236148ca75a016c) | fix | **schematics:** add custom replacements for imports |
+| [f23140419](https://github.com/angular/components/commit/f231404191032a45e7e9095d5ee62eac6e6940b8) | fix | **schematics:** add support for replacing mixins that begin with all-legacy-component |
+| [cfc923029](https://github.com/angular/components/commit/cfc92302958fa87459b2ababe0e60b09a07b6f12) | fix | **schematics:** correctly migrate theme, color & typography |
+| [fd11f2b4d](https://github.com/angular/components/commit/fd11f2b4d54b1076eab7ab20b34c234fbd8880cd) | fix | **schematics:** ensure test files are included in migration ([#25757](https://github.com/angular/components/pull/25757)) |
+| [19d0b3613](https://github.com/angular/components/commit/19d0b3613a124cf063e7486d54d2bd15c1ebee6d) | fix | **schematics:** files with inline resources overwritten by ng-generate ([#25744](https://github.com/angular/components/pull/25744)) |
+| [018a6f796](https://github.com/angular/components/commit/018a6f7965894bb06a7a92f3d9c7c7b69c2369d5) | fix | **schematics:** fix calling .match on null |
+| [1289310d4](https://github.com/angular/components/commit/1289310d46fe2e6a5e51cb97450e721cc8795ee9) | fix | **schematics:** improve sass comment adding logic |
+| [9d5f0f3cf](https://github.com/angular/components/commit/9d5f0f3cfff95dc40f11b6a7ed1cc701b20f84cc) | fix | **schematics:** replace pre-existing attribute values ([#25754](https://github.com/angular/components/pull/25754)) |
+| [6526277d4](https://github.com/angular/components/commit/6526277d4af739d7705989478d979042c20aad58) | fix | **tooltip:** animation not cancelled when mouseleave goes through tooltip ([#25740](https://github.com/angular/components/pull/25740)) |
+| [9769a5ada](https://github.com/angular/components/commit/9769a5adabe4652f532efe2f67161c44c1acdfa9) | fix | **tooltip:** resolve server-side rendering error ([#25728](https://github.com/angular/components/pull/25728)) |
+## Special Thanks
+Amy Sorto, Andrew Seguin, Joey Perrott, Kevin Lee / 이지환, Kristiyan Kostadinov, Miles Malerba, Titos Chaniotakis, Wagner Maciel and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.4"></a>
 # 14.2.4 "calcium-coconut" (2022-10-05)
 ### material
