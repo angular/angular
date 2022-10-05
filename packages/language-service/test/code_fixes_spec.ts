@@ -226,6 +226,62 @@ describe('code fixes', () => {
       fileName: 'app.ts'
     });
   });
+
+  describe('should fix missing selector imports', () => {
+    const files = {};
+    const standaloneFiles = {
+      'foo.ts': ` import {CommonModule} from '@angular/common';
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'foo',
+        template: '<bar></bar>',
+        standalone: true
+      })
+      export class FooComponent {}`,
+      'bar.ts': `
+      import {CommonModule} from '@angular/common';
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'bar',
+        template: '<div>bar</div>',
+        standalone: true
+      })
+      export class BarComponent {}`,
+    };
+
+    it('for a new standalone component import', () => {
+      const project =
+          createModuleAndProjectWithDeclarations(env, 'test', files, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('foo.ts');
+      const fixFile = project.openFile('foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions =
+          project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [diags[0].code]);
+      // TODO(dylhunn): These integration test helpers are hard to debug, and somewhat brittle
+      // against formatting. They can be refactored more thoroughly to simplify multiline tests
+      // like these, using Jasime expects all the way down.
+      expectIncludeReplacementText({
+        codeActions,
+        content: fixFile.contents,
+        text: null,
+        newText:
+            `{\n    selector: 'foo',\n    template: '<bar></bar>',\n    standalone: true,\n    imports: [BarComponent]\n}`,
+        fileName: 'foo.ts',
+        description: `Import BarComponent from './bar' on FooComponent`,
+        removeWhitespace: false,  // Include whitespace to check multiline formatting
+      });
+      expectIncludeAddText({
+        codeActions,
+        position: null,
+        text: `import{BarComponent}from"./bar";`,
+        fileName: 'foo.ts',
+        removeWhitespace: true,
+      });
+    });
+  });
 });
 
 function expectNotIncludeFixAllInfo(codeActions: readonly ts.CodeFixAction[]) {
@@ -240,16 +296,22 @@ function expectNotIncludeFixAllInfo(codeActions: readonly ts.CodeFixAction[]) {
  * check it.
  */
 function expectIncludeReplacementText(
-    {codeActions, content, text, newText, fileName, description}: {
-      codeActions: readonly ts.CodeAction[]; content: string; text: string; newText: string;
+    {codeActions, content, text, newText, fileName, description, removeWhitespace = false}: {
+      codeActions: readonly ts.CodeAction[]; content: string; text: string | null; newText: string;
       fileName: string;
       description?: string;
+      removeWhitespace?: boolean;
     }) {
   let includeReplacementText = false;
   for (const codeAction of codeActions) {
-    includeReplacementText =
-        includeReplacementTextInChanges(
-            {fileTextChanges: codeAction.changes, content, text, newText, fileName}) &&
+    includeReplacementText = includeReplacementTextInChanges({
+                               fileTextChanges: codeAction.changes,
+                               content,
+                               text,
+                               newText,
+                               fileName,
+                               removeWhitespace
+                             }) &&
         (description === undefined ? true : (description === codeAction.description));
     if (includeReplacementText) {
       return;
@@ -258,13 +320,14 @@ function expectIncludeReplacementText(
   expect(includeReplacementText).toBeTruthy();
 }
 
-function expectIncludeAddText({codeActions, position, text, fileName}: {
-  codeActions: readonly ts.CodeAction[]; position: number; text: string; fileName: string;
+function expectIncludeAddText({codeActions, position, text, fileName, removeWhitespace = false}: {
+  codeActions: readonly ts.CodeAction[]; position: number | null; text: string; fileName: string;
+  removeWhitespace?: boolean;
 }) {
   let includeAddText = false;
   for (const codeAction of codeActions) {
-    includeAddText =
-        includeAddTextInChanges({fileTextChanges: codeAction.changes, position, text, fileName});
+    includeAddText = includeAddTextInChanges(
+        {fileTextChanges: codeAction.changes, position, text, fileName, removeWhitespace});
     if (includeAddText) {
       return;
     }
@@ -273,25 +336,34 @@ function expectIncludeAddText({codeActions, position, text, fileName}: {
 }
 
 function expectIncludeReplacementTextForFileTextChange(
-    {fileTextChanges, content, text, newText, fileName}: {
+    {fileTextChanges, content, text, newText, fileName, removeWhitespace = false}: {
       fileTextChanges: readonly ts.FileTextChanges[]; content: string; text: string;
       newText: string;
       fileName: string;
+      removeWhitespace?: boolean;
     }) {
-  expect(includeReplacementTextInChanges({fileTextChanges, content, text, newText, fileName}))
+  expect(includeReplacementTextInChanges(
+             {fileTextChanges, content, text, newText, fileName, removeWhitespace}))
       .toBeTruthy();
 }
 
-function expectIncludeAddTextForFileTextChange({fileTextChanges, position, text, fileName}: {
-  fileTextChanges: readonly ts.FileTextChanges[]; position: number; text: string; fileName: string;
-}) {
-  expect(includeAddTextInChanges({fileTextChanges, position, text, fileName})).toBeTruthy();
+function expectIncludeAddTextForFileTextChange(
+    {fileTextChanges, position, text, fileName, removeWhitespace = false}: {
+      fileTextChanges: readonly ts.FileTextChanges[]; position: number; text: string;
+      fileName: string;
+      removeWhitespace?: boolean;
+    }) {
+  expect(includeAddTextInChanges({fileTextChanges, position, text, fileName, removeWhitespace}))
+      .toBeTruthy();
 }
 
-function includeReplacementTextInChanges({fileTextChanges, content, text, newText, fileName}: {
-  fileTextChanges: readonly ts.FileTextChanges[]; content: string; text: string; newText: string;
-  fileName: string;
-}) {
+function includeReplacementTextInChanges(
+    {fileTextChanges, content, text, newText, fileName, removeWhitespace = false}: {
+      fileTextChanges: readonly ts.FileTextChanges[]; content: string; text: string | null;
+      newText: string;
+      fileName: string;
+      removeWhitespace?: boolean;
+    }) {
   for (const change of fileTextChanges) {
     if (!change.fileName.endsWith(fileName)) {
       continue;
@@ -300,11 +372,12 @@ function includeReplacementTextInChanges({fileTextChanges, content, text, newTex
       if (textChange.span.length === 0) {
         continue;
       }
-      const includeReplaceText =
-          content.slice(textChange.span.start, textChange.span.start + textChange.span.length) ===
-              text &&
-          newText === textChange.newText;
-      if (includeReplaceText) {
+      const textChangeOldText =
+          content.slice(textChange.span.start, textChange.span.start + textChange.span.length);
+      let preprocess = removeWhitespace ? deleteWhitespace : (s: string) => s;
+      const oldTextMatches = text === null || (preprocess(textChangeOldText) === preprocess(text));
+      const newTextMatches = preprocess(newText) === preprocess(textChange.newText);
+      if (oldTextMatches && newTextMatches) {
         return true;
       }
     }
@@ -312,9 +385,12 @@ function includeReplacementTextInChanges({fileTextChanges, content, text, newTex
   return false;
 }
 
-function includeAddTextInChanges({fileTextChanges, position, text, fileName}: {
-  fileTextChanges: readonly ts.FileTextChanges[]; position: number; text: string; fileName: string;
-}) {
+function includeAddTextInChanges(
+    {fileTextChanges, position, text, fileName, removeWhitespace = false}: {
+      fileTextChanges: readonly ts.FileTextChanges[]; position: number | null; text: string;
+      fileName: string;
+      removeWhitespace?: boolean;
+    }) {
   for (const change of fileTextChanges) {
     if (!change.fileName.endsWith(fileName)) {
       continue;
@@ -323,11 +399,21 @@ function includeAddTextInChanges({fileTextChanges, position, text, fileName}: {
       if (textChange.span.length > 0) {
         continue;
       }
-      const includeAddText = position === textChange.span.start && text === textChange.newText;
+      let preprocess = removeWhitespace ? deleteWhitespace : (s: string) => s;
+      const includeAddText = (position === null || position === textChange.span.start) &&
+          preprocess(text) === preprocess(textChange.newText);
       if (includeAddText) {
         return true;
       }
     }
   }
   return false;
+}
+
+/**
+ * For many test input files, there will be extra whitespace from the file formatting,
+ * which causes unnecessarily fragile tests.
+ */
+function deleteWhitespace(str: string) {
+  return str.replace(/\s/g, '');
 }

@@ -9,7 +9,7 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
-import {addElementToArrayLiteral, collectMemberMethods, findTightestNode, objectPropertyAssignmentForKey, updateObjectValueForKey} from '../src/ts_utils';
+import {addElementToArrayLiteral, collectMemberMethods, ensureArrayWithIdentifier, findTightestNode, generateImport, hasImport, nonCollidingImportName, objectPropertyAssignmentForKey, printNode, updateImport, updateObjectValueForKey} from '../src/ts_utils';
 import {LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
 
 describe('TS util', () => {
@@ -160,6 +160,48 @@ describe('TS util', () => {
         const obj = updateObjectValueForKey(oldObj, 'foo', valueAppenderFn);
         expect(print(obj)).toBe('{ foo: "barbaz" }');
       });
+    });
+
+    it('addElementToArrayLiteral', () => {
+      let arr = ensureArrayWithIdentifier(ts.factory.createIdentifier('foo'));
+      arr = addElementToArrayLiteral(arr!, ts.factory.createIdentifier('bar'));
+      expect(print(arr)).toEqual('[foo, bar]');
+    });
+
+    it('ensureArrayWithIdentifier', () => {
+      let arr = ensureArrayWithIdentifier(ts.factory.createIdentifier('foo'));
+      expect(print(arr!)).toEqual('[foo]');
+      arr = ensureArrayWithIdentifier(ts.factory.createIdentifier('bar'), arr!);
+      expect(print(arr!)).toEqual('[foo, bar]');
+      arr = ensureArrayWithIdentifier(ts.factory.createIdentifier('bar'), arr!);
+      expect(arr).toEqual(null);
+    });
+
+    it('generateImport', () => {
+      let imp = generateImport('Foo', null, './foo');
+      expect(print(imp)).toEqual(`import { Foo } from "./foo";`);
+      imp = generateImport('Foo', 'Bar', './foo');
+      expect(print(imp)).toEqual(`import { Bar as Foo } from "./foo";`);
+    });
+
+    it('updateImport', () => {
+      let imp = generateImport('Foo', null, './foo');
+      let namedImp = updateImport(imp.importClause!.namedBindings! as ts.NamedImports, 'Bar', null);
+      expect(print(namedImp)).toEqual(`{ Foo, Bar }`);
+      namedImp = updateImport(imp.importClause!.namedBindings! as ts.NamedImports, 'Foo_2', 'Foo');
+      expect(print(namedImp)).toEqual(`{ Foo, Foo as Foo_2 }`);
+      namedImp = updateImport(imp.importClause!.namedBindings! as ts.NamedImports, 'Bar', 'Bar');
+      expect(print(namedImp)).toEqual(`{ Foo, Bar }`);
+    });
+
+    it('nonCollidingImportName', () => {
+      let imps = [
+        generateImport('Foo', null, './foo'),
+        generateImport('Bar', 'ExternalBar', './bar'),
+      ];
+      expect(nonCollidingImportName(imps, 'Other')).toEqual('Other');
+      expect(nonCollidingImportName(imps, 'Foo')).toEqual('Foo_1');
+      expect(nonCollidingImportName(imps, 'ExternalBar')).toEqual('ExternalBar');
     });
   });
 });
