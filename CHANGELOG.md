@@ -1,5 +1,78 @@
+<a name="15.0.0-next.5"></a>
+# 15.0.0-next.5 (2022-10-05)
+## Breaking Changes
+### compiler
+- Keyframes names are now prefixed with the component's "scope name".
+  For example, the following keyframes rule in a component definition,
+  whose "scope name" is host-my-cmp:
+  
+     @keyframes foo { ... }
+  
+  will become:
+  
+     @keyframes host-my-cmp_foo { ... }
+  
+  Any TypeScript/JavaScript code which relied on the names of keyframes rules
+  will no longer match.
+  
+  The recommended solutions in this case are to either:
+  - change the component's view encapsulation to the `None` or `ShadowDom`
+  - define keyframes rules in global stylesheets (e.g styles.css)
+  - define keyframes rules programmatically in code.
+### router
+- Previously, the `RouterOutlet` would immediately
+  instantiate the component being activated during navigation. Now the
+  component is not instantiated until the change detection runs. This
+  could affect tests which do not trigger change detection after a router
+  navigation. In rarer cases, this can affect production code that relies
+  on the exact timing of component availability.
+## Deprecations
+### core
+- - The ability to pass an `NgModule` to the `providedIn` option for
+  `@Injectable` and `InjectionToken` is now deprecated.
+  
+  `providedIn: NgModule` was intended to be a tree-shakable alternative to
+  NgModule providers. It does not have wide usage, and in most cases is used
+  incorrectly, in circumstances where `providedIn: 'root'` should be
+  preferred. If providers should truly be scoped to a specific NgModule, use
+  `NgModule.providers` instead.
+  
+  - The ability to set `providedIn: 'any'` for an `@Injectable` or
+  `InjectionToken` is now deprecated.
+  
+  `providedIn: 'any'` is an option with confusing semantics and is almost
+  never used apart from a handful of esoteric cases internal to the framework.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [051f75648d](https://github.com/angular/angular/commit/051f75648d6065949796ac1c7ea67e71e31b011e) | fix | scope css keyframes in emulated view encapsulation ([#42608](https://github.com/angular/angular/pull/42608)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2e1dddec45](https://github.com/angular/angular/commit/2e1dddec45fef8291b1f3abce2a937e28bb75a87) | fix | support hasInvalidatedResolutions. ([#47585](https://github.com/angular/angular/pull/47585)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e3cef4a784](https://github.com/angular/angular/commit/e3cef4a7843d22fd004f1e27afcc42d0fbbef74a) | docs | deprecate `providedIn: NgModule` and `providedIn: 'any'` ([#47616](https://github.com/angular/angular/pull/47616)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [400a6b5e37](https://github.com/angular/angular/commit/400a6b5e3707f3939d84c659a115b75ef15d2c09) | fix | add polyfill in polyfills array instead of polyfills.ts ([#47569](https://github.com/angular/angular/pull/47569)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [da58801f95](https://github.com/angular/angular/commit/da58801f95c66c201e332189af25702bdd722f3f) | feat | auto-unwrap default exports when lazy loading ([#47586](https://github.com/angular/angular/pull/47586)) |
+| [c3f857975d](https://github.com/angular/angular/commit/c3f857975d56cac6ad3939d64f76a51455159c23) | feat | make RouterOutlet name an Input so it can be set dynamically ([#46569](https://github.com/angular/angular/pull/46569)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Alexander Wiebe, Andrew Kushnir, Andrew Scott, Ciprian Sauliuc, Dmytro Mezhenskyi, Dylan Hunn, George Kalpakas, Joe Martin (Crowdstaffing), Jordan, Kristiyan Kostadinov, Martin Probst, Ole M, Paul Gschwendtner, Pawel Kozlowski, dario-piotrowicz and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.5"></a>
 # 14.2.5 (2022-10-05)
+
+This release contains various API docs improvements.
+
 ## Special Thanks
 Alexander Wiebe, Ciprian Sauliuc, Dmytro Mezhenskyi, George Kalpakas, Joe Martin (Crowdstaffing), Jordan, Ole M, Paul Gschwendtner, Pawel Kozlowski and mgechev
 
