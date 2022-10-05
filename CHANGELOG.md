@@ -1,3 +1,10 @@
+<a name="14.2.5"></a>
+# 14.2.5 (2022-10-05)
+## Special Thanks
+Alexander Wiebe, Ciprian Sauliuc, Dmytro Mezhenskyi, George Kalpakas, Joe Martin (Crowdstaffing), Jordan, Ole M, Paul Gschwendtner, Pawel Kozlowski and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-next.4"></a>
 # 15.0.0-next.4 (2022-09-28)
 ## Breaking Changes
