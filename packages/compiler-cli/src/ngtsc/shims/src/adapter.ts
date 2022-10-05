@@ -168,31 +168,26 @@ export class ShimAdapter {
       // This _might_ be a shim, if an underlying base file exists. The base file might be .ts or
       // .tsx.
       let baseFileName = absoluteFrom(prefix + '.ts');
-      if (!this.delegate.fileExists(baseFileName)) {
+      // Retrieve the original file for which the shim will be generated.
+      let inputFile = this.delegate.getSourceFile(baseFileName, ts.ScriptTarget.Latest);
+      if (inputFile === undefined) {
         // No .ts file by that name - try .tsx.
         baseFileName = absoluteFrom(prefix + '.tsx');
-        if (!this.delegate.fileExists(baseFileName)) {
-          // This isn't a shim after all since there is no original file which would have triggered
-          // its generation, even though the path is right. There are a few reasons why this could
-          // occur:
-          //
-          // * when resolving an import to an .ngfactory.d.ts file, the module resolution algorithm
-          //   will first look for an .ngfactory.ts file in its place, which will be requested here.
-          // * when the user writes a bad import.
-          // * when a file is present in one compilation and removed in the next incremental step.
-          //
-          // Note that this does not add the filename to `notShims`, so this path is not cached.
-          // That's okay as these cases above are edge cases and do not occur regularly in normal
-          // operations.
-          return undefined;
-        }
+        inputFile = this.delegate.getSourceFile(baseFileName, ts.ScriptTarget.Latest);
       }
-
-      // Retrieve the original file for which the shim will be generated.
-      const inputFile = this.delegate.getSourceFile(baseFileName, ts.ScriptTarget.Latest);
       if (inputFile === undefined || isShim(inputFile)) {
-        // Something strange happened here. This case is also not cached in `notShims`, but this
-        // path is not expected to occur in reality so this shouldn't be a problem.
+        // This isn't a shim after all since there is no original file which would have triggered
+        // its generation, even though the path is right. There are a few reasons why this could
+        // occur:
+        //
+        // * when resolving an import to an .ngfactory.d.ts file, the module resolution algorithm
+        //   will first look for an .ngfactory.ts file in its place, which will be requested here.
+        // * when the user writes a bad import.
+        // * when a file is present in one compilation and removed in the next incremental step.
+        //
+        // Note that this does not add the filename to `notShims`, so this path is not cached.
+        // That's okay as these cases above are edge cases and do not occur regularly in normal
+        // operations.
         return undefined;
       }
 
