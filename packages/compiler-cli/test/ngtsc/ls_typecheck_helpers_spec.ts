@@ -201,5 +201,98 @@ runInEachFileSystem(() => {
         expect(directives.map(d => d.selector)).toContain('two-cmp');
       });
     });
+
+    describe('can generate imports` ', () => {
+      it('for out of scope standalone components', () => {
+        env.write('one.ts', `
+			 import {Component} from '@angular/core';
+	 
+			 @Component({
+				 standalone: true,
+				 selector: 'one-cmp',
+				 template: '<div></div>',
+			 })
+			 export class OneCmp {}
+			 `);
+
+        env.write('two.ts', `
+			 import {Component} from '@angular/core';
+	 
+			 @Component({
+				 standalone: true,
+				 selector: 'two-cmp',
+				 template: '<div></div>',
+			 })
+			 export class TwoCmp {}
+			 `);
+        const {program, checker} = env.driveTemplateTypeChecker();
+        const sfOne = program.getSourceFile(_('/one.ts'));
+        expect(sfOne).not.toBeNull();
+        const OneCmpClass = getClass(sfOne!, 'OneCmp');
+
+        const TwoCmpDir = checker.getPotentialTemplateDirectives(OneCmpClass)
+                              .filter(d => d.selector === 'two-cmp')[0];
+        const imports = checker.getPotentialImportsFor(TwoCmpDir, OneCmpClass);
+
+        expect(imports.length).toBe(1);
+        expect(imports[0].moduleSpecifier).toBe('./two');
+        expect(imports[0].symbolName).toBe('TwoCmp');
+      });
+
+      it('for out of scope ngModules', () => {
+        env.write('one.ts', `
+			 import {Component} from '@angular/core';
+	 
+			 @Component({
+				 standalone: true,
+				 selector: 'one-cmp',
+				 template: '<div></div>',
+			 })
+			 export class OneCmp {}
+			 `);
+
+        env.write('two.ts', `
+			 import {Component} from '@angular/core';
+	 
+			 @Component({
+				 selector: 'two-cmp',
+				 template: '<div></div>',
+			 })
+			 export class TwoCmp {}
+			 `);
+
+        env.write('twomod.ts', `
+			import { NgModule } from '@angular/core';
+			import { CommonModule } from '@angular/common';
+			import { TwoCmp } from './two';
+			
+			@NgModule({
+			declarations: [
+				TwoCmp
+			],
+			exports: [
+				TwoCmp
+			],
+			imports: [
+				CommonModule
+			]
+			})
+			export class TwoModule { }
+			 `);
+
+        const {program, checker} = env.driveTemplateTypeChecker();
+        const sfOne = program.getSourceFile(_('/one.ts'));
+        expect(sfOne).not.toBeNull();
+        const OneCmpClass = getClass(sfOne!, 'OneCmp');
+
+        const TwoNgMod = checker.getPotentialTemplateDirectives(OneCmpClass)
+                             .filter(d => d.selector === 'two-cmp')[0];
+        const imports = checker.getPotentialImportsFor(TwoNgMod, OneCmpClass);
+
+        expect(imports.length).toBe(1);
+        expect(imports[0].moduleSpecifier).toBe('./twomod');
+        expect(imports[0].symbolName).toBe('TwoModule');
+      });
+    });
   });
 });
