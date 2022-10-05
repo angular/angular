@@ -8,7 +8,7 @@
 
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
-import {Provider} from '@angular/core';
+import {EnvironmentProviders, Provider} from '@angular/core';
 import {provideRouter, RouterFeatures, Routes} from '@angular/router';
 
 
@@ -46,9 +46,9 @@ import {provideRouter, RouterFeatures, Routes} from '@angular/router';
  * @returns A set of providers to setup Router for testing.
  */
 export function provideRouterForTesting(
-    routes: Routes = [], ...features: RouterFeatures[]): Provider[] {
+    routes: Routes = [], ...features: RouterFeatures[]): (Provider|EnvironmentProviders)[] {
   return [
-    ...provideRouter(routes, ...features),
+    provideRouter(routes, ...features),
     {provide: Location, useClass: SpyLocation},
     {provide: LocationStrategy, useClass: MockLocationStrategy},
   ];
