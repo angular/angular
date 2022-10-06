@@ -90,7 +90,7 @@ export function xsrfInterceptorFn(
   const headerName = inject(XSRF_HEADER_NAME);
 
   // Be careful not to overwrite an existing header of the same name.
-  if (token !== null && !req.headers.has(headerName)) {
+  if (token != null && !req.headers.has(headerName)) {
     req = req.clone({headers: req.headers.set(headerName, token)});
   }
   return next(req);
