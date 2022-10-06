@@ -14,7 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
 import {createImageLoader, IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
-import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
+import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, IMAGE_CONFIG, ImageConfig, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
@@ -99,11 +99,11 @@ describe('Image directive', () => {
               'the `src` attribute.');
     });
 
-    it('should throw if both `ngSrc` and `srcset` is present', () => {
+    it('should throw if both `ngSrcet` and `srcset` is present', () => {
       setupTestingModule();
 
       const template =
-          '<img ngSrc="img-100.png" srcset="img-100.png 100w, img-200.png 200w" width="100" height="50">';
+          '<img ngSrc="img-100.png" ngSrcset="100w, 200w" srcset="img-100.png 100w, img-200.png 200w" width="100" height="50">';
       expect(() => {
         const fixture = createTestComponent(template);
         fixture.detectChanges();
@@ -901,21 +901,6 @@ describe('Image directive', () => {
         };
       });
 
-      it('should NOT set `srcset` if no `ngSrcset` value', () => {
-        setupTestingModule({imageLoader});
-
-        const template = `
-           <img ngSrc="img-100.png" width="100" height="50">
-         `;
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-
-        const nativeElement = fixture.nativeElement as HTMLElement;
-        const img = nativeElement.querySelector('img')!;
-        expect(img.src).toBe(`${IMG_BASE_URL}/img-100.png`);
-        expect(img.srcset).toBe('');
-      });
-
       it('should set the `srcset` using the `ngSrcset` value with width descriptors', () => {
         setupTestingModule({imageLoader});
 
@@ -1033,6 +1018,180 @@ describe('Image directive', () => {
                 `${IMG_BASE_URL}/img.png?w=300 3x`);
       });
     });
+
+    describe('sizes attribute', () => {
+      it('should pass through the sizes attribute', () => {
+        setupTestingModule();
+
+        const template = '<img ngSrc="path/img.png" width="150" height="50" ' +
+            'sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw">';
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+
+        expect(img.getAttribute('sizes'))
+            .toBe('(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw');
+      });
+
+      it('should throw if a complex `sizes` is used', () => {
+        setupTestingModule();
+
+        const template =
+            '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw">';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
+                'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
+                '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own \`ngSrcset\` value directly.');
+      });
+      it('should throw if a complex `sizes` is used with srcset', () => {
+        setupTestingModule();
+
+        const template =
+            '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" srcset="www.example.com/img.png?w=500 768w, www.example.com/img.png?w=2000" >';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
+                'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
+                '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own \`ngSrcset\` value directly.');
+      });
+      it('should not throw if a complex `sizes` is used with ngSrcset', () => {
+        setupTestingModule();
+
+        const template =
+            '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" ngSrcset="100w, 200w">';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        }).not.toThrow();
+      });
+    });
+
+    describe('automatic srcset generation', () => {
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const width = config.width ? `?w=${config.width}` : ``;
+        return `${IMG_BASE_URL}/${config.src}${width}`;
+      };
+
+      it('should add a responsive srcset to the img element if sizes attribute exists', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50" sizes="100vw">
+    `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=750 750w, ${
+                IMG_BASE_URL}/img?w=828 828w, ${IMG_BASE_URL}/img?w=1080 1080w, ${
+                IMG_BASE_URL}/img?w=1200 1200w, ${IMG_BASE_URL}/img?w=1920 1920w, ${
+                IMG_BASE_URL}/img?w=2048 2048w, ${IMG_BASE_URL}/img?w=3840 3840w`);
+      });
+
+      it('should use the long responsive srcset if sizes attribute exists and is less than 100vw',
+         () => {
+           setupTestingModule({imageLoader});
+
+           const template = `
+      <img ngSrc="img" width="100" height="50" sizes="2vw">
+    `;
+           const fixture = createTestComponent(template);
+           fixture.detectChanges();
+
+           const nativeElement = fixture.nativeElement as HTMLElement;
+           const img = nativeElement.querySelector('img')!;
+           expect(img.getAttribute('srcset'))
+               .toBe(`${IMG_BASE_URL}/img?w=16 16w, ${IMG_BASE_URL}/img?w=32 32w, ${
+                   IMG_BASE_URL}/img?w=48 48w, ${IMG_BASE_URL}/img?w=64 64w, ${
+                   IMG_BASE_URL}/img?w=96 96w, ${IMG_BASE_URL}/img?w=128 128w, ${
+                   IMG_BASE_URL}/img?w=256 256w, ${IMG_BASE_URL}/img?w=384 384w, ${
+                   IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=750 750w, ${
+                   IMG_BASE_URL}/img?w=828 828w, ${IMG_BASE_URL}/img?w=1080 1080w, ${
+                   IMG_BASE_URL}/img?w=1200 1200w, ${IMG_BASE_URL}/img?w=1920 1920w, ${
+                   IMG_BASE_URL}/img?w=2048 2048w, ${IMG_BASE_URL}/img?w=3840 3840w`);
+         });
+
+      it('should add a fixed srcset to the img element if sizes attribute does not exist', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50">
+    `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=100 1x, ${IMG_BASE_URL}/img?w=200 2x`);
+      });
+
+      it('should use a custom breakpoint set if one is provided', () => {
+        const imageConfig = {
+          breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 1280, 3840],
+        };
+        setupTestingModule({imageLoader, imageConfig});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50" sizes="2vw">
+    `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=16 16w, ${IMG_BASE_URL}/img?w=32 32w, ${
+                IMG_BASE_URL}/img?w=48 48w, ${IMG_BASE_URL}/img?w=64 64w, ${
+                IMG_BASE_URL}/img?w=96 96w, ${IMG_BASE_URL}/img?w=128 128w, ${
+                IMG_BASE_URL}/img?w=256 256w, ${IMG_BASE_URL}/img?w=384 384w, ${
+                IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=1280 1280w, ${
+                IMG_BASE_URL}/img?w=3840 3840w`);
+      });
+
+      it('should sort custom breakpoint set', () => {
+        const imageConfig = {
+          breakpoints: [48, 16, 3840, 640, 1280],
+        };
+        setupTestingModule({imageLoader, imageConfig});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50" sizes="2vw">
+    `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=16 16w, ${IMG_BASE_URL}/img?w=48 48w, ${
+                IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=1280 1280w, ${
+                IMG_BASE_URL}/img?w=3840 3840w`);
+      });
+
+      it('should disable automatic srcset generation if "disableOptimizedSrcset" attribute is set',
+         () => {
+           setupTestingModule({imageLoader});
+
+           const template = `
+      <img ngSrc="img" width="100" height="50" sizes="50vw" disableOptimizedSrcset>
+    `;
+           const fixture = createTestComponent(template);
+           fixture.detectChanges();
+           const nativeElement = fixture.nativeElement as HTMLElement;
+           const img = nativeElement.querySelector('img')!;
+           expect(img.getAttribute('srcset')).toBeNull();
+         });
+    });
   });
 });
 
@@ -1059,8 +1218,12 @@ class TestComponent {
   priority = false;
 }
 
-function setupTestingModule(
-    config?: {imageLoader?: ImageLoader, extraProviders?: Provider[], component?: Type<unknown>}) {
+function setupTestingModule(config?: {
+  imageConfig?: ImageConfig,
+  imageLoader?: ImageLoader,
+  extraProviders?: Provider[],
+  component?: Type<unknown>
+}) {
   const defaultLoader = (config: ImageLoaderConfig) => {
     const isAbsolute = /^https?:\/\//.test(config.src);
     return isAbsolute ? config.src : window.location.origin + '/' + config.src;
@@ -1072,6 +1235,9 @@ function setupTestingModule(
     {provide: IMAGE_LOADER, useValue: loader},
     ...extraProviders,
   ];
+  if (config?.imageConfig) {
+    providers.push({provide: IMAGE_CONFIG, useValue: config.imageConfig});
+  }
 
   TestBed.configureTestingModule({
     declarations: [config?.component ?? TestComponent],
