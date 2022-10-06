@@ -41,3 +41,11 @@ ng_package(
         "//packages/compiler/testing",
     ],
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+)
