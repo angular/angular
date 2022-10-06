@@ -145,6 +145,7 @@ TEST_DEPS = APPLICATION_DEPS + [
     "@aio_npm//karma-coverage",
     "@aio_npm//karma-jasmine",
     "@aio_npm//karma-jasmine-html-reporter",
+    "//aio/tools:windows-chromium-path",
 ]
 
 # All sources, specs, and config files required to serve the app
@@ -159,6 +160,7 @@ E2E_DEPS = APPLICATION_DEPS + [
     "@aio_npm//jasmine-spec-reporter",
     "@aio_npm//protractor",
     "@aio_npm//ts-node",
+    "//aio/tools:windows-chromium-path",
 ]
 
 # Stamp npm_link targets for all dependencies that correspond to a
