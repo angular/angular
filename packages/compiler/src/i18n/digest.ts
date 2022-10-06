@@ -7,8 +7,8 @@
  */
 
 import {Byte, newArray, utf8Encode} from '../util';
-import {BigIntExponentiation} from './big_integer';
 
+import {BigIntExponentiation} from './big_integer';
 import * as i18n from './i18n_ast';
 
 /**

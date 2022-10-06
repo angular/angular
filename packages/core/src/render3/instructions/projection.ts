@@ -12,6 +12,7 @@ import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, T_HOST} from '../interfaces/v
 import {applyProjection} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
 import {getLView, getTView, setCurrentTNodeAsNotParent} from '../state';
+
 import {getOrCreateTNode} from './shared';
 
 
