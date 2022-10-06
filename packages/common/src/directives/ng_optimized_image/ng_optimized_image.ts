@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, inject, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 
@@ -50,6 +50,15 @@ export const ABSOLUTE_SRCSET_DENSITY_CAP = 3;
 export const RECOMMENDED_SRCSET_DENSITY_CAP = 2;
 
 /**
+ * Used in generating automatic density-based srcsets
+ */
+const DENSITY_SRCSET_MULTIPLIERS = [1, 2];
+
+/**
+ * Used to determine which breakpoints to use on full-width images
+ */
+const VIEWPORT_BREAKPOINT_CUTOFF = 640;
+/**
  * Used to determine whether two aspect ratios are similar in value.
  */
 const ASPECT_RATIO_TOLERANCE = .1;
@@ -62,6 +71,34 @@ const ASPECT_RATIO_TOLERANCE = .1;
 const OVERSIZED_IMAGE_TOLERANCE = 1000;
 
 /**
+ * A configuration object for the NgOptimizedImage directive. Contains:
+ * - breakpoints: An array of integer breakpoints used to generate
+ *      srcsets for responsive images.
+ *
+ * Learn more about the responsive image configuration in [the NgOptimizedImage
+ * guide](guide/image-directive).
+ * @publicApi
+ * @developerPreview
+ */
+export type ImageConfig = {
+  breakpoints?: number[]
+};
+
+const defaultConfig: ImageConfig = {
+  breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+};
+
+/**
+ * Injection token that configures the image optimized image functionality.
+ *
+ * @see `NgOptimizedImage`
+ * @publicApi
+ * @developerPreview
+ */
+export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
+    'ImageConfig', {providedIn: 'root', factory: () => defaultConfig});
+
+/**
  * Directive that improves image loading performance by enforcing best practices.
  *
  * `NgOptimizedImage` ensures that the loading of the Largest Contentful Paint (LCP) image is
@@ -72,6 +109,7 @@ const OVERSIZED_IMAGE_TOLERANCE = 1000;
  *
  * In addition, the directive:
  * - Generates appropriate asset URLs if a corresponding `ImageLoader` function is provided
+ * - Automatically generates a srcset
  * - Requires that `width` and `height` are set
  * - Warns if `width` or `height` have been set incorrectly
  * - Warns if the image will be visually distorted when rendered
@@ -165,6 +203,7 @@ const OVERSIZED_IMAGE_TOLERANCE = 1000;
 })
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private imageLoader = inject(IMAGE_LOADER);
+  private config: ImageConfig = processConfig(inject(IMAGE_CONFIG));
   private renderer = inject(Renderer2);
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
@@ -224,6 +263,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   @Input() ngSrcset!: string;
 
   /**
+   * The base `sizes` attribute passed through to the `<img>` element.
+   * Providing sizes causes the image to create an automatic responsive srcset.
+   */
+  @Input() sizes?: string;
+
+  /**
    * The intrinsic width of the image in pixels.
    */
   @Input()
@@ -270,6 +315,18 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private _priority = false;
 
   /**
+   * Disables automatic srcset generation for this image.
+   */
+  @Input()
+  set disableOptimizedSrcset(value: string|boolean|undefined) {
+    this._disableOptimizedSrcset = inputToBoolean(value);
+  }
+  get disableOptimizedSrcset(): boolean {
+    return this._disableOptimizedSrcset;
+  }
+  private _disableOptimizedSrcset = false;
+
+  /**
    * Value of the `src` attribute if set on the host `<img>` element.
    * This input is exclusively read to assert that `src` is not set in conflict
    * with `ngSrc` and that images don't start to load until a lazy loading strategy is set.
@@ -290,12 +347,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNonEmptyInput(this, 'ngSrc', this.ngSrc);
       assertValidNgSrcset(this, this.ngSrcset);
       assertNoConflictingSrc(this);
-      assertNoConflictingSrcset(this);
+      if (this.ngSrcset) {
+        assertNoConflictingSrcset(this);
+      }
       assertNotBase64Image(this);
       assertNotBlobUrl(this);
       assertNonEmptyWidthAndHeight(this);
       assertValidLoadingInput(this);
       assertNoImageDistortion(this, this.imgElement, this.renderer);
+      if (!this.ngSrcset) {
+        assertNoComplexSizes(this);
+      }
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
@@ -325,8 +387,13 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // The `src` and `srcset` attributes should be set last since other attributes
     // could affect the image's loading behavior.
     this.setHostAttribute('src', this.getRewrittenSrc());
+    if (this.sizes) {
+      this.setHostAttribute('sizes', this.sizes);
+    }
     if (this.ngSrcset) {
       this.setHostAttribute('srcset', this.getRewrittenSrcset());
+    } else if (!this._disableOptimizedSrcset && !this.srcset) {
+      this.setHostAttribute('srcset', this.getAutomaticSrcset());
     }
   }
 
@@ -370,6 +437,36 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     return finalSrcs.join(', ');
   }
 
+  private getAutomaticSrcset(): string {
+    if (this.sizes) {
+      return this.getResponsiveSrcset();
+    } else {
+      return this.getFixedSrcset();
+    }
+  }
+
+  private getResponsiveSrcset(): string {
+    const {breakpoints} = this.config;
+
+    let filteredBreakpoints = breakpoints!;
+    if (this.sizes?.trim() === '100vw') {
+      // Since this is a full-screen-width image, our srcset only needs to include
+      // breakpoints with full viewport widths.
+      filteredBreakpoints = breakpoints!.filter(bp => bp >= VIEWPORT_BREAKPOINT_CUTOFF);
+    }
+
+    const finalSrcs =
+        filteredBreakpoints.map(bp => `${this.imageLoader({src: this.ngSrc, width: bp})} ${bp}w`);
+    return finalSrcs.join(', ');
+  }
+
+  private getFixedSrcset(): string {
+    const finalSrcs = DENSITY_SRCSET_MULTIPLIERS.map(
+        multiplier => `${this.imageLoader({src: this.ngSrc, width: this.width! * multiplier})} ${
+            multiplier}x`);
+    return finalSrcs.join(', ');
+  }
+
   ngOnDestroy() {
     if (ngDevMode) {
       if (!this.priority && this._renderedSrc !== null && this.lcpObserver !== null) {
@@ -399,6 +496,16 @@ function inputToBoolean(value: unknown): boolean {
   return value != null && `${value}` !== 'false';
 }
 
+/**
+ * Sorts provided config breakpoints and uses defaults.
+ */
+function processConfig(config: ImageConfig): ImageConfig {
+  let sortedBreakpoints: {breakpoints?: number[]} = {};
+  if (config.breakpoints) {
+    sortedBreakpoints.breakpoints = config.breakpoints.sort((a, b) => a - b);
+  }
+  return Object.assign({}, defaultConfig, config, sortedBreakpoints);
+}
 
 /***** Assert functions *****/
 
@@ -445,6 +552,21 @@ function assertNotBase64Image(dir: NgOptimizedImage) {
             `(${ngSrc}). NgOptimizedImage does not support Base64-encoded strings. ` +
             `To fix this, disable the NgOptimizedImage directive for this element ` +
             `by removing \`ngSrc\` and using a standard \`src\` attribute instead.`);
+  }
+}
+
+/**
+ * Verifies that the 'sizes' only includes responsive values.
+ */
+function assertNoComplexSizes(dir: NgOptimizedImage) {
+  let sizes = dir.sizes;
+  if (sizes?.match(/((\)|,)\s|^)\d+px/)) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `${imgDirectiveDetails(dir.ngSrc, false)} \`sizes\` was set to a string including ` +
+            `pixel values. For automatic \`srcset\` generation, \`sizes\` must only include responsive ` +
+            `values, such as \`sizes="50vw"\` or \`sizes="(min-width: 768px) 50vw, 100vw"\`. ` +
+            `To fix this, modify the \`sizes\` attribute, or provide your own \`ngSrcset\` value directly.`);
   }
 }
 
