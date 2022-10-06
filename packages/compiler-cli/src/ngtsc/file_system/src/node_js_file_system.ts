@@ -123,29 +123,10 @@ export class NodeJSFileSystem extends NodeJSReadonlyFileSystem implements FileSy
     fs.renameSync(from, to);
   }
   ensureDir(path: AbsoluteFsPath): void {
-    const parents: AbsoluteFsPath[] = [];
-    while (!this.isRoot(path) && !this.exists(path)) {
-      parents.push(path);
-      path = this.dirname(path);
-    }
-    while (parents.length) {
-      this.safeMkdir(parents.pop()!);
-    }
+    fs.mkdirSync(path, {recursive: true});
   }
   removeDeep(path: AbsoluteFsPath): void {
     fs.rmdirSync(path, {recursive: true});
-  }
-
-  private safeMkdir(path: AbsoluteFsPath): void {
-    try {
-      fs.mkdirSync(path);
-    } catch (err) {
-      // Ignore the error, if the path already exists and points to a directory.
-      // Re-throw otherwise.
-      if (!this.exists(path) || !this.stat(path).isDirectory()) {
-        throw err;
-      }
-    }
   }
 }
 
