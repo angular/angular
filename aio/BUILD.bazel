@@ -33,7 +33,12 @@ npm_package_bin(
     name = "dgeni",
     # angular.io-package is a js_library target, which copies sources to $(BINDIR)
     args = ["./$(BINDIR)/aio/tools/transforms/angular.io-package"],
-    data = ["//aio/tools/transforms/angular.io-package"],
+    data = [
+        "//aio/tools/transforms/angular.io-package",
+        # Dgeni typescript package crawls type definitions for Angular dependencies
+        "@npm//rxjs",
+        "@npm//@types/node",
+    ],
     env = {
         "BAZEL_DGENI_OUTPUT_PATH": "$(@D)",
         "GIT_BIN": "$(GIT_BIN_PATH)",
@@ -42,7 +47,9 @@ npm_package_bin(
     output_dir = True,
     stamp = "@rules_nodejs//nodejs/stamp:always",
     # Makes remote git calls to get previous versions
-    tags = ["requires-network"],
+    tags = [
+        "requires-network",
+    ],
     tool = "@aio_npm//dgeni/bin:dgeni",
     toolchains = [
         "@npm//@angular/build-tooling/bazel/git-toolchain:current_git_toolchain",
