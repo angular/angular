@@ -9,10 +9,11 @@ import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers'
 import getPort from 'get-port';
 import {constructExampleSandbox} from "./example-sandbox.mjs";
+import { getAdjustedChromeBinPathForWindows } from '../windows-chromium-path.js';
 
 shelljs.set('-e');
 
-process.env.CHROME_BIN = adjustChromeBinPathForWindows();
+process.env.CHROME_BIN = getAdjustedChromeBinPathForWindows();
 
 // Resolve CHROME_BIN and CHROMEDRIVER_BIN from relative paths to absolute paths within the
 // runfiles tree so that subprocesses spawned in a different working directory can still find them.
@@ -327,33 +328,6 @@ function loadExampleConfig(exampleFolder) {
   }
 
   return config;
-}
-
-// TODO: this is a hack; the root cause should be found and fixed
-function adjustChromeBinPathForWindows() {
-  if (os.platform() === 'win32') {
-    /*
-      For some unknown reason, the symlinked copy of chromium under runfiles won't run under
-      karma on Windows. Instead, modify the CHROME_BIN env var to point to the chrome binary
-      under external/ in the execroot.
-
-      CHROME_BIN is equal to the make var $(CHROMIUM), which points to chrome relative
-      to the runfiles root.
-
-      The org_chromium_chromium_windows/ in the path below is needed to cancel out the
-      leading ../ in CHROME_BIN.
-
-      First, back out of
-          bazel-out/x64_windows-fastbuild/bin/aio/content/examples/{EXAMPLE}/e2e.bat.runfiles/angular
-      Then go into
-          external/
-      and then into
-          org_chromium_chromium_windows/
-      to cancel out the leading ../ in CHROME_BIN
-    */
-   return path.join(`../../../../../../../../../external/org_chromium_chromium_windows/${process.env.CHROME_BIN}`);
-  }
-  return process.env.CHROME_BIN;
 }
 
 runE2e(EXAMPLE_PATH);
