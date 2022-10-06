@@ -103,7 +103,7 @@ describe('NgModule', () => {
     expect(TestBed.inject(Service).initializations).toEqual(['RoutesModule', 'AppModule']);
   });
 
-  describe('standalone components, directives and pipes', () => {
+  describe('standalone components, directives, and pipes', () => {
     it('should throw when a standalone component is added to NgModule declarations', () => {
       @Component({
         selector: 'my-comp',

@@ -374,7 +374,7 @@ Because `HeroDetailComponent` is an Angular component, you must also add it to t
 
 <div class="alert is-helpful">
 
-All Angular components, directives and pipes must be declared in an NgModule.
+All Angular components, directives, and pipes must be declared in an NgModule.
 
 </div>
 

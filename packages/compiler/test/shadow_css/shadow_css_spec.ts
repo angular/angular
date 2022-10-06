@@ -126,17 +126,6 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(s(css, 'contenta')).toEqual(expected);
     });
 
-    // Check that the browser supports unprefixed CSS animation
-    it('should handle keyframes rules', () => {
-      const css = '@keyframes foo {0% {transform:translate(-50%) scaleX(0);}}';
-      expect(s(css, 'contenta')).toEqual(css);
-    });
-
-    it('should handle -webkit-keyframes rules', () => {
-      const css = '@-webkit-keyframes foo {0% {-webkit-transform:translate(-50%) scaleX(0);}}';
-      expect(s(css, 'contenta')).toEqual(css);
-    });
-
     it('should handle complicated selectors', () => {
       expect(s('one::before {}', 'contenta')).toEqual('one[contenta]::before {}');
       expect(s('one two {}', 'contenta')).toEqual('one[contenta] two[contenta] {}');

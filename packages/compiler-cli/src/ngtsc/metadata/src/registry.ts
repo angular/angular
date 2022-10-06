@@ -9,14 +9,14 @@
 import {Reference} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, MetadataReaderWithIndex, MetadataRegistry, NgModuleMeta, PipeMeta} from './api';
 import {hasInjectableFields} from './util';
 
 /**
  * A registry of directive, pipe, and module metadata for types defined in the current compilation
  * unit, which supports both reading and registering.
  */
-export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
+export class LocalMetadataRegistry implements MetadataRegistry, MetadataReaderWithIndex {
   private directives = new Map<ClassDeclaration, DirectiveMeta>();
   private ngModules = new Map<ClassDeclaration, NgModuleMeta>();
   private pipes = new Map<ClassDeclaration, PipeMeta>();
@@ -39,6 +39,10 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
   }
   registerPipeMetadata(meta: PipeMeta): void {
     this.pipes.set(meta.ref.node, meta);
+  }
+
+  getKnownDirectives(): Iterable<ClassDeclaration> {
+    return this.directives.keys();
   }
 }
 

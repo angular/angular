@@ -487,6 +487,14 @@
     "twitter": "devjoost",
     "bio": "Joost is a Software Engineer from the Netherlands with an interest in open source software who likes to learn something new every day. He works at Blueriq during the day and contributes to Angular in his spare time, by working on the Angular compiler and runtime. He may review your PR even if you never asked for it ;)"
   },
+  "jordanpowell88": {
+    "name": "Jordan Powell",
+    "picture": "jordanpowell.jpg",
+    "twitter": "jordanpowell88",
+    "website": "https://jordanpowell88.com",
+    "bio": "Jordan is a GDE (Google Developer Expert) and a self taught software engineer who is passionate about writing 'good code' that is easy to read, test and maintain over time. He has over a decade of freelance experience in software development, marketing, design and video production. He currently is a Developer Experience Engineer at Cypress.io and also serves as the CEO & Co-Founder for the non-profit Dream On: Global.",
+    "groups": ["GDE"]
+  },
   "jorgeucano": {
     "name": "Jorge Cano",
     "picture": "jorgeucano.jpg",

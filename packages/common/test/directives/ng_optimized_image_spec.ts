@@ -8,12 +8,12 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
-import {Component, Provider} from '@angular/core';
+import {Component, Provider, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
-import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
+import {createImageLoader, IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
 import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
@@ -742,7 +742,7 @@ describe('Image directive', () => {
     describe('PRECONNECT_CHECK_BLOCKLIST token', () => {
       it(`should allow passing host names`, withHead('', () => {
            const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.io', multi: true},
+             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.io'},
            ];
            setupTestingModule({imageLoader, extraProviders: providers});
 
@@ -757,7 +757,7 @@ describe('Image directive', () => {
 
       it(`should allow passing origins`, withHead('', () => {
            const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io', multi: true},
+             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io'},
            ];
            setupTestingModule({imageLoader, extraProviders: providers});
 
@@ -772,7 +772,7 @@ describe('Image directive', () => {
 
       it(`should allow passing arrays of host names`, withHead('', () => {
            const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.io'], multi: true},
+             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.io']},
            ];
            setupTestingModule({imageLoader, extraProviders: providers});
 
@@ -787,7 +787,7 @@ describe('Image directive', () => {
 
       it(`should allow passing nested arrays of host names`, withHead('', () => {
            const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.io']], multi: true},
+             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.io']]},
            ];
            setupTestingModule({imageLoader, extraProviders: providers});
 
@@ -798,24 +798,6 @@ describe('Image directive', () => {
 
            // Expect no warnings in the console.
            expect(consoleWarnSpy.calls.count()).toBe(0);
-         }));
-
-      it(`should throw when PRECONNECT_CHECK_BLOCKLIST is not a multi provider`,
-         withHead('', () => {
-           const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io'},
-           ];
-           setupTestingModule({imageLoader, extraProviders: providers});
-
-           const template = '<img ngSrc="a.png" width="100" height="50" priority>';
-           expect(() => {
-             const fixture = createTestComponent(template);
-             fixture.detectChanges();
-           })
-               .toThrowError(
-                   'NG02957: The blocklist for the preconnect check was not ' +
-                   'provided as an array. Check that the `PRECONNECT_CHECK_BLOCKLIST` token ' +
-                   'is configured as a `multi: true` provider.');
          }));
     });
   });
@@ -882,6 +864,32 @@ describe('Image directive', () => {
       const img = nativeElement.querySelector('img')!;
       expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
     });
+
+    it(`should allow providing image loaders via Component providers`, withHead('', () => {
+         const createImgUrl = (path: string, config: ImageLoaderConfig) => `${path}/${config.src}`;
+         const loaderWithPath = createImageLoader(createImgUrl);
+
+         @Component({
+           selector: 'test-cmp',
+           template: '<img ngSrc="a.png" width="100" height="50" priority>',
+           providers: [loaderWithPath('https://component.io')]
+         })
+         class TestComponent {
+         }
+
+         setupTestingModule(
+             {component: TestComponent, extraProviders: [loaderWithPath('https://default.io')]});
+
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+
+         const defaultLoader = TestBed.inject(IMAGE_LOADER);
+         const nativeElement = fixture.nativeElement as HTMLElement;
+         const img = nativeElement.querySelector('img')!;
+
+         expect(defaultLoader({src: 'a.png'})).toBe('https://default.io/a.png');
+         expect(img.src).toBe('https://component.io/a.png');
+       }));
 
     describe('`ngSrcset` values', () => {
       let imageLoader!: ImageLoader;
@@ -1051,7 +1059,8 @@ class TestComponent {
   priority = false;
 }
 
-function setupTestingModule(config?: {imageLoader?: ImageLoader, extraProviders?: any[]}) {
+function setupTestingModule(
+    config?: {imageLoader?: ImageLoader, extraProviders?: Provider[], component?: Type<unknown>}) {
   const defaultLoader = (config: ImageLoaderConfig) => {
     const isAbsolute = /^https?:\/\//.test(config.src);
     return isAbsolute ? config.src : window.location.origin + '/' + config.src;
@@ -1065,7 +1074,7 @@ function setupTestingModule(config?: {imageLoader?: ImageLoader, extraProviders?
   ];
 
   TestBed.configureTestingModule({
-    declarations: [TestComponent],
+    declarations: [config?.component ?? TestComponent],
     // Note: the `NgOptimizedImage` directive is experimental and is not a part of the
     // `CommonModule` yet, so it's imported separately.
     imports: [CommonModule, NgOptimizedImage],

@@ -483,9 +483,6 @@
     "name": "RouterLinkActive"
   },
   {
-    "name": "RouterLinkWithHref"
-  },
-  {
     "name": "RouterOutlet"
   },
   {
@@ -699,6 +696,9 @@
     "name": "addComponentLogic"
   },
   {
+    "name": "addPropertyAlias"
+  },
+  {
     "name": "addToArray"
   },
   {
@@ -712,6 +712,9 @@
   },
   {
     "name": "allocLFrame"
+  },
+  {
+    "name": "allowSanitizationBypassAndThrow"
   },
   {
     "name": "appendChild"
@@ -978,9 +981,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "fillProperties"
-  },
-  {
     "name": "filter"
   },
   {
@@ -1185,6 +1185,9 @@
     "name": "getResolve"
   },
   {
+    "name": "getSanitizer"
+  },
+  {
     "name": "getSelectedIndex"
   },
   {
@@ -1249,15 +1252,6 @@
   },
   {
     "name": "incrementInitPhaseFlags"
-  },
-  {
-    "name": "inheritContentQueries"
-  },
-  {
-    "name": "inheritHostBindings"
-  },
-  {
-    "name": "inheritViewQuery"
   },
   {
     "name": "inheritedParamsDataResolve"
@@ -1473,7 +1467,7 @@
     "name": "matrixParamsMatch"
   },
   {
-    "name": "maybeUnwrapEmpty"
+    "name": "maybeUnwrapDefaultExport"
   },
   {
     "name": "maybeUnwrapFn"
@@ -1567,6 +1561,9 @@
   },
   {
     "name": "pipeFromArray"
+  },
+  {
+    "name": "policy"
   },
   {
     "name": "prioritizedGuardValue"
@@ -1794,6 +1791,9 @@
     "name": "tree"
   },
   {
+    "name": "trustedScriptURLFromStringBypass"
+  },
+  {
     "name": "uniqueIdCounter"
   },
   {
@@ -1801,6 +1801,9 @@
   },
   {
     "name": "unwrapRNode"
+  },
+  {
+    "name": "unwrapSafeValue"
   },
   {
     "name": "updateMicroTaskStatus"
@@ -1836,9 +1839,6 @@
     "name": "ɵEmptyOutletComponent"
   },
   {
-    "name": "ɵɵInheritDefinitionFeature"
-  },
-  {
     "name": "ɵɵNgOnChangesFeature"
   },
   {
@@ -1846,9 +1846,6 @@
   },
   {
     "name": "ɵɵattribute"
-  },
-  {
-    "name": "ɵɵcontentQuery"
   },
   {
     "name": "ɵɵdefineComponent"
@@ -1875,16 +1872,13 @@
     "name": "ɵɵinject"
   },
   {
-    "name": "ɵɵinjectAttribute"
-  },
-  {
     "name": "ɵɵlistener"
   },
   {
-    "name": "ɵɵloadQuery"
+    "name": "ɵɵqueryRefresh"
   },
   {
-    "name": "ɵɵqueryRefresh"
+    "name": "ɵɵsanitizeResourceUrl"
   },
   {
     "name": "ɵɵsanitizeUrl"

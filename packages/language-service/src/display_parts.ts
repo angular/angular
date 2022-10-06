@@ -7,7 +7,7 @@
  */
 
 import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {DirectiveInScope, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {PotentialDirective, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 
@@ -130,7 +130,7 @@ function getDocumentationFromTypeDefAtLocation(
 }
 
 export function getDirectiveDisplayInfo(
-    tsLS: ts.LanguageService, dir: DirectiveInScope): DisplayInfo {
+    tsLS: ts.LanguageService, dir: PotentialDirective): DisplayInfo {
   const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
   const decl = dir.tsSymbol.declarations.find(ts.isClassDeclaration);
   if (decl === undefined || decl.name === undefined) {

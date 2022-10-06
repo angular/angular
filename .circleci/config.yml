@@ -77,6 +77,7 @@ var_11: &only_release_branches
 # https://circleci.com/developer/orbs.
 orbs:
   node: circleci/node@5.0.1
+  devinfra: angular/dev-infra@1.0.6
 
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
@@ -218,19 +219,9 @@ jobs:
       - checkout
       - save_month_to_file
       - init_environment
-      - run:
-          name: Rebase PR on target branch
-          # After checkout, rebase on top of target branch.
-          command: >
-            if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
-              # User is required for rebase.
-              git config user.name "angular-ci"
-              git config user.email "angular-ci"
-              # Rebase PR on top of target branch.
-              node .circleci/rebase-pr.js
-            else
-              echo "This build is not over a PR, nothing to do."
-            fi
+      - devinfra/rebase-pr-on-target-branch:
+          base_revision: << pipeline.git.base_revision >>
+          head_revision: << pipeline.git.revision >>
       # This cache is saved in the build-npm-packages so that Bazel cache is also included.
       - restore_cache:
           keys:

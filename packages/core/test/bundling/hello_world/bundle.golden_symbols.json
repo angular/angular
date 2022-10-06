@@ -273,6 +273,9 @@
     "name": "_wrapInTimeout"
   },
   {
+    "name": "addPropertyAlias"
+  },
+  {
     "name": "allocExpando"
   },
   {
@@ -361,6 +364,9 @@
   },
   {
     "name": "detectChangesInternal"
+  },
+  {
+    "name": "diPublicInInjector"
   },
   {
     "name": "empty"
@@ -457,6 +463,9 @@
   },
   {
     "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateNodeInjectorForNode"
   },
   {
     "name": "getOrCreateTNode"

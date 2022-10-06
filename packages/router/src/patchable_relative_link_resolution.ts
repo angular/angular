@@ -11,3 +11,5 @@
  */
 export function assignRelativeLinkResolution(
     router: {relativeLinkResolution: 'legacy'|'corrected'}): void {}
+
+export interface InternalExtraOptions {}

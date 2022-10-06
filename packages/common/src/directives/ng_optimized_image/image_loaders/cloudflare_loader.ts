@@ -15,10 +15,6 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * Cloudflare Image Resizing; it will not work with Cloudflare Images or Cloudflare Polish.
  *
  * @param path Your domain name, e.g. https://mysite.com
- * @param options An object with extra configuration:
- * - `ensurePreconnect`: boolean flag indicating whether the NgOptimizedImage directive
- *                       should verify that there is a corresponding `<link rel="preconnect">`
- *                       present in the document's `<head>`.
  * @returns Provider that provides an ImageLoader function
  *
  * @publicApi
