@@ -57,6 +57,7 @@ DOCS_ENTRYPOINTS = [
     "common/http/testing",
     "common/testing",
     "common/upgrade",
+    "compiler",
     "core",
     "core/src/compiler",
     "core/src/di/interface",
