@@ -27,9 +27,9 @@
 import lighthouse from 'lighthouse';
 import * as printer from 'lighthouse/lighthouse-cli/printer.js';
 import logger from 'lighthouse-logger';
-import os from 'os';
 import puppeteer from 'puppeteer-core';
 import path from 'path';
+import {getAdjustedChromeBinPathForWindows} from '../tools/windows-chromium-path.js';
 
 // Constants
 const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];
@@ -37,7 +37,7 @@ const LIGHTHOUSE_FLAGS = {logLevel: process.env.CI ? 'error' : 'info'};  // Be l
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer';
 const WAIT_FOR_SW_DELAY = 5000;
 
-process.env.CHROME_BIN = adjustChromeBinPathForWindows();
+process.env.CHROME_BIN = getAdjustedChromeBinPathForWindows();
 
 // Run
 _main(process.argv.slice(2));
@@ -168,31 +168,4 @@ async function runLighthouse(browser, url, flags, config) {
   } finally {
     await browser.close();
   }
-}
-
-// TODO: this is a hack; the root cause should be found and fixed
-function adjustChromeBinPathForWindows() {
-  if (os.platform() === 'win32') {
-    /*
-      For some unknown reason, the symlinked copy of chromium under runfiles won't run under
-      karma on Windows. Instead, modify the CHROME_BIN env var to point to the chrome binary
-      under external/ in the execroot.
-
-      CHROME_BIN is equal to the make var $(CHROMIUM), which points to chrome relative
-      to the runfiles root.
-
-      The org_chromium_chromium_windows/ in the path below is needed to cancel out the
-      leading ../ in CHROME_BIN.
-
-      First, back out of
-          bazel-out/x64_windows-fastbuild/bin/aio/scripts/audit-web-app.bat.runfiles/angular
-      Then go into`
-          external/
-      and then into
-          org_chromium_chromium_windows/
-      to cancel out the leading ../ in CHROME_BIN
-    */
-   return path.resolve(`../../../../../../external/org_chromium_chromium_windows/${process.env.CHROME_BIN}`);
-  }
-  return process.env.CHROME_BIN;
 }
