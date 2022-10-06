@@ -524,7 +524,7 @@ export function getDownlevelDecoratorsTransform(
       const possibleAngularDecorators = host.getDecoratorsOfDeclaration(classDecl) || [];
 
       let hasAngularDecorator = false;
-      const decoratorsToLower = [];
+      const decoratorsToLower: ts.ObjectLiteralExpression[] = [];
       for (const decorator of possibleAngularDecorators) {
         // We only deal with concrete nodes in TypeScript sources, so we don't
         // need to handle synthetically created decorators.

@@ -287,7 +287,7 @@ function rol64(num: [number, number], count: number): [number, number] {
 
 function bytesToWords32(bytes: Byte[], endian: Endian): number[] {
   const size = (bytes.length + 3) >>> 2;
-  const words32 = [];
+  const words32: number[] = [];
 
   for (let i = 0; i < size; i++) {
     words32[i] = wordAt(bytes, i * 4, endian);

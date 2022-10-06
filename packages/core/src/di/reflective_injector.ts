@@ -343,7 +343,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   private _instantiateProvider(provider: ResolvedReflectiveProvider): any {
     if (provider.multiProvider) {
-      const res = [];
+      const res: any[] = [];
       for (let i = 0; i < provider.resolvedFactories.length; ++i) {
         res[i] = this._instantiate(provider, provider.resolvedFactories[i]);
       }

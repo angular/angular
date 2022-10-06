@@ -319,7 +319,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       // template, a directive applied on a template or element (in which case the directive field
       // is non-null), or nothing at all.
       const refTarget = this.boundTemplate.getReferenceTarget(node);
-      let target = null;
+      let target: any = null;
       if (refTarget) {
         let node: ElementIdentifier|TemplateNodeIdentifier|null = null;
         let directive: ClassDeclaration<DeclarationNode>|null = null;

@@ -156,7 +156,7 @@ function listenerInternal(
     // In order to have just one native event handler in presence of multiple handler functions,
     // we just register a first handler function as a native event listener and then chain
     // (coalesce) other handler functions on top of the first native handler function.
-    let existingListener = null;
+    let existingListener: ((e?: any) => any)|null = null;
     // Please note that the coalescing described here doesn't happen for events specifying an
     // alternative target (ex. (document:click)) - this is to keep backward compatibility with the
     // view engine.

@@ -24,7 +24,7 @@ function createDom() {
 function noop() {}
 
 function init() {
-  const rootEl = document.querySelector('tree');
+  const rootEl = document.querySelector('tree')!;
   rootEl.textContent = '';
   tree = new TreeComponent(rootEl);
 

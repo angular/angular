@@ -473,7 +473,7 @@ export function icuStart(
  *
  */
 export function parseICUBlock(pattern: string): IcuExpression {
-  const cases = [];
+  const cases: string[] = [];
   const values: (string|IcuExpression)[][] = [];
   let icuType = IcuType.plural;
   let mainBinding = 0;
@@ -526,7 +526,7 @@ export function i18nParseTextIntoPartsAndICU(pattern: string): (string|IcuExpres
   }
 
   let prevPos = 0;
-  const braceStack = [];
+  const braceStack: string[] = [];
   const results: (string|IcuExpression)[] = [];
   const braces = /[{}]/g;
   // lastIndex doesn't get set to 0 so we have to.

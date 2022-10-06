@@ -206,7 +206,7 @@ export class ImportManager {
       return ts.factory.createIdentifier(baseName);
     }
 
-    let name = null;
+    let name: string | null = null;
     let counter = 1;
     do {
       name = `${baseName}_${counter++}`;

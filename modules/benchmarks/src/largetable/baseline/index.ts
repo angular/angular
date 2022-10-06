@@ -24,7 +24,7 @@ function createDom() {
 function noop() {}
 
 function init() {
-  const rootEl = document.querySelector('largetable');
+  const rootEl = document.querySelector('largetable')!;
   rootEl.textContent = '';
   table = new TableComponent(rootEl);
 

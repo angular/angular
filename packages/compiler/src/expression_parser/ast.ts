@@ -617,7 +617,7 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitAll(asts: any[]): any[] {
-    const res = [];
+    const res: any[] = [];
     for (let i = 0; i < asts.length; ++i) {
       res[i] = asts[i].visit(this);
     }
@@ -776,7 +776,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
   }
 
   visitAll(asts: any[]): any[] {
-    const res = [];
+    const res: any[] = [];
     let modified = false;
     for (let i = 0; i < asts.length; ++i) {
       const original = asts[i];

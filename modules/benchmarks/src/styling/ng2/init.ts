@@ -21,7 +21,7 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
   const select = document.querySelector('#scenario-select')! as HTMLSelectElement;
 
   const empty = [];
-  const items = [];
+  const items: number[] = [];
 
   function create(tplRefIdx: number) {
     component.tplRefIdx = tplRefIdx;

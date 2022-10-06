@@ -26,7 +26,7 @@ import {getOrCreateTNode} from './shared';
  */
 export function matchingProjectionSlotIndex(tNode: TNode, projectionSlots: ProjectionSlots): number|
     null {
-  let wildcardNgContentIndex = null;
+  let wildcardNgContentIndex: number|null = null;
   const ngProjectAsAttrVal = getProjectAsAttrValue(tNode);
   for (let i = 0; i < projectionSlots.length; i++) {
     const slotValue = projectionSlots[i];

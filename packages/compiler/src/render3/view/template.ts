@@ -80,7 +80,7 @@ export function prepareEventListenerParameters(
   const bindingStatements = convertActionBinding(
       scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
       EVENT_BINDING_SCOPE_GLOBALS);
-  const statements = [];
+  const statements: o.Statement[] = [];
   const variableDeclarations = scope?.variableDeclarations();
   const restoreViewStatement = scope?.restoreViewStatement();
 

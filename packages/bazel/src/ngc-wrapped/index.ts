@@ -329,7 +329,7 @@ export function compile({
     // However we still want to give it an AMD module name for devmode.
     // We can't easily tell which file is the synthetic one, so we build up the path we expect
     // it to have and compare against that.
-    if (fileName === path.posix.join(compilerOpts.baseUrl, flatModuleOutPath)) return true;
+    if (fileName === path.posix.join(compilerOpts.baseUrl!, flatModuleOutPath)) return true;
 
     // Also handle the case the target is in an external repository.
     // Pull the workspace name from the target which is formatted as `@wksp//package:target`
@@ -339,7 +339,7 @@ export function compile({
 
     if (targetWorkspace &&
         fileName ===
-            path.posix.join(compilerOpts.baseUrl, 'external', targetWorkspace, flatModuleOutPath))
+            path.posix.join(compilerOpts.baseUrl!, 'external', targetWorkspace, flatModuleOutPath))
       return true;
 
     return origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
@@ -347,11 +347,11 @@ export function compile({
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
   patchNgHostWithFileNameToModuleName(
-      ngHost, compilerOpts, bazelOpts, useManifestPathsAsModuleName);
+      ngHost, compilerOpts, bazelOpts, useManifestPathsAsModuleName!);
 
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.posix.join(
       bazelOpts.workspaceName,
-      relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, ''));
+      relativeToRootDirs(fileName, compilerOpts.rootDirs!).replace(EXT, ''));
   if (allDepsCompiledWithBazel) {
     // Note: The default implementation would work as well,
     // but we can be faster as we know how `toSummaryFileName` works.
@@ -378,7 +378,7 @@ export function compile({
     customTransformers = {},
   }) =>
       tsickle.emitWithTsickle(
-          program, bazelHost, bazelHost, compilerOpts, targetSourceFile, writeFile,
+          program, bazelHost!, bazelHost!, compilerOpts, targetSourceFile, writeFile,
           cancellationToken, emitOnlyDtsFiles, {
             beforeTs: customTransformers.before,
             afterTs: customTransformers.after,
@@ -412,7 +412,7 @@ export function compile({
 
   // If compilation fails unexpectedly, performCompilation returns no program.
   // Make sure not to crash but report the diagnostics.
-  if (!program) return {program, diagnostics};
+  if (!program) return {program: program!, diagnostics};
 
   if (bazelOpts.tsickleExternsPath) {
     // Note: when tsickleExternsPath is provided, we always write a file as a
@@ -549,16 +549,16 @@ export function patchNgHostWithFileNameToModuleName(
     // but when we don't run as a worker, there is no cache.
     // For one example target in g3, we saw a cache hit rate of 7590/7695
     if (fileNameToModuleNameCache.has(cacheKey)) {
-      return fileNameToModuleNameCache.get(cacheKey);
+      return fileNameToModuleNameCache.get(cacheKey)!;
     }
     const result = doFileNameToModuleName(importedFilePath, containingFilePath);
     fileNameToModuleNameCache.set(cacheKey, result);
-    return result;
+    return result!;
   };
 
   function doFileNameToModuleName(importedFilePath: string, containingFilePath?: string): string {
     const relativeTargetPath =
-        relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+        relativeToRootDirs(importedFilePath, compilerOpts.rootDirs!).replace(EXT, '');
     const manifestTargetPath = `${bazelOpts.workspaceName}/${relativeTargetPath}`;
     if (useManifestPathsAsModuleName === true) {
       return manifestTargetPath;
@@ -605,7 +605,7 @@ export function patchNgHostWithFileNameToModuleName(
 
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
-      return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile);
+      return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile)!;
     }
 
     // If no AMD module name has been set for the source file by the `@bazel/concatjs` compiler
@@ -629,7 +629,7 @@ export function patchNgHostWithFileNameToModuleName(
       return manifestTargetPath;
     }
     const containingFileDir =
-        path.dirname(relativeToRootDirs(containingFilePath, compilerOpts.rootDirs));
+        path.dirname(relativeToRootDirs(containingFilePath, compilerOpts.rootDirs!));
     const relativeImportPath = path.posix.relative(containingFileDir, relativeTargetPath);
     return relativeImportPath.startsWith('.') ? relativeImportPath : `./${relativeImportPath}`;
   }
