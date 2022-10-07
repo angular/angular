@@ -42,7 +42,7 @@ The command generates a skeleton `HeroService` class in `src/app/hero.service.ts
 ### `@Injectable()` services
 
 Notice that the new service imports the Angular `Injectable` symbol and annotates the class with the `@Injectable()` decorator. This marks the class as one that participates in the *dependency injection system*.
-The `HeroService` class is going to provide an injectable service, and it can also have its own injected dependencies. 
+The `HeroService` class is going to provide an injectable service, and it can also have its own injected dependencies.
 It doesn't have any dependencies yet.
 
 The `@Injectable()` decorator accepts a metadata object for the service, the same way the `@Component()` decorator did for your component classes.
@@ -166,7 +166,7 @@ synchronous, because that would block the browser as it waits to return data.
 
 `HeroService.getHeroes()` must have an *asynchronous signature* of some kind.
 
-In this tutorial, `HeroService.getHeroes()` returns an `Observable` so that it can 
+In this tutorial, `HeroService.getHeroes()` returns an `Observable` so that it can
 use the Angular `HttpClient.get` method to fetch the heroes
 and have [`HttpClient.get()`](guide/http) return an `Observable`.
 
@@ -263,7 +263,7 @@ Open `MessageService` and replace its contents with the following.
 
 The service exposes its cache of `messages` and two methods:
 
-* One to `add()` a message to the cache. 
+* One to `add()` a message to the cache.
 * Another to `clear()` the cache.
 
 <a id="inject-message-service"></a>
