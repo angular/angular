@@ -40,6 +40,7 @@ export {FormGroupDirective} from './directives/reactive_directives/form_group_di
 export {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
 export {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
 export {SelectMultipleControlValueAccessor, ɵNgSelectMultipleOption} from './directives/select_multiple_control_value_accessor';
+export {SetDisabledStateOption} from './directives/shared';
 export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 export {ControlConfig, FormBuilder, NonNullableFormBuilder, UntypedFormBuilder, ɵElement} from './form_builder';
 export {AbstractControl, AbstractControlOptions, FormControlStatus, ɵCoerceStrArrToNumArr, ɵGetProperty, ɵNavigate, ɵRawValue, ɵTokenize, ɵTypedOrUntyped, ɵValue, ɵWriteable} from './model/abstract_model';
