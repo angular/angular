@@ -1,16 +1,12 @@
-<p>
 <!-- #docregion mat-badge-overlap -->
-  <span matBadge="4" matBadgeOverlap="false">Text with a badge</span>
+  <div matBadge="4" matBadgeOverlap="false" class="demo-section">Text with a badge</div>
 <!-- #enddocregion mat-badge-overlap -->
-</p>
 
-<p>
 <!-- #docregion mat-badge-size -->
-    <span matBadge="1" matBadgeSize="large">Text with large badge</span>
+  <div matBadge="1" matBadgeSize="large" class="demo-section">Text with large badge</div>
 <!-- #enddocregion mat-badge-size -->
-</p>
 
-<p>
+<div class="demo-section">
   Button with a badge on the left
 <!-- #docregion mat-badge-position -->
   <button mat-raised-button color="primary"
@@ -18,18 +14,18 @@
     Action
   </button>
 <!-- #enddocregion mat-badge-position -->
-</p>
+</div>
 
-<p>
+<div class="demo-section">
     Button toggles badge visibility
 <!-- #docregion mat-badge-hide -->
     <button mat-raised-button matBadge="7" [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()">
         Hide
     </button>
 <!-- #enddocregion mat-badge-hide -->
-</p>
+  </div>
 
-<p>
+<div class="demo-section">
   Icon with a badge
 <!-- #docregion mat-badge-color -->
   <mat-icon matBadge="15" matBadgeColor="warn">home</mat-icon>
@@ -38,6 +34,4 @@
     <span class="cdk-visually-hidden">
       Example with a home icon with overlaid badge showing the number 15
     </span>
-</p>
-
-
+</div>
