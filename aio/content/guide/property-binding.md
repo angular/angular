@@ -1,6 +1,6 @@
 # Property binding
 
-Property binding in Angular helps you set values for properties of HTML elements or directives.  Use property binding to do things such as toggle button functionality, set paths programmatically, and share values between components.
+Property binding in Angular helps you set values for properties of HTML elements or directives. Use property binding to do things such as toggle button features, set paths programmatically, and share values between components.
 
 <div class="alert is-helpful">
 
@@ -40,7 +40,11 @@ In most cases, the target name is the name of a property, even when it appears t
 
 In this example, `src` is the name of the `<img>` element property.
 
+<!-- vale Angular.Google_WordListSuggestions = NO -->
+
 The brackets, `[]`, cause Angular to evaluate the right-hand side of the assignment as a dynamic expression.
+
+<!-- vale Angular.Google_WordListSuggestions = NO -->
 
 Without the brackets, Angular treats the right-hand side as a string literal and sets the property to that static value.
 
@@ -52,7 +56,7 @@ Omitting the brackets renders the string `parentItem`, not the value of `parentI
 
 ## Setting an element property to a component property value
 
-To bind the `src` property of an `<img>` element to a component's property, place the target, `src`, in square brackets followed by an equal sign and then the property.
+To bind the `src` property of an `<img>` element to a component's property, place `src` in square brackets followed by an equal sign and then the property.
 
 Using the property `itemImageUrl`, type the following code:
 
@@ -72,7 +76,7 @@ To use property binding using `colSpan`, type the following:
 
 <code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
 
-To disable a button when the component says that it `isUnchanged`, type the following:
+To disable a button while the component's `isUnchanged` property is `true`, type the following:
 
 <code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
 
@@ -84,10 +88,13 @@ To set the model property of a custom component for parent and child components 
 
 <code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
 
+## Toggling button features
 
-## Toggling button functionality
+<!-- vale Angular.Google_WordListSuggestions = NO -->
 
-To disable a button's functionality depending on a Boolean value, bind the DOM `disabled` property to a property in the class that is `true` or `false`.
+To use a Boolean value to disable a button's features, bind the `disabled` DOM attribute to a Boolean property in the class.
+
+<!-- vale Angular.Google_WordListSuggestions = YES -->
 
 <code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
 
