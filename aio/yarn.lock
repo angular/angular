@@ -35,6 +35,14 @@
     "@angular-devkit/core" "14.2.1"
     rxjs "6.6.7"
 
+"@angular-devkit/architect@0.1500.0-next.0":
+  version "0.1500.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1500.0-next.0.tgz#71bb79523f5bbff7745d1ecee6aab831589c7dd6"
+  integrity sha512-xXxgzkDeD5H1Ia7sKXIekYfeMgSArxB6TOhyDd3F8h/ku7hQaMVnpV98g5ZOU8vIFpXGJ1YiH9al7rq6w+yGWw==
+  dependencies:
+    "@angular-devkit/core" "15.0.0-next.0"
+    rxjs "6.6.7"
+
 "@angular-devkit/architect@0.1500.0-next.4":
   version "0.1500.0-next.4"
   resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1500.0-next.4.tgz#bac2c68e6a531e1d489df7b50cdbbc5c08bd3c73"
@@ -210,6 +218,17 @@
     rxjs "6.6.7"
     source-map "0.7.4"
 
+"@angular-devkit/core@15.0.0-next.0":
+  version "15.0.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-15.0.0-next.0.tgz#fc8a78db96a21e105c1948ef65e5210edca223ea"
+  integrity sha512-QNLLgMKSGBNh5iy99F0lzUYBkERft2Qk5CQvYe07AWuQkvzIp+SYDfjugiSnBJbzK79Wja728KETtIz6X9bLaA==
+  dependencies:
+    ajv "8.11.0"
+    ajv-formats "2.1.1"
+    jsonc-parser "3.2.0"
+    rxjs "6.6.7"
+    source-map "0.7.4"
+
 "@angular-devkit/core@15.0.0-next.4":
   version "15.0.0-next.4"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-15.0.0-next.4.tgz#19af8b29478a9a7119e24b21ace7460e79911b2d"
@@ -294,9 +313,9 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#6df2d555d326fe6282de28db80c49dd439b42af3":
-  version "0.0.0-40aaf3831425d472965dd61e58cbd5854abd7214"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#6df2d555d326fe6282de28db80c49dd439b42af3"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#90004d8813b2da5264a8e9b0e2b3a0d88f44a4ad":
+  version "0.0.0-b12cd73948225d0d3056d9610eee2c60286e6fdd"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#90004d8813b2da5264a8e9b0e2b3a0d88f44a4ad"
   dependencies:
     "@angular-devkit/build-angular" "15.0.0-next.0"
     "@angular/benchpress" "0.3.0"
