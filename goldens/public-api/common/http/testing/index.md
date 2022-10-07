@@ -10,6 +10,7 @@ import { HttpRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common/http';
 import { Observer } from 'rxjs';
+import { Provider } from '@angular/core';
 
 // @public
 export class HttpClientTestingModule {
@@ -36,6 +37,9 @@ export abstract class HttpTestingController {
         ignoreCancelled?: boolean;
     }): void;
 }
+
+// @public (undocumented)
+export function provideHttpClientTesting(): Provider[];
 
 // @public
 export interface RequestMatch {

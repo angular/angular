@@ -8,9 +8,9 @@
 
 import {HttpHeaders} from '@angular/common/http/src/headers';
 import {HttpRequest} from '@angular/common/http/src/request';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor} from '@angular/common/http/src/xsrf';
-
+import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_ENABLED, XSRF_HEADER_NAME} from '@angular/common/http/src/xsrf';
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
+import {TestBed} from '@angular/core/testing';
 
 class SampleTokenExtractor extends HttpXsrfTokenExtractor {
   constructor(private token: string|null) {
@@ -25,8 +25,26 @@ class SampleTokenExtractor extends HttpXsrfTokenExtractor {
 {
   describe('HttpXsrfInterceptor', () => {
     let backend: HttpClientTestingBackend;
-    const interceptor = new HttpXsrfInterceptor(new SampleTokenExtractor('test'), 'X-XSRF-TOKEN');
+    let interceptor: HttpXsrfInterceptor;
     beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: HttpXsrfTokenExtractor,
+            useValue: new SampleTokenExtractor('test'),
+          },
+          {
+            provide: XSRF_HEADER_NAME,
+            useValue: 'X-XSRF-TOKEN',
+          },
+          {
+            provide: XSRF_ENABLED,
+            useValue: true,
+          },
+          HttpXsrfInterceptor,
+        ],
+      });
+      interceptor = TestBed.inject(HttpXsrfInterceptor);
       backend = new HttpClientTestingBackend();
     });
     it('applies XSRF protection to outgoing requests', () => {
@@ -59,7 +77,25 @@ class SampleTokenExtractor extends HttpXsrfTokenExtractor {
       req.flush({});
     });
     it('does not set the header for a null token', () => {
-      const interceptor = new HttpXsrfInterceptor(new SampleTokenExtractor(null), 'X-XSRF-TOKEN');
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: HttpXsrfTokenExtractor,
+            useValue: new SampleTokenExtractor(null),
+          },
+          {
+            provide: XSRF_HEADER_NAME,
+            useValue: 'X-XSRF-TOKEN',
+          },
+          {
+            provide: XSRF_ENABLED,
+            useValue: true,
+          },
+          HttpXsrfInterceptor,
+        ],
+      });
+      interceptor = TestBed.inject(HttpXsrfInterceptor);
       interceptor.intercept(new HttpRequest('POST', '/test', {}), backend).subscribe();
       const req = backend.expectOne('/test');
       expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);

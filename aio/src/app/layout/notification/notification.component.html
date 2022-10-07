@@ -2,6 +2,6 @@
   <ng-content></ng-content>
 </span>
 
-<button mat-icon-button class="close-button" aria-label="Dismiss notification" (click)="dismiss()">
+<button mat-icon-button class="close-button" [attr.aria-label]="'Close' + bannerNotficationDescription" (click)="dismiss()">
   <mat-icon svgIcon="close"></mat-icon>
 </button>
