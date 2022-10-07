@@ -98,6 +98,8 @@ Next, `AppRoutingModule` exports `RouterModule` to be available throughout the a
 
 ## Add `RouterOutlet`
 
+<!-- markdownlint-disable MD001 -->
+
 Open the `AppComponent` template and replace the `<app-heroes>` element with a `<router-outlet>` element.
 
 <code-example header="src/app/app.component.html (router-outlet)" path="toh-pt5/src/app/app.component.html" region="outlet"></code-example>
@@ -114,6 +116,8 @@ If you didn't use the `ng generate` command to create `app-routing.module.ts`, i
 
 </div>
 
+<!-- markdownlint-disable MD024 -->
+
 #### Try it
 
 If you're not still serving your application, run `ng serve` to see your application in the browser.
@@ -125,10 +129,13 @@ The URL ends in `/`.
 The route path to `HeroesComponent` is `/heroes`.
 
 Append `/heroes` to the URL in the browser address bar.
-You should see the familiar heroes master/detail view.
+You should see the familiar heroes overview/detail view.
 
 Remove `/heroes` from the URL in the browser address bar.
 The browser should refresh and display the application title but not the list of heroes.
+
+<!-- markdownlint-enable MD001 -->
+<!-- markdownlint-enable MD024 -->
 
 <a id="routerlink"></a>
 
@@ -292,8 +299,8 @@ The hero items in the `HeroesComponent` are `<li>` elements whose click events a
 
 <code-example header="src/app/heroes/heroes.component.html (list with onSelect)" path="toh-pt4/src/app/heroes/heroes.component.html" region="list"></code-example>
 
-Remove the `<li>` back to just its `*ngFor`. 
-Wrap the badge and name in an anchor `<a>` element. 
+Remove the `<li>` back to just its `*ngFor`.
+Wrap the badge and name in an anchor `<a>` element.
 Add a `routerLink` attribute to the anchor that's the same as in the dashboard template.
 
 <code-example header="src/app/heroes/heroes.component.html (list with links)" path="toh-pt5/src/app/heroes/heroes.component.html" region="list"></code-example>
@@ -380,12 +387,16 @@ It returns a *mock hero* as an `Observable`, using the RxJS `of()` function.
 
 You can rewrite `getHero()` as a real `Http` request without having to change the `HeroDetailComponent` that calls it.
 
+<!-- markdownlint-disable MD024 -->
+
 #### Try it
 
 The browser refreshes and the application is working again.
 You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
 
 If you paste `localhost:4200/detail/12` in the browser address bar, the router navigates to the detail view for the hero with `id: 12`, **Dr Nice**.
+
+<!-- markdownlint-enable MD024 -->
 
 <a id="goback"></a>
 
@@ -410,6 +421,8 @@ Users can now navigate around the application using the new buttons.
 The details look better when you add the private CSS styles to `hero-detail.component.css` as listed in one of the ["final code review"](#final-code-review) tabs below.
 
 ## Final code review
+
+<!-- markdownlint-disable MD001 -->
 
 Here are the code files discussed on this page.
 
@@ -463,6 +476,8 @@ Here are the code files discussed on this page.
     <code-pane header="src/app/hero-detail/hero-detail.component.ts" path="toh-pt5/src/app/hero-detail/hero-detail.component.ts"></code-pane>
     <code-pane header="src/app/hero-detail/hero-detail.component.css" path="toh-pt5/src/app/hero-detail/hero-detail.component.css"></code-pane>
 </code-tabs>
+
+<!-- markdownlint-enable MD001 -->
 
 ## Summary
 
