@@ -43,6 +43,7 @@ export {FormGroupDirective} from './directives/reactive_directives/form_group_di
 export {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
 export {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
 export {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
+export {CALL_SET_DISABLED_STATE} from './directives/shared';
 
 export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
   NgNoValidate,
