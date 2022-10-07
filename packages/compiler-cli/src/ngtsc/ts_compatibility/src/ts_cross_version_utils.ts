@@ -11,28 +11,8 @@ import ts from 'typescript';
 /** Whether the current TypeScript version is after 4.8. */
 const IS_AFTER_TS_48 = isAfterVersion(4, 8);
 
-/** Whether the current TypeScript version is after 4.7. */
-const IS_AFTER_TS_47 = isAfterVersion(4, 7);
-
 /** Equivalent of `ts.ModifierLike` which is only present in TS 4.8+. */
 export type ModifierLike = ts.Modifier|ts.Decorator;
-
-/** Type of `ts.factory.updateTypeParameterDeclaration` in TS 4.7+. */
-type Ts47UpdateTypeParameterDeclarationFn =
-    (node: ts.TypeParameterDeclaration, modifiers: readonly ts.Modifier[]|undefined,
-     name: ts.Identifier, constraint: ts.TypeNode|undefined, defaultType: ts.TypeNode|undefined) =>
-        ts.TypeParameterDeclaration;
-
-/**
- * Updates a `ts.TypeParameter` declaration.
- *
- * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.7.
- * We should remove it once we have dropped support for the older versions.
- */
-export const updateTypeParameterDeclaration: Ts47UpdateTypeParameterDeclarationFn = IS_AFTER_TS_47 ?
-    (ts.factory.updateTypeParameterDeclaration as any) :
-    (node, _modifiers, name, constraint, defaultType) =>
-        (ts.factory.updateTypeParameterDeclaration as any)(node, name, constraint, defaultType);
 
 /** Type of `ts.factory.updateParameterDeclaration` in TS 4.8+. */
 type Ts48UpdateParameterDeclarationFn =
