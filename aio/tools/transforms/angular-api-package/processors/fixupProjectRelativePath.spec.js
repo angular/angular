@@ -16,18 +16,18 @@ describe('fixupProjectRelativePath processor', () => {
   it('should add `packages` segment to the start of `projectRelativePath` for API docs', () => {
     const processor = processorFactory(['class', 'member']);
     const docs = [
-      { docType: 'class', fileInfo: { projectRelativePath: 'a/b/c' } },
-      { docType: 'member', fileInfo: { projectRelativePath: 'a/b/c/d' } },
-      { docType: 'cli-command', fileInfo: { projectRelativePath: 'a/b/c' } },
+      { docType: 'class', fileInfo: { projectRelativePath: 'a/b/c', realFilePath: '/root/a/b/c' } },
+      { docType: 'member', fileInfo: { projectRelativePath: 'a/b/c/d', realFilePath: '/root/a/b/c/d' } },
+      { docType: 'cli-command', fileInfo: { projectRelativePath: 'a/b/c', realFilePath: '/root/a/b/c' } },
       { docType: 'class', fileInfo: { } },
       { docType: 'class' },
     ];
     processor.$process(docs);
 
     expect(docs).toEqual([
-      { docType: 'class', fileInfo: { projectRelativePath: 'packages/a/b/c' } },
-      { docType: 'member', fileInfo: { projectRelativePath: 'packages/a/b/c/d' } },
-      { docType: 'cli-command', fileInfo: { projectRelativePath: 'a/b/c' } },
+      { docType: 'class', fileInfo: { projectRelativePath: 'packages/a/b/c', realFilePath: '/root/a/b/c' } },
+      { docType: 'member', fileInfo: { projectRelativePath: 'packages/a/b/c/d', realFilePath: '/root/a/b/c/d' } },
+      { docType: 'cli-command', fileInfo: { projectRelativePath: 'a/b/c', realFilePath: '/root/a/b/c' } },
       { docType: 'class', fileInfo: { } },
       { docType: 'class' },
     ]);
