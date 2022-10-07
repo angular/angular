@@ -233,7 +233,7 @@ describe('MDC-based Option Chips', () => {
         });
 
         it('should have correct aria-selected in single selection mode', () => {
-          expect(primaryAction.hasAttribute('aria-selected')).toBe(false);
+          expect(primaryAction.getAttribute('aria-selected')).toBe('false');
 
           testComponent.selected = true;
           fixture.detectChanges();

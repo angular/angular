@@ -513,19 +513,19 @@ describe('MDC-based MatChipListbox', () => {
           '.mdc-evolution-chip__action--primary',
         );
 
-        expect(getAriaSelected()).toEqual([null, null, null]);
+        expect(getAriaSelected()).toEqual(['false', 'false', 'false']);
 
         primaryActions[1].click();
         fixture.detectChanges();
-        expect(getAriaSelected()).toEqual([null, 'true', null]);
+        expect(getAriaSelected()).toEqual(['false', 'true', 'false']);
 
         primaryActions[2].click();
         fixture.detectChanges();
-        expect(getAriaSelected()).toEqual([null, null, 'true']);
+        expect(getAriaSelected()).toEqual(['false', 'false', 'true']);
 
         primaryActions[0].click();
         fixture.detectChanges();
-        expect(getAriaSelected()).toEqual(['true', null, null]);
+        expect(getAriaSelected()).toEqual(['true', 'false', 'false']);
       }));
 
       it('should set `aria-selected` based on the selection state in multi-selection mode', fakeAsync(() => {
@@ -548,15 +548,15 @@ describe('MDC-based MatChipListbox', () => {
           '.mdc-evolution-chip__action--primary',
         );
 
-        expect(getAriaSelected()).toEqual([null, null, null]);
+        expect(getAriaSelected()).toEqual(['false', 'false', 'false']);
 
         primaryActions[1].click();
         fixture.detectChanges();
-        expect(getAriaSelected()).toEqual([null, 'true', null]);
+        expect(getAriaSelected()).toEqual(['false', 'true', 'false']);
 
         primaryActions[2].click();
         fixture.detectChanges();
-        expect(getAriaSelected()).toEqual([null, 'true', 'true']);
+        expect(getAriaSelected()).toEqual(['false', 'true', 'true']);
 
         primaryActions[0].click();
         fixture.detectChanges();
@@ -564,7 +564,7 @@ describe('MDC-based MatChipListbox', () => {
 
         primaryActions[1].click();
         fixture.detectChanges();
-        expect(getAriaSelected()).toEqual(['true', null, 'true']);
+        expect(getAriaSelected()).toEqual(['true', 'false', 'true']);
       }));
     });
 
