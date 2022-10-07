@@ -1,6 +1,6 @@
 # Display a selection list
 
-This tutorial shows you how to: 
+This tutorial shows you how to:
 
 * Expand the Tour of Heroes application to display a list of heroes.
 * Allow users to select a hero and display the hero's details.
@@ -141,7 +141,7 @@ Add the following `onSelect()` method, which assigns the clicked hero from the t
 ### Add a details section
 
 Currently, you have a list in the component template.
-To show details about a hero when you click their name in the list, add a section 
+To show details about a hero when you click their name in the list, add a section
 in the template that displays their details.
 Add the following to `heroes.component.html` beneath the list section:
 
