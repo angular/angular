@@ -22,8 +22,8 @@ To set up your development environment, follow the instructions in [Local Enviro
 ## Create a new workspace and an initial application
 
 You develop applications in the context of an Angular [workspace](guide/glossary#workspace).
-A _workspace_ contains the files for one or more [projects](guide/glossary#project).
-A _project_ is the set of files that make up an application or a library.
+A *workspace* contains the files for one or more [projects](guide/glossary#project).
+A *project* is the set of files that make up an application or a library.
 
 To create a new workspace and an initial project:
 
@@ -100,7 +100,7 @@ In the IDE, locate these files, which make up the `AppComponent` that you just c
 <div class="alert is-important">
 
 When you ran `ng new`, Angular created test specifications for your new application.
-Making these changes, however, breaks your newly created specifications.
+Unfortunately, making these changes breaks your newly created specifications.
 
 That won't be a problem because Angular testing is outside the scope of this tutorial and won't be used.
 
