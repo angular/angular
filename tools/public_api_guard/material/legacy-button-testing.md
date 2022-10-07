@@ -7,8 +7,11 @@
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 import { ButtonHarnessFilters as LegacyButtonHarnessFilters } from '@angular/material/button/testing';
+import { ButtonVariant as LegacyButtonVariant } from '@angular/material/button/testing';
 
 export { LegacyButtonHarnessFilters }
+
+export { LegacyButtonVariant }
 
 // @public @deprecated
 export class MatLegacyButtonHarness extends ContentContainerComponentHarness {
@@ -18,6 +21,7 @@ export class MatLegacyButtonHarness extends ContentContainerComponentHarness {
     click(): Promise<void>;
     focus(): Promise<void>;
     getText(): Promise<string>;
+    getVariant(): Promise<LegacyButtonVariant>;
     static hostSelector: string;
     isDisabled(): Promise<boolean>;
     isFocused(): Promise<boolean>;

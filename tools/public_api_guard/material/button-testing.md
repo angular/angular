@@ -12,7 +12,11 @@ import { HarnessPredicate } from '@angular/cdk/testing';
 // @public
 export interface ButtonHarnessFilters extends BaseHarnessFilters {
     text?: string | RegExp;
+    variant?: ButtonVariant;
 }
+
+// @public
+export type ButtonVariant = 'basic' | 'raised' | 'flat' | 'icon' | 'stroked' | 'fab' | 'mini-fab';
 
 // @public
 export class MatButtonHarness extends ContentContainerComponentHarness {
@@ -22,6 +26,7 @@ export class MatButtonHarness extends ContentContainerComponentHarness {
     click(): Promise<void>;
     focus(): Promise<void>;
     getText(): Promise<string>;
+    getVariant(): Promise<ButtonVariant>;
     // (undocumented)
     static hostSelector: string;
     isDisabled(): Promise<boolean>;

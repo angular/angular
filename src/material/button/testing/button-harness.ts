@@ -12,7 +12,7 @@ import {
   HarnessPredicate,
 } from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ButtonHarnessFilters} from './button-harness-filters';
+import {ButtonHarnessFilters, ButtonVariant} from './button-harness-filters';
 
 /** Harness for interacting with a MDC-based mat-button in tests. */
 export class MatButtonHarness extends ContentContainerComponentHarness {
@@ -25,15 +25,20 @@ export class MatButtonHarness extends ContentContainerComponentHarness {
    * @param options Options for narrowing the search:
    *   - `selector` finds a button whose host element matches the given selector.
    *   - `text` finds a button with specific text content.
+   *   - `variant` finds buttons matching a specific variant.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with<T extends MatButtonHarness>(
     this: ComponentHarnessConstructor<T>,
     options: ButtonHarnessFilters = {},
   ): HarnessPredicate<T> {
-    return new HarnessPredicate(this, options).addOption('text', options.text, (harness, text) =>
-      HarnessPredicate.stringMatches(harness.getText(), text),
-    );
+    return new HarnessPredicate(this, options)
+      .addOption('text', options.text, (harness, text) =>
+        HarnessPredicate.stringMatches(harness.getText(), text),
+      )
+      .addOption('variant', options.variant, (harness, variant) =>
+        HarnessPredicate.stringMatches(harness.getVariant(), variant),
+      );
   }
 
   /**
@@ -74,5 +79,26 @@ export class MatButtonHarness extends ContentContainerComponentHarness {
   /** Whether the button is focused. */
   async isFocused(): Promise<boolean> {
     return (await this.host()).isFocused();
+  }
+
+  /** Gets the variant of the button. */
+  async getVariant(): Promise<ButtonVariant> {
+    const host = await this.host();
+
+    if ((await host.getAttribute('mat-raised-button')) != null) {
+      return 'raised';
+    } else if ((await host.getAttribute('mat-flat-button')) != null) {
+      return 'flat';
+    } else if ((await host.getAttribute('mat-icon-button')) != null) {
+      return 'icon';
+    } else if ((await host.getAttribute('mat-stroked-button')) != null) {
+      return 'stroked';
+    } else if ((await host.getAttribute('mat-fab')) != null) {
+      return 'fab';
+    } else if ((await host.getAttribute('mat-mini-fab')) != null) {
+      return 'mini-fab';
+    }
+
+    return 'basic';
   }
 }

@@ -1,5 +1,5 @@
 import {Platform, PlatformModule} from '@angular/cdk/platform';
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
@@ -112,6 +112,34 @@ export function runHarnessTests(
 
     expect(await homeIcon.getName()).toBe('home');
     expect(await favIcon.getName()).toBe('favorite');
+  });
+
+  it('should load all button harnesses', async () => {
+    const buttons = await loader.getAllHarnesses(buttonHarness);
+    const variants = await parallel(() => buttons.map(button => button.getVariant()));
+
+    expect(variants).toEqual([
+      'basic',
+      'flat',
+      'raised',
+      'stroked',
+      'icon',
+      'icon',
+      'fab',
+      'mini-fab',
+      'basic',
+      'flat',
+      'raised',
+      'stroked',
+      'icon',
+      'fab',
+      'mini-fab',
+    ]);
+  });
+
+  it('should be able to filter buttons based on their variant', async () => {
+    const button = await loader.getHarness(buttonHarness.with({variant: 'flat'}));
+    expect(await button.getText()).toBe('Flat button');
   });
 }
 

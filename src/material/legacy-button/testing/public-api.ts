@@ -7,4 +7,7 @@
  */
 
 export {MatLegacyButtonHarness} from './button-harness';
-export {ButtonHarnessFilters as LegacyButtonHarnessFilters} from '@angular/material/button/testing';
+export {
+  ButtonHarnessFilters as LegacyButtonHarnessFilters,
+  ButtonVariant as LegacyButtonVariant,
+} from '@angular/material/button/testing';
