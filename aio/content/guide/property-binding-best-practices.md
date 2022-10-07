@@ -1,6 +1,6 @@
 # Property binding best practices
 
-By following a few guidelines, you can use property binding in a way that helps you minimize bugs and keep your code readable.
+By following a few guidelines, you can use property binding in a way that helps you reduce bugs and keep your code readable.
 
 <div class="alert is-helpful">
 
@@ -25,8 +25,12 @@ As a best practice, use only properties and methods that return values.
 
 ## Return the proper type
 
-A template expression should evaluate to the type of value that the target property expects.
-For example, return a string if the target property expects a string, a number if it expects a number, or an object if it expects an object.
+A template expression should result in the type of value that the target property expects.
+For example, return:
+
+*   a `string`, if the target property expects a string
+*   a `number`, if it expects a number
+*   an `object`, if it expects an object.
 
 ### Passing in a string
 
@@ -54,7 +58,7 @@ In the `ItemListComponent` the `@Input()`, `items`, has a type of `Item[]`.
 
 <code-example header="src/app/item-list.component.ts" path="property-binding/src/app/item-list/item-list.component.ts" region="item-input"></code-example>
 
-Notice that `Item` is an object that it has two properties; an `id` and a `name`.
+Notice that `Item` is an object that it has two properties, an `id` and a `name`.
 
 <code-example header="src/app/item.ts" path="property-binding/src/app/item.ts" region="item-class"></code-example>
 
@@ -62,7 +66,7 @@ In `app.component.ts`, `currentItems` is an array of objects in the same shape a
 
 <code-example header="src/app.component.ts" path="property-binding/src/app/app.component.ts" region="pass-object"></code-example>
 
-By supplying an object in the same shape, you satisfy the expectations of `items` when Angular evaluates the expression `currentItems`.
+By supplying an object in the same shape, you meet the expectations of `items` when Angular evaluates the expression `currentItems`.
 
 <!-- links -->
 
