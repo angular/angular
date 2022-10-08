@@ -10,7 +10,7 @@ As a platform, Angular includes:
 *   A suite of developer tools to help you develop, build, test, and update your code
 
 With Angular, you're taking advantage of a platform that can scale from single-developer projects to enterprise-level applications.
-Angular is designed to make updating as straightforward as possible, so take advantage of the latest developments with a minimum of effort.
+Angular is designed to make updating as straightforward as possible, so take advantage of the latest developments with minimal effort.
 Best of all, the Angular ecosystem consists of a diverse group of over 1.7 million developers, library authors, and content creators.
 
 <div class="alert is-helpful">
@@ -53,7 +53,7 @@ When Angular renders this component, the resulting DOM looks like this:
 <code-example format="html" language="html" path="what-is-angular/src/app/hello-world-example.html"></code-example>
 
 Angular's component model offers strong encapsulation and an intuitive application structure.
-Components also make your application painless to unit test and can improve the overall readability of your code.
+Components also make your application painless to unit test and can improve the general readability of your code.
 
 For more information on what to do with components, see the [Components](guide/component-overview) section.
 
@@ -61,10 +61,14 @@ For more information on what to do with components, see the [Components](guide/c
 
 ### Templates
 
+<!-- vale Angular.Google_WordListWarnings = NO -->
+
 Every component has an HTML template that declares how that component renders.
 You define this template either inline or by file path.
 
-Angular extends HTML with additional syntax that lets you insert dynamic values from your component.
+<!-- vale Angular.Google_WordListWarnings = YES -->
+
+Angular adds syntax elements that extend HTML so you can insert dynamic values from your component.
 Angular automatically updates the rendered DOM when your component's state changes.
 One application of this feature is inserting dynamic text, as shown in the following example.
 
@@ -106,7 +110,7 @@ The following is a combined example of Interpolation, Property Binding, and Even
     <code-pane header="hello-world-bindings.component.html" path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.html"></code-pane>
 </code-tabs>
 
-Add additional functionality to your templates through the use of [directives](guide/built-in-directives).
+Add features to your templates by using [directives](guide/built-in-directives).
 The most popular directives in Angular are `*ngIf` and `*ngFor`.
 Use directives to perform a variety of tasks, such as dynamically modifying the DOM structure.
 And create your own custom directives to create great user experiences.
@@ -130,7 +134,7 @@ For more information on templates, see the [Templates](guide/template-syntax) se
 Dependency injection lets you declare the dependencies of your TypeScript classes without taking care of their instantiation.
 Instead, Angular handles the instantiation for you.
 This design pattern lets you write more testable and flexible code.
-Even though understanding dependency injection is not critical to start using Angular, we strongly recommend it as a best practice and many aspects of Angular take advantage of it to some degree.
+Understanding dependency injection is not critical to start using Angular, but it is strongly recommended as a best practice. Many aspects of Angular take advantage of it to some degree.
 
 To illustrate how dependency injection works, consider the following example.
 The first file, `logger.service.ts`, defines a `Logger` class.
@@ -151,30 +155,36 @@ For more information about dependency injection and Angular, see the [Dependency
 ## Angular CLI
 
 The Angular CLI is the fastest, straightforward, and recommended way to develop Angular applications.
-The Angular CLI makes a number of tasks trouble-free.
-Here are some examples:
+The Angular CLI makes some tasks trouble-free.
+For example:
+
+<!-- vale Angular.Google_WordListSuggestions = NO -->
 
 | Command                     | Details |
 |:---                         |:---     |
-| [ng build](cli/build)       | Compiles an Angular app into an output directory.                     |
+| [ng build](cli/build)       | Compiles an Angular application into an output directory.                     |
 | [ng serve](cli/serve)       | Builds and serves your application, rebuilding on file changes.       |
 | [ng generate](cli/generate) | Generates or modifies files based on a schematic.                     |
 | [ng test](cli/test)         | Runs unit tests on a given project.                                   |
 | [ng e2e](cli/e2e)           | Builds and serves an Angular application, then runs end-to-end tests. |
 
-You'll find the Angular CLI a valuable tool for building out your applications.
+<!-- vale Angular.Google_WordListSuggestions = YES -->
 
-For more information about the Angular CLI, see the [CLI Reference](cli) section.
+The Angular CLI is a valuable tool for building out your applications.
+
+For more information about the Angular CLI, see the [Angular CLI Reference](cli) section.
 
 <a id="1p-libraries"></a>
 
 ## First-party libraries
 
-The section, [Angular applications: The essentials](#essentials), provides a brief overview of a couple of the key architectural elements you'll use when building Angular applications.
-But the many benefits of Angular really become apparent when your application grows and you want to add additional functions such as site navigation or user input.
+The section, [Angular applications: the essentials](#essentials), provides a brief overview of a couple of the key architectural elements that are used when building Angular applications.
+The many benefits of Angular really become clear when your application grows and you want to add functions such as site navigation or user input.
 Use the Angular platform to incorporate one of the many first-party libraries that Angular provides.
 
 Some of the libraries available to you include:
+
+<!-- vale Angular.Google_Acronyms = NO -->
 
 | Library                                   | Details |
 |:---                                       |:---     |
@@ -182,22 +192,27 @@ Some of the libraries available to you include:
 | [Angular Forms](guide/forms-overview)     | Uniform system for form participation and validation.                                                                                          |
 | [Angular HttpClient](guide/http)          | Robust HTTP client that can power more advanced client-server communication.                                                                   |
 | [Angular Animations](guide/animations)    | Rich system for driving animations based on application state.                                                                                 |
-| [Angular PWA](guide/service-worker-intro) | Tools for building Progressive Web Applications \(PWAs\) including a service worker and Web app manifest.                                      |
+| [Angular PWA](guide/service-worker-intro) | Tools for building Progressive Web Applications \(PWA\) including a service worker and Web application manifest.                                      |
 | [Angular Schematics](guide/schematics)    | Automated scaffolding, refactoring, and update tools that simplify development at large scale.                                                 |
 
-These libraries expand your application's functionality while also letting you focus more on the features that make your application unique.
-Add these libraries knowing that they're designed to integrate seamlessly into and update simultaneously with the Angular framework.
+<!-- vale Angular.Google_Acronyms = YES -->
 
-These libraries are only required if and when they can help you add functionality to your applications or solve a particular problem.
+These libraries expand your application's capabilities while also letting you focus more on the features that make your application unique.
+Add these libraries knowing that they're designed to integrate flawlessly into and update simultaneously with the Angular framework.
+
+These libraries are only required when they can help you add features to your applications or solve a particular problem.
 
 ## Next steps
 
-This topic is intended to give you a brief overview of what Angular is, the advantages it provides, and what to expect as you start to build your applications.
+This topic gives you a brief overview of what Angular is, the advantages it provides, and what to expect as you start to build your applications.
 
-To see Angular in action, see our [Getting Started](start) tutorial.
+To see Angular in action, see the [Getting Started](start) tutorial.
 This tutorial uses [stackblitz.com](https://stackblitz.com), for you to explore a working example of Angular without any installation requirements.
 
-To explore Angular's capabilities further, we recommend reading through the sections, Understanding Angular, and Developer Guides.
+The following sections are recommended to explore Angular's capabilities further:
+
+*   [Understanding Angular](guide/understanding-angular-overview)
+*   [Angular Developer Guide](guide/developer-guide-overview)
 
 <!-- links -->
 
