@@ -129,7 +129,8 @@ export class TransferState {
    * Indicates whether the state is empty.
    */
   get isEmpty(): boolean {
-    return Object.keys(this.store).length === 0;
+    return Object.keys(this.store).length === 0 &&
+        Object.keys(this.onSerializeCallbacks).length === 0;
   }
 
   /**

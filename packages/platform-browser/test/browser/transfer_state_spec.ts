@@ -8,7 +8,7 @@
 
 import {DOCUMENT} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule, BrowserTransferStateModule, TransferState} from '@angular/platform-browser';
+import {BrowserModule, TransferState} from '@angular/platform-browser';
 import {escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
 
 (function() {
@@ -128,6 +128,9 @@ describe('TransferState', () => {
 
     transferState.remove(TEST_KEY);
     expect(transferState.isEmpty).toBeTrue();
+
+    transferState.onSerialize(TEST_KEY, () => 10);
+    expect(transferState.isEmpty).toBeFalse();
   });
 });
 
