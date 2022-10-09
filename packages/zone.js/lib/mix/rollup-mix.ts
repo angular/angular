@@ -7,4 +7,5 @@
  */
 
 import '../browser/rollup-main';
+import '../node/node_util';
 import '../node/node';

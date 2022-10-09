@@ -537,12 +537,12 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
     // Keep a reference to the original method.
     proto[symbolThen] = originalThen;
 
-    Ctor.prototype.then = function(onResolve: any, onReject: any) {
+    patchFunctionProperty(proto, 'then', function(this: unknown) {
       const wrapped = new ZoneAwarePromise((resolve, reject) => {
         originalThen.call(this, resolve, reject);
       });
-      return wrapped.then(onResolve, onReject);
-    };
+      return wrapped.then(arguments[0], arguments[1]);
+    });
     (Ctor as any)[symbolThenPatched] = true;
   }
 
