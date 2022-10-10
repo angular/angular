@@ -120,7 +120,7 @@ let thisArg: any;
          getComponent().items = <any>'whaaa';
          expect(() => fixture.detectChanges())
              .toThrowError(
-                 `NG02200: Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables, such as Arrays. Find more at https://angular.io/errors/NG02200`);
+                 `NG2200: Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables, such as Arrays. Find more at https://angular.io/errors/NG2200`);
        }));
 
     it('should throw on non-iterable ref and suggest using an array ', waitForAsync(() => {
@@ -129,7 +129,7 @@ let thisArg: any;
          getComponent().items = <any>{'stuff': 'whaaa'};
          expect(() => fixture.detectChanges())
              .toThrowError(
-                 `NG02200: Cannot find a differ supporting object '\[object Object\]' of type 'object'. NgFor only supports binding to Iterables, such as Arrays. Did you mean to use the keyvalue pipe? Find more at https://angular.io/errors/NG02200`);
+                 `NG2200: Cannot find a differ supporting object '\[object Object\]' of type 'object'. NgFor only supports binding to Iterables, such as Arrays. Did you mean to use the keyvalue pipe? Find more at https://angular.io/errors/NG2200`);
        }));
 
     it('should throw on ref changing to string', waitForAsync(() => {

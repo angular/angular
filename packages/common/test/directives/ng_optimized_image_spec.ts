@@ -373,7 +373,7 @@ describe('Image directive', () => {
           fixture.detectChanges();
         })
             .toThrowError(
-                `NG0${
+                `NG${
                     RuntimeErrorCode
                         .INVALID_INPUT}: The NgOptimizedImage directive (activated on an <img> element with the \`ngSrc="img"\`) ` +
                 `has detected that the \`ngSrcset\` contains an unsupported image density:` +
@@ -402,7 +402,7 @@ describe('Image directive', () => {
           fixture.detectChanges();
         })
             .toThrowError(
-                `NG0${
+                `NG${
                     RuntimeErrorCode
                         .INVALID_INPUT}: The NgOptimizedImage directive (activated on an <img> element with the \`ngSrc="img"\`) ` +
                 `has detected that the \`ngSrcset\` contains an unsupported image density:` +
