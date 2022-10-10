@@ -248,6 +248,21 @@ describe('MatIcon', () => {
   });
 
   describe('Ligature icons by attribute', () => {
+    it('should forward the fontIcon attribute', () => {
+      const fixture = TestBed.createComponent(IconWithLigatureByAttribute);
+
+      const testComponent = fixture.componentInstance;
+      const icon = fixture.debugElement.nativeElement.querySelector('mat-icon');
+
+      testComponent.iconName = 'home';
+      fixture.detectChanges();
+      expect(icon.getAttribute('fontIcon')).toBe('home');
+
+      testComponent.iconName = 'house';
+      fixture.detectChanges();
+      expect(icon.getAttribute('fontIcon')).toBe('house');
+    });
+
     it('should add material-icons and mat-ligature-font class by default', () => {
       const fixture = TestBed.createComponent(IconWithLigatureByAttribute);
 

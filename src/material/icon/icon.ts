@@ -147,6 +147,7 @@ const funcIriPattern = /^url\(['"]?#(.*?)['"]?\)$/;
     '[attr.data-mat-icon-type]': '_usingFontIcon() ? "font" : "svg"',
     '[attr.data-mat-icon-name]': '_svgName || fontIcon',
     '[attr.data-mat-icon-namespace]': '_svgNamespace || fontSet',
+    '[attr.fontIcon]': '_usingFontIcon() ? fontIcon : null',
     '[class.mat-icon-inline]': 'inline',
     '[class.mat-icon-no-color]': 'color !== "primary" && color !== "accent" && color !== "warn"',
   },
