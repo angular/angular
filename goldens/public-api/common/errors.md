@@ -25,6 +25,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
     // (undocumented)
+    TOO_MANY_PRELOADED_IMAGES = 2961,
+    // (undocumented)
     UNEXPECTED_DEV_MODE_CHECK_IN_PROD_MODE = 2958,
     // (undocumented)
     UNEXPECTED_INPUT_CHANGE = 2953,
