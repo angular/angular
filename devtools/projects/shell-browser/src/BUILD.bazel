@@ -133,6 +133,7 @@ pkg_web(
         "//devtools/projects/shell-browser/src/app:backend_bundle",
         "//devtools/projects/shell-browser/src/app:background_bundle",
         "//devtools/projects/shell-browser/src/app:content_script_bundle",
+        "//devtools/projects/shell-browser/src/app:detect_angular_for_extension_icon_bundle",
         "//devtools/projects/shell-browser/src/app:ng_validate_bundle",
         "//devtools/projects/shell-browser/src/assets",
         "//devtools/projects/shell-browser/src/popups",
