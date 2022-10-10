@@ -7,14 +7,18 @@
  */
 
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
+import {join} from 'path';
 
 import {runfiles} from '@bazel/runfiles';
 
-const TS_CONFIG = '/projects/material/tsconfig.app.json';
+const PROJECT_ROOT = '/projects/material';
+const SRC = join(PROJECT_ROOT, 'src');
 
-export const THEME_FILE = '/projects/material/src/theme.scss';
-export const APP_MODULE_FILE = '/projects/material/src/app/app.module.ts';
-export const TEMPLATE_FILE = '/projects/material/src/app/app.component.html';
+export const APP_ROOT = join(SRC, 'app');
+export const TS_CONFIG = join(PROJECT_ROOT, 'tsconfig.app.json');
+export const THEME_FILE = join(SRC, 'theme.scss');
+export const APP_MODULE_FILE = join(APP_ROOT, 'app.module.ts');
+export const TEMPLATE_FILE = join(APP_ROOT, 'app.component.html');
 
 export function createNewTestRunner(): SchematicTestRunner {
   return new SchematicTestRunner(

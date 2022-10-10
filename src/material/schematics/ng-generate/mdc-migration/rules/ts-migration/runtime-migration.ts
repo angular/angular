@@ -8,10 +8,12 @@
 
 import {Migration, getPropertyNameText} from '@angular/cdk/schematics';
 import {SchematicContext} from '@angular-devkit/schematics';
-import {ComponentMigrator} from '../index';
+import {ComponentMigrator, LEGACY_MODULES} from '../index';
 import * as ts from 'typescript';
 import {ThemingStylesMigration} from '../theming-styles';
 import {TemplateMigration} from '../template-migration';
+
+type Replacement = [node: ts.Node, newText: string];
 
 export class RuntimeCodeMigration extends Migration<ComponentMigrator[], SchematicContext> {
   enabled = true;
@@ -22,22 +24,135 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
   private _hasPossibleTemplateMigrations = true;
 
   override visitNode(node: ts.Node): void {
-    if (this._isImportExpression(node)) {
+    if (ts.isSourceFile(node)) {
+      this._migrateSourceFileReferences(node);
+    } else if (this._isComponentDecorator(node)) {
+      this._migrateComponentDecorator(node as ts.Decorator);
+    } else if (this._isImportExpression(node)) {
       this._migrateModuleSpecifier(node.arguments[0]);
     } else if (this._isTypeImportExpression(node)) {
       this._migrateModuleSpecifier(node.argument.literal);
-    } else if (ts.isImportDeclaration(node)) {
-      // Note: TypeScript enforces the `moduleSpecifier` to be a string literal in its syntax.
-      this._migrateModuleSpecifier(node.moduleSpecifier as ts.StringLiteral, node.importClause);
-    } else if (
-      ts.isDecorator(node) &&
-      (this._isNgModuleDecorator(node) || this._isComponentDecorator(node))
-    ) {
-      this._migrateDecoratorProperties(node as ts.Decorator);
     }
   }
 
-  private _migrateDecoratorProperties(node: ts.Decorator) {
+  /** Runs the SourceFile-level migrations, including renaming imports and references. */
+  private _migrateSourceFileReferences(sourceFile: ts.SourceFile) {
+    const {importSpecifiersToNewNames, identifiersToImportSpecifiers, moduleSpecifiers} =
+      this._findImportsToMigrate(sourceFile);
+
+    [
+      ...this._renameModuleSpecifiers(moduleSpecifiers),
+      ...this._renameReferences(
+        sourceFile,
+        identifiersToImportSpecifiers,
+        importSpecifiersToNewNames,
+      ),
+    ]
+      .sort(([a], [b]) => b.getStart() - a.getStart())
+      .forEach(([currentNode, newName]) => {
+        this._printAndUpdateNode(sourceFile, currentNode, newName);
+      });
+  }
+
+  /** Finds the imported symbols in a file that need to be migrated. */
+  private _findImportsToMigrate(sourceFile: ts.SourceFile) {
+    const importSpecifiersToNewNames = new Map<ts.ImportSpecifier, string>();
+    const moduleSpecifiers = new Map<ts.StringLiteral, string>();
+    const identifiersToImportSpecifiers = new Map<string, ts.ImportSpecifier>();
+
+    for (const statement of sourceFile.statements) {
+      if (
+        ts.isImportDeclaration(statement) &&
+        ts.isStringLiteral(statement.moduleSpecifier) &&
+        statement.importClause?.namedBindings &&
+        ts.isNamedImports(statement.importClause.namedBindings) &&
+        LEGACY_MODULES.has(statement.moduleSpecifier.text)
+      ) {
+        statement.importClause.namedBindings.elements.forEach(element => {
+          const oldName = (element.propertyName || element.name).text;
+          const newName = this._removeLegacy(oldName);
+
+          if (newName) {
+            importSpecifiersToNewNames.set(element, newName);
+
+            // Skip aliased imports since they only need to be renamed in the import declaration.
+            if (!element.propertyName) {
+              identifiersToImportSpecifiers.set(oldName, element);
+            }
+          }
+        });
+
+        const newModuleSpecifier = this._removeLegacy(statement.moduleSpecifier.text);
+
+        if (newModuleSpecifier) {
+          moduleSpecifiers.set(statement.moduleSpecifier, newModuleSpecifier);
+        }
+      }
+    }
+
+    return {importSpecifiersToNewNames, identifiersToImportSpecifiers, moduleSpecifiers};
+  }
+
+  /** Renames all of the references to imported legacy symbols. */
+  private _renameReferences(
+    sourceFile: ts.SourceFile,
+    identifiersToImportSpecifiers: Map<string, ts.ImportSpecifier>,
+    importSpecifiersToNewNames: Map<ts.ImportSpecifier, string>,
+  ): Replacement[] {
+    if (importSpecifiersToNewNames.size === 0) {
+      return [];
+    }
+
+    const replacements: Replacement[] = [];
+    const walk = (node: ts.Node) => {
+      // Imports are handled separately.
+      if (ts.isImportDeclaration(node)) {
+        return;
+      }
+
+      if (ts.isIdentifier(node)) {
+        const specifier = identifiersToImportSpecifiers.get(node.text);
+
+        if (specifier && this._isReferenceToImport(node, specifier)) {
+          replacements.push([node, importSpecifiersToNewNames.get(specifier)!]);
+        }
+      }
+
+      node.forEachChild(walk);
+    };
+
+    sourceFile.forEachChild(walk);
+
+    importSpecifiersToNewNames.forEach((newName, specifier) => {
+      if (specifier.propertyName) {
+        replacements.push([
+          // If the import looks like `import {OldName as NewName} from ...;`,
+          // we drop the alias and simplify the import to `import {NewName} from ...`.
+          specifier.name.text === newName ? specifier : specifier.propertyName,
+          newName,
+        ]);
+      } else {
+        replacements.push([specifier.name, newName]);
+      }
+    });
+
+    return replacements;
+  }
+
+  /** Renames all of the legacy module import specifiers. */
+  private _renameModuleSpecifiers(moduleSpecifiers: Map<ts.StringLiteral, string>): Replacement[] {
+    const replacements: Replacement[] = [];
+
+    for (const [specifier, newName] of moduleSpecifiers.entries()) {
+      const quoteStyle = specifier.getText()[0];
+      replacements.push([specifier, quoteStyle + newName + quoteStyle]);
+    }
+
+    return replacements;
+  }
+
+  /** Migrates the `@Component` metadata. */
+  private _migrateComponentDecorator(node: ts.Decorator) {
     if (!ts.isCallExpression(node.expression)) {
       return;
     }
@@ -50,12 +165,6 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
     for (const prop of metadata.properties) {
       if (prop.name) {
         switch (getPropertyNameText(prop.name)) {
-          case 'imports':
-            this._migrateImportsAndExports(prop as ts.PropertyAssignment);
-            break;
-          case 'exports':
-            this._migrateImportsAndExports(prop as ts.PropertyAssignment);
-            break;
           case 'styles':
             this._migrateStyles(prop as ts.PropertyAssignment);
             break;
@@ -67,21 +176,6 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
         }
       }
     }
-  }
-
-  private _migrateImportsAndExports(node: ts.PropertyAssignment) {
-    node.initializer.forEachChild(specifier => {
-      // Iterate through all activated migrators and check if the import can be migrated.
-      for (const migrator of this.upgradeData) {
-        const newSpecifier = migrator.runtime?.updateImportOrExportSpecifier(
-          specifier as ts.Identifier,
-        );
-        if (newSpecifier) {
-          this._printAndUpdateNode(specifier.getSourceFile(), specifier, newSpecifier);
-          break;
-        }
-      }
-    });
   }
 
   private _migrateStyles(node: ts.PropertyAssignment) {
@@ -166,49 +260,25 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
     );
   }
 
-  private _migrateModuleSpecifier(
-    specifierLiteral: ts.StringLiteralLike,
-    importClause?: ts.ImportClause,
-  ) {
-    const sourceFile = specifierLiteral.getSourceFile();
+  private _migrateModuleSpecifier(specifier: ts.StringLiteralLike) {
+    const newName = this._removeLegacy(specifier.text);
 
-    // Iterate through all activated migrators and check if the import can be migrated.
-    for (const migrator of this.upgradeData) {
-      if (importClause && importClause.namedBindings) {
-        const importSpecifiers = (importClause.namedBindings as ts.NamedImports).elements;
-        importSpecifiers.forEach(importSpecifer => {
-          const newImportSpecifier =
-            migrator.runtime?.updateImportSpecifierWithPossibleAlias(importSpecifer);
-
-          if (newImportSpecifier) {
-            this._printAndUpdateNode(sourceFile, importSpecifer, newImportSpecifier);
-          }
-        });
-      }
-
-      const newModuleSpecifier = migrator.runtime?.updateModuleSpecifier(specifierLiteral) ?? null;
-
-      if (newModuleSpecifier !== null) {
-        this._printAndUpdateNode(sourceFile, specifierLiteral, newModuleSpecifier);
-
-        // If the import has been replaced, break the loop as no others can match.
-        break;
-      }
+    if (newName) {
+      const quoteStyle = specifier.getText()[0];
+      this._printAndUpdateNode(
+        specifier.getSourceFile(),
+        specifier,
+        quoteStyle + newName + quoteStyle,
+      );
     }
-  }
-
-  /** Gets whether the specified decorator node is for a NgModule declaration  */
-  private _isNgModuleDecorator(node: ts.Decorator): boolean {
-    const call = node.expression;
-    if (!ts.isCallExpression(call) || !ts.isIdentifier(call.expression)) {
-      return false;
-    }
-
-    return call.expression.text === 'NgModule';
   }
 
   /** Gets whether the specified decorator node is for a Component declaration */
-  private _isComponentDecorator(node: ts.Decorator): boolean {
+  private _isComponentDecorator(node: ts.Node): node is ts.Decorator {
+    if (!ts.isDecorator(node)) {
+      return false;
+    }
+
     const call = node.expression;
     if (!ts.isCallExpression(call) || !ts.isIdentifier(call.expression)) {
       return false;
@@ -240,12 +310,48 @@ export class RuntimeCodeMigration extends Migration<ComponentMigrator[], Schemat
     );
   }
 
-  private _printAndUpdateNode(sourceFile: ts.SourceFile, oldNode: ts.Node, newNode: ts.Node) {
+  private _printAndUpdateNode(
+    sourceFile: ts.SourceFile,
+    oldNode: ts.Node,
+    newNode: ts.Node | string,
+  ) {
     const filePath = this.fileSystem.resolve(sourceFile.fileName);
-    const newNodeText = this._printer.printNode(ts.EmitHint.Unspecified, newNode, sourceFile);
+    const newNodeText =
+      typeof newNode === 'string'
+        ? newNode
+        : this._printer.printNode(ts.EmitHint.Unspecified, newNode, sourceFile);
     const start = oldNode.getStart();
     const width = oldNode.getWidth();
 
     this.fileSystem.edit(filePath).remove(start, width).insertRight(start, newNodeText);
+  }
+
+  /** Checks whether a specifier identifier is referring to an imported symbol. */
+  private _isReferenceToImport(node: ts.Identifier, importSpecifier: ts.ImportSpecifier): boolean {
+    if ((importSpecifier.propertyName || importSpecifier.name).text !== node.text) {
+      return false;
+    }
+
+    const nodeSymbol = this.typeChecker.getTypeAtLocation(node).getSymbol();
+    const importSymbol = this.typeChecker.getTypeAtLocation(importSpecifier).getSymbol();
+
+    // This can happen for type references.
+    if (!nodeSymbol && !importSymbol) {
+      return this.typeChecker.getSymbolAtLocation(node)?.declarations?.[0] === importSpecifier;
+    }
+
+    return (
+      !!(nodeSymbol?.declarations?.[0] && importSymbol?.declarations?.[0]) &&
+      nodeSymbol.declarations[0] === importSymbol.declarations[0]
+    );
+  }
+
+  /**
+   * Strips "legacy" from the name of a symbol or an import.
+   * Returns null if it doesn't have a legacy name.
+   */
+  private _removeLegacy(name: string): string | null {
+    const legacyRegex = /legacy[_-]?/i;
+    return legacyRegex.test(name) ? name.replace(legacyRegex, '') : null;
   }
 }

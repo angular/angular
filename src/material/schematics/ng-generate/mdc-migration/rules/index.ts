@@ -25,7 +25,6 @@ import {PaginatorStylesMigrator} from './components/paginator/paginator-styles';
 import {ProgressBarStylesMigrator} from './components/progress-bar/progress-bar-styles';
 import {ProgressSpinnerStylesMigrator} from './components/progress-spinner/progress-spinner-styles';
 import {RadioStylesMigrator} from './components/radio/radio-styles';
-import {RuntimeMigrator} from './ts-migration/runtime-migrator';
 import {SelectStylesMigrator} from './components/select/select-styles';
 import {SlideToggleStylesMigrator} from './components/slide-toggle/slide-toggle-styles';
 import {SliderStylesMigrator} from './components/slider/slider-styles';
@@ -41,106 +40,135 @@ export interface ComponentMigrator {
   component: string;
   styles: StyleMigrator;
   template?: TemplateMigrator;
-  runtime?: RuntimeMigrator;
 }
+
+export const LEGACY_MODULES = new Set(
+  [
+    'legacy-autocomplete',
+    'legacy-autocomplete/testing',
+    'legacy-button',
+    'legacy-button/testing',
+    'legacy-card',
+    'legacy-card/testing',
+    'legacy-checkbox',
+    'legacy-checkbox/testing',
+    'legacy-chips',
+    'legacy-chips/testing',
+    'legacy-core',
+    'legacy-core/testing',
+    'legacy-dialog',
+    'legacy-dialog/testing',
+    'legacy-form-field',
+    'legacy-form-field/testing',
+    'legacy-input',
+    'legacy-input/testing',
+    'legacy-list',
+    'legacy-list/testing',
+    'legacy-menu',
+    'legacy-menu/testing',
+    'legacy-paginator',
+    'legacy-paginator/testing',
+    'legacy-progress-bar',
+    'legacy-progress-bar/testing',
+    'legacy-progress-spinner',
+    'legacy-progress-spinner/testing',
+    'legacy-radio',
+    'legacy-radio/testing',
+    'legacy-select',
+    'legacy-select/testing',
+    'legacy-slide-toggle',
+    'legacy-slide-toggle/testing',
+    'legacy-slider',
+    'legacy-slider/testing',
+    'legacy-snack-bar',
+    'legacy-snack-bar/testing',
+    'legacy-table',
+    'legacy-table/testing',
+    'legacy-tabs',
+    'legacy-tabs/testing',
+    'legacy-tooltip',
+    'legacy-tooltip/testing',
+  ].map(name => `@angular/material/${name}`),
+);
 
 export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'autocomplete',
     styles: new AutocompleteStylesMigrator(),
-    runtime: new RuntimeMigrator('autocomplete'),
   },
   {
     component: 'button',
     styles: new ButtonStylesMigrator(),
-    runtime: new RuntimeMigrator('button'),
   },
   {
     component: 'card',
     styles: new CardStylesMigrator(),
-    runtime: new RuntimeMigrator('card'),
     template: new CardTemplateMigrator(),
   },
   {
     component: 'checkbox',
     styles: new CheckboxStylesMigrator(),
-    runtime: new RuntimeMigrator('checkbox'),
   },
   {
     component: 'chips',
     styles: new ChipsStylesMigrator(),
-    runtime: new RuntimeMigrator('chips'),
     template: new ChipsTemplateMigrator(),
   },
   {
     component: 'dialog',
     styles: new DialogStylesMigrator(),
-    runtime: new RuntimeMigrator('dialog'),
   },
   {
     component: 'form-field',
     styles: new FormFieldStylesMigrator(),
-    runtime: new RuntimeMigrator('form-field'),
   },
   {
     component: 'input',
     styles: new InputStylesMigrator(),
-    runtime: new RuntimeMigrator('input'),
   },
   {
     component: 'list',
     styles: new ListStylesMigrator(),
-    runtime: new RuntimeMigrator('list'),
   },
   {
     component: 'menu',
     styles: new MenuStylesMigrator(),
-    runtime: new RuntimeMigrator('menu'),
   },
   {
     component: 'optgroup',
     styles: new OptgroupStylesMigrator(),
-    runtime: new RuntimeMigrator('optgroup'),
   },
   {
     component: 'option',
     styles: new OptionStylesMigrator(),
-    runtime: new RuntimeMigrator('option'),
   },
   {
     component: 'paginator',
     styles: new PaginatorStylesMigrator(),
-    runtime: new RuntimeMigrator('paginator'),
   },
   {
     component: 'progress-bar',
     styles: new ProgressBarStylesMigrator(),
-    runtime: new RuntimeMigrator('progress-bar'),
   },
   {
     component: 'progress-spinner',
     styles: new ProgressSpinnerStylesMigrator(),
-    runtime: new RuntimeMigrator('progress-spinner'),
   },
   {
     component: 'radio',
     styles: new RadioStylesMigrator(),
-    runtime: new RuntimeMigrator('radio'),
   },
   {
     component: 'select',
     styles: new SelectStylesMigrator(),
-    runtime: new RuntimeMigrator('select'),
   },
   {
     component: 'slide-toggle',
     styles: new SlideToggleStylesMigrator(),
-    runtime: new RuntimeMigrator('slide-toggle'),
   },
   {
     component: 'slider',
     styles: new SliderStylesMigrator(),
-    runtime: new RuntimeMigrator('slider'),
   },
   {
     component: 'snack-bar',
@@ -149,16 +177,13 @@ export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'table',
     styles: new TableStylesMigrator(),
-    runtime: new RuntimeMigrator('table'),
   },
   {
     component: 'tabs',
     styles: new TabsStylesMigrator(),
-    runtime: new RuntimeMigrator('tabs'),
   },
   {
     component: 'tooltip',
     styles: new TooltipStylesMigrator(),
-    runtime: new RuntimeMigrator('tooltip'),
   },
 ];
