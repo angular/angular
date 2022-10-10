@@ -561,5 +561,11 @@ export type UntypedFormControl = FormControl<any>;
 
 export const UntypedFormControl: UntypedFormControlCtor = FormControl;
 
+/**
+ * @description
+ * Asserts that the given control is an instance of `FormControl`
+ *
+ * @publicApi
+ */
 export const isFormControl = (control: unknown): control is FormControl =>
     control instanceof FormControl;

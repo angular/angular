@@ -604,6 +604,12 @@ export type UntypedFormGroup = FormGroup<any>;
 
 export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
 
+/**
+ * @description
+ * Asserts that the given control is an instance of `FormGroup`
+ *
+ * @publicApi
+ */
 export const isFormGroup = (control: unknown): control is FormGroup => control instanceof FormGroup;
 
 /**
@@ -706,5 +712,11 @@ export interface FormRecord<TControl> {
   getRawValue(): {[key: string]: ɵRawValue<TControl>};
 }
 
+/**
+ * @description
+ * Asserts that the given control is an instance of `FormRecord`
+ *
+ * @publicApi
+ */
 export const isFormRecord = (control: unknown): control is FormRecord =>
     control instanceof FormRecord;
