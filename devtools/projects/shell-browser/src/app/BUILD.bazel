@@ -126,7 +126,7 @@ ts_library(
     srcs = [
         "background.ts",
     ],
-    deps = ["//devtools/projects/shell-browser/src/app:ng_validate"],
+    deps = ["//devtools/projects/shell-browser/src/app:detect_angular_for_extension_icon"],
 )
 
 ts_library(
@@ -153,6 +153,30 @@ ts_library(
         ":same_page_message_bus",
         "//devtools/projects/protocol",
         "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "detect_angular_for_extension_icon",
+    srcs = [
+        "detect-angular-for-extension-icon.ts",
+    ],
+    deps = [
+        "@npm//@types",
+    ],
+)
+
+esbuild(
+    name = "detect_angular_for_extension_icon_bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    entry_point = "detect-angular-for-extension-icon.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":detect_angular_for_extension_icon",
     ],
 )
 

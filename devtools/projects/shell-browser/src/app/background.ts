@@ -8,19 +8,29 @@
 
 /// <reference types="chrome"/>
 
-import {AngularDetection} from './ng-validate';
+import {AngularDetection} from './detect-angular-for-extension-icon';
 
-// Electron does not expose browserAction object,
-// Use empty calls as fallback if they are not defined.
-const browserAction = chrome.browserAction || {setIcon: () => {}, setPopup: () => {}};
+const isManifestV3 = chrome.runtime.getManifest().manifest_version === 3;
+
+const browserAction = (() => {
+  // Electron does not expose browserAction object,
+  // Use empty calls as fallback if they are not defined.
+  const noopAction = {setIcon: () => {}, setPopup: () => {}};
+
+  if (isManifestV3) {
+    return chrome.action || noopAction;
+  }
+
+  return chrome.browserAction || noopAction;
+})();
 
 // By default use the black and white icon.
 // Replace it only when we detect an Angular app.
 browserAction.setIcon({
   path: {
-    16: `assets/icon-bw16.png`,
-    48: `assets/icon-bw48.png`,
-    128: `assets/icon-bw128.png`,
+    16: chrome.runtime.getURL(`assets/icon-bw16.png`),
+    48: chrome.runtime.getURL(`assets/icon-bw48.png`),
+    128: chrome.runtime.getURL(`assets/icon-bw128.png`),
   },
 });
 
@@ -94,6 +104,17 @@ const installContentScript = (tabId: number) => {
 
   // We first inject the content-script and after that
   // invoke the global that it exposes.
+
+  if (isManifestV3) {
+    chrome.scripting.executeScript(
+        {files: ['app/content_script_bundle.js'], target: {tabId}}, () => {
+          chrome.scripting.executeScript({func: () => globalThis.main(), target: {tabId}});
+        });
+
+    return;
+  }
+
+  // manifest V2 APIs
   chrome.tabs.executeScript(tabId, {file: 'app/content_script_bundle.js'}, (result) => {
     chrome.tabs.executeScript(tabId, {
       code: 'globalThis.main()',
@@ -163,9 +184,9 @@ chrome.runtime.onMessage.addListener((req, sender) => {
     browserAction.setIcon({
       tabId: sender.tab.id,
       path: {
-        16: `assets/icon16.png`,
-        48: `assets/icon48.png`,
-        128: `assets/icon128.png`,
+        16: chrome.runtime.getURL(`assets/icon16.png`),
+        48: chrome.runtime.getURL(`assets/icon48.png`),
+        128: chrome.runtime.getURL(`assets/icon128.png`),
       },
     });
   }
