@@ -78,7 +78,7 @@
     "@bazel/worker": "5.5.3",
     "@microsoft/api-extractor": "^7.24.2",
     "@rollup/plugin-babel": "^6.0.0",
-    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-commonjs": "^23.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@schematics/angular": "15.0.0-next.4",
     "@types/angular": "^1.6.47",
