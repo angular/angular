@@ -401,14 +401,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
     if (this.ngSrcset) {
       rewrittenSrcset = this.getRewrittenSrcset();
+    } else if (!this._disableOptimizedSrcset && !this.srcset) {
+      rewrittenSrcset = this.getAutomaticSrcset();
+    }
+
+    if (rewrittenSrcset) {
       this.setHostAttribute('srcset', rewrittenSrcset);
     }
 
     if (this.isServer && this.priority) {
       this.preloadLinkChecker.createPreloadLinkTag(
           this.renderer, rewrittenSrc, rewrittenSrcset, this.sizes);
-    } else if (!this._disableOptimizedSrcset && !this.srcset) {
-      this.setHostAttribute('srcset', this.getAutomaticSrcset());
     }
   }
 
