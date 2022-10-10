@@ -36,12 +36,6 @@ import { Subject } from 'rxjs';
 import { ViewportRuler } from '@angular/cdk/scrolling';
 
 // @public
-type AutoFocusTarget = 'dialog' | 'first-tabbable' | 'first-heading';
-
-// @public
-const MAT_DRAWER_CONTAINER: InjectionToken<unknown>;
-
-// @public
 export const MAT_DRAWER_DEFAULT_AUTOSIZE: InjectionToken<boolean>;
 
 // @public

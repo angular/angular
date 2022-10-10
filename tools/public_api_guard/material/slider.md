@@ -149,30 +149,6 @@ export class MatSliderThumb implements AfterViewInit, ControlValueAccessor, OnIn
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSliderThumb, never>;
 }
 
-// @public
-class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
-    constructor(_ngZone: NgZone, _slider: MatSlider, _elementRef: ElementRef<HTMLElement>);
-    disableRipple: boolean;
-    discrete: boolean;
-    _getHostElement(): HTMLElement;
-    _getKnob(): HTMLElement;
-    _getValueIndicatorContainer(): HTMLElement;
-    readonly _isActive = false;
-    _isShortValue(): boolean;
-    _knob: ElementRef<HTMLElement>;
-    // (undocumented)
-    ngAfterViewInit(): void;
-    // (undocumented)
-    ngOnDestroy(): void;
-    thumbPosition: Thumb;
-    _valueIndicatorContainer: ElementRef<HTMLElement>;
-    valueIndicatorText: string;
-    // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSliderVisualThumb, "mat-slider-visual-thumb", never, { "discrete": "discrete"; "thumbPosition": "thumbPosition"; "valueIndicatorText": "valueIndicatorText"; "disableRipple": "disableRipple"; }, {}, never, never, false, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatSliderVisualThumb, never>;
-}
-
 // (No @packageDocumentation comment for this package)
 
 ```

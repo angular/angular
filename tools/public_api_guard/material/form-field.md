@@ -193,33 +193,6 @@ export interface MatFormFieldDefaultOptions {
     subscriptSizing?: SubscriptSizing;
 }
 
-// @public
-class MatFormFieldFloatingLabel {
-    constructor(_elementRef: ElementRef<HTMLElement>);
-    get element(): HTMLElement;
-    floating: boolean;
-    getWidth(): number;
-    // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatFormFieldFloatingLabel, "label[matFormFieldFloatingLabel]", never, { "floating": "floating"; }, {}, never, never, false, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormFieldFloatingLabel, never>;
-}
-
-// @public
-class MatFormFieldLineRipple implements OnDestroy {
-    constructor(_elementRef: ElementRef<HTMLElement>, ngZone: NgZone);
-    // (undocumented)
-    activate(): void;
-    // (undocumented)
-    deactivate(): void;
-    // (undocumented)
-    ngOnDestroy(): void;
-    // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatFormFieldLineRipple, "div[matFormFieldLineRipple]", never, {}, {}, never, never, false, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormFieldLineRipple, never>;
-}
-
 // @public (undocumented)
 export class MatFormFieldModule {
     // (undocumented)
@@ -228,21 +201,6 @@ export class MatFormFieldModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MatFormFieldModule>;
     // (undocumented)
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatFormFieldModule, [typeof i1.MatFormField, typeof i2.MatLabel, typeof i3.MatError, typeof i4.MatHint, typeof i5.MatPrefix, typeof i6.MatSuffix, typeof i7.MatFormFieldFloatingLabel, typeof i8.MatFormFieldNotchedOutline, typeof i9.MatFormFieldLineRipple], [typeof i10.MatCommonModule, typeof i11.CommonModule, typeof i12.ObserversModule], [typeof i1.MatFormField, typeof i2.MatLabel, typeof i4.MatHint, typeof i3.MatError, typeof i5.MatPrefix, typeof i6.MatSuffix, typeof i10.MatCommonModule]>;
-}
-
-// @public
-class MatFormFieldNotchedOutline implements AfterViewInit {
-    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone);
-    // (undocumented)
-    _getNotchWidth(): string | null;
-    labelWidth: number;
-    // (undocumented)
-    ngAfterViewInit(): void;
-    open: boolean;
-    // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatFormFieldNotchedOutline, "div[matFormFieldNotchedOutline]", never, { "labelWidth": "matFormFieldNotchedOutlineLabelWidth"; "open": "matFormFieldNotchedOutlineOpen"; }, {}, never, ["*"], false, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormFieldNotchedOutline, never>;
 }
 
 // @public

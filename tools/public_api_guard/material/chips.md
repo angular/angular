@@ -119,37 +119,6 @@ export class MatChip extends _MatChipMixinBase implements AfterViewInit, CanColo
 }
 
 // @public
-class MatChipAction extends _MatChipActionMixinBase implements HasTabIndex {
-    constructor(_elementRef: ElementRef<HTMLElement>, _parentChip: {
-        _handlePrimaryActionInteraction(): void;
-        remove(): void;
-        disabled: boolean;
-    });
-    get disabled(): boolean;
-    set disabled(value: BooleanInput);
-    // (undocumented)
-    _elementRef: ElementRef<HTMLElement>;
-    // (undocumented)
-    focus(): void;
-    // (undocumented)
-    _handleClick(event: MouseEvent): void;
-    // (undocumented)
-    _handleKeydown(event: KeyboardEvent): void;
-    isInteractive: boolean;
-    _isPrimary: boolean;
-    // (undocumented)
-    protected _parentChip: {
-        _handlePrimaryActionInteraction(): void;
-        remove(): void;
-        disabled: boolean;
-    };
-    // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatChipAction, "[matChipAction]", never, { "disabled": "disabled"; "tabIndex": "tabIndex"; "isInteractive": "isInteractive"; }, {}, never, never, false, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatChipAction, never>;
-}
-
-// @public
 export class MatChipAvatar {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatChipAvatar, "mat-chip-avatar, [matChipAvatar]", never, {}, {}, never, never, false, never>;

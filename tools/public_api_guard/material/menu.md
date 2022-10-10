@@ -51,16 +51,10 @@ export const MAT_MENU_CONTENT: InjectionToken<MatMenuContent>;
 export const MAT_MENU_DEFAULT_OPTIONS: InjectionToken<MatMenuDefaultOptions>;
 
 // @public
-function MAT_MENU_DEFAULT_OPTIONS_FACTORY(): MatMenuDefaultOptions;
-
-// @public
 export const MAT_MENU_PANEL: InjectionToken<MatMenuPanel<any>>;
 
 // @public
 export const MAT_MENU_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
-
-// @public
-function MAT_MENU_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy;
 
 // @public
 export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: {
@@ -331,9 +325,6 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
 
 // @public @deprecated
 export const MENU_PANEL_TOP_PADDING = 8;
-
-// @public
-type MenuCloseReason = void | 'click' | 'keydown' | 'tab';
 
 // @public
 export type MenuPositionX = 'before' | 'after';

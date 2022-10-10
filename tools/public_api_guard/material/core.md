@@ -212,9 +212,6 @@ export type MatDateFormats = {
 export const MATERIAL_SANITY_CHECKS: InjectionToken<SanityChecks>;
 
 // @public
-function MATERIAL_SANITY_CHECKS_FACTORY(): SanityChecks;
-
-// @public
 export class MatLine {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLine, "[mat-line], [matLine]", never, {}, {}, never, never, false, never>;

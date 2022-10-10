@@ -103,24 +103,6 @@ export class MatLegacySelectTrigger {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacySelectTrigger, never>;
 }
 
-// @public @deprecated
-const SELECT_ITEM_HEIGHT_EM = 3;
-
-// @public @deprecated
-const SELECT_MULTIPLE_PANEL_PADDING_X: number;
-
-// @public @deprecated
-const SELECT_PANEL_INDENT_PADDING_X: number;
-
-// @public @deprecated
-const SELECT_PANEL_MAX_HEIGHT = 256;
-
-// @public @deprecated
-const SELECT_PANEL_PADDING_X = 16;
-
-// @public @deprecated
-const SELECT_PANEL_VIEWPORT_PADDING = 8;
-
 // (No @packageDocumentation comment for this package)
 
 ```

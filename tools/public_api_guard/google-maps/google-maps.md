@@ -57,23 +57,6 @@ export interface ClusterIconStyle {
 }
 
 // @public
-const DEFAULT_HEIGHT = "500px";
-
-// @public
-const DEFAULT_MARKER_OPTIONS: {
-    position: {
-        lat: number;
-        lng: number;
-    };
-};
-
-// @public
-const DEFAULT_OPTIONS: google.maps.MapOptions;
-
-// @public
-const DEFAULT_WIDTH = "500px";
-
-// @public
 export class GoogleMap implements OnChanges, OnInit, OnDestroy {
     constructor(_elementRef: ElementRef, _ngZone: NgZone, platformId: Object);
     readonly authFailure: EventEmitter<void>;

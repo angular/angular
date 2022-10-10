@@ -14,12 +14,6 @@ import { Observable } from 'rxjs';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 
-// @public (undocumented)
-const DEFAULT_PLAYER_HEIGHT = 390;
-
-// @public (undocumented)
-const DEFAULT_PLAYER_WIDTH = 640;
-
 // @public
 export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     constructor(_ngZone: NgZone, platformId: Object);

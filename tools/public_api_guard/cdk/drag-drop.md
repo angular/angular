@@ -269,10 +269,6 @@ export class CdkDropListGroup<T> implements OnDestroy {
 }
 
 // @public
-interface CdkDropListInternal extends CdkDropList {
-}
-
-// @public
 export function copyArrayItem<T = any>(currentArray: T[], targetArray: T[], currentIndex: number, targetIndex: number): void;
 
 // @public

@@ -16,9 +16,6 @@ import { Subject } from 'rxjs';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 
 // @public
-const CDK_ACCORDION: InjectionToken<CdkAccordion>;
-
-// @public
 export class CdkAccordion implements OnDestroy, OnChanges {
     closeAll(): void;
     readonly id: string;

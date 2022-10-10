@@ -46,19 +46,6 @@ export class BlockScrollStrategy implements ScrollStrategy {
 }
 
 // @public
-const CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
-
-// @public
-const CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER: {
-    provide: InjectionToken<() => ScrollStrategy>;
-    deps: (typeof Overlay)[];
-    useFactory: typeof CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER_FACTORY;
-};
-
-// @public
-function CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay): () => RepositionScrollStrategy;
-
-// @public
 export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     constructor(_overlay: Overlay, templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef, scrollStrategyFactory: any, _dir: Directionality);
     readonly attach: EventEmitter<void>;

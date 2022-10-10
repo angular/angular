@@ -103,15 +103,6 @@ export class DefaultMatCalendarRangeStrategy<D> implements MatDateRangeSelection
 export type ExtractDateTypeFromSelection<T> = T extends DateRange<infer D> ? D : NonNullable<T>;
 
 // @public
-function getActiveOffset<D>(dateAdapter: DateAdapter<D>, activeDate: D, minDate: D | null, maxDate: D | null): number;
-
-// @public (undocumented)
-function isSameMultiYearView<D>(dateAdapter: DateAdapter<D>, date1: D, date2: D, minDate: D | null, maxDate: D | null): boolean;
-
-// @public
-const MAT_DATE_RANGE_INPUT_PARENT: InjectionToken<MatDateRangeInputParent<unknown>>;
-
-// @public
 export const MAT_DATE_RANGE_SELECTION_STRATEGY: InjectionToken<MatDateRangeSelectionStrategy<any>>;
 
 // @public
@@ -359,63 +350,6 @@ export class MatDatepickerApply {
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatDatepickerApply, "[matDatepickerApply], [matDateRangePickerApply]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatDatepickerApply, never>;
-}
-
-// @public
-abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S, D = ExtractDateTypeFromSelection<S>> implements MatDatepickerPanel<C, S, D>, OnDestroy, OnChanges {
-    constructor(_overlay: Overlay, _ngZone: NgZone, _viewContainerRef: ViewContainerRef, scrollStrategy: any, _dateAdapter: DateAdapter<D>, _dir: Directionality, _model: MatDateSelectionModel<S, D>);
-    _applyPendingSelection(): void;
-    calendarHeaderComponent: ComponentType<any>;
-    close(): void;
-    readonly closedStream: EventEmitter<void>;
-    get color(): ThemePalette;
-    set color(value: ThemePalette);
-    // (undocumented)
-    _color: ThemePalette;
-    dateClass: MatCalendarCellClassFunction<D>;
-    datepickerInput: C;
-    get disabled(): boolean;
-    set disabled(value: BooleanInput);
-    protected _forwardContentValues(instance: MatDatepickerContent<S, D>): void;
-    // (undocumented)
-    _getDateFilter(): DateFilterFn<D>;
-    _getMaxDate(): D | null;
-    _getMinDate(): D | null;
-    id: string;
-    readonly monthSelected: EventEmitter<D>;
-    // (undocumented)
-    ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
-    ngOnDestroy(): void;
-    open(): void;
-    get opened(): boolean;
-    set opened(value: BooleanInput);
-    readonly openedStream: EventEmitter<void>;
-    get panelClass(): string | string[];
-    set panelClass(value: string | string[]);
-    registerActions(portal: TemplatePortal): void;
-    registerInput(input: C): MatDateSelectionModel<S, D>;
-    removeActions(portal: TemplatePortal): void;
-    get restoreFocus(): boolean;
-    set restoreFocus(value: BooleanInput);
-    select(date: D): void;
-    _selectMonth(normalizedMonth: D): void;
-    _selectYear(normalizedYear: D): void;
-    get startAt(): D | null;
-    set startAt(value: D | null);
-    startView: 'month' | 'year' | 'multi-year';
-    readonly stateChanges: Subject<void>;
-    get touchUi(): boolean;
-    set touchUi(value: BooleanInput);
-    readonly viewChanged: EventEmitter<MatCalendarView>;
-    _viewChanged(view: MatCalendarView): void;
-    xPosition: DatepickerDropdownPositionX;
-    readonly yearSelected: EventEmitter<D>;
-    yPosition: DatepickerDropdownPositionY;
-    // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatDatepickerBase<any, any, any>, never, never, { "calendarHeaderComponent": "calendarHeaderComponent"; "startAt": "startAt"; "startView": "startView"; "color": "color"; "touchUi": "touchUi"; "disabled": "disabled"; "xPosition": "xPosition"; "yPosition": "yPosition"; "restoreFocus": "restoreFocus"; "dateClass": "dateClass"; "panelClass": "panelClass"; "opened": "opened"; }, { "yearSelected": "yearSelected"; "monthSelected": "monthSelected"; "viewChanged": "viewChanged"; "openedStream": "opened"; "closedStream": "closed"; }, never, never, false, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatDatepickerBase<any, any, any>, [null, null, null, null, { optional: true; }, { optional: true; }, null]>;
 }
 
 // @public
@@ -680,33 +614,6 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>, 
 }
 
 // @public
-interface MatDateRangeInputParent<D> {
-    // (undocumented)
-    dateFilter: DateFilterFn<D>;
-    // (undocumented)
-    _endInput: MatDateRangeInputPartBase<D>;
-    // (undocumented)
-    _groupDisabled: boolean;
-    // (undocumented)
-    _handleChildValueChange(): void;
-    // (undocumented)
-    id: string;
-    // (undocumented)
-    max: D | null;
-    // (undocumented)
-    min: D | null;
-    // (undocumented)
-    _openDatepicker(): void;
-    // (undocumented)
-    rangePicker: {
-        opened: boolean;
-        id: string;
-    };
-    // (undocumented)
-    _startInput: MatDateRangeInputPartBase<D>;
-}
-
-// @public
 export class MatDateRangePicker<D> extends MatDatepickerBase<MatDateRangePickerInput<D>, DateRange<D>, D> {
     // (undocumented)
     protected _forwardContentValues(instance: MatDatepickerContent<DateRange<D>, D>): void;
@@ -714,18 +621,6 @@ export class MatDateRangePicker<D> extends MatDatepickerBase<MatDateRangePickerI
     static ɵcmp: i0.ɵɵComponentDeclaration<MatDateRangePicker<any>, "mat-date-range-picker", ["matDateRangePicker"], {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatDateRangePicker<any>, never>;
-}
-
-// @public
-interface MatDateRangePickerInput<D> extends MatDatepickerControl<D> {
-    // (undocumented)
-    comparisonEnd: D | null;
-    // (undocumented)
-    comparisonStart: D | null;
-    // (undocumented)
-    _getEndDateAccessibleName(): string | null;
-    // (undocumented)
-    _getStartDateAccessibleName(): string | null;
 }
 
 // @public
