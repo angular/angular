@@ -2730,18 +2730,17 @@
     "@babel/helper-module-imports" "^7.18.6"
     "@rollup/pluginutils" "^4.2.1"
 
-"@rollup/plugin-commonjs@^22.0.0":
-  version "22.0.1"
-  resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-22.0.1.tgz#f7cb777d20de3eeeaf994f39080115c336bef810"
-  integrity sha512-dGfEZvdjDHObBiP5IvwTKMVeq/tBZGMBHZFMdIV1ClMM/YoWS34xrHFGfag9SN2ZtMgNZRFruqvxZQEa70O6nQ==
+"@rollup/plugin-commonjs@^23.0.0":
+  version "23.0.0"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-23.0.0.tgz#3f64a49409d0681cd7496a71dd6577f07d39c3b0"
+  integrity sha512-JbrTRyDNtLQj/rhl7RFUuYXwQ2fac+33oLDAu2k++WD95zweyo28UAomLVA0JMGx4vmCa7Nw4T6k/1F6lelExg==
   dependencies:
-    "@rollup/pluginutils" "^3.1.0"
+    "@rollup/pluginutils" "^4.2.1"
     commondir "^1.0.1"
-    estree-walker "^2.0.1"
-    glob "^7.1.6"
-    is-reference "^1.2.1"
-    magic-string "^0.25.7"
-    resolve "^1.17.0"
+    estree-walker "^2.0.2"
+    glob "^8.0.3"
+    is-reference "1.2.1"
+    magic-string "^0.26.4"
 
 "@rollup/plugin-node-resolve@^13.0.4":
   version "13.3.0"
@@ -7548,7 +7547,7 @@ estree-walker@^1.0.1:
   resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-1.0.1.tgz#31bc5d612c96b704106b477e6dd5d8aa138cb700"
   integrity sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==
 
-estree-walker@^2.0.1:
+estree-walker@^2.0.1, estree-walker@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-2.0.2.tgz#52f010178c2a4c117a7757cfe942adb7d2da4cac"
   integrity sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==
@@ -8677,7 +8676,7 @@ glob-watcher@^5.0.3:
     normalize-path "^3.0.0"
     object.defaults "^1.1.0"
 
-glob@8.0.3, glob@^8.0.1:
+glob@8.0.3, glob@^8.0.1, glob@^8.0.3:
   version "8.0.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-8.0.3.tgz#415c6eb2deed9e502c68fa44a272e6da6eeca42e"
   integrity sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==
@@ -9920,7 +9919,7 @@ is-promise@^2.2.2:
   resolved "https://registry.yarnpkg.com/is-promise/-/is-promise-2.2.2.tgz#39ab959ccbf9a774cf079f7b40c7a26f763135f1"
   integrity sha512-+lP4/6lKUBfQjZ2pdxThZvLUAafmZb8OAxFb8XXtiQmS35INgr85hdOGoEs124ez1FCnZJt6jau/T+alh58QFQ==
 
-is-reference@^1.2.1:
+is-reference@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/is-reference/-/is-reference-1.2.1.tgz#8b2dac0b371f4bc994fdeaba9eb542d03002d0b7"
   integrity sha512-U82MsXXiFIrjCK4otLT+o2NA2Cd2g5MLoOVXUZjIOhLurrRxpEXzI8O0KZHr3IjLvlAH1kTPYSuqer5T9ZVBKQ==
@@ -11073,6 +11072,13 @@ magic-string@^0.25.7:
   version "0.25.9"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.9.tgz#de7f9faf91ef8a1c91d02c2e5314c8277dbcdd1c"
   integrity sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==
+  dependencies:
+    sourcemap-codec "^1.4.8"
+
+magic-string@^0.26.4:
+  version "0.26.7"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.26.7.tgz#caf7daf61b34e9982f8228c4527474dac8981d6f"
+  integrity sha512-hX9XH3ziStPoPhJxLq1syWuZMxbDvGNbVchfrdCtanC7D13888bMFow61x8axrx+GfHLtVeAx2kxL7tTGRl+Ow==
   dependencies:
     sourcemap-codec "^1.4.8"
 
@@ -13748,7 +13754,7 @@ resolve-url@^0.2.1:
   resolved "https://registry.yarnpkg.com/resolve-url/-/resolve-url-0.2.1.tgz#2c637fe77c893afd2a663fe21aa9080068e2052a"
   integrity sha512-ZuF55hVUQaaczgOIwqWzkEcEidmlD/xl44x1UZnhOXcYuFN2S6+rcxpG+C1N3So0wvNI3DmJICUFfu2SxhBmvg==
 
-resolve@1.22.1, resolve@^1.1.6, resolve@^1.1.7, resolve@^1.10.0, resolve@^1.14.2, resolve@^1.17.0, resolve@^1.19.0, resolve@^1.21.0, resolve@^1.3.2, resolve@^1.4.0:
+resolve@1.22.1, resolve@^1.1.6, resolve@^1.1.7, resolve@^1.10.0, resolve@^1.14.2, resolve@^1.19.0, resolve@^1.21.0, resolve@^1.3.2, resolve@^1.4.0:
   version "1.22.1"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.22.1.tgz#27cb2ebb53f91abb49470a928bba7558066ac177"
   integrity sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==
