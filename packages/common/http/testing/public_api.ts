@@ -8,4 +8,5 @@
 
 export {HttpTestingController, RequestMatch} from './src/api';
 export {HttpClientTestingModule} from './src/module';
+export {provideHttpClientTesting} from './src/provider';
 export {TestRequest} from './src/request';

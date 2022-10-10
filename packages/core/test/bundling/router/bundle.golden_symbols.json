@@ -483,9 +483,6 @@
     "name": "RouterLinkActive"
   },
   {
-    "name": "RouterLinkWithHref"
-  },
-  {
     "name": "RouterOutlet"
   },
   {
@@ -888,6 +885,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "defaultErrorFactory"
   },
   {
@@ -982,9 +982,6 @@
   },
   {
     "name": "extractDirectiveDef"
-  },
-  {
-    "name": "fillProperties"
   },
   {
     "name": "filter"
@@ -1260,15 +1257,6 @@
     "name": "incrementInitPhaseFlags"
   },
   {
-    "name": "inheritContentQueries"
-  },
-  {
-    "name": "inheritHostBindings"
-  },
-  {
-    "name": "inheritViewQuery"
-  },
-  {
     "name": "inheritedParamsDataResolve"
   },
   {
@@ -1356,6 +1344,9 @@
     "name": "isEmptyError"
   },
   {
+    "name": "isEnvironmentProviders"
+  },
+  {
     "name": "isFunction"
   },
   {
@@ -1363,9 +1354,6 @@
   },
   {
     "name": "isImmediateMatch"
-  },
-  {
-    "name": "isImportedNgModuleProviders"
   },
   {
     "name": "isInlineTemplate"
@@ -1483,9 +1471,6 @@
   },
   {
     "name": "maybeUnwrapDefaultExport"
-  },
-  {
-    "name": "maybeUnwrapEmpty"
   },
   {
     "name": "maybeUnwrapFn"
@@ -1857,9 +1842,6 @@
     "name": "ɵEmptyOutletComponent"
   },
   {
-    "name": "ɵɵInheritDefinitionFeature"
-  },
-  {
     "name": "ɵɵNgOnChangesFeature"
   },
   {
@@ -1867,9 +1849,6 @@
   },
   {
     "name": "ɵɵattribute"
-  },
-  {
-    "name": "ɵɵcontentQuery"
   },
   {
     "name": "ɵɵdefineComponent"
@@ -1897,9 +1876,6 @@
   },
   {
     "name": "ɵɵlistener"
-  },
-  {
-    "name": "ɵɵloadQuery"
   },
   {
     "name": "ɵɵqueryRefresh"

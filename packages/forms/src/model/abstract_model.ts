@@ -1109,6 +1109,11 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * Calling `setErrors` also updates the validity of the parent control.
    *
+   * @param opts Configuration options that determine how the control propagates
+   * changes and emits events after the control errors are set.
+   * * `emitEvent`: When true or not supplied (the default), the `statusChanges`
+   * observable emits an event after the errors are set.
+   *
    * @usageNotes
    *
    * ### Manually set the errors for a control

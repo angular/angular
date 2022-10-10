@@ -5,7 +5,7 @@
 <header>Getting Started</header>
 
 In this tutorial, you build your own Angular application from the start.
-This is a good way to experience a typical development process as you learn Angular application-design concepts, tools, and terminology. 
+This is a good way to experience a typical development process as you learn Angular application-design concepts, tools, and terminology.
 
 If you're new to Angular, try the [**Try it now**](start) quick-start application first.
 **Try it now** is based on a ready-made  partially completed project.
@@ -29,7 +29,6 @@ The finished application:
 * Displays the heroes in a list
 * Edits a selected hero's details
 * Navigates between different views of heroic data
-
 
 This tutorial helps you gain confidence that Angular can do whatever you need it to do by showing you how to:
 

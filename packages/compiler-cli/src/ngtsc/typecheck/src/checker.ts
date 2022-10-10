@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, CssSelector, DomElementSchemaRegistry, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
+import {AST, CssSelector, DomElementSchemaRegistry, ExternalExpr, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
-import {Reference, ReferenceEmitter} from '../../imports';
+import {Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
-import {DirectiveMeta, MetadataReader, MetadataReaderWithIndex, MetaKind} from '../../metadata';
+import {DirectiveMeta, MetadataReader, MetadataReaderWithIndex, MetaKind, NgModuleMeta} from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
 import {ProgramDriver, UpdateMode} from '../../program_driver';
 import {ClassDeclaration, DeclarationNode, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PotentialDirective, PotentialPipe, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
+import {ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PotentialDirective, PotentialImport, PotentialImportKind, PotentialPipe, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
@@ -671,6 +671,39 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     return scope.ngModule;
+  }
+
+  getPotentialImportsFor(toImport: PotentialDirective, inContext: ts.ClassDeclaration):
+      ReadonlyArray<PotentialImport> {
+    // Look up the original reference associated with the trait's ngModule, so we don't lose the
+    // Reference context (such as identifiers). If the trait is standalone, this will be
+    // `undefined`.
+    let ngModuleRef: Reference<ClassDeclaration<DeclarationNode>>|undefined;
+    if (toImport.ngModule !== null) {
+      ngModuleRef = this.metaReader.getNgModuleMetadata(new Reference(toImport.ngModule))?.ref;
+    }
+
+    // Import the ngModule if one exists. Otherwise, import the standalone trait directly.
+    const importTarget = ngModuleRef ?? toImport.ref;
+
+    // Using the compiler's ReferenceEmitter, try to emit a reference to the trait.
+    // TODO(dylhunn): In the future, we can use a more sophisticated strategy for generating and
+    // ranking references, such as keeping a record of import specifiers used in existing code.
+    const emittedRef = this.refEmitter.emit(importTarget, inContext.getSourceFile());
+    if (emittedRef.kind === ReferenceEmitKind.Failed) return [];
+
+    // The resulting import expression should have a module name and an identifier name.
+    const emittedExpression: ExternalExpr = emittedRef.expression as ExternalExpr;
+    if (emittedExpression.value.moduleName === null || emittedExpression.value.name === null)
+      return [];
+
+    // Extract and return the TS module and identifier names.
+    const preferredImport: PotentialImport = {
+      kind: ngModuleRef ? PotentialImportKind.NgModule : PotentialImportKind.Standalone,
+      moduleSpecifier: emittedExpression.value.moduleName,
+      symbolName: emittedExpression.value.name,
+    };
+    return [preferredImport];
   }
 
   private getScopeData(component: ts.ClassDeclaration): ScopeData|null {

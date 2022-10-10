@@ -603,6 +603,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "defaultIterableDiffersFactory"
   },
   {
@@ -927,10 +930,10 @@
     "name": "isDirectiveHost"
   },
   {
-    "name": "isFunction"
+    "name": "isEnvironmentProviders"
   },
   {
-    "name": "isImportedNgModuleProviders"
+    "name": "isFunction"
   },
   {
     "name": "isInlineTemplate"

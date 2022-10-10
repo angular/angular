@@ -84,6 +84,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "forEachSingleProvider"
   },
   {
@@ -123,7 +126,7 @@
     "name": "internalImportProvidersFrom"
   },
   {
-    "name": "isImportedNgModuleProviders"
+    "name": "isEnvironmentProviders"
   },
   {
     "name": "isTypeProvider"

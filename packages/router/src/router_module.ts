@@ -10,7 +10,7 @@ import {HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, 
 import {APP_BOOTSTRAP_LISTENER, ComponentRef, inject, Inject, InjectionToken, ModuleWithProviders, NgModule, NgProbeToken, Optional, Provider, SkipSelf, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
-import {RouterLink, RouterLinkWithHref} from './directives/router_link';
+import {RouterLink} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
@@ -29,8 +29,7 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 /**
  * The directives defined in the `RouterModule`.
  */
-const ROUTER_DIRECTIVES =
-    [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive, EmptyOutletComponent];
+const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkActive, EmptyOutletComponent];
 
 /**
  * @docsNotRequired

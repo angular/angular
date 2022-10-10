@@ -7,10 +7,11 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {EnvironmentInjector, Inject, inject, Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
+import {HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response';
 
@@ -49,6 +50,21 @@ export const JSONP_ERR_HEADERS_NOT_SUPPORTED = 'JSONP requests do not support he
  */
 export abstract class JsonpCallbackContext {
   [key: string]: (data: any) => void;
+}
+
+/**
+ * Factory function that determines where to store JSONP callbacks.
+ *
+ * Ordinarily JSONP callbacks are stored on the `window` object, but this may not exist
+ * in test environments. In that case, callbacks are stored on an anonymous object instead.
+ *
+ *
+ */
+export function jsonpCallbackContext(): Object {
+  if (typeof window === 'object') {
+    return window;
+  }
+  return {};
 }
 
 /**
@@ -230,6 +246,19 @@ export class JsonpClientBackend implements HttpBackend {
 }
 
 /**
+ * Identifies requests with the method JSONP and shifts them to the `JsonpClientBackend`.
+ */
+export function jsonpInterceptorFn(
+    req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  if (req.method === 'JSONP') {
+    return inject(JsonpClientBackend).handle(req as HttpRequest<never>);
+  }
+
+  // Fall through for normal HTTP requests.
+  return next(req);
+}
+
+/**
  * Identifies requests with the method JSONP and
  * shifts them to the `JsonpClientBackend`.
  *
@@ -239,20 +268,18 @@ export class JsonpClientBackend implements HttpBackend {
  */
 @Injectable()
 export class JsonpInterceptor {
-  constructor(private jsonp: JsonpClientBackend) {}
+  constructor(private injector: EnvironmentInjector) {}
 
   /**
    * Identifies and handles a given JSONP request.
-   * @param req The outgoing request object to handle.
+   * @param initialRequest The outgoing request object to handle.
    * @param next The next interceptor in the chain, or the backend
    * if no interceptors remain in the chain.
    * @returns An observable of the event stream.
    */
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (req.method === 'JSONP') {
-      return this.jsonp.handle(req as HttpRequest<never>);
-    }
-    // Fall through for normal HTTP requests.
-    return next.handle(req);
+  intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return this.injector.runInContext(
+        () => jsonpInterceptorFn(
+            initialRequest, downstreamRequest => next.handle(downstreamRequest)));
   }
 }

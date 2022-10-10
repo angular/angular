@@ -76,11 +76,14 @@ export class CurrencyPipe implements PipeTransform {
 }
 
 // @public
+export const DATE_PIPE_DEFAULT_OPTIONS: InjectionToken<DatePipeConfig>;
+
+// @public @deprecated
 export const DATE_PIPE_DEFAULT_TIMEZONE: InjectionToken<string>;
 
 // @public
 export class DatePipe implements PipeTransform {
-    constructor(locale: string, defaultTimezone?: string | null | undefined);
+    constructor(locale: string, defaultTimezone?: string | null | undefined, defaultOptions?: DatePipeConfig | null | undefined);
     // (undocumented)
     transform(value: Date | string | number, format?: string, timezone?: string, locale?: string): string | null;
     // (undocumented)
@@ -88,9 +91,17 @@ export class DatePipe implements PipeTransform {
     // (undocumented)
     transform(value: Date | string | number | null | undefined, format?: string, timezone?: string, locale?: string): string | null;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<DatePipe, [null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<DatePipe, [null, { optional: true; }, { optional: true; }]>;
     // (undocumented)
     static ɵpipe: i0.ɵɵPipeDeclaration<DatePipe, "date", true>;
+}
+
+// @public
+export interface DatePipeConfig {
+    // (undocumented)
+    dateFormat: string;
+    // (undocumented)
+    timezone: string;
 }
 
 // @public
@@ -535,6 +546,9 @@ export abstract class NgLocalization {
 
 // @public
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
+    set disableOptimizedSrcset(value: string | boolean | undefined);
+    // (undocumented)
+    get disableOptimizedSrcset(): boolean;
     set height(value: string | number | undefined);
     // (undocumented)
     get height(): number | undefined;
@@ -552,11 +566,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     get priority(): boolean;
     // @deprecated
     set rawSrc(value: string);
+    sizes?: string;
     set width(value: string | number | undefined);
     // (undocumented)
     get width(): number | undefined;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc],img[rawSrc]", never, { "rawSrc": "rawSrc"; "ngSrc": "ngSrc"; "ngSrcset": "ngSrcset"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc],img[rawSrc]", never, { "rawSrc": "rawSrc"; "ngSrc": "ngSrc"; "ngSrcset": "ngSrcset"; "sizes": "sizes"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "disableOptimizedSrcset": "disableOptimizedSrcset"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
 }

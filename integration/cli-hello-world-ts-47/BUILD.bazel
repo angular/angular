@@ -1,8 +1,0 @@
-load("//integration:index.bzl", "ng_integration_test")
-
-ng_integration_test(
-    name = "test",
-    # Pinned since we're testing TS 4.7 support specifically.
-    pinned_npm_packages = ["typescript"],
-    setup_chromium = True,
-)

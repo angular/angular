@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@angular/common';
-import {SpyLocation} from '@angular/common/testing';
+import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injectable, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ChildrenOutletContexts, Resolve, Router, RouterOutlet} from '@angular/router';
@@ -15,7 +15,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 import {delay, mapTo} from 'rxjs/operators';
 
-import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
+import {provideRouter} from '../src/provide_router';
 
 describe('Integration', () => {
   describe('routerLinkActive', () => {
@@ -304,7 +304,8 @@ describe('Integration', () => {
         imports: [RouterOutlet],
         providers: [
           DelayedResolve,
-          provideRouterForTesting(
+          provideLocationMocks(),
+          provideRouter(
               [
                 {path: '', component: SimpleCmp},
                 {path: 'one', component: OneCmp, resolve: {x: DelayedResolve}}

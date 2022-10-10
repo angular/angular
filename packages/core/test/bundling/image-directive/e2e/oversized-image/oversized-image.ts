@@ -36,7 +36,7 @@ export class OversizedImageComponentPassing {
   template: `
       <!-- Image is rendered too small  -->
       <div style="width: 300px; height: 300px">
-         <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority>
+         <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority disableOptimizedSrcset>
        </div>
       `,
 })

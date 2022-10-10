@@ -530,4 +530,10 @@ export type UntypedFormArray = FormArray<any>;
 
 export const UntypedFormArray: UntypedFormArrayCtor = FormArray;
 
+/**
+ * @description
+ * Asserts that the given control is an instance of `FormArray`
+ *
+ * @publicApi
+ */
 export const isFormArray = (control: unknown): control is FormArray => control instanceof FormArray;

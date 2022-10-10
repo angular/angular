@@ -8,7 +8,7 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
-import {ActivatedRoute, provideRouter, Router, RouterLinkActive, RouterLinkWithHref, RouterOutlet, Routes} from '@angular/router';
+import {ActivatedRoute, provideRouter, Router, RouterLink, RouterLinkActive, RouterOutlet, Routes} from '@angular/router';
 
 @Component({
   selector: 'app-list',
@@ -20,7 +20,7 @@ import {ActivatedRoute, provideRouter, Router, RouterLinkActive, RouterLinkWithH
   </ul>
   `,
   standalone: true,
-  imports: [RouterLinkWithHref, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive],
 })
 class ListComponent {
 }

@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, inject, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean, ɵɵsanitizeUrlOrResourceUrl} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean, ɵɵsanitizeUrlOrResourceUrl} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
 import {Event, NavigationEnd} from '../events';
@@ -116,7 +116,7 @@ import {UrlTree} from '../url_tree';
  * @publicApi
  */
 @Directive({
-  selector: ':not(a):not(area)[routerLink]',
+  selector: ':not(a):not(area)[routerLink],a[routerLink],area[routerLink]',
   standalone: true,
 })
 export class RouterLink implements OnChanges, OnDestroy {
@@ -375,24 +375,10 @@ export class RouterLink implements OnChanges, OnDestroy {
 
 /**
  * @description
+ * An alias for the `RouterLink` directive.
+ * Deprecated since v15, use `RouterLink` directive instead.
  *
- * Lets you link to specific routes in your app.
- *
- * See `RouterLink` for more information.
- *
- * @ngModule RouterModule
- *
+ * @deprecated use `RouterLink` directive instead.
  * @publicApi
  */
-@Directive({
-  selector: 'a[routerLink],area[routerLink]',
-  standalone: true,
-})
-export class RouterLinkWithHref extends RouterLink {
-  // For backwards compatibility, constructor arguments retained an old shape.
-  constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy) {
-    super(
-        router, route, undefined /* tabIndexAttribute */, inject(Renderer2), inject(ElementRef),
-        locationStrategy);
-  }
-}
+export {RouterLink as RouterLinkWithHref};

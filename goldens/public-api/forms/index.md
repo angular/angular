@@ -560,6 +560,18 @@ export class FormsModule {
 }
 
 // @public
+export const isFormArray: (control: unknown) => control is FormArray<any>;
+
+// @public
+export const isFormControl: (control: unknown) => control is FormControl<any>;
+
+// @public
+export const isFormGroup: (control: unknown) => control is FormGroup<any>;
+
+// @public
+export const isFormRecord: (control: unknown) => control is FormRecord<AbstractControl<any, any>>;
+
+// @public
 export class MaxLengthValidator extends AbstractValidatorDirective {
     maxlength: string | number | null;
     // (undocumented)

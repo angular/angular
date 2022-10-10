@@ -360,6 +360,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "detachMovedView"
   },
   {
@@ -558,10 +561,10 @@
     "name": "isComponentDef"
   },
   {
-    "name": "isFunction"
+    "name": "isEnvironmentProviders"
   },
   {
-    "name": "isImportedNgModuleProviders"
+    "name": "isFunction"
   },
   {
     "name": "isInlineTemplate"

@@ -693,6 +693,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "deepForEachProvider"
+  },
+  {
     "name": "defaultIterableDiffersFactory"
   },
   {
@@ -1056,6 +1059,9 @@
     "name": "isDirectiveHost"
   },
   {
+    "name": "isEnvironmentProviders"
+  },
+  {
     "name": "isFormControlState"
   },
   {
@@ -1063,9 +1069,6 @@
   },
   {
     "name": "isFunction"
-  },
-  {
-    "name": "isImportedNgModuleProviders"
   },
   {
     "name": "isInlineTemplate"

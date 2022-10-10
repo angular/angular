@@ -89,7 +89,40 @@ You can typically fix this by adding `height: auto` or `width: auto` to your ima
 
 ### Handling `srcset` attributes
 
-If your `<img>` tag defines a `srcset` attribute, replace it with `ngSrcset`.
+Defining a [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset) ensures that the browser requests an image at the right size for your user's viewport, so it doesn't waste time downloading an image that's too large. 'NgOptimizedImage' generates an appropriate `srcset` for the image, based on the presence and value of the [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes) on the image tag.
+
+#### Fixed-size images
+
+If your image should be "fixed" in size  (i.e. the same size across devices, except for [pixel density](https://web.dev/codelab-density-descriptors/)), there is no need to set a `sizes` attribute. A `srcset` can be generated automatically from the image's width and height attributes with no further input required. 
+
+Example srcset generated: `<img ... srcset="image-400w.jpg 1x, image-800w.jpg 2x">`
+
+#### Responsive images
+
+If your image should be responsive (i.e. grow and shrink according to viewport size), then you will need to define a [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes) to generate the `srcset`.
+
+If you haven't used `sizes` before, a good place to start is to set it based on viewport width. For example, if your CSS causes the image to fill 100% of viewport width, set `sizes` to `100vw` and the browser will select the image in the `srcset` that is closest to the viewport width (after accounting for pixel density). If your image is only likely to take up half the screen (ex: in a sidebar), set `sizes` to `50vw` to ensure the browser selects a smaller image. And so on.
+
+If you find that the above does not cover your desired image behavior, see the documentation on [advanced sizes values](#advanced-sizes-values).
+
+By default, the responsive breakpoints are:
+
+`[16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840]`
+
+If you would like to customize these breakpoints, you can do so using the `IMAGE_CONFIG` provider:
+
+<code-example format="typescript" language="typescript">
+providers: [
+  {
+    provide: IMAGE_CONFIG,
+    useValue: {
+      breakpoints: [16, 48, 96, 128, 384, 640, 750, 828, 1080, 1200, 1920]
+    }
+  },
+],
+</code-example>
+
+If you would like to manually define a `srcset` attribute, you can provide your own directly, or use the `ngSrcset` attribute:
 
 <code-example format="html" language="html">
 
@@ -97,13 +130,21 @@ If your `<img>` tag defines a `srcset` attribute, replace it with `ngSrcset`.
 
 </code-example>
 
-If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets the [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset) using the configured image loader. Do not include image file names in `ngSrcset` - the directive infers this information from `ngSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`) are supported.
-
-You can also use `ngSrcset` with the standard image [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
+If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets the `srcset` using the configured image loader. Do not include image file names in `ngSrcset` - the directive infers this information from `ngSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`) are supported.
 
 <code-example format="html" language="html">
 
 &lt;img ngSrc="hero.jpg" ngSrcset="100w, 200w, 300w" sizes="50vw"&gt;
+
+</code-example>
+
+### Disabling automatic srcset generation
+
+To disable srcset generation for a single image, you can add the `disableOptimizedSrcset` attribute on the image:
+
+<code-example format="html" language="html">
+
+&lt;img ngSrc="about.jpg" disableOptimizedSrcset&gt;
 
 </code-example>
 
@@ -116,6 +157,20 @@ By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not m
 &lt;img ngSrc="cat.jpg" width="400" height="200" loading="eager"&gt;
 
 </code-example>
+
+### Advanced 'sizes' values
+
+You may want to have images displayed at varying widths on differently-sized screens. A common example of this pattern is a grid- or column-based layout that renders a single column on mobile devices, and two columns on larger devices. You can capture this behavior in the `sizes` attribute, using a "media query" syntax, such as the following:
+
+<code-example format="html" language="html">
+
+&lt;img ngSrc="cat.jpg" width="400" height="200" sizes="(max-width: 768px) 100vw, 50vw"&gt;
+
+</code-example>
+
+The `sizes` attribute in the above example says "I expect this image to be 100 percent of the screen width on devices under 768px wide. Otherwise, I expect it to be 50 percent of the screen width.
+
+For additional information about the `sizes` attribute, see [web.dev](https://web.dev/learn/design/responsive-images/#sizes) or [mdn](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
 
 <!-- links -->
 
