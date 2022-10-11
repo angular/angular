@@ -60,18 +60,18 @@ export class ImageDistortionPassingComponent {
      <!-- These images should throw -->
      <!-- Supplied aspect ratio differs from intrinsic aspect ratio by > .1 -->
      <!-- Aspect-ratio: 0.86666666666 -->
-     <img ngSrc="/e2e/b.png" width="26" height="30">
+     <img ngSrc="/e2e/b.png" width="26" height="30" disableOptimizedSrcset>
      <!-- Aspect-ratio: 0.1 -->
-     <img ngSrc="/e2e/b.png" width="24" height="240">
+     <img ngSrc="/e2e/b.png" width="24" height="240" disableOptimizedSrcset>
      <!-- Supplied aspect ratio is incorrect & image has 0x0 rendered size -->
-     <img ngSrc="/e2e/a.png" width="222" height="25" style="display: none">
+     <img ngSrc="/e2e/a.png" width="222" height="25" style="display: none" disableOptimizedSrcset>
      <br>
      <!-- Image styling is causing distortion -->
      <div style="width: 300px; height: 300px">
-       <img ngSrc="/e2e/b.png" width="250" height="250" style="width: 10%">
-       <img ngSrc="/e2e/b.png" width="250" height="250" style="max-height: 10%">
+       <img ngSrc="/e2e/b.png" width="250" height="250" style="width: 10%" disableOptimizedSrcset>
+       <img ngSrc="/e2e/b.png" width="250" height="250" style="max-height: 10%" disableOptimizedSrcset>
        <!-- Images dimensions are incorrect AND image styling is incorrect -->
-       <img ngSrc="/e2e/b.png" width="150" height="250" style="max-height: 10%">
+       <img ngSrc="/e2e/b.png" width="150" height="250" style="max-height: 10%" disableOptimizedSrcset>
      </div>
      `,
 })

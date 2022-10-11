@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ImportedNgModuleProviders} from '../di/interface/provider';
+import {isEnvironmentProviders} from '../di/interface/provider';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
@@ -33,10 +33,16 @@ export function throwInvalidProviderError(
     throw new Error(`Invalid provider for the NgModule '${
         stringify(ngModuleType)}' - only instances of Provider and Type are allowed, got: [${
         providerDetail.join(', ')}]`);
-  } else if ((provider as ImportedNgModuleProviders).ɵproviders) {
-    throw new RuntimeError(
-        RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
-        `Invalid providers from 'importProvidersFrom' present in a non-environment injector. 'importProvidersFrom' can't be used for component providers.`);
+  } else if (isEnvironmentProviders(provider)) {
+    if (provider.ɵfromNgModule) {
+      throw new RuntimeError(
+          RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
+          `Invalid providers from 'importProvidersFrom' present in a non-environment injector. 'importProvidersFrom' can't be used for component providers.`);
+    } else {
+      throw new RuntimeError(
+          RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
+          `Invalid providers present in a non-environment injector. 'EnvironmentProviders' can't be used for component providers.`);
+    }
   } else {
     throw new Error('Invalid provider');
   }

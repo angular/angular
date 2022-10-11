@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, ImportedNgModuleProviders, InjectionToken, NgModuleFactory, Provider, ProviderToken, Type} from '@angular/core';
+import {EnvironmentInjector, EnvironmentProviders, InjectionToken, NgModuleFactory, Provider, ProviderToken, Type} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {DeprecatedLoadChildren} from './deprecated_load_children';
@@ -568,7 +568,7 @@ export interface Route {
    * route also has a `loadChildren` function which returns an `NgModuleRef`, this injector will be
    * used as the parent of the lazy loaded module.
    */
-  providers?: Array<Provider|ImportedNgModuleProviders>;
+  providers?: Array<Provider|EnvironmentProviders>;
 
   /**
    * Injector created from the static route providers

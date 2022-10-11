@@ -21,8 +21,18 @@ import {resolveForwardRef} from './forward_ref';
 import {ENVIRONMENT_INITIALIZER} from './initializer_token';
 import {ɵɵinject as inject} from './injector_compatibility';
 import {getInjectorDef, InjectorType, InjectorTypeWithProviders} from './interface/defs';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, ImportedNgModuleProviders, ModuleWithProviders, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
+import {ClassProvider, ConstructorProvider, EnvironmentProviders, ExistingProvider, FactoryProvider, ImportedNgModuleProviders, InternalEnvironmentProviders, isEnvironmentProviders, ModuleWithProviders, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {INJECTOR_DEF_TYPES} from './internal_tokens';
+
+/**
+ * Wrap an array of `Provider`s into `EnvironmentProviders`, preventing them from being accidentally
+ * referenced in `@Component in a component injector.
+ */
+export function makeEnvironmentProviders(providers: Provider[]): EnvironmentProviders {
+  return {
+    ɵproviders: providers,
+  } as unknown as EnvironmentProviders;
+}
 
 /**
  * A source of providers for the `importProvidersFrom` function.
@@ -74,9 +84,11 @@ export type ImportProvidersSource =
  * @publicApi
  * @developerPreview
  */
-export function importProvidersFrom(...sources: ImportProvidersSource[]):
-    ImportedNgModuleProviders {
-  return {ɵproviders: internalImportProvidersFrom(true, sources)};
+export function importProvidersFrom(...sources: ImportProvidersSource[]): EnvironmentProviders {
+  return {
+    ɵproviders: internalImportProvidersFrom(true, sources),
+    ɵfromNgModule: true,
+  } as InternalEnvironmentProviders;
 }
 
 export function internalImportProvidersFrom(
@@ -118,7 +130,7 @@ function processInjectorTypesWithProviders(
     typesWithProviders: InjectorTypeWithProviders<unknown>[], providersOut: Provider[]): void {
   for (let i = 0; i < typesWithProviders.length; i++) {
     const {ngModule, providers} = typesWithProviders[i];
-    deepForEach(providers!, provider => {
+    deepForEachProvider(providers! as Array<Provider|InternalEnvironmentProviders>, provider => {
       ngDevMode && validateProvider(provider, providers || EMPTY_ARRAY, ngModule);
       providersOut.push(provider);
     });
@@ -251,12 +263,12 @@ export function walkProviderTree(
     }
 
     // Next, include providers listed on the definition itself.
-    const defProviders = injDef.providers;
+    const defProviders = injDef.providers as Array<SingleProvider|InternalEnvironmentProviders>;
     if (defProviders != null && !isDuplicate) {
       const injectorType = container as InjectorType<any>;
-      deepForEach(defProviders, provider => {
-        ngDevMode && validateProvider(provider, defProviders as SingleProvider[], injectorType);
-        providersOut.push(provider);
+      deepForEachProvider(defProviders, provider => {
+        ngDevMode && validateProvider(provider as SingleProvider, defProviders, injectorType);
+        providersOut.push(provider as SingleProvider);
       });
     }
   } else {
@@ -270,7 +282,8 @@ export function walkProviderTree(
 }
 
 function validateProvider(
-    provider: SingleProvider, providers: SingleProvider[], containerType: Type<unknown>): void {
+    provider: SingleProvider, providers: Array<SingleProvider|InternalEnvironmentProviders>,
+    containerType: Type<unknown>): void {
   if (isTypeProvider(provider) || isValueProvider(provider) || isFactoryProvider(provider) ||
       isExistingProvider(provider)) {
     return;
@@ -281,6 +294,21 @@ function validateProvider(
       provider && ((provider as StaticClassProvider | ClassProvider).useClass || provider.provide));
   if (!classRef) {
     throwInvalidProviderError(containerType, providers, provider);
+  }
+}
+
+function deepForEachProvider(
+    providers: Array<Provider|InternalEnvironmentProviders>,
+    fn: (provider: SingleProvider) => void): void {
+  for (let provider of providers) {
+    if (isEnvironmentProviders(provider)) {
+      provider = provider.ɵproviders;
+    }
+    if (Array.isArray(provider)) {
+      deepForEachProvider(provider, fn);
+    } else {
+      fn(provider);
+    }
   }
 }
 

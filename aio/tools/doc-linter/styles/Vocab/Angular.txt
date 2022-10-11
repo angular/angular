@@ -3,6 +3,7 @@ angular's
 animatable
 autoprefixer
 bootstrapper
+cpus
 devtools
 initializer
 initializers
@@ -21,6 +22,8 @@ preloader
 preloading
 preloads
 prepends
+prerender
+prerendering
 profiler
 rollout
 routable

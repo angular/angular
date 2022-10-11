@@ -19,6 +19,11 @@
       "version": "15.0.0-beta",
       "description": "Since Angular v15, the `RouterLink` contains the logic of the `RouterLinkWithHref` directive. This migration replaces all `RouterLinkWithHref` references with `RouterLink`.",
       "factory": "./migrations/router-link-with-href/index"
+    },
+    "migration-v15-relative-link-resolution": {
+      "version": "15.0.0-beta",
+      "description": "In Angular version 15, the deprecated `relativeLinkResolution` config parameter of the Router is removed. This migration removes all `relativeLinkResolution` fields from the Router config objects.",
+      "factory": "./migrations/relative-link-resolution/index"
     }
   }
 }

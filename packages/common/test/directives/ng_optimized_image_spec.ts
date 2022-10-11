@@ -8,16 +8,186 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
-import {Component, Provider, Type} from '@angular/core';
+import {PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
+import {Component, PLATFORM_ID, Provider, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
+import {PRELOADED_IMAGES} from '../..//src/directives/ng_optimized_image/tokens';
 import {createImageLoader, IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
-import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
+import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, IMAGE_CONFIG, ImageConfig, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
+  describe('preload <link> element on a server', () => {
+    it('should create `<link>` element when the image priority attr is true', () => {
+      // Only run this test in a browser since the Node-based DOM mocks don't
+      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+      if (!isBrowser) return;
+
+      const src = 'preload1/img.png';
+
+      setupTestingModule({
+        extraProviders: [
+          {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID}, {
+            provide: IMAGE_LOADER,
+            useValue: (config: ImageLoaderConfig) => config.width ?
+                `https://angular.io/${config.src}?width=${config.width}` :
+                `https://angular.io/${config.src}`
+          }
+        ]
+      });
+
+      const template =
+          `<img ngSrc="${src}" width="150" height="50" priority sizes="10vw" ngSrcset="100w">`;
+      TestBed.overrideComponent(TestComponent, {set: {template: template}});
+
+      const _document = TestBed.inject(DOCUMENT);
+      const _window = _document.defaultView!;
+      const setAttributeSpy =
+          spyOn(_window.HTMLLinkElement.prototype, 'setAttribute').and.callThrough();
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const head = _document.head;
+
+      const rewrittenSrc = `https://angular.io/${src}`;
+
+      const preloadLink = head.querySelector(`link[href="${rewrittenSrc}"]`);
+
+      expect(preloadLink).toBeTruthy();
+
+      const [name, value] = setAttributeSpy.calls.argsFor(0);
+
+      expect(name).toEqual('as');
+      expect(value).toEqual('image');
+
+      expect(preloadLink!.getAttribute('rel')).toEqual('preload');
+      expect(preloadLink!.getAttribute('as')).toEqual('image');
+      expect(preloadLink!.getAttribute('imagesizes')).toEqual('10vw');
+      expect(preloadLink!.getAttribute('imagesrcset')).toEqual(`${rewrittenSrc}?width=100 100w`);
+
+      preloadLink!.remove();
+    });
+
+    it('should not create a preload `<link>` element when src is already preloaded.', () => {
+      // Only run this test in a browser since the Node-based DOM mocks don't
+      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+      if (!isBrowser) return;
+
+      const src = `preload2/img.png`;
+
+      const rewrittenSrc = `https://angular.io/${src}`;
+
+      setupTestingModule({
+        extraProviders: [
+          {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID}, {
+            provide: IMAGE_LOADER,
+            useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`
+          }
+        ]
+      });
+
+      const template = `<img ngSrc="${src}" width="150" height="50" priority><img ngSrc="${
+          src}" width="150" height="50" priority>`;
+      TestBed.overrideComponent(TestComponent, {set: {template: template}});
+
+      const _document = TestBed.inject(DOCUMENT);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const head = _document.head;
+
+      const preloadImages = TestBed.inject(PRELOADED_IMAGES);
+
+      expect(preloadImages.has(rewrittenSrc)).toBeTruthy();
+
+      const preloadLinks = head.querySelectorAll(`link[href="${rewrittenSrc}"]`);
+
+      expect(preloadLinks.length).toEqual(1);
+
+      preloadLinks[0]!.remove();
+    });
+
+    it('should error when the number of preloaded images is larger than the limit', () => {
+      // Only run this test in a browser since the Node-based DOM mocks don't
+      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+      if (!isBrowser) return;
+
+      setupTestingModule({
+        extraProviders: [
+          {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID}, {
+            provide: IMAGE_LOADER,
+            useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`
+          }
+        ]
+      });
+
+      const template = `
+                <img ngSrc="preloaderror2/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror3/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderro4/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror5/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror6/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror7/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror8/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror9/img.png" width="150" height="50" priority>
+                <img ngSrc="preloaderror10/img.png" width="150" height="50" priority>
+                `;
+
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02961: The `NgOptimizedImage` directive has detected that more than 5 images were marked as priority. This might negatively affect an overall performance of the page. To fix this, remove the "priority" attribute from images with less priority.');
+    });
+
+    it('should not hit max preload limit when not on the server', () => {
+      // Only run this test in a browser since the Node-based DOM mocks don't
+      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+      if (!isBrowser) return;
+
+      setupTestingModule({
+        extraProviders: [{
+          provide: IMAGE_LOADER,
+          useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`
+        }]
+      });
+
+      const template = `
+                <img ngSrc="preloadbrowser1/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser2/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser3/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser4/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser5/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser6/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser7/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser8/img.png" width="150" height="50" priority>
+                <img ngSrc="preloadbrowser9/img.png" width="150" height="50" priority>
+                `;
+
+      TestBed.overrideComponent(TestComponent, {set: {template: template}});
+
+      const _document = TestBed.inject(DOCUMENT);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const head = _document.head;
+
+      const preloadImages = TestBed.inject(PRELOADED_IMAGES);
+
+      const preloadLinks = head.querySelectorAll(`link[preload]`);
+
+      expect(preloadImages.size).toEqual(0);
+      expect(preloadLinks.length).toEqual(0);
+    });
+  });
+
   it('should set `loading` and `fetchpriority` attributes before `src`', () => {
     // Only run this test in a browser since the Node-based DOM mocks don't
     // allow to override `HTMLImageElement.prototype.setAttribute` easily.
@@ -99,11 +269,11 @@ describe('Image directive', () => {
               'the `src` attribute.');
     });
 
-    it('should throw if both `ngSrc` and `srcset` is present', () => {
+    it('should throw if both `ngSrcet` and `srcset` is present', () => {
       setupTestingModule();
 
       const template =
-          '<img ngSrc="img-100.png" srcset="img-100.png 100w, img-200.png 200w" width="100" height="50">';
+          '<img ngSrc="img-100.png" ngSrcset="100w, 200w" srcset="img-100.png 100w, img-200.png 200w" width="100" height="50">';
       expect(() => {
         const fixture = createTestComponent(template);
         fixture.detectChanges();
@@ -741,9 +911,7 @@ describe('Image directive', () => {
 
     describe('PRECONNECT_CHECK_BLOCKLIST token', () => {
       it(`should allow passing host names`, withHead('', () => {
-           const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.io'},
-           ];
+           const providers = [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.io'}];
            setupTestingModule({imageLoader, extraProviders: providers});
 
            const consoleWarnSpy = spyOn(console, 'warn');
@@ -756,9 +924,8 @@ describe('Image directive', () => {
          }));
 
       it(`should allow passing origins`, withHead('', () => {
-           const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io'},
-           ];
+           const providers =
+               [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io'}];
            setupTestingModule({imageLoader, extraProviders: providers});
 
            const consoleWarnSpy = spyOn(console, 'warn');
@@ -771,9 +938,8 @@ describe('Image directive', () => {
          }));
 
       it(`should allow passing arrays of host names`, withHead('', () => {
-           const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.io']},
-           ];
+           const providers =
+               [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.io']}];
            setupTestingModule({imageLoader, extraProviders: providers});
 
            const consoleWarnSpy = spyOn(console, 'warn');
@@ -786,9 +952,8 @@ describe('Image directive', () => {
          }));
 
       it(`should allow passing nested arrays of host names`, withHead('', () => {
-           const providers = [
-             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.io']]},
-           ];
+           const providers =
+               [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.io']]}];
            setupTestingModule({imageLoader, extraProviders: providers});
 
            const consoleWarnSpy = spyOn(console, 'warn');
@@ -899,21 +1064,6 @@ describe('Image directive', () => {
           const width = config.width ? `?w=${config.width}` : ``;
           return `${IMG_BASE_URL}/${config.src}${width}`;
         };
-      });
-
-      it('should NOT set `srcset` if no `ngSrcset` value', () => {
-        setupTestingModule({imageLoader});
-
-        const template = `
-           <img ngSrc="img-100.png" width="100" height="50">
-         `;
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-
-        const nativeElement = fixture.nativeElement as HTMLElement;
-        const img = nativeElement.querySelector('img')!;
-        expect(img.src).toBe(`${IMG_BASE_URL}/img-100.png`);
-        expect(img.srcset).toBe('');
       });
 
       it('should set the `srcset` using the `ngSrcset` value with width descriptors', () => {
@@ -1033,6 +1183,180 @@ describe('Image directive', () => {
                 `${IMG_BASE_URL}/img.png?w=300 3x`);
       });
     });
+
+    describe('sizes attribute', () => {
+      it('should pass through the sizes attribute', () => {
+        setupTestingModule();
+
+        const template = '<img ngSrc="path/img.png" width="150" height="50" ' +
+            'sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw">';
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+
+        expect(img.getAttribute('sizes'))
+            .toBe('(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw');
+      });
+
+      it('should throw if a complex `sizes` is used', () => {
+        setupTestingModule();
+
+        const template =
+            '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw">';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
+                'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
+                '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own \`ngSrcset\` value directly.');
+      });
+      it('should throw if a complex `sizes` is used with srcset', () => {
+        setupTestingModule();
+
+        const template =
+            '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" srcset="www.example.com/img.png?w=500 768w, www.example.com/img.png?w=2000" >';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
+                'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
+                '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own \`ngSrcset\` value directly.');
+      });
+      it('should not throw if a complex `sizes` is used with ngSrcset', () => {
+        setupTestingModule();
+
+        const template =
+            '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" ngSrcset="100w, 200w">';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        }).not.toThrow();
+      });
+    });
+
+    describe('automatic srcset generation', () => {
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const width = config.width ? `?w=${config.width}` : ``;
+        return `${IMG_BASE_URL}/${config.src}${width}`;
+      };
+
+      it('should add a responsive srcset to the img element if sizes attribute exists', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50" sizes="100vw">
+    `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=750 750w, ${
+                IMG_BASE_URL}/img?w=828 828w, ${IMG_BASE_URL}/img?w=1080 1080w, ${
+                IMG_BASE_URL}/img?w=1200 1200w, ${IMG_BASE_URL}/img?w=1920 1920w, ${
+                IMG_BASE_URL}/img?w=2048 2048w, ${IMG_BASE_URL}/img?w=3840 3840w`);
+      });
+
+      it('should use the long responsive srcset if sizes attribute exists and is less than 100vw',
+         () => {
+           setupTestingModule({imageLoader});
+
+           const template = `
+      <img ngSrc="img" width="100" height="50" sizes="2vw">
+    `;
+           const fixture = createTestComponent(template);
+           fixture.detectChanges();
+
+           const nativeElement = fixture.nativeElement as HTMLElement;
+           const img = nativeElement.querySelector('img')!;
+           expect(img.getAttribute('srcset'))
+               .toBe(`${IMG_BASE_URL}/img?w=16 16w, ${IMG_BASE_URL}/img?w=32 32w, ${
+                   IMG_BASE_URL}/img?w=48 48w, ${IMG_BASE_URL}/img?w=64 64w, ${
+                   IMG_BASE_URL}/img?w=96 96w, ${IMG_BASE_URL}/img?w=128 128w, ${
+                   IMG_BASE_URL}/img?w=256 256w, ${IMG_BASE_URL}/img?w=384 384w, ${
+                   IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=750 750w, ${
+                   IMG_BASE_URL}/img?w=828 828w, ${IMG_BASE_URL}/img?w=1080 1080w, ${
+                   IMG_BASE_URL}/img?w=1200 1200w, ${IMG_BASE_URL}/img?w=1920 1920w, ${
+                   IMG_BASE_URL}/img?w=2048 2048w, ${IMG_BASE_URL}/img?w=3840 3840w`);
+         });
+
+      it('should add a fixed srcset to the img element if sizes attribute does not exist', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50">
+    `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=100 1x, ${IMG_BASE_URL}/img?w=200 2x`);
+      });
+
+      it('should use a custom breakpoint set if one is provided', () => {
+        const imageConfig = {
+          breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 1280, 3840],
+        };
+        setupTestingModule({imageLoader, imageConfig});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50" sizes="2vw">
+    `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=16 16w, ${IMG_BASE_URL}/img?w=32 32w, ${
+                IMG_BASE_URL}/img?w=48 48w, ${IMG_BASE_URL}/img?w=64 64w, ${
+                IMG_BASE_URL}/img?w=96 96w, ${IMG_BASE_URL}/img?w=128 128w, ${
+                IMG_BASE_URL}/img?w=256 256w, ${IMG_BASE_URL}/img?w=384 384w, ${
+                IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=1280 1280w, ${
+                IMG_BASE_URL}/img?w=3840 3840w`);
+      });
+
+      it('should sort custom breakpoint set', () => {
+        const imageConfig = {
+          breakpoints: [48, 16, 3840, 640, 1280],
+        };
+        setupTestingModule({imageLoader, imageConfig});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50" sizes="2vw">
+    `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=16 16w, ${IMG_BASE_URL}/img?w=48 48w, ${
+                IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=1280 1280w, ${
+                IMG_BASE_URL}/img?w=3840 3840w`);
+      });
+
+      it('should disable automatic srcset generation if "disableOptimizedSrcset" attribute is set',
+         () => {
+           setupTestingModule({imageLoader});
+
+           const template = `
+      <img ngSrc="img" width="100" height="50" sizes="50vw" disableOptimizedSrcset>
+    `;
+           const fixture = createTestComponent(template);
+           fixture.detectChanges();
+           const nativeElement = fixture.nativeElement as HTMLElement;
+           const img = nativeElement.querySelector('img')!;
+           expect(img.getAttribute('srcset')).toBeNull();
+         });
+    });
   });
 });
 
@@ -1048,10 +1372,7 @@ const IMG_BASE_URL = {
 const ANGULAR_LOGO_BASE64 =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==';
 
-@Component({
-  selector: 'test-cmp',
-  template: '',
-})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   width = 100;
   height = 50;
@@ -1059,8 +1380,12 @@ class TestComponent {
   priority = false;
 }
 
-function setupTestingModule(
-    config?: {imageLoader?: ImageLoader, extraProviders?: Provider[], component?: Type<unknown>}) {
+function setupTestingModule(config?: {
+  imageConfig?: ImageConfig,
+  imageLoader?: ImageLoader,
+  extraProviders?: Provider[],
+  component?: Type<unknown>
+}) {
   const defaultLoader = (config: ImageLoaderConfig) => {
     const isAbsolute = /^https?:\/\//.test(config.src);
     return isAbsolute ? config.src : window.location.origin + '/' + config.src;
@@ -1068,17 +1393,19 @@ function setupTestingModule(
   const loader = config?.imageLoader || defaultLoader;
   const extraProviders = config?.extraProviders || [];
   const providers: Provider[] = [
-    {provide: DOCUMENT, useValue: window.document},
-    {provide: IMAGE_LOADER, useValue: loader},
-    ...extraProviders,
+    {provide: DOCUMENT, useValue: window.document}, {provide: IMAGE_LOADER, useValue: loader},
+    ...extraProviders
   ];
+  if (config?.imageConfig) {
+    providers.push({provide: IMAGE_CONFIG, useValue: config.imageConfig});
+  }
 
   TestBed.configureTestingModule({
     declarations: [config?.component ?? TestComponent],
     // Note: the `NgOptimizedImage` directive is experimental and is not a part of the
     // `CommonModule` yet, so it's imported separately.
     imports: [CommonModule, NgOptimizedImage],
-    providers,
+    providers
   });
 }
 

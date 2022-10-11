@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ModuleWithProviders, Provider} from '../di/interface/provider';
+import {EnvironmentProviders, ModuleWithProviders, Provider} from '../di/interface/provider';
 import {Type} from '../interface/type';
 import {SchemaMetadata} from '../metadata/schema';
 import {compileNgModule} from '../render3/jit/module';
@@ -79,7 +79,7 @@ export interface NgModule {
    * }
    * ```
    */
-  providers?: Provider[];
+  providers?: Array<Provider|EnvironmentProviders>;
 
   /**
    * The set of components, directives, and pipes ([declarables](guide/glossary#declarable))
