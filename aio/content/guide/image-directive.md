@@ -81,6 +81,18 @@ providers: [
 
 </code-example>
 
+### Using `fill` mode
+
+In cases where you want to have an image fill a containing element, you can use the `fill` attribute. This is often useful when you want to achieve a "background image" behavior, or when you don't know the exact width and height of your image.
+
+When you add the `fill` attribute to your image, you do not need and should not include a `width` and `height`, as in this example:
+
+<code-example format="typescript" language="typescript">
+
+&lt;img ngSrc="cat.jpg" fill&gt;
+
+</code-example> 
+
 ### Adjusting image styling
 
 Depending on the image's styling, adding `width` and `height` attributes may cause the image to render differently. `NgOptimizedImage` warns you if your image styling renders the image at a distorted aspect ratio.
