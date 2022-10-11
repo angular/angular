@@ -794,6 +794,123 @@ describe('Image directive', () => {
     });
   });
 
+  describe('fill mode', () => {
+    it('should allow unsized images in fill mode', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+    it('should throw if width is provided for fill mode image', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" width="500" fill>';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02952: The NgOptimizedImage directive (activated on an <img> element with the ' +
+              '`ngSrc="path/img.png"`) has detected that the attributes `height` and/or `width` ' +
+              'are present along with the `fill` attribute. Because `fill` mode causes an image ' +
+              'to fill its containing element, the size attributes have no effect and should be removed.');
+    });
+    it('should throw if height is provided for fill mode image', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" height="500" fill>';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02952: The NgOptimizedImage directive (activated on an <img> element with the ' +
+              '`ngSrc="path/img.png"`) has detected that the attributes `height` and/or `width` ' +
+              'are present along with the `fill` attribute. Because `fill` mode causes an image ' +
+              'to fill its containing element, the size attributes have no effect and should be removed.');
+    });
+    it('should apply appropriate styles in fill mode', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('style')?.replace(/\s/g, ''))
+          .toBe('position:absolute;width:100%;height:100%;inset:0px;');
+    });
+    it('should augment existing styles in fill mode', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" style="border-radius: 5px; padding: 10px" fill>';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('style')?.replace(/\s/g, ''))
+          .toBe(
+              'border-radius:5px;padding:10px;position:absolute;width:100%;height:100%;inset:0px;');
+    });
+    it('should not add fill styles if not in fill mode', () => {
+      setupTestingModule();
+
+      const template =
+          '<img ngSrc="path/img.png" width="400" height="300" style="position: relative; border-radius: 5px">';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('style')?.replace(/\s/g, ''))
+          .toBe('position:relative;border-radius:5px;');
+    });
+    it('should add default sizes value in fill mode', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('sizes')).toBe('100vw');
+    });
+    it('should not overwrite sizes value in fill mode', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" sizes="50vw" fill>';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('sizes')).toBe('50vw');
+    });
+    it('should cause responsive srcset to be generated in fill mode', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('srcset'))
+          .toBe(
+              `${IMG_BASE_URL}/path/img.png 640w, ${IMG_BASE_URL}/path/img.png 750w, ${
+                  IMG_BASE_URL}/path/img.png 828w, ` +
+              `${IMG_BASE_URL}/path/img.png 1080w, ${IMG_BASE_URL}/path/img.png 1200w, ${
+                  IMG_BASE_URL}/path/img.png 1920w, ` +
+              `${IMG_BASE_URL}/path/img.png 2048w, ${IMG_BASE_URL}/path/img.png 3840w`);
+    });
+  });
+
   describe('preconnect detector', () => {
     const imageLoader = () => {
       // We need something different from the `localhost` (as we don't want to produce
