@@ -56,7 +56,7 @@ load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
 nodejs_register_toolchains(
     name = "nodejs",
-    node_version = "16.10.0",
+    node_version = "16.13.0",
 )
 
 # Download npm dependencies.
