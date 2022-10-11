@@ -269,6 +269,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   @Input() sizes?: string;
 
   /**
+   * The base `sizes` attribute passed through to the `<img>` element.
+   * Providing sizes causes the image to create an automatic responsive srcset.
+   */
+  @Input() style?: string;
+
+  /**
    * The intrinsic width of the image in pixels.
    */
   @Input()
@@ -327,6 +333,19 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private _disableOptimizedSrcset = false;
 
   /**
+   * Sets the image to "fill mode," which eliminates the height/width requirement and adds
+   * styles such that the image fills its containing element.
+   */
+  @Input()
+  set fill(value: string|boolean|undefined) {
+    this._fill = inputToBoolean(value);
+  }
+  get fill(): boolean {
+    return this._fill;
+  }
+  private _fill = false;
+
+  /**
    * Value of the `src` attribute if set on the host `<img>` element.
    * This input is exclusively read to assert that `src` is not set in conflict
    * with `ngSrc` and that images don't start to load until a lazy loading strategy is set.
@@ -352,7 +371,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       }
       assertNotBase64Image(this);
       assertNotBlobUrl(this);
-      assertNonEmptyWidthAndHeight(this);
+      if (this.fill) {
+        assertEmptyWidthAndHeight(this);
+      } else {
+        assertNonEmptyWidthAndHeight(this);
+      }
       assertValidLoadingInput(this);
       assertNoImageDistortion(this, this.imgElement, this.renderer);
       if (!this.ngSrcset) {
@@ -379,8 +402,15 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private setHostAttributes() {
     // Must set width/height explicitly in case they are bound (in which case they will
     // only be reflected and not found by the browser)
-    this.setHostAttribute('width', this.width!.toString());
-    this.setHostAttribute('height', this.height!.toString());
+    if (this.fill) {
+      this.setHostAttribute('style', this.getFillStyle())
+    } else {
+      this.setHostAttribute('width', this.width!.toString());
+      this.setHostAttribute('height', this.height!.toString());
+      if (this.style) {
+        this.setHostAttribute('style', this.style)
+      }
+    }
 
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
@@ -395,6 +425,27 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     } else if (!this._disableOptimizedSrcset && !this.srcset) {
       this.setHostAttribute('srcset', this.getAutomaticSrcset());
     }
+  }
+
+  private getFillStyle(): string {
+    const fillStyle = {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      left: '0',
+      top: '0',
+      right: '0',
+      bottom: '0'
+    } let providedStyles: {[key: string]: string|number} = {} if (this.style) {
+      this.style.split(';').forEach(styleKVP => {
+        const [key, value] = styleKVP.split(':')
+        if (key && value) {
+          providedStyles[key.trim()] = value.trim();
+        }
+      })
+    }
+    const combinedStyles = Object.assign(providedStyles, fillStyle);
+    return Object.entries(combinedStyles).map(kvp => `${kvp[0]}: ${kvp[1]}`).join('; ');
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -784,6 +835,22 @@ function assertNonEmptyWidthAndHeight(dir: NgOptimizedImage) {
             `are missing: ${missingAttributes.map(attr => `"${attr}"`).join(', ')}. ` +
             `Including "width" and "height" attributes will prevent image-related layout shifts. ` +
             `To fix this, include "width" and "height" attributes on the image tag.`);
+  }
+}
+
+/**
+ * Verifies that width and height are not set. Used in fill mode, where those attributes don't make
+ * sense.
+ */
+function assertEmptyWidthAndHeight(dir: NgOptimizedImage) {
+  if (dir.width || dir.height) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `${
+            imgDirectiveDetails(
+                dir.ngSrc)} the attributes \`height\` and/or \`width\` are present ` +
+            `along with the \`fill\` attribute. Because \`fill\` mode causes an image to fill its containing ` +
+            `element, the size attributes have no effect and should be removed.`);
   }
 }
 

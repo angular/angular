@@ -1192,6 +1192,58 @@ describe('Image directive', () => {
            expect(img.getAttribute('srcset')).toBeNull();
          });
     });
+    describe('fill mode', () => {
+      it('should allow unsized images in fill mode', () => {
+        setupTestingModule();
+
+        const template = '<img ngSrc="path/img.png" fill>';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        }).not.toThrow();
+      });
+      it('should throw if width is provided for fill mode image', () => {
+        setupTestingModule();
+
+        const template = '<img ngSrc="path/img.png" width="500" fill>';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                'NG02952: The NgOptimizedImage directive (activated on an <img> element with the ' +
+                '`ngSrc="path/img.png"`) has detected that the attributes `height` and/or `width` ' +
+                'are present along with the `fill` attribute. Because `fill` mode causes an image ' +
+                'to fill its containing element, the size attributes have no effect and should be removed.');
+      });
+      it('should apply appropriate styles in fill mode', () => {
+        setupTestingModule();
+
+        const template = '<img ngSrc="path/img.png" fill>';
+
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('style'))
+            .toBe(
+                'position: absolute; width: 100%; height: 100%; left: 0; top: 0; right: 0; bottom: 0')
+      });
+      it('should augment existing styles in fill mode', () => {
+        setupTestingModule();
+
+        const template =
+            '<img ngSrc="path/img.png" style="border-radius: 5px; padding: 10px" fill>';
+
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('style'))
+            .toBe(
+                'border-radius: 5px; padding: 10px; position: absolute; width: 100%; height: 100%; left: 0; top: 0; right: 0; bottom: 0')
+      });
+    });
   });
 });
 
