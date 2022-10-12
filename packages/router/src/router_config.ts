@@ -49,7 +49,6 @@ export type InitialNavigation = 'disabled'|'enabledBlocking'|'enabledNonBlocking
  * Extra configuration options that can be used with the `withRouterConfig` function.
  *
  * @publicApi
- * @developerPreview
  */
 export interface RouterConfigOptions {
   /**
@@ -115,7 +114,6 @@ export interface RouterConfigOptions {
  * function.
  *
  * @publicApi
- * @developerPreview
  */
 export interface InMemoryScrollingOptions {
   /**
