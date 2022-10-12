@@ -79,7 +79,6 @@ export class BrowserAnimationsModule {
  * ```
  *
  * @publicApi
- * @developerPreview
  */
 export function provideAnimations(): Provider[] {
   // Return a copy to prevent changes to the original array in case any in-place
@@ -118,7 +117,6 @@ export class NoopAnimationsModule {
  * ```
  *
  * @publicApi
- * @developerPreview
  */
 export function provideNoopAnimations(): Provider[] {
   // Return a copy to prevent changes to the original array in case any in-place

@@ -315,6 +315,11 @@
           "tooltip": "A list of developer guides for building Angular applications."
         },
         {
+          "url": "guide/standalone-components",
+          "title": "Standalone components",
+          "tooltip": "Standalone components, directives, and pipes"
+        },
+        {
           "title": "Change detection",
           "tooltip": "Learn how Angular updates the view based on data changes and how to keep your application fast",
           "children": [
@@ -852,11 +857,6 @@
       "title": "Feature preview",
       "tooltip": "Angular preview features and APIs",
       "children": [
-        {
-          "url": "guide/standalone-components",
-          "title": "Standalone components",
-          "tooltip": "Standalone components, directives, and pipes"
-        },
         {
           "url": "guide/image-directive",
           "title": "Image Directive",

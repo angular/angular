@@ -54,7 +54,6 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
  * @see `RouterFeatures`
  *
  * @publicApi
- * @developerPreview
  * @param routes A set of `Route`s to use for the application routing table.
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to setup a Router.
@@ -79,7 +78,6 @@ export function rootRoute(router: Router): ActivatedRoute {
  * Helper type to represent a Router feature.
  *
  * @publicApi
- * @developerPreview
  */
 export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
   ɵkind: FeatureKind;
@@ -122,7 +120,6 @@ export function provideRoutes(routes: Routes): Provider[] {
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type InMemoryScrollingFeature = RouterFeature<RouterFeatureKind.InMemoryScrollingFeature>;
 
@@ -147,7 +144,6 @@ export type InMemoryScrollingFeature = RouterFeature<RouterFeatureKind.InMemoryS
  * @see `ViewportScroller`
  *
  * @publicApi
- * @developerPreview
  * @param options Set of configuration parameters to customize scrolling behavior, see
  *     `InMemoryScrollingOptions` for additional information.
  * @returns A set of providers for use with `provideRouter`.
@@ -236,7 +232,6 @@ const INITIAL_NAVIGATION = new InjectionToken<InitialNavigation>(
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type EnabledBlockingInitialNavigationFeature =
     RouterFeature<RouterFeatureKind.EnabledBlockingInitialNavigationFeature>;
@@ -250,7 +245,6 @@ export type EnabledBlockingInitialNavigationFeature =
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type InitialNavigationFeature =
     EnabledBlockingInitialNavigationFeature|DisabledInitialNavigationFeature;
@@ -278,7 +272,6 @@ export type InitialNavigationFeature =
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature {
@@ -369,7 +362,6 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type DisabledInitialNavigationFeature =
     RouterFeature<RouterFeatureKind.DisabledInitialNavigationFeature>;
@@ -399,7 +391,6 @@ export type DisabledInitialNavigationFeature =
  * @returns A set of providers for use with `provideRouter`.
  *
  * @publicApi
- * @developerPreview
  */
 export function withDisabledInitialNavigation(): DisabledInitialNavigationFeature {
   const providers = [
@@ -425,7 +416,6 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFeature>;
 
@@ -452,7 +442,6 @@ export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFe
  * @returns A set of providers for use with `provideRouter`.
  *
  * @publicApi
- * @developerPreview
  */
 export function withDebugTracing(): DebugTracingFeature {
   let providers: Provider[] = [];
@@ -488,7 +477,6 @@ const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(NG_DEV_MODE ? 'rout
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type PreloadingFeature = RouterFeature<RouterFeatureKind.PreloadingFeature>;
 
@@ -517,7 +505,6 @@ export type PreloadingFeature = RouterFeature<RouterFeatureKind.PreloadingFeatur
  * @returns A set of providers for use with `provideRouter`.
  *
  * @publicApi
- * @developerPreview
  */
 export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): PreloadingFeature {
   const providers = [
@@ -534,7 +521,6 @@ export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): Pr
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type RouterConfigurationFeature =
     RouterFeature<RouterFeatureKind.RouterConfigurationFeature>;
@@ -565,7 +551,6 @@ export type RouterConfigurationFeature =
  * @returns A set of providers for use with `provideRouter`.
  *
  * @publicApi
- * @developerPreview
  */
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature {
   const providers = [
@@ -583,7 +568,6 @@ export function withRouterConfig(options: RouterConfigOptions): RouterConfigurat
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type RouterFeatures = PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|
     InMemoryScrollingFeature|RouterConfigurationFeature;
