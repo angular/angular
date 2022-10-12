@@ -43,6 +43,6 @@ jobs:
             Generated `events.json` with the latest events retrieved from the Firebase DB.
           pr-labels: |
             action: review
-            comp: docs
+            area: docs
             target: patch
           angular-robot-token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
