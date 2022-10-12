@@ -14,7 +14,7 @@
   "prHourlyLimit": 3,
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {"enabled": true},
-  "labels": ["target: patch", "comp: build & ci", "action: review"],
+  "labels": ["target: patch", "area: build & ci", "action: review"],
   "ignoreDeps": [
     "@angular/animations-12",
     "@angular/common-12",
