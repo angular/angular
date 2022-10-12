@@ -143,29 +143,29 @@ triage:
   defaultMilestone: 82,
   # arrays of labels that determine if an issue has been triaged by the caretaker
   l1TriageLabels:
-    - - 'comp: *'
+    - - 'area: *'
   # arrays of labels that determine if an issue has been fully triaged
   l2TriageLabels:
     - - 'P0'
-      - 'comp: *'
+      - 'area: *'
     - - 'P1'
-      - 'comp: *'
+      - 'area: *'
     - - 'P2'
-      - 'comp: *'
+      - 'area: *'
     - - 'P3'
-      - 'comp: *'
+      - 'area: *'
     - - 'P4'
-      - 'comp: *'
+      - 'area: *'
     - - 'P5'
-      - 'comp: *'
+      - 'area: *'
     - - 'feature'
-      - 'comp: *'
+      - 'area: *'
     - - 'discussion'
-      - 'comp: *'
+      - 'area: *'
     - - 'needs clarification'
-      - 'comp: *'
+      - 'area: *'
     - - 'needs reproduction'
-      - 'comp: *'
+      - 'area: *'
 
 # options for the triage PR plugin
 triagePR:
@@ -177,10 +177,10 @@ triagePR:
   defaultMilestone: 82,
   # arrays of labels that determine if a PR has been triaged by the caretaker
   l1TriageLabels:
-    - - 'comp: *'
+    - - 'area: *'
   # arrays of labels that determine if a PR has been fully triaged
   l2TriageLabels:
-    - - 'comp: *'
+    - - 'area: *'
 
 # options for rerunning CI
 rerunCircleCI:

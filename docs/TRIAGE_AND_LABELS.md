@@ -1,7 +1,7 @@
 # Triage Process and GitHub Labels for Angular
 
 This document describes how the Angular team uses labels and milestones to triage issues on GitHub.
-The basic idea of the process is that caretaker only assigns a component (`comp: *`) label.
+The basic idea of the process is that caretaker only assigns a component (`area: *`) label.
 The owner of the component is then responsible for the detailed / component-level triage.
 
 
@@ -13,41 +13,41 @@ The caretaker should be able to determine which component the issue belongs to.
 The components have a clear piece of source code associated with it within the `/packages/` folder
 of this repo.
 
-* `comp: animations`
-* `comp: bazel` - @angular/bazel rules
-* `comp: benchpress`
-* `comp: common` - this includes core components / pipes
-* `comp: common/http` - this includes core components / pipes
-* `comp: core & compiler` - because core, compiler, compiler-cli and
+* `area: animations`
+* `area: bazel` - @angular/bazel rules
+* `area: benchpress`
+* `area: common` - this includes core components / pipes
+* `area: common/http` - this includes core components / pipes
+* `area: core & compiler` - because core, compiler, compiler-cli and
   browser-platforms are very intertwined, we will be treating them as one
-* `comp: ivy` - a subset of core representing the new Ivy renderer.
-* `comp: ngcc` - a subset of ivy representing the [Angular Compatibility Compiler](../packages/compiler-cli/ngcc/README.md)
-* `comp: ve` - a subset of `core & compiler` representing changes specific to ViewEngine (legacy compiler/renderer).
-* `comp: docs-infra` - the angular.io application and docs-related tooling
-* `comp: elements`
-* `comp: forms`
-* `comp: http`
-* `comp: i18n`
-* `comp: language-service`
-* `comp: metadata-extractor`
-* `comp: router`
-* `comp: server`
-* `comp: service-worker`
-* `comp: testing`
-* `comp: upgrade`
-* `comp: web-worker`
-* `comp: zones`
+* `area: ivy` - a subset of core representing the new Ivy renderer.
+* `area: ngcc` - a subset of ivy representing the [Angular Compatibility Compiler](../packages/compiler-cli/ngcc/README.md)
+* `area: ve` - a subset of `core & compiler` representing changes specific to ViewEngine (legacy compiler/renderer).
+* `area: docs-infra` - the angular.io application and docs-related tooling
+* `area: elements`
+* `area: forms`
+* `area: http`
+* `area: i18n`
+* `area: language-service`
+* `area: metadata-extractor`
+* `area: router`
+* `area: server`
+* `area: service-worker`
+* `area: testing`
+* `area: upgrade`
+* `area: web-worker`
+* `area: zones`
 
 There are few components which are cross-cutting.
 They don't have a clear location in the source tree.
 We will treat them as a component even thought no specific source tree is associated with them.
 
-* `comp: build & ci` - build and CI infrastructure for the angular/angular repo
-* `comp: dev-infra` - angular's common internal developer infrastructure scripting and tooling
-* `comp: docs` - documentation, including API docs, guides, tutorial
-* `comp: packaging` - packaging format of @angular/* npm packages
-* `comp: performance`
-* `comp: security`
+* `area: build & ci` - build and CI infrastructure for the angular/angular repo
+* `area: dev-infra` - angular's common internal developer infrastructure scripting and tooling
+* `area: docs` - documentation, including API docs, guides, tutorial
+* `area: packaging` - packaging format of @angular/* npm packages
+* `area: performance`
+* `area: security`
 
 Sometimes, especially in the case of cross-cutting issues or PRs, these PRs or issues belong to
 multiple components. In these cases, all applicable component labels should be used to triage the
@@ -65,7 +65,7 @@ issue or PR.
 
 ## Caretaker Triage Process (Initial Triage)
 
-The caretaker assigns `comp:  *` labels to new issues as they come in.
+The caretaker assigns `area:  *` labels to new issues as they come in.
 Untriaged issues can be found by selecting the issues with no milestone.
 
 If an issue or PR obviously relates to a release regression, the caretaker must assign an
