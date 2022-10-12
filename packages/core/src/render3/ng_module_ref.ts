@@ -154,7 +154,6 @@ class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
  *     messages.
  *
  * @publicApi
- * @developerPreview
  */
 export function createEnvironmentInjector(
     providers: Array<Provider|EnvironmentProviders>, parent: EnvironmentInjector,

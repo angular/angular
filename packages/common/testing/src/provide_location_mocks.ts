@@ -16,7 +16,6 @@ import {MockLocationStrategy} from './mock_location_strategy';
  * Returns mock providers for the `Location` and `LocationStrategy` classes.
  * The mocks are helpful in tests to fire simulated location events.
  *
- * @developerPreview
  * @publicApi
  */
 export function provideLocationMocks(): Provider[] {
