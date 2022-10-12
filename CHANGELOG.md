@@ -1,3 +1,15 @@
+<a name="14.2.6"></a>
+# 14.2.6 (2022-10-12)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3fd176a905](https://github.com/angular/angular/commit/3fd176a9054bea6f6c4cd22e8ff3b8f63b86b637) | fix | add missing period to error message ([#47744](https://github.com/angular/angular/pull/47744)) |
+| [c3821f5ab5](https://github.com/angular/angular/commit/c3821f5ab5bf54b2c9d7868da79a742d4e4b7667) | perf | minimize filesystem calls when generating shims ([#47682](https://github.com/angular/angular/pull/47682)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, Charles Lyding, Joey Perrott, Joshua Morony, Mathew Berg, Paul Gschwendtner, Peter Dickten, Renan Ferro, Sri Ram, WD Snoeijer, markostanimirovic and Álvaro Martínez
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-next.5"></a>
 # 15.0.0-next.5 (2022-10-05)
 ## Breaking Changes
