@@ -10,7 +10,7 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveSymbol, PotentialDirective, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 import ts from 'typescript';
@@ -224,8 +224,8 @@ function difference<T>(left: Set<T>, right: Set<T>): Set<T> {
  * @returns The list of directives matching the tag name via the strategy described above.
  */
 // TODO(atscott): Add unit tests for this and the one for attributes
-export function getDirectiveMatchesForElementTag(
-    element: t.Template|t.Element, directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
+export function getDirectiveMatchesForElementTag<T extends {selector: string}>(
+    element: t.Template|t.Element, directives: T[]): Set<T> {
   const attributes = getAttributes(element);
   const allAttrs = attributes.map(toAttributeCssSelector);
   const allDirectiveMatches =
@@ -269,14 +269,14 @@ export function getDirectiveMatchesForAttribute(
  * Given a list of directives and a text to use as a selector, returns the directives which match
  * for the selector.
  */
-function getDirectiveMatchesForSelector(
-    directives: DirectiveSymbol[], selector: string): Set<DirectiveSymbol> {
+function getDirectiveMatchesForSelector<T extends {selector: string}>(
+    directives: T[], selector: string): Set<T> {
   try {
     const selectors = CssSelector.parse(selector);
     if (selectors.length === 0) {
       return new Set();
     }
-    return new Set(directives.filter((dir: DirectiveSymbol) => {
+    return new Set(directives.filter((dir: T) => {
       if (dir.selector === null) {
         return false;
       }

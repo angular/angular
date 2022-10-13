@@ -400,3 +400,8 @@ export function getOriginNodeForDiagnostics(
     return container;
   }
 }
+
+export function isAbstractClassDeclaration(clazz: ClassDeclaration): boolean {
+  return clazz.modifiers !== undefined &&
+      clazz.modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword);
+}

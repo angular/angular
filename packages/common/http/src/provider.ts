@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, InjectionToken, Provider} from '@angular/core';
+import {EnvironmentProviders, inject, InjectionToken, makeEnvironmentProviders, Provider} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
@@ -38,7 +38,8 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
 }
 
 
-export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): Provider[] {
+export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
+    EnvironmentProviders {
   if (ngDevMode) {
     const featureKinds = new Set(features.map(f => f.ɵkind));
     if (featureKinds.has(HttpFeatureKind.NoXsrfProtection) &&
@@ -69,7 +70,7 @@ export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): 
     providers.push(...feature.ɵproviders);
   }
 
-  return providers;
+  return makeEnvironmentProviders(providers);
 }
 
 export function withInterceptors(interceptorFns: HttpInterceptorFn[]):

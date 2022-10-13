@@ -340,7 +340,7 @@ export const FormControl: ɵFormControlCtor;
 
 // @public
 export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
-    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
+    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null, callSetDisabledState?: SetDisabledStateOption | undefined);
     get control(): FormControl;
     form: FormControl;
     set isDisabled(isDisabled: boolean);
@@ -358,7 +358,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlDirective, "[formControl]", ["ngForm"], { "form": "formControl"; "isDisabled": "disabled"; "model": "ngModel"; }, { "update": "ngModelChange"; }, never, never, false, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<FormControlDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormControlDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -466,7 +466,7 @@ export class FormGroup<TControl extends {
 
 // @public
 export class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
-    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
+    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], callSetDisabledState?: SetDisabledStateOption | undefined);
     addControl(dir: FormControlName): FormControl;
     addFormArray(dir: FormArrayName): void;
     addFormGroup(dir: FormGroupName): void;
@@ -494,7 +494,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": "formGroup"; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, [{ optional: true; self: true; }, { optional: true; self: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -551,6 +551,9 @@ export interface FormRecord<TControl> {
 
 // @public
 export class FormsModule {
+    static withConfig(opts: {
+        callSetDisabledState?: SetDisabledStateOption;
+    }): ModuleWithProviders<ReactiveFormsModule>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormsModule, never>;
     // (undocumented)
@@ -643,7 +646,7 @@ export class NgControlStatusGroup extends AbstractControlStatus {
 
 // @public
 export class NgForm extends ControlContainer implements Form, AfterViewInit {
-    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
+    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], callSetDisabledState?: SetDisabledStateOption | undefined);
     addControl(dir: NgModel): void;
     addFormGroup(dir: NgModelGroup): void;
     get control(): FormGroup;
@@ -674,12 +677,12 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgForm, "form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]", ["ngForm"], { "options": "ngFormOptions"; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<NgForm, [{ optional: true; self: true; }, { optional: true; self: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgForm, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
 
 // @public
 export class NgModel extends NgControl implements OnChanges, OnDestroy {
-    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _changeDetectorRef?: ChangeDetectorRef | null | undefined);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _changeDetectorRef?: ChangeDetectorRef | null | undefined, callSetDisabledState?: SetDisabledStateOption | undefined);
     // (undocumented)
     readonly control: FormControl;
     get formDirective(): any;
@@ -704,7 +707,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgModel, "[ngModel]:not([formControlName]):not([formControl])", ["ngModel"], { "name": "name"; "isDisabled": "disabled"; "model": "ngModel"; "options": "ngModelOptions"; }, { "update": "ngModelChange"; }, never, never, false, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<NgModel, [{ optional: true; host: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgModel, [{ optional: true; host: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -799,7 +802,8 @@ export class RangeValueAccessor extends BuiltInControlValueAccessor implements C
 // @public
 export class ReactiveFormsModule {
     static withConfig(opts: {
-        warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
+        warnOnNgModelWithFormControl?: 'never' | 'once' | 'always';
+        callSetDisabledState?: SetDisabledStateOption;
     }): ModuleWithProviders<ReactiveFormsModule>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ReactiveFormsModule, never>;
@@ -844,6 +848,9 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SelectMultipleControlValueAccessor, never>;
 }
+
+// @public
+export type SetDisabledStateOption = 'whenDisabledForLegacyCode' | 'always';
 
 // @public
 export type UntypedFormArray = FormArray<any>;

@@ -7,10 +7,9 @@
  */
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {ClassDeclaration} from '../../reflection';
 
 import {DirectiveMeta, MetadataReaderWithIndex, MetadataRegistry, NgModuleMeta, PipeMeta} from './api';
-import {hasInjectableFields} from './util';
 
 /**
  * A registry of directive, pipe, and module metadata for types defined in the current compilation
@@ -69,26 +68,5 @@ export class CompoundMetadataRegistry implements MetadataRegistry {
     for (const registry of this.registries) {
       registry.registerPipeMetadata(meta);
     }
-  }
-}
-
-/**
- * Registry that keeps track of classes that can be constructed via dependency injection (e.g.
- * injectables, directives, pipes).
- */
-export class InjectableClassRegistry {
-  private classes = new Set<ClassDeclaration>();
-
-  constructor(private host: ReflectionHost) {}
-
-  registerInjectable(declaration: ClassDeclaration): void {
-    this.classes.add(declaration);
-  }
-
-  isInjectable(declaration: ClassDeclaration): boolean {
-    // Figure out whether the class is injectable based on the registered classes, otherwise
-    // fall back to looking at its members since we might not have been able register the class
-    // if it was compiled already.
-    return this.classes.has(declaration) || hasInjectableFields(declaration, this.host);
   }
 }
