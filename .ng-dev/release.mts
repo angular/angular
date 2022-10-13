@@ -31,5 +31,5 @@ export const release: ReleaseConfig = {
   releaseNotes: {
     hiddenScopes: ['aio', 'bazel', 'dev-infra', 'docs-infra', 'zone.js', 'devtools'],
   },
-  releasePrLabels: ['comp: build & ci', 'action: merge', 'PullApprove: disable'],
+  releasePrLabels: ['area: build & ci', 'action: merge', 'PullApprove: disable'],
 };
