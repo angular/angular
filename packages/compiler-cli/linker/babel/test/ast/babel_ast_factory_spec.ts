@@ -99,7 +99,7 @@ describe('BabelAstFactory', () => {
       const arg1 = expression.ast`42`;
       const arg2 = expression.ast`"moo"`;
       const call = factory.createCallExpression(callee, [arg1, arg2], true);
-      expect(generate(call).code).toEqual(['/* @__PURE__ */', 'foo(42, "moo")'].join('\n'));
+      expect(generate(call).code).toEqual('/* @__PURE__ */foo(42, "moo")');
     });
   });
 
