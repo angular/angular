@@ -37,6 +37,7 @@ ts_library(
     deps = [
         ":ng-add",
         "@npm//@angular-devkit/schematics",
+        "@npm//typescript",
     ],
 )
 
