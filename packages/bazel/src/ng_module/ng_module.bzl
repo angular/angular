@@ -29,6 +29,8 @@ load(
 # compilation which includes this provider.
 NgPerfInfo = provider(fields = ["enable_perf_logging"])
 
+# should not affect g3.
+
 def is_perf_requested(ctx):
     return ctx.attr.perf_flag != None and ctx.attr.perf_flag[NgPerfInfo].enable_perf_logging == True
 
@@ -60,7 +62,7 @@ def _flat_module_out_file(ctx):
     from other attributes (name)
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       a basename used for the flat module out (no extension)
@@ -76,7 +78,7 @@ def _should_produce_flat_module_outs(ctx):
     based on the presence of the module_name attribute.
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       true iff we should run the bundle_index_host to produce flat module metadata and bundle index
@@ -118,7 +120,7 @@ def _expected_outs(ctx):
             else:
                 devmode_js = [".js"]
                 if not _is_bazel():
-                    devmode_js += [".ngfactory.js"]
+                    devmode_js.append(".ngfactory.js")
         else:
             continue
 
@@ -278,7 +280,7 @@ def ngc_compile_action(
     as part of the public API.
 
     Args:
-      ctx: skylark context
+      ctx: starlark context
       label: the label of the ng_module being compiled
       inputs: passed to the ngc action's inputs
       outputs: passed to the ngc action's outputs
@@ -315,7 +317,7 @@ def ngc_compile_action(
     # Two at-signs escapes the argument so it's passed through to ngc
     # rather than the contents getting expanded.
     if supports_workers == "1":
-        arguments += ["@@" + tsconfig_file.path]
+        arguments.append("@@" + tsconfig_file.path)
     else:
         arguments += ["-p", tsconfig_file.path]
 
@@ -414,7 +416,7 @@ def ng_module_impl(ctx, ts_compile_actions):
     and is not meant as a public API.
 
     Args:
-      ctx: the skylark rule context
+      ctx: the starlark rule context
       ts_compile_actions: generates all the actions to run an ngc compilation
 
     Returns:
