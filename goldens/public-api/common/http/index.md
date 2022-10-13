@@ -5,6 +5,7 @@
 ```ts
 
 import { EnvironmentInjector } from '@angular/core';
+import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
@@ -2162,7 +2163,7 @@ export class JsonpInterceptor {
 }
 
 // @public (undocumented)
-export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): Provider[];
+export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): EnvironmentProviders;
 
 // @public (undocumented)
 export function withInterceptors(interceptorFns: HttpInterceptorFn[]): HttpFeature<HttpFeatureKind.Interceptors>;
