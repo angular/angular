@@ -4,11 +4,11 @@
 
 ```ts
 
-import { ɵ$localize as $localize_2 } from '@angular/localize';
+import { ɵ$localize as $localize } from '@angular/localize';
 import { ɵLocalizeFn as LocalizeFn } from '@angular/localize';
 import { ɵTranslateFn as TranslateFn } from '@angular/localize';
 
-export { $localize_2 as $localize }
+export { $localize }
 
 export { LocalizeFn }
 

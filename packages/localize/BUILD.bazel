@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_package", "ts_library")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "extract_types", "ng_package", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,20 +17,26 @@ ts_library(
     ],
 )
 
+extract_types(
+    name = "api_type_definitions",
+    deps = [":localize"],
+)
+
 ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
+        ":api_type_definitions",
     ],
     nested_packages = [
         "//packages/localize/schematics:npm_package",
         "//packages/localize/tools:npm_package",
     ],
     skip_type_bundling = [
-        # For the "init" entry-point we disable type bundling because API extractor
+        # For the primary entry-point we disable type bundling because API extractor
         # does not properly handle module augumentation.
         # TODO: Remove once https://github.com/microsoft/rushstack/issues/2090 is solved.
-        "init",
+        "",
     ],
     tags = [
         "release-with-framework",
