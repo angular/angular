@@ -17,7 +17,7 @@ tool will automatically merge it based on the applied target label.
 
 To merge a PR run:
 
-```
+```sh
 $ yarn ng-dev pr merge <pr number>
 ```
 
