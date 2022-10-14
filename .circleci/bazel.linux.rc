@@ -12,10 +12,10 @@ build --repository_cache=/home/circleci/bazel_repository_cache
 
 # Workaround https://github.com/bazelbuild/bazel/issues/3645
 # Bazel doesn't calculate the memory ceiling correctly when running under Docker.
-# Limit Bazel to consuming resources that fit in CircleCI "xlarge" class
+# Limit Bazel to consuming resources that fit in CircleCI "2xlarge+" class
 # https://circleci.com/docs/2.0/configuration-reference/#resource_class
 build --local_cpu_resources=20
-build --local_ram_resources=32768
+build --local_ram_resources=40960
 
 # All build executed remotely should be done using our RBE configuration.
 build:remote --google_default_credentials
