@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {Reference} from '../../../imports';
-import {HostDirectiveMeta, MetadataReader} from '../../../metadata';
+import {DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectiveMeta, MetadataReader} from '../../../metadata';
 import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../../reflection';
 import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
@@ -161,7 +161,7 @@ export function validateHostDirectives(
   const diagnostics: ts.DiagnosticWithLocation[] = [];
 
   for (const current of hostDirectives) {
-    const hostMeta = metaReader.getDirectiveMetadata(current.directive);
+    const hostMeta = flattenInheritedDirectiveMetadata(metaReader, current.directive);
 
     if (hostMeta === null) {
       diagnostics.push(makeDiagnostic(
@@ -184,10 +184,51 @@ export function validateHostDirectives(
           ErrorCode.HOST_DIRECTIVE_COMPONENT, current.directive.getOriginForDiagnostics(origin),
           `Host directive ${hostMeta.name} cannot be a component`));
     }
+
+    validateHostDirectiveMappings('input', current, hostMeta, origin, diagnostics);
+    validateHostDirectiveMappings('output', current, hostMeta, origin, diagnostics);
   }
 
   return diagnostics;
 }
+
+function validateHostDirectiveMappings(
+    bindingType: 'input'|'output', hostDirectiveMeta: HostDirectiveMeta, meta: DirectiveMeta,
+    origin: ts.Expression, diagnostics: ts.DiagnosticWithLocation[]) {
+  const className = meta.name;
+  const hostDirectiveMappings =
+      bindingType === 'input' ? hostDirectiveMeta.inputs : hostDirectiveMeta.outputs;
+  const existingBindings = bindingType === 'input' ? meta.inputs : meta.outputs;
+
+  for (const publicName in hostDirectiveMappings) {
+    if (hostDirectiveMappings.hasOwnProperty(publicName)) {
+      if (!existingBindings.hasBindingPropertyName(publicName)) {
+        diagnostics.push(makeDiagnostic(
+            ErrorCode.HOST_DIRECTIVE_UNDEFINED_BINDING,
+            hostDirectiveMeta.directive.getOriginForDiagnostics(origin),
+            `Directive ${className} does not have an ${bindingType} with a public name of ${
+                publicName}.`));
+      }
+
+      const remappedPublicName = hostDirectiveMappings[publicName];
+      const bindingsForPublicName = existingBindings.getByBindingPropertyName(remappedPublicName);
+
+      if (bindingsForPublicName !== null) {
+        for (const binding of bindingsForPublicName) {
+          if (binding.bindingPropertyName !== publicName) {
+            diagnostics.push(makeDiagnostic(
+                ErrorCode.HOST_DIRECTIVE_CONFLICTING_ALIAS,
+                hostDirectiveMeta.directive.getOriginForDiagnostics(origin),
+                `Cannot alias ${bindingType} ${publicName} of host directive ${className} to ${
+                    remappedPublicName}, because it already has a different ${
+                    bindingType} with the same public name.`));
+          }
+        }
+      }
+    }
+  }
+}
+
 
 export function getUndecoratedClassWithAngularFeaturesDiagnostic(node: ClassDeclaration):
     ts.Diagnostic {
