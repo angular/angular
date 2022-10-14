@@ -2,11 +2,12 @@ load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architec
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "npm_package_bin")
 load("//tools:defaults.bzl", "nodejs_binary")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
-load(":local_packages_util.bzl", "link_local_packages", "substitute_local_packages")
+load(":local_packages_util.bzl", "link_local_packages", "substitute_local_package_deps")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("//aio/scripts:local_server_test.bzl", "local_server_test")
 load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 load(":aio_targets.bzl", "aio_test")
+load("@bazel_skylib//lib:collections.bzl", "collections")
 
 exports_files([
     "firebase.json",
@@ -115,6 +116,7 @@ APPLICATION_DEPS = [
     "@aio_npm//@angular/cli",
     "@aio_npm//@angular/common",
     "@aio_npm//@angular/compiler",
+    "@aio_npm//@angular/compiler-cli",
     "@aio_npm//@angular/core",
     "@aio_npm//@angular/elements",
     "@aio_npm//@angular/forms",
@@ -172,7 +174,7 @@ E2E_DEPS = APPLICATION_DEPS + [
 
 # Stamp npm_link targets for all dependencies that correspond to a
 # first-party equivalent pacakge in angular.
-link_local_packages(deps = APPLICATION_DEPS)
+link_local_packages(all_aio_deps = collections.uniq(APPLICATION_DEPS + TEST_DEPS + E2E_DEPS))
 
 copy_to_bin(
     name = "application_files_bin",
@@ -188,7 +190,7 @@ architect(
     chdir = "$(RULEDIR)",
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = [":application_files_bin"] + select({
-        ":aio_local_deps": substitute_local_packages(APPLICATION_DEPS),
+        ":aio_local_deps": substitute_local_package_deps(APPLICATION_DEPS),
         "//conditions:default": APPLICATION_DEPS,
     }),
     output_dir = True,
@@ -227,7 +229,7 @@ copy_to_directory(
 )
 
 TEST_DATA = TEST_FILES + select({
-    ":aio_local_deps": substitute_local_packages(TEST_DEPS),
+    ":aio_local_deps": substitute_local_package_deps(TEST_DEPS),
     "//conditions:default": TEST_DEPS,
 })
 
@@ -265,7 +267,7 @@ architect_test(
     chdir = package_name(),
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = E2E_FILES + select({
-        ":aio_local_deps": substitute_local_packages(E2E_DEPS),
+        ":aio_local_deps": substitute_local_package_deps(E2E_DEPS),
         "//conditions:default": E2E_DEPS,
     }),
     env = {
@@ -289,7 +291,7 @@ architect(
     ],
     chdir = package_name(),
     data = APPLICATION_FILES + select({
-        ":aio_local_deps": substitute_local_packages(APPLICATION_DEPS),
+        ":aio_local_deps": substitute_local_package_deps(APPLICATION_DEPS),
         "//conditions:default": APPLICATION_DEPS,
     }),
     tags = ["ibazel_notify_changes"],
@@ -306,7 +308,7 @@ nodejs_binary(
     data = APPLICATION_FILES + [
         "//aio/scripts:fast-serve-and-watch",
     ] + select({
-        ":aio_local_deps": substitute_local_packages(APPLICATION_DEPS),
+        ":aio_local_deps": substitute_local_package_deps(APPLICATION_DEPS),
         "//conditions:default": APPLICATION_DEPS,
     }),
     enable_linker = True,
