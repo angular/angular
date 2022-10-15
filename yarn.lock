@@ -255,7 +255,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#1c1c375aff396f7f5eaa22d6d5bc112b255bd45a":
   version "0.0.0-c9b2ff083a50d0eac742da1e69e0cbdb98bf53dd"
-  uid "1c1c375aff396f7f5eaa22d6d5bc112b255bd45a"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#1c1c375aff396f7f5eaa22d6d5bc112b255bd45a"
   dependencies:
     "@angular-devkit/build-angular" "15.0.0-next.0"
@@ -360,10 +359,9 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#5d7a73b39c1357c571dc1478caa495bc30195d6f":
-  version "0.0.0-c9b2ff083a50d0eac742da1e69e0cbdb98bf53dd"
-  uid "5d7a73b39c1357c571dc1478caa495bc30195d6f"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#5d7a73b39c1357c571dc1478caa495bc30195d6f"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#4c84bf7d283d773e86db85827b831187f983a480":
+  version "0.0.0-658ea9ec012d34882807f0be093812961af79cce"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#4c84bf7d283d773e86db85827b831187f983a480"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.8.0"
@@ -11061,7 +11059,7 @@ magic-string@0.26.5:
   dependencies:
     sourcemap-codec "^1.4.8"
 
-magic-string@0.26.7:
+magic-string@0.26.7, magic-string@^0.26.4:
   version "0.26.7"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.26.7.tgz#caf7daf61b34e9982f8228c4527474dac8981d6f"
   integrity sha512-hX9XH3ziStPoPhJxLq1syWuZMxbDvGNbVchfrdCtanC7D13888bMFow61x8axrx+GfHLtVeAx2kxL7tTGRl+Ow==
@@ -11072,13 +11070,6 @@ magic-string@^0.25.7:
   version "0.25.9"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.9.tgz#de7f9faf91ef8a1c91d02c2e5314c8277dbcdd1c"
   integrity sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==
-  dependencies:
-    sourcemap-codec "^1.4.8"
-
-magic-string@^0.26.4:
-  version "0.26.7"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.26.7.tgz#caf7daf61b34e9982f8228c4527474dac8981d6f"
-  integrity sha512-hX9XH3ziStPoPhJxLq1syWuZMxbDvGNbVchfrdCtanC7D13888bMFow61x8axrx+GfHLtVeAx2kxL7tTGRl+Ow==
   dependencies:
     sourcemap-codec "^1.4.8"
 
