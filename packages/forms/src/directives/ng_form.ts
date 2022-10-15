@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
+import {AfterViewInit, Directive, EventEmitter, forwardRef, inject, Inject, Input, Optional, Self} from '@angular/core';
 
 import {AbstractControl, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -18,7 +18,7 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {setUpControl, setUpFormContainer, syncPendingControls} from './shared';
+import {CALL_SET_DISABLED_STATE, SetDisabledStateOption, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formDirectiveProvider: any = {
@@ -135,7 +135,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          (AsyncValidator|AsyncValidatorFn)[]) {
+          (AsyncValidator|AsyncValidatorFn)[],
+      @Optional() @Inject(CALL_SET_DISABLED_STATE) private callSetDisabledState?:
+          SetDisabledStateOption) {
     super();
     this.form =
         new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
@@ -191,7 +193,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       const container = this._findContainer(dir.path);
       (dir as {control: FormControl}).control =
           <FormControl>container.registerControl(dir.name, dir.control);
-      setUpControl(dir.control, dir);
+      setUpControl(dir.control, dir, this.callSetDisabledState);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.add(dir);
     });

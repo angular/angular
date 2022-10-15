@@ -22,7 +22,7 @@ merge:
   # the g3 status will be added to your pull requests if they include files that match the patterns
   g3Status:
     # set to true to disable
-    disabled: false
+    disabled: true
     # the name of the status
     context: 'google3'
     # text to show when the status is pending, {{PRNumber}} will be replaced by the PR number
@@ -32,64 +32,8 @@ merge:
     # link to use for the details
     url: 'http://go/angular/g3sync'
     # list of patterns to check for the files changed by the PR
-    # this list must be manually kept in sync with google3/third_party/javascript/angular2/copy.bara.sky
     include:
-      - 'LICENSE'
-      - 'modules/benchmarks/**'
-      - 'modules/system.d.ts'
-      - 'packages/**'
-    # list of patterns to ignore for the files changed by the PR
     exclude:
-      - 'packages/*'
-      - 'packages/bazel/*'
-      - 'packages/bazel/src/*'
-      - 'packages/bazel/src/api-extractor/**'
-      - 'packages/bazel/src/builders/**'
-      - 'packages/bazel/src/ng_module/**'
-      - 'packages/bazel/src/ng_package/**'
-      - 'packages/bazel/src/protractor/**'
-      - 'packages/bazel/src/schematics/**'
-      - 'packages/bazel/src/types_bundle/**'
-      - 'packages/compiler-cli/src/ngcc/**'
-      - 'packages/compiler-cli/linker/**'
-      - 'packages/compiler-cli/ngcc/**'
-      - 'packages/compiler-cli/src/ngtsc/sourcemaps/**'
-      # 'private' mostly contains entrypoints for 3P Angular.
-      # Note that 'private/migrations' _is_ used.
-      - 'packages/compiler-cli/private/bazel.ts'
-      - 'packages/compiler-cli/private/localize.ts'
-      - 'packages/compiler-cli/private/tooling.ts'
-      - 'packages/compiler-cli/private/babel.d.ts'
-      # google3 defines its own binary entrypoints.
-      - 'packages/compiler-cli/src/bin/**'
-      - 'packages/docs/**'
-      - 'packages/elements/schematics/**'
-      - 'packages/examples/**'
-      - 'packages/language-service/**'
-      - 'packages/localize/**'
-      - 'packages/private/**'
-      - 'packages/service-worker/**'
-      - 'packages/common/locales/generate-locales-tool/**'
-      - 'packages/common/locales/index.bzl'
-      - 'packages/http/**'
-      - '**/.gitignore'
-      - '**/.gitkeep'
-      - '**/yarn.lock'
-      - '**/package.json'
-      - '**/third_party/**'
-      - '**/tsconfig-build.json'
-      - '**/tsconfig-tsec.json'
-      - '**/tsconfig.json'
-      - '**/rollup.config.js'
-      - '**/BUILD.bazel'
-      - '**/*.md'
-      - 'packages/**/integrationtest/**'
-      - 'packages/**/test/**'
-      - 'packages/zone.js/*'
-      - 'packages/zone.js/dist/**'
-      - 'packages/zone.js/doc/**'
-      - 'packages/zone.js/example/**'
-      - 'packages/zone.js/scripts/**'
 
   # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable
   mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.\nPlease help to unblock it by resolving these conflicts. Thanks!"
@@ -127,7 +71,7 @@ merge:
       - 'ci/circleci: build'
       - 'ci/circleci: lint'
       - 'ci/angular: size'
-      - 'google3'
+      - 'google-internal-tests'
       - 'pullapprove'
 
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
@@ -143,29 +87,29 @@ triage:
   defaultMilestone: 82,
   # arrays of labels that determine if an issue has been triaged by the caretaker
   l1TriageLabels:
-    - - 'comp: *'
+    - - 'area: *'
   # arrays of labels that determine if an issue has been fully triaged
   l2TriageLabels:
     - - 'P0'
-      - 'comp: *'
+      - 'area: *'
     - - 'P1'
-      - 'comp: *'
+      - 'area: *'
     - - 'P2'
-      - 'comp: *'
+      - 'area: *'
     - - 'P3'
-      - 'comp: *'
+      - 'area: *'
     - - 'P4'
-      - 'comp: *'
+      - 'area: *'
     - - 'P5'
-      - 'comp: *'
+      - 'area: *'
     - - 'feature'
-      - 'comp: *'
+      - 'area: *'
     - - 'discussion'
-      - 'comp: *'
+      - 'area: *'
     - - 'needs clarification'
-      - 'comp: *'
+      - 'area: *'
     - - 'needs reproduction'
-      - 'comp: *'
+      - 'area: *'
 
 # options for the triage PR plugin
 triagePR:
@@ -177,10 +121,10 @@ triagePR:
   defaultMilestone: 82,
   # arrays of labels that determine if a PR has been triaged by the caretaker
   l1TriageLabels:
-    - - 'comp: *'
+    - - 'area: *'
   # arrays of labels that determine if a PR has been fully triaged
   l2TriageLabels:
-    - - 'comp: *'
+    - - 'area: *'
 
 # options for rerunning CI
 rerunCircleCI:

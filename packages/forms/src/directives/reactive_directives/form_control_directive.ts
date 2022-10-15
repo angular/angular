@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Inject, inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {FormControl} from '../../model/form_control';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {disabledAttrWarning} from '../reactive_errors';
-import {_ngModelWarning, cleanUpControl, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
+import {_ngModelWarning, CALL_SET_DISABLED_STATE, cleanUpControl, isPropertyUpdated, selectValueAccessor, setDisabledStateDefault, SetDisabledStateOption, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 
@@ -108,7 +108,9 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
           (AsyncValidator|AsyncValidatorFn)[],
       @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
       @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|
-      null) {
+      null,
+      @Optional() @Inject(CALL_SET_DISABLED_STATE) private callSetDisabledState?:
+          SetDisabledStateOption) {
     super();
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
@@ -122,7 +124,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
       if (previousForm) {
         cleanUpControl(previousForm, this, /* validateControlPresenceOnChange */ false);
       }
-      setUpControl(this.form, this);
+      setUpControl(this.form, this, this.callSetDisabledState);
       this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {

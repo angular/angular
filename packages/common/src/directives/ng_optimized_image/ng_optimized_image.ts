@@ -202,6 +202,12 @@ export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
 @Directive({
   standalone: true,
   selector: 'img[ngSrc],img[rawSrc]',
+  host: {
+    '[style.position]': 'fill ? "absolute" : null',
+    '[style.width]': 'fill ? "100%" : null',
+    '[style.height]': 'fill ? "100%" : null',
+    '[style.inset]': 'fill ? "0px" : null'
+  }
 })
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private imageLoader = inject(IMAGE_LOADER);
@@ -331,6 +337,19 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private _disableOptimizedSrcset = false;
 
   /**
+   * Sets the image to "fill mode," which eliminates the height/width requirement and adds
+   * styles such that the image fills its containing element.
+   */
+  @Input()
+  set fill(value: string|boolean|undefined) {
+    this._fill = inputToBoolean(value);
+  }
+  get fill(): boolean {
+    return this._fill;
+  }
+  private _fill = false;
+
+  /**
    * Value of the `src` attribute if set on the host `<img>` element.
    * This input is exclusively read to assert that `src` is not set in conflict
    * with `ngSrc` and that images don't start to load until a lazy loading strategy is set.
@@ -356,7 +375,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       }
       assertNotBase64Image(this);
       assertNotBlobUrl(this);
-      assertNonEmptyWidthAndHeight(this);
+      if (this.fill) {
+        assertEmptyWidthAndHeight(this);
+      } else {
+        assertNonEmptyWidthAndHeight(this);
+      }
       assertValidLoadingInput(this);
       assertNoImageDistortion(this, this.imgElement, this.renderer);
       if (!this.ngSrcset) {
@@ -383,8 +406,14 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private setHostAttributes() {
     // Must set width/height explicitly in case they are bound (in which case they will
     // only be reflected and not found by the browser)
-    this.setHostAttribute('width', this.width!.toString());
-    this.setHostAttribute('height', this.height!.toString());
+    if (this.fill) {
+      if (!this.sizes) {
+        this.sizes = '100vw';
+      }
+    } else {
+      this.setHostAttribute('width', this.width!.toString());
+      this.setHostAttribute('height', this.height!.toString());
+    }
 
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
@@ -802,6 +831,22 @@ function assertNonEmptyWidthAndHeight(dir: NgOptimizedImage) {
             `are missing: ${missingAttributes.map(attr => `"${attr}"`).join(', ')}. ` +
             `Including "width" and "height" attributes will prevent image-related layout shifts. ` +
             `To fix this, include "width" and "height" attributes on the image tag.`);
+  }
+}
+
+/**
+ * Verifies that width and height are not set. Used in fill mode, where those attributes don't make
+ * sense.
+ */
+function assertEmptyWidthAndHeight(dir: NgOptimizedImage) {
+  if (dir.width || dir.height) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `${
+            imgDirectiveDetails(
+                dir.ngSrc)} the attributes \`height\` and/or \`width\` are present ` +
+            `along with the \`fill\` attribute. Because \`fill\` mode causes an image to fill its containing ` +
+            `element, the size attributes have no effect and should be removed.`);
   }
 }
 

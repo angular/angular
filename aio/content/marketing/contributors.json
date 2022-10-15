@@ -509,6 +509,14 @@
     "twitter": "joeyperrott",
     "groups": ["Angular"]
   },
+  "joshuamorony": {
+    "name": "Joshua Morony",
+    "picture": "joshuamorony.jpg",
+    "twitter": "joshuamorony",
+    "website": "https://joshmorony.com",
+    "bio": "Josh is a Software Engineer, Google Developer Expert for Angular, and Ionic Developer Expert. He is a consultant and content creator focused on advancing the skills of Angular and Ionic developers. He is the author of multiple books and courses including Ionic Start and Modern Angular.",
+    "groups": ["GDE"]
+  },
   "josmar-crwdstffng": {
     "name": "Joe Martin",
     "picture": "josephmmartin.jpg",

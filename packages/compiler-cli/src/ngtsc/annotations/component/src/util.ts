@@ -69,7 +69,7 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
   if (!Array.isArray(imports)) {
     const error = createValueHasWrongTypeError(
                       expr, imports,
-                      `'imports' must be an array of components, directives, pipes, or NgModules`)
+                      `'imports' must be an array of components, directives, pipes, or NgModules.`)
                       .toDiagnostic();
     return {
       imports: [],
@@ -91,7 +91,7 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
         diagnostics.push(
             createValueHasWrongTypeError(
                 ref.getOriginForDiagnostics(expr), ref,
-                `'imports' must be an array of components, directives, pipes, or NgModules`)
+                `'imports' must be an array of components, directives, pipes, or NgModules.`)
                 .toDiagnostic());
       }
     } else if (isLikelyModuleWithProviders(ref)) {
@@ -111,7 +111,7 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
       diagnostics.push(
           createValueHasWrongTypeError(
               expr, imports,
-              `'imports' must be an array of components, directives, pipes, or NgModules`)
+              `'imports' must be an array of components, directives, pipes, or NgModules.`)
               .toDiagnostic());
     }
   }

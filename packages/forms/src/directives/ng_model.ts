@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
+import {ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, inject, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
 
 import {FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -18,7 +18,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor'
 import {NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
-import {controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
+import {CALL_SET_DISABLED_STATE, controlPath, isPropertyUpdated, selectValueAccessor, SetDisabledStateOption, setUpControl} from './shared';
 import {formGroupNameException, missingNameException, modelParentException} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
@@ -210,7 +210,9 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
           (AsyncValidator|AsyncValidatorFn)[],
       @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
-      @Optional() @Inject(ChangeDetectorRef) private _changeDetectorRef?: ChangeDetectorRef|null) {
+      @Optional() @Inject(ChangeDetectorRef) private _changeDetectorRef?: ChangeDetectorRef|null,
+      @Optional() @Inject(CALL_SET_DISABLED_STATE) private callSetDisabledState?:
+          SetDisabledStateOption) {
     super();
     this._parent = parent;
     this._setValidators(validators);
@@ -295,7 +297,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _setUpStandalone(): void {
-    setUpControl(this.control, this);
+    setUpControl(this.control, this, this.callSetDisabledState);
     this.control.updateValueAndValidity({emitEvent: false});
   }
 
