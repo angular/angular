@@ -279,7 +279,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   @Input() sizes?: string;
 
   /**
-   * The intrinsic width of the image in pixels.
+   * For responsive images: the intrinsic width of the image in pixels.
+   * For fixed size images: the desired rendered width of the image in pixels.
    */
   @Input()
   set width(value: string|number|undefined) {
@@ -292,7 +293,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private _width?: number;
 
   /**
-   * The intrinsic height of the image in pixels.
+   * For responsive images: the intrinsic height of the image in pixels.
+   * For fixed size images: the desired rendered height of the image in pixels.* The intrinsic
+   * height of the image in pixels.
    */
   @Input()
   set height(value: string|number|undefined) {
