@@ -32,7 +32,6 @@ function isImgixUrl(url: string): boolean {
  * @returns Set of providers to configure the Imgix loader.
  *
  * @publicApi
- * @developerPreview
  */
 export const provideImgixLoader =
     createImageLoader(createImgixUrl, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);

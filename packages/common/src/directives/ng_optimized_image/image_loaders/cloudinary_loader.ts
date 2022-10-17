@@ -35,7 +35,6 @@ function isCloudinaryUrl(url: string): boolean {
  * @returns Set of providers to configure the Cloudinary loader.
  *
  * @publicApi
- * @developerPreview
  */
 export const provideCloudinaryLoader = createImageLoader(
     createCloudinaryUrl,

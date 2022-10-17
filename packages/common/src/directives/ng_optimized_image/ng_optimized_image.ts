@@ -203,7 +203,6 @@ export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
  * ```
  *
  * @publicApi
- * @developerPreview
  */
 @Directive({
   standalone: true,
@@ -325,6 +324,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * Sets the image to "fill mode," which eliminates the height/width requirement and adds
    * styles such that the image fills its containing element.
+   *
+   * @developerPreview
    */
   @Input()
   set fill(value: string|boolean|undefined) {
