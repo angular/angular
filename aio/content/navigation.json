@@ -822,8 +822,8 @@
         },
         {
           "url": "guide/image-directive-setup",
-          "title": "Setting up NgOptimizedImage",
-          "tooltip": "Setup the Angular image directive"
+          "title": "Configuring an image loader for NgOptimizedImage",
+          "tooltip": "Set up an image loader for the Angular image directive"
         },
         {
           "title": "Angular Libraries",
