@@ -9,7 +9,7 @@ Before continuing with this topic, you should be familiar with the following:
 *   [Introduction to Angular animations](guide/animations)
 *   [Transition and triggers](guide/transition-and-triggers)
 
-## Creating reusable animations
+## Create reusable animations
 
 To create a reusable animation, use the [`animation()`](api/animations/animation) function to define an animation in a separate `.ts` file and declare this animation definition as a `const` export variable.
 You can then import and reuse this animation in any of your application components using the [`useAnimation()`](api/animations/useAnimation) function.
@@ -44,10 +44,4 @@ You might also be interested in the following:
 *   [Complex animation Sequences](guide/complex-animation-sequences)
 *   [Route transition animations](guide/route-animations)
 
-<!-- links -->
-
-<!-- external links -->
-
-<!-- end links -->
-
-@reviewed 2022-02-28
+@reviewed 2022-10-11
