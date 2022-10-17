@@ -67,7 +67,24 @@ async function linkLocalDeps(exampleDepsNodeModules, linkedNodeModules, localPac
     .map(pkgName => fs.pathExists(path.join(exampleDepsNodeModules, pkgName))));
 
   return Promise.all(Object.keys(localPackages).filter((pkgName, i) => hasNpmDepForPkg[i])
-    .map(pkgName => fs.ensureSymlinkSync(localPackages[pkgName], path.join(linkedNodeModules, pkgName), 'dir')));
+    .map(pkgName => {
+      const pkgJsonPath = path.join(LOCAL_PACKAGES[pkgName], 'package.json');
+      const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+      const linkedPkgPath = path.join(linkedNodeModules, pkgName);
+
+      // If a local package has bin entries and an example invokes one, then entrypoint
+      // resolution escapes out of the sandboxed folder into the package folder in the output
+      // tree and the bin cannot resolve its deps. To prevent this, copy the full local package
+      // into node_modules as a way of linking it. Currently, only the `upgrade-phonecat-hybrid-2`
+      // which calls `ngc` seems to need this.
+      if (pkgJson.bin) {
+        fs.copySync(LOCAL_PACKAGES[pkgName], linkedPkgPath);
+        return;
+      }
+
+      // Standard case: just symlink the local package.
+      fs.ensureSymlinkSync(LOCAL_PACKAGES[pkgName], linkedPkgPath, 'dir')
+    }));
 }
 
 // The .bin folder is copied over from the original yarn_install repository, so the
@@ -85,12 +102,6 @@ function pointBinSymlinksToLocalPackages(linkedNodeModules, exampleDepsNodeModul
     onlyFiles: true
   });
   allNodeModuleBins.forEach(bin => {
-    // TODO: Swapping the symlink to ngc with the local package equivalent
-    // doesn't seem to work. When ngc runs in upgrade-phonecat-2-hybrid via
-    // the build:aot yarn script, node cannot resolve @angular/compiler.
-    if (bin === 'ngc') {
-      return;
-    }
     const symlinkTarget = fs.readlinkSync(path.join(linkedNodeModules, '.bin', bin));
     for (const pkgName of Object.keys(localPackages)) {
       const binMightBeInLocalPackage = symlinkTarget.includes(path.join(exampleDepsNodeModules, pkgName) + path
