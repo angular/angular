@@ -9,22 +9,24 @@ It's ready for you to try, but it might change before it is stable.
 
 The `NgOptimizedImage` directive makes it easy to adopt performance best practices for loading images.
 
-The `NgOptimizedImage` directive ensures that the loading of the [Largest Contentful Paint](http://web.dev/lcp) image is prioritized by:
+The directive ensures that the loading of the [Largest Contentful Paint](http://web.dev/lcp) image is prioritized by:
 
 *   Automatically setting the `fetchpriority` attribute on the `<img>` tag
 *   Lazy loading other images by default
 *   Asserting that there is a corresponding preconnect link tag in the document head
+*   Generating a [preload hint](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preload) if app is using SSR
 
 In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enforces a number of image best practices:
 
-*   Using [image URLs to apply image optimizations](https://web.dev/image-cdns/#how-image-cdns-use-urls-to-indicate-optimization-options)
+*   Uses [image CDN URLs to apply image optimizations](https://web.dev/image-cdns/#how-image-cdns-use-urls-to-indicate-optimization-options)
 *   Requires that `width` and `height` are set
 *   Warns if `width` or `height` have been set incorrectly
 *   Warns if the image will be visually distorted when rendered
 
 ## Prerequisites
 
-You will need to import the directive into your application. In addition, you will need to set up an image loader. These steps are explained in the [Setting up `NgOptimizedImage`](/guide/image-directive-setup) tutorial.
+1. You will need to import `NgOptimizedImage` from the `@angular/common` module into your application. The directive is defined as a [standalone directive](/guide/standalone-components), so components should import it directly.
+2. Consider setting up an image loader. These steps are explained in the [Configuring an image loader](/guide/image-directive-setup) tutorial.
 
 ## Usage in a template
 
@@ -38,9 +40,18 @@ To activate the `NgOptimizedImage` directive, replace your image's `src` attribu
 
 </code-example>
 
-The built-in third-party loaders prepend a shared base URL to `src`. If you're using one of these loaders (or any other loader that does this), make sure to omit the shared base URL path from `src` to prevent unnecessary duplication.
+If you're using a built-in third-party loader, make sure to omit the base URL path from `src`, as that will be prepended automatically by the loader.
 
-You must also set the `width` and `height` attributes. This is done to prevent [image-related layout shifts](https://web.dev/css-web-vitals/#images-and-layout-shifts).  The `width` and `height` attributes should reflect the [intrinsic size](https://developer.mozilla.org/en-US/docs/Glossary/Intrinsic_Size) of the image. During development, the `NgOptimizedImage` warns if it detects that the `width` and `height` attributes have been set incorrectly.
+### Preventing layout shift
+
+To prevent [image-related layout shifts](https://web.dev/css-web-vitals/#images-and-layout-shifts), the directive enforces that you set the `width` and `height` attributes for each image.  
+
+* For responsive images, the `width` and `height` attributes should reflect
+the [intrinsic size](https://developer.mozilla.org/en-US/docs/Glossary/Intrinsic_Size) of the image. 
+
+* For fixed size images, the `width` and `height` attributes should reflect the desired rendered size of the image. The aspect ratio of these attributes should always match the intrinsic aspect ratio of the image.
+
+Note: if you don't know the size of your images, consider using "fill mode" to inherit the size of the parent container (see below).
 
 ### Marking images as `priority`
 
@@ -57,7 +68,7 @@ Marking an image as `priority` applies the following optimizations:
 *   Sets `fetchpriority=high` (read more about priority hints [here](https://web.dev/priority-hints))
 *   Sets `loading=eager` (read more about native lazy loading [here](https://web.dev/browser-level-image-lazy-loading))
 
-Angular displays a warning during development if the LCP element is an image that does not have the `priority` attribute. A page’s LCP element can vary based on a number of factors - such as the dimensions of a user's screen. A page may have multiple images that should be marked `priority`. See [CSS for Web Vitals](https://web.dev/css-web-vitals/#images-and-largest-contentful-paint-lcp) for more details.
+Angular displays a warning during development if the LCP element is an image that does not have the `priority` attribute. A page’s LCP element can vary based on a number of factors - such as the dimensions of a user's screen, so a page may have multiple images that should be marked `priority`. See [CSS for Web Vitals](https://web.dev/css-web-vitals/#images-and-largest-contentful-paint-lcp) for more details.
 
 ### Adding resource hints
 
@@ -71,12 +82,12 @@ You can add a [`preconnect` resource hint](https://web.dev/preconnect-and-dns-pr
 
 By default, if you use a loader for a third-party image service, the `NgOptimizedImage` directive will warn during development if it detects that there is no `preconnect` resource hint for the origin that serves the LCP image.
 
-To disable these warnings, add `{ensurePreconnect: false}` to the arguments passed to the provider factory for your chosen image service:
+To disable these warnings, inject the `PRECONNECT_CHECK_BLOCKLIST` token:
 
 <code-example format="typescript" language="typescript">
 
 providers: [
-  provideImgixLoader('https://my.base.url', {ensurePreconnect: false})
+  {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://your-domain.com'}
 ],
 
 </code-example>
@@ -99,9 +110,9 @@ Depending on the image's styling, adding `width` and `height` attributes may cau
 
 You can typically fix this by adding `height: auto` or `width: auto` to your image styles. For more information, see the [web.dev article on the `<img>` tag](https://web.dev/patterns/web-vitals-patterns/images/img-tag).
 
-### Handling `srcset` attributes
+### Requesting images at the correct size
 
-Defining a [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset) ensures that the browser requests an image at the right size for your user's viewport, so it doesn't waste time downloading an image that's too large. 'NgOptimizedImage' generates an appropriate `srcset` for the image, based on the presence and value of the [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes) on the image tag.
+Defining a [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset) ensures that the browser requests an image at the right size for your user's viewport, so it doesn't waste time downloading an image that's too large. `NgOptimizedImage` generates an appropriate `srcset` for the image, based on the presence and value of the [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes) on the image tag.
 
 #### Fixed-size images
 
@@ -134,7 +145,7 @@ providers: [
 ],
 </code-example>
 
-If you would like to manually define a `srcset` attribute, you can provide your own directly, or use the `ngSrcset` attribute:
+If you would like to manually define a `srcset` attribute, you can provide your own using the `ngSrcset` attribute:
 
 <code-example format="html" language="html">
 
@@ -142,7 +153,7 @@ If you would like to manually define a `srcset` attribute, you can provide your 
 
 </code-example>
 
-If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets the `srcset` using the configured image loader. Do not include image file names in `ngSrcset` - the directive infers this information from `ngSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`) are supported.
+If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets the `srcset` based on the sizes included. Do not include image file names in `ngSrcset` - the directive infers this information from `ngSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`) are supported.
 
 <code-example format="html" language="html">
 
