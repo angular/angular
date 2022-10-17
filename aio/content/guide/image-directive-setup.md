@@ -1,15 +1,6 @@
 # Configuring an image loader for `NgOptimizedImage`
 
-<div class="alert is-important">
-
-The `NgOptimizedImage` directive is available for [developer preview](https://angular.io/guide/releases#developer-preview).
-It's ready for you to try, but it might change before it is stable.
-
-For information on using `NgOptimizedImage`, see [Getting Started with NgOptimizedImage](/guide/image-directive).
-
-</div>
-
-These instructions explain how to set up an image loader for use with the `NgOptimizedImage`. 
+These instructions explain how to set up an image loader for use with the `NgOptimizedImage`.
 
 A "loader" is a function that generates an [image transformation URL](https://web.dev/image-cdns/#how-image-cdns-use-urls-to-indicate-optimization-options) for a given image file. When appropriate, `NgOptimizedImage` sets the size, format, and image quality transformations for an image.
 

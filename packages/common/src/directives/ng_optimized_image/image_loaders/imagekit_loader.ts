@@ -34,7 +34,6 @@ function isImageKitUrl(url: string): boolean {
  * @returns Set of providers to configure the ImageKit loader.
  *
  * @publicApi
- * @developerPreview
  */
 export const provideImageKitLoader = createImageLoader(
     createImagekitUrl,

@@ -1,12 +1,5 @@
 # Getting started with NgOptimizedImage
 
-<div class="alert is-important">
-
-The `NgOptimizedImage` directive is available for [developer preview](https://angular.io/guide/releases#developer-preview).
-It's ready for you to try, but it might change before it is stable.
-
-</div>
-
 The `NgOptimizedImage` directive makes it easy to adopt performance best practices for loading images.
 
 The directive ensures that the loading of the [Largest Contentful Paint](http://web.dev/lcp) image is prioritized by:

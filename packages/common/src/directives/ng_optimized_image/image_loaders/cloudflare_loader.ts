@@ -18,7 +18,6 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @returns Provider that provides an ImageLoader function
  *
  * @publicApi
- * @developerPreview
  */
 export const provideCloudflareLoader = createImageLoader(
     createCloudflareUrl,
