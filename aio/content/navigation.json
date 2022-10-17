@@ -418,6 +418,11 @@
           "tooltip": "Use HTTP to talk to a remote server."
         },
         {
+          "url": "guide/image-directive",
+          "title": "Image optimization",
+          "tooltip": "Performant images with the Angular image directive."
+        },
+        {
           "title": "Testing",
           "tooltip": "Testing your Angular apps.",
           "children": [
@@ -850,17 +855,6 @@
               "tooltip": "Information about the Angular Package Format."
             }
           ]
-        }
-      ]
-    },
-    {
-      "title": "Feature preview",
-      "tooltip": "Angular preview features and APIs",
-      "children": [
-        {
-          "url": "guide/image-directive",
-          "title": "Image Directive",
-          "tooltip": "Performant images with the Angular image directive."
         }
       ]
     },
