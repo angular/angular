@@ -39,6 +39,8 @@ export const missingImportMeta: CodeActionMeta = {
 function getCodeActions(
     {templateInfo, start, compiler, formatOptions, preferences, errorCode, tsLs}:
         CodeActionContext) {
+  let codeActions: ts.CodeFixAction[] = [];
+
   const checker = compiler.getTemplateTypeChecker();
   const tsChecker = compiler.programDriver.getProgram().getTypeChecker();
 
@@ -64,46 +66,45 @@ function getCodeActions(
   }
   const importOn = owningNgModule ?? templateInfo.component;
 
-  // Find all possible importable directives with a matching selector, and take one of them.
-  // In the future, we could handle multiple matches as additional quick fixes.
+  // Find all possible importable directives with a matching selector.
   const allPossibleDirectives = checker.getPotentialTemplateDirectives(templateInfo.component);
   const matchingDirectives =
       getDirectiveMatchesForElementTag(missingElement, allPossibleDirectives);
-  if (matchingDirectives.size === 0) {
-    return [];
+  const matches = matchingDirectives.values();
+
+  // Generate suggestions for each possible match.
+  for (let currMatch of matches) {
+    const currMatchSymbol = currMatch.tsSymbol.valueDeclaration;
+
+    // Get possible trait imports corresponding to the recommended directive.
+    const potentialImports = checker.getPotentialImportsFor(currMatch, importOn);
+
+    // For each possible import specifier, create a suggestion.
+    for (let potentialImport of potentialImports) {
+      // Update the imports on the TypeScript file and Angular decorator.
+      let [fileImportChanges, importName] = updateImportsForTypescriptFile(
+          tsChecker, importOn.getSourceFile(), potentialImport, currMatchSymbol.getSourceFile());
+      let traitImportChanges = updateImportsForAngularTrait(checker, importOn, importName);
+
+      // All quick fixes should always update the trait import; however, the TypeScript import might
+      // already be present.
+      if (traitImportChanges.length === 0) {
+        continue;
+      }
+
+      // Create a code action for this import.
+      codeActions.push({
+        fixName: FixIdForCodeFixesAll.FIX_MISSING_IMPORT,
+        description: `Import ${importName} from '${potentialImport.moduleSpecifier}' on ${
+            importOn.name!.text}`,
+        changes: [{
+          fileName: importOn.getSourceFile().fileName,
+          textChanges: [...fileImportChanges, ...traitImportChanges],
+        }]
+      });
+    }
   }
-  const bestMatch: PotentialDirective = matchingDirectives.values().next().value;
-  const bestMatchSymbol = bestMatch.tsSymbol.valueDeclaration;
 
-  // Get possible trait imports corresponding to the recommended directive. Only use the
-  // compiler's best import; in the future, we could suggest multiple imports if they exist.
-  const potentialImports = checker.getPotentialImportsFor(bestMatch, importOn);
-  if (potentialImports.length === 0) {
-    return [];
-  }
-  const potentialImport = potentialImports[0];
-
-  // Update the imports on the TypeScript file and Angular decorator.
-  let [fileImportChanges, importName] = updateImportsForTypescriptFile(
-      tsChecker, importOn.getSourceFile(), potentialImport, bestMatchSymbol.getSourceFile());
-  let traitImportChanges = updateImportsForAngularTrait(checker, importOn, importName);
-
-  // All quick fixes should always update the trait import; however, the TypeScript import might
-  // already be present.
-  if (traitImportChanges.length === 0) {
-    return [];
-  }
-
-  // Create the code action to insert the new imports.
-  const codeActions: ts.CodeFixAction[] = [{
-    fixName: FixIdForCodeFixesAll.FIX_MISSING_IMPORT,
-    description:
-        `Import ${importName} from '${potentialImport.moduleSpecifier}' on ${importOn.name!.text}`,
-    changes: [{
-      fileName: importOn.getSourceFile().fileName,
-      textChanges: [...fileImportChanges, ...traitImportChanges],
-    }],
-  }];
   return codeActions;
 }
 
