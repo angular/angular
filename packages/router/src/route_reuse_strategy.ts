@@ -64,7 +64,7 @@ export abstract class RouteReuseStrategy {
  *
  * This base route reuse strategy only reuses routes when the matched router configs are
  * identical. This prevents components from being destroyed and recreated
- * when just the fragment or query parameters change
+ * when just the route parameters, query parameters or fragment change
  * (that is, the existing component is _reused_).
  *
  * This strategy does not store any routes for later reuse.
