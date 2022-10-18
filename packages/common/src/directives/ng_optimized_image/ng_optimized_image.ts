@@ -417,7 +417,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
     if (this.ngSrcset) {
       rewrittenSrcset = this.getRewrittenSrcset();
-    } else if (!this._disableOptimizedSrcset && !this.srcset) {
+    } else if (
+        !this._disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader) {
       rewrittenSrcset = this.getAutomaticSrcset();
     }
 
