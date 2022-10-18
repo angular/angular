@@ -1401,6 +1401,20 @@ describe('Image directive', () => {
         return `${IMG_BASE_URL}/${config.src}${width}`;
       };
 
+      it('should not generate a srcset if the default noop loader is used', () => {
+        setupTestingModule({noLoader: true});
+
+        const template = `
+          <img ngSrc="img" width="100" height="50" sizes="100vw">
+        `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset')).toBeNull();
+      });
+
       it('should add a responsive srcset to the img element if sizes attribute exists', () => {
         setupTestingModule({imageLoader});
 
@@ -1538,6 +1552,7 @@ class TestComponent {
 function setupTestingModule(config?: {
   imageConfig?: ImageConfig,
   imageLoader?: ImageLoader,
+  noLoader?: boolean,
   extraProviders?: Provider[],
   component?: Type<unknown>
 }) {
@@ -1548,8 +1563,8 @@ function setupTestingModule(config?: {
   const loader = config?.imageLoader || defaultLoader;
   const extraProviders = config?.extraProviders || [];
   const providers: Provider[] = [
-    {provide: DOCUMENT, useValue: window.document}, {provide: IMAGE_LOADER, useValue: loader},
-    ...extraProviders
+    {provide: DOCUMENT, useValue: window.document},
+    ...(config?.noLoader ? [] : [{provide: IMAGE_LOADER, useValue: loader}]), ...extraProviders
   ];
   if (config?.imageConfig) {
     providers.push({provide: IMAGE_CONFIG, useValue: config.imageConfig});
