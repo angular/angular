@@ -359,7 +359,8 @@ describe('Image directive', () => {
               'element with the `ngSrc="img.png"`) has detected that these ' +
               'required attributes are missing: "width", "height". Including "width" and ' +
               '"height" attributes will prevent image-related layout shifts. ' +
-              'To fix this, include "width" and "height" attributes on the image tag.');
+              'To fix this, include "width" and "height" attributes on the image tag or turn on ' +
+              '"fill" mode with the `fill` attribute.');
     });
 
     it('should throw if `width` is not set', () => {
@@ -375,7 +376,8 @@ describe('Image directive', () => {
               'element with the `ngSrc="img.png"`) has detected that these ' +
               'required attributes are missing: "width". Including "width" and ' +
               '"height" attributes will prevent image-related layout shifts. ' +
-              'To fix this, include "width" and "height" attributes on the image tag.');
+              'To fix this, include "width" and "height" attributes on the image tag or turn on ' +
+              '"fill" mode with the `fill` attribute.');
     });
 
     it('should throw if `width` is 0', () => {
@@ -421,7 +423,8 @@ describe('Image directive', () => {
               'element with the `ngSrc="img.png"`) has detected that these required ' +
               'attributes are missing: "height". Including "width" and "height" ' +
               'attributes will prevent image-related layout shifts. ' +
-              'To fix this, include "width" and "height" attributes on the image tag.');
+              'To fix this, include "width" and "height" attributes on the image tag or turn on ' +
+              '"fill" mode with the `fill` attribute.');
     });
 
     it('should throw if `height` is 0', () => {
