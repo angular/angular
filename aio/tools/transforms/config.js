@@ -5,10 +5,10 @@ const { readdirSync } = require('fs');
 // directory (TEST_TMPDIR) that bazel provides for tests.
 const BAZEL_OUTPUT_PATH = process.env.BAZEL_DGENI_OUTPUT_PATH || process.env.TEST_TMPDIR;
 
-// The current directory is always the correct project root. During a build, this evalutates
-// to the exec root. During the "fast-serve" bazel run mode, it resolves to the runfiles root
-// of the fast serve binary.
-const PROJECT_ROOT = resolve('.');
+// During a build the project root resolves to the execroot. During docs-watch,
+// we set the project root to the root of the source tree so that we can watch
+// changes to docs files.
+const PROJECT_ROOT = process.env.BUILD_WORKSPACE_DIRECTORY || resolve('.');
 
 const AIO_PATH = resolve(PROJECT_ROOT, 'aio');
 const TEMPLATES_PATH = resolve(AIO_PATH, 'tools/transforms/templates');
