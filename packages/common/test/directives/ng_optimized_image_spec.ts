@@ -288,21 +288,6 @@ describe('Image directive', () => {
               'attribute.');
     });
 
-    it('should throw if an old `rawSrc` is present', () => {
-      setupTestingModule();
-
-      const template = '<img rawSrc="path/img.png" src="path/img2.png" width="100" height="50">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      })
-          .toThrowError(
-              'NG02952: The NgOptimizedImage directive has detected that the `rawSrc` ' +
-              'attribute was used to activate the directive. Newer version of the directive uses ' +
-              'the `ngSrc` attribute instead. Please replace `rawSrc` with `ngSrc` and ' +
-              '`rawSrcset` with `ngSrcset` attributes in the template to enable image optimizations.');
-    });
-
     it('should throw if `ngSrc` contains a Base64-encoded image (that starts with `data:`)', () => {
       setupTestingModule();
 
