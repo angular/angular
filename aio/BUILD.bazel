@@ -302,6 +302,7 @@ architect(
 
 nodejs_binary(
     name = "docs-watch",
+    chdir = package_name(),
     data = APPLICATION_FILES + [
         "//aio/scripts:fast-serve-and-watch",
     ] + select({
