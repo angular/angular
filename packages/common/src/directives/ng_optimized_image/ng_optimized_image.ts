@@ -814,7 +814,8 @@ function assertNonEmptyWidthAndHeight(dir: NgOptimizedImage) {
         `${imgDirectiveDetails(dir.ngSrc)} these required attributes ` +
             `are missing: ${missingAttributes.map(attr => `"${attr}"`).join(', ')}. ` +
             `Including "width" and "height" attributes will prevent image-related layout shifts. ` +
-            `To fix this, include "width" and "height" attributes on the image tag.`);
+            `To fix this, include "width" and "height" attributes on the image tag or turn on ` +
+            `"fill" mode with the \`fill\` attribute.`);
   }
 }
 
