@@ -352,6 +352,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    */
   @Input() srcset?: string;
 
+  /** @nodoc */
   ngOnInit() {
     if (ngDevMode) {
       assertNonEmptyInput(this, 'ngSrc', this.ngSrc);
@@ -433,6 +434,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     if (ngDevMode) {
       assertNoPostInitInputChange(
@@ -503,6 +505,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     return finalSrcs.join(', ');
   }
 
+  /** @nodoc */
   ngOnDestroy() {
     if (ngDevMode) {
       if (!this.priority && this._renderedSrc !== null && this.lcpObserver !== null) {
