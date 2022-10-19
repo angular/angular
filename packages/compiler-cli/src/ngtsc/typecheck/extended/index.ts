@@ -12,6 +12,7 @@ import {TemplateCheckFactory} from './api';
 import {factory as invalidBananaInBoxFactory} from './checks/invalid_banana_in_box';
 import {factory as missingControlFlowDirectiveFactory} from './checks/missing_control_flow_directive';
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let';
+import {factory as nonStictComparisionOperatorFactory} from './checks/non_strict_comparison_operator';
 import {factory as nullishCoalescingNotNullableFactory} from './checks/nullish_coalescing_not_nullable';
 import {factory as optionalChainNotNullableFactory} from './checks/optional_chain_not_nullable';
 import {factory as suffixNotSupportedFactory} from './checks/suffix_not_supported';
@@ -22,6 +23,7 @@ export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 export const ALL_DIAGNOSTIC_FACTORIES:
     readonly TemplateCheckFactory<ErrorCode, ExtendedTemplateDiagnosticName>[] = [
       invalidBananaInBoxFactory,
+      nonStictComparisionOperatorFactory,
       nullishCoalescingNotNullableFactory,
       optionalChainNotNullableFactory,
       missingControlFlowDirectiveFactory,

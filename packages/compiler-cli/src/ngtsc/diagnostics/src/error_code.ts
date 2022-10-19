@@ -310,6 +310,16 @@ export enum ErrorCode {
   OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
 
   /**
+   * The comparison operator is not strict.
+   *
+   * ```
+   * {{ foo != bar }}
+   * {{ foo == bar }}
+   * ```
+   */
+  NON_STRICT_COMPARISON_OPERATOR = 8109,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

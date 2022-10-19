@@ -10,6 +10,7 @@ Currently, Angular supports the following extended diagnostics:
 
 *   [NG8101 - `invalidBananaInBox`](extended-diagnostics/NG8101)
 *   [NG8102 - `nullishCoalescingNotNullable`](extended-diagnostics/NG8102)
+*   [NG8102 - `nonStrictComparisonOperator`](extended-diagnostics/NG8109)
 
 ## Configuration
 

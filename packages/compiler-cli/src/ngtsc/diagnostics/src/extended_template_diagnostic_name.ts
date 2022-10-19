@@ -23,4 +23,5 @@ export enum ExtendedTemplateDiagnosticName {
   TEXT_ATTRIBUTE_NOT_BINDING = 'textAttributeNotBinding',
   MISSING_NGFOROF_LET = 'missingNgForOfLet',
   SUFFIX_NOT_SUPPORTED = 'suffixNotSupported',
+  NON_STRICT_COMPARISON_OPERATOR = 'nonStrictComparisionOperator'
 }
