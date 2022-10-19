@@ -1,3 +1,10 @@
+<a name="14.2.7"></a>
+# 14.2.7 (2022-10-19)
+## Special Thanks
+Bob Watson, Charles Barnes, Joey Perrott, Virginia Dooley, WD Snoeijer, abergquist and urugator
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-next.6"></a>
 # 15.0.0-next.6 (2022-10-12)
 ## Breaking Changes
