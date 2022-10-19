@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = ["non_strict_comparision_operator_spec.ts"],
+    srcs = ["non_strict_comparison_operator_spec.ts"],
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/core:api",
@@ -12,7 +12,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended",
-        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/non_strict_comparision_operator",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/non_strict_comparison_operator",
         "//packages/compiler-cli/src/ngtsc/typecheck/testing",
         "@npm//typescript",
     ],
