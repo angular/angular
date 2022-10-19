@@ -1,3 +1,28 @@
+<a name="15.0.0-rc.0"></a>
+# 15.0.0-rc.0 (2022-10-19)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f52d4e474](https://github.com/angular/angular/commit/4f52d4e47416494b4054e43a0d96383bde7813ca) | fix | don't generate srcset if noopImageLoader is used ([#47804](https://github.com/angular/angular/pull/47804)) |
+| [fa4798095e](https://github.com/angular/angular/commit/fa4798095e3820087c4a3bccc9638c5e979315da) | fix | update size error to mention 'fill' mode ([#47797](https://github.com/angular/angular/pull/47797)) |
+| [23f210c0ab](https://github.com/angular/angular/commit/23f210c0abfb6104f4aa2f39d0efd096c2b7574d) | fix | warn if using supported CDN but not built-in loader ([#47330](https://github.com/angular/angular/pull/47330)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [309b2cde51](https://github.com/angular/angular/commit/309b2cde51d1577d6561e826be01e2b5fce43c49) | fix | implement more host directive validations as diagnostics ([#47768](https://github.com/angular/angular/pull/47768)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b6fd814542](https://github.com/angular/angular/commit/b6fd81454207bd256a48d5726f3bd7e6ce6a489b) | fix | update ng add schematic to support Angular CLI version 15 ([#47763](https://github.com/angular/angular/pull/47763)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [79e9e8ab77](https://github.com/angular/angular/commit/79e9e8ab779d230f6a1df25c4ccff94b13129305) | fix | Delay router scroll event until navigated components have rendered ([#47563](https://github.com/angular/angular/pull/47563)) |
+## Special Thanks
+Alan Agius, Alex Castle, Andrew Kushnir, Andrew Scott, Bob Watson, Charles Barnes, Charles Lyding, Kara Erickson, Kristiyan Kostadinov, Paul Gschwendtner, Virginia Dooley, WD Snoeijer, abergquist and urugator
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.7"></a>
 # 14.2.7 (2022-10-19)
 ## Special Thanks
