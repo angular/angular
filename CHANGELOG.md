@@ -1,3 +1,13 @@
+<a name="14.2.7"></a>
+# 14.2.7 (2022-10-19)
+
+This release contains API docs improvements.
+
+## Special Thanks
+Bob Watson, Charles Barnes, Joey Perrott, Virginia Dooley, WD Snoeijer, abergquist and urugator
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.6"></a>
 # 14.2.6 (2022-10-12)
 ### compiler-cli
