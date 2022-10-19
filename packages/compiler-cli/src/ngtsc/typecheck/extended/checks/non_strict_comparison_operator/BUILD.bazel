@@ -1,7 +1,7 @@
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-    name = "non_strict_comparision_operator",
+    name = "non_strict_comparison_operator",
     srcs = ["index.ts"],
     visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
     deps = [
