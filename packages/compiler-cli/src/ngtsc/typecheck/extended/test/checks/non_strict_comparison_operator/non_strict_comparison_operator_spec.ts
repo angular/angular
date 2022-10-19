@@ -19,8 +19,7 @@ import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checke
 runInEachFileSystem(() => {
   describe('NonStrictComparisonOperatorCheck', () => {
     it('binds the error code to its extended template diagnostic name', () => {
-      expect(nonStictComparisonOperatorFactory.code)
-          .toBe(ErrorCode.NON_STRICT_COMPARISON_OPERATOR);
+      expect(nonStictComparisonOperatorFactory.code).toBe(ErrorCode.NON_STRICT_COMPARISON_OPERATOR);
       expect(nonStictComparisonOperatorFactory.name)
           .toBe(ExtendedTemplateDiagnosticName.NON_STRICT_COMPARISON_OPERATOR);
     });
