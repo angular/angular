@@ -121,7 +121,7 @@
     "canonical-path": "1.0.0",
     "chalk": "^4.1.0",
     "chokidar": "^3.5.1",
-    "convert-source-map": "^1.5.1",
+    "convert-source-map": "^2.0.0",
     "core-js-bundle": "^3.10.2",
     "d3": "^7.0.0",
     "dependency-graph": "^0.11.0",
