@@ -93,8 +93,6 @@ js_library(
     ],
 )
 
-EXAMPLES_WITH_BOILERPLATE = ["//aio/content/examples/%s" % example for example in EXAMPLES]
-
 LOCAL_PACKAGE_DEPS = [to_package_label(dep) for dep in AIO_EXAMPLE_PACKAGES]
 
 LOCAL_PACKAGE_ARGS = ["--localPackage=%s#$(rootpath %s)" % (
@@ -102,20 +100,22 @@ LOCAL_PACKAGE_ARGS = ["--localPackage=%s#$(rootpath %s)" % (
     to_package_label(dep),
 ) for dep in AIO_EXAMPLE_PACKAGES]
 
-nodejs_binary(
-    name = "create-example-playground",
+[nodejs_binary(
+    name = "create-example-playground-%s" % example,
     args = select({
         # Hardcode package names/paths in args
         "//aio:aio_local_deps": LOCAL_PACKAGE_ARGS,
         "//conditions:default": [],
-    }),
+    }) + ["--example=%s" % example],
     data = [
         ":example-sandbox",
         "@aio_example_deps//:node_modules_files",
         "@aio_npm//yargs",
-    ] + EXAMPLES_WITH_BOILERPLATE + select({
+        "//aio/content/examples/%s" % example,
+    ] + select({
         "//aio:aio_local_deps": LOCAL_PACKAGE_DEPS,
         "//conditions:default": [],
     }),
     entry_point = "create-example-playground.mjs",
-)
+    tags = ["manual"],
+) for example in EXAMPLES]
