@@ -17,12 +17,10 @@ const playgroundRoot = path.join(sourceRoot, 'aio', 'content', 'example-playgrou
  * Create an example playground with shared example deps and optionally linked local
  * angular packages in the source tree under content/examples/example-playground. This
  * script is intended to only be run under bazel as it has the localPackage arguments
- * hardcoded into the binary via starlark.
+ * and example hardcoded into the binary via starlark.
  *
- * Usage: bazel run //aio/tools/examples:create-example-playground -- --example=<example>
+ * Usage: bazel run //aio/tools/examples:create-example-playground-{EXAMPLE}
  *
- * Args:
- *  example: name of the example
  */
 
 async function main(args) {

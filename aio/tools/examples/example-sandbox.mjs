@@ -7,10 +7,15 @@ import os from 'node:os';
 // Construct a sandbox environment for an example, linking in shared example node_modules
 // and optionally linking in locally-built angular packages.
 export async function constructExampleSandbox(examplePath, destPath, nodeModulesPath, localPackages) {
-  fs.rmSync(destPath, {
-    recursive: true,
-    force: true
-  });
+  // If the sandbox folder exists delete the contents but not the folder itself. If cd'ed
+  // into the sandbox then bash will lose the reference and be stuck in a stray deleted folder,
+  // creating a confusing experience. This is relevant for developer experience with ibazel.
+  globbySync(`${destPath}/*`, {onlyFiles: false}).forEach(file => {
+    fs.rmSync(file, {
+      recursive: true,
+      force: true
+    });
+  })
   fs.copySync(examplePath, destPath);
 
   // Remove write protection as the example was copied from bazel output tree
