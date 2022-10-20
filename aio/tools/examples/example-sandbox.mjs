@@ -73,7 +73,7 @@ async function linkLocalDeps(exampleDepsNodeModules, linkedNodeModules, localPac
 
   return Promise.all(Object.keys(localPackages).filter((pkgName, i) => hasNpmDepForPkg[i])
     .map(pkgName => {
-      const pkgJsonPath = path.join(LOCAL_PACKAGES[pkgName], 'package.json');
+      const pkgJsonPath = path.join(localPackages[pkgName], 'package.json');
       const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
       const linkedPkgPath = path.join(linkedNodeModules, pkgName);
 
@@ -83,12 +83,12 @@ async function linkLocalDeps(exampleDepsNodeModules, linkedNodeModules, localPac
       // into node_modules as a way of linking it. Currently, only the `upgrade-phonecat-hybrid-2`
       // which calls `ngc` seems to need this.
       if (pkgJson.bin) {
-        fs.copySync(LOCAL_PACKAGES[pkgName], linkedPkgPath);
+        fs.copySync(localPackages[pkgName], linkedPkgPath);
         return;
       }
 
       // Standard case: just symlink the local package.
-      fs.ensureSymlinkSync(LOCAL_PACKAGES[pkgName], linkedPkgPath, 'dir')
+      fs.ensureSymlinkSync(localPackages[pkgName], linkedPkgPath, 'dir')
     }));
 }
 
