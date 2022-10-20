@@ -367,9 +367,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         assertEmptyWidthAndHeight(this);
       } else {
         assertNonEmptyWidthAndHeight(this);
+        // Only check for distorted images when not in fill mode, where
+        // images may be intentionally stretched, cropped or letterboxed.
+        assertNoImageDistortion(this, this.imgElement, this.renderer);
       }
       assertValidLoadingInput(this);
-      assertNoImageDistortion(this, this.imgElement, this.renderer);
       if (!this.ngSrcset) {
         assertNoComplexSizes(this);
       }

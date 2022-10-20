@@ -36,6 +36,10 @@ import {Component} from '@angular/core';
      <!-- Aspect-ratio: 1.0652173913 -->
      <img ngSrc="/e2e/b.png" width="245" height="230">
      <br>
+     <!-- Fill mode disables aspect ratio warning -->
+     <!-- Aspect-ratio: 0.1 -->
+     <img ngSrc="/e2e/b.png" width="24" height="240" disableOptimizedSrcset fill>
+     <br>
      <!-- Supplied aspect ratio is correct & image has 0x0 rendered size -->
      <img ngSrc="/e2e/a.png" width="25" height="25" style="display: none">
      <br>
