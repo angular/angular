@@ -99,7 +99,7 @@ EXAMPLES = {
     "what-is-angular": {"stackblitz": True, "zip": True},
 }
 
-def docs_example(name, test = True, test_tags = [], test_exec_properties = {}):
+def docs_example(name, test = True, test_tags = [], test_exec_properties = {}, flaky = False):
     """Stamp targets for adding boilerplate to examples, creating live examples, and creating zips.
 
     Args:
@@ -216,6 +216,7 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}):
                 "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
             ],
             exec_properties = test_exec_properties,
+            flaky = flaky,
             # RBE complains about superseeding the max inputs limit (70,000) due to the
             # size of the input tree.
             tags = ["no-remote-exec"] + test_tags,
