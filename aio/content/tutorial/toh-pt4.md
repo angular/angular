@@ -329,7 +329,7 @@ This template binds directly to the component's `messageService`.
 
 The messages look better after you add the private CSS styles to `messages.component.css` as listed in one of the ["final code review"](#final-code-review) tabs below.
 
-## Add messages to hero service
+## Add messages to hero component
 
 The following example shows how to display a history of each time the user clicks on a hero.
 This helps when you get to the next section on [Routing](tutorial/toh-pt5).
@@ -337,7 +337,7 @@ This helps when you get to the next section on [Routing](tutorial/toh-pt5).
 <code-example header="src/app/heroes/heroes.component.ts" path="toh-pt4/src/app/heroes/heroes.component.ts"></code-example>
 
 Refresh the browser to see the list of heroes, and scroll to the bottom to see the messages from the HeroService.
-Each time you click a hero, a new message appears to record the selection.
+Each time you click a hero, a new message from the HeroComponent appears to record the selection.
 Use the **Clear messages** button to clear the message history.
 
 <a id="final-code-review"></a>
