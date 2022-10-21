@@ -16,7 +16,7 @@
       "remoteRoot": "${workspaceRoot}",
       "stopOnEntry": false,
       "timeout": 600000,
-      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
     },
     {
       "name": "Attach to bazel test ... --config=debug (no source maps)",
@@ -30,58 +30,46 @@
       "remoteRoot": "${workspaceRoot}",
       "stopOnEntry": false,
       "timeout": 600000,
-      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
     },
     {
       "name": "IVY:packages/core/test/acceptance",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
-      "args": [
-        "test",
-        "packages/core/test/acceptance",
-        "--config=debug"
-      ],
+      "args": ["test", "packages/core/test/acceptance", "--config=debug"],
       "port": 9229,
       "address": "localhost",
       "restart": true,
       "sourceMaps": true,
       "timeout": 600000,
-      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
     },
     {
       "name": "IVY:packages/core/test/render3",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
-      "args": [
-        "test",
-        "packages/core/test/render3",
-        "--config=debug"
-      ],
+      "args": ["test", "packages/core/test/render3", "--config=debug"],
       "port": 9229,
       "address": "localhost",
       "restart": true,
       "sourceMaps": true,
       "timeout": 600000,
-      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
     },
     {
       "name": "IVY:packages/core/test",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
-      "args": [
-        "test",
-        "packages/core/test",
-        "--config=debug"
-      ],
+      "args": ["test", "packages/core/test", "--config=debug"],
       "port": 9229,
       "address": "localhost",
       "restart": true,
       "sourceMaps": true,
       "timeout": 600000,
-      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
-    },
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
+    }
   ]
 }
