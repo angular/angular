@@ -75,7 +75,19 @@ export abstract class SwRegistrationOptions {
   registrationStrategy?: string|(() => Observable<unknown>);
 }
 
-export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
+/**
+ * Token that can be used to provide script for `ServiceWorkerModule` outside of
+ * `ServiceWorkerModule.register()`.
+ *
+ * You can use this token to define a provider that generates the script at runtime,
+ * for example via a function call:
+ *
+ * {@example service-worker/script/module.ts region="sw-script"
+ *     header="app.module.ts"}
+ *
+ * @publicApi
+ */
+export const SW_SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
 
 export function ngswAppInitializer(
     injector: Injector, script: string, options: SwRegistrationOptions,
@@ -168,7 +180,7 @@ export class ServiceWorkerModule {
     return {
       ngModule: ServiceWorkerModule,
       providers: [
-        {provide: SCRIPT, useValue: script},
+        {provide: SW_SCRIPT, useValue: script},
         {provide: SwRegistrationOptions, useValue: opts},
         {
           provide: NgswCommChannel,
@@ -178,7 +190,7 @@ export class ServiceWorkerModule {
         {
           provide: APP_INITIALIZER,
           useFactory: ngswAppInitializer,
-          deps: [Injector, SCRIPT, SwRegistrationOptions, PLATFORM_ID],
+          deps: [Injector, SW_SCRIPT, SwRegistrationOptions, PLATFORM_ID],
           multi: true,
         },
       ],

@@ -5,6 +5,7 @@
 ```ts
 
 import * as i0 from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -29,6 +30,9 @@ export class ServiceWorkerModule {
     // (undocumented)
     static ɵmod: i0.ɵɵNgModuleDeclaration<ServiceWorkerModule, never, never, never>;
 }
+
+// @public
+export const SW_SCRIPT: InjectionToken<string>;
 
 // @public
 export class SwPush {

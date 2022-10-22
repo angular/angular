@@ -11,7 +11,7 @@ import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
-import {ServiceWorkerModule, SwRegistrationOptions} from '../src/module';
+import {ServiceWorkerModule, SW_SCRIPT, SwRegistrationOptions} from '../src/module';
 import {SwUpdate} from '../src/update';
 
 
@@ -79,6 +79,26 @@ describe('ServiceWorkerModule', () => {
       await configTestBed({enabled: true, scope: 'foo'});
       expect(consoleErrorSpy)
           .toHaveBeenCalledWith('Service worker registration failed with:', 'no reason');
+    });
+  });
+
+  describe('SW_SCRIPT', () => {
+    const configTestBed = async (providerScript: string) => {
+      TestBed.configureTestingModule({
+        imports: [ServiceWorkerModule.register('sw.js')],
+        providers: [
+          {provide: PLATFORM_ID, useValue: 'browser'},
+          {provide: SW_SCRIPT, useFactory: () => providerScript},
+        ],
+      });
+
+      await untilStable();
+    };
+
+    it('sets the script (and overwrites this set via `.register()`', async () => {
+      await configTestBed('provider-sw.js');
+
+      expect(swRegisterSpy).toHaveBeenCalledWith('provider-sw.js', {scope: undefined});
     });
   });
 

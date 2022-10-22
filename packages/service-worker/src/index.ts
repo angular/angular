@@ -15,6 +15,6 @@
  */
 
 export {NoNewVersionDetectedEvent, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionDetectedEvent, VersionEvent, VersionInstallationFailedEvent, VersionReadyEvent} from './low_level';
-export {ServiceWorkerModule, SwRegistrationOptions} from './module';
+export {ServiceWorkerModule, SW_SCRIPT, SwRegistrationOptions} from './module';
 export {SwPush} from './push';
 export {SwUpdate} from './update';
