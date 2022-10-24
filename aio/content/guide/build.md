@@ -303,35 +303,35 @@ To disable these warnings, add the CommonJS module name to `allowedCommonJsDepen
 
 ## Configuring browser compatibility
 
+The Angular CLI uses [Browserslist](https://github.com/browserslist/browserslist) to ensure compatibility with different browser versions. [Autoprefixer](https://github.com/postcss/autoprefixer) is used for CSS vendor prefixing and [@babel/preset-env](https://babeljs.io/docs/en/babel-preset-env) for JavaScript syntax transformations.
+
+Internally, the Angular CLI uses the below `browserslist` configuration which matches the [browsers that are supported by Angular](guide/browser-support).
+
+  <code-example format="none" language="text">
+  last 1 Chrome version
+  last 1 Firefox version
+  last 2 Edge major versions
+  last 2 Safari major versions
+  last 2 iOS major versions
+  Firefox ESR
+  </code-example>
+
+
 The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure compatibility with different browser and browser versions.
 You might find it necessary to target specific browsers or exclude certain browser versions from your build.
 
-Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing.
-Browserslist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`.
-Autoprefixer looks for the `browserslist` configuration when it prefixes your CSS.
+To override the internal configuration, add a new file named `.browserslistrc`, to the project directory, that specifies the browsers you want to support:
 
-*   Tell Autoprefixer what browsers to target by adding a browserslist property to the package configuration file, `package.json`:
+  <code-example format="none" language="text">
+  last 1 Chrome version
+  last 1 Firefox version
+  </code-example>
 
-    <code-example format="json" language="json">
+See the [browserslist repository](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
 
-    "browserslist": [
-      "&gt; 1%",
-      "last 2 versions"
-    ]
-
-    </code-example>
-
-*   Alternatively, you can add a new file, `.browserslistrc`, to the project directory, that specifies browsers you want to support:
-
-    <code-example format="none" language="text">
-
-    &num;&num;&num; Supported Browsers
-    &gt; 1%
-    last 2 versions
-
-    </code-example>
-
-See the [browserslist repo](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
+<div class="alert is-helpful">
+Use [browsersl.ist](https://browsersl.ist) to display compatible browsers for a `browserslist` query.
+</div>
 
 <a id="proxy"></a>
 
@@ -547,16 +547,10 @@ module.exports = setupForCorporateProxy(proxyConfig);
 
 </code-example>
 
-<a id="browser-compat"></a>
-
-## Configuring browser compatibility
-
-See [browser support guide](guide/browser-support).
-
 <!-- links -->
 
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-10-24
