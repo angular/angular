@@ -72,13 +72,10 @@ Subfolders contain the application source and application-specific configuration
 |:---                       |:---                                                                                                                                                                                                                                                                                                                                                        |
 | `app/`                    | Contains the component files in which your application logic and data are defined. See details [below](#app-src).                                                                                                                                                                                                                                          |
 | `assets/`                 | Contains image and other asset files to be copied as-is when you build your application.                                                                                                                                                                                                                                                                   |
-| `environments/`           | Contains build configuration options for particular target environments. By default there is an unnamed standard development environment and a production \("prod"\) environment. You can define additional target environment configurations.                                                                                                             |
 | `favicon.ico`             | An icon to use for this application in the bookmark bar.                                                                                                                                                                                                                                                                                                   |
 | `index.html`              | The main HTML page that is served when someone visits your site. The CLI automatically adds all JavaScript and CSS files when building your app, so you typically don't need to add any `<script>` or` <link>` tags here manually.                                                                                                                         |
 | `main.ts`                 | The main entry point for your application. Compiles the application with the [JIT compiler](guide/glossary#jit) and bootstraps the application's root module \(AppModule\) to run in the browser. You can also use the [AOT compiler](guide/aot-compiler) without changing any code by appending the `--aot` flag to the CLI `build` and `serve` commands. |
-| `polyfills.ts`            | Provides polyfill scripts for browser support.                                                                                                                                                                                                                                                                                                             |
 | `styles.sass`             | Lists CSS files that supply styles for a project. The extension reflects the style preprocessor you have configured for the project.                                                                                                                                                                                                                       |
-| `test.ts`                 | The main entry point for your unit tests, with some Angular-specific configuration. You don't typically need to edit this file.                                                                                                                                                                                                                            |
 
 <div class="alert is-helpful">
 
@@ -110,8 +107,6 @@ Project-specific [TypeScript](https://www.typescriptlang.org) configuration file
 
 | Application-specific configuration files | Purpose                                                                                                                                                                                                                                                                      |
 |:---                                      |:---                                                                                                                                                                                                                                                                          |
-| `.browserslistrc`                        | Configures sharing of target browsers and Node.js versions among various front-end tools. See [Browserslist on GitHub](https://github.com/browserslist/browserslist) for more information.                                                                                   |
-| `karma.conf.js`                          | Application-specific [Karma](https://karma-runner.github.io/2.0/config/configuration-file.html) configuration.                                                                                                                                                               |
 | `tsconfig.app.json`                      | Application-specific [TypeScript](https://www.typescriptlang.org) configuration, including TypeScript and Angular template compiler options. See [TypeScript Configuration](guide/typescript-configuration) and [Angular Compiler Options](guide/angular-compiler-options). |
 | `tsconfig.spec.json`                     | [TypeScript](https://www.typescriptlang.org) configuration for the application tests. See [TypeScript Configuration](guide/typescript-configuration).                                                                                                                       |
 
@@ -129,7 +124,7 @@ The following command creates a workspace with all of the workspace-wide configu
 
 <code-example format="shell" language="shell">
 
-ng new my-workspace --create-application false
+ng new my-workspace --no-create-application
 
 </code-example>
 
@@ -198,9 +193,7 @@ Under the `projects/` folder, the `my-lib` folder contains your library code.
 | Library source files     | Purpose                                                                                                                                                                                                   |
 |:---                      |:---                                                                                                                                                                                                       |
 | `src/lib`                |  Contains your library project's logic and data. Like an application project, a library project can contain components, services, modules, directives, and pipes.                                         |
-| `src/test.ts`            | The main entry point for your unit tests, with some library-specific configuration. You don't typically need to edit this file.                                                                           |
 | `src/public-api.ts`      | Specifies all files that are exported from your library.                                                                                                                                                  |
-| `karma.conf.js`          | Library-specific [Karma](https://karma-runner.github.io/2.0/config/configuration-file.html) configuration.                                                                                                |
 | `ng-package.json`        | Configuration file used by [ng-packagr](https://github.com/ng-packagr/ng-packagr) for building your library.                                                                                              |
 | `package.json`           | Configures [npm package dependencies](guide/npm-packages) that are required for this library.                                                                                                             |
 | `tsconfig.lib.json`      | Library-specific [TypeScript](https://www.typescriptlang.org) configuration, including TypeScript and Angular template compiler options. See [TypeScript Configuration](guide/typescript-configuration). |
@@ -213,4 +206,4 @@ Under the `projects/` folder, the `my-lib` folder contains your library code.
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-10-24
