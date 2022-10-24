@@ -232,3 +232,5 @@
 /styleguide --> /guide/styleguide
 /testing --> /guide/testing
 /testing/first-app-tests.html --> /guide/testing
+/cli/usage-analytics-gathering --> /cli/analytics
+/analytics --> /cli/analytics
