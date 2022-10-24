@@ -79,7 +79,7 @@
     "@microsoft/api-extractor": "^7.24.2",
     "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-commonjs": "^23.0.0",
-    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@rollup/plugin-node-resolve": "^15.0.0",
     "@schematics/angular": "15.0.0-rc.0",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.1.19",
