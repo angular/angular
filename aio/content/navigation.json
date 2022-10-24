@@ -1114,11 +1114,6 @@
               "title": "Overview",
               "tooltip": "An introduction to the CLI tool, commands, and syntax.",
               "url": "cli"
-            },
-            {
-              "title": "Usage analytics",
-              "tooltip": "For administrators, guide to gathering usage analytics from your users.",
-              "url": "cli/usage-analytics-gathering"
             }
           ]
         },
@@ -1310,11 +1305,6 @@
           "url": "https://blog.angular.io/",
           "title": "Blog",
           "tooltip": "Angular Blog"
-        },
-        {
-          "url": "analytics",
-          "title": "Usage analytics",
-          "tooltip": "Angular Usage Analytics"
         }
       ]
     },

@@ -194,7 +194,11 @@
 
       // Temporarily serve the guide at `/devtools` as well as `/guide/devtools` until users have
       // their SW updated to a version that knows about the `/devtools` redirect.
-      {"type": 302, "source": "/generated/docs/devtools.json", "destination": "/generated/docs/guide/devtools.json"}
+      {"type": 302, "source": "/generated/docs/devtools.json", "destination": "/generated/docs/guide/devtools.json"},
+
+      // Analytics pages that have been deleted in v15
+      {"type": 301, "source": "/cli/usage-analytics-gathering", "destination": "/cli/analytics"},
+      {"type": 301, "source": "/analytics", "destination": "/cli/analytics"}
     ],
     "rewrites": [
       {
