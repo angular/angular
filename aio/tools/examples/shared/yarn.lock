@@ -7999,12 +7999,10 @@ systemjs-plugin-babel@~0.0.25:
   resolved "https://registry.yarnpkg.com/systemjs-plugin-babel/-/systemjs-plugin-babel-0.0.25.tgz#93bc92a58e3e9c5d1505c972c3eede570b770c65"
   integrity sha512-RMKSizWWlw4+IpDB385ugxn7Owd9W+HEtjYDQ6yO1FpsnER/vk6FbXRweUF+mvRi6EHgk8vDdUdtui7ReDwX3w==
 
-systemjs@~0.19.39:
-  version "0.19.47"
-  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-0.19.47.tgz#c8c93937180f3f5481c769cd2720763fb4a31c6f"
-  integrity sha512-6P+63y7bQhZXqOcim7QU0TKEjCmQArFkKa+CxlDchIerej7wrXLUoyGuWk+L0yC5rYrZ5LI6Eh1QOawttQq5xw==
-  dependencies:
-    when "^3.7.5"
+systemjs@~6.13.0:
+  version "6.13.0"
+  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-6.13.0.tgz#7b28e74b44352e1650e8652499f42de724c3fc7f"
+  integrity sha512-P3cgh2bpaPvAO2NE3uRp/n6hmk4xPX4DQf+UzTlCAycssKdqhp6hjw+ENWe+aUS7TogKRFtptMosTSFeC6R55g==
 
 tapable@^2.1.1, tapable@^2.2.0:
   version "2.2.1"
@@ -8675,11 +8673,6 @@ whatwg-url@^8.0.0, whatwg-url@^8.5.0:
     lodash "^4.7.0"
     tr46 "^2.1.0"
     webidl-conversions "^6.1.0"
-
-when@^3.7.5:
-  version "3.7.8"
-  resolved "https://registry.yarnpkg.com/when/-/when-3.7.8.tgz#c7130b6a7ea04693e842cdc9e7a1f2aa39a39f82"
-  integrity sha512-5cZ7mecD3eYcMiCH4wtRPA5iFJZ50BJYDfckI5RRpQiktMiYTcn0ccLTZOvcbBume+1304fQztxeNzNS9Gvrnw==
 
 which-module@^2.0.0:
   version "2.0.0"
