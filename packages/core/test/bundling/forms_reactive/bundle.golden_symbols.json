@@ -633,6 +633,12 @@
     "name": "cleanUpView"
   },
   {
+    "name": "coerceToAsyncValidator"
+  },
+  {
+    "name": "coerceToValidator"
+  },
+  {
     "name": "collectNativeNodes"
   },
   {
