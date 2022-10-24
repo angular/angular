@@ -305,7 +305,7 @@ To disable these warnings, add the CommonJS module name to `allowedCommonJsDepen
 
 The Angular CLI uses [Browserslist](https://github.com/browserslist/browserslist) to ensure compatibility with different browser versions. [Autoprefixer](https://github.com/postcss/autoprefixer) is used for CSS vendor prefixing and [@babel/preset-env](https://babeljs.io/docs/en/babel-preset-env) for JavaScript syntax transformations.
 
-Internally, the Angular CLI uses the below `browserslist` configuration which matches the [browsers that are supported by Angular](guide/browser-support).
+Internally, the Angular CLI uses the below `browserslist` configuration which matches the [browsers that are supported](guide/browser-support) by Angular.
 
   <code-example format="none" language="text">
   last 1 Chrome version
@@ -317,9 +317,6 @@ Internally, the Angular CLI uses the below `browserslist` configuration which ma
   </code-example>
 
 
-The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure compatibility with different browser and browser versions.
-You might find it necessary to target specific browsers or exclude certain browser versions from your build.
-
 To override the internal configuration, add a new file named `.browserslistrc`, to the project directory, that specifies the browsers you want to support:
 
   <code-example format="none" language="text">
@@ -330,7 +327,9 @@ To override the internal configuration, add a new file named `.browserslistrc`, 
 See the [browserslist repository](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
 
 <div class="alert is-helpful">
+
 Use [browsersl.ist](https://browsersl.ist) to display compatible browsers for a `browserslist` query.
+
 </div>
 
 <a id="proxy"></a>
