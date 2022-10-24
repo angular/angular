@@ -99,7 +99,7 @@ Angular packages include them already.
 ### `lib`
 
 TypeScript includes a default set of declaration files.
-These files contains the ambient declarations for various common JavaScript constructs present in JavaScript runtimes and the DOM.
+These files contain the ambient declarations for various common JavaScript constructs present in JavaScript runtimes and the DOM.
 
 For more information, see [lib](https://www.typescriptlang.org/tsconfig#lib) in the TypeScript guide.
 
@@ -123,7 +123,7 @@ For instance, to install typings for `chai` you run `npm install @types/chai --s
 
 ### `target`
 
-By default, the target is `ES2022` to control ECMA syntax use the [Browserslist](https://github.com/browserslist/browserslist) configuration file.
+By default, the target is `ES2022`. To control ECMA syntax use the [Browserslist](https://github.com/browserslist/browserslist) configuration file.
 For more information, see the [configuring browser compatibility](/guide/build#configuring-browser-compatibility) guide.
 
 <!-- links -->
