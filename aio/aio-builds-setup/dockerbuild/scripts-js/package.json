@@ -29,7 +29,7 @@
     "express": "^4.17.1",
     "jasmine": "^4.0.0",
     "nock": "^13.0.4",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.0.0",
     "shelljs": "^0.8.5",
     "source-map-support": "^0.5.19",
     "tar-stream": "^2.1.3",
