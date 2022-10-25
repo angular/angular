@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
-      - uses: angular/dev-infra/github-actions/google-internal-tests@dcf4672ce6b29284a464804f1d12fd0c507a4e8c
+      - uses: angular/dev-infra/github-actions/google-internal-tests@bf6b1f3beb4017d91b58007e063aa5f09ebe0212
         with:
           run-tests-guide-url: http://go/angular/g3sync
           github-token: ${{ secrets.GITHUB_TOKEN }}
