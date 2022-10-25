@@ -76,6 +76,7 @@ export const enum RuntimeErrorCode {
   TYPE_IS_NOT_STANDALONE = 907,
   MISSING_ZONEJS = 908,
   UNEXPECTED_ZONE_STATE = 909,
+  UNSAFE_IFRAME_ATTRS = 910,
 }
 
 /**
