@@ -346,4 +346,6 @@ export class Identifiers {
   static trustConstantHtml: o.ExternalReference = {name: 'ɵɵtrustConstantHtml', moduleName: CORE};
   static trustConstantResourceUrl:
       o.ExternalReference = {name: 'ɵɵtrustConstantResourceUrl', moduleName: CORE};
+  static validateIframeAttribute:
+      o.ExternalReference = {name: 'ɵɵvalidateIframeAttribute', moduleName: CORE};
 }
