@@ -76,3 +76,28 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
 function registerContext(ctx: SecurityContext, specs: string[]) {
   for (const spec of specs) _SECURITY_SCHEMA[spec.toLowerCase()] = ctx;
 }
+
+/**
+ * The set of security-sensitive attributes of an `<iframe>` that *must* be
+ * applied before setting the `src` or `srcdoc` attribute value.
+ * This ensures that all security-sensitive attributes are taken into account
+ * while creating an instance of an `<iframe>` at runtime.
+ *
+ * Keep this list in sync with the `IFRAME_SECURITY_SENSITIVE_ATTRS` token
+ * from the `packages/core/src/sanitization/iframe_attrs_validation.ts` script.
+ *
+ * Avoid using this set directly, use the `isIframeSecuritySensitiveAttr` function
+ * in the code instead.
+ */
+export const IFRAME_SECURITY_SENSITIVE_ATTRS = new Set(
+    ['sandbox', 'allow', 'allowfullscreen', 'referrerpolicy', 'loading', 'csp', 'fetchpriority']);
+
+/**
+ * Checks whether a given attribute name might represent a security-sensitive
+ * attribute of an <iframe>.
+ */
+export function isIframeSecuritySensitiveAttr(attrName: string): boolean {
+  // The `setAttribute` DOM API is case-insensitive, so we lowercase the value
+  // before checking it against a known security-sensitive attributes.
+  return IFRAME_SECURITY_SENSITIVE_ATTRS.has(attrName.toLowerCase());
+}

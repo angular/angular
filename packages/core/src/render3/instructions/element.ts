@@ -12,6 +12,7 @@ import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
+import {SanitizerFn} from '../interfaces/sanitization';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
@@ -27,7 +28,8 @@ import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, reso
 
 function elementStartFirstCreatePass(
     index: number, tView: TView, lView: LView, native: RElement, name: string,
-    attrsIndex?: number|null, localRefsIndex?: number): TElementNode {
+    attrsIndex?: number|null, localRefsIndex?: number,
+    staticAttrsSanitizer?: (attrs: TAttributes) => void): TElementNode {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
 
@@ -37,6 +39,11 @@ function elementStartFirstCreatePass(
 
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
+
+  if (staticAttrsSanitizer && tNode.mergedAttrs !== null) {
+    staticAttrsSanitizer(tNode.mergedAttrs);
+  }
+
   if (ngDevMode) {
     validateElementIsKnown(native, lView, tNode.value, tView.schemas, hasDirectives);
   }
@@ -72,8 +79,8 @@ function elementStartFirstCreatePass(
  * @codeGenApi
  */
 export function ɵɵelementStart(
-    index: number, name: string, attrsIndex?: number|null,
-    localRefsIndex?: number): typeof ɵɵelementStart {
+    index: number, name: string, attrsIndex?: number|null, localRefsIndex?: number,
+    staticAttrsSanitizer?: (attrs: TAttributes) => void): typeof ɵɵelementStart {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = HEADER_OFFSET + index;
@@ -86,10 +93,10 @@ export function ɵɵelementStart(
 
   const renderer = lView[RENDERER];
   const native = lView[adjustedIndex] = createElementNode(renderer, name, getNamespace());
-  const tNode = tView.firstCreatePass ?
-      elementStartFirstCreatePass(
-          adjustedIndex, tView, lView, native, name, attrsIndex, localRefsIndex) :
-      tView.data[adjustedIndex] as TElementNode;
+  const tNode = tView.firstCreatePass ? elementStartFirstCreatePass(
+                                            adjustedIndex, tView, lView, native, name, attrsIndex,
+                                            localRefsIndex, staticAttrsSanitizer) :
+                                        tView.data[adjustedIndex] as TElementNode;
   setCurrentTNode(tNode, true);
   setupStaticAttributes(renderer, native, tNode);
 
@@ -171,9 +178,9 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
  * @codeGenApi
  */
 export function ɵɵelement(
-    index: number, name: string, attrsIndex?: number|null,
-    localRefsIndex?: number): typeof ɵɵelement {
-  ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
+    index: number, name: string, attrsIndex?: number|null, localRefsIndex?: number,
+    staticAttrsSanitizer?: (attrs: TAttributes) => void): typeof ɵɵelement {
+  ɵɵelementStart(index, name, attrsIndex, localRefsIndex, staticAttrsSanitizer);
   ɵɵelementEnd();
   return ɵɵelement;
 }
