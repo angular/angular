@@ -24,7 +24,7 @@ export const enum RuntimeErrorCode {
   PIPE_NOT_FOUND = '302',
   UNKNOWN_BINDING = '303',
   UNKNOWN_ELEMENT = '304',
-  TEMPLATE_STRUCTURE_ERROR = '305'
+  TEMPLATE_STRUCTURE_ERROR = '305',
 
   // Styling Errors
 
@@ -33,6 +33,9 @@ export const enum RuntimeErrorCode {
   // i18n Errors
 
   // Compilation Errors
+
+  // Other
+  UNSAFE_IFRAME_ATTRS = '910',
 }
 
 export class RuntimeError extends Error {
