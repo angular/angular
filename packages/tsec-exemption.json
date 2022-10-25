@@ -31,5 +31,8 @@
   ],
   "ban-window-stringfunctiondef": [
     "core/src/render3/util/misc_utils.ts"
+  ],
+  "ban-iframe-srcdoc-assignments": [
+    "core/src/sanitization/iframe_attrs_validation.ts"
   ]
 }
