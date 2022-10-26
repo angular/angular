@@ -1,3 +1,10 @@
+<a name="14.2.8"></a>
+# 14.2.8 (2022-10-26)
+## Special Thanks
+Andrew Scott, Balaji, Paul Gschwendtner, WD Snoeijer, onrails and vyom1611
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.7"></a>
 # 14.2.7 (2022-10-19)
 
