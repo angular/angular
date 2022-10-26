@@ -598,28 +598,12 @@ mockRequest.error(mockError);
 
 This section contains a complete list all of the currently deprecated CLI flags.
 
-### &commat;angular/cli
-
-| API/Option        | May be removed in | Details |
-|:---               |:---               |:---     |
-| `--prod`          | <!--v12--> v14    | Use `--configuration production` instead. |
-| `ng update --all` | <!--v11--> v14    | No longer has an effect.                  |
-
 ### &commat;angular-devkit/build-angular
 
 | API/Option                 | May be removed in | Details |
 |:---                        |:---               |:---     |
 | `deployUrl`                | <!--v13--> v15    | Use `baseHref` option, `APP_BASE_HREF` DI token or a combination of both instead. For more information, see [the deploy url](guide/deployment#the-deploy-url). |
-| `showCircularDependencies` | <!--v12--> v14    | The recommended method to detect circular dependencies in project code is to use either a lint rule or other external tooling.                                 |
 | Protractor builder         | <!--v12--> v14    | Deprecate as part of the Protractor deprecation.                                                                                                               |
-
-### &commat;angular-devkit/build-optimizer
-
-The entire NPM package is deprecated.
-It has always been experimental \(never hit `1.0.0`\) and has
-been an internal package for the Angular CLI.
-All the relevant functionality has been moved to
-`@angular-devkit/build-angular`
 
 <a id="removed"></a>
 
