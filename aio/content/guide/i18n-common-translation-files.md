@@ -123,7 +123,7 @@ For example, to create a French translation file, complete the following actions
 Unless you are fluent in the language and have the time to edit translations, you will likely complete the following steps.
 
 1.  Send each translation file to a translator.
-1.  The translator uses an XLIFF file editor complete the following actions.
+1.  The translator uses an XLIFF file editor to complete the following actions.
     1.  Create the translation.
     1.  Edit the translation.
 
