@@ -1,3 +1,22 @@
+<a name="15.0.0-rc.1"></a>
+# 15.0.0-rc.1 (2022-10-26)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3a18398d83](https://github.com/angular/angular/commit/3a18398d8303fb4ae1923b3a182e6abb92e3117b) | fix | Don't warn about image distortion is fill mode is enabled ([#47824](https://github.com/angular/angular/pull/47824)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a99d9d67f3](https://github.com/angular/angular/commit/a99d9d67f382c18b46c4c1c6765bbda445ca0b8c) | fix | don't mutate validators array ([#47830](https://github.com/angular/angular/pull/47830)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2908eba59c](https://github.com/angular/angular/commit/2908eba59c25e9a1fc5aa257b4a8a247db82079e) | fix | align server renderer interface with base renderer ([#47868](https://github.com/angular/angular/pull/47868)) |
+## Special Thanks
+Alan Agius, Alex Castle, Andrew Scott, Balaji, George Kalpakas, Kristiyan Kostadinov, Paul Gschwendtner, Pawel Kozlowski, WD Snoeijer, onrails and vyom1611
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.8"></a>
 # 14.2.8 (2022-10-26)
 ## Special Thanks
