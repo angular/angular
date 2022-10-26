@@ -150,14 +150,15 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#faeeb54064fae2907c28ecd3cdca17a950433d64":
-  version "0.0.0-bf6b1f3beb4017d91b58007e063aa5f09ebe0212"
-  uid faeeb54064fae2907c28ecd3cdca17a950433d64
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#faeeb54064fae2907c28ecd3cdca17a950433d64"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#51f13a0f64d44abb406f1a79c0a9587d5c9a2182":
+  version "0.0.0-d87b1b56a970132f90301624cea6b6d70b6d9489"
+  uid "51f13a0f64d44abb406f1a79c0a9587d5c9a2182"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#51f13a0f64d44abb406f1a79c0a9587d5c9a2182"
   dependencies:
     "@angular-devkit/build-angular" "15.0.0-rc.0"
     "@angular/benchpress" "0.3.0"
     "@babel/core" "^7.16.0"
+    "@babel/helper-annotate-as-pure" "^7.18.6"
     "@bazel/buildifier" "5.1.0"
     "@bazel/concatjs" "5.7.0"
     "@bazel/esbuild" "5.7.0"
@@ -256,10 +257,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#fadde2b96ad66dd57221b99a91b256ad3745588a":
-  version "0.0.0-bf6b1f3beb4017d91b58007e063aa5f09ebe0212"
-  uid fadde2b96ad66dd57221b99a91b256ad3745588a
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#fadde2b96ad66dd57221b99a91b256ad3745588a"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#60bcee1fbdce4933102f6b434c82079dd0be9af9":
+  version "0.0.0-d87b1b56a970132f90301624cea6b6d70b6d9489"
+  uid "60bcee1fbdce4933102f6b434c82079dd0be9af9"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#60bcee1fbdce4933102f6b434c82079dd0be9af9"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.8.0"
