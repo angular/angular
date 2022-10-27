@@ -429,6 +429,9 @@
     "name": "ROUTER_CONFIGURATION"
   },
   {
+    "name": "ROUTER_IS_PROVIDED"
+  },
+  {
     "name": "ROUTER_PRELOADER"
   },
   {
@@ -1578,9 +1581,6 @@
     "name": "promise"
   },
   {
-    "name": "provideRoutes"
-  },
-  {
     "name": "redirectIfUrlTree"
   },
   {
@@ -1639,6 +1639,9 @@
   },
   {
     "name": "rootRoute"
+  },
+  {
+    "name": "routes"
   },
   {
     "name": "rxSubscriber"

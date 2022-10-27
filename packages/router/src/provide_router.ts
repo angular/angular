@@ -23,6 +23,13 @@ import {ActivatedRoute} from './router_state';
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
+ * An Injection token used to indicate whether `provideRouter` or `RouterModule.forRoot` was ever
+ * called.
+ */
+export const ROUTER_IS_PROVIDED =
+    new InjectionToken<boolean>('', {providedIn: 'root', factory: () => false});
+
+/**
  * Sets up providers necessary to enable `Router` functionality for the application.
  * Allows to configure a set of routes as well as extra features that should be enabled.
  *
@@ -60,7 +67,7 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
  */
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   return makeEnvironmentProviders([
-    {provide: ROUTES, multi: true, useValue: routes},
+    {provide: ROUTES, multi: true, useValue: routes}, {provide: ROUTER_IS_PROVIDED, useValue: true},
     {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map(feature => feature.ɵproviders),
@@ -112,7 +119,19 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
  */
 export function provideRoutes(routes: Routes): Provider[] {
   return [
-    {provide: ROUTES, multi: true, useValue: routes},
+    {provide: ROUTES, multi: true, useValue: routes}, {
+      provide: ENVIRONMENT_INITIALIZER,
+      multi: true,
+      useFactory() {
+        return () => {
+          if (NG_DEV_MODE && !inject(ROUTER_IS_PROVIDED)) {
+            console.warn(
+                '`provideRoutes` was called without `provideRouter` or `RouterModule.forRoot`. ' +
+                'This is likely a mistake.');
+          }
+        };
+      }
+    }
   ];
 }
 
