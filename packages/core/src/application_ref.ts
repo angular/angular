@@ -191,8 +191,9 @@ export function internalCreateApplication(config: {
   rootComponent?: Type<unknown>,
   appProviders?: Array<Provider|EnvironmentProviders>,
   platformProviders?: Provider[],
+  ngZoneConfig?: BootstrapOptions,
 }): Promise<ApplicationRef> {
-  const {rootComponent, appProviders, platformProviders} = config;
+  const {rootComponent, appProviders, platformProviders, ngZoneConfig} = config;
 
   if (NG_DEV_MODE && rootComponent !== undefined) {
     assertStandaloneComponentType(rootComponent);
@@ -200,7 +201,7 @@ export function internalCreateApplication(config: {
 
   const platformInjector = createOrReusePlatformInjector(platformProviders as StaticProvider[]);
 
-  const ngZone = getNgZone('zone.js', getNgZoneOptions());
+  const ngZone = getNgZone(ngZoneConfig?.ngZone ?? 'zone.js', getNgZoneOptions(ngZoneConfig));
 
   return ngZone.run(() => {
     // Create root application injector based on a set of providers configured at the platform
