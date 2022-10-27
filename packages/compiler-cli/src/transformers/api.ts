@@ -162,17 +162,26 @@ export interface TsEmitArguments {
   customTransformers?: ts.CustomTransformers;
 }
 
-export interface TsEmitCallback {
-  (args: TsEmitArguments): ts.EmitResult;
+export interface TsEmitCallback<T extends ts.EmitResult> {
+  (args: TsEmitArguments): T;
 }
-export interface TsMergeEmitResultsCallback {
-  (results: ts.EmitResult[]): ts.EmitResult;
+export interface TsMergeEmitResultsCallback<T extends ts.EmitResult> {
+  (results: T[]): T;
 }
 
 export interface LazyRoute {
   route: string;
   module: {name: string, filePath: string};
   referencedModule: {name: string, filePath: string};
+}
+
+export interface EmitOptions<CbEmitRes extends ts.EmitResult> {
+  emitFlags?: EmitFlags;
+  forceEmit?: boolean;
+  cancellationToken?: ts.CancellationToken;
+  customTransformers?: CustomTransformers;
+  emitCallback?: TsEmitCallback<CbEmitRes>;
+  mergeEmitResultsCallback?: TsMergeEmitResultsCallback<CbEmitRes>;
 }
 
 export interface Program {
@@ -250,21 +259,7 @@ export interface Program {
    *
    * Angular structural information is required to emit files.
    */
-  emit({
-    emitFlags,
-    forceEmit,
-    cancellationToken,
-    customTransformers,
-    emitCallback,
-    mergeEmitResultsCallback,
-  }?: {
-    emitFlags?: EmitFlags,
-    forceEmit?: boolean,
-    cancellationToken?: ts.CancellationToken,
-    customTransformers?: CustomTransformers,
-    emitCallback?: TsEmitCallback,
-    mergeEmitResultsCallback?: TsMergeEmitResultsCallback
-  }): ts.EmitResult;
+  emit<CbEmitRes extends ts.EmitResult>(opts?: EmitOptions<CbEmitRes>|undefined): ts.EmitResult;
 
   /**
    * @internal
