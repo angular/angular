@@ -20,7 +20,7 @@
     {% endif%}
 
     {% if doc.subcommands.length %}
-    <p>This command has the following <a href="#{$ doc.name $}-commands">commands</a>:<p>
+    <p>This command has the following <a href="#{$ doc.name $}-commands">sub-commands</a>:<p>
     <ul>
       {% for subcommand in doc.subcommands %}
       <li><a class="code-anchor" href="#{$ subcommand.name $}-command">{$ subcommand.name $}</a></li>
