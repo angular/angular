@@ -1,3 +1,13 @@
+# [0.12.0](https://github.com/angular/angular/compare/zone.js-0.11.8...zone.js-0.12.0) (2022-10-27)
+
+
+### Bug Fixes
+
+* **zone.js:** cancel tasks only when they are scheduled or running ([#46435](https://github.com/angular/angular/issues/46435)) ([b618b5a](https://github.com/angular/angular/commit/b618b5aa86138c900055c5496967e3348a7b98fc)), closes [#45711](https://github.com/angular/angular/issues/45711)
+* **zone.js:** Fix ConsoleTask interface typo ([#47090](https://github.com/angular/angular/issues/47090)) ([91954cf](https://github.com/angular/angular/commit/91954cf20e17a386d71cc8ea25d1d17b9ae1e31c))
+
+
+
 ## [0.11.8](https://github.com/angular/angular/compare/zone.js-0.11.7...zone.js-0.11.8) (2022-08-08)
 
 
