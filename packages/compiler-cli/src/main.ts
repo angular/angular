@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import type {TsickleHost} from 'tsickle';
+import type {TsickleHost, EmitResult as TsickleEmitResult} from 'tsickle';
 import yargs from 'yargs';
 import {exitCodeFromResult, formatDiagnostics, ParsedConfiguration, performCompilation, readConfiguration} from './perform_compile';
 import {createPerformWatchHost, performWatchCompilation} from './perform_watch';
@@ -91,8 +91,8 @@ export function mainDiagnosticsForTest(
   };
 }
 
-function createEmitCallback(
-    options: api.CompilerOptions, tsickle?: TsickleModule): api.TsEmitCallback|undefined {
+function createEmitCallback(options: api.CompilerOptions, tsickle?: TsickleModule):
+    api.TsEmitCallback<TsickleEmitResult>|undefined {
   if (!options.annotateForClosureCompiler) {
     return undefined;
   }
