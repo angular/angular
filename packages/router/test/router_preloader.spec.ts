@@ -9,7 +9,7 @@
 import {provideLocationMocks} from '@angular/common/testing';
 import {Compiler, Component, Injectable, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, Type} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
-import {PreloadAllModules, PreloadingStrategy, provideRoutes, RouterPreloader, withPreloading} from '@angular/router';
+import {PreloadAllModules, PreloadingStrategy, RouterPreloader, ROUTES, withPreloading} from '@angular/router';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {catchError, delay, filter, switchMap, take} from 'rxjs/operators';
 
@@ -46,7 +46,13 @@ describe('RouterPreloader', () => {
   describe('configurations with canLoad guard', () => {
     @NgModule({
       declarations: [LazyLoadedCmp],
-      providers: [provideRoutes([{path: 'LoadedModule1', component: LazyLoadedCmp}])]
+      providers: [
+        {
+          provide: ROUTES,
+          multi: true,
+          useValue: [{path: 'LoadedModule1', component: LazyLoadedCmp}]
+        },
+      ]
     })
     class LoadedModule {
     }
@@ -563,10 +569,14 @@ describe('RouterPreloader', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
-          provideRoutes([
-            {path: 'lazy1', loadChildren: jasmine.createSpy('expected1')},
-            {path: 'lazy2', loadChildren: () => LoadedModule}
-          ]),
+          {
+            provide: ROUTES,
+            multi: true,
+            useValue: [
+              {path: 'lazy1', loadChildren: jasmine.createSpy('expected1')},
+              {path: 'lazy2', loadChildren: () => LoadedModule}
+            ]
+          },
           {provide: PreloadingStrategy, useExisting: PreloadAllModules},
         ]
       });
@@ -587,7 +597,10 @@ describe('RouterPreloader', () => {
 
   describe('should copy loaded configs', () => {
     const configs = [{path: 'LoadedModule1', component: LazyLoadedCmp}];
-    @NgModule({declarations: [LazyLoadedCmp], providers: [provideRoutes(configs)]})
+    @NgModule({
+      declarations: [LazyLoadedCmp],
+      providers: [{provide: ROUTES, multi: true, useValue: configs}]
+    })
     class LoadedModule {
     }
 
@@ -621,7 +634,11 @@ describe('RouterPreloader', () => {
       'should work with lazy loaded modules that don\'t provide RouterModule.forChild()', () => {
         @NgModule({
           declarations: [LazyLoadedCmp],
-          providers: [provideRoutes([{path: 'LoadedModule1', component: LazyLoadedCmp}])]
+          providers: [{
+            provide: ROUTES,
+            multi: true,
+            useValue: [{path: 'LoadedModule1', component: LazyLoadedCmp}]
+          }]
         })
         class LoadedModule {
         }
