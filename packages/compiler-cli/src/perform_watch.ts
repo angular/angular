@@ -39,11 +39,11 @@ export enum FileChangeEvent {
   CreateDeleteDir,
 }
 
-export interface PerformWatchHost {
+export interface PerformWatchHost<CbEmitRes extends ts.EmitResult = ts.EmitResult> {
   reportDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic>): void;
   readConfiguration(): ParsedConfiguration;
   createCompilerHost(options: api.CompilerOptions): api.CompilerHost;
-  createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined;
+  createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback<CbEmitRes>|undefined;
   onFileChange(
       options: api.CompilerOptions, listener: (event: FileChangeEvent, fileName: string) => void,
       ready: () => void): {close: () => void};
@@ -51,11 +51,11 @@ export interface PerformWatchHost {
   clearTimeout(timeoutId: any): void;
 }
 
-export function createPerformWatchHost(
+export function createPerformWatchHost<CbEmitRes extends ts.EmitResult = ts.EmitResult>(
     configFileName: string, reportDiagnostics: (diagnostics: ReadonlyArray<ts.Diagnostic>) => void,
     existingOptions?: ts.CompilerOptions,
     createEmitCallback?: (options: api.CompilerOptions) =>
-        api.TsEmitCallback | undefined): PerformWatchHost {
+        api.TsEmitCallback<CbEmitRes>| undefined): PerformWatchHost {
   return {
     reportDiagnostics: reportDiagnostics,
     createCompilerHost: options => createCompilerHost({options}),
