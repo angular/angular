@@ -15,10 +15,10 @@ import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
-import {getBootstrapListener, provideRoutes, rootRoute, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
+import {getBootstrapListener, rootRoute, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
 import {Router, setupRouter} from './router';
 import {ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
-import {RouterConfigLoader} from './router_config_loader';
+import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
@@ -106,7 +106,7 @@ export class RouterModule {
       providers: [
         ROUTER_PROVIDERS,
         NG_DEV_MODE ? (config?.enableTracing ? withDebugTracing().ɵproviders : []) : [],
-        provideRoutes(routes),
+        {provide: ROUTES, multi: true, useValue: routes},
         {
           provide: ROUTER_FORROOT_GUARD,
           useFactory: provideForRootGuard,
@@ -140,7 +140,10 @@ export class RouterModule {
    *
    */
   static forChild(routes: Routes): ModuleWithProviders<RouterModule> {
-    return {ngModule: RouterModule, providers: [provideRoutes(routes)]};
+    return {
+      ngModule: RouterModule,
+      providers: [{provide: ROUTES, multi: true, useValue: routes}],
+    };
   }
 }
 
