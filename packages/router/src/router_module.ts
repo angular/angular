@@ -15,7 +15,7 @@ import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
-import {getBootstrapListener, rootRoute, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
+import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
 import {Router, setupRouter} from './router';
 import {ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
@@ -48,6 +48,9 @@ export const ROUTER_PROVIDERS: Provider[] = [
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
   RouterConfigLoader,
+  // Only used to warn when `provideRoutes` is used without `RouterModule` or `provideRouter`. Can
+  // be removed when `provideRoutes` is removed.
+  NG_DEV_MODE ? {provide: ROUTER_IS_PROVIDED, useValue: true} : [],
 ];
 
 export function routerNgProbeToken() {
