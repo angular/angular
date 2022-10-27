@@ -526,7 +526,7 @@ export const PRIMARY_OUTLET = "primary";
 // @public
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders;
 
-// @public
+// @public @deprecated
 export function provideRoutes(routes: Routes): Provider[];
 
 // @public

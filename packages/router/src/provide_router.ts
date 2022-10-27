@@ -60,7 +60,8 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
  */
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   return makeEnvironmentProviders([
-    provideRoutes(routes), {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
+    {provide: ROUTES, multi: true, useValue: routes},
+    {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map(feature => feature.ɵproviders),
     // TODO: All options used by the `assignExtraOptionsToRouter` factory need to be reviewed for
@@ -105,6 +106,8 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
  * class LazyLoadedChildModule {}
  * ```
  *
+ * @deprecated If necessary, provide routes using the `ROUTES` `InjectionToken`.
+ * @see `ROUTES`
  * @publicApi
  */
 export function provideRoutes(routes: Routes): Provider[] {

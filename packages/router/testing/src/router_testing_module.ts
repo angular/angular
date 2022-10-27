@@ -9,7 +9,7 @@
 import {Location} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
 import {Compiler, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
+import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
 
 import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
 
@@ -124,7 +124,7 @@ export function setupTestingRouter(
       ]
     },
     withPreloading(NoPreloading).ɵproviders,
-    provideRoutes([]),
+    {provide: ROUTES, multi: true, useValue: []},
   ]
 })
 export class RouterTestingModule {
@@ -133,7 +133,7 @@ export class RouterTestingModule {
     return {
       ngModule: RouterTestingModule,
       providers: [
-        provideRoutes(routes),
+        {provide: ROUTES, multi: true, useValue: routes},
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
       ]
     };
