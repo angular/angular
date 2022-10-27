@@ -1578,9 +1578,6 @@
     "name": "promise"
   },
   {
-    "name": "provideRoutes"
-  },
-  {
     "name": "redirectIfUrlTree"
   },
   {
@@ -1639,6 +1636,9 @@
   },
   {
     "name": "rootRoute"
+  },
+  {
+    "name": "routes"
   },
   {
     "name": "rxSubscriber"
