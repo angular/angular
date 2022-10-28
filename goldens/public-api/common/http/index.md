@@ -2169,10 +2169,10 @@ export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): 
 export function withInterceptors(interceptorFns: HttpInterceptorFn[]): HttpFeature<HttpFeatureKind.Interceptors>;
 
 // @public
-export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;
+export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInterceptors>;
 
 // @public
-export function withLegacyInterceptors(): HttpFeature<HttpFeatureKind.LegacyInterceptors>;
+export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;
 
 // @public
 export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtection>;
