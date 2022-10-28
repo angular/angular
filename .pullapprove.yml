@@ -127,6 +127,7 @@ groups:
           'packages/animations/**/{*,.*}',
           'packages/platform-browser/animations/**/{*,.*}',
           'aio/content/guide/animations.md',
+          'aio/content/guide/add-an-animation.md',
           'aio/content/guide/animate-state-style.md',
           'aio/content/guide/animation-api-summary.md',
           'aio/content/guide/understanding-angular-animation.md',
@@ -145,6 +146,7 @@ groups:
         - crisbeto
         - ~jelbourn
         - jessicajaniuk
+        - treladyone
 
   # =========================================================
   #  Framework: Compiler
