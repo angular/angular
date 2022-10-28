@@ -56,7 +56,7 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * `withInterceptors(...)` feature.
  *
  * @see withInterceptors
- * @see withLegacyInterceptors
+ * @see withInterceptorsFromDi
  * @see withXsrfConfiguration
  * @see withNoXsrfProtection
  * @see withJsonpSupport
@@ -129,7 +129,7 @@ const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>('LEGACY_INTE
  * @see HTTP_INTERCEPTORS
  * @see provideHttpClient
  */
-export function withLegacyInterceptors(): HttpFeature<HttpFeatureKind.LegacyInterceptors> {
+export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInterceptors> {
   // Note: the legacy interceptor function is provided here via an intermediate token
   // (`LEGACY_INTERCEPTOR_FN`), using a pattern which guarantees that if these providers are
   // included multiple times, all of the multi-provider entries will have the same instance of the
