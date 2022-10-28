@@ -50,7 +50,11 @@ export class AnimationRendererFactory implements RendererFactory2 {
     if (!hostElement || !type || !type.data || !type.data['animation']) {
       let renderer: BaseAnimationRenderer|undefined = this._rendererCache.get(delegate);
       if (!renderer) {
-        renderer = new BaseAnimationRenderer(EMPTY_NAMESPACE_ID, delegate, this.engine);
+        // Ensure that the renderer is removed from the cache on destroy
+        // since it may contain references to detached DOM nodes.
+        const onRendererDestroy = () => this._rendererCache.delete(delegate);
+        renderer =
+            new BaseAnimationRenderer(EMPTY_NAMESPACE_ID, delegate, this.engine, onRendererDestroy);
         // only cache this result when the base renderer is used
         this._rendererCache.set(delegate, renderer);
       }
@@ -135,7 +139,8 @@ export class AnimationRendererFactory implements RendererFactory2 {
 
 export class BaseAnimationRenderer implements Renderer2 {
   constructor(
-      protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine) {
+      protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine,
+      private _onDestroy?: () => void) {
     this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode!(n) : null;
   }
 
@@ -148,6 +153,7 @@ export class BaseAnimationRenderer implements Renderer2 {
   destroy(): void {
     this.engine.destroy(this.namespaceId, this.delegate);
     this.delegate.destroy();
+    this._onDestroy?.();
   }
 
   createElement(name: string, namespace?: string|null|undefined) {
@@ -237,8 +243,8 @@ export class BaseAnimationRenderer implements Renderer2 {
 export class AnimationRenderer extends BaseAnimationRenderer implements Renderer2 {
   constructor(
       public factory: AnimationRendererFactory, namespaceId: string, delegate: Renderer2,
-      engine: AnimationEngine) {
-    super(namespaceId, delegate, engine);
+      engine: AnimationEngine, onDestroy?: () => void) {
+    super(namespaceId, delegate, engine, onDestroy);
     this.namespaceId = namespaceId;
   }
 
