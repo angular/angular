@@ -66,6 +66,10 @@ export interface HttpInterceptor {
  * This function should only be called within the scope of the request that's currently being
  * intercepted. Once that request is complete, this downstream handler function should not be
  * called.
+ *
+ * @publicApi
+ *
+ * @see [HTTP Guide](guide/http#intercepting-requests-and-responses)
  */
 export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<unknown>>;
 

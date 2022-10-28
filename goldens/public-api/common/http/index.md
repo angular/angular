@@ -1728,7 +1728,7 @@ export enum HttpEventType {
     User = 5
 }
 
-// @public (undocumented)
+// @public
 export interface HttpFeature<KindT extends HttpFeatureKind> {
     // (undocumented)
     ɵkind: KindT;
@@ -1736,7 +1736,7 @@ export interface HttpFeature<KindT extends HttpFeatureKind> {
     ɵproviders: Provider[];
 }
 
-// @public (undocumented)
+// @public
 export enum HttpFeatureKind {
     // (undocumented)
     CustomXsrfConfiguration = 2,
@@ -2162,25 +2162,25 @@ export class JsonpInterceptor {
     static ɵprov: i0.ɵɵInjectableDeclaration<JsonpInterceptor>;
 }
 
-// @public (undocumented)
+// @public
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): EnvironmentProviders;
 
-// @public (undocumented)
+// @public
 export function withInterceptors(interceptorFns: HttpInterceptorFn[]): HttpFeature<HttpFeatureKind.Interceptors>;
 
-// @public (undocumented)
+// @public
 export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;
 
-// @public (undocumented)
+// @public
 export function withLegacyInterceptors(): HttpFeature<HttpFeatureKind.LegacyInterceptors>;
 
-// @public (undocumented)
+// @public
 export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtection>;
 
-// @public (undocumented)
+// @public
 export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.RequestsMadeViaParent>;
 
-// @public (undocumented)
+// @public
 export function withXsrfConfiguration({ cookieName, headerName }: {
     cookieName?: string;
     headerName?: string;
