@@ -91,16 +91,29 @@ bootstrapApplication(PhotoAppComponent, {
 });
 ```
 
-The standalone bootstrap operation is based on explicitly configuring a list of `Provider`s for dependency injection. However, existing libraries may rely on `NgModule`s for configuring DI. For example, Angular’s router uses the `RouterModule.forRoot()` helper to set up routing in an application. You can use these existing `NgModule`s in `bootstrapApplication` via the `importProvidersFrom` utility:
+The standalone bootstrap operation is based on explicitly configuring a list of `Provider`s for dependency injection. In Angular, `provide`-prefixed functions can be used to configure different systems without needing to import NgModules. For example, `provideRouter` is used in place of `RouterModule.forRoot` to configure the router:
 
 ```ts
 bootstrapApplication(PhotoAppComponent, {
   providers: [
     {provide: BACKEND_URL, useValue: 'https://photoapp.looknongmodules.com/api'},
-    importProvidersFrom(
-      RouterModule.forRoot([/* app routes */]),
-    ),
+    provideRouter([/* app routes */]),
     // ...
+  ]
+});
+```
+
+Many third party libraries have also been updated to support this `provide`-function configuration pattern. If a library only offers an NgModule API for its DI configuration, you can use the `importProvidersFrom` utility to still use it with `bootstrapApplication` and other standalone contexts:
+
+```ts
+import {LibraryModule} from 'ngmodule-based-library';
+
+bootstrapApplication(PhotoAppComponent, {
+  providers: [
+    {provide: BACKEND_URL, useValue: 'https://photoapp.looknongmodules.com/api'},
+    importProvidersFrom(
+      LibraryModule.forRoot()
+    ),
   ]
 });
 ```
@@ -210,6 +223,8 @@ export const ADMIN_ROUTES: Route[] = [{
 ```
 
 Note the use of an empty-path route to host `providers` that are shared among all the child routes.
+
+`importProvidersFrom` can be used to import existing NgModule-based DI configuration into route `providers` as well.
 
 ## Advanced topics
 
