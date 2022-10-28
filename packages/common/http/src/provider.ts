@@ -15,6 +15,11 @@ import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, jsonpInt
 import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
 
+/**
+ * Identifies a particular kind of `HttpFeature`.
+ *
+ * @publicApi
+ */
 export enum HttpFeatureKind {
   Interceptors,
   LegacyInterceptors,
@@ -24,6 +29,11 @@ export enum HttpFeatureKind {
   RequestsMadeViaParent,
 }
 
+/**
+ * A feature for use when configuring `provideHttpClient`.
+ *
+ * @publicApi
+ */
 export interface HttpFeature<KindT extends HttpFeatureKind> {
   ɵkind: KindT;
   ɵproviders: Provider[];
@@ -37,7 +47,21 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
   };
 }
 
-
+/**
+ * Configures Angular's `HttpClient` service to be available for injection.
+ *
+ * By default, `HttpClient` will be configured for injection with its default options for XSRF
+ * protection of outgoing requests. Additional configuration options can be provided by passing
+ * feature functions to `provideHttpClient`. For example, HTTP interceptors can be added using the
+ * `withInterceptors(...)` feature.
+ *
+ * @see withInterceptors
+ * @see withLegacyInterceptors
+ * @see withXsrfConfiguration
+ * @see withNoXsrfProtection
+ * @see withJsonpSupport
+ * @see withRequestsMadeViaParent
+ */
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
     EnvironmentProviders {
   if (ngDevMode) {
@@ -73,6 +97,14 @@ export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
   return makeEnvironmentProviders(providers);
 }
 
+/**
+ * Adds one or more functional-style HTTP interceptors to the configuration of the `HttpClient`
+ * instance.
+ *
+ * @see HttpInterceptorFn
+ * @see provideHttpClient
+ * @publicApi
+ */
 export function withInterceptors(interceptorFns: HttpInterceptorFn[]):
     HttpFeature<HttpFeatureKind.Interceptors> {
   return makeHttpFeature(HttpFeatureKind.Interceptors, interceptorFns.map(interceptorFn => {
@@ -86,6 +118,17 @@ export function withInterceptors(interceptorFns: HttpInterceptorFn[]):
 
 const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>('LEGACY_INTERCEPTOR_FN');
 
+/**
+ * Includes class-based interceptors configured using a multi-provider in the current injector into
+ * the configured `HttpClient` instance.
+ *
+ * Prefer `withInterceptors` and functional interceptors instead, as support for DI-provided
+ * interceptors may be phased out in a later release.
+ *
+ * @see HttpInterceptor
+ * @see HTTP_INTERCEPTORS
+ * @see provideHttpClient
+ */
 export function withLegacyInterceptors(): HttpFeature<HttpFeatureKind.LegacyInterceptors> {
   // Note: the legacy interceptor function is provided here via an intermediate token
   // (`LEGACY_INTERCEPTOR_FN`), using a pattern which guarantees that if these providers are
@@ -105,6 +148,13 @@ export function withLegacyInterceptors(): HttpFeature<HttpFeatureKind.LegacyInte
   ]);
 }
 
+/**
+ * Customizes the XSRF protection for the configuration of the current `HttpClient` instance.
+ *
+ * This feature is incompatible with the `withNoXsrfProtection` feature.
+ *
+ * @see provideHttpClient
+ */
 export function withXsrfConfiguration(
     {cookieName, headerName}: {cookieName?: string, headerName?: string}):
     HttpFeature<HttpFeatureKind.CustomXsrfConfiguration> {
@@ -119,6 +169,13 @@ export function withXsrfConfiguration(
   return makeHttpFeature(HttpFeatureKind.CustomXsrfConfiguration, providers);
 }
 
+/**
+ * Disables XSRF protection in the configuration of the current `HttpClient` instance.
+ *
+ * This feature is incompatible with the `withXsrfConfiguration` feature.
+ *
+ * @see provideHttpClient
+ */
 export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtection> {
   return makeHttpFeature(HttpFeatureKind.NoXsrfProtection, [
     {
@@ -128,6 +185,11 @@ export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtec
   ]);
 }
 
+/**
+ * Add JSONP support to the configuration of the current `HttpClient` instance.
+ *
+ * @see provideHttpClient
+ */
 export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
   return makeHttpFeature(HttpFeatureKind.JsonpSupport, [
     JsonpClientBackend,
@@ -137,6 +199,23 @@ export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
 }
 
 /**
+ * Configures the current `HttpClient` instance to make requests via the parent injector's
+ * `HttpClient` instead of directly.
+ *
+ * By default, `provideHttpClient` configures `HttpClient` in its injector to be an independent
+ * instance. For example, even if `HttpClient` is configured in the parent injector with
+ * one or more interceptors, they will not intercept requests made via this instance.
+ *
+ * With this option enabled, once the request has passed through the current injector's
+ * interceptors, it will be delegated to the parent injector's `HttpClient` chain instead of
+ * dispatched directly, and interceptors in the parent configuration will be applied to the request.
+ *
+ * If there are several `HttpClient` instances in the injector hierarchy, it's possible for
+ * `withRequestsMadeViaParent` to be used at multiple levels, which will cause the request to
+ * "bubble up" until either reaching the root level or an `HttpClient` which was not configured with
+ * this option.
+ *
+ * @see provideHttpClient
  * @developerPreview
  */
 export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.RequestsMadeViaParent> {
