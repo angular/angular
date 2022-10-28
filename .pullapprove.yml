@@ -128,6 +128,7 @@ groups:
           'packages/platform-browser/animations/**/{*,.*}',
           'aio/content/guide/animations.md',
           'aio/content/guide/animate-state-style.md',
+          'aio/content/guide/animation-api-summary.md',
           'aio/content/examples/animations/**/{*,.*}',
           'aio/content/images/guide/animations/**/{*,.*}',
           'aio/content/guide/complex-animation-sequences.md',
