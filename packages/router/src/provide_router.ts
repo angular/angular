@@ -23,13 +23,6 @@ import {ActivatedRoute} from './router_state';
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
- * An Injection token used to indicate whether `provideRouter` or `RouterModule.forRoot` was ever
- * called.
- */
-export const ROUTER_IS_PROVIDED =
-    new InjectionToken<boolean>('', {providedIn: 'root', factory: () => false});
-
-/**
  * Sets up providers necessary to enable `Router` functionality for the application.
  * Allows to configure a set of routes as well as extra features that should be enabled.
  *
@@ -67,7 +60,8 @@ export const ROUTER_IS_PROVIDED =
  */
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   return makeEnvironmentProviders([
-    {provide: ROUTES, multi: true, useValue: routes}, {provide: ROUTER_IS_PROVIDED, useValue: true},
+    {provide: ROUTES, multi: true, useValue: routes},
+    NG_DEV_MODE ? {provide: ROUTER_IS_PROVIDED, useValue: true} : [],
     {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map(feature => feature.ɵproviders),
@@ -100,6 +94,28 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
   return {ɵkind: kind, ɵproviders: providers};
 }
 
+
+/**
+ * An Injection token used to indicate whether `provideRouter` or `RouterModule.forRoot` was ever
+ * called.
+ */
+export const ROUTER_IS_PROVIDED =
+    new InjectionToken<boolean>('', {providedIn: 'root', factory: () => false});
+
+const routerIsProvidedDevModeCheck = {
+  provide: ENVIRONMENT_INITIALIZER,
+  multi: true,
+  useFactory() {
+    return () => {
+      if (!inject(ROUTER_IS_PROVIDED)) {
+        console.warn(
+            '`provideRoutes` was called without `provideRouter` or `RouterModule.forRoot`. ' +
+            'This is likely a mistake.');
+      }
+    };
+  }
+};
+
 /**
  * Registers a [DI provider](guide/glossary#provider) for a set of routes.
  * @param routes The route configuration to provide.
@@ -119,19 +135,8 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
  */
 export function provideRoutes(routes: Routes): Provider[] {
   return [
-    {provide: ROUTES, multi: true, useValue: routes}, {
-      provide: ENVIRONMENT_INITIALIZER,
-      multi: true,
-      useFactory() {
-        return () => {
-          if (NG_DEV_MODE && !inject(ROUTER_IS_PROVIDED)) {
-            console.warn(
-                '`provideRoutes` was called without `provideRouter` or `RouterModule.forRoot`. ' +
-                'This is likely a mistake.');
-          }
-        };
-      }
-    }
+    {provide: ROUTES, multi: true, useValue: routes},
+    NG_DEV_MODE ? routerIsProvidedDevModeCheck : [],
   ];
 }
 

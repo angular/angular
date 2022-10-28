@@ -429,9 +429,6 @@
     "name": "ROUTER_CONFIGURATION"
   },
   {
-    "name": "ROUTER_IS_PROVIDED"
-  },
-  {
     "name": "ROUTER_PRELOADER"
   },
   {

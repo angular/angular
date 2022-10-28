@@ -50,7 +50,7 @@ export const ROUTER_PROVIDERS: Provider[] = [
   RouterConfigLoader,
   // Only used to warn when `provideRoutes` is used without `RouterModule` or `provideRouter`. Can
   // be removed when `provideRoutes` is removed.
-  {provide: ROUTER_IS_PROVIDED, useValue: true},
+  NG_DEV_MODE ? {provide: ROUTER_IS_PROVIDED, useValue: true} : [],
 ];
 
 export function routerNgProbeToken() {
