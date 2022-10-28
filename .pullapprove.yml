@@ -134,7 +134,8 @@ groups:
           'aio/content/guide/reusable-animations.md',
           'aio/content/guide/route-animations.md',
           'aio/content/guide/transition-and-triggers.md',
-          'aio/content/guide/animations-attach-to-html-template.md'
+          'aio/content/guide/animations-attach-to-html-template.md',
+          'aio/content/guide/animation-transition-timing.md'
           ])
     reviewers:
       users:
