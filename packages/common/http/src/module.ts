@@ -9,7 +9,7 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
 
 import {HTTP_INTERCEPTORS} from './interceptor';
-import {provideHttpClient, withJsonpSupport, withLegacyInterceptors, withNoXsrfProtection, withXsrfConfiguration} from './provider';
+import {provideHttpClient, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withXsrfConfiguration} from './provider';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_DEFAULT_COOKIE_NAME, XSRF_DEFAULT_HEADER_NAME, XSRF_ENABLED} from './xsrf';
 
 /**
@@ -84,7 +84,7 @@ export class HttpClientXsrfModule {
    */
   providers: [
     provideHttpClient(
-        withLegacyInterceptors(),
+        withInterceptorsFromDi(),
         withXsrfConfiguration({
           cookieName: XSRF_DEFAULT_COOKIE_NAME,
           headerName: XSRF_DEFAULT_HEADER_NAME,
