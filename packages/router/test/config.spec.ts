@@ -157,6 +157,12 @@ describe('config', () => {
         validateConfig([{path: 'a', outlet: 'aux', loadChildren: jasmine.createSpy('child')}]);
       }).not.toThrow();
     });
+
+    it('should not throw when outlet has redirectTo', () => {
+      expect(() => {
+        validateConfig([{path: '', pathMatch: 'prefix', outlet: 'aux', redirectTo: 'main'}]);
+      }).not.toThrow();
+    });
   });
 });
 

@@ -84,8 +84,8 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
           RuntimeErrorCode.INVALID_ROUTE_CONFIG,
           `Invalid configuration of route '${fullPath}': Array cannot be specified`);
     }
-    if (!route.component && !route.loadComponent && !route.children && !route.loadChildren &&
-        (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
+    if (!route.redirectTo && !route.component && !route.loadComponent && !route.children &&
+        !route.loadChildren && (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
       throw new RuntimeError(
           RuntimeErrorCode.INVALID_ROUTE_CONFIG,
           `Invalid configuration of route '${
