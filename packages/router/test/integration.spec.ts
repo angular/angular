@@ -3009,20 +3009,19 @@ describe('Integration', () => {
 
 
       it('can redirect from componentless named outlets', fakeAsync(() => {
-        const router = TestBed.inject(Router);
-        const fixture = createRoot(router, RootCmp);
+           const router = TestBed.inject(Router);
+           const fixture = createRoot(router, RootCmp);
 
-        router.resetConfig([
-          {path: 'main', outlet: 'aux', component: BlankCmp},
-          {path: '', pathMatch: 'full', outlet: 'aux', redirectTo: 'main'},
-        ]);
+           router.resetConfig([
+             {path: 'main', outlet: 'aux', component: BlankCmp},
+             {path: '', pathMatch: 'full', outlet: 'aux', redirectTo: 'main'},
+           ]);
 
-        router.navigateByUrl('');
-        advance(fixture);
+           router.navigateByUrl('');
+           advance(fixture);
 
-        expect(TestBed.inject(Location).path()).toEqual('/(aux:main)');
-      }));
-
+           expect(TestBed.inject(Location).path()).toEqual('/(aux:main)');
+         }));
     });
 
     it('should set href on area elements', fakeAsync(() => {
