@@ -641,34 +641,58 @@ describe('Image directive', () => {
     });
 
     const inputs = [
-      ['ngSrc', 'new-img.png'],  //
-      ['width', 10],             //
-      ['height', 20],            //
-      ['priority', true]
+      ['ngSrc', 'new-img.png'],
+      ['width', 10],
+      ['height', 20],
+      ['priority', true],
+      ['fill', true],
+      ['loading', true],
+      ['sizes', '90vw'],
+      ['disableOptimizedSrcset', true],
     ];
     inputs.forEach(([inputName, value]) => {
-      it(`should throw if an input changed after directive initialized the input`, () => {
-        setupTestingModule();
+      it(`should throw if the \`${inputName}\` input changed after directive initialized the input`,
+         () => {
+           @Component({
+             selector: 'test-cmp',
+             template: `<img
+              [ngSrc]="ngSrc"
+              [width]="width"
+              [height]="height"
+              [priority]="priority"
+              [fill]="fill"
+              [loading]="loading"
+              [sizes]="sizes"
+              [disableOptimizedSrcset]="disableOptimizedSrcset"
+            >`
+           })
+           class TestComponent {
+             width = 100;
+             height = 50;
+             ngSrc = 'img.png';
+             priority = false;
+             fill = false;
+             loading = false;
+             sizes = '100vw';
+             disableOptimizedSrcset = false;
+           }
 
-        const template =
-            '<img [ngSrc]="ngSrc" [width]="width" [height]="height" [priority]="priority">';
-        // Initial render
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
+           setupTestingModule({component: TestComponent});
 
-        expect(() => {
-          // Update input (expect to throw)
-          (fixture.componentInstance as unknown as {[key: string]: unknown})[inputName as string] =
-              value;
-          fixture.detectChanges();
-        })
-            .toThrowError(
-                'NG02953: The NgOptimizedImage directive (activated on an <img> element ' +
-                `with the \`ngSrc="img.png"\`) has detected that \`${inputName}\` was updated ` +
-                'after initialization. The NgOptimizedImage directive will not react ' +
-                `to this input change. To fix this, switch \`${inputName}\` a static value or ` +
-                'wrap the image element in an *ngIf that is gated on the necessary value.');
-      });
+           // Initial render
+           const fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
+
+           const expectedErrorMessage =  //
+               `NG02953: The NgOptimizedImage directive (.*)? ` +
+               `has detected that \`${inputName}\` was updated after initialization`;
+           expect(() => {
+             // Update input (expect to throw)
+             (fixture.componentInstance as unknown as
+              {[key: string]: unknown})[inputName as string] = value;
+             fixture.detectChanges();
+           }).toThrowError(new RegExp(expectedErrorMessage));
+         });
     });
   });
 

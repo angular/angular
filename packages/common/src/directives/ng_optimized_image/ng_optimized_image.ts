@@ -439,8 +439,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     if (ngDevMode) {
-      assertNoPostInitInputChange(
-          this, changes, ['ngSrc', 'ngSrcset', 'width', 'height', 'priority']);
+      assertNoPostInitInputChange(this, changes, [
+        'ngSrc',
+        'ngSrcset',
+        'width',
+        'height',
+        'priority',
+        'fill',
+        'loading',
+        'sizes',
+        'disableOptimizedSrcset',
+      ]);
     }
   }
 
@@ -687,12 +696,20 @@ function assertUnderDensityCap(dir: NgOptimizedImage, value: string) {
  * the directive has initialized.
  */
 function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} {
+  let reason!: string;
+  if (inputName === 'width' || inputName === 'height') {
+    reason = `Changing \`${inputName}\` may result in different attribute value ` +
+        `applied to the underlying image element and cause layout shifts on a page.`;
+  } else {
+    reason = `Changing the \`${inputName}\` would have no effect on the underlying ` +
+        `image element, because the resource loading has already occurred.`;
+  }
   return new RuntimeError(
       RuntimeErrorCode.UNEXPECTED_INPUT_CHANGE,
       `${imgDirectiveDetails(dir.ngSrc)} \`${inputName}\` was updated after initialization. ` +
-          `The NgOptimizedImage directive will not react to this input change. ` +
-          `To fix this, switch \`${inputName}\` a static value or wrap the image element ` +
-          `in an *ngIf that is gated on the necessary value.`);
+          `The NgOptimizedImage directive will not react to this input change. ${reason} ` +
+          `To fix this, either switch \`${inputName}\` to a static value ` +
+          `or wrap the image element in an *ngIf that is gated on the necessary value.`);
 }
 
 /**
