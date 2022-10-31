@@ -117,6 +117,7 @@ v15 - v18
 | `@angular/router`                   | [`RouterLinkWithHref` directive](#router)                                                                  | v15           | v17         |
 | `@angular/router`                   | [Router writeable properties](#router-writable-properties)                                                 | v15.1         | v17         |
 | `@angular/router`                   | [Router CanLoad guards](#router-can-load)                                                 | v15.1         | v17         |
+| `@angular/router`                   | [class and `InjectionToken` guards and resolvers](#router)                                                 | v15.2         | v17         |
 
 ### Deprecated features with no planned removal version
 
@@ -203,6 +204,8 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 | [`RouterLinkWithHref` directive](api/router/RouterLinkWithHref) | Use `RouterLink` instead. | v15                   | The `RouterLinkWithHref` directive code was merged into `RouterLink`. Now the `RouterLink` directive can be used for all elements that have `routerLink` attribute. |
 | [`provideRoutes` function](api/router/provideRoutes) | Use `ROUTES` `InjectionToken` instead. | v15                   | The `provideRoutes` helper function is minimally useful and can be unintentionally used instead of `provideRouter` due to similar spelling. |
 | [`setupTestingRouter` function](api/router/testing/setupTestingRouter) | Use `provideRouter` or `RouterTestingModule` instead. | v15.1                   | The `setupTestingRouter` function is not necessary. The `Router` is initialized based on the DI configuration in tests as it would be in production. |
+| [class and `InjectionToken` guards and resolvers](api/router/DeprecatedGuard) | Use plain JavaScript functions instead. | v15.2                   | Functional guards are simpler and more powerful than class and token-based guards. |
+
 
 <a id="platform-browser"></a>
 
