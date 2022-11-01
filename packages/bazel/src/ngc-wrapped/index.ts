@@ -226,9 +226,8 @@ export function compile({
     return delegate(fileName.replace(/\.(ngfactory|ngsummary)\.ts$/, '.ts'));
   };
 
-  // By default, disable tsickle decorator transforming in the tsickle compiler host.
-  // The Angular compilers have their own logic for decorator processing and we wouldn't
-  // want tsickle to interfere with that.
+  // Never run the tsickle decorator transform.
+  // TODO(b/254054103): Remove the transform and this flag.
   bazelHost.transformDecorators = false;
 
   // By default in the `prodmode` output, we do not add annotations for closure compiler.
@@ -238,11 +237,6 @@ export function compile({
   if (!bazelOpts.es5Mode && !bazelOpts.devmode) {
     if (bazelOpts.workspaceName === 'google3') {
       compilerOpts.annotateForClosureCompiler = true;
-      // Enable the tsickle decorator transform in google3 with Ivy mode enabled. The tsickle
-      // decorator transformation is still needed. This might be because of custom decorators
-      // with the `@Annotation` JSDoc that will be processed by the tsickle decorator transform.
-      // TODO: Figure out why this is needed in g3 and how we can improve this. FW-2225
-      bazelHost.transformDecorators = true;
     } else {
       compilerOpts.annotateForClosureCompiler = false;
     }
