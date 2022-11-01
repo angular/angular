@@ -233,4 +233,4 @@
 /testing --> /guide/testing
 /testing/first-app-tests.html --> /guide/testing
 /cli/usage-analytics-gathering --> /cli/analytics
-/cli/analytics --> /cli/analytics
+/analytics --> /cli/analytics
