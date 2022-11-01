@@ -151,17 +151,6 @@ export function createUrlTree(
   // didn't before.
   const result = createTreeUsingPathIndex(route.snapshot?._lastPathIndex);
 
-  // Check if application is relying on `relativeLinkResolution: 'legacy'`
-  if (typeof ngDevMode === 'undefined' || !!ngDevMode) {
-    const correctedResult = createTreeUsingPathIndex(route.snapshot?._correctedLastPathIndex);
-    if (correctedResult.toString() !== result.toString()) {
-      console.warn(
-          `relativeLinkResolution: 'legacy' is deprecated and will be removed in a future version of Angular. The link to ${
-              result.toString()} will change to ${
-              correctedResult.toString()} if the code is not updated before then.`);
-    }
-  }
-
   return result;
 }
 
