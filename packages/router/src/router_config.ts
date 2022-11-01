@@ -8,7 +8,6 @@
 
 import {InjectionToken} from '@angular/core';
 
-import {InternalExtraOptions} from './patchable_relative_link_resolution';
 import {UrlSerializer, UrlTree} from './url_tree';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
@@ -171,8 +170,7 @@ export interface InMemoryScrollingOptions {
  *
  * @publicApi
  */
-export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions,
-                                      InternalExtraOptions {
+export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
   /**
    * When true, log all internal navigation events to the console.
    * Use for debugging.

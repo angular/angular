@@ -288,7 +288,7 @@ export const enum EventType {
 }
 
 // @public
-export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions, InternalExtraOptions {
+export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;

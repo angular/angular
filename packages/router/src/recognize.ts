@@ -33,11 +33,11 @@ function newObservableError(e: unknown): Observable<RouterStateSnapshot> {
 export function recognize(
     injector: EnvironmentInjector, rootComponentType: Type<any>|null, config: Routes,
     urlTree: UrlTree, url: string, urlSerializer: UrlSerializer,
-    paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
-    relativeLinkResolution: 'legacy'|'corrected' = 'legacy'): Observable<RouterStateSnapshot> {
+    paramsInheritanceStrategy: ParamsInheritanceStrategy =
+        'emptyOnly'): Observable<RouterStateSnapshot> {
   return new Recognizer(
              injector, rootComponentType, config, urlTree, url, paramsInheritanceStrategy,
-             relativeLinkResolution, urlSerializer)
+             urlSerializer)
       .recognize()
       .pipe(switchMap(result => {
         if (result === null) {
@@ -53,14 +53,11 @@ export class Recognizer {
       private injector: EnvironmentInjector, private rootComponentType: Type<any>|null,
       private config: Routes, private urlTree: UrlTree, private url: string,
       private paramsInheritanceStrategy: ParamsInheritanceStrategy,
-      private relativeLinkResolution: 'legacy'|'corrected',
       private readonly urlSerializer: UrlSerializer) {}
 
   recognize(): Observable<RouterStateSnapshot|null> {
     const rootSegmentGroup =
-        split(
-            this.urlTree.root, [], [], this.config.filter(c => c.redirectTo === undefined),
-            this.relativeLinkResolution)
+        split(this.urlTree.root, [], [], this.config.filter(c => c.redirectTo === undefined))
             .segmentGroup;
 
     return this.processSegmentGroup(this.injector, this.config, rootSegmentGroup, PRIMARY_OUTLET)
@@ -184,12 +181,7 @@ export class Recognizer {
       const snapshot = new ActivatedRouteSnapshot(
           segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment,
           getData(route), getOutlet(route), route.component ?? route._loadedComponent ?? null,
-          route, getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route),
-          // NG_DEV_MODE is used to prevent the getCorrectedPathIndexShift function from affecting
-          // production bundle size. This value is intended only to surface a warning to users
-          // depending on `relativeLinkResolution: 'legacy'` in dev mode.
-          (NG_DEV_MODE ? getCorrectedPathIndexShift(rawSegment) + segments.length :
-                         pathIndexShift));
+          route, getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route));
       matchResult = of({
         snapshot,
         consumedSegments: [],
@@ -208,10 +200,7 @@ export class Recognizer {
                     consumedSegments, parameters, Object.freeze({...this.urlTree.queryParams}),
                     this.urlTree.fragment, getData(route), getOutlet(route),
                     route.component ?? route._loadedComponent ?? null, route,
-                    getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route),
-                    (NG_DEV_MODE ?
-                         getCorrectedPathIndexShift(rawSegment) + consumedSegments.length :
-                         pathIndexShift));
+                    getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route));
                 return {snapshot, consumedSegments, remainingSegments};
               }));
     }
@@ -231,7 +220,7 @@ export class Recognizer {
           // Filter out routes with redirectTo because we are trying to create activated route
           // snapshots and don't handle redirects here. That should have been done in
           // `applyRedirects`.
-          childConfig.filter(c => c.redirectTo === undefined), this.relativeLinkResolution);
+          childConfig.filter(c => c.redirectTo === undefined));
 
       if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
         return this.processChildren(childInjector, childConfig, segmentGroup).pipe(map(children => {
