@@ -24,7 +24,6 @@ import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
 import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
-import {assignRelativeLinkResolution} from './patchable_relative_link_resolution';
 import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
@@ -346,8 +345,6 @@ export function setupRouter() {
 
   assignExtraOptionsToRouter(opts, router);
 
-  assignRelativeLinkResolution(router);
-
   return router;
 }
 
@@ -527,13 +524,6 @@ export class Router {
   urlUpdateStrategy: 'deferred'|'eager' = 'deferred';
 
   /**
-   * TODO(atscott): Remove all references to relativeLinkResolution when internal cleanup is
-   * finished.
-   * @internal
-   */
-  relativeLinkResolution: 'legacy'|'corrected' = 'corrected';
-
-  /**
    * Configures how the Router attempts to restore state when a navigation is cancelled.
    *
    * 'replace' - Always uses `location.replaceState` to set the browser state to the state of the
@@ -693,8 +683,7 @@ export class Router {
                                  // Recognize
                                  recognize(
                                      this.ngModule.injector, this.rootComponentType, this.config,
-                                     this.urlSerializer, this.paramsInheritanceStrategy,
-                                     this.relativeLinkResolution),
+                                     this.urlSerializer, this.paramsInheritanceStrategy),
 
                                  // Update URL if in `eager` update mode
                                  tap(t => {

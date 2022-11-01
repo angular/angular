@@ -17,12 +17,11 @@ import {UrlSerializer} from '../url_tree';
 
 export function recognize(
     injector: EnvironmentInjector, rootComponentType: Type<any>|null, config: Route[],
-    serializer: UrlSerializer, paramsInheritanceStrategy: 'emptyOnly'|'always',
-    relativeLinkResolution: 'legacy'|'corrected'): MonoTypeOperatorFunction<NavigationTransition> {
+    serializer: UrlSerializer, paramsInheritanceStrategy: 'emptyOnly'|'always'):
+    MonoTypeOperatorFunction<NavigationTransition> {
   return mergeMap(
       t => recognizeFn(
                injector, rootComponentType, config, t.urlAfterRedirects!,
-               serializer.serialize(t.urlAfterRedirects!), serializer, paramsInheritanceStrategy,
-               relativeLinkResolution)
+               serializer.serialize(t.urlAfterRedirects!), serializer, paramsInheritanceStrategy)
                .pipe(map(targetSnapshot => ({...t, targetSnapshot}))));
 }
