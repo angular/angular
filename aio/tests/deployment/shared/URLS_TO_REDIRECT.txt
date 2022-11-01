@@ -40,7 +40,6 @@
 /api/upgrade/static/downgradeComponent-function.html --> /api/upgrade/static/downgradeComponent
 /api/upgrade/static/index/downgradeComponent-function --> /api/upgrade/static/downgradeComponent
 /api/upgrade/static/UpgradeModule-class --> /api/upgrade/static/UpgradeModule
-/config/app-package-json --> /guide/strict-mode#non-local-side-effects-in-applications
 /config/solution-tsconfig --> https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig
 /config/tsconfig --> /guide/typescript-configuration
 /devtools --> /guide/devtools
