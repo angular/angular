@@ -55,7 +55,7 @@ http_archive(
 # Download cli source from angular/cli-builds for doc generation at a specific tag or commit.
 # If the ref is a commit sha, use the full sha instead of the abbreviated form. Tags, which
 # hold an abbreviated sha by convention in cli-builds, can continue to use the short form.
-CLI_SRC_REF = "4a6e62d467dc20d4e5c3513fc6b3aa252f227697"
+CLI_SRC_REF = "6ccbc6b4cba4fde7898b67d2e195a1ea3bf4553e"
 
 http_archive(
     name = "angular_cli_src",
@@ -73,7 +73,7 @@ filegroup(
     # Run the following command to calculate the sha256, substituting the CLI_SRC_REF
     # wget -O- -q https://github.com/angular/cli-builds/archive/{CLI_SRC_REF}.tar.gz | sha256sum
     # Alternatively, just remove the parameter and bazel debug will output the sha as a suggestion.
-    sha256 = "8cc176a6a0fec4902d9893e39594c69a3356f9caaf084f246a829578781ff406",
+    sha256 = "6558e1774904719d0615f01b88368d7fe3a927ea1e54cb0436e7957bc8f6d0a6",
     strip_prefix = "cli-builds-%s" % CLI_SRC_REF,
     url = "https://github.com/angular/cli-builds/archive/%s.tar.gz" % CLI_SRC_REF,
 )
