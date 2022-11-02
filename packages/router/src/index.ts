@@ -27,6 +27,7 @@ export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot
 export {convertToParamMap, defaultUrlMatcher, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 export {UrlHandlingStrategy} from './url_handling_strategy';
 export {DefaultUrlSerializer, IsActiveMatchOptions, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+export {mapToCanActivate, mapToCanActivateChild, mapToCanDeactivate, mapToCanMatch, mapToResolve} from './utils/functional_guards';
 export {VERSION} from './version';
 
 export * from './private_export';

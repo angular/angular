@@ -372,6 +372,31 @@ export type LoadChildren = LoadChildrenCallback;
 export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Routes | Observable<Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>> | Promise<NgModuleFactory<any> | Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>>;
 
 // @public
+export function mapToCanActivate(providers: Array<Type<{
+    canActivate: CanActivateFn;
+}>>): CanActivateFn[];
+
+// @public
+export function mapToCanActivateChild(providers: Array<Type<{
+    canActivateChild: CanActivateChildFn;
+}>>): CanActivateChildFn[];
+
+// @public
+export function mapToCanDeactivate<T = unknown>(providers: Array<Type<{
+    canDeactivate: CanDeactivateFn<T>;
+}>>): CanDeactivateFn<T>[];
+
+// @public
+export function mapToCanMatch(providers: Array<Type<{
+    canMatch: CanMatchFn;
+}>>): CanMatchFn[];
+
+// @public
+export function mapToResolve<T>(provider: Type<{
+    resolve: ResolveFn<T>;
+}>): ResolveFn<T>;
+
+// @public
 export interface Navigation {
     extractedUrl: UrlTree;
     extras: NavigationExtras;
