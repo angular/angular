@@ -93,10 +93,13 @@ function getCodeActions(
       }
 
       // Create a code action for this import.
+      let description = `Import ${importName}`;
+      if (potentialImport.moduleSpecifier !== undefined) {
+        description += ` from '${potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;
+      }
       codeActions.push({
         fixName: FixIdForCodeFixesAll.FIX_MISSING_IMPORT,
-        description: `Import ${importName} from '${potentialImport.moduleSpecifier}' on ${
-            importOn.name!.text}`,
+        description,
         changes: [{
           fileName: importOn.getSourceFile().fileName,
           textChanges: [...fileImportChanges, ...traitImportChanges],
@@ -115,7 +118,10 @@ function getCodeActions(
 function updateImportsForTypescriptFile(
     tsChecker: ts.TypeChecker, file: ts.SourceFile, newImport: PotentialImport,
     tsFileToImport: ts.SourceFile): [ts.TextChange[], string] {
-  const changes = new Array<ts.TextChange>();
+  // If the expression is already imported, we can just return its name.
+  if (newImport.moduleSpecifier === undefined) {
+    return [[], newImport.symbolName];
+  }
 
   // The trait might already be imported, possibly under a different name. If so, determine the
   // local name of the imported trait.
