@@ -1,9 +1,8 @@
 name: DevInfra
 
 on:
-  push:
   pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened]
 
 # Declare default permissions as read only.
 permissions:
@@ -11,32 +10,16 @@ permissions:
 
 jobs:
   labels:
-    if: github.action == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
-        with:
-          persist-credentials: false
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
       - uses: angular/dev-infra/github-actions/commit-message-based-labels@aa4dcc8fa853e6b5f3345e6f1bac5255c7d7a871
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
   post_approval_changes:
-    if: github.action == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
-        with:
-          persist-credentials: false
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
       - uses: angular/dev-infra/github-actions/post-approval-changes@aa4dcc8fa853e6b5f3345e6f1bac5255c7d7a871
-        with:
-          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
-  assistant_to_the_branch_manager:
-    if: github.action == 'pull_request_target' or github.action == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
-        with:
-          persist-credentials: false
-      - uses: angular/dev-infra/github-actions/branch-manager@aa4dcc8fa853e6b5f3345e6f1bac5255c7d7a871
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
