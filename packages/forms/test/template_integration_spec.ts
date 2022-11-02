@@ -1409,6 +1409,15 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
     });
 
     describe('validation directives', () => {
+      it('should validate with correct initial value', () => {
+        const fixture = initTest(NgModelRequiredValidator);
+        fixture.detectChanges();
+
+        const element = fixture.debugElement.query(By.directive(NgModel));
+        const control = element.injector.get(NgModel).control;
+        expect(control.hasError('required')).toBe(false);
+      });
+
       it('required validator should validate checkbox', fakeAsync(() => {
            const fixture = initTest(NgModelCheckboxRequiredValidator);
            fixture.detectChanges();
@@ -2832,6 +2841,12 @@ class NgModelMultipleValidators {
   minLen!: number;
   // TODO(issue/24571): remove '!'.
   pattern!: string|RegExp;
+}
+
+@Component(
+    {selector: 'ng-model-checkbox-validator', template: `<input [(ngModel)]="value" required>`})
+class NgModelRequiredValidator {
+  value = 'value';
 }
 
 @Component({

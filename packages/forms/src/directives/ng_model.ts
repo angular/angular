@@ -298,7 +298,12 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpStandalone(): void {
     setUpControl(this.control, this, this.callSetDisabledState);
-    this.control.updateValueAndValidity({emitEvent: false});
+    // Wait to emit value and status changes.
+    this.control.setValue(this.model, {
+      emitEvent: false,
+      emitModelToViewChange: false,
+      onlySelf: true,
+    });
   }
 
   private _checkForErrors(): void {
