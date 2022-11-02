@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, CssSelector, DomElementSchemaRegistry, ExternalExpr, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
+import {AST, CssSelector, DomElementSchemaRegistry, ExternalExpr, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
@@ -682,6 +682,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (toImport.ngModule !== null) {
       ngModuleRef = this.metaReader.getNgModuleMetadata(new Reference(toImport.ngModule))?.ref;
     }
+    const kind = ngModuleRef ? PotentialImportKind.NgModule : PotentialImportKind.Standalone;
 
     // Import the ngModule if one exists. Otherwise, import the standalone trait directly.
     const importTarget = ngModuleRef ?? toImport.ref;
@@ -691,9 +692,17 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     // ranking references, such as keeping a record of import specifiers used in existing code.
     const emittedRef = this.refEmitter.emit(importTarget, inContext.getSourceFile());
     if (emittedRef.kind === ReferenceEmitKind.Failed) return [];
+    const emittedExpression = emittedRef.expression;
 
-    // The resulting import expression should have a module name and an identifier name.
-    const emittedExpression: ExternalExpr = emittedRef.expression as ExternalExpr;
+    // This is not be a true import if an appropriate identifier is already in scope.
+    if (emittedExpression instanceof WrappedNodeExpr) {
+      return [{kind, symbolName: emittedExpression.node.getText()}];
+    }
+    // Otherwise, it must be a genuine external expression.
+    if (!(emittedExpression instanceof ExternalExpr)) {
+      return [];
+    }
+
     if (emittedExpression.value.moduleName === null || emittedExpression.value.name === null)
       return [];
 
