@@ -7,13 +7,11 @@ ng_module(
     srcs = glob(
         ["**/*.ts"],
     ),
+    tsconfig = ":tsconfig.json",
     deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "//packages/router",
-        "//packages/zone.js/lib",
-        "@npm//rxjs",
     ],
 )
 
