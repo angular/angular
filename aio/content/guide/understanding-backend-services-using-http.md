@@ -1,6 +1,7 @@
 # Understanding communicating with backend services using HTTP
 
-Most front-end applications need to communicate with a server over the HTTP protocol, to download or upload data and access other back-end services. Angular provides a client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
+Most front-end applications need to communicate with a server over the HTTP protocol, to download or upload data and access other back-end services.
+Angular provides a client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
 
 ## Prerequisites
 
@@ -16,13 +17,9 @@ Before working with the `HttpClientModule`, you should have a basic understandin
 
 The HTTP client service offers the following major features.
 
-*   The ability to request data from a server
-*   Streamlined error handling
-*   Testing-requests features
-*   Request and response
+*   The ability to request [typed response objects](#typed-response)
+*   Streamlined [error handling](#error-handling)
+*   [Testability](#testing-requests) features
+*   Request and response [interception](#intercepting-requests-and-responses)
 
-## What's next
-
-* [Setup for server communication](guide/http-setup-server-communication.md)
-
-@reviewed 2023-01-25
+@reviewed 2022-11-01
