@@ -116,7 +116,7 @@ import {UrlTree} from '../url_tree';
  * @publicApi
  */
 @Directive({
-  selector: ':not(a):not(area)[routerLink],a[routerLink],area[routerLink]',
+  selector: '[routerLink]',
   standalone: true,
 })
 export class RouterLink implements OnChanges, OnDestroy {
