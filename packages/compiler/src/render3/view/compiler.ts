@@ -12,7 +12,6 @@ import * as core from '../../core';
 import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
-import {isIframeSecuritySensitiveAttr} from '../../schema/dom_security_schema';
 import {CssSelector} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {BindingParser} from '../../template_parser/binding_parser';
@@ -575,19 +574,6 @@ function createHostBindingsFunction(
     const instructionParams = [o.literal(bindingName), bindingExpr.currValExpr];
     if (sanitizerFn) {
       instructionParams.push(sanitizerFn);
-    } else {
-      // If there was no sanitization function found based on the security context
-      // of an attribute/property binding - check whether this attribute/property is
-      // one of the security-sensitive <iframe> attributes.
-      // Note: for host bindings defined on a directive, we do not try to find all
-      // possible places where it can be matched, so we can not determine whether
-      // the host element is an <iframe>. In this case, if an attribute/binding
-      // name is in the `IFRAME_SECURITY_SENSITIVE_ATTRS` set - append a validation
-      // function, which would be invoked at runtime and would have access to the
-      // underlying DOM element, check if it's an <iframe> and if so - runs extra checks.
-      if (isIframeSecuritySensitiveAttr(bindingName)) {
-        instructionParams.push(o.importExpr(R3.validateIframeAttribute));
-      }
     }
 
     updateVariables.push(...bindingExpr.stmts);
