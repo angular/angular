@@ -1,8 +1,8 @@
-# Resolving Zone Pollution
+# Resolving zone pollution
 
 **Zone.js** is a signaling mechanism that Angular uses to detect when an application state might have changed. It captures asynchronous operations like `setTimeout`, network requests, and event listeners. Angular schedules change detection based on signals from Zone.js
 
-There are cases in which scheduled [tasks](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide#tasks) or [microtasks](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide#microtasks) don’t make any changes in the data model, which makes running change detection unnecessary. Common examples are:
+In some cases scheduled [tasks](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide#tasks) or [microtasks](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide#microtasks) don’t make any changes in the data model, which makes running change detection unnecessary. Common examples are:
 * `requestAnimationFrame`, `setTimeout` or `setInterval`
 * Task or microtask scheduling by third-party libraries
 
@@ -19,9 +19,9 @@ You can detect unnecessary change detection calls using Angular DevTools. Often 
 In the image above, there is a series of change detection calls triggered by event handlers associated with an element. That’s a common challenge when using third-party, non-native Angular components, which do not alter the default behavior of `NgZone`.
 
 
-## Run tasks outside NgZone
+## Run tasks outside `NgZone`
 
-In such cases, we can instruct Angular to avoid calling change detection for tasks scheduled by a given piece of code using  [NgZone](https://angular.io/guide/zone).
+In such cases, you can instruct Angular to avoid calling change detection for tasks scheduled by a given piece of code using [NgZone](https://angular.io/guide/zone).
 
 ```ts
 import { Component, NgZone, OnInit } from '@angular/core';
@@ -34,7 +34,7 @@ class AppComponent implements OnInit {
 }
 ```
 
-The snippet above instructs Angular that it should execute the `setInterval` call outside the Angular Zone and skip running change detection after `pollForUpdates` runs.
+The preceding snippet instructs Angular to call `setInterval` outside the Angular Zone and skip running change detection after `pollForUpdates` runs.
 
 Third-party libraries commonly trigger unnecessary change detection cycles because they weren't authored with Zone.js in mind. Avoid these extra cycles by calling library APIs outside the Angular zone:
 
@@ -53,8 +53,8 @@ class AppComponent implements OnInit {
 }
 ```
 
-Running `Plotly.newPlot('chart', data);` within `runOutsideAngular` instructs the framework that it shouldn’t execute change detection after the execution of tasks scheduled by the initialization logic.
+Running `Plotly.newPlot('chart', data);` within `runOutsideAngular` instructs the framework that it shouldn’t run change detection after the execution of tasks scheduled by the initialization logic.
 
-For example, if `Plotly.newPlot('chart', data)` adds event listeners to a DOM element, Angular will not execute change detection after the execution of their handlers.
+For example, if `Plotly.newPlot('chart', data)` adds event listeners to a DOM element, Angular does not run change detection after the execution of their handlers.
 
 @reviewed 2022-05-04
