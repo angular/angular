@@ -11,7 +11,7 @@ import {getTemplateLocationDetails} from '../render3/instructions/element_valida
 import {TAttributes, TNodeType} from '../render3/interfaces/node';
 import {RComment, RElement} from '../render3/interfaces/renderer_dom';
 import {LView} from '../render3/interfaces/view';
-import {getCurrentTNode, getLView} from '../render3/state';
+import {getLView, getSelectedTNode} from '../render3/state';
 import {getNativeByTNode} from '../render3/util/view_utils';
 
 /*
@@ -35,15 +35,25 @@ export const IFRAME_SECURITY_SENSITIVE_ATTRS = new Set(
  */
 export function ɵɵvalidateIframeAttribute(attrValue: any, tagName: string, attrName: string) {
   const lView = getLView();
-  const tNode = getCurrentTNode()!;
+  const tNode = getSelectedTNode()!;
   const element = getNativeByTNode(tNode, lView) as RElement | RComment;
 
   if (tNode.type === TNodeType.Element && tNode.value.toLowerCase() === 'iframe' &&
       // Note: check for all false'y values including an empty string as a value,
       // since this is a default value for an `<iframe>`'s `src` attribute.
       ((element as HTMLIFrameElement).src || (element as HTMLIFrameElement).srcdoc)) {
+    // Unset `src` and/or `srcdoc` if we come across a situation when
+    // a security-sensitive attribute is applied later.
+    const iframe = element as HTMLIFrameElement;
+    if (iframe.src) {
+      iframe.src = '';
+    }
+    if (iframe.srcdoc) {
+      iframe.srcdoc = '';
+    }
     throw unsafeIframeAttributeError(lView, attrName);
   }
+  return attrValue;
 }
 
 /**
