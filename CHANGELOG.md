@@ -1,3 +1,18 @@
+<a name="14.2.9"></a>
+# 14.2.9 (2022-11-03)
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [92d28bdd99](https://github.com/angular/angular/commit/92d28bdd99d3e18f42f6ed8494344b72b15d0104) | perf | resolve memory leak when using animations with shadow DOM ([#47903](https://github.com/angular/angular/pull/47903)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d2d9bbf5ce](https://github.com/angular/angular/commit/d2d9bbf5ce5a2f5e95e7c836fbca67d90db62371) | fix | call `onSerialize` when state is empty ([#47888](https://github.com/angular/angular/pull/47888)) |
+## Special Thanks
+Alan Agius, Kristiyan Kostadinov, Virginia Dooley and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-rc.1"></a>
 # 15.0.0-rc.1 (2022-10-26)
 ### common
