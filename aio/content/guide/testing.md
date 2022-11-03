@@ -125,7 +125,7 @@ If you require to fine-tune Karma, follow the below steps:
 
     </code-example>
 
-1. In the `angular.json`, configure the Karma builder to use the created configuration file.
+1. In the `angular.json`, use the [`karmaConfig`](cli/test) option to configure the Karma builder to use the created configuration file.
 
   <code-example format="jsonc" language="jsonc">
 
