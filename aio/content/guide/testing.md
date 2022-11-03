@@ -1,5 +1,7 @@
 <a id="top"></a>
 
+{@searchKeywords test testing karma jasmine coverage}
+
 # Testing
 
 Testing your Angular application helps you check that your app is working as you expect.
