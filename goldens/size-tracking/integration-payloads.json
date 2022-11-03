@@ -48,7 +48,7 @@
   "animations": {
     "uncompressed": {
       "runtime": 1070,
-      "main": 156446,
+      "main": 155920,
       "polyfills": 33814
     }
   },

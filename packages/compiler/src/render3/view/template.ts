@@ -23,7 +23,6 @@ import {mapLiteral} from '../../output/map_util';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
-import {isIframeSecuritySensitiveAttr} from '../../schema/dom_security_schema';
 import {isTrustedTypesSink} from '../../schema/trusted_types_sinks';
 import {CssSelector} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
@@ -676,16 +675,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const refs = this.prepareRefsArray(element.references);
     parameters.push(this.addToConsts(refs));
 
-    // If this element is an <iframe>, append an extra validation
-    // function, which would be invoked at runtime to make sure that
-    // all security-sensitive attributes defined statically (both on
-    // the element itself as well as on all matched directives) are
-    // set on the underlying <iframe> *before* setting its `src` or
-    // `srcdoc` (otherwise they'd not be taken into account).
-    if (isIframeElement(element.name)) {
-      parameters.push(o.importExpr(R3.validateIframeStaticAttributes));
-    }
-
     const wasInNamespace = this._namespace;
     const currentNamespace = this.getNamespaceInstruction(namespaceKey);
 
@@ -794,19 +783,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           const params: any[] = [];
           const [attrNamespace, attrName] = splitNsName(input.name);
           const isAttributeBinding = inputType === BindingType.Attribute;
-          let sanitizationRef = resolveSanitizationFn(input.securityContext, isAttributeBinding);
-          if (!sanitizationRef) {
-            // If there was no sanitization function found based on the security context
-            // of an attribute/property - check whether this attribute/property is
-            // one of the security-sensitive <iframe> attributes (and that the current
-            // element is actually an <iframe>).
-            if (isIframeElement(element.name) && isIframeSecuritySensitiveAttr(input.name)) {
-              sanitizationRef = o.importExpr(R3.validateIframeAttribute);
-            }
-          }
-          if (sanitizationRef) {
-            params.push(sanitizationRef);
-          }
+          const sanitizationRef = resolveSanitizationFn(input.securityContext, isAttributeBinding);
+          if (sanitizationRef) params.push(sanitizationRef);
           if (attrNamespace) {
             const namespaceLiteral = o.literal(attrNamespace);
 
@@ -2231,10 +2209,6 @@ function isSingleElementTemplate(children: t.Node[]): children is[t.Element] {
 
 function isTextNode(node: t.Node): boolean {
   return node instanceof t.Text || node instanceof t.BoundText || node instanceof t.Icu;
-}
-
-function isIframeElement(tagName: string): boolean {
-  return tagName.toLowerCase() === 'iframe';
 }
 
 function hasTextChildrenOnly(children: t.Node[]): boolean {
