@@ -2,7 +2,7 @@
 
 The web is used by a wide variety of people, including those who have visual or motor impairments.
 A variety of assistive technologies are available that make it much easier for these groups to interact with web-based software applications.
-In addition, designing an application to be more accessible generally improves the user experience for all users.
+Also, designing an application to be more accessible generally improves the user experience for all users.
 
 For an in-depth introduction to issues and techniques for designing accessible applications, see the [Accessibility](https://developers.google.com/web/fundamentals/accessibility/#what_is_accessibility) section of the Google's [Web Fundamentals](https://developers.google.com/web/fundamentals).
 
@@ -16,10 +16,10 @@ For the sample application that this page describes, see the <live-example></liv
 
 ## Accessibility attributes
 
-Building accessible web experience often involves setting [ARIA attributes](https://developers.google.com/web/fundamentals/accessibility/semantics-aria) to provide semantic meaning where it might otherwise be missing.
+Building accessible web experience often involves setting [Accessible Rich Internet Applications \(ARIA\) attributes](https://developers.google.com/web/fundamentals/accessibility/semantics-aria) to provide semantic meaning where it might otherwise be missing.
 Use [attribute binding](guide/attribute-binding) template syntax to control the values of accessibility-related attributes.
 
-When binding to ARIA attributes in Angular, you must use the `attr.` prefix, as the ARIA specification depends specifically on HTML attributes rather than properties of DOM elements.
+When binding to ARIA attributes in Angular, you must use the `attr.` prefix. The ARIA specification depends specifically on HTML attributes rather than properties of DOM elements.
 
 <code-example format="html" language="html">
 
@@ -67,7 +67,7 @@ For full details of these and other tools, see the [Angular CDK accessibility ov
 
 ### Augmenting native elements
 
-Native HTML elements capture a number of standard interaction patterns that are important to accessibility.
+Native HTML elements capture several standard interaction patterns that are important to accessibility.
 When authoring Angular components, you should re-use these native elements directly when possible, rather than re-implementing well-supported behaviors.
 
 For example, instead of creating a custom element for a new variety of button, create a component that uses an attribute selector with a native `<button>` element.
@@ -79,8 +79,8 @@ You can see examples of this pattern in Angular Material:
 ### Using containers for native elements
 
 Sometimes using the appropriate native element requires a container element.
-For example, the native `<input>` element cannot have children, so any custom text entry components need to wrap an `<input>` with additional elements.
-While you might just include the `<input>` in your custom component's template, this makes it impossible for users of the component to set arbitrary properties and attributes to the input element.
+For example, the native `<input>` element cannot have children, so any custom text entry components need to wrap an `<input>` with extra elements.
+By just including `<input>` in your custom component's template, it's impossible for your component's users  to set arbitrary properties and attributes to the `<input>` element.
 Instead, create a container component that uses content projection to include the native control in the component's API.
 
 You can see [`MatFormField`](https://material.angular.io/components/form-field/overview) as an example of this pattern.
@@ -127,7 +127,10 @@ You should avoid situations where focus returns to the `body` element after a ro
 
 ### Active links identification
 
-CSS classes applied to active `RouterLink` elements (usually via `RouterLinkActive`) provide a visual indication regarding as to which link is currently active. Such indication doesn't apply to blind or visually impaired users, in order to provide such information the `aria-current` attribute should be applied to the element as well (for more information see [MDN aria-current](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current)).
+CSS classes applied to active `RouterLink` elements, such as `RouterLinkActive`, provide a visual cue to identify the active link.
+Unfortunately, a visual cue doesn't help blind or visually impaired users.
+Applying the `aria-current` attribute to the element can help identify the active link.
+For more information, see [Mozilla Developer Network \(MDN\) aria-current](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current)).
 
 The `RouterLinkActive` directive provides the `ariaCurrentWhenActive` input which sets the `aria-current` to a specified value when the link becomes active.
 
@@ -153,7 +156,9 @@ The following example shows how to apply the `active-page` class to active links
     </nav>
 ```
 
-## Additional resources
+<!-- vale Angular.Angular_Spelling = NO -->
+
+## More information
 
 *   [Accessibility - Google Web Fundamentals](https://developers.google.com/web/fundamentals/accessibility)
 *   [ARIA specification and authoring practices](https://www.w3.org/TR/wai-aria)
@@ -164,6 +169,8 @@ The following example shows how to apply the `active-page` class to active links
 *   [W3C - Web Accessibility Initiative](https://www.w3.org/WAI/people-use-web)
 *   [Rob Dodson A11ycasts](https://www.youtube.com/watch?v=HtTyRajRuyY)
 *   [Angular ESLint](https://github.com/angular-eslint/angular-eslint#functionality) provides linting rules that can help you make sure your code meets accessibility standards.
+
+<!-- vale Angular.Angular_Spelling = YES -->
 
 Books
 

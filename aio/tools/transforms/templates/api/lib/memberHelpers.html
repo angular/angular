@@ -89,6 +89,11 @@
         {%- else %}{$ method.name $}()
         {%- endif -%}
       </h3>
+      {%- if method.developerPreview %}
+      <label class="api-status-label dev-preview" title="This API is in Developer Preview">
+        <a href="guide/releases#developer-preview">developer preview</a>
+      </label>
+      {% endif %}
       {$ github.githubLinks(method, versionInfo) $}
     </div>
   </th></tr></thead>
@@ -221,6 +226,12 @@
           <code class="{% if property.deprecated %} deprecated-api-item{% endif %}">{$ renderMemberSyntax(property) $}</code>
         </td>
         <td>
+          {%- if property.developerPreview %}
+          <label class="api-status-label dev-preview" title="This API is in Developer Preview">
+            <a href="guide/releases#developer-preview">developer preview</a>
+          </label>
+          {% endif %}
+
           {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}
           <span class='read-only-property'>Read-Only</span>{% endif %}
 

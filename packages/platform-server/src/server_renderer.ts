@@ -69,7 +69,7 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   destroyNode = null;
 
-  createElement(name: string, namespace?: string, debugInfo?: any): any {
+  createElement(name: string, namespace?: string): any {
     if (namespace) {
       const doc = this.document || getDOM().getDefaultDocument();
       return doc.createElementNS(NAMESPACE_URIS[namespace], name);
@@ -78,11 +78,11 @@ class DefaultServerRenderer2 implements Renderer2 {
     return getDOM().createElement(name, this.document);
   }
 
-  createComment(value: string, debugInfo?: any): any {
+  createComment(value: string): any {
     return getDOM().getDefaultDocument().createComment(value);
   }
 
-  createText(value: string, debugInfo?: any): any {
+  createText(value: string): any {
     const doc = getDOM().getDefaultDocument();
     return doc.createTextNode(value);
   }
@@ -105,18 +105,16 @@ class DefaultServerRenderer2 implements Renderer2 {
     }
   }
 
-  selectRootElement(selectorOrNode: string|any, debugInfo?: any): any {
-    let el: any;
-    if (typeof selectorOrNode === 'string') {
-      el = this.document.querySelector(selectorOrNode);
-      if (!el) {
-        throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
-      }
-    } else {
-      el = selectorOrNode;
+  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
+    const el = typeof selectorOrNode === 'string' ? this.document.querySelector(selectorOrNode) :
+                                                    selectorOrNode;
+    if (!el) {
+      throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
     }
-    while (el.firstChild) {
-      el.removeChild(el.firstChild);
+    if (!preserveContent) {
+      while (el.firstChild) {
+        el.removeChild(el.firstChild);
+      }
     }
     return el;
   }
@@ -271,7 +269,7 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
   }
 
   override createElement(parent: any, name: string): Element {
-    const el = super.createElement(parent, name, this.document);
+    const el = super.createElement(parent, name);
     super.setAttribute(el, this.contentAttr, '');
     return el;
   }

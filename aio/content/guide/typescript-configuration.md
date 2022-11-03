@@ -32,34 +32,14 @@ For more information, see the [Configuration inheritance with extends](https://w
 
 <div class="alert is-helpful">
 
-For more information TypeScript configuration files, see the official [TypeScript wiki](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
+For more information TypeScript configuration files, see the official [TypeScript handbook](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 For details about configuration inheritance, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section.
 
 </div>
 
 The initial `tsconfig.json` for an Angular workspace typically looks like the following example.
 
-<code-example lang="json" header="tsconfig.json" linenums="false">
-{
-  "compileOnSave": false,
-  "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "es2020",
-    "lib": [
-      "es2018",
-      "dom"
-    ]
-  }
-}
-</code-example>
+<code-example header="tsconfig.json" path="getting-started/tsconfig.0.json"></code-example>
 
 <a id="noImplicitAny"></a>
 
@@ -116,17 +96,12 @@ Angular packages include them already.
 
 </div>
 
-### `lib.d.ts`
+### `lib`
 
-TypeScript includes a special declaration file called `lib.d.ts`.
-This file contains the ambient declarations for various common JavaScript constructs present in JavaScript runtimes and the DOM.
+TypeScript includes a default set of declaration files.
+These files contain the ambient declarations for various common JavaScript constructs present in JavaScript runtimes and the DOM.
 
-Based on the `--target`, TypeScript adds *additional* ambient declarations like `Promise` if the target is `es6`.
-
-By default, the target is `es2015`.
-If you are targeting `es5`, you still have newer type declarations due to the list of declaration files included:
-
-<code-example header="tsconfig.json (lib excerpt)" path="getting-started/tsconfig.0.json" region="lib"></code-example>
+For more information, see [lib](https://www.typescriptlang.org/tsconfig#lib) in the TypeScript guide.
 
 ### Installable typings files
 
@@ -148,7 +123,8 @@ For instance, to install typings for `chai` you run `npm install @types/chai --s
 
 ### `target`
 
-By default, the target is `es2020`, which is supported in modern browsers.
+By default, the target is `ES2022`. To control ECMA syntax use the [Browserslist](https://github.com/browserslist/browserslist) configuration file.
+For more information, see the [configuring browser compatibility](/guide/build#configuring-browser-compatibility) guide.
 
 <!-- links -->
 
@@ -156,4 +132,4 @@ By default, the target is `es2020`, which is supported in modern browsers.
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-10-24
