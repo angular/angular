@@ -73,7 +73,7 @@ setPublicVar COMPONENTS_REPO_TMP_DIR "/tmp/angular-components-repo"
 setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
 setPublicVar COMPONENTS_REPO_BRANCH "main"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
-setPublicVar COMPONENTS_REPO_COMMIT "87eb708d162e89897e66809c371e3a1e079de962"
+setPublicVar COMPONENTS_REPO_COMMIT "a999a52bb967608b4ec59729cf720ade9db274d8"
 
 ####################################################################################################
 # Create shell script in /tmp for Bazel actions to access CI envs without
