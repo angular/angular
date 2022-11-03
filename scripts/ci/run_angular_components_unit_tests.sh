@@ -23,4 +23,5 @@ bazel test \
   --build_tag_filters=-docs-package,-e2e,-browser:firefox \
   --test_tag_filters=-e2e,-browser:firefox \
   --build_tests_only \
+  --keep_going \
   -- src/...
