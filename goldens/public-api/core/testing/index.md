@@ -160,6 +160,7 @@ export interface TestBed {
     resetTestEnvironment(): void;
     // (undocumented)
     resetTestingModule(): TestBed;
+    runInInjectionContext<T>(fn: () => T): T;
 }
 
 // @public
