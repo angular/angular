@@ -5093,7 +5093,9 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const fixture = initTest(NoCVAComponent);
         expect(() => {
           fixture.detectChanges();
-        }).toThrowError('No value accessor for form control with name: \'control\'');
+        })
+            .toThrowError(
+                `NG01203: No value accessor for form control name: 'control'. Find more at https://angular.io/errors/NG01203`);
 
         // Making sure that cleanup between tests doesn't cause any issues
         // for not fully initialized controls.
