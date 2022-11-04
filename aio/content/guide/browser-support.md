@@ -30,12 +30,12 @@ See instructions on how to include polyfills into your project below.
 The suggested polyfills are the ones that run full Angular applications.
 You might need additional polyfills to support features not covered by this list.
 
+</div>
+
 <div class="alert is-helpful">
 
 **NOTE**: <br />
 Polyfills cannot magically transform an old, slow browser into a modern, fast one.
-
-</div>
 
 </div>
 
@@ -44,11 +44,27 @@ Polyfills cannot magically transform an old, slow browser into a modern, fast on
 The [Angular CLI](cli) provides support for polyfills.
 If you are not using the CLI to create your projects, see [Polyfill instructions for non-CLI users](#non-cli).
 
-When you create a project with the `ng new` command, a `src/polyfills.ts` configuration file is created as part of your project folder.
-This file incorporates the mandatory and many of the optional polyfills as JavaScript `import` statements.
+The `polyfills` options of the [browser](cli/build) and [test](cli/test) builder can be a full path for a file \(Example: `src/polyfills.ts`\) or,
+relative to the current workspace or module specifier \(Example: `zone.js`\).
 
-*   The npm packages for the mandatory polyfills \(such as `zone.js`\) are installed automatically for you when you create your project with `ng new`, and their corresponding `import` statements are already enabled in the `src/polyfills.ts` configuration file
-*   If you need an *optional* polyfill, you must install its npm package, then uncomment or create the corresponding import statement in the `src/polyfills.ts` configuration file
+If you create a TypeScript file, make sure to include it in the `files` property of your `tsconfig` file.
+
+<code-example language="jsonc" syntax="jsonc">
+
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    ...
+  },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts"
+  ]
+  ...
+}
+
+</code-example>
+
 
 <a id="non-cli"></a>
 
@@ -89,4 +105,4 @@ For example:
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-11-04
