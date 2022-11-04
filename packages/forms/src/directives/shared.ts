@@ -65,7 +65,7 @@ export function setUpControl(
     callSetDisabledState: SetDisabledStateOption = setDisabledStateDefault): void {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (!control) _throwError(dir, 'Cannot find control with');
-    if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
+    if (!dir.valueAccessor) _throwMissingValueAccessorError(dir);
   }
 
   setUpValidators(control, dir);
@@ -320,6 +320,12 @@ function _describeControlLocation(dir: AbstractControlDirective): string {
   if (path && path.length > 1) return `path: '${path.join(' -> ')}'`;
   if (path?.[0]) return `name: '${path}'`;
   return 'unspecified name attribute';
+}
+
+function _throwMissingValueAccessorError(dir: AbstractControlDirective) {
+  const loc = _describeControlLocation(dir);
+  throw new RuntimeError(
+      RuntimeErrorCode.NG_MISSING_VALUE_ACCESSOR, `No value accessor for form control ${loc}.`);
 }
 
 function _throwInvalidValueAccessorError(dir: AbstractControlDirective) {

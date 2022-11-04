@@ -184,7 +184,8 @@ class CustomValidatorDirective implements Validator {
           dir.name = 'login';
 
           expect(() => form.addControl(dir))
-              .toThrowError(new RegExp(`No value accessor for form control with name: 'login'`));
+              .toThrowError(new RegExp(
+                  `NG01203: No value accessor for form control name: 'login'. Find more at https://angular.io/errors/NG01203`));
         });
 
         it('should throw when no value accessor with path', () => {
@@ -195,7 +196,7 @@ class CustomValidatorDirective implements Validator {
 
           expect(() => form.addControl(dir))
               .toThrowError(new RegExp(
-                  `No value accessor for form control with path: 'passwords -> password'`));
+                  `NG01203: No value accessor for form control path: 'passwords -> password'. Find more at https://angular.io/errors/NG01203`));
         });
 
         it('should set up validators', fakeAsync(() => {
@@ -582,15 +583,16 @@ class CustomValidatorDirective implements Validator {
         namedDir.name = 'one';
 
         expect(() => namedDir.ngOnChanges({}))
-            .toThrowError(new RegExp(`No value accessor for form control with name: 'one'`));
+            .toThrowError(new RegExp(
+                `NG01203: No value accessor for form control name: 'one'. Find more at https://angular.io/errors/NG01203`));
       });
 
       it('should throw when no value accessor with unnamed control', () => {
         const unnamedDir = new NgModel(null!, null!, null!, null!);
 
         expect(() => unnamedDir.ngOnChanges({}))
-            .toThrowError(
-                new RegExp(`No value accessor for form control with unspecified name attribute`));
+            .toThrowError(new RegExp(
+                `NG01203: No value accessor for form control unspecified name attribute. Find more at https://angular.io/errors/NG01203`));
       });
 
       it('should set up validator', fakeAsync(() => {
