@@ -44,7 +44,7 @@ When you register a provider at the component level, you get a new instance of t
 class HeroListModule {}
 </code-example>
 
-When you register a provider with a specific NgModule, the same instance of a service is available to all components in that NgModule.
+When you register a provider with a specific NgModule, the same instance of a service is available to all components in that NgModule (to understand all edge-cases, see [Hierarchical injectors](guide/hierarchical-dependency-injection)).
 
 * At the application root level, which allows injecting it into other classes in the application. This can be done by adding the `providedIn: 'root'` field to the `@Injectable` decorator:
 
