@@ -204,3 +204,21 @@ export function toUnredirectedSourceFile(sf: ts.SourceFile): ts.SourceFile {
   }
   return redirectInfo.unredirected;
 }
+
+/**
+ * Determines the effective module kind from the compiler options.
+ *
+ * Derived from
+ * https://github.com/microsoft/TypeScript/blob/release-4.8/src/compiler/utilities.ts#L6354-L6365
+ */
+export function getEmitModuleKind(options: ts.CompilerOptions): ts.ModuleKind {
+  if (options.module !== undefined) {
+    return options.module;
+  }
+
+  if (options.target === undefined || options.target < ts.ScriptTarget.ES2015) {
+    return ts.ModuleKind.CommonJS;
+  }
+
+  return ts.ModuleKind.ES2015;
+}

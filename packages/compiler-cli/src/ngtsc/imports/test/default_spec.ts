@@ -42,7 +42,7 @@ runInEachFileSystem(() => {
       const fooClause = getDeclaration(program, _('/test.ts'), 'Foo', ts.isImportClause);
       const fooDecl = fooClause.parent;
 
-      const tracker = new DefaultImportTracker();
+      const tracker = new DefaultImportTracker(false);
       tracker.recordUsedImport(fooDecl);
       program.emit(undefined, undefined, undefined, undefined, {
         before: [tracker.importPreservingTransformer()],
@@ -71,7 +71,7 @@ runInEachFileSystem(() => {
       const fooId = fooClause.name!;
       const fooDecl = fooClause.parent;
 
-      const tracker = new DefaultImportTracker();
+      const tracker = new DefaultImportTracker(true);
       tracker.recordUsedImport(fooDecl);
       program.emit(undefined, undefined, undefined, undefined, {
         before: [

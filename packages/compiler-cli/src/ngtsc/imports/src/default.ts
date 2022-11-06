@@ -72,6 +72,8 @@ export class DefaultImportTracker {
    */
   private sourceFileToUsedImports = new Map<ts.SourceFile, Set<ts.ImportDeclaration>>();
 
+  constructor(private isCommonJSEmit: boolean) {}
+
   recordUsedImport(importDecl: ts.ImportDeclaration): void {
     const sf = getSourceFile(importDecl);
 
@@ -131,15 +133,24 @@ export class DefaultImportTracker {
         //    violate invariants elsewhere in the compiler and cause crashes.
         //
         // 5. Using `ts.getMutableClone` seems to correctly preserve the import and correctly
-        //    generate references to the import variable across all module types.
+        //    generate references to the import variable across all module types. This function
+        //    is deprecated and started generating a deprecation warning in TypeScript 4.8 so
+        //    is ideally avoided.
         //
-        // Therefore, option 5 is the one used here. It seems to be implemented as the correct way
-        // to perform option 4, which preserves all the compiler's invariants.
+        // Therefore, we only use option 5 if CommonJS (or AMD/UMD) emit is requested. It seems to
+        // be implemented as the correct way to perform option 4, which preserves all the
+        // compiler's invariants with the downside of producing a deprecating warning. For ES emit
+        // we use option 2 as it has the desired effect without using deprecated API.
         //
         // TODO(alxhub): discuss with the TypeScript team and determine if there's a better way to
         // deal with this issue.
-        // tslint:disable-next-line: ban
-        stmt = ts.getMutableClone(stmt);
+        if (this.isCommonJSEmit) {
+          // tslint:disable-next-line: ban
+          stmt = ts.getMutableClone(stmt);
+        } else {
+          stmt = ts.factory.createImportDeclaration(
+              stmt.modifiers, stmt.importClause, stmt.moduleSpecifier, stmt.assertClause);
+        }
       }
       return stmt;
     });

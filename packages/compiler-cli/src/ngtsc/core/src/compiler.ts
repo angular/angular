@@ -33,7 +33,7 @@ import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
 import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
-import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
+import {getEmitModuleKind, getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
@@ -617,7 +617,9 @@ export class NgCompiler {
       importRewriter = new NoopImportRewriter();
     }
 
-    const defaultImportTracker = new DefaultImportTracker();
+    const isCommonJsEmit =
+        getEmitModuleKind(this.currentProgram.getCompilerOptions()) < ts.ModuleKind.ES2015;
+    const defaultImportTracker = new DefaultImportTracker(isCommonJsEmit);
 
     const before = [
       ivyTransformFactory(

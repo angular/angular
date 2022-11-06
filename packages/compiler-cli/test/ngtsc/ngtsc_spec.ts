@@ -5038,6 +5038,125 @@ function allTests(os: string) {
       expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.Other'));
     });
 
+    describe('default export preserving', () => {
+      it('should correctly rewrite references to default imports when no configuration is set',
+         () => {
+           env.write('tsconfig.json', JSON.stringify({
+             compilerOptions: {
+               lib: ['es2015'],
+               moduleResolution: 'node',
+               experimentalDecorators: true,
+               outDir: 'built',
+               rootDir: '.',
+             },
+           }));
+           env.write(`types.ts`, `
+            export default class Default {}
+          `);
+           env.write(`test.ts`, `
+            import {Injectable} from '@angular/core';
+            import Default from './types';
+
+            @Injectable()
+            export class SomeCmp {
+              constructor(arg: Default) {}
+            }
+         `);
+
+           env.driveMain();
+           const jsContents = trim(env.getContents('test.js'));
+           expect(jsContents).toContain(`var types_1 = require("./types");`);
+           expect(jsContents).toContain('i0.ɵɵinject(types_1["default"])');
+         });
+
+      it('should correctly rewrite references to default imports when module is set to CommonJS',
+         () => {
+           env.write('tsconfig.json', JSON.stringify({
+             compilerOptions: {
+               lib: ['es2015'],
+               moduleResolution: 'node',
+               experimentalDecorators: true,
+               outDir: 'built',
+               rootDir: '.',
+               module: 'CommonJS',
+             },
+           }));
+           env.write(`types.ts`, `
+            export default class Default {}
+          `);
+           env.write(`test.ts`, `
+            import {Injectable} from '@angular/core';
+            import Default from './types';
+
+            @Injectable()
+            export class SomeCmp {
+              constructor(arg: Default) {}
+            }
+         `);
+
+           env.driveMain();
+           const jsContents = trim(env.getContents('test.js'));
+           expect(jsContents).toContain(`var types_1 = require("./types");`);
+           expect(jsContents).toContain('i0.ɵɵinject(types_1["default"])');
+         });
+
+      it('should correctly rewrite references to default imports when target is set to ES5', () => {
+        env.write('tsconfig.json', JSON.stringify({
+          compilerOptions: {
+            lib: ['es2015'],
+            moduleResolution: 'node',
+            experimentalDecorators: true,
+            outDir: 'built',
+            rootDir: '.',
+            target: 'ES5',
+          },
+        }));
+        env.write(`types.ts`, `
+            export default class Default {}
+          `);
+        env.write(`test.ts`, `
+            import {Injectable} from '@angular/core';
+            import Default from './types';
+
+            @Injectable()
+            export class SomeCmp {
+              constructor(arg: Default) {}
+            }
+         `);
+
+        env.driveMain();
+        const jsContents = trim(env.getContents('test.js'));
+        expect(jsContents).toContain(`var types_1 = require("./types");`);
+        expect(jsContents).toContain('i0.ɵɵinject(types_1.default)');
+      });
+
+      it('does not use deprecated getMutableClone API when targeting ES2015 and later', () => {
+        const originalGetMutableClone = ts.getMutableClone;
+        (ts as any).getMutableClone = () => fail('getMutableClone API should not be used');
+        try {
+          env.write(`types.ts`, `
+            export default class Default {}
+          `);
+          env.write(`test.ts`, `
+            import {Injectable} from '@angular/core';
+            import Default from './types';
+
+            @Injectable()
+            export class SomeCmp {
+              constructor(arg: Default) {}
+            }
+         `);
+
+          env.driveMain();
+          const jsContents = trim(env.getContents('test.js'));
+          expect(jsContents).toContain(`import Default from './types';`);
+          expect(jsContents).toContain('i0.ɵɵinject(Default)');
+        } finally {
+          (ts as any).getMutableClone = originalGetMutableClone;
+        }
+      });
+    });
+
     it('should not throw when using an SVG-specific `title` tag', () => {
       env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
