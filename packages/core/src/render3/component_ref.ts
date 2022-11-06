@@ -169,9 +169,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     const elementName = this.componentDef.selectors[0][0] as string || 'div';
     const hostRNode = rootSelectorOrNode ?
         locateHostElement(hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation) :
-        createElementNode(
-            rendererFactory.createRenderer(null, this.componentDef), elementName,
-            getNamespace(elementName));
+        createElementNode(hostRenderer, elementName, getNamespace(elementName));
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
