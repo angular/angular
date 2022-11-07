@@ -10,7 +10,7 @@ import {Location} from '@angular/common';
 import {Compiler, inject, Injectable, Injector, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {BehaviorSubject, Observable, of, SubscriptionLike} from 'rxjs';
 
-import {createUrlTree} from './create_url_tree';
+import {CreateUrlTreeStrategy} from './create_url_tree_strategy';
 import {RuntimeErrorCode} from './errors';
 import {Event, NavigationTrigger} from './events';
 import {NavigationBehaviorOptions, Routes} from './models';
@@ -215,6 +215,9 @@ export class Router {
    * A strategy for re-using routes.
    */
   routeReuseStrategy = inject(RouteReuseStrategy);
+
+  /** Strategy used to create a UrlTree. */
+  private readonly urlCreationStrategy = inject(CreateUrlTreeStrategy);
 
   /**
    * A strategy for setting the title based on the `routerState`.
@@ -478,7 +481,6 @@ export class Router {
   createUrlTree(commands: any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
     const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
         navigationExtras;
-    const a = relativeTo || this.routerState.root;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     let q: Params|null = null;
     switch (queryParamsHandling) {
@@ -494,7 +496,8 @@ export class Router {
     if (q !== null) {
       q = this.removeEmptyProps(q);
     }
-    return createUrlTree(a, this.currentUrlTree, commands, q, f ?? null);
+    return this.urlCreationStrategy.createUrlTree(
+        relativeTo, this.routerState, this.currentUrlTree, commands, q, f ?? null);
   }
 
   /**

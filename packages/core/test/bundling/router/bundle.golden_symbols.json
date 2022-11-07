@@ -111,6 +111,9 @@
     "name": "Console"
   },
   {
+    "name": "CreateUrlTreeStrategy"
+  },
+  {
     "name": "DEFAULT_SERIALIZER"
   },
   {
@@ -250,6 +253,9 @@
   },
   {
     "name": "LQuery_"
+  },
+  {
+    "name": "LegacyCreateUrlTree"
   },
   {
     "name": "LifecycleHooksFeature"
