@@ -12,14 +12,14 @@ The directive ensures that the loading of the [Largest Contentful Paint](http://
 In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enforces a number of image best practices:
 
 *   Uses [image CDN URLs to apply image optimizations](https://web.dev/image-cdns/#how-image-cdns-use-urls-to-indicate-optimization-options)
-*   Requires that `width` and `height` are set
+*   Prevents layout shift by requiring `width` and `height`
 *   Warns if `width` or `height` have been set incorrectly
 *   Warns if the image will be visually distorted when rendered
 
 ## Prerequisites
 
 1. You will need to import `NgOptimizedImage` from the `@angular/common` module into your application. The directive is defined as a [standalone directive](/guide/standalone-components), so components should import it directly.
-2. Consider setting up an image loader. These steps are explained in the [Configuring an image loader](/guide/image-directive-setup) tutorial.
+2. Consider setting up an image loader. These steps are explained in the [Configuring an Image Loader](#configuring-an-image-loader-for-ngoptimizedimage) section.
 
 ## Usage in a template
 
@@ -33,7 +33,7 @@ To activate the `NgOptimizedImage` directive, replace your image's `src` attribu
 
 </code-example>
 
-If you're using a built-in third-party loader, make sure to omit the base URL path from `src`, as that will be prepended automatically by the loader.
+If you're using a [built-in third-party loader](#built-in-loaders), make sure to omit the base URL path from `src`, as that will be prepended automatically by the loader.
 
 ### Preventing layout shift
 
@@ -146,7 +146,7 @@ If you would like to manually define a `srcset` attribute, you can provide your 
 
 </code-example>
 
-If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets the `srcset` based on the sizes included. Do not include image file names in `ngSrcset` - the directive infers this information from `ngSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`) are supported.
+If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets the `srcset` based on the sizes included. Do not include image file names in `ngSrcset` - the directive infers this information from `ngSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`).
 
 <code-example format="html" language="html">
 
@@ -188,10 +188,70 @@ The `sizes` attribute in the above example says "I expect this image to be 100 p
 
 For additional information about the `sizes` attribute, see [web.dev](https://web.dev/learn/design/responsive-images/#sizes) or [mdn](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
 
+## Configuring an image loader for `NgOptimizedImage`
+
+A "loader" is a function that generates an [image transformation URL](https://web.dev/image-cdns/#how-image-cdns-use-urls-to-indicate-optimization-options) for a given image file. When appropriate, `NgOptimizedImage` sets the size, format, and image quality transformations for an image.
+
+`NgOptimizedImage` provides both a generic loader that applies no transformations, as well as loaders for various third-party image services. It also supports writing your own custom loader.
+
+| Loader type| Behavior |
+|:--- |:--- |
+| Generic loader | The URL returned by the generic loader will always match the value of `src`. In other words, this loader applies no transformations. Sites that use Angular to serve images are the primary intended use case for this loader.|
+| Loaders for third-party image services | The URL returned by the loaders for third-party image services will follow API conventions used by that particular image service. |
+| Custom loaders | A custom loader's behavior is defined by its developer. You should use a custom loader if your image service isn't supported by the loaders that come preconfigured with `NgOptimizedImage`.|
+
+Based on the image services commonly used with Angular applications, `NgOptimizedImage` provides loaders preconfigured to work with the following image services:
+
+| Image Service | Angular API | Documentation |
+|:--- |:--- |:--- |
+| Cloudflare Image Resizing | `provideCloudflareLoader` | [Documentation](https://developers.cloudflare.com/images/image-resizing/) |
+| Cloudinary | `provideCloudinaryLoader` | [Documentation](https://cloudinary.com/documentation/resizing_and_cropping) |
+| ImageKit | `provideImageKitLoader` | [Documentation](https://docs.imagekit.io/) |
+| Imgix | `provideImgixLoader` | [Documentation](https://docs.imgix.com/) |
+
+To use the **generic loader** no additional code changes are necessary. This is the default behavior.
+
+### Built-in Loaders
+
+To use an existing loader for a **third-party image service**, add the provider factory for your chosen service to the `providers` array. In the example below, the Imgix loader is used:
+
+<code-example format="typescript" language="typescript">
+providers: [
+  provideImgixLoader('https://my.base.url/'),
+],
+</code-example>
+
+The base URL for your image assets should be passed to the provider factory as an argument. For most sites, this base URL should match one of the following patterns:
+
+*   https://yoursite.yourcdn.com
+*   https://subdomain.yoursite.com
+*   https://subdomain.yourcdn.com/yoursite
+
+You can learn more about the base URL structure in the docs of a corresponding CDN provider.
+
+### Custom Loaders
+
+To use a **custom loader**, provide your loader function as a value for the `IMAGE_LOADER` DI token. In the example below, the custom loader function returns a URL starting with `https://example.com` that includes `src` and `width` as URL parameters.
+
+<code-example format="typescript" language="typescript">
+providers: [
+  {
+    provide: IMAGE_LOADER,
+    useValue: (config: ImageLoaderConfig) => {
+      return `https://example.com/images?src=${config.src}&width=${config.width}`;
+    },
+  },
+],
+</code-example>
+
+A loader function for the `NgOptimizedImage` directive takes an object with the `ImageLoaderConfig` type (from `@angular/common`) as its argument and returns the absolute URL of the image asset. The `ImageLoaderConfig` object contains the `src` and `width` properties.
+
+Note: a custom loader must support requesting images at various widths in order for `ngSrcset` to work properly.
+
 <!-- links -->
 
 <!-- external links -->
 
 <!--end links -->
 
-@reviewed 2022-08-25
+@reviewed 2022-11-07
