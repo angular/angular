@@ -75,6 +75,14 @@ const ASPECT_RATIO_TOLERANCE = .1;
  */
 const OVERSIZED_IMAGE_TOLERANCE = 1000;
 
+/**
+ * Used to limit automatic srcset generation of very large sources for
+ * fixed-size images. In pixels.
+ */
+const FIXED_SRCSET_WIDTH_LIMIT = 1920;
+const FIXED_SRCSET_HEIGHT_LIMIT = 1080;
+
+
 /** Info about built-in loaders we can test for. */
 export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo];
 
@@ -422,8 +430,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
     if (this.ngSrcset) {
       rewrittenSrcset = this.getRewrittenSrcset();
-    } else if (
-        !this._disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader) {
+    } else if (this.shouldGenerateAutomaticSrcset()) {
       rewrittenSrcset = this.getAutomaticSrcset();
     }
 
@@ -515,6 +522,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         multiplier => `${this.imageLoader({src: this.ngSrc, width: this.width! * multiplier})} ${
             multiplier}x`);
     return finalSrcs.join(', ');
+  }
+
+  private shouldGenerateAutomaticSrcset(): boolean {
+    return !this._disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader &&
+        !(this.width! > FIXED_SRCSET_WIDTH_LIMIT || this.height! > FIXED_SRCSET_HEIGHT_LIMIT);
   }
 
   /** @nodoc */
