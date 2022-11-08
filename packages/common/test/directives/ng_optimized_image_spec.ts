@@ -1496,6 +1496,30 @@ describe('Image directive', () => {
             .toBe(`${IMG_BASE_URL}/img?w=100 1x, ${IMG_BASE_URL}/img?w=200 2x`);
       });
 
+      it('should not add a fixed srcset to the img element if height is too large', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `<img ngSrc="img" width="1100" height="2400">`;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset')).toBeNull();
+      });
+
+      it('should not add a fixed srcset to the img element if width is too large', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `<img ngSrc="img" width="3000" height="400">`;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset')).toBeNull();
+      });
+
       it('should use a custom breakpoint set if one is provided', () => {
         const imageConfig = {
           breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 1280, 3840],
