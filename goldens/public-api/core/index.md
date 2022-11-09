@@ -1189,7 +1189,7 @@ export class QueryList<T> implements Iterable<T> {
     // (undocumented)
     [Symbol.iterator]: () => Iterator<T>;
     constructor(_emitDistinctChangesOnly?: boolean);
-    get changes(): Observable<any>;
+    get changes(): Observable<QueryList<T>>;
     destroy(): void;
     // (undocumented)
     readonly dirty = true;

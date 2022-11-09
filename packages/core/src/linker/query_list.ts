@@ -55,8 +55,8 @@ export class QueryList<T> implements Iterable<T> {
   /**
    * Returns `Observable` of `QueryList` notifying the subscriber of changes.
    */
-  get changes(): Observable<any> {
-    return this._changes || (this._changes = new EventEmitter());
+  get changes(): Observable<QueryList<T>> {
+    return this._changes || (this._changes = new EventEmitter<QueryList<T>>());
   }
 
   /**
@@ -157,7 +157,7 @@ export class QueryList<T> implements Iterable<T> {
     const self = this as QueryListInternal<T>;
     (self as {dirty: boolean}).dirty = false;
     const newResultFlat = flatten(resultsTree);
-    if (this._changesDetected = !arrayEquals(self._results, newResultFlat, identityAccessor)) {
+    if ((this._changesDetected = !arrayEquals(self._results, newResultFlat, identityAccessor))) {
       self._results = newResultFlat;
       self.length = newResultFlat.length;
       self.last = newResultFlat[this.length - 1];
