@@ -218,7 +218,7 @@ export interface Navigation {
    */
   initialUrl: UrlTree;
   /**
-   * The initial target URL after being parsed with `UrlSerializer.extract()`.
+   * The initial target URL after being parsed with `UrlHandlingStrategy.extract()`.
    */
   extractedUrl: UrlTree;
   /**

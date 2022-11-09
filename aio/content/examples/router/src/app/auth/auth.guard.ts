@@ -18,11 +18,6 @@ export const authGuard: CanMatchFn|CanActivateChildFn|CanActivateFn|CanLoadFn = 
     return true;
   }
 
-  const url = router.getCurrentNavigation()!.extractedUrl.toString();
-
-  // Store the attempted URL for redirecting
-  authService.redirectUrl = url;
-
   // Create a dummy session id
   const sessionId = 123456789;
 
