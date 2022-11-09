@@ -390,7 +390,7 @@ application strategy in DI via the `providers` in the root `NgModule` or
 * `urlHandlingStrategy`
 
 The following options are meant to be configured using the options
-available in `RouterModule.forRoot` or `provideRouter`.
+available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
 * `onSameUrlNavigation`
 * `paramsInheritanceStrategy`
 * `urlUpdateStrategy`

@@ -455,7 +455,8 @@ export class Router {
    * The most common case is a `%` sign
    * that's not encoded and is not part of a percent encoded sequence.
    *
-   * @deprecated Configure this through `RouterModule.forRoot` instead.
+   * @deprecated Configure this through `RouterModule.forRoot` instead:
+   *   `RouterModule.forRoot(routes, {malformedUriErrorHandler: myHandler})`
    * @see `RouterModule`
    */
   malformedUriErrorHandler:
@@ -516,6 +517,7 @@ export class Router {
    * _and_ provide a `RouteReuseStrategy` which returns `false` for `shouldReuseRoute`.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
+   * @see `withRouterConfig`
    * @see `provideRouter`
    * @see `RouterModule`
    */
@@ -531,6 +533,7 @@ export class Router {
    * for all child routes.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
+   * @see `withRouterConfig`
    * @see `provideRouter`
    * @see `RouterModule`
    */
@@ -544,6 +547,7 @@ export class Router {
    * you can show an error message with the URL that failed.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
+   * @see `withRouterConfig`
    * @see `provideRouter`
    * @see `RouterModule`
    */
@@ -571,6 +575,7 @@ export class Router {
    * The default value is `replace`.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
+   * @see `withRouterConfig`
    * @see `provideRouter`
    * @see `RouterModule`
    */
