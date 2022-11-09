@@ -32,11 +32,8 @@ export class RouterTestingModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<RouterTestingModule, never, never, [typeof i1.RouterModule]>;
 }
 
-// @public
+// @public @deprecated
 export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions | UrlHandlingStrategy | null, urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy, titleStrategy?: TitleStrategy): Router;
-
-// @public
-export function setupTestingRouterInternal(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, compiler: Compiler, injector: Injector, routes: Route[][], titleStrategy: TitleStrategy, opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy): Router;
 
 // (No @packageDocumentation comment for this package)
 
