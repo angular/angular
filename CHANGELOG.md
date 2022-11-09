@@ -1,3 +1,31 @@
+<a name="15.0.0-rc.3"></a>
+# 15.0.0-rc.3 (2022-11-09)
+## Breaking Changes
+### core
+- Existing iframe usages may have security-sensitive attributes applied as an attribute or property binding in a template or via host bindings in a directive. Such usages would require an update to ensure compliance with the new stricter rules around iframe bindings.
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [37a25486cf](https://github.com/angular/angular/commit/37a25486cfc546df859b6fe8c84b78b4c5827805) | fix | add` zone.js` version `0.12.x` as a valid peer dependency ([#48002](https://github.com/angular/angular/pull/48002)) |
+| [28f289b825](https://github.com/angular/angular/commit/28f289b825be7f4bf6dc5db69197741867b8ea23) | fix | hardening attribute and property binding rules for <iframe> elements ([#47964](https://github.com/angular/angular/pull/47964)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2625dc1312](https://github.com/angular/angular/commit/2625dc13127da9f8d5fa79f1b32ad132d6656c63) | fix | Improve a very commonly viewed error message by adding a guide. ([#47969](https://github.com/angular/angular/pull/47969)) |
+| [ae29f98c20](https://github.com/angular/angular/commit/ae29f98c20390abbf84d2df312ee5e8766195d60) | fix | Runtime error pages must begin with leading zero ([#47991](https://github.com/angular/angular/pull/47991)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e7b48da713](https://github.com/angular/angular/commit/e7b48da713f32c02c096f1342ab8b0d7ec696ca5) | fix | rename `withLegacyInterceptors` to `withInterceptorsFromDi` ([#47901](https://github.com/angular/angular/pull/47901)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b8a6f7491b](https://github.com/angular/angular/commit/b8a6f7491beb9f3cdd71be550bf55173c6e5b670) | fix | fix redirectTo on named outlets - resolves [#33783](https://github.com/angular/angular/pull/33783) ([#47927](https://github.com/angular/angular/pull/47927)) |
+## Special Thanks
+Alan Agius, Albert Szekely, Alex Castle, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Doug Parker, Dylan Hunn, Kristiyan Kostadinov, Markus Eckstein, Matthieu Riegler, Paul Gschwendtner, Peter Scriven and abergquist
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.10"></a>
 # 14.2.10 (2022-11-09)
 ### core
