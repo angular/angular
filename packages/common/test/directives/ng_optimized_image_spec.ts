@@ -68,6 +68,7 @@ describe('Image directive', () => {
       expect(preloadLink!.getAttribute('as')).toEqual('image');
       expect(preloadLink!.getAttribute('imagesizes')).toEqual('10vw');
       expect(preloadLink!.getAttribute('imagesrcset')).toEqual(`${rewrittenSrc}?width=100 100w`);
+      expect(preloadLink!.getAttribute('fetchpriority')).toEqual('high');
 
       preloadLink!.remove();
     });
