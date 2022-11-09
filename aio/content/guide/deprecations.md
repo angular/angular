@@ -85,6 +85,7 @@ v15 - v18
 | `@angular/router`                     | [`resolver` field of the `OutletContext` class](#router)                                                                        | <!-- v14 --> v16         |
 | `@angular/router`                     | [`RouterLinkWithHref` directive](#router)                                                                        | <!-- v15 --> v17         |
 | `@angular/router`                     | [`provideRoutes` function](#router)                                                                        | <!-- v15 --> v17         |
+| `@angular/router`                     | [setupTestingRouter](#router)                                                                        | <!-- v15.1 --> v17         |
 | `@angular/service-worker`           | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated)                                              | <!-- v13 --> v16         |
 | `@angular/service-worker`           | [`SwUpdate#available`](api/service-worker/SwUpdate#available)                                              | <!-- v13 --> v16         |
 | template syntax                     | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                                         | <!--  v7 --> unspecified |
@@ -169,6 +170,7 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 | [`resolver` field of the `OutletContext` class](api/router/OutletContext#resolver) | No replacement needed | v14                   | Component factories are not required to create an instance of a component dynamically. Passing a factory resolver via `resolver` class field is no longer needed. |
 | [`RouterLinkWithHref` directive](api/router/RouterLinkWithHref) | Use `RouterLink` instead. | v15                   | The `RouterLinkWithHref` directive code was merged into `RouterLink`. Now the `RouterLink` directive can be used for all elements that have `routerLink` attribute. |
 | [`provideRoutes` function](api/router/provideRoutes) | Use `ROUTES` `InjectionToken` instead. | v15                   | The `provideRoutes` helper function is minimally useful and can be unintentionally used instead of `provideRouter` due to similar spelling. |
+| [`setupTestingRouter` function](api/router/testing/setupTestingRouter) | Use `provideRouter` or `RouterTestingModule` instead. | v15.1                   | The `setupTestingRouter` function is not necessary. The `Router` is initialized based on the DI configuration in tests as it would be in production. |
 
 
 <a id="platform-browser"></a>
