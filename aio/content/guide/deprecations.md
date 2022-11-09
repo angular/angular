@@ -115,6 +115,7 @@ v15 - v18
 | `@angular/common`                   | [`DatePipe` - `DATE_PIPE_DEFAULT_TIMEZONE`](api/common/DATE_PIPE_DEFAULT_TIMEZONE)                         | v15           | v17         |
 | `@angular/core`                     | NgModule and `'any'` options for [`providedIn`](#core)                                                     | v15           | v17         |
 | `@angular/router`                   | [`RouterLinkWithHref` directive](#router)                                                                  | v15           | v17         |
+| `@angular/router`                   | [Router writeable properties](#router-writable-properties)                                                 | v15.1         | v17         |
 
 ### Deprecated features with no planned removal version
 
@@ -374,6 +375,33 @@ The injector no longer requires the Reflect polyfill, reducing application size 
 **After**:
 
 <code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="static-injector-example"></code-example>
+
+<a id="router-writable-properties"></a>
+
+None of the public properties of the `Router` are meant to be writeable.
+They should all be configured using other methods, all of which have been
+documented.
+
+The following strategies are meant to be configured by registering the
+application strategy in DI via the `providers` in the root `NgModule` or
+`bootstrapApplication`:
+* `routeReuseStrategy`
+* `titleStrategy`
+* `urlHandlingStrategy`
+
+The following options are meant to be configured using the options
+available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
+* `onSameUrlNavigation`
+* `paramsInheritanceStrategy`
+* `urlUpdateStrategy`
+* `canceledNavigationResolution`
+
+The following options are available in `RouterModule.forRoot` but not
+available in `provideRouter`:
+* `malformedUriErrorHandler` - This was not found to be used by anyone.
+  There are currently no plans to make this available in `provideRouter`.
+* `errorHandler` - Developers should instead subscribe to `Router.events`
+  and filter for `NavigationError`.
 
 <a id="relativeLinkResolution"></a>
 
