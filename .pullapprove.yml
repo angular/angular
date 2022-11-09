@@ -933,6 +933,8 @@ groups:
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
           'aio/content/guide/update-to-latest-version.md',
+          'aio/content/guide/update-to-version-14.md',
+          'aio/content/guide/update-to-version-15.md'
           ])
     reviewers:
       users:

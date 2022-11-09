@@ -859,13 +859,13 @@
       ]
     },
     {
-      "title": "Release Information",
+      "title": "Updates and releases",
       "tooltip": "Angular release practices, updating, and upgrading.",
       "children": [
         {
-          "url": "guide/releases",
-          "title": "Release practices",
-          "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+          "url": "guide/update-to-version-15",
+          "title": "Update Angular to the latest version",
+          "tooltip": "Update your Angular application to the latest version."
         },
         {
           "url": "guide/roadmap",
@@ -873,14 +873,14 @@
           "tooltip": "Roadmap of the Angular team."
         },
         {
+          "url": "guide/releases",
+          "title": "Release practices",
+          "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+        },
+        {
           "url": "guide/browser-support",
           "title": "Browser support",
           "tooltip": "Browser support and polyfills guide."
-        },
-        {
-          "url": "guide/update-to-latest-version",
-          "title": "Update to version 14",
-          "tooltip": "Support to update your application to version 14"
         },
         {
           "url": "guide/deprecations",

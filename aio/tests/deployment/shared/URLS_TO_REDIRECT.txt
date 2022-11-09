@@ -214,9 +214,11 @@
 /guide/service-worker-configref --> /guide/service-worker-config
 /guide/setup --> /guide/setup-local
 /guide/setup-systemjs-anatomy --> /guide/file-structure
+/guide/update-to-latest-version --> /guide/update-to-version-15
 /guide/updating-to-version-10 --> https://v10.angular.io/guide/updating-to-version-10
 /guide/updating-to-version-11 --> https://v11.angular.io/guide/updating-to-version-11
-/guide/updating-to-version-12 --> /guide/update-to-latest-version
+/guide/updating-to-version-12 --> https://v12.angular.io/guide/updating-to-version-12
+/guide/updating-to-version-13 --> https://v13.angular.io/guide/update-to-latest-version
 /guide/set-document-title --> /guide/router#setting-the-page-title
 /guide/webpack --> https://v5.angular.io/guide/webpack
 /index.html?foo=bar --> /?foo=bar
