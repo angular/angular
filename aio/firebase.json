@@ -78,8 +78,16 @@
       {"type": 301, "source": "/guide/ivy", "destination": "https://v12.angular.io/guide/ivy"},
       {"type": 301, "source": "/guide/updating-to-version-10", "destination": "https://v10.angular.io/guide/updating-to-version-10"},
       {"type": 301, "source": "/guide/updating-to-version-11", "destination": "https://v11.angular.io/guide/updating-to-version-11"},
-      {"type": 301, "source": "/guide/updating-to-version-12", "destination": "/guide/update-to-latest-version"},
+      {"type": 301, "source": "/guide/updating-to-version-12", "destination": "https://v12.angular.io/guide/updating-to-version-12"},
+      {"type": 301, "source": "/guide/updating-to-version-13", "destination": "https://v13.angular.io/guide/update-to-latest-version"},
       {"type": 301, "source": "/guide/set-document-title", "destination": "/guide/router#setting-the-page-title"},
+
+      // Update Angular guide refactor to name individual update topics.
+      // This redirects the generic link to the current version's topic.
+      // The destination value must be updated with each new major version.
+      // When changing this value, be sure to update or add the corresponding
+      //  test in angular/aio/tests/deployment/shared/URLS_TO_REDIRECT.txt
+      {"type": 301, "source": "/guide/update-to-latest-version", "destination": "/guide/update-to-version-15"},
 
       // Renaming of Getting Started topics
       {"type": 301, "source": "/start/data", "destination": "/start/start-data"},
