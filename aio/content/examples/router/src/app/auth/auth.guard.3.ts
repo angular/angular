@@ -15,9 +15,6 @@ export const authGuard: CanMatchFn|CanActivateFn|CanActivateChildFn = () => {
     return true;
   }
 
-  const url = router.getCurrentNavigation()!.extractedUrl.toString();
-  // Store the attempted URL for redirecting
-  authService.redirectUrl = url;
   // Redirect to the login page
   return router.parseUrl('/login');
 };
