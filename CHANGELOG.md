@@ -1,3 +1,18 @@
+<a name="14.2.10"></a>
+# 14.2.10 (2022-11-09)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4312e1be5](https://github.com/angular/angular/commit/a4312e1be55f0677a77c9015688dbd4cf8163c69) | fix | add` zone.js` version `0.12.x` as a valid peer dependency ([#48002](https://github.com/angular/angular/pull/48002)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [db867fee77](https://github.com/angular/angular/commit/db867fee77bc62f367fc5d484fc3951d72d998c8) | fix | fix redirectTo on named outlets - resolves [#33783](https://github.com/angular/angular/pull/33783) ([#47927](https://github.com/angular/angular/pull/47927)) |
+## Special Thanks
+Alan Agius, Albert Szekely, Andrew Scott, Doug Parker, Kristiyan Kostadinov, Markus Eckstein, Peter Scriven and abergquist
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-rc.2"></a>
 # 15.0.0-rc.2 (2022-11-04)
 ### core
