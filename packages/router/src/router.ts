@@ -444,6 +444,8 @@ export class Router {
 
   /**
    * A handler for navigation errors in this NgModule.
+   *
+   * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
    */
   errorHandler: ErrorHandler = defaultErrorHandler;
 
@@ -452,6 +454,9 @@ export class Router {
    * when `url` contains an invalid character.
    * The most common case is a `%` sign
    * that's not encoded and is not part of a percent encoded sequence.
+   *
+   * @deprecated Configure this through `RouterModule.forRoot` instead.
+   * @see `RouterModule`
    */
   malformedUriErrorHandler:
       (error: URIError, urlSerializer: UrlSerializer,
@@ -475,16 +480,25 @@ export class Router {
   /**
    * A strategy for extracting and merging URLs.
    * Used for AngularJS to Angular migrations.
+   *
+   * @deprecated Configure using `providers` instead:
+   *   `{provide: UrlHandlingStrategy, useClass: MyStrategy}`.
    */
   urlHandlingStrategy: UrlHandlingStrategy = new DefaultUrlHandlingStrategy();
 
   /**
    * A strategy for re-using routes.
+   *
+   * @deprecated Configure using `providers` instead:
+   *   `{provide: RouteReuseStrategy, useClass: MyStrategy}`.
    */
   routeReuseStrategy: RouteReuseStrategy = new DefaultRouteReuseStrategy();
 
   /**
    * A strategy for setting the title based on the `routerState`.
+   *
+   * @deprecated Configure using `providers` instead:
+   *   `{provide: TitleStrategy, useClass: MyStrategy}`.
    */
   titleStrategy?: TitleStrategy;
 
@@ -500,6 +514,10 @@ export class Router {
    * component first. This behavior is configured by the `RouteReuseStrategy`. In order to reload
    * routed components on same url navigation, you need to set `onSameUrlNavigation` to `'reload'`
    * _and_ provide a `RouteReuseStrategy` which returns `false` for `shouldReuseRoute`.
+   *
+   * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
+   * @see `provideRouter`
+   * @see `RouterModule`
    */
   onSameUrlNavigation: 'reload'|'ignore' = 'ignore';
 
@@ -511,6 +529,10 @@ export class Router {
    * for path-less or component-less routes.
    * - `'always'` : Inherit parent parameters, data, and resolved data
    * for all child routes.
+   *
+   * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
+   * @see `provideRouter`
+   * @see `RouterModule`
    */
   paramsInheritanceStrategy: 'emptyOnly'|'always' = 'emptyOnly';
 
@@ -520,6 +542,10 @@ export class Router {
    * Set to `'eager'` to update the browser URL at the beginning of navigation.
    * You can choose to update early so that, if navigation fails,
    * you can show an error message with the URL that failed.
+   *
+   * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
+   * @see `provideRouter`
+   * @see `RouterModule`
    */
   urlUpdateStrategy: 'deferred'|'eager' = 'deferred';
 
@@ -544,6 +570,9 @@ export class Router {
    *
    * The default value is `replace`.
    *
+   * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
+   * @see `provideRouter`
+   * @see `RouterModule`
    */
   canceledNavigationResolution: 'replace'|'computed' = 'replace';
 
