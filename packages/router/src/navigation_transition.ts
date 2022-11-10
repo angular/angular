@@ -344,7 +344,10 @@ export class NavigationTransitions {
                                // try processing the URL again.
                                browserUrlTree !== this.router.currentUrlTree.toString();
 
-                           if (!urlTransition && this.router.onSameUrlNavigation !== 'reload') {
+
+                           const onSameUrlNavigation =
+                               t.extras.onSameUrlNavigation ?? this.router.onSameUrlNavigation;
+                           if (!urlTransition && onSameUrlNavigation !== 'reload') {
                              const reason = NG_DEV_MODE ?
                                  `Navigation to ${
                                      t.rawUrl} was ignored because it is the same as the current Router URL.` :

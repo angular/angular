@@ -13,7 +13,7 @@ import {BehaviorSubject, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {createUrlTree} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
 import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationTrigger, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
-import {NavigationBehaviorOptions, Route, Routes} from './models';
+import {NavigationBehaviorOptions, OnSameUrlNavigation, Route, Routes} from './models';
 import {Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
 import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
@@ -281,24 +281,15 @@ export class Router {
   titleStrategy?: TitleStrategy = inject(TitleStrategy);
 
   /**
-   * How to handle a navigation request to the current URL. One of:
+   * How to handle a navigation request to the current URL.
    *
-   * - `'ignore'` :  The router ignores the request.
-   * - `'reload'` : The router reloads the URL. Use to implement a "refresh" feature.
-   *
-   * Note that this only configures whether the Route reprocesses the URL and triggers related
-   * action and events like redirects, guards, and resolvers. By default, the router re-uses a
-   * component instance when it re-navigates to the same component type without visiting a different
-   * component first. This behavior is configured by the `RouteReuseStrategy`. In order to reload
-   * routed components on same url navigation, you need to set `onSameUrlNavigation` to `'reload'`
-   * _and_ provide a `RouteReuseStrategy` which returns `false` for `shouldReuseRoute`.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
    * @see `withRouterConfig`
    * @see `provideRouter`
    * @see `RouterModule`
    */
-  onSameUrlNavigation: 'reload'|'ignore' = 'ignore';
+  onSameUrlNavigation: OnSameUrlNavigation = 'ignore';
 
   /**
    * How to merge parameters, data, resolved data, and title from parent to child
