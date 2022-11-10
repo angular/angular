@@ -23,14 +23,14 @@ import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
-import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
-import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
+import {TitleStrategy} from './page_title_strategy';
+import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
 import {Params} from './shared';
-import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
+import {UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
 import {standardizeConfig, validateConfig} from './utils/config';
@@ -325,22 +325,8 @@ export function setupRouter() {
   const compiler = inject(Compiler);
   const config = inject(ROUTES, {optional: true}) ?? [];
   const opts = inject(ROUTER_CONFIGURATION, {optional: true}) ?? {};
-  const defaultTitleStrategy = inject(DefaultTitleStrategy);
-  const titleStrategy = inject(TitleStrategy, {optional: true});
-  const urlHandlingStrategy = inject(UrlHandlingStrategy, {optional: true});
-  const routeReuseStrategy = inject(RouteReuseStrategy, {optional: true});
   const router =
       new Router(null, urlSerializer, contexts, location, injector, compiler, flatten(config));
-
-  if (urlHandlingStrategy) {
-    router.urlHandlingStrategy = urlHandlingStrategy;
-  }
-
-  if (routeReuseStrategy) {
-    router.routeReuseStrategy = routeReuseStrategy;
-  }
-
-  router.titleStrategy = titleStrategy ?? defaultTitleStrategy;
 
   assignExtraOptionsToRouter(opts, router);
 
@@ -475,17 +461,17 @@ export class Router {
    * A strategy for extracting and merging URLs.
    * Used for AngularJS to Angular migrations.
    */
-  urlHandlingStrategy: UrlHandlingStrategy = new DefaultUrlHandlingStrategy();
+  urlHandlingStrategy = inject(UrlHandlingStrategy);
 
   /**
    * A strategy for re-using routes.
    */
-  routeReuseStrategy: RouteReuseStrategy = new DefaultRouteReuseStrategy();
+  routeReuseStrategy = inject(RouteReuseStrategy);
 
   /**
    * A strategy for setting the title based on the `routerState`.
    */
-  titleStrategy?: TitleStrategy;
+  titleStrategy?: TitleStrategy = inject(TitleStrategy);
 
   /**
    * How to handle a navigation request to the current URL. One of:
