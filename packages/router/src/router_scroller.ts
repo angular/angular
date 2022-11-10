@@ -10,9 +10,8 @@ import {ViewportScroller} from '@angular/common';
 import {Injectable, InjectionToken, NgZone, OnDestroy} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
-import {NavigationEnd, NavigationStart, Scroll} from './events';
+import {NavigationEnd, NavigationSkipped, NavigationSkippedCode, NavigationStart, Scroll} from './events';
 import {NavigationTransitions} from './navigation_transition';
-import {Router} from './router';
 import {UrlSerializer} from './url_tree';
 
 export const ROUTER_SCROLLER = new InjectionToken<RouterScroller>('');
@@ -61,6 +60,12 @@ export class RouterScroller implements OnDestroy {
       } else if (e instanceof NavigationEnd) {
         this.lastId = e.id;
         this.scheduleScrollEvent(e, this.urlSerializer.parse(e.urlAfterRedirects).fragment);
+      } else if (
+          e instanceof NavigationSkipped &&
+          e.code === NavigationSkippedCode.IgnoredSameUrlNavigation) {
+        this.lastSource = undefined;
+        this.restoredId = 0;
+        this.scheduleScrollEvent(e, this.urlSerializer.parse(e.url).fragment);
       }
     });
   }
@@ -86,7 +91,8 @@ export class RouterScroller implements OnDestroy {
     });
   }
 
-  private scheduleScrollEvent(routerEvent: NavigationEnd, anchor: string|null): void {
+  private scheduleScrollEvent(routerEvent: NavigationEnd|NavigationSkipped, anchor: string|null):
+      void {
     this.zone.runOutsideAngular(() => {
       // The scroll event needs to be delayed until after change detection. Otherwise, we may
       // attempt to restore the scroll position before the router outlet has fully rendered the
