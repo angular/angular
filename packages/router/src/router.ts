@@ -14,7 +14,7 @@ import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap}
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
-import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
 import {isNavigationCancelingError, isRedirectingNavigationCancelingError, redirectingNavigationError} from './navigation_canceling_error';
 import {activateRoutes} from './operators/activate_routes';
@@ -671,12 +671,21 @@ export class Router {
                                // matching. If this is not the case, assume something went wrong and
                                // try processing the URL again.
                                browserUrlTree !== this.currentUrlTree.toString();
-                           const processCurrentUrl =
-                               (this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
-                               this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl);
 
+                           if (!urlTransition && this.onSameUrlNavigation !== 'reload') {
+                             const reason = NG_DEV_MODE ?
+                                 `Navigation to ${
+                                     t.rawUrl} was ignored because it is the same as the current Router URL.` :
+                                 '';
+                             this.triggerEvent(new NavigationSkipped(
+                                 t.id, this.serializeUrl(overallTransitionState.rawUrl), reason,
+                                 NavigationSkippedCode.IgnoredSameUrlNavigation));
+                             this.rawUrlTree = t.rawUrl;
+                             t.resolve(null);
+                             return EMPTY;
+                           }
 
-                           if (processCurrentUrl) {
+                           if (this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl)) {
                              // If the source of the navigation is from a browser event, the URL is
                              // already updated. We already need to sync the internal state.
                              if (isBrowserTriggeredNavigation(t.source)) {
@@ -736,37 +745,44 @@ export class Router {
                                        this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
                                    eventsSubject.next(routesRecognized);
                                  }));
-                           } else {
-                             const processPreviousUrl = urlTransition && this.rawUrlTree &&
-                                 this.urlHandlingStrategy.shouldProcessUrl(this.rawUrlTree);
-                             /* When the current URL shouldn't be processed, but the previous one
-                              * was, we handle this "error condition" by navigating to the
-                              * previously successful URL, but leaving the URL intact.*/
-                             if (processPreviousUrl) {
-                               const {id, extractedUrl, source, restoredState, extras} = t;
-                               const navStart = new NavigationStart(
-                                   id, this.serializeUrl(extractedUrl), source, restoredState);
-                               eventsSubject.next(navStart);
-                               const targetSnapshot =
-                                   createEmptyState(extractedUrl, this.rootComponentType).snapshot;
+                           } else if (
+                               urlTransition &&
+                               this.urlHandlingStrategy.shouldProcessUrl(this.rawUrlTree)) {
+                             // When the current URL shouldn't be processed, but the previous one
+                             // was, we handle this by navigating from the current URL to an empty
+                             // state so deactivate guards can run.
+                             const {id, extractedUrl, source, restoredState, extras} = t;
+                             const navStart = new NavigationStart(
+                                 id, this.serializeUrl(extractedUrl), source, restoredState);
+                             eventsSubject.next(navStart);
+                             const targetSnapshot =
+                                 createEmptyState(extractedUrl, this.rootComponentType).snapshot;
 
-                               overallTransitionState = {
-                                 ...t,
-                                 targetSnapshot,
-                                 urlAfterRedirects: extractedUrl,
-                                 extras: {...extras, skipLocationChange: false, replaceUrl: false},
-                               };
-                               return of(overallTransitionState);
-                             } else {
-                               /* When neither the current or previous URL can be processed, do
-                                * nothing other than update router's internal reference to the
-                                * current "settled" URL. This way the next navigation will be coming
-                                * from the current URL in the browser.
-                                */
-                               this.rawUrlTree = t.rawUrl;
-                               t.resolve(null);
-                               return EMPTY;
-                             }
+                             overallTransitionState = {
+                               ...t,
+                               targetSnapshot,
+                               urlAfterRedirects: extractedUrl,
+                               extras: {...extras, skipLocationChange: false, replaceUrl: false},
+                             };
+                             return of(overallTransitionState);
+                           } else {
+                             /* When neither the current or previous URL can be processed, do
+                              * nothing other than update router's internal reference to the
+                              * current "settled" URL. This way the next navigation will be coming
+                              * from the current URL in the browser.
+                              */
+                             const reason = NG_DEV_MODE ?
+                                 `Navigation was ignored because the UrlHandlingStrategy` +
+                                     ` indicated neither the current URL ${
+                                         this.rawUrlTree} nor target URL ${
+                                         t.rawUrl} should be processed.` :
+                                 '';
+                             this.triggerEvent(new NavigationSkipped(
+                                 t.id, this.serializeUrl(overallTransitionState.extractedUrl),
+                                 reason, NavigationSkippedCode.IgnoredByUrlHandlingStrategy));
+                             this.rawUrlTree = t.rawUrl;
+                             t.resolve(null);
+                             return EMPTY;
                            }
                          }),
 
