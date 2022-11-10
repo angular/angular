@@ -30,6 +30,12 @@ describe('create-example tool', () => {
           .toHaveBeenCalledWith(
               path.resolve(`/path/to/foo-bar/${STACKBLITZ_CONFIG_FILENAME}`), jasmine.any(String));
     });
+
+    it('should fail if the example name contains spaces', () => {
+        expect(() => createEmptyExample('foo bar', '/path/to/foo-bar')).toThrowError(
+            `Unable to create example. The example name contains spaces: 'foo bar'`
+      );
+    });
   });
 
   describe('ensureExamplePath', () => {

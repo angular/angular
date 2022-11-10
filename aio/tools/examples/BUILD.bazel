@@ -10,58 +10,61 @@ exports_files([
     "run-example-e2e.mjs",
 ])
 
-EXAMPLE_BOILERPLATE_SRCS = [
-    "example-boilerplate.js",
-    "constants.js",
-    "//aio/tools/examples/shared",
-    "//aio/content/examples",
-]
-
-EXAMPLE_BOILERPLATE_DEPS = [
-    "@aio_npm//canonical-path",
-    "@aio_npm//fs-extra",
-    "@aio_npm//ignore",
-    "@aio_npm//shelljs",
-    "@aio_npm//yargs",
-]
+js_library(
+    name = "example-boilerplate-lib",
+    srcs = [
+        "constants.js",
+        "example-boilerplate.js",
+    ],
+    deps = [
+        "//aio/content/examples",
+        "//aio/tools/examples/shared",
+        "@aio_npm//canonical-path",
+        "@aio_npm//fs-extra",
+        "@aio_npm//ignore",
+        "@aio_npm//shelljs",
+        "@aio_npm//yargs",
+    ],
+)
 
 nodejs_binary(
     name = "example-boilerplate",
-    data = EXAMPLE_BOILERPLATE_SRCS + EXAMPLE_BOILERPLATE_DEPS,
+    data = [":example-boilerplate-lib"],
     entry_point = "example-boilerplate.js",
 )
 
 jasmine_node_test(
     name = "example-boilerplate-test",
     srcs = ["example-boilerplate.spec.js"],
-    deps = EXAMPLE_BOILERPLATE_SRCS + EXAMPLE_BOILERPLATE_DEPS,
+    deps = [":example-boilerplate-lib"],
 )
 
-CREATE_EXAMPLE_SRCS = [
-    "create-example.js",
-    "constants.js",
-] + glob(["shared/**"])
-
-CREATE_EXAMPLE_DEPS = [
-    "@aio_npm//@bazel/buildozer",
-    "@aio_npm//canonical-path",
-    "@aio_npm//fs-extra",
-    "@aio_npm//ignore",
-    "@aio_npm//shelljs",
-    "@aio_npm//yargs",
-]
+js_library(
+    name = "create-example-lib",
+    srcs = [
+        "create-example.js",
+        "constants.js",
+    ] + glob(["shared/**"]),
+    deps = [
+        "@aio_npm//@bazel/buildozer",
+        "@aio_npm//canonical-path",
+        "@aio_npm//fs-extra",
+        "@aio_npm//ignore",
+        "@aio_npm//shelljs",
+        "@aio_npm//yargs",
+    ],
+)
 
 nodejs_binary(
     name = "create-example",
-    data = CREATE_EXAMPLE_SRCS + CREATE_EXAMPLE_DEPS,
+    data = [":create-example-lib"],
     entry_point = "create-example.js",
 )
 
 jasmine_node_test(
     name = "create-example-test",
     srcs = ["create-example.spec.js"],
-    deps =
-        CREATE_EXAMPLE_SRCS + CREATE_EXAMPLE_DEPS,
+    deps = [":create-example-lib"],
 )
 
 js_library(

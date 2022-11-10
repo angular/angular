@@ -334,8 +334,6 @@ jobs:
           command: yarn --cwd aio test:ci
           no_output_timeout: 20m
 
-        # TODO: run the following tests under bazel
-
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size
 
@@ -359,8 +357,6 @@ jobs:
       - run:
           command: yarn --cwd aio test-local:ci
           no_output_timeout: 20m
-
-        # TODO: run the following tests under bazel
 
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size aio-local
