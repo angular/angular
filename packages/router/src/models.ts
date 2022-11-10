@@ -13,6 +13,31 @@ import {DeprecatedLoadChildren} from './deprecated_load_children';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 
+/**
+ * How to handle a navigation request to the current URL. One of:
+ *
+ * - `'ignore'` :  The router ignores the request it is the same as the current state.
+ * - `'reload'` : The router processes the URL even if it is not different from the current state.
+ * One example of when you might want this option is if a `canMatch` guard depends on
+ * application state and initially rejects navigation to a route. After fixing the state, you want
+ * to re-navigate to the same URL so the route with the `canMatch` guard can activate.
+ *
+ * Note that this only configures whether the Route reprocesses the URL and triggers related
+ * action and events like redirects, guards, and resolvers. By default, the router re-uses a
+ * component instance when it re-navigates to the same component type without visiting a different
+ * component first. This behavior is configured by the `RouteReuseStrategy`. In order to reload
+ * routed components on same url navigation, you need to set `onSameUrlNavigation` to `'reload'`
+ * _and_ provide a `RouteReuseStrategy` which returns `false` for `shouldReuseRoute`. Additionally,
+ * resolvers and most guards for routes do not run unless the path or path params changed
+ * (configured by `runGuardsAndResolvers`).
+ *
+ * @publicApi
+ * @see RouteReuseStrategy
+ * @see RunGuardsAndResolvers
+ * @see NavigationBehaviorOptions
+ * @see RouterConfigOptions
+ */
+export type OnSameUrlNavigation = 'reload'|'ignore';
 
 /**
  * Represents a route configuration for the Router service.
@@ -550,11 +575,19 @@ export interface Route {
   loadChildren?: LoadChildren;
 
   /**
-   * Defines when guards and resolvers will be run. One of
-   * - `paramsOrQueryParamsChange` : Run when query parameters change.
+   * A policy for when to run guards and resolvers on a route.
+   *
+   * Guards and/or resolvers will always run when a route is activated or deactivated. When a route
+   * is unchanged, the default behavior is the same as `paramsChange`.
+   *
+   * `paramsChange` : Rerun the guards and resolvers when path or
+   * path param changes. This does not include query parameters. This option is the default.
    * - `always` : Run on every execution.
-   * By default, guards and resolvers run only when the matrix
-   * parameters of the route change.
+   * - `pathParamsChange` : Rerun guards and resolvers when the path params
+   * change. This does not compare matrix or query parameters.
+   * - `paramsOrQueryParamsChange` : Run when path, matrix, or query parameters change.
+   * - `pathParamsOrQueryParamsChange` : Rerun guards and resolvers when the path params
+   * change or query params have changed. This does not include matrix parameters.
    *
    * @see RunGuardsAndResolvers
    */
@@ -1194,6 +1227,17 @@ export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
  * @publicApi
  */
 export interface NavigationBehaviorOptions {
+  /**
+   * How to handle a navigation request to the current URL.
+   *
+   * This value is a subset of the options available in `OnSameUrlNavigation` and
+   * will take precedence over the default value set for the `Router`.
+   *
+   * @see `OnSameUrlNavigation`
+   * @see `RouterConfigOptions`
+   */
+  onSameUrlNavigation?: Extract<OnSameUrlNavigation, 'reload'>;
+
   /**
    * When true, navigates without pushing a new state into history.
    *

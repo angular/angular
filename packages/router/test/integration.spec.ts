@@ -60,14 +60,18 @@ describe('Integration', () => {
      })));
 
   describe('navigation', function() {
-    it('should navigate to the current URL', fakeAsync(inject([Router], (router: Router) => {
-         router.onSameUrlNavigation = 'reload';
+    it('should navigate to the current URL', fakeAsync(() => {
+         TestBed.configureTestingModule({
+           providers: [
+             provideRouter([], withRouterConfig({onSameUrlNavigation: 'reload'})),
+           ]
+         });
+         const router = TestBed.inject(Router);
          router.resetConfig([
            {path: '', component: SimpleCmp},
            {path: 'simple', component: SimpleCmp},
          ]);
 
-         const fixture = createRoot(router, RootCmp);
          const events: Event[] = [];
          router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
 
@@ -81,8 +85,34 @@ describe('Integration', () => {
            [NavigationStart, '/simple'], [NavigationEnd, '/simple'], [NavigationStart, '/simple'],
            [NavigationEnd, '/simple']
          ]);
-       })));
+       }));
 
+    it('should override default onSameUrlNavigation with extras', async () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([], withRouterConfig({onSameUrlNavigation: 'ignore'})),
+        ]
+      });
+      const router = TestBed.inject(Router);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'simple', component: SimpleCmp},
+      ]);
+
+      const events: Event[] = [];
+      router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
+
+      await router.navigateByUrl('/simple');
+      await router.navigateByUrl('/simple');
+      // By default, the second navigation is ignored
+      expectEvents(events, [[NavigationStart, '/simple'], [NavigationEnd, '/simple']]);
+      await router.navigateByUrl('/simple', {onSameUrlNavigation: 'reload'});
+      // We overrode the `onSameUrlNavigation` value. This navigation should be processed.
+      expectEvents(events, [
+        [NavigationStart, '/simple'], [NavigationEnd, '/simple'], [NavigationStart, '/simple'],
+        [NavigationEnd, '/simple']
+      ]);
+    });
 
     it('should ignore empty paths in relative links',
        fakeAsync(inject([Router], (router: Router) => {
