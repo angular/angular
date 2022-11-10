@@ -1,4 +1,4 @@
-# HTTP - Track and show request progress
+# HTTP client - Track and show request progress
 
 Sometimes applications transfer large amounts of data and those transfers can take a long time. File uploads are a typical example. You can give the users a better experience by providing feedback on the progress of such transfers.
 
