@@ -941,7 +941,7 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
 // @public
 export class Scroll {
     constructor(
-    routerEvent: NavigationEnd,
+    routerEvent: NavigationEnd | NavigationSkipped,
     position: [number, number] | null,
     anchor: string | null);
     // (undocumented)
@@ -949,7 +949,7 @@ export class Scroll {
     // (undocumented)
     readonly position: [number, number] | null;
     // (undocumented)
-    readonly routerEvent: NavigationEnd;
+    readonly routerEvent: NavigationEnd | NavigationSkipped;
     // (undocumented)
     toString(): string;
     // (undocumented)

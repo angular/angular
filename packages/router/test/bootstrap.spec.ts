@@ -455,7 +455,7 @@ describe('bootstrap', () => {
               scrollPositionRestoration: 'enabled',
               anchorScrolling: 'enabled',
               scrollOffset: [0, 100],
-              onSameUrlNavigation: 'reload'
+              onSameUrlNavigation: 'ignore',
             })
       ],
       declarations: [TallComponent, RootCmp],
@@ -494,13 +494,16 @@ describe('bootstrap', () => {
 
     await router.navigateByUrl('/aa#marker2');
     await resolveAfter(100);
-    expect(window.pageYOffset).toBeGreaterThanOrEqual(5900);
-    expect(window.pageYOffset).toBeLessThan(6000);  // offset
+    expect(window.scrollY).toBeGreaterThanOrEqual(5900);
+    expect(window.scrollY).toBeLessThan(6000);  // offset
 
-    await router.navigateByUrl('/aa#marker3');
+    // Scroll somewhere else, then navigate to the hash again. Even though the same url navigation
+    // is ignored by the Router, we should still scroll.
+    window.scrollTo(0, 3000);
+    await router.navigateByUrl('/aa#marker2');
     await resolveAfter(100);
-    expect(window.pageYOffset).toBeGreaterThanOrEqual(8900);
-    expect(window.pageYOffset).toBeLessThan(9000);
+    expect(window.scrollY).toBeGreaterThanOrEqual(5900);
+    expect(window.scrollY).toBeLessThan(6000);  // offset
   });
 
   it('should cleanup "popstate" and "hashchange" listeners', async () => {
