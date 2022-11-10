@@ -36,19 +36,16 @@ async function main(args) {
     '--quiet'
   ];
   const lightserverProcess = sh.exec(lightserverCmd.join(' '), {async: true, silent: true});
-    
   const command = [
     testScript,
     ...testScriptArgs
   ].join(' ').replace('LOCALHOST_URL', `http://localhost:${port}`);
 
-  sh.exec(command);
-  
+  const returnCode = sh.exec(command).code;
+
   await killProcess(lightserverProcess);
 
-  // TODO: On Windows something remains unresolved and node does not exit.
-  // It does not appear to be the lightserver process.
-  process.exit(0);
+  process.exit(returnCode);
 }
 
 (async() => await main(process.argv.slice(2)))();

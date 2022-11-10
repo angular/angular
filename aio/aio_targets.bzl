@@ -5,7 +5,6 @@ def aio_test(name, data, args, **kwargs):
         name = name,
         args = args,
         chdir = native.package_name(),
-        configuration_env_vars = ["NG_BUILD_CACHE"],
         data = data,
         env = {
             "CHROME_BIN": "../$(CHROMIUM)",
