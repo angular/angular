@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {inject, Injectable} from '@angular/core';
+
 import {UrlTree} from './url_tree';
 
 /**
@@ -15,6 +17,7 @@ import {UrlTree} from './url_tree';
  *
  * @publicApi
  */
+@Injectable({providedIn: 'root', useFactory: () => inject(DefaultUrlHandlingStrategy)})
 export abstract class UrlHandlingStrategy {
   /**
    * Tells the router if this URL should be processed.
@@ -41,6 +44,7 @@ export abstract class UrlHandlingStrategy {
 /**
  * @publicApi
  */
+@Injectable({providedIn: 'root'})
 export class DefaultUrlHandlingStrategy implements UrlHandlingStrategy {
   shouldProcessUrl(url: UrlTree): boolean {
     return true;
