@@ -345,6 +345,9 @@
     "name": "NavigationError"
   },
   {
+    "name": "NavigationSkipped"
+  },
+  {
     "name": "NavigationStart"
   },
   {

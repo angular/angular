@@ -248,7 +248,7 @@ export type DisabledInitialNavigationFeature = RouterFeature<RouterFeatureKind.D
 export type EnabledBlockingInitialNavigationFeature = RouterFeature<RouterFeatureKind.EnabledBlockingInitialNavigationFeature>;
 
 // @public
-type Event_2 = RouterEvent | NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | GuardsCheckStart | GuardsCheckEnd | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll | ResolveStart | ResolveEnd;
+type Event_2 = RouterEvent | NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | GuardsCheckStart | GuardsCheckEnd | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll | ResolveStart | ResolveEnd | NavigationSkipped;
 export { Event_2 as Event }
 
 // @public
@@ -271,6 +271,8 @@ export const enum EventType {
     NavigationEnd = 1,
     // (undocumented)
     NavigationError = 3,
+    // (undocumented)
+    NavigationSkipped = 16,
     // (undocumented)
     NavigationStart = 0,
     // (undocumented)
@@ -439,6 +441,25 @@ export class NavigationError extends RouterEvent {
 
 // @public
 export interface NavigationExtras extends UrlCreationOptions, NavigationBehaviorOptions {
+}
+
+// @public
+export class NavigationSkipped extends RouterEvent {
+    constructor(
+    id: number,
+    url: string,
+    reason: string,
+    code?: NavigationSkippedCode | undefined);
+    readonly code?: NavigationSkippedCode | undefined;
+    reason: string;
+    // (undocumented)
+    readonly type = EventType.NavigationSkipped;
+}
+
+// @public
+export const enum NavigationSkippedCode {
+    IgnoredByUrlHandlingStrategy = 1,
+    IgnoredSameUrlNavigation = 0
 }
 
 // @public
