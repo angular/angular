@@ -379,6 +379,7 @@ export interface Navigation {
 
 // @public
 export interface NavigationBehaviorOptions {
+    onSameUrlNavigation?: Extract<OnSameUrlNavigation, 'reload'>;
     replaceUrl?: boolean;
     skipLocationChange?: boolean;
     state?: {
@@ -492,6 +493,9 @@ export class NoPreloading implements PreloadingStrategy {
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<NoPreloading>;
 }
+
+// @public
+export type OnSameUrlNavigation = 'reload' | 'ignore';
 
 // @public
 export class OutletContext {
@@ -677,7 +681,7 @@ export class Router {
     // (undocumented)
     ngOnDestroy(): void;
     // @deprecated
-    onSameUrlNavigation: 'reload' | 'ignore';
+    onSameUrlNavigation: OnSameUrlNavigation;
     // @deprecated
     paramsInheritanceStrategy: 'emptyOnly' | 'always';
     parseUrl(url: string): UrlTree;
@@ -709,7 +713,7 @@ export const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => 
 // @public
 export interface RouterConfigOptions {
     canceledNavigationResolution?: 'replace' | 'computed';
-    onSameUrlNavigation?: 'reload' | 'ignore';
+    onSameUrlNavigation?: OnSameUrlNavigation;
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     urlUpdateStrategy?: 'deferred' | 'eager';
 }
