@@ -20,7 +20,7 @@ function resolveCliSourcePath() {
     return path;
   }
   // Case: bazel test, find in runfiles
-  return runfiles.resolveWorkspaceRelative('../angular_cli_src');
+  return runfiles.resolve('angular_cli_src');
 }
 
 // Define the dgeni package for generating the docs
