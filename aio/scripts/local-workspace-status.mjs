@@ -14,7 +14,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const pkgJsonPath = path.join(__dirname, '..', 'package.json');
 const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
 
-const aioAngularVersion = pkgJson.dependencies['@angular/core'].replace(/^[\^~]/, '') + "+locallySubstituted";
+const aioAngularVersion = pkgJson.dependencies['@angular/core'].replace(/^[\^~]/, '') + "+forAIOLocalBuildToAvoidMismatch";
 
 // Output the workspace status variable format to stdout so Bazel can read it
 console.log(`\

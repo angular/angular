@@ -206,7 +206,6 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}, f
                 "//aio:aio_local_deps": LOCAL_PACKAGE_ARGS,
                 "//conditions:default": [],
             }),
-            configuration_env_vars = ["NG_BUILD_CACHE"],
             entry_point = "//aio/tools/examples:run-example-e2e.mjs",
             env = {
                 "CHROME_BIN": "$(CHROMIUM)",

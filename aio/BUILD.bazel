@@ -172,6 +172,9 @@ E2E_DEPS = APPLICATION_DEPS + [
     "//aio/tools:windows-chromium-path",
 ]
 
+# Poll period for architect rules that watch for changes
+ARCHITECT_POLL_MS = 1000
+
 # Stamp npm_link targets for all dependencies that correspond to a
 # first-party equivalent pacakge in angular.
 link_local_packages(all_aio_deps = collections.uniq(APPLICATION_DEPS + TEST_DEPS + E2E_DEPS))
@@ -188,7 +191,6 @@ architect(
         "--output-path=build-app",
     ],
     chdir = "$(RULEDIR)",
-    configuration_env_vars = ["NG_BUILD_CACHE"],
     data = [":application_files_bin"] + select({
         ":aio_local_deps": substitute_local_package_deps(APPLICATION_DEPS),
         "//conditions:default": APPLICATION_DEPS,
@@ -247,7 +249,7 @@ aio_test(
     args = [
         "site:test",
         "--watch",
-        "--poll=1000",
+        "--poll=%d" % ARCHITECT_POLL_MS,
     ],
     data = TEST_DATA,
     tags = [
@@ -265,7 +267,6 @@ architect_test(
         "--port=0",
     ],
     chdir = package_name(),
-    configuration_env_vars = ["NG_BUILD_CACHE"],
     data = E2E_FILES + select({
         ":aio_local_deps": substitute_local_package_deps(E2E_DEPS),
         "//conditions:default": E2E_DEPS,
@@ -285,7 +286,7 @@ architect(
     args = [
         "site:serve",
         "--open",
-        "--poll=1000",
+        "--poll=%d" % ARCHITECT_POLL_MS,
         "--live-reload",
         "--watch",
     ],

@@ -56,9 +56,18 @@ if (require.main === module) {
  * Create the directory and marker files for the new example.
  */
 function createEmptyExample(exampleName, examplePath) {
+  validateExampleName(exampleName);
   ensureExamplePath(examplePath);
   writeExampleConfigFile(examplePath);
   writeStackBlitzFile(exampleName, examplePath);
+}
+
+function validateExampleName(exampleName) {
+  if (/\s/.test(exampleName)) {
+    throw new Error(
+      `Unable to create example. The example name contains spaces: '${exampleName}'`
+    )
+  }
 }
 
 /**
