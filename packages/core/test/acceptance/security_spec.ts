@@ -47,7 +47,7 @@ describe('comment node text escaping', () => {
 
 describe('iframe processing', () => {
   function getErrorMessageRegexp() {
-    const errorMessagePart = 'NG0' + RuntimeErrorCode.UNSAFE_IFRAME_ATTRS.toString();
+    const errorMessagePart = 'NG0' + Math.abs(RuntimeErrorCode.UNSAFE_IFRAME_ATTRS).toString();
     return new RegExp(errorMessagePart);
   }
 
