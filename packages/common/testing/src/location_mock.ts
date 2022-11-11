@@ -103,13 +103,15 @@ export class SpyLocation implements Location {
     path = this.prepareExternalUrl(path);
 
     const history = this._history[this._historyIndex];
+
+    history.state = state;
+
     if (history.path == path && history.query == query) {
       return;
     }
 
     history.path = path;
     history.query = query;
-    history.state = state;
 
     const url = path + (query.length > 0 ? ('?' + query) : '');
     this.urlChanges.push('replace: ' + url);

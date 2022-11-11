@@ -1018,19 +1018,27 @@ export class Router {
           // hybrid apps.
           setTimeout(() => {
             const extras: NavigationExtras = {replaceUrl: true};
-            // Navigations coming from Angular router have a navigationId state
-            // property. When this exists, restore the state.
-            const state = event.state?.navigationId ? event.state : null;
-            if (state) {
-              const stateCopy = {...state} as Partial<RestoredState>;
+
+            // TODO: Simplify state management #28954
+
+            // NavigationStart.restoredState was originally set to either
+            // {{ navigationdId: number }} | null, so preserve this behavior
+            // even though we now include the rest of the state along with it (since #27198)
+            const restoredState = event.state?.navigationId ? event.state : null;
+
+            // Separate to NavigationStart.restoredState, we must also restore the state to
+            // history.state and generate a new navigationId, since it will be overwritten
+            if (event.state) {
+              const stateCopy = {...event.state} as Partial<RestoredState>;
               delete stateCopy.navigationId;
               delete stateCopy.ɵrouterPageId;
               if (Object.keys(stateCopy).length !== 0) {
                 extras.state = stateCopy;
               }
             }
+
             const urlTree = this.parseUrl(event['url']!);
-            this.scheduleNavigation(urlTree, source, state, extras);
+            this.scheduleNavigation(urlTree, source, restoredState, extras);
           }, 0);
         }
       });

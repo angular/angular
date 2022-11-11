@@ -163,9 +163,20 @@ describe('Integration', () => {
            }
          });
 
-         const state = {foo: 'bar'};
+         let state: any = {foo: 'bar'};
          router.navigateByUrl('/simple', {state});
          tick();
+         location.back();
+         tick();
+         location.forward();
+         tick();
+
+         expect(navigation.extras.state).toBeDefined();
+         expect(navigation.extras.state).toEqual(state);
+
+         // Manually set state rather than using navigate()
+         state = {bar: 'foo'};
+         location.replaceState(location.path(), '', state);
          location.back();
          tick();
          location.forward();
