@@ -6,6 +6,7 @@ ng_module(
     name = "image-directive",
     srcs = [
         "e2e/basic/basic.ts",
+        "e2e/fill-mode/fill-mode.ts",
         "e2e/image-distortion/image-distortion.ts",
         "e2e/lcp-check/lcp-check.ts",
         "e2e/oversized-image/oversized-image.ts",

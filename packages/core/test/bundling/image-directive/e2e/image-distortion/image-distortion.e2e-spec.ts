@@ -7,7 +7,7 @@
  */
 
 /* tslint:disable:no-console  */
-import {browser, by, element, ExpectedConditions} from 'protractor';
+import {browser} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
 import {collectBrowserLogs} from '../browser-logs-util';
