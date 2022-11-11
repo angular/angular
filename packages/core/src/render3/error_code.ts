@@ -54,6 +54,7 @@ export const RUNTIME_ERRORS_WITH_GUIDES = new Set([
   RuntimeErrorCode.MULTIPLE_COMPONENTS_MATCH,
   RuntimeErrorCode.EXPORT_NOT_FOUND,
   RuntimeErrorCode.PIPE_NOT_FOUND,
+  RuntimeErrorCode.UNSAFE_IFRAME_ATTRS,
 ]);
 /* tslint:enable:no-toplevel-property-access */
 

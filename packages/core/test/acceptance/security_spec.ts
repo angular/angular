@@ -48,7 +48,7 @@ describe('comment node text escaping', () => {
 
 onlyInIvy('Ivy-specific handling of bindings').describe('iframe processing', () => {
   function getErrorMessageRegexp() {
-    const errorMessagePart = 'NG0' + RuntimeErrorCode.UNSAFE_IFRAME_ATTRS.toString();
+    const errorMessagePart = 'NG0' + RuntimeErrorCode.UNSAFE_IFRAME_ATTRS;
     return new RegExp(errorMessagePart);
   }
 
