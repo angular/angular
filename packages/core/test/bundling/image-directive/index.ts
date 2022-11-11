@@ -11,6 +11,7 @@ import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/pl
 import {RouterModule} from '@angular/router';
 
 import {BasicComponent} from './e2e/basic/basic';
+import {FillModeFailingComponent, FillModePassingComponent} from './e2e/fill-mode/fill-mode';
 import {ImageDistortionFailingComponent, ImageDistortionPassingComponent} from './e2e/image-distortion/image-distortion';
 import {LcpCheckComponent} from './e2e/lcp-check/lcp-check';
 import {OversizedImageComponentFailing, OversizedImageComponentPassing} from './e2e/oversized-image/oversized-image';
@@ -38,6 +39,8 @@ const ROUTES = [
   {path: 'e2e/image-distortion-failing', component: ImageDistortionFailingComponent},
   {path: 'e2e/oversized-image-passing', component: OversizedImageComponentPassing},
   {path: 'e2e/oversized-image-failing', component: OversizedImageComponentFailing},
+  {path: 'e2e/fill-mode-passing', component: FillModePassingComponent},
+  {path: 'e2e/fill-mode-failing', component: FillModeFailingComponent},
 ];
 
 bootstrapApplication(RootComponent, {
