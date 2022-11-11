@@ -365,6 +365,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNotBlobUrl(this);
       if (this.fill) {
         assertEmptyWidthAndHeight(this);
+        assertNonZeroRenderedHeight(this, this.imgElement, this.renderer);
       } else {
         assertNonEmptyWidthAndHeight(this);
         // Only check for distorted images when not in fill mode, where
@@ -860,6 +861,26 @@ function assertEmptyWidthAndHeight(dir: NgOptimizedImage) {
             `along with the \`fill\` attribute. Because \`fill\` mode causes an image to fill its containing ` +
             `element, the size attributes have no effect and should be removed.`);
   }
+}
+
+/**
+ * Verifies that the rendered image has a nonzero height. If the image is in fill mode, provides
+ * guidance that this can be caused by the containing element's CSS position property.
+ */
+function assertNonZeroRenderedHeight(
+    dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
+  const removeListenerFn = renderer.listen(img, 'load', () => {
+    removeListenerFn();
+    const renderedHeight = parseFloat(img.clientHeight as any);
+    if (dir.fill && renderedHeight === 0) {
+      console.warn(formatRuntimeError(
+          RuntimeErrorCode.INVALID_INPUT,
+          `${imgDirectiveDetails(dir.ngSrc)} the height of the fill-mode image is zero. ` +
+              `This is likely because the containing element does not have the CSS 'position' ` +
+              `property set to one of the following: "relative", "fixed", or "absolute". Make this ` +
+              `change to ensure that the image is visible.`));
+    }
+  });
 }
 
 /**
