@@ -294,6 +294,9 @@ export {
   bypassSanitizationTrustUrl as ɵbypassSanitizationTrustUrl,
 } from './sanitization/bypass';
 export {
+  ɵɵvalidateIframeAttribute,
+} from './sanitization/iframe_attrs_validation';
+export {
   ɵɵsanitizeHtml,
   ɵɵsanitizeResourceUrl,
   ɵɵsanitizeScript,
@@ -303,9 +306,6 @@ export {
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
 } from './sanitization/sanitization';
-export {
-  ɵɵvalidateIframeAttribute,
-} from './sanitization/iframe_attrs_validation';
 export {
   noSideEffects as ɵnoSideEffects,
 } from './util/closure';
