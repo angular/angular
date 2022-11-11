@@ -877,8 +877,9 @@ function assertNonZeroRenderedHeight(
           RuntimeErrorCode.INVALID_INPUT,
           `${imgDirectiveDetails(dir.ngSrc)} the height of the fill-mode image is zero. ` +
               `This is likely because the containing element does not have the CSS 'position' ` +
-              `property set to one of the following: "relative", "fixed", or "absolute". Make this ` +
-              `change to ensure that the image is visible.`));
+              `property set to one of the following: "relative", "fixed", or "absolute". ` +
+              `To fix this problem, make sure the container element has the CSS 'position' ` +
+              `property defined and the height of the element is not zero.`));
     }
   });
 }
