@@ -188,8 +188,8 @@ export const ROUTES: Route[] = [
       {provide: ADMIN_API_KEY, useValue: '12345'},
     ],
     children: [
-      path: 'users', component: AdminUsersComponent,
-      path: 'teams', component: AdminTeamsComponent,
+      {path: 'users', component: AdminUsersComponent},
+      {path: 'teams', component: AdminTeamsComponent},
     ],
   },
   // ... other application routes that don't
