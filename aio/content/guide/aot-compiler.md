@@ -83,7 +83,8 @@ You write metadata in a *subset* of TypeScript that must conform to the followin
 *   Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript
 *   Only reference exported symbols after [code folding](#code-folding)
 *   Only call [functions supported](#supported-functions) by the compiler
-*   Decorated and data-bound class members must be public
+*   Decorated class members must be public
+*   Data-bound lass members must be public or protected
 
 For additional guidelines and instructions on preparing an application for AOT compilation, see [Angular: Writing AOT-friendly applications](https://medium.com/sparkles-blog/angular-writing-aot-friendly-applications-7b64c8afbe3f).
 
@@ -317,7 +318,7 @@ The compiler can only reference *exported symbols*.
 *   Decorated component class members must be public.
     You cannot make an `@Input()` property private or protected.
 
-*   Data bound properties must also be public
+*   Data bound properties can be public or protected.
 
 <!--<code-example format="typescript" language="typescript">
 
