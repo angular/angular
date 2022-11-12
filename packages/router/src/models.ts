@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, EnvironmentProviders, InjectionToken, NgModuleFactory, Provider, ProviderToken, Type} from '@angular/core';
+import {EnvironmentInjector, EnvironmentProviders, InjectionToken, NgModuleFactory, Provider, Type} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {DeprecatedLoadChildren} from './deprecated_load_children';
@@ -851,7 +851,7 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
 export interface CanDeactivate<T> {
   canDeactivate(
       component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
-      nextState?: RouterStateSnapshot): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean
+      nextState: RouterStateSnapshot): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean
       |UrlTree;
 }
 
@@ -864,7 +864,7 @@ export interface CanDeactivate<T> {
  */
 export type CanDeactivateFn<T> =
     (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
-     nextState?: RouterStateSnapshot) =>
+     nextState: RouterStateSnapshot) =>
         Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 
 /**
