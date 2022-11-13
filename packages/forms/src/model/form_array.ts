@@ -142,7 +142,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    *     around from the back, and if index is greatly negative (less than `-length`), the result is
    * undefined. This behavior is the same as `Array.at(index)`.
    */
-  at(index: number): ɵTypedOrUntyped<TControl, TControl, AbstractControl<any>> {
+  at(index: number): ɵTypedOrUntyped<TControl, TControl, AbstractControl<any>>|undefined {
     return (this.controls as any)[this._adjustIndex(index)];
   }
 
@@ -286,7 +286,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     assertAllValuesPresent(this, false, value);
     value.forEach((newValue: any, index: number) => {
       assertControlPresent(this, false, index);
-      this.at(index).setValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
+      this.at(index)?.setValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
     });
     this.updateValueAndValidity(options);
   }
@@ -334,9 +334,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     if (value == null /* both `null` and `undefined` */) return;
 
     value.forEach((newValue, index) => {
-      if (this.at(index)) {
-        this.at(index).patchValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
-      }
+      this.at(index)?.patchValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
     });
     this.updateValueAndValidity(options);
   }

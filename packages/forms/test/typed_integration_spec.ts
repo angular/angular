@@ -744,7 +744,7 @@ describe('Typed Class', () => {
         t1 = null as unknown as ValueType;
       }
       c.at(0);
-      c.at(0).valueChanges.subscribe(v => {});
+      c.at(0)!.valueChanges.subscribe(v => {});
       c.push(new FormControl('', {nonNullable: true}));
       c.insert(0, new FormControl('', {nonNullable: true}));
       c.removeAt(0);

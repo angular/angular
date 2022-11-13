@@ -183,8 +183,8 @@ describe('FormArray', () => {
             {'c2': new FormControl('v2') as AbstractControl, 'c3': new FormControl('v3')}) as any,
         new FormArray([new FormControl('v4'), new FormControl('v5')])
       ]);
-      a.at(0).get('c3')!.disable();
-      (a.at(1) as FormArray).at(1).disable();
+      a.at(0)!.get('c3')!.disable();
+      (a.at(1)! as FormArray).at(1)!.disable();
 
       expect(a.getRawValue()).toEqual([{'c2': 'v2', 'c3': 'v3'}, ['v4', 'v5']]);
     });

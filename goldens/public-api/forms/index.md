@@ -228,7 +228,7 @@ export interface Form {
 // @public
 export class FormArray<TControl extends AbstractControl<any> = any> extends AbstractControl<ɵTypedOrUntyped<TControl, ɵFormArrayValue<TControl>, any>, ɵTypedOrUntyped<TControl, ɵFormArrayRawValue<TControl>, any>> {
     constructor(controls: Array<TControl>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
-    at(index: number): ɵTypedOrUntyped<TControl, TControl, AbstractControl<any>>;
+    at(index: number): ɵTypedOrUntyped<TControl, TControl, AbstractControl<any>> | undefined;
     clear(options?: {
         emitEvent?: boolean;
     }): void;

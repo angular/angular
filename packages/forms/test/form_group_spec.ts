@@ -57,7 +57,7 @@ describe('FormGroup', () => {
         'array': new FormArray([new FormControl('v4'), new FormControl('v5')])
       });
       fg.get('group')!.get('c3')!.disable();
-      (fg.get('array') as FormArray).at(1).disable();
+      (fg.get('array') as FormArray).at(1)!.disable();
 
       expect(fg.getRawValue())
           .toEqual({'c1': 'v1', 'group': {'c2': 'v2', 'c3': 'v3'}, 'array': ['v4', 'v5']});

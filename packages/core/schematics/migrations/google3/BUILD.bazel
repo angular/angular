@@ -5,11 +5,21 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
+        "//packages/core/schematics/migrations/form-array-at",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
         "@npm//typescript",
     ],
+)
+
+esbuild(
+    name = "form_array_at_cjs",
+    entry_point = ":formArrayAtRule.ts",
+    format = "cjs",
+    output = "formArrayAtCjsRule.js",
+    platform = "node",
+    deps = [":google3"],
 )
 
 esbuild(
@@ -24,6 +34,7 @@ esbuild(
 filegroup(
     name = "google3_cjs",
     srcs = [
+        ":form_array_at_cjs",
         ":wait_for_async_rule_cjs",
     ],
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],
