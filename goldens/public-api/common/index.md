@@ -270,7 +270,15 @@ export class I18nSelectPipe implements PipeTransform {
 }
 
 // @public
+export const IMAGE_CONFIG: InjectionToken<ImageConfig>;
+
+// @public
 export const IMAGE_LOADER: InjectionToken<ImageLoader>;
+
+// @public
+export type ImageConfig = {
+    breakpoints?: number[];
+};
 
 // @public
 export type ImageLoader = (config: ImageLoaderConfig) => string;
