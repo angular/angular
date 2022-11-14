@@ -9,7 +9,7 @@
 
 import {assertIndexInRange} from '../../util/assert';
 import {isObservable} from '../../util/lang';
-import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {PropertyAliasValue, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
@@ -31,7 +31,8 @@ import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadCompo
  *
  * @param eventName Name of the event
  * @param listenerFn The function to be called when event emits
- * @param useCapture Whether or not to use capture in event listener
+ * @param useCapture Whether or not to use capture in event listener - this argument is a reminder
+ *     from the Renderer3 infrastructure and should be removed from the instruction arguments
  * @param eventTargetResolver Function that returns global target information in case this listener
  * should be attached to a global object like window, document or body
  *
@@ -44,8 +45,7 @@ export function ɵɵlistener(
   const tView = getTView();
   const tNode = getCurrentTNode()!;
   listenerInternal(
-      tView, lView, lView[RENDERER], tNode, eventName, listenerFn, !!useCapture,
-      eventTargetResolver);
+      tView, lView, lView[RENDERER], tNode, eventName, listenerFn, eventTargetResolver);
   return ɵɵlistener;
 }
 
@@ -77,7 +77,7 @@ export function ɵɵsyntheticHostListener(
   const tView = getTView();
   const currentDef = getCurrentDirectiveDef(tView.data);
   const renderer = loadComponentRenderer(currentDef, tNode, lView);
-  listenerInternal(tView, lView, renderer, tNode, eventName, listenerFn, false);
+  listenerInternal(tView, lView, renderer, tNode, eventName, listenerFn);
   return ɵɵsyntheticHostListener;
 }
 
@@ -115,8 +115,7 @@ function findExistingListener(
 
 function listenerInternal(
     tView: TView, lView: LView<{}|null>, renderer: Renderer, tNode: TNode, eventName: string,
-    listenerFn: (e?: any) => any, useCapture: boolean,
-    eventTargetResolver?: GlobalTargetResolver): void {
+    listenerFn: (e?: any) => any, eventTargetResolver?: GlobalTargetResolver): void {
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const firstCreatePass = tView.firstCreatePass;
   const tCleanup: false|any[] = firstCreatePass && getOrCreateTViewCleanup(tView);
