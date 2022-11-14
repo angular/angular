@@ -269,6 +269,11 @@
               "url": "guide/structural-directives",
               "title": "Structural directives",
               "tooltip": "Structural directives manipulate the layout of the page."
+            },
+            {
+              "url": "guide/directive-composition-api",
+              "title": "Directive composition API",
+              "tooltip": "Apply directive to host elements."
             }
           ]
         },
