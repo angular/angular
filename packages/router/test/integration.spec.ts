@@ -3019,6 +3019,21 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/team/22');
        })));
 
+    it('can redirect from componentless named outlets', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'main', outlet: 'aux', component: BlankCmp},
+           {path: '', pathMatch: 'full', outlet: 'aux', redirectTo: 'main'},
+         ]);
+
+         router.navigateByUrl('');
+         advance(fixture);
+
+         expect(TestBed.inject(Location).path()).toEqual('/(aux:main)');
+       }));
+
     it('should update Navigation object after redirects are applied',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = createRoot(router, RootCmp);

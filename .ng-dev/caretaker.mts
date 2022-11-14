@@ -10,7 +10,7 @@ export const caretaker: CaretakerConfig = {
     },
     {
       name: 'Merge Assistance Queue',
-      query: `is:pr is:open label:"action: caretaker note"`,
+      query: `is:pr is:open label:"merge: caretaker note" label:"action: merge"`,
     },
     {
       name: 'Initial Triage Queue',

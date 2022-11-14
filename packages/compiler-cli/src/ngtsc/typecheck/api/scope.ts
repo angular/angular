@@ -18,7 +18,8 @@ import {SymbolWithValueDeclaration} from '../../util/src/typescript';
  */
 export interface PotentialImport {
   kind: PotentialImportKind;
-  moduleSpecifier: string;
+  // If no moduleSpecifier is present, the given symbol name is already in scope.
+  moduleSpecifier?: string;
   symbolName: string;
 }
 

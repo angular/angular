@@ -2,7 +2,7 @@
 import {Injectable, NgModule} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {
-  Resolve,
+  ResolveFn,
   RouterModule,
   RouterStateSnapshot,
   Routes,
@@ -18,7 +18,7 @@ const routes: Routes = [
     children: [
       {
         path: 'child-a',  // child route path
-        title: ResolvedChildATitle,
+        title: resolvedChildATitle,
         component: ChildAComponent,  // child route component that the router renders
       },
       {
@@ -30,12 +30,7 @@ const routes: Routes = [
   },
 ];
 
-@Injectable({providedIn: 'root'})
-export class ResolvedChildATitle implements Resolve<string> {
-  resolve() {
-    return Promise.resolve('child a');
-  }
-}
+const resolvedChildATitle: ResolveFn<string> = () => Promise.resolve('child a');
 // #enddocregion page-title
 
 

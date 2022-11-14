@@ -171,7 +171,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵtrustConstantHtml': sanitization.ɵɵtrustConstantHtml,
        'ɵɵtrustConstantResourceUrl': sanitization.ɵɵtrustConstantResourceUrl,
        'ɵɵvalidateIframeAttribute': iframe_attrs_validation.ɵɵvalidateIframeAttribute,
-       'ɵɵvalidateIframeStaticAttributes': iframe_attrs_validation.ɵɵvalidateIframeStaticAttributes,
 
        'forwardRef': forwardRef,
        'resolveForwardRef': resolveForwardRef,

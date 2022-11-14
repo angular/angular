@@ -676,16 +676,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const refs = this.prepareRefsArray(element.references);
     parameters.push(this.addToConsts(refs));
 
-    // If this element is an <iframe>, append an extra validation
-    // function, which would be invoked at runtime to make sure that
-    // all security-sensitive attributes defined statically (both on
-    // the element itself as well as on all matched directives) are
-    // set on the underlying <iframe> *before* setting its `src` or
-    // `srcdoc` (otherwise they'd not be taken into account).
-    if (isIframeElement(element.name)) {
-      parameters.push(o.importExpr(R3.validateIframeStaticAttributes));
-    }
-
     const wasInNamespace = this._namespace;
     const currentNamespace = this.getNamespaceInstruction(namespaceKey);
 

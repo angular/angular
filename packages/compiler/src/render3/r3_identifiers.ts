@@ -348,6 +348,4 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵtrustConstantResourceUrl', moduleName: CORE};
   static validateIframeAttribute:
       o.ExternalReference = {name: 'ɵɵvalidateIframeAttribute', moduleName: CORE};
-  static validateIframeStaticAttributes:
-      o.ExternalReference = {name: 'ɵɵvalidateIframeStaticAttributes', moduleName: CORE};
 }

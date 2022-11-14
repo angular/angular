@@ -9,7 +9,7 @@
 import {Location} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
 import {Compiler, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
+import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
 
 import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
 
@@ -21,30 +21,10 @@ function isUrlHandlingStrategy(opts: ExtraOptions|
 }
 
 /**
- * Router setup factory function used for testing. Only used internally to keep the factory that's
- * marked as publicApi cleaner (i.e. not having _both_ `TitleStrategy` and `DefaultTitleStrategy`).
- */
-export function setupTestingRouterInternal(
-    urlSerializer: UrlSerializer,
-    contexts: ChildrenOutletContexts,
-    location: Location,
-    compiler: Compiler,
-    injector: Injector,
-    routes: Route[][],
-    titleStrategy: TitleStrategy,
-    opts?: ExtraOptions|UrlHandlingStrategy,
-    urlHandlingStrategy?: UrlHandlingStrategy,
-    routeReuseStrategy?: RouteReuseStrategy,
-) {
-  return setupTestingRouter(
-      urlSerializer, contexts, location, compiler, injector, routes, opts, urlHandlingStrategy,
-      routeReuseStrategy, titleStrategy);
-}
-
-/**
  * Router setup factory function used for testing.
  *
  * @publicApi
+ * @deprecated Use `provideRouter` or `RouterTestingModule` instead.
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -107,24 +87,8 @@ export function setupTestingRouter(
     ROUTER_PROVIDERS,
     EXTRA_ROUTER_TESTING_PROVIDERS,
     provideLocationMocks(),
-    {
-      provide: Router,
-      useFactory: setupTestingRouterInternal,
-      deps: [
-        UrlSerializer,
-        ChildrenOutletContexts,
-        Location,
-        Compiler,
-        Injector,
-        ROUTES,
-        TitleStrategy,
-        ROUTER_CONFIGURATION,
-        [UrlHandlingStrategy, new Optional()],
-        [RouteReuseStrategy, new Optional()],
-      ]
-    },
     withPreloading(NoPreloading).ɵproviders,
-    provideRoutes([]),
+    {provide: ROUTES, multi: true, useValue: []},
   ]
 })
 export class RouterTestingModule {
@@ -133,7 +97,7 @@ export class RouterTestingModule {
     return {
       ngModule: RouterTestingModule,
       providers: [
-        provideRoutes(routes),
+        {provide: ROUTES, multi: true, useValue: routes},
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
       ]
     };

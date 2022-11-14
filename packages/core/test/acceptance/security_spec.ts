@@ -7,7 +7,7 @@
  */
 
 import {NgIf} from '@angular/common';
-import {Component, Directive, inject, Type} from '@angular/core';
+import {Component, Directive, inject, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {RuntimeErrorCode} from '@angular/core/src/errors';
 import {global} from '@angular/core/src/util/global';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -47,19 +47,29 @@ describe('comment node text escaping', () => {
 
 describe('iframe processing', () => {
   function getErrorMessageRegexp() {
-    const errorMessagePart = 'NG0' + RuntimeErrorCode.UNSAFE_IFRAME_ATTRS.toString();
+    const errorMessagePart = 'NG0' + Math.abs(RuntimeErrorCode.UNSAFE_IFRAME_ATTRS).toString();
     return new RegExp(errorMessagePart);
   }
 
-  function expectIframeCreationToFail<T>(component: Type<T>, attrName: string) {
+  function ensureNoIframePresent(fixture?: ComponentFixture<unknown>) {
+    // Note: a `fixture` may not exist in case an error was thrown at creation time.
+    const iframe = fixture?.nativeElement.querySelector('iframe');
+    expect(!!iframe).toBeFalse();
+  }
+
+  function expectIframeCreationToFail<T>(component: Type<T>): ComponentFixture<T> {
+    let fixture: ComponentFixture<T>|undefined;
     expect(() => {
-      let fixture = TestBed.createComponent(component);
+      fixture = TestBed.createComponent(component);
       fixture.detectChanges();
     }).toThrowError(getErrorMessageRegexp());
+
+    ensureNoIframePresent(fixture);
+    return fixture!;
   }
 
   function expectIframeToBeCreated<T>(
-      component: Type<T>, srcAttrToCheck?: string, expectedValue?: string): ComponentFixture<T> {
+      component: Type<T>, attrsToCheck: {[key: string]: string}): ComponentFixture<T> {
     let fixture: ComponentFixture<T>;
     expect(() => {
       fixture = TestBed.createComponent(component);
@@ -67,8 +77,8 @@ describe('iframe processing', () => {
     }).not.toThrow();
 
     const iframe = fixture!.nativeElement.querySelector('iframe');
-    if (srcAttrToCheck) {
-      expect(iframe[srcAttrToCheck]).toEqual(expectedValue);
+    for (const [attrName, attrValue] of Object.entries(attrsToCheck)) {
+      expect(iframe[attrName]).toEqual(attrValue);
     }
 
     return fixture!;
@@ -77,7 +87,7 @@ describe('iframe processing', () => {
   // *Must* be in sync with the `SECURITY_SENSITIVE_ATTRS` list
   // from the `packages/compiler/src/schema/dom_security_schema.ts`.
   const SECURITY_SENSITIVE_ATTRS =
-      ['sandbox', 'allow', 'allowfullscreen', 'referrerpolicy', 'loading'];
+      ['sandbox', 'allow', 'allowFullscreen', 'referrerPolicy', 'csp', 'fetchPriority'];
 
   const TEST_IFRAME_URL = 'https://angular.io/assets/images/logos/angular/angular.png';
 
@@ -103,8 +113,8 @@ describe('iframe processing', () => {
     describe(`with ngDevMode = ${devModeFlag}`, () => {
       SECURITY_SENSITIVE_ATTRS.forEach((securityAttr: string) => {
         ['src', 'srcdoc'].forEach((srcAttr: string) => {
-          it(`should error when a security-sensitive attribute is located ` +
-                 `*after* the \`${srcAttr}\` (checking \`${securityAttr}\` as a static attribute)`,
+          it(`should work when a security-sensitive attribute is set ` +
+                 `as a static attribute (checking \`${securityAttr}\`)`,
              () => {
                @Component({
                  standalone: true,
@@ -118,32 +128,30 @@ describe('iframe processing', () => {
                class IframeComp {
                }
 
-               expectIframeCreationToFail(IframeComp, securityAttr);
+               expectIframeToBeCreated(IframeComp, {[srcAttr]: TEST_IFRAME_URL});
              });
 
-          it(`should error when a security-sensitive attribute is located *after* the \`${
-                 srcAttr}\` ` +
-                 `(checking \`${securityAttr}\` as a static attribute, making sure it's ` +
-                 `case-insensitive)`,
+          it(`should work when a security-sensitive attribute is set ` +
+                 `as a static attribute (checking \`${securityAttr}\` and ` +
+                 `making sure it's case-insensitive)`,
              () => {
                @Component({
                  standalone: true,
                  selector: 'my-comp',
                  template: `
                   <iframe
-                    ${srcAttr.toUpperCase()}="${TEST_IFRAME_URL}"
+                    ${srcAttr}="${TEST_IFRAME_URL}"
                     ${securityAttr.toUpperCase()}="">
-                  </iframe>
-                 `,
+                  </iframe>`,
                })
                class IframeComp {
                }
 
-               expectIframeCreationToFail(IframeComp, securityAttr);
+               expectIframeToBeCreated(IframeComp, {[srcAttr]: TEST_IFRAME_URL});
              });
 
-          it(`should error when a security-sensitive attribute is located ` +
-                 `*after* the \`${srcAttr}\` (checking \`${securityAttr}\` as a property binding)`,
+          it(`should error when a security-sensitive attribute is applied ` +
+                 `using a property binding (checking \`${securityAttr}\`)`,
              () => {
                @Component({
                  standalone: true,
@@ -154,12 +162,11 @@ describe('iframe processing', () => {
                class IframeComp {
                }
 
-               expectIframeCreationToFail(IframeComp, securityAttr);
+               expectIframeCreationToFail(IframeComp);
              });
 
-          it(`should error when a security-sensitive attribute is located ` +
-                 `*after* the \`${srcAttr}\` (checking \`${
-                     securityAttr}\` as a property interpolation)`,
+          it(`should error when a security-sensitive attribute is applied ` +
+                 `using a property interpolation (checking \`${securityAttr}\`)`,
              () => {
                @Component({
                  standalone: true,
@@ -170,69 +177,12 @@ describe('iframe processing', () => {
                class IframeComp {
                }
 
-               expectIframeCreationToFail(IframeComp, securityAttr);
+               expectIframeCreationToFail(IframeComp);
              });
 
-
-          it(`should error when a security-sensitive attribute is located ` +
-                 `*after* the \`${srcAttr}\` (checking \`${
-                     securityAttr}\` as a property binding, ` +
-                 `making sure it's case-insensitive)`,
-             () => {
-               @Component({
-                 standalone: true,
-                 selector: 'my-comp',
-                 template: `
-                  <iframe
-                    ${srcAttr}="${TEST_IFRAME_URL}"
-                    [${securityAttr.toUpperCase()}]="''"
-                  ></iframe>
-                 `,
-               })
-               class IframeComp {
-               }
-
-               expectIframeCreationToFail(IframeComp, securityAttr.toUpperCase());
-             });
-
-          it(`should error when a security-sensitive attribute is located ` +
-                 `*after* the \`${srcAttr}\` (checking \`${
-                     securityAttr}\` as an attribute binding)`,
-             () => {
-               @Component({
-                 standalone: true,
-                 selector: 'my-comp',
-                 template: `
-                    <iframe ${srcAttr}="${TEST_IFRAME_URL}" [attr.${securityAttr}]="''"></iframe>
-                  `,
-               })
-               class IframeComp {
-               }
-
-               expectIframeCreationToFail(IframeComp, securityAttr);
-             });
-
-          it(`should error when a security-sensitive attribute is located ` +
-                 `*after* the \`${srcAttr}\` (checking \`${
-                     securityAttr}\` as an attribute interpolation)`,
-             () => {
-               @Component({
-                 standalone: true,
-                 selector: 'my-comp',
-                 template: `
-                <iframe ${srcAttr}="${TEST_IFRAME_URL}" attr.${securityAttr}="{{''}}"></iframe>
-              `,
-               })
-               class IframeComp {
-               }
-
-               expectIframeCreationToFail(IframeComp, securityAttr);
-             });
-
-          it(`should error when a security-sensitive attribute is located ` +
-                 `*after* the \`${srcAttr}\` (checking \`${
-                     securityAttr}\` as an attribute binding, ` +
-                 `making sure it's case-insensitive)`,
+          it(`should error when a security-sensitive attribute is applied ` +
+                 `using a property binding (checking \`${securityAttr}\`, making ` +
+                 `sure it's case-insensitive)`,
              () => {
                @Component({
                  standalone: true,
@@ -240,72 +190,89 @@ describe('iframe processing', () => {
                  template: `
                     <iframe
                       ${srcAttr}="${TEST_IFRAME_URL}"
-                      [attr.${securityAttr.toUpperCase()}]="''">
-                    </iframe>
+                      [${securityAttr.toUpperCase()}]="''"
+                    ></iframe>
                   `,
                })
                class IframeComp {
                }
 
-               expectIframeCreationToFail(IframeComp, securityAttr.toUpperCase());
+               expectIframeCreationToFail(IframeComp);
              });
 
-          it(`should work when a security-sensitive attribute is set ` +
-                 `before the \`${srcAttr}\` (checking \`${securityAttr}\`)`,
-             () => {
-               @Component({
-                 standalone: true,
-                 selector: 'my-comp',
-                 template: `<iframe ${securityAttr}="" ${srcAttr}="${TEST_IFRAME_URL}"></iframe>`,
-               })
-               class IframeComp {
-               }
-
-               expectIframeToBeCreated(IframeComp, srcAttr, TEST_IFRAME_URL);
-             });
-
-          it(`should error when trying to change a security-sensitive attribute after initial creation ` +
-                 `when the \`${srcAttr}\` is set (checking \`${securityAttr}\`)`,
+          it(`should error when a security-sensitive attribute is applied ` +
+                 `using a property binding (checking \`${securityAttr}\`)`,
              () => {
                @Component({
                  standalone: true,
                  selector: 'my-comp',
                  template: `
                     <iframe
-                      [${securityAttr}]="securityAttr"
-                      [${srcAttr}]="src">
-                    </iframe>
+                      ${srcAttr}="${TEST_IFRAME_URL}"
+                      [attr.${securityAttr}]="''"
+                    ></iframe>
                   `,
                })
                class IframeComp {
-                 private sanitizer = inject(DomSanitizer);
-                 src = this.sanitizeFn(TEST_IFRAME_URL);
-                 securityAttr = 'allow-forms';
-
-                 get sanitizeFn() {
-                   return srcAttr === 'src' ? this.sanitizer.bypassSecurityTrustResourceUrl :
-                                              this.sanitizer.bypassSecurityTrustHtml;
-                 }
                }
 
-               const fixture = expectIframeToBeCreated(IframeComp, srcAttr, TEST_IFRAME_URL);
-               const component = fixture.componentInstance;
-
-               // Expect to throw if security-sensitive attribute is changed
-               // after the `src` or `srcdoc` is set.
-               component.securityAttr = 'allow-modals';
-               expect(() => fixture.detectChanges()).toThrowError(getErrorMessageRegexp());
-
-               // However, changing the `src` or `srcdoc` is allowed.
-               const newUrl = 'https://angular.io/about?group=Angular';
-               component.src = component.sanitizeFn(newUrl);
-               expect(() => fixture.detectChanges()).not.toThrow();
-               expect(fixture.nativeElement.querySelector('iframe')[srcAttr]).toEqual(newUrl);
+               expectIframeCreationToFail(IframeComp);
              });
+
+          it(`should error when a security-sensitive attribute is applied ` +
+                 `using a property binding (checking \`${securityAttr}\`, making ` +
+                 `sure it's case-insensitive)`,
+             () => {
+               @Component({
+                 standalone: true,
+                 selector: 'my-comp',
+                 template: `
+                    <iframe
+                      ${srcAttr}="${TEST_IFRAME_URL}"
+                      [attr.${securityAttr.toUpperCase()}]="''"
+                    ></iframe>
+                  `,
+               })
+               class IframeComp {
+               }
+
+               expectIframeCreationToFail(IframeComp);
+             });
+
+          it(`should allow changing \`${srcAttr}\` after initial render`, () => {
+            @Component({
+              standalone: true,
+              selector: 'my-comp',
+              template: `
+                    <iframe
+                      ${securityAttr}="allow-forms"
+                      [${srcAttr}]="src">
+                    </iframe>
+                  `,
+            })
+            class IframeComp {
+              private sanitizer = inject(DomSanitizer);
+              src = this.sanitizeFn(TEST_IFRAME_URL);
+
+              get sanitizeFn() {
+                return srcAttr === 'src' ? this.sanitizer.bypassSecurityTrustResourceUrl :
+                                           this.sanitizer.bypassSecurityTrustHtml;
+              }
+            }
+
+            const fixture = expectIframeToBeCreated(IframeComp, {[srcAttr]: TEST_IFRAME_URL});
+            const component = fixture.componentInstance;
+
+            // Changing `src` or `srcdoc` is allowed.
+            const newUrl = 'https://angular.io/about?group=Angular';
+            component.src = component.sanitizeFn(newUrl);
+            expect(() => fixture.detectChanges()).not.toThrow();
+            expect(fixture.nativeElement.querySelector('iframe')[srcAttr]).toEqual(newUrl);
+          });
         });
       });
 
-      it('should error when a directive sets a security-sensitive attribute after setting `src`',
+      it('should work when a directive sets a security-sensitive attribute as a static attribute',
          () => {
            @Directive({
              standalone: true,
@@ -326,10 +293,10 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           expectIframeCreationToFail(IframeComp, 'sandbox');
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
 
-      it('should not error when a directive sets a security-sensitive host attribute on a non-iframe element',
+      it('should work when a directive sets a security-sensitive host attribute on a non-iframe element',
          () => {
            @Directive({
              standalone: true,
@@ -358,7 +325,7 @@ describe('iframe processing', () => {
          });
 
 
-      it('should error when a security-sensitive attribute is set after `src` on an <iframe> ' +
+      it('should work when a security-sensitive attribute on an <iframe> ' +
              'which also has a structural directive (*ngIf)',
          () => {
            @Component({
@@ -371,10 +338,10 @@ describe('iframe processing', () => {
              visible = true;
            }
 
-           expectIframeCreationToFail(IframeComp, 'sandbox');
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
 
-      it('should error when a security-sensitive attribute is set between `src` and `srcdoc`',
+      it('should work when a security-sensitive attribute is set between `src` and `srcdoc`',
          () => {
            @Component({
              standalone: true,
@@ -384,7 +351,7 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           expectIframeCreationToFail(IframeComp, 'sandbox');
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
 
       it('should work when a directive sets a security-sensitive attribute before setting `src`',
@@ -409,10 +376,10 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           expectIframeToBeCreated(IframeComp, 'src', TEST_IFRAME_URL);
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
 
-      it('should error when a directive sets an `src` and ' +
+      it('should work when a directive sets an `src` and ' +
              'there was a security-sensitive attribute set in a template' +
              '(directive attribute after `sandbox`)',
          () => {
@@ -435,11 +402,11 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           expectIframeCreationToFail(IframeComp, 'sandbox');
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
 
-      it('should error when a directive sets a security-sensitive attribute in uppercase ' +
-             'and it gets applied before an `src` value',
+      it('should error when a directive sets a security-sensitive attribute ' +
+             'as an attribute binding (checking that it\'s case-insensitive)',
          () => {
            @Directive({
              standalone: true,
@@ -460,10 +427,10 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           expectIframeCreationToFail(IframeComp, 'SANDBOX');
+           expectIframeCreationToFail(IframeComp);
          });
 
-      it('should error when a directive sets an `src` and ' +
+      it('should work when a directive sets an `src` and ' +
              'there was a security-sensitive attribute set in a template' +
              '(directive attribute before `sandbox`)',
          () => {
@@ -486,7 +453,7 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           expectIframeCreationToFail(IframeComp, 'sandbox');
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
 
       it('should work when a directive sets a security-sensitive attribute and ' +
@@ -512,7 +479,44 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           expectIframeToBeCreated(IframeComp, 'src', TEST_IFRAME_URL);
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
+         });
+
+      it('should work when a security-sensitive attribute is set as a static attribute', () => {
+        @Component({
+          standalone: true,
+          selector: 'my-comp',
+          template: `
+            <iframe referrerPolicy="no-referrer" src="${TEST_IFRAME_URL}"></iframe>
+          `,
+        })
+        class IframeComp {
+        }
+
+        expectIframeToBeCreated(IframeComp, {
+          src: TEST_IFRAME_URL,
+          referrerPolicy: 'no-referrer',
+        });
+      });
+
+      it('should error when a security-sensitive attribute is set ' +
+             'as a property binding and an <iframe> is wrapped into another element',
+         () => {
+           @Component({
+             standalone: true,
+             selector: 'my-comp',
+             template: `
+                <section>
+                  <iframe
+                    src="${TEST_IFRAME_URL}"
+                    [referrerPolicy]="'no-referrer'"
+                  ></iframe>
+                </section>`,
+           })
+           class IframeComp {
+           }
+
+           expectIframeCreationToFail(IframeComp);
          });
 
       it('should work when a directive sets a security-sensitive attribute and ' +
@@ -538,42 +542,7 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           expectIframeToBeCreated(IframeComp, 'src', TEST_IFRAME_URL);
-         });
-
-      it('should error when a directive that sets a security-sensitive attribute goes ' +
-             'after the directive that sets an `src` attribute value',
-         () => {
-           @Directive({
-             standalone: true,
-             selector: '[set-src]',
-             host: {
-               'src': TEST_IFRAME_URL,
-             },
-           })
-           class DirThatSetsSrc {
-           }
-
-           @Directive({
-             standalone: true,
-             selector: '[set-sandbox]',
-             host: {
-               'sandbox': '',
-             },
-           })
-           class DirThatSetsSandbox {
-           }
-
-           @Component({
-             standalone: true,
-             imports: [DirThatSetsSrc, DirThatSetsSandbox],
-             selector: 'my-comp',
-             template: '<iframe set-src set-sandbox></iframe>',
-           })
-           class IframeComp {
-           }
-
-           expectIframeCreationToFail(IframeComp, 'sandbox');
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
 
       it('should work when a directive that sets a security-sensitive attribute goes ' +
@@ -611,24 +580,10 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           expectIframeToBeCreated(IframeComp, 'src', TEST_IFRAME_URL);
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
 
-      it(`should error when a security-sensitive attribute is located after the \`src\` ` +
-             `on an <iframe> with the tag name defined in uppercase`,
-         () => {
-           @Component({
-             standalone: true,
-             selector: 'my-comp',
-             template: `<IFRAME src="${TEST_IFRAME_URL}" sandbox=""></IFRAME>`,
-           })
-           class IframeComp {
-           }
-
-           expectIframeCreationToFail(IframeComp, 'sandbox');
-         });
-
-      it('should error when a directive that sets a security-sensitive attribute has ' +
+      it('should work when a directive that sets a security-sensitive attribute has ' +
              'a host directive that sets an `src` attribute value',
          () => {
            @Directive({
@@ -661,10 +616,7 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           // Note: host bindings of the `DirThatSetsSrc` (thus setting the `src`)
-           // were invoked first, since this is a host directive of the `DirThatSetsSandbox`
-           // (in which case, the `sandbox` is set afterwards, which causes an error).
-           expectIframeCreationToFail(IframeComp, 'sandbox');
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
 
       it('should work when a directive that sets an `src` has ' +
@@ -700,11 +652,95 @@ describe('iframe processing', () => {
            class IframeComp {
            }
 
-           // Note: host bindings of the `DirThatSetsSandbox` (thus setting the `sandbox`)
-           // were invoked first, since this is a host directive of the `DirThatSetsSrc`
-           // (in which case, the `src` is set afterwards, which is ok).
-           expectIframeToBeCreated(IframeComp, 'src', TEST_IFRAME_URL);
+           expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
          });
+
+
+      it('should error when creating a view that contains an <iframe> ' +
+             'with security-sensitive attributes set via property bindings',
+         () => {
+           @Component({
+             standalone: true,
+             selector: 'my-comp',
+             template: `
+                <ng-container #container></ng-container>
+                <ng-template #template>
+                  <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"></iframe>
+                </ng-template>
+              `,
+           })
+           class IframeComp {
+             @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
+             @ViewChild('template') template!: TemplateRef<unknown>;
+
+             createEmbeddedView() {
+               this.container.createEmbeddedView(this.template);
+             }
+           }
+
+           const fixture = TestBed.createComponent(IframeComp);
+           fixture.detectChanges();
+
+           expect(() => {
+             fixture.componentInstance.createEmbeddedView();
+             fixture.detectChanges();
+           }).toThrowError(getErrorMessageRegexp());
+
+           ensureNoIframePresent(fixture);
+         });
+
+      describe('i18n', () => {
+        it('should error when a security-sensitive attribute is set as ' +
+               'a property binding on an <iframe> inside i18n block',
+           () => {
+             @Component({
+               standalone: true,
+               selector: 'my-comp',
+               template: `
+                  <section i18n>
+                    <iframe src="${TEST_IFRAME_URL}" [sandbox]="''">
+                    </iframe>
+                  </section>
+                `,
+             })
+             class IframeComp {
+             }
+
+             expectIframeCreationToFail(IframeComp);
+           });
+
+        it('should error when a security-sensitive attribute is set as ' +
+               'a property binding on an <iframe> annotated with i18n attribute',
+           () => {
+             @Component({
+               standalone: true,
+               selector: 'my-comp',
+               template: `
+                  <iframe i18n src="${TEST_IFRAME_URL}" [sandbox]="''">
+                  </iframe>
+                `,
+             })
+             class IframeComp {
+             }
+
+             expectIframeCreationToFail(IframeComp);
+           });
+
+        it('should work when a security-sensitive attributes are marked for translation', () => {
+          @Component({
+            standalone: true,
+            selector: 'my-comp',
+            template: `
+              <iframe src="${TEST_IFRAME_URL}" i18n-sandbox sandbox="">
+              </iframe>
+            `,
+          })
+          class IframeComp {
+          }
+
+          expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
+        });
+      });
     });
   });
 });

@@ -1,22 +1,16 @@
 // #docregion
-import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CanDeactivate,
+import { CanDeactivateFn,
          ActivatedRouteSnapshot,
          RouterStateSnapshot } from '@angular/router';
 
 import { CrisisDetailComponent } from './crisis-center/crisis-detail/crisis-detail.component';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class CanDeactivateGuard implements CanDeactivate<CrisisDetailComponent> {
-
-  canDeactivate(
+export const canDeactivateGuard: CanDeactivateFn<CrisisDetailComponent>  = (
     component: CrisisDetailComponent,
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean> | boolean {
+  ): Observable<boolean> | boolean => {
     // Get the Crisis Center ID
     console.log(route.paramMap.get('id'));
 
@@ -30,5 +24,4 @@ export class CanDeactivateGuard implements CanDeactivate<CrisisDetailComponent> 
     // Otherwise ask the user with the dialog service and return its
     // observable which resolves to true or false when the user decides
     return component.dialogService.confirm('Discard changes?');
-  }
-}
+  };

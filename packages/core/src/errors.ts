@@ -82,7 +82,7 @@ export const enum RuntimeErrorCode {
   TYPE_IS_NOT_STANDALONE = 907,
   MISSING_ZONEJS = 908,
   UNEXPECTED_ZONE_STATE = 909,
-  UNSAFE_IFRAME_ATTRS = 910,
+  UNSAFE_IFRAME_ATTRS = -910,
 }
 
 /**
@@ -114,6 +114,7 @@ export function formatRuntimeError<T extends number = RuntimeErrorCode>(
     code: T, message: null|false|string): string {
   // Error code might be a negative number, which is a special marker that instructs the logic to
   // generate a link to the error details page on angular.io.
+  // We also prepend `0` to non-compile-time errors.
   const fullCode = `NG0${Math.abs(code)}`;
 
   let errorMessage = `${fullCode}${message ? ': ' + message.trim() : ''}`;

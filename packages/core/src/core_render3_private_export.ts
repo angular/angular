@@ -274,7 +274,6 @@ export {
 } from './sanitization/sanitization';
 export {
   ɵɵvalidateIframeAttribute,
-  ɵɵvalidateIframeStaticAttributes,
 } from './sanitization/iframe_attrs_validation';
 export {
   noSideEffects as ɵnoSideEffects,
