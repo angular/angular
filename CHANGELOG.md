@@ -1,3 +1,16 @@
+<a name="15.0.0-rc.4"></a>
+# 15.0.0-rc.4 (2022-11-14)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [449d29b701](https://github.com/angular/angular/commit/449d29b701ee5a50e7279d44f4c3888a5d6f7e96) | fix | Add fetchpriority to ngOptimizedImage preloads ([#48010](https://github.com/angular/angular/pull/48010)) |
+| [edea15f2c6](https://github.com/angular/angular/commit/edea15f2c63675e86248a25649008a10e1384334) | fix | export the IMAGE_CONFIG token ([#48051](https://github.com/angular/angular/pull/48051)) |
+| [945432e3fa](https://github.com/angular/angular/commit/945432e3fa2cb22ff911eda2a8ad3302a8adba5a) | fix | Warn on fill ngOptimizedImage without height ([#48036](https://github.com/angular/angular/pull/48036)) |
+## Special Thanks
+Alan Agius, Alex Castle, Andrew Kushnir, Mujo Osmanovic and ced
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-rc.3"></a>
 # 15.0.0-rc.3 (2022-11-09)
 ## Breaking Changes
