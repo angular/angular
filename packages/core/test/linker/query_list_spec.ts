@@ -139,6 +139,13 @@ import {fakeAsync, tick} from '@angular/core/testing';
       expect(queryList.some(item => item === 'four')).toEqual(false);
     });
 
+    it('should support guards on filter', () => {
+      const qList = new QueryList<'foo'|'bar'>();
+      qList.reset(['foo']);
+      const foos: Array<'foo'> = queryList.filter((item): item is 'foo' => item === 'foo');
+      expect(qList.length).toEqual(1);
+    });
+
     it('should be iterable', () => {
       const data = ['one', 'two', 'three'];
       queryList.reset([...data]);
