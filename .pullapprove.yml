@@ -325,6 +325,7 @@ groups:
           'aio/content/guide/two-way-binding.md',
           'aio/content/examples/two-way-binding/**/{*,.*}',
           'aio/content/guide/built-in-directives.md',
+          'aio/content/guide/directive-composition-api.md',
           'aio/content/examples/built-in-directives/**/{*,.*}',
           'aio/content/images/guide/built-in-directives/**/{*,.*}',
           'aio/content/guide/template-reference-variables.md',
