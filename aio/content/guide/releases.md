@@ -133,9 +133,8 @@ The following table provides the status for Angular versions under support.
 |:---     |:---    |:---        |:---         |:---        |
 | ^14.0.0 | Active | 2022-06-02 | 2022-12-02  | 2023-12-02 |
 | ^13.0.0 | LTS    | 2021-11-04 | 2022-06-02  | 2023-05-04 |
-| ^12.0.0 | LTS    | 2021-05-12 | 2021-11-12  | 2022-11-12 |
 
-Angular versions v2 to v11 are no longer under support.
+Angular versions v2 to v12 are no longer under support.
 
 ### LTS fixes
 
@@ -189,4 +188,4 @@ The policies and practices that are described in this document do not apply to A
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-11-14
