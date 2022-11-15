@@ -11,7 +11,7 @@ import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Inje
 import {inject} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NavigationEnd, provideRouter, Resolve, Router, RouterModule, withEnabledBlockingInitialNavigation} from '@angular/router';
+import {NavigationEnd, provideRouter, Resolve, Router, RouterModule, RouterOutlet, withEnabledBlockingInitialNavigation} from '@angular/router';
 
 // This is needed, because all files under `packages/` are compiled together as part of the
 // [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by
@@ -110,6 +110,55 @@ describe('bootstrap', () => {
          expect(log).toContain('TestModule');
          expect(log).toContain('NavigationError');
        });
+     });
+
+  it('should finish navigation when initial navigation is enabledBlocking and component renavigates on render',
+     async () => {
+       @Component({
+         template: '',
+         standalone: true,
+       })
+       class Renavigate {
+         constructor(router: Router) {
+           router.navigateByUrl('/other');
+         }
+       }
+       @Component({
+         template: '',
+         standalone: true,
+       })
+       class BlankCmp {
+       }
+
+       let resolveFn: () => void;
+       const navigationEndPromise = new Promise<void>(r => {
+         resolveFn = r;
+       });
+
+       @NgModule({
+         imports: [BrowserModule, RouterOutlet],
+         declarations: [RootCmp],
+         bootstrap: [RootCmp],
+         providers: [
+           {provide: LocationStrategy, useClass: HashLocationStrategy},
+           provideRouter(
+               [{path: '', component: Renavigate}, {path: 'other', component: BlankCmp}],
+               withEnabledBlockingInitialNavigation())
+         ],
+       })
+       class TestModule {
+         constructor(router: Router) {
+           router.events.subscribe(e => {
+             if (e instanceof NavigationEnd) {
+               resolveFn();
+               expect(router.url).toEqual('/other');
+             }
+           });
+         }
+       }
+
+       await Promise.all(
+           [platformBrowserDynamic([]).bootstrapModule(TestModule), navigationEndPromise]);
      });
 
   it('should wait for redirect when initialNavigation = enabledBlocking', async () => {
