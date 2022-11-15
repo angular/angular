@@ -208,8 +208,10 @@ export function getBootstrapListener() {
     injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
     injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional)?.init();
     router.resetRootComponentType(ref.componentTypes[0]);
-    bootstrapDone.next();
-    bootstrapDone.complete();
+    if (!bootstrapDone.closed) {
+      bootstrapDone.next();
+      bootstrapDone.unsubscribe();
+    }
   };
 }
 
