@@ -314,7 +314,6 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
       useFactory: (injector: Injector) => {
         const locationInitialized: Promise<any> =
             injector.get(LOCATION_INITIALIZED, Promise.resolve());
-        let initNavigation = false;
 
         /**
          * Performs the given action once the router finishes its next/current navigation.
@@ -358,7 +357,6 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
                 // Unblock APP_INITIALIZER in case the initial navigation was canceled or errored
                 // without a redirect.
                 resolve(true);
-                initNavigation = true;
               });
 
               router.afterPreactivation = () => {
@@ -366,13 +364,7 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
                 // assume activation will complete successfully (even though this is not
                 // guaranteed).
                 resolve(true);
-                // only the initial navigation should be delayed until bootstrapping is done.
-                if (!initNavigation) {
-                  return bootstrapDone.closed ? of(void 0) : bootstrapDone;
-                  // subsequent navigations should not be delayed
-                } else {
-                  return of(void 0);
-                }
+                return bootstrapDone.closed ? of(void 0) : bootstrapDone;
               };
               router.initialNavigation();
             });
