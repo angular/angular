@@ -252,7 +252,6 @@ export interface NavigationTransition {
   id: number;
   targetPageId: number;
   currentUrlTree: UrlTree;
-  currentRawUrl: UrlTree;
   extractedUrl: UrlTree;
   urlAfterRedirects?: UrlTree;
   rawUrl: UrlTree;
@@ -577,7 +576,6 @@ export class Router {
       id: 0,
       targetPageId: 0,
       currentUrlTree: this.currentUrlTree,
-      currentRawUrl: this.currentUrlTree,
       extractedUrl: this.urlHandlingStrategy.extract(this.currentUrlTree),
       urlAfterRedirects: this.urlHandlingStrategy.extract(this.currentUrlTree),
       rawUrl: this.currentUrlTree,
@@ -1332,7 +1330,6 @@ export class Router {
       resolve = priorPromise.resolve;
       reject = priorPromise.reject;
       promise = priorPromise.promise;
-
     } else {
       promise = new Promise<boolean>((res, rej) => {
         resolve = res;
@@ -1372,7 +1369,6 @@ export class Router {
       source,
       restoredState,
       currentUrlTree: this.currentUrlTree,
-      currentRawUrl: this.rawUrlTree,
       rawUrl,
       extras,
       resolve,
