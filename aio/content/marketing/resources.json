@@ -287,6 +287,12 @@
             "title": "Compodoc",
             "url": "https://github.com/compodoc/compodoc"
           },
+          "docgeni": {
+            "desc": "A modern, powerful and out of the box documentation generator for Angular component lib and markdown docs.",
+            "logo": "",
+            "title": "Docgeni",
+            "url": "https://github.com/docgeni/docgeni"
+          },
           "angular-playground": {
             "desc": "UI development environment for building, testing, and documenting Angular applications.",
             "title": "Angular Playground",
