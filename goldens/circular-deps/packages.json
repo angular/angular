@@ -298,7 +298,7 @@
   [
     "packages/router/src/apply_redirects.ts",
     "packages/router/src/operators/check_guards.ts",
-    "packages/router/src/router.ts",
+    "packages/router/src/navigation_transition.ts",
     "packages/router/src/operators/apply_redirects.ts"
   ],
   [
@@ -315,20 +315,20 @@
     "packages/router/src/shared.ts"
   ],
   [
-    "packages/router/src/operators/activate_routes.ts",
-    "packages/router/src/router.ts"
+    "packages/router/src/navigation_transition.ts",
+    "packages/router/src/operators/activate_routes.ts"
   ],
   [
-    "packages/router/src/operators/apply_redirects.ts",
-    "packages/router/src/router.ts"
+    "packages/router/src/navigation_transition.ts",
+    "packages/router/src/operators/apply_redirects.ts"
   ],
   [
-    "packages/router/src/operators/recognize.ts",
-    "packages/router/src/router.ts"
+    "packages/router/src/navigation_transition.ts",
+    "packages/router/src/operators/recognize.ts"
   ],
   [
-    "packages/router/src/operators/resolve_data.ts",
-    "packages/router/src/router.ts"
+    "packages/router/src/navigation_transition.ts",
+    "packages/router/src/operators/resolve_data.ts"
   ],
   [
     "packages/router/src/shared.ts",
