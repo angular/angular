@@ -102,7 +102,17 @@ def ts_devserver(**kwargs):
 
 ts_config = _ts_config
 
-def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name = None, package_name = None, **kwargs):
+def ts_library(
+        name,
+        tsconfig = None,
+        testonly = False,
+        deps = [],
+        module_name = None,
+        package_name = None,
+        # TODO(devversion): disallow configuration of the target when binaries/schematics can be ESM.
+        devmode_target = None,
+        devmode_module = None,
+        **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@npm//tslib"]
     if testonly:
@@ -122,16 +132,24 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
     if not package_name:
         package_name = _default_module_name(testonly)
 
+    default_target = "es2020"
+    default_module = "esnext"
+
     _ts_library(
         name = name,
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
+        # We also set devmode output to the same settings as prodmode as a first step in
+        # combining devmode and prodmode output.
+        devmode_target = devmode_target if devmode_target != None else default_target,
+        devmode_module = devmode_module if devmode_module != None else default_module,
         # For prodmode, the target is set to `ES2020`. `@bazel/typecript` sets `ES2015` by
         # default. Note that this should be in sync with the `ng_module` tsconfig generation.
         # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
         # https://github.com/bazelbuild/rules_nodejs/blob/9b36274dba34204625579463e3da054a9f42cb47/packages/typescript/internal/build_defs.bzl#L85.
-        prodmode_target = "es2020",
+        prodmode_target = default_target,
+        prodmode_module = default_module,
         # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,
         # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
