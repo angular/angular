@@ -372,7 +372,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @internal
    */
-  private _composedValidatorFn: ValidatorFn|null;
+  private _composedValidatorFn!: ValidatorFn|null;
 
   /**
    * Contains the result of merging asynchronous validators into a single validator function
@@ -380,7 +380,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @internal
    */
-  private _composedAsyncValidatorFn: AsyncValidatorFn|null;
+  private _composedAsyncValidatorFn!: AsyncValidatorFn|null;
 
   /**
    * Synchronous validators as they were provided:
@@ -390,7 +390,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @internal
    */
-  private _rawValidators: ValidatorFn|ValidatorFn[]|null;
+  private _rawValidators!: ValidatorFn|ValidatorFn[]|null;
 
   /**
    * Asynchronous validators as they were provided:
@@ -401,7 +401,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @internal
    */
-  private _rawAsyncValidators: AsyncValidatorFn|AsyncValidatorFn[]|null;
+  private _rawAsyncValidators!: AsyncValidatorFn|AsyncValidatorFn[]|null;
 
   /**
    * The current value of the control.
@@ -427,10 +427,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   constructor(
       validators: ValidatorFn|ValidatorFn[]|null,
       asyncValidators: AsyncValidatorFn|AsyncValidatorFn[]|null) {
-    this._rawValidators = validators;
-    this._rawAsyncValidators = asyncValidators;
-    this._composedValidatorFn = coerceToValidator(this._rawValidators);
-    this._composedAsyncValidatorFn = coerceToAsyncValidator(this._rawAsyncValidators);
+    this._assignValidators(validators);
+    this._assignAsyncValidators(asyncValidators);
   }
 
   /**
@@ -620,8 +618,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * using `addValidators()` method instead.
    */
   setValidators(validators: ValidatorFn|ValidatorFn[]|null): void {
-    this._rawValidators = validators;
-    this._composedValidatorFn = coerceToValidator(validators);
+    this._assignValidators(validators);
   }
 
   /**
@@ -635,8 +632,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * using `addAsyncValidators()` method instead.
    */
   setAsyncValidators(validators: AsyncValidatorFn|AsyncValidatorFn[]|null): void {
-    this._rawAsyncValidators = validators;
-    this._composedAsyncValidatorFn = coerceToAsyncValidator(validators);
+    this._assignAsyncValidators(validators);
   }
 
   /**
@@ -1376,5 +1372,25 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   /** @internal */
   _find(name: string|number): AbstractControl|null {
     return null;
+  }
+
+  /**
+   * Internal implementation of the `setValidators` method. Needs to be separated out into a
+   * different method, because it is called in the constructor and it can break cases where
+   * a control is extended.
+   */
+  private _assignValidators(validators: ValidatorFn|ValidatorFn[]|null): void {
+    this._rawValidators = Array.isArray(validators) ? validators.slice() : validators;
+    this._composedValidatorFn = coerceToValidator(this._rawValidators);
+  }
+
+  /**
+   * Internal implementation of the `setAsyncValidators` method. Needs to be separated out into a
+   * different method, because it is called in the constructor and it can break cases where
+   * a control is extended.
+   */
+  private _assignAsyncValidators(validators: AsyncValidatorFn|AsyncValidatorFn[]|null): void {
+    this._rawAsyncValidators = Array.isArray(validators) ? validators.slice() : validators;
+    this._composedAsyncValidatorFn = coerceToAsyncValidator(this._rawAsyncValidators);
   }
 }

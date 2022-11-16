@@ -266,6 +266,16 @@ describe('FormControl', () => {
       expect(c.valid).toEqual(true);
     });
 
+    it('should not mutate the validators array when overriding using setValidators', () => {
+      const control = new FormControl('');
+      const originalValidators = [Validators.required];
+
+      control.setValidators(originalValidators);
+      control.addValidators(Validators.minLength(10));
+
+      expect(originalValidators.length).toBe(1);
+    });
+
     it('should override validators by setting `control.validator` field value', () => {
       const c = new FormControl('');
       expect(c.valid).toEqual(true);
@@ -355,6 +365,30 @@ describe('FormControl', () => {
 
       c.removeValidators(Validators.required);
       expect(c.hasValidator(Validators.required)).toEqual(false);
+    });
+
+    it('should not mutate the validators array when adding/removing sync validators', () => {
+      const originalValidators = [Validators.required];
+      const control = new FormControl('', originalValidators);
+
+      control.addValidators(Validators.min(10));
+      expect(originalValidators.length).toBe(1);
+
+      control.removeValidators(Validators.required);
+      expect(originalValidators.length).toBe(1);
+    });
+
+    it('should not mutate the validators array when adding/removing async validators', () => {
+      const firstValidator = asyncValidator('one');
+      const secondValidator = asyncValidator('two');
+      const originalValidators = [firstValidator];
+      const control = new FormControl('', null, originalValidators);
+
+      control.addAsyncValidators(secondValidator);
+      expect(originalValidators.length).toBe(1);
+
+      control.removeAsyncValidators(firstValidator);
+      expect(originalValidators.length).toBe(1);
     });
 
     it('should return false when checking presence of a validator not identical by reference',
@@ -517,6 +551,16 @@ describe('FormControl', () => {
          tick();
          expect(c.valid).toEqual(true);
        }));
+
+    it('should not mutate the validators array when overriding using setValidators', () => {
+      const control = new FormControl('');
+      const originalValidators = [asyncValidator('one')];
+
+      control.setAsyncValidators(originalValidators);
+      control.addAsyncValidators(asyncValidator('two'));
+
+      expect(originalValidators.length).toBe(1);
+    });
 
     it('should override validators by setting `control.asyncValidator` field value',
        fakeAsync(() => {
