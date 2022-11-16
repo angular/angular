@@ -272,7 +272,6 @@ interface InternalRouterInterface {
   ngModule: NgModuleRef<any>;
   readonly routerState: RouterState;
   errorHandler: ErrorHandler;
-  malformedUriErrorHandler: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
   navigated: boolean;
   afterPreactivation: () => Observable<void>;
   urlHandlingStrategy: UrlHandlingStrategy;
