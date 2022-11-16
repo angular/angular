@@ -39,6 +39,14 @@ type ValidatorConfig = ValidatorFn|AsyncValidatorFn|ValidatorFn[]|AsyncValidator
 type PermissiveControlConfig<T> = Array<T|FormControlState<T>|ValidatorConfig>;
 
 /**
+ * Helper type to allow the compiler to accept [XXXX, { updateOn: string }] as a valid shorthand
+ * argument for .group()
+ */
+interface PermissiveAbstractControlOptions extends Omit<AbstractControlOptions, 'updateOn'> {
+  updateOn?: string;
+}
+
+/**
  * ControlConfig<T> is a tuple containing a value of type T, plus optional validators and async
  * validators.
  *
@@ -82,7 +90,7 @@ export type ɵElement<T, N extends null> =
   // FormControlState object container, which produces a nullable control.
   [T] extends [FormControlState<infer U>] ? FormControl<U|N> :
   // A ControlConfig tuple, which produces a nullable control.
-  [T] extends [PermissiveControlConfig<infer U>] ? FormControl<Exclude<U, ValidatorConfig>|N> :
+  [T] extends [PermissiveControlConfig<infer U>] ? FormControl<Exclude<U, ValidatorConfig| PermissiveAbstractControlOptions>|N> :
   FormControl<T|N>;
 
 // clang-format on
