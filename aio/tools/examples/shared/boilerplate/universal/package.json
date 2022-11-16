@@ -37,7 +37,7 @@
     "@angular-devkit/build-angular": "^15.0.0-rc.1",
     "@angular/cli": "^15.0.0-rc.1",
     "@angular/compiler-cli": "^15.0.0-rc.1",
-    "@nguniversal/builders": "^14.1.0",
+    "@nguniversal/builders": "^15.0.0",
     "@types/express": "^4.17.13",
     "@types/jasmine": "~4.3.0",
     "@types/node": "^16.11.35",
