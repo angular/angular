@@ -11,7 +11,9 @@ import {Injectable, InjectionToken, NgZone, OnDestroy} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {NavigationEnd, NavigationStart, Scroll} from './events';
+import {NavigationTransitions} from './navigation_transition';
 import {Router} from './router';
+import {UrlSerializer} from './url_tree';
 
 export const ROUTER_SCROLLER = new InjectionToken<RouterScroller>('');
 
@@ -25,10 +27,11 @@ export class RouterScroller implements OnDestroy {
   private restoredId = 0;
   private store: {[key: string]: [number, number]} = {};
 
+  /** @nodoc */
   constructor(
-      private router: Router,
-      /** @docsNotRequired */ public readonly viewportScroller: ViewportScroller,
-      private readonly zone: NgZone, private options: {
+      readonly urlSerializer: UrlSerializer, private transitions: NavigationTransitions,
+      public readonly viewportScroller: ViewportScroller, private readonly zone: NgZone,
+      private options: {
         scrollPositionRestoration?: 'disabled'|'enabled'|'top',
         anchorScrolling?: 'disabled'|'enabled'
       } = {}) {
@@ -49,7 +52,7 @@ export class RouterScroller implements OnDestroy {
   }
 
   private createScrollEvents() {
-    return this.router.events.subscribe(e => {
+    return this.transitions.events.subscribe(e => {
       if (e instanceof NavigationStart) {
         // store the scroll position of the current stable navigations.
         this.store[this.lastId] = this.viewportScroller.getScrollPosition();
@@ -57,13 +60,13 @@ export class RouterScroller implements OnDestroy {
         this.restoredId = e.restoredState ? e.restoredState.navigationId : 0;
       } else if (e instanceof NavigationEnd) {
         this.lastId = e.id;
-        this.scheduleScrollEvent(e, this.router.parseUrl(e.urlAfterRedirects).fragment);
+        this.scheduleScrollEvent(e, this.urlSerializer.parse(e.urlAfterRedirects).fragment);
       }
     });
   }
 
   private consumeScrollEvents() {
-    return this.router.events.subscribe(e => {
+    return this.transitions.events.subscribe(e => {
       if (!(e instanceof Scroll)) return;
       // a popstate event. The pop state event will always ignore anchor scrolling.
       if (e.position) {
@@ -90,7 +93,7 @@ export class RouterScroller implements OnDestroy {
       // component by executing its update block of the template function.
       setTimeout(() => {
         this.zone.run(() => {
-          this.router.triggerEvent(new Scroll(
+          this.transitions.events.next(new Scroll(
               routerEvent, this.lastSource === 'popstate' ? this.store[this.restoredId] : null,
               anchor));
         });
