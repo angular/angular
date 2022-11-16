@@ -7,13 +7,13 @@
  */
 
 import {Location} from '@angular/common';
-import {Injectable, NgModuleRef, Type} from '@angular/core';
+import {inject, Injectable, NgModuleRef, Type} from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rxjs';
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
-import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RoutesRecognized} from './events';
-import {NavigationBehaviorOptions, QueryParamsHandling, Routes} from './models';
+import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
 import {isNavigationCancelingError, isRedirectingNavigationCancelingError, redirectingNavigationError} from './navigation_canceling_error';
 import {activateRoutes} from './operators/activate_routes';
 import {applyRedirects} from './operators/apply_redirects';
@@ -268,7 +268,6 @@ interface InternalRouterInterface {
   rawUrlTree: UrlTree;
   transitions: BehaviorSubject<NavigationTransition>;
   navigationId: number;
-  configLoader: RouterConfigLoader;
   ngModule: NgModuleRef<any>;
   readonly routerState: RouterState;
   errorHandler: ErrorHandler;
@@ -299,6 +298,14 @@ export class NavigationTransitions {
   currentNavigation: Navigation|null = null;
   lastSuccessfulNavigation: Navigation|null = null;
   readonly events = new Subject<Event>();
+  private readonly configLoader = inject(RouterConfigLoader);
+
+  constructor() {
+    const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
+    const onLoadEnd = (r: Route) => this.events.next(new RouteConfigLoadEnd(r));
+    this.configLoader.onLoadEndListener = onLoadEnd;
+    this.configLoader.onLoadStartListener = onLoadStart;
+  }
 
   setupNavigations(transitions: Observable<NavigationTransition>, router: InternalRouterInterface):
       Observable<NavigationTransition> {
@@ -380,7 +387,7 @@ export class NavigationTransitions {
 
                                  // ApplyRedirects
                                  applyRedirects(
-                                     router.ngModule.injector, router.configLoader,
+                                     router.ngModule.injector, this.configLoader,
                                      router.urlSerializer, router.config),
 
                                  // Update the currentNavigation
@@ -556,7 +563,7 @@ export class NavigationTransitions {
                                  const loaders: Array<Observable<void>> = [];
                                  if (route.routeConfig?.loadComponent &&
                                      !route.routeConfig._loadedComponent) {
-                                   loaders.push(router.configLoader.loadComponent(route.routeConfig)
+                                   loaders.push(this.configLoader.loadComponent(route.routeConfig)
                                                     .pipe(
                                                         tap(loadedComponent => {
                                                           route.component = loadedComponent;
