@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location} from '@angular/common';
 import {EnvironmentInjector, inject, Injectable, Type} from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rxjs';
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
@@ -281,9 +280,6 @@ interface InternalRouterInterface {
   serializeUrl(url: UrlTree): string;
   config: Routes;
   rootComponentType: Type<any>|null;
-  urlSerializer: UrlSerializer;
-  rootContexts: ChildrenOutletContexts;
-  location: Location;
   setBrowserUrl(url: UrlTree, t: NavigationTransition): void;
   restoreHistory(t: NavigationTransition, restoringFromCaughtError?: boolean): void;
   scheduleNavigation(
@@ -299,6 +295,8 @@ export class NavigationTransitions {
   readonly events = new Subject<Event>();
   private readonly configLoader = inject(RouterConfigLoader);
   private readonly environmentInjector = inject(EnvironmentInjector);
+  private readonly urlSerializer = inject(UrlSerializer);
+  private readonly rootContexts = inject(ChildrenOutletContexts);
 
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
@@ -362,7 +360,7 @@ export class NavigationTransitions {
                                  switchMap(t => {
                                    const transition = router.transitions.getValue();
                                    this.events.next(new NavigationStart(
-                                       t.id, router.serializeUrl(t.extractedUrl), t.source,
+                                       t.id, this.urlSerializer.serialize(t.extractedUrl), t.source,
                                        t.restoredState));
                                    if (transition !== router.transitions.getValue()) {
                                      return EMPTY;
@@ -376,7 +374,7 @@ export class NavigationTransitions {
                                  // ApplyRedirects
                                  applyRedirects(
                                      this.environmentInjector, this.configLoader,
-                                     router.urlSerializer, router.config),
+                                     this.urlSerializer, router.config),
 
                                  // Update the currentNavigation
                                  // `urlAfterRedirects` is guaranteed to be set after this point
@@ -391,7 +389,7 @@ export class NavigationTransitions {
                                  // Recognize
                                  recognize(
                                      this.environmentInjector, router.rootComponentType,
-                                     router.config, router.urlSerializer,
+                                     router.config, this.urlSerializer,
                                      router.paramsInheritanceStrategy),
 
                                  // Update URL if in `eager` update mode
@@ -408,8 +406,8 @@ export class NavigationTransitions {
 
                                    // Fire RoutesRecognized
                                    const routesRecognized = new RoutesRecognized(
-                                       t.id, router.serializeUrl(t.extractedUrl),
-                                       router.serializeUrl(t.urlAfterRedirects!),
+                                       t.id, this.urlSerializer.serialize(t.extractedUrl),
+                                       this.urlSerializer.serialize(t.urlAfterRedirects!),
                                        t.targetSnapshot!);
                                    this.events.next(routesRecognized);
                                  }));
@@ -422,7 +420,8 @@ export class NavigationTransitions {
                              if (processPreviousUrl) {
                                const {id, extractedUrl, source, restoredState, extras} = t;
                                const navStart = new NavigationStart(
-                                   id, router.serializeUrl(extractedUrl), source, restoredState);
+                                   id, this.urlSerializer.serialize(extractedUrl), source,
+                                   restoredState);
                                this.events.next(navStart);
                                const targetSnapshot =
                                    createEmptyState(extractedUrl, router.rootComponentType)
@@ -451,8 +450,9 @@ export class NavigationTransitions {
                          // --- GUARDS ---
                          tap(t => {
                            const guardsStart = new GuardsCheckStart(
-                               t.id, router.serializeUrl(t.extractedUrl),
-                               router.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
+                               t.id, this.urlSerializer.serialize(t.extractedUrl),
+                               this.urlSerializer.serialize(t.urlAfterRedirects!),
+                               t.targetSnapshot!);
                            this.events.next(guardsStart);
                          }),
 
@@ -460,7 +460,7 @@ export class NavigationTransitions {
                            overallTransitionState = {
                              ...t,
                              guards: getAllRouteGuards(
-                                 t.targetSnapshot!, t.currentSnapshot, router.rootContexts)
+                                 t.targetSnapshot!, t.currentSnapshot, this.rootContexts)
                            };
                            return overallTransitionState;
                          }),
@@ -470,13 +470,13 @@ export class NavigationTransitions {
                          tap(t => {
                            overallTransitionState.guardsResult = t.guardsResult;
                            if (isUrlTree(t.guardsResult)) {
-                             throw redirectingNavigationError(router.urlSerializer, t.guardsResult);
+                             throw redirectingNavigationError(this.urlSerializer, t.guardsResult);
                            }
 
                            const guardsEnd = new GuardsCheckEnd(
-                               t.id, router.serializeUrl(t.extractedUrl),
-                               router.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!,
-                               !!t.guardsResult);
+                               t.id, this.urlSerializer.serialize(t.extractedUrl),
+                               this.urlSerializer.serialize(t.urlAfterRedirects!),
+                               t.targetSnapshot!, !!t.guardsResult);
                            this.events.next(guardsEnd);
                          }),
 
@@ -496,8 +496,8 @@ export class NavigationTransitions {
                              return of(t).pipe(
                                  tap(t => {
                                    const resolveStart = new ResolveStart(
-                                       t.id, router.serializeUrl(t.extractedUrl),
-                                       router.serializeUrl(t.urlAfterRedirects!),
+                                       t.id, this.urlSerializer.serialize(t.extractedUrl),
+                                       this.urlSerializer.serialize(t.urlAfterRedirects!),
                                        t.targetSnapshot!);
                                    this.events.next(resolveStart);
                                  }),
@@ -526,8 +526,8 @@ export class NavigationTransitions {
                                  }),
                                  tap(t => {
                                    const resolveEnd = new ResolveEnd(
-                                       t.id, router.serializeUrl(t.extractedUrl),
-                                       router.serializeUrl(t.urlAfterRedirects!),
+                                       t.id, this.urlSerializer.serialize(t.extractedUrl),
+                                       this.urlSerializer.serialize(t.urlAfterRedirects!),
                                        t.targetSnapshot!);
                                    this.events.next(resolveEnd);
                                  }));
@@ -590,7 +590,7 @@ export class NavigationTransitions {
                          }),
 
                          activateRoutes(
-                             router.rootContexts, router.routeReuseStrategy,
+                             this.rootContexts, router.routeReuseStrategy,
                              (evt: Event) => this.events.next(evt)),
 
                          tap({
@@ -599,8 +599,8 @@ export class NavigationTransitions {
                              this.lastSuccessfulNavigation = this.currentNavigation;
                              router.navigated = true;
                              this.events.next(new NavigationEnd(
-                                 t.id, router.serializeUrl(t.extractedUrl),
-                                 router.serializeUrl(router.currentUrlTree)));
+                                 t.id, this.urlSerializer.serialize(t.extractedUrl),
+                                 this.urlSerializer.serialize(router.currentUrlTree)));
                              router.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
                              t.resolve(true);
                            },
@@ -649,7 +649,7 @@ export class NavigationTransitions {
                              }
                              const navCancel = new NavigationCancel(
                                  overallTransitionState.id,
-                                 router.serializeUrl(overallTransitionState.extractedUrl),
+                                 this.urlSerializer.serialize(overallTransitionState.extractedUrl),
                                  e.message, e.cancellationCode);
                              this.events.next(navCancel);
 
@@ -684,8 +684,8 @@ export class NavigationTransitions {
                              router.restoreHistory(overallTransitionState, true);
                              const navError = new NavigationError(
                                  overallTransitionState.id,
-                                 router.serializeUrl(overallTransitionState.extractedUrl), e,
-                                 overallTransitionState.targetSnapshot ?? undefined);
+                                 this.urlSerializer.serialize(overallTransitionState.extractedUrl),
+                                 e, overallTransitionState.targetSnapshot ?? undefined);
                              this.events.next(navError);
                              try {
                                overallTransitionState.resolve(router.errorHandler(e));
@@ -702,7 +702,8 @@ export class NavigationTransitions {
   private cancelNavigationTransition(
       t: NavigationTransition, reason: string, code: NavigationCancellationCode,
       router: InternalRouterInterface) {
-    const navCancel = new NavigationCancel(t.id, router.serializeUrl(t.extractedUrl), reason, code);
+    const navCancel =
+        new NavigationCancel(t.id, this.urlSerializer.serialize(t.extractedUrl), reason, code);
     this.events.next(navCancel);
     t.resolve(false);
   }
