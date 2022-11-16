@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {forwardRef, Inject, Injectable, Injector, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵBypassType as BypassType, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
+import {forwardRef, Inject, Injectable, Injector, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵBypassType as BypassType, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue, ɵXSS_SECURITY_URL as XSS_SECURITY_URL} from '@angular/core';
 
 export {SecurityContext};
 
@@ -182,10 +182,9 @@ export class DomSanitizerImpl extends DomSanitizer {
         if (allowSanitizationBypassOrThrow(value, BypassType.ResourceUrl)) {
           return unwrapSafeValue(value);
         }
-        throw new Error(
-            'unsafe value used in a resource URL context (see https://g.co/ng/security#xss)');
+        throw new Error(`unsafe value used in a resource URL context (see ${XSS_SECURITY_URL})`);
       default:
-        throw new Error(`Unexpected SecurityContext ${ctx} (see https://g.co/ng/security#xss)`);
+        throw new Error(`Unexpected SecurityContext ${ctx} (see ${XSS_SECURITY_URL})`);
     }
   }
 

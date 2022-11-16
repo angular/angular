@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {XSS_SECURITY_URL} from '../error_details_base_url';
 
 export const enum BypassType {
   Url = 'URL',
@@ -65,7 +66,7 @@ abstract class SafeValueImpl implements SafeValue {
 
   toString() {
     return `SafeValue must use [property]=binding: ${this.changingThisBreaksApplicationSecurity}` +
-        ` (see https://g.co/ng/security#xss)`;
+        ` (see ${XSS_SECURITY_URL})`;
   }
 }
 
@@ -118,8 +119,7 @@ export function allowSanitizationBypassAndThrow(value: any, type: BypassType): b
   if (actualType != null && actualType !== type) {
     // Allow ResourceURLs in URL contexts, they are strictly more trusted.
     if (actualType === BypassType.ResourceUrl && type === BypassType.Url) return true;
-    throw new Error(
-        `Required a safe ${type}, got a ${actualType} (see https://g.co/ng/security#xss)`);
+    throw new Error(`Required a safe ${type}, got a ${actualType} (see ${XSS_SECURITY_URL})`);
   }
   return actualType === type;
 }
