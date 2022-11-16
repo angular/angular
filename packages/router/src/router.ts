@@ -354,12 +354,9 @@ export class Router {
   constructor(
       /** @internal */
       public rootComponentType: Type<any>|null,
-      /** @internal */
-      readonly urlSerializer: UrlSerializer,
-      /** @internal */
-      readonly rootContexts: ChildrenOutletContexts,
-      /** @internal */
-      readonly location: Location,
+      private readonly urlSerializer: UrlSerializer,
+      private readonly rootContexts: ChildrenOutletContexts,
+      private readonly location: Location,
       injector: Injector,
       compiler: Compiler,
       public config: Routes,
