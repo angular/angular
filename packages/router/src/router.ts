@@ -12,13 +12,13 @@ import {BehaviorSubject, Observable, of, SubscriptionLike} from 'rxjs';
 
 import {createUrlTree} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
-import {Event, NavigationCancel, NavigationCancellationCode, NavigationTrigger, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
-import {NavigationBehaviorOptions, OnSameUrlNavigation, Route, Routes} from './models';
+import {Event, NavigationTrigger} from './events';
+import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
 import {Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
 import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
-import {RouterConfigLoader, ROUTES} from './router_config_loader';
+import {ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {createEmptyState, RouterState} from './router_state';
 import {Params} from './shared';
@@ -202,8 +202,6 @@ export class Router {
     return (this.location.getState() as RestoredState | null)?.ɵrouterPageId;
   }
   /** @internal */
-  configLoader: RouterConfigLoader;
-  /** @internal */
   ngModule: NgModuleRef<any>;
   private console: Console;
   private isNgZoneEnabled: boolean = false;
@@ -368,12 +366,6 @@ export class Router {
       compiler: Compiler,
       public config: Routes,
   ) {
-    const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
-    const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
-    this.configLoader = injector.get(RouterConfigLoader);
-    this.configLoader.onLoadEndListener = onLoadEnd;
-    this.configLoader.onLoadStartListener = onLoadStart;
-
     this.ngModule = injector.get(NgModuleRef);
     this.console = injector.get(Console);
     const ngZone = injector.get(NgZone);
@@ -494,10 +486,6 @@ export class Router {
    */
   getCurrentNavigation(): Navigation|null {
     return this.navigationTransitions.currentNavigation;
-  }
-
-  private triggerEvent(event: Event): void {
-    this.navigationTransitions.events.next(event);
   }
 
   /**
