@@ -60,7 +60,7 @@ def _flat_module_out_file(ctx):
     from other attributes (name)
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       a basename used for the flat module out (no extension)
@@ -76,7 +76,7 @@ def _should_produce_flat_module_outs(ctx):
     based on the presence of the module_name attribute.
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       true iff we should run the bundle_index_host to produce flat module metadata and bundle index
@@ -118,7 +118,7 @@ def _expected_outs(ctx):
             else:
                 devmode_js = [".js"]
                 if not _is_bazel():
-                    devmode_js += [".ngfactory.js"]
+                    devmode_js.append(".ngfactory.js")
         else:
             continue
 
@@ -238,17 +238,13 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     })
 
     # For prodmode, the compilation target is set to `ES2020`. `@bazel/typecript`
-    # using the `create_tsconfig` function sets `ES2015` by default.
+    # using the `create_tsconfig` function sets `ES2015` by default for prodmode
+    # and uses ES5 with UMD for devmode. We want to consistenly use ES2020 ESM.
     # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
     # TODO(devversion): In the future, combine prodmode and devmode so we can get rid of the
     # ambiguous terminology and concept that can result in slow-down for development workflows.
-    if not is_devmode:
-        # Note: Keep in sync with the `prodmode_target` for `ts_library` in `tools/defaults.bzl`
-        tsconfig["compilerOptions"]["target"] = "es2020"
-    else:
-        # For devmode output, we use ES2015 to match with what `ts_library` produces by default.
-        # https://github.com/bazelbuild/rules_nodejs/blob/9b36274dba34204625579463e3da054a9f42cb47/packages/typescript/internal/build_defs.bzl#L83.
-        tsconfig["compilerOptions"]["target"] = "es2015"
+    tsconfig["compilerOptions"]["target"] = "es2020"
+    tsconfig["compilerOptions"]["module"] = "esnext"
 
     return tsconfig
 
@@ -278,7 +274,7 @@ def ngc_compile_action(
     as part of the public API.
 
     Args:
-      ctx: skylark context
+      ctx: starlark context
       label: the label of the ng_module being compiled
       inputs: passed to the ngc action's inputs
       outputs: passed to the ngc action's outputs
@@ -315,7 +311,7 @@ def ngc_compile_action(
     # Two at-signs escapes the argument so it's passed through to ngc
     # rather than the contents getting expanded.
     if supports_workers == "1":
-        arguments += ["@@" + tsconfig_file.path]
+        arguments.append("@@" + tsconfig_file.path)
     else:
         arguments += ["-p", tsconfig_file.path]
 
@@ -414,7 +410,7 @@ def ng_module_impl(ctx, ts_compile_actions):
     and is not meant as a public API.
 
     Args:
-      ctx: the skylark rule context
+      ctx: the starlark rule context
       ts_compile_actions: generates all the actions to run an ngc compilation
 
     Returns:
