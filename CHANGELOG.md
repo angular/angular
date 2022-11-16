@@ -1,3 +1,14 @@
+<a name="14.2.11"></a>
+# 14.2.11 (2022-11-16)
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aef353c143](https://github.com/angular/angular/commit/aef353c143ea4e31d76f00ae91efe49eecc3a321) | fix | Ensure renavigating in component init works with enabledBlocking ([#48066](https://github.com/angular/angular/pull/48066)) |
+## Special Thanks
+Alan Agius, Andrew Scott and Mujo Osmanovic
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0-rc.4"></a>
 # 15.0.0-rc.4 (2022-11-14)
 ### common
