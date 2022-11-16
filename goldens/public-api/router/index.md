@@ -640,7 +640,7 @@ export class Router {
     createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
     dispose(): void;
     errorHandler: ErrorHandler;
-    readonly events: Observable<Event_2>;
+    get events(): Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
     // @deprecated
