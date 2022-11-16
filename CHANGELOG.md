@@ -1,267 +1,5 @@
-<a name="14.2.11"></a>
-# 14.2.11 (2022-11-16)
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [aef353c143](https://github.com/angular/angular/commit/aef353c143ea4e31d76f00ae91efe49eecc3a321) | fix | Ensure renavigating in component init works with enabledBlocking ([#48066](https://github.com/angular/angular/pull/48066)) |
-## Special Thanks
-Alan Agius, Andrew Scott and Mujo Osmanovic
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-rc.4"></a>
-# 15.0.0-rc.4 (2022-11-14)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [449d29b701](https://github.com/angular/angular/commit/449d29b701ee5a50e7279d44f4c3888a5d6f7e96) | fix | Add fetchpriority to ngOptimizedImage preloads ([#48010](https://github.com/angular/angular/pull/48010)) |
-| [edea15f2c6](https://github.com/angular/angular/commit/edea15f2c63675e86248a25649008a10e1384334) | fix | export the IMAGE_CONFIG token ([#48051](https://github.com/angular/angular/pull/48051)) |
-| [945432e3fa](https://github.com/angular/angular/commit/945432e3fa2cb22ff911eda2a8ad3302a8adba5a) | fix | Warn on fill ngOptimizedImage without height ([#48036](https://github.com/angular/angular/pull/48036)) |
-## Special Thanks
-Alan Agius, Alex Castle, Andrew Kushnir, Mujo Osmanovic and ced
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-rc.3"></a>
-# 15.0.0-rc.3 (2022-11-09)
-## Breaking Changes
-### core
-- Existing iframe usages may have security-sensitive attributes applied as an attribute or property binding in a template or via host bindings in a directive. Such usages would require an update to ensure compliance with the new stricter rules around iframe bindings.
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [37a25486cf](https://github.com/angular/angular/commit/37a25486cfc546df859b6fe8c84b78b4c5827805) | fix | add` zone.js` version `0.12.x` as a valid peer dependency ([#48002](https://github.com/angular/angular/pull/48002)) |
-| [28f289b825](https://github.com/angular/angular/commit/28f289b825be7f4bf6dc5db69197741867b8ea23) | fix | hardening attribute and property binding rules for <iframe> elements ([#47964](https://github.com/angular/angular/pull/47964)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2625dc1312](https://github.com/angular/angular/commit/2625dc13127da9f8d5fa79f1b32ad132d6656c63) | fix | Improve a very commonly viewed error message by adding a guide. ([#47969](https://github.com/angular/angular/pull/47969)) |
-| [ae29f98c20](https://github.com/angular/angular/commit/ae29f98c20390abbf84d2df312ee5e8766195d60) | fix | Runtime error pages must begin with leading zero ([#47991](https://github.com/angular/angular/pull/47991)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [e7b48da713](https://github.com/angular/angular/commit/e7b48da713f32c02c096f1342ab8b0d7ec696ca5) | fix | rename `withLegacyInterceptors` to `withInterceptorsFromDi` ([#47901](https://github.com/angular/angular/pull/47901)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b8a6f7491b](https://github.com/angular/angular/commit/b8a6f7491beb9f3cdd71be550bf55173c6e5b670) | fix | fix redirectTo on named outlets - resolves [#33783](https://github.com/angular/angular/pull/33783) ([#47927](https://github.com/angular/angular/pull/47927)) |
-## Special Thanks
-Alan Agius, Albert Szekely, Alex Castle, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Doug Parker, Dylan Hunn, Kristiyan Kostadinov, Markus Eckstein, Matthieu Riegler, Paul Gschwendtner, Peter Scriven and abergquist
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.2.10"></a>
-# 14.2.10 (2022-11-09)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a4312e1be5](https://github.com/angular/angular/commit/a4312e1be55f0677a77c9015688dbd4cf8163c69) | fix | add` zone.js` version `0.12.x` as a valid peer dependency ([#48002](https://github.com/angular/angular/pull/48002)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [db867fee77](https://github.com/angular/angular/commit/db867fee77bc62f367fc5d484fc3951d72d998c8) | fix | fix redirectTo on named outlets - resolves [#33783](https://github.com/angular/angular/pull/33783) ([#47927](https://github.com/angular/angular/pull/47927)) |
-## Special Thanks
-Alan Agius, Albert Szekely, Andrew Scott, Doug Parker, Kristiyan Kostadinov, Markus Eckstein, Peter Scriven and abergquist
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-rc.2"></a>
-# 15.0.0-rc.2 (2022-11-04)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [96c0e42e61](https://github.com/angular/angular/commit/96c0e42e61b8a4fced1354da0162c06e7b029cf3) | fix | allow readonly arrays for standalone imports ([#47851](https://github.com/angular/angular/pull/47851)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d5cd79f885](https://github.com/angular/angular/commit/d5cd79f88542cc19aa6cc907a8097881ebd8aea1) | perf | resolve memory leak when using animations with shadow DOM ([#47903](https://github.com/angular/angular/pull/47903)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [31a7ce1268](https://github.com/angular/angular/commit/31a7ce12681d45cda33070b6fcf29d4815814cdf) | fix | call `onSerialize` when state is empty ([#47888](https://github.com/angular/angular/pull/47888)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Charles Lyding, Kristiyan Kostadinov, Paul Gschwendtner, Pawel Kozlowski, Virginia Dooley and mgechev
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.2.9"></a>
-# 14.2.9 (2022-11-03)
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [92d28bdd99](https://github.com/angular/angular/commit/92d28bdd99d3e18f42f6ed8494344b72b15d0104) | perf | resolve memory leak when using animations with shadow DOM ([#47903](https://github.com/angular/angular/pull/47903)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d2d9bbf5ce](https://github.com/angular/angular/commit/d2d9bbf5ce5a2f5e95e7c836fbca67d90db62371) | fix | call `onSerialize` when state is empty ([#47888](https://github.com/angular/angular/pull/47888)) |
-## Special Thanks
-Alan Agius, Kristiyan Kostadinov, Virginia Dooley and mgechev
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-rc.1"></a>
-# 15.0.0-rc.1 (2022-10-26)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3a18398d83](https://github.com/angular/angular/commit/3a18398d8303fb4ae1923b3a182e6abb92e3117b) | fix | Don't warn about image distortion is fill mode is enabled ([#47824](https://github.com/angular/angular/pull/47824)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a99d9d67f3](https://github.com/angular/angular/commit/a99d9d67f382c18b46c4c1c6765bbda445ca0b8c) | fix | don't mutate validators array ([#47830](https://github.com/angular/angular/pull/47830)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2908eba59c](https://github.com/angular/angular/commit/2908eba59c25e9a1fc5aa257b4a8a247db82079e) | fix | align server renderer interface with base renderer ([#47868](https://github.com/angular/angular/pull/47868)) |
-## Special Thanks
-Alan Agius, Alex Castle, Andrew Scott, Balaji, George Kalpakas, Kristiyan Kostadinov, Paul Gschwendtner, Pawel Kozlowski, WD Snoeijer, onrails and vyom1611
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.2.8"></a>
-# 14.2.8 (2022-10-26)
-## Special Thanks
-Andrew Scott, Balaji, Paul Gschwendtner, WD Snoeijer, onrails and vyom1611
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-rc.0"></a>
-# 15.0.0-rc.0 (2022-10-19)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4f52d4e474](https://github.com/angular/angular/commit/4f52d4e47416494b4054e43a0d96383bde7813ca) | fix | don't generate srcset if noopImageLoader is used ([#47804](https://github.com/angular/angular/pull/47804)) |
-| [fa4798095e](https://github.com/angular/angular/commit/fa4798095e3820087c4a3bccc9638c5e979315da) | fix | update size error to mention 'fill' mode ([#47797](https://github.com/angular/angular/pull/47797)) |
-| [23f210c0ab](https://github.com/angular/angular/commit/23f210c0abfb6104f4aa2f39d0efd096c2b7574d) | fix | warn if using supported CDN but not built-in loader ([#47330](https://github.com/angular/angular/pull/47330)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [309b2cde51](https://github.com/angular/angular/commit/309b2cde51d1577d6561e826be01e2b5fce43c49) | fix | implement more host directive validations as diagnostics ([#47768](https://github.com/angular/angular/pull/47768)) |
-### localize
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b6fd814542](https://github.com/angular/angular/commit/b6fd81454207bd256a48d5726f3bd7e6ce6a489b) | fix | update ng add schematic to support Angular CLI version 15 ([#47763](https://github.com/angular/angular/pull/47763)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [79e9e8ab77](https://github.com/angular/angular/commit/79e9e8ab779d230f6a1df25c4ccff94b13129305) | fix | Delay router scroll event until navigated components have rendered ([#47563](https://github.com/angular/angular/pull/47563)) |
-## Special Thanks
-Alan Agius, Alex Castle, Andrew Kushnir, Andrew Scott, Bob Watson, Charles Barnes, Charles Lyding, Kara Erickson, Kristiyan Kostadinov, Paul Gschwendtner, Virginia Dooley, WD Snoeijer, abergquist and urugator
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.2.7"></a>
-# 14.2.7 (2022-10-19)
-## Special Thanks
-Bob Watson, Charles Barnes, Joey Perrott, Virginia Dooley, WD Snoeijer, abergquist and urugator
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-next.6"></a>
-# 15.0.0-next.6 (2022-10-12)
-## Breaking Changes
-### compiler-cli
-- Invalid constructors for DI may now report compilation errors
-  
-  When a class inherits its constructor from a base class, the compiler may now
-  report an error when that constructor cannot be used for DI purposes. This may
-  either be because the base class is missing an Angular decorator such as
-  `@Injectable()` or `@Directive()`, or because the constructor contains parameters
-  which do not have an associated token (such as primitive types like `string`).
-  These situations used to behave unexpectedly at runtime, where the class may be
-  constructed without any of its constructor parameters, so this is now reported
-  as an error during compilation.
-  
-  Any new errors that may be reported because of this change can be resolved either
-  by decorating the base class from which the constructor is inherited, or by adding
-  an explicit constructor to the class for which the error is reported.
-### core
-- Angular no longer supports Node.js versions `14.[15-19].x` and `16.[10-12].x`. Current supported versions of Node.js are `14.20.x`, `16.13.x` and `18.10.x`.
-- TypeScript versions older than 4.8 are no longer supported.
-### forms
-- setDisabledState will always be called when a `ControlValueAccessor` is attached. You can opt-out with `FormsModule.withConfig` or `ReactiveFormsModule.withConfig`.
-### router
-- `relativeLinkResolution` is no longer configurable in
-  the Router. This option was used as a means to opt out of a bug fix.
-## Deprecations
-### common
-- The `DATE_PIPE_DEFAULT_TIMEZONE` token is now deprecated in favor
-  of the `DATE_PIPE_DEFAULT_OPTIONS` token, which accepts an object
-  as a value and the timezone can be defined as a field (called `timezone`)
-  on that object.
-### router
-- The `RouterLinkWithHref` directive is deprecated, use the `RouterLink` directive instead. The `RouterLink` contains the code from the `RouterLinkWithHref` to handle elements with `href` attributes.
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c0c7efaf7c](https://github.com/angular/angular/commit/c0c7efaf7c8a53c1a6f137aac960757cc804f263) | feat | add `provideLocationMocks()` function to provide Location mocks ([#47674](https://github.com/angular/angular/pull/47674)) |
-| [75e6297f09](https://github.com/angular/angular/commit/75e6297f0901cc98aea1626a138a820e68d026ec) | feat | add <link> preload tag on server for priority img ([#47343](https://github.com/angular/angular/pull/47343)) |
-| [4fde292bb5](https://github.com/angular/angular/commit/4fde292bb58f5d5bc3cf6e634f7cff9eb0d13d84) | feat | Add automatic srcset generation to ngOptimizedImage ([#47547](https://github.com/angular/angular/pull/47547)) |
-| [9483343ebf](https://github.com/angular/angular/commit/9483343ebf958297ebcb81ef313d356296a41f41) | feat | Add fill mode to NgOptimizedImage ([#47738](https://github.com/angular/angular/pull/47738)) |
-| [bdb5371033](https://github.com/angular/angular/commit/bdb5371033d8e9a110619861323e8383a32d5900) | feat | add injection token for default DatePipe configuration ([#47157](https://github.com/angular/angular/pull/47157)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [39b72e208b](https://github.com/angular/angular/commit/39b72e208b46d80f1d9a802cebf043c2ccf3c5f2) | fix | update element schema ([#47552](https://github.com/angular/angular/pull/47552)) |
-| [48b354a83e](https://github.com/angular/angular/commit/48b354a83e6d94735a03eebb3a52c5698e7a0f44) | fix | update element schema ([#47552](https://github.com/angular/angular/pull/47552)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [38078e7adb](https://github.com/angular/angular/commit/38078e7adb79c058d2cb1dfe2e8d11f7304d4e5d) | fix | add missing period to error message ([#47744](https://github.com/angular/angular/pull/47744)) |
-| [bc54687c7b](https://github.com/angular/angular/commit/bc54687c7b91efe451aa744d2d3a15ca3524231e) | fix | exclude abstract classes from `strictInjectionParameters` requirement ([#44615](https://github.com/angular/angular/pull/44615)) |
-| [19ad4987f9](https://github.com/angular/angular/commit/19ad4987f9070222bb2fb8bd07a43ed7995f602a) | fix | use @ts-ignore. ([#47636](https://github.com/angular/angular/pull/47636)) |
-| [a792bf1703](https://github.com/angular/angular/commit/a792bf1703fa6fb7b6aff0b9256b2bc65d27b724) | perf | minimize filesystem calls when generating shims ([#47682](https://github.com/angular/angular/pull/47682)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1b9fd46d14](https://github.com/angular/angular/commit/1b9fd46d14ed46f78b6d761b3917ded1f0d51e0d) | feat | add support for Node.js version 18 ([#47730](https://github.com/angular/angular/pull/47730)) |
-| [ed11a13c3c](https://github.com/angular/angular/commit/ed11a13c3c5cccb0094c1a4ff9c60ea741a42067) | feat | drop support for TypeScript 4.6 and 4.7 ([#47690](https://github.com/angular/angular/pull/47690)) |
-| [db28badfe6](https://github.com/angular/angular/commit/db28badfe67f404e81dacd7c3131af105feb3412) | feat | enable the new directive composition API ([#47642](https://github.com/angular/angular/pull/47642)) |
-| [7de1469be6](https://github.com/angular/angular/commit/7de1469be62b08037681ee9e75614fb800700ef8) | feat | introduce EnvironmentProviders wrapper type ([#47669](https://github.com/angular/angular/pull/47669)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a8569e3802](https://github.com/angular/angular/commit/a8569e38029724a7d77935bccce99117a7e1aefa) | feat | export forms utility functions: isFormArray, isFormGroup… ([#47718](https://github.com/angular/angular/pull/47718)) |
-| [96b7fe93af](https://github.com/angular/angular/commit/96b7fe93af361a1cf2ea5477970f64ba6f3d8cd5) | fix | call `setDisabledState` on `ControlValueAcessor` when control is enabled ([#47576](https://github.com/angular/angular/pull/47576)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3ba99e286a](https://github.com/angular/angular/commit/3ba99e286a166d122fb334171b6a9a1e6461a724) | feat | allow for child `HttpClient`s to request via parents ([#47502](https://github.com/angular/angular/pull/47502)) |
-| [84d0d33c35](https://github.com/angular/angular/commit/84d0d33c3537f0da927e0ce449ede78ef9bebc6b) | feat | introduce `provideHttpClientTesting` provider function ([#47502](https://github.com/angular/angular/pull/47502)) |
-| [62c7a7a16e](https://github.com/angular/angular/commit/62c7a7a16e035c3a5346270dc4c5c6de85bf9137) | feat | introduce functional interceptors ([#47502](https://github.com/angular/angular/pull/47502)) |
-| [e47b129070](https://github.com/angular/angular/commit/e47b129070655f2e9eeac58bc2d0ea5648f41045) | feat | introduce the `provideHttpClient()` API ([#47502](https://github.com/angular/angular/pull/47502)) |
-| [ea16a98dfe](https://github.com/angular/angular/commit/ea16a98dfef0de33c192e328f151cca39749a488) | fix | better handle unexpected `undefined` XSRF tokens ([#47683](https://github.com/angular/angular/pull/47683)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [bebef5fb43](https://github.com/angular/angular/commit/bebef5fb43dcf54a109499d0d9dd701786c33f60) | feat | Quick fix to import a component when its selector is used ([#47088](https://github.com/angular/angular/pull/47088)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7bee28d037](https://github.com/angular/angular/commit/7bee28d037a8a21a7440293b3e8c118cc93ec8c1) | feat | add a migration to remove `relativeLinkResolution` usages ([#47604](https://github.com/angular/angular/pull/47604)) |
-| [f73ef21442](https://github.com/angular/angular/commit/f73ef2144279b6b26902510f90ca1fccb8e166b2) | feat | merge `RouterLinkWithHref` into `RouterLink` ([#47630](https://github.com/angular/angular/pull/47630)) |
-| [16c8f55663](https://github.com/angular/angular/commit/16c8f55663c30270fcd647b1a8a20ddbc8923349) | feat | migrate `RouterLinkWithHref` references to `RouterLink` ([#47599](https://github.com/angular/angular/pull/47599)) |
-| [07017a7bd3](https://github.com/angular/angular/commit/07017a7bd30c6bb7bd1b94a9fd1b112ee68c9ced) | feat | prevent `provideRouter()` from usage in @Component ([#47669](https://github.com/angular/angular/pull/47669)) |
-| [7b89d95c0e](https://github.com/angular/angular/commit/7b89d95c0e7370d33f006aba8e67bafb53a2fd4f) | fix | Remove deprecated relativeLinkResolution ([#47623](https://github.com/angular/angular/pull/47623)) |
-## Special Thanks
-Alan Agius, AleksanderBodurri, Alex Castle, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, Charles Lyding, Dylan Hunn, Ferdinand Malcher, George Kalpakas, Jessica Janiuk, Joey Perrott, JoostK, Joshua Morony, Kristiyan Kostadinov, Martin Probst, Mathew Berg, Matthias Weiß, Paul Gschwendtner, Peter Dickten, Renan Ferro, Sri Ram, WD Snoeijer, arturovt, jaybell, markostanimirovic and Álvaro Martínez
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.2.6"></a>
-# 14.2.6 (2022-10-12)
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3fd176a905](https://github.com/angular/angular/commit/3fd176a9054bea6f6c4cd22e8ff3b8f63b86b637) | fix | add missing period to error message ([#47744](https://github.com/angular/angular/pull/47744)) |
-| [c3821f5ab5](https://github.com/angular/angular/commit/c3821f5ab5bf54b2c9d7868da79a742d4e4b7667) | perf | minimize filesystem calls when generating shims ([#47682](https://github.com/angular/angular/pull/47682)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, Charles Lyding, Joey Perrott, Joshua Morony, Mathew Berg, Paul Gschwendtner, Peter Dickten, Renan Ferro, Sri Ram, WD Snoeijer, markostanimirovic and Álvaro Martínez
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-next.5"></a>
-# 15.0.0-next.5 (2022-10-05)
+<a name="15.0.0"></a>
+# 15.0.0 (2022-11-16)
 ## Breaking Changes
 ### compiler
 - Keyframes names are now prefixed with the component's "scope name".
@@ -281,6 +19,32 @@ Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, Charl
   - change the component's view encapsulation to the `None` or `ShadowDom`
   - define keyframes rules in global stylesheets (e.g styles.css)
   - define keyframes rules programmatically in code.
+### compiler-cli
+- Invalid constructors for DI may now report compilation errors
+  
+  When a class inherits its constructor from a base class, the compiler may now
+  report an error when that constructor cannot be used for DI purposes. This may
+  either be because the base class is missing an Angular decorator such as
+  `@Injectable()` or `@Directive()`, or because the constructor contains parameters
+  which do not have an associated token (such as primitive types like `string`).
+  These situations used to behave unexpectedly at runtime, where the class may be
+  constructed without any of its constructor parameters, so this is now reported
+  as an error during compilation.
+  
+  Any new errors that may be reported because of this change can be resolved either
+  by decorating the base class from which the constructor is inherited, or by adding
+  an explicit constructor to the class for which the error is reported.
+- Angular compiler option `enableIvy` has been removed as Ivy is the only rendering engine.
+### core
+- Angular no longer supports Node.js versions `14.[15-19].x` and `16.[10-12].x`. Current supported versions of Node.js are `14.20.x`, `16.13.x` and `18.10.x`.
+- TypeScript versions older than 4.8 are no longer supported.
+- Existing iframe usages may have security-sensitive attributes applied as an attribute or property binding in a template or via host bindings in a directive. Such usages would require an update to ensure compliance with the new stricter rules around iframe bindings.
+- Existing iframe usages may have `src` or `srcdoc` preceding other attributes. Such usages may need to be updated to ensure compliance with the new stricter rules around iframe bindings.
+### forms
+- setDisabledState will always be called when a `ControlValueAccessor` is attached. You can opt-out with `FormsModule.withConfig` or `ReactiveFormsModule.withConfig`.
+### localize
+- - `canParse` method has been removed from all translation parsers in `@angular/localize/tools`. `analyze` should be used instead.
+  -  the `hint` parameter in the`parse` methods is now mandatory.
 ### router
 - Previously, the `RouterOutlet` would immediately
   instantiate the component being activated during navigation. Now the
@@ -288,7 +52,15 @@ Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, Charl
   could affect tests which do not trigger change detection after a router
   navigation. In rarer cases, this can affect production code that relies
   on the exact timing of component availability.
+- The title property is now required on ActivatedRouteSnapshot
+- `relativeLinkResolution` is no longer configurable in
+  the Router. This option was used as a means to opt out of a bug fix.
 ## Deprecations
+### common
+- The `DATE_PIPE_DEFAULT_TIMEZONE` token is now deprecated in favor
+  of the `DATE_PIPE_DEFAULT_OPTIONS` token, which accepts an object
+  as a value and the timezone can be defined as a field (called `timezone`)
+  on that object.
 ### core
 - - The ability to pass an `NgModule` to the `providedIn` option for
   `@Injectable` and `InjectionToken` is now deprecated.
@@ -304,29 +76,171 @@ Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, Charl
   
   `providedIn: 'any'` is an option with confusing semantics and is almost
   never used apart from a handful of esoteric cases internal to the framework.
+- The bit field signature of `Injector.get()` has been deprecated, in favor of the new options object.
+- The bit field signature of `TestBed.inject()` has been deprecated, in favor of the new options object.
+### router
+- The `RouterLinkWithHref` directive is deprecated, use the `RouterLink` directive instead. The `RouterLink` contains the code from the `RouterLinkWithHref` to handle elements with `href` attributes.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c0c7efaf7c](https://github.com/angular/angular/commit/c0c7efaf7c8a53c1a6f137aac960757cc804f263) | feat | add `provideLocationMocks()` function to provide Location mocks ([#47674](https://github.com/angular/angular/pull/47674)) |
+| [75e6297f09](https://github.com/angular/angular/commit/75e6297f0901cc98aea1626a138a820e68d026ec) | feat | add <link> preload tag on server for priority img ([#47343](https://github.com/angular/angular/pull/47343)) |
+| [4fde292bb5](https://github.com/angular/angular/commit/4fde292bb58f5d5bc3cf6e634f7cff9eb0d13d84) | feat | Add automatic srcset generation to ngOptimizedImage ([#47547](https://github.com/angular/angular/pull/47547)) |
+| [9483343ebf](https://github.com/angular/angular/commit/9483343ebf958297ebcb81ef313d356296a41f41) | feat | Add fill mode to NgOptimizedImage ([#47738](https://github.com/angular/angular/pull/47738)) |
+| [bdb5371033](https://github.com/angular/angular/commit/bdb5371033d8e9a110619861323e8383a32d5900) | feat | add injection token for default DatePipe configuration ([#47157](https://github.com/angular/angular/pull/47157)) |
+| [449d29b701](https://github.com/angular/angular/commit/449d29b701ee5a50e7279d44f4c3888a5d6f7e96) | fix | Add fetchpriority to ngOptimizedImage preloads ([#48010](https://github.com/angular/angular/pull/48010)) |
+| [4f52d4e474](https://github.com/angular/angular/commit/4f52d4e47416494b4054e43a0d96383bde7813ca) | fix | don't generate srcset if noopImageLoader is used ([#47804](https://github.com/angular/angular/pull/47804)) |
+| [3a18398d83](https://github.com/angular/angular/commit/3a18398d8303fb4ae1923b3a182e6abb92e3117b) | fix | Don't warn about image distortion is fill mode is enabled ([#47824](https://github.com/angular/angular/pull/47824)) |
+| [edea15f2c6](https://github.com/angular/angular/commit/edea15f2c63675e86248a25649008a10e1384334) | fix | export the IMAGE_CONFIG token ([#48051](https://github.com/angular/angular/pull/48051)) |
+| [8abf1c844c](https://github.com/angular/angular/commit/8abf1c844c656b41a604098889db76e8c63da720) | fix | fix formatting on oversized image error ([#47188](https://github.com/angular/angular/pull/47188)) |
+| [ca7bf65933](https://github.com/angular/angular/commit/ca7bf6593380fa760891d29fba5c9f61c6e9bf8b) | fix | rename `rawSrc` -> `ngSrc` in NgOptimizedImage directive ([#47362](https://github.com/angular/angular/pull/47362)) |
+| [b3879dbf14](https://github.com/angular/angular/commit/b3879dbf1470ab4f31e676f1f8909cd50d963844) | fix | support density descriptors with 2+ decimals ([#47197](https://github.com/angular/angular/pull/47197)) |
+| [fa4798095e](https://github.com/angular/angular/commit/fa4798095e3820087c4a3bccc9638c5e979315da) | fix | update size error to mention 'fill' mode ([#47797](https://github.com/angular/angular/pull/47797)) |
+| [23f210c0ab](https://github.com/angular/angular/commit/23f210c0abfb6104f4aa2f39d0efd096c2b7574d) | fix | warn if using supported CDN but not built-in loader ([#47330](https://github.com/angular/angular/pull/47330)) |
+| [945432e3fa](https://github.com/angular/angular/commit/945432e3fa2cb22ff911eda2a8ad3302a8adba5a) | fix | Warn on fill ngOptimizedImage without height ([#48036](https://github.com/angular/angular/pull/48036)) |
 ### compiler
 | Commit | Type | Description |
 | -- | -- | -- |
 | [051f75648d](https://github.com/angular/angular/commit/051f75648d6065949796ac1c7ea67e71e31b011e) | fix | scope css keyframes in emulated view encapsulation ([#42608](https://github.com/angular/angular/pull/42608)) |
+| [39b72e208b](https://github.com/angular/angular/commit/39b72e208b46d80f1d9a802cebf043c2ccf3c5f2) | fix | update element schema ([#47552](https://github.com/angular/angular/pull/47552)) |
+| [48b354a83e](https://github.com/angular/angular/commit/48b354a83e6d94735a03eebb3a52c5698e7a0f44) | fix | update element schema ([#47552](https://github.com/angular/angular/pull/47552)) |
 ### compiler-cli
 | Commit | Type | Description |
 | -- | -- | -- |
+| [bc54687c7b](https://github.com/angular/angular/commit/bc54687c7b91efe451aa744d2d3a15ca3524231e) | fix | exclude abstract classes from `strictInjectionParameters` requirement ([#44615](https://github.com/angular/angular/pull/44615)) |
+| [309b2cde51](https://github.com/angular/angular/commit/309b2cde51d1577d6561e826be01e2b5fce43c49) | fix | implement more host directive validations as diagnostics ([#47768](https://github.com/angular/angular/pull/47768)) |
 | [2e1dddec45](https://github.com/angular/angular/commit/2e1dddec45fef8291b1f3abce2a937e28bb75a87) | fix | support hasInvalidatedResolutions. ([#47585](https://github.com/angular/angular/pull/47585)) |
+| [19ad4987f9](https://github.com/angular/angular/commit/19ad4987f9070222bb2fb8bd07a43ed7995f602a) | fix | use @ts-ignore. ([#47636](https://github.com/angular/angular/pull/47636)) |
+| [8fcadaad48](https://github.com/angular/angular/commit/8fcadaad48b2b1328f47b7603b230445a26f95a8) | perf | cache source file for reporting type-checking diagnostics ([#47471](https://github.com/angular/angular/pull/47471)) |
+| [16f96eeabf](https://github.com/angular/angular/commit/16f96eeabf77964092b4b6a830e29f2761ffaeec) | refactor | remove `enableIvy` options ([#47346](https://github.com/angular/angular/pull/47346)) |
 ### core
 | Commit | Type | Description |
 | -- | -- | -- |
 | [e3cef4a784](https://github.com/angular/angular/commit/e3cef4a7843d22fd004f1e27afcc42d0fbbef74a) | docs | deprecate `providedIn: NgModule` and `providedIn: 'any'` ([#47616](https://github.com/angular/angular/pull/47616)) |
+| [1b9fd46d14](https://github.com/angular/angular/commit/1b9fd46d14ed46f78b6d761b3917ded1f0d51e0d) | feat | add support for Node.js version 18 ([#47730](https://github.com/angular/angular/pull/47730)) |
+| [ed11a13c3c](https://github.com/angular/angular/commit/ed11a13c3c5cccb0094c1a4ff9c60ea741a42067) | feat | drop support for TypeScript 4.6 and 4.7 ([#47690](https://github.com/angular/angular/pull/47690)) |
+| [db28badfe6](https://github.com/angular/angular/commit/db28badfe67f404e81dacd7c3131af105feb3412) | feat | enable the new directive composition API ([#47642](https://github.com/angular/angular/pull/47642)) |
+| [7de1469be6](https://github.com/angular/angular/commit/7de1469be62b08037681ee9e75614fb800700ef8) | feat | introduce EnvironmentProviders wrapper type ([#47669](https://github.com/angular/angular/pull/47669)) |
+| [841c8e5138](https://github.com/angular/angular/commit/841c8e51386645d7fd26642f41952ed8f0a2dbe5) | feat | support object-based DI flags in Injector.get() ([#46761](https://github.com/angular/angular/pull/46761)) |
+| [120555a626](https://github.com/angular/angular/commit/120555a626d66523e46ce01681b11a0f38e3a40a) | feat | support object-based DI flags in TestBed.inject() ([#46761](https://github.com/angular/angular/pull/46761)) |
+| [96c0e42e61](https://github.com/angular/angular/commit/96c0e42e61b8a4fced1354da0162c06e7b029cf3) | fix | allow readonly arrays for standalone imports ([#47851](https://github.com/angular/angular/pull/47851)) |
+| [28f289b825](https://github.com/angular/angular/commit/28f289b825be7f4bf6dc5db69197741867b8ea23) | fix | hardening attribute and property binding rules for <iframe> elements ([#47964](https://github.com/angular/angular/pull/47964)) |
+| [d4b3c0b47c](https://github.com/angular/angular/commit/d4b3c0b47c32a9a664d3073164d04c0385058008) | fix | hardening rules related to the attribute order on iframe elements ([#47935](https://github.com/angular/angular/pull/47935)) |
+| [85330f3fd9](https://github.com/angular/angular/commit/85330f3fd9ac6381ce3aa18479ed8195d2ac215e) | fix | update `isDevMode` to rely on `ngDevMode` ([#47475](https://github.com/angular/angular/pull/47475)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a8569e3802](https://github.com/angular/angular/commit/a8569e38029724a7d77935bccce99117a7e1aefa) | feat | export forms utility functions: isFormArray, isFormGroup… ([#47718](https://github.com/angular/angular/pull/47718)) |
+| [96b7fe93af](https://github.com/angular/angular/commit/96b7fe93af361a1cf2ea5477970f64ba6f3d8cd5) | fix | call `setDisabledState` on `ControlValueAcessor` when control is enabled ([#47576](https://github.com/angular/angular/pull/47576)) |
+| [a99d9d67f3](https://github.com/angular/angular/commit/a99d9d67f382c18b46c4c1c6765bbda445ca0b8c) | fix | don't mutate validators array ([#47830](https://github.com/angular/angular/pull/47830)) |
+| [2625dc1312](https://github.com/angular/angular/commit/2625dc13127da9f8d5fa79f1b32ad132d6656c63) | fix | Improve a very commonly viewed error message by adding a guide. ([#47969](https://github.com/angular/angular/pull/47969)) |
+| [ae29f98c20](https://github.com/angular/angular/commit/ae29f98c20390abbf84d2df312ee5e8766195d60) | fix | Runtime error pages must begin with leading zero ([#47991](https://github.com/angular/angular/pull/47991)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3ba99e286a](https://github.com/angular/angular/commit/3ba99e286a166d122fb334171b6a9a1e6461a724) | feat | allow for child `HttpClient`s to request via parents ([#47502](https://github.com/angular/angular/pull/47502)) |
+| [84d0d33c35](https://github.com/angular/angular/commit/84d0d33c3537f0da927e0ce449ede78ef9bebc6b) | feat | introduce `provideHttpClientTesting` provider function ([#47502](https://github.com/angular/angular/pull/47502)) |
+| [62c7a7a16e](https://github.com/angular/angular/commit/62c7a7a16e035c3a5346270dc4c5c6de85bf9137) | feat | introduce functional interceptors ([#47502](https://github.com/angular/angular/pull/47502)) |
+| [e47b129070](https://github.com/angular/angular/commit/e47b129070655f2e9eeac58bc2d0ea5648f41045) | feat | introduce the `provideHttpClient()` API ([#47502](https://github.com/angular/angular/pull/47502)) |
+| [ea16a98dfe](https://github.com/angular/angular/commit/ea16a98dfef0de33c192e328f151cca39749a488) | fix | better handle unexpected `undefined` XSRF tokens ([#47683](https://github.com/angular/angular/pull/47683)) |
+| [e7b48da713](https://github.com/angular/angular/commit/e7b48da713f32c02c096f1342ab8b0d7ec696ca5) | fix | rename `withLegacyInterceptors` to `withInterceptorsFromDi` ([#47901](https://github.com/angular/angular/pull/47901)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bebef5fb43](https://github.com/angular/angular/commit/bebef5fb43dcf54a109499d0d9dd701786c33f60) | feat | Quick fix to import a component when its selector is used ([#47088](https://github.com/angular/angular/pull/47088)) |
+| [e7ee53c541](https://github.com/angular/angular/commit/e7ee53c541da0a1f85c217354ec9901010ae0de9) | feat | support to fix invalid banana in box ([#47393](https://github.com/angular/angular/pull/47393)) |
 ### localize
 | Commit | Type | Description |
 | -- | -- | -- |
 | [400a6b5e37](https://github.com/angular/angular/commit/400a6b5e3707f3939d84c659a115b75ef15d2c09) | fix | add polyfill in polyfills array instead of polyfills.ts ([#47569](https://github.com/angular/angular/pull/47569)) |
+| [b6fd814542](https://github.com/angular/angular/commit/b6fd81454207bd256a48d5726f3bd7e6ce6a489b) | fix | update ng add schematic to support Angular CLI version 15 ([#47763](https://github.com/angular/angular/pull/47763)) |
+| [d36fd3d9e4](https://github.com/angular/angular/commit/d36fd3d9e41984818af5e1aad5e3004574d837bb) | refactor | remove deprecated `canParse` method from TranslationParsers ([#47275](https://github.com/angular/angular/pull/47275)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2908eba59c](https://github.com/angular/angular/commit/2908eba59c25e9a1fc5aa257b4a8a247db82079e) | fix | align server renderer interface with base renderer ([#47868](https://github.com/angular/angular/pull/47868)) |
 ### router
 | Commit | Type | Description |
 | -- | -- | -- |
+| [7bee28d037](https://github.com/angular/angular/commit/7bee28d037a8a21a7440293b3e8c118cc93ec8c1) | feat | add a migration to remove `relativeLinkResolution` usages ([#47604](https://github.com/angular/angular/pull/47604)) |
+| [5163e3d876](https://github.com/angular/angular/commit/5163e3d876cdfd6d309d7e35aefa6f07ef62715e) | feat | Add UrlTree constructor to public API ([#47186](https://github.com/angular/angular/pull/47186)) |
 | [da58801f95](https://github.com/angular/angular/commit/da58801f95c66c201e332189af25702bdd722f3f) | feat | auto-unwrap default exports when lazy loading ([#47586](https://github.com/angular/angular/pull/47586)) |
 | [c3f857975d](https://github.com/angular/angular/commit/c3f857975d56cac6ad3939d64f76a51455159c23) | feat | make RouterOutlet name an Input so it can be set dynamically ([#46569](https://github.com/angular/angular/pull/46569)) |
+| [f73ef21442](https://github.com/angular/angular/commit/f73ef2144279b6b26902510f90ca1fccb8e166b2) | feat | merge `RouterLinkWithHref` into `RouterLink` ([#47630](https://github.com/angular/angular/pull/47630)) |
+| [16c8f55663](https://github.com/angular/angular/commit/16c8f55663c30270fcd647b1a8a20ddbc8923349) | feat | migrate `RouterLinkWithHref` references to `RouterLink` ([#47599](https://github.com/angular/angular/pull/47599)) |
+| [07017a7bd3](https://github.com/angular/angular/commit/07017a7bd30c6bb7bd1b94a9fd1b112ee68c9ced) | feat | prevent `provideRouter()` from usage in @Component ([#47669](https://github.com/angular/angular/pull/47669)) |
+| [79e9e8ab77](https://github.com/angular/angular/commit/79e9e8ab779d230f6a1df25c4ccff94b13129305) | fix | Delay router scroll event until navigated components have rendered ([#47563](https://github.com/angular/angular/pull/47563)) |
+| [6a88bad019](https://github.com/angular/angular/commit/6a88bad0192516f26a5a008c0634b73456b9447c) | fix | Ensure ActivatedRouteSnapshot#title has correct value ([#47481](https://github.com/angular/angular/pull/47481)) |
+| [7b89d95c0e](https://github.com/angular/angular/commit/7b89d95c0e7370d33f006aba8e67bafb53a2fd4f) | fix | Remove deprecated relativeLinkResolution ([#47623](https://github.com/angular/angular/pull/47623)) |
 ## Special Thanks
-Alan Agius, Alex Rickabaugh, Alexander Wiebe, Andrew Kushnir, Andrew Scott, Ciprian Sauliuc, Dmytro Mezhenskyi, Dylan Hunn, George Kalpakas, Joe Martin (Crowdstaffing), Jordan, Kristiyan Kostadinov, Martin Probst, Ole M, Paul Gschwendtner, Pawel Kozlowski, dario-piotrowicz and mgechev
+Alan Agius, AleksanderBodurri, Alex Castle, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Charles Lyding, Dylan Hunn, Ferdinand Malcher, George Kalpakas, Jeremy Elbourn, Jessica Janiuk, JiaLiPassion, Joey Perrott, JoostK, Kara Erickson, Kristiyan Kostadinov, Martin Probst, Matthias Weiß, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Sabareesh Kappagantu, WD Snoeijer, angular-robot[bot], arturovt, ced, dario-piotrowicz, ivanwonder and jaybell
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="14.2.11"></a>
+# 14.2.11 (2022-11-16)
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aef353c143](https://github.com/angular/angular/commit/aef353c143ea4e31d76f00ae91efe49eecc3a321) | fix | Ensure renavigating in component init works with enabledBlocking ([#48066](https://github.com/angular/angular/pull/48066)) |
+## Special Thanks
+Alan Agius, Andrew Scott and Mujo Osmanovic
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="14.2.10"></a>
+# 14.2.10 (2022-11-09)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4312e1be5](https://github.com/angular/angular/commit/a4312e1be55f0677a77c9015688dbd4cf8163c69) | fix | add` zone.js` version `0.12.x` as a valid peer dependency ([#48002](https://github.com/angular/angular/pull/48002)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [db867fee77](https://github.com/angular/angular/commit/db867fee77bc62f367fc5d484fc3951d72d998c8) | fix | fix redirectTo on named outlets - resolves [#33783](https://github.com/angular/angular/pull/33783) ([#47927](https://github.com/angular/angular/pull/47927)) |
+## Special Thanks
+Alan Agius, Albert Szekely, Andrew Scott, Doug Parker, Kristiyan Kostadinov, Markus Eckstein, Peter Scriven and abergquist
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="14.2.9"></a>
+# 14.2.9 (2022-11-03)
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [92d28bdd99](https://github.com/angular/angular/commit/92d28bdd99d3e18f42f6ed8494344b72b15d0104) | perf | resolve memory leak when using animations with shadow DOM ([#47903](https://github.com/angular/angular/pull/47903)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d2d9bbf5ce](https://github.com/angular/angular/commit/d2d9bbf5ce5a2f5e95e7c836fbca67d90db62371) | fix | call `onSerialize` when state is empty ([#47888](https://github.com/angular/angular/pull/47888)) |
+## Special Thanks
+Alan Agius, Kristiyan Kostadinov, Virginia Dooley and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="14.2.8"></a>
+# 14.2.8 (2022-10-26)
+## Special Thanks
+Andrew Scott, Balaji, Paul Gschwendtner, WD Snoeijer, onrails and vyom1611
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="14.2.7"></a>
+# 14.2.7 (2022-10-19)
+## Special Thanks
+Bob Watson, Charles Barnes, Joey Perrott, Virginia Dooley, WD Snoeijer, abergquist and urugator
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="14.2.6"></a>
+# 14.2.6 (2022-10-12)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3fd176a905](https://github.com/angular/angular/commit/3fd176a9054bea6f6c4cd22e8ff3b8f63b86b637) | fix | add missing period to error message ([#47744](https://github.com/angular/angular/pull/47744)) |
+| [c3821f5ab5](https://github.com/angular/angular/commit/c3821f5ab5bf54b2c9d7868da79a742d4e4b7667) | perf | minimize filesystem calls when generating shims ([#47682](https://github.com/angular/angular/pull/47682)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, Charles Lyding, Joey Perrott, Joshua Morony, Mathew Berg, Paul Gschwendtner, Peter Dickten, Renan Ferro, Sri Ram, WD Snoeijer, markostanimirovic and Álvaro Martínez
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -337,35 +251,6 @@ This release contains various API docs improvements.
 
 ## Special Thanks
 Alexander Wiebe, Ciprian Sauliuc, Dmytro Mezhenskyi, George Kalpakas, Joe Martin (Crowdstaffing), Jordan, Ole M, Paul Gschwendtner, Pawel Kozlowski and mgechev
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-next.4"></a>
-# 15.0.0-next.4 (2022-09-28)
-## Breaking Changes
-### router
-- The title property is now required on ActivatedRouteSnapshot
-## Deprecations
-### core
-- The bit field signature of `Injector.get()` has been deprecated, in favor of the new options object.
-- The bit field signature of `TestBed.inject()` has been deprecated, in favor of the new options object.
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [841c8e5138](https://github.com/angular/angular/commit/841c8e51386645d7fd26642f41952ed8f0a2dbe5) | feat | support object-based DI flags in Injector.get() ([#46761](https://github.com/angular/angular/pull/46761)) |
-| [120555a626](https://github.com/angular/angular/commit/120555a626d66523e46ce01681b11a0f38e3a40a) | feat | support object-based DI flags in TestBed.inject() ([#46761](https://github.com/angular/angular/pull/46761)) |
-| [aef8d0bb02](https://github.com/angular/angular/commit/aef8d0bb020931e0b44e067b074a449fc66f6ff7) | fix | correctly check for `typeof` of undefined in `ngDevMode` check ([#47480](https://github.com/angular/angular/pull/47480)) |
-| [85330f3fd9](https://github.com/angular/angular/commit/85330f3fd9ac6381ce3aa18479ed8195d2ac215e) | fix | update `isDevMode` to rely on `ngDevMode` ([#47475](https://github.com/angular/angular/pull/47475)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [e7ee53c541](https://github.com/angular/angular/commit/e7ee53c541da0a1f85c217354ec9901010ae0de9) | feat | support to fix invalid banana in box ([#47393](https://github.com/angular/angular/pull/47393)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6a88bad019](https://github.com/angular/angular/commit/6a88bad0192516f26a5a008c0634b73456b9447c) | fix | Ensure ActivatedRouteSnapshot#title has correct value ([#47481](https://github.com/angular/angular/pull/47481)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Ashley Hunter, Doug Parker, Jessica Janiuk, JiaLiPassion, Kristiyan Kostadinov, Rokas Brazdžionis, Simona Cotin and ivanwonder
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -384,21 +269,6 @@ Alan Agius, Ashley Hunter, Doug Parker, Jessica Janiuk, JoostK, Kristiyan Kostad
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="15.0.0-next.3"></a>
-# 15.0.0-next.3 (2022-09-21)
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d11b1d99b0](https://github.com/angular/angular/commit/d11b1d99b0af1bc6389ef0e0157c5bca8a7f951a) | fix | make sure that the useAnimation function delay is applied ([#47468](https://github.com/angular/angular/pull/47468)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8fcadaad48](https://github.com/angular/angular/commit/8fcadaad48b2b1328f47b7603b230445a26f95a8) | perf | cache source file for reporting type-checking diagnostics ([#47471](https://github.com/angular/angular/pull/47471)) |
-## Special Thanks
-AleksanderBodurri, Andrew Kushnir, Andrew Scott, Bob Watson, George Kalpakas, JiaLiPassion, Joey Perrott, JoostK, Kristiyan Kostadinov, Mauro Mattos, Pawel Kozlowski, Sabareesh Kappagantu, angular-robot[bot], dario-piotrowicz, fabioemoutinho and famzila
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="14.2.3"></a>
 # 14.2.3 (2022-09-21)
 ### animations
@@ -407,29 +277,6 @@ AleksanderBodurri, Andrew Kushnir, Andrew Scott, Bob Watson, George Kalpakas, Ji
 | [bba2dae812](https://github.com/angular/angular/commit/bba2dae81263d07c55cd059eb8ef51baa7774055) | fix | make sure that the useAnimation function delay is applied ([#47468](https://github.com/angular/angular/pull/47468)) |
 ## Special Thanks
 AleksanderBodurri, Andrew Kushnir, Andrew Scott, Bob Watson, George Kalpakas, Joey Perrott, Mauro Mattos, dario-piotrowicz, fabioemoutinho and famzila
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-next.2"></a>
-# 15.0.0-next.2 (2022-09-14)
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7ec196e0fb](https://github.com/angular/angular/commit/7ec196e0fb7d73caada1f502758cab0950e3a272) | fix | make sure that the animation function delay is applied ([#47285](https://github.com/angular/angular/pull/47285)) |
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ca7bf65933](https://github.com/angular/angular/commit/ca7bf6593380fa760891d29fba5c9f61c6e9bf8b) | fix | rename `rawSrc` -> `ngSrc` in NgOptimizedImage directive ([#47362](https://github.com/angular/angular/pull/47362)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4e10a74941](https://github.com/angular/angular/commit/4e10a7494130b9bb4772ee8f76b66675867b2145) | fix | imply @Optional flag when a default value is provided ([#47242](https://github.com/angular/angular/pull/47242)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4a13210ecd](https://github.com/angular/angular/commit/4a13210ecd692aaace7f67fadf25741f3f0cc50b) | fix | don't prevent default behavior for forms with method="dialog" ([#47308](https://github.com/angular/angular/pull/47308)) |
-## Special Thanks
-Abhishek Rawat, Andrew Kushnir, Benjamin Chanudet, Bob Watson, Dylan Hunn, George Kalpakas, Ikko Ashimine, Joey Perrott, Kristiyan Kostadinov, Marc Wrobel, Mariia Subkov, Pawel Kozlowski, Sebastian, abergquist, dario-piotrowicz, onrails and vyom1611
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -456,41 +303,6 @@ Abhishek Rawat, Andrew Kushnir, Benjamin Chanudet, Bob Watson, George Kalpakas, 
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="15.0.0-next.1"></a>
-# 15.0.0-next.1 (2022-09-07)
-## Breaking Changes
-### compiler-cli
-- Angular compiler option `enableIvy` has been removed as Ivy is the only rendering engine.
-### localize
-- - `canParse` method has been removed from all translation parsers in `@angular/localize/tools`. `analyze` should be used instead.
-  -  the `hint` parameter in the`parse` methods is now mandatory.
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [220d1203e6](https://github.com/angular/angular/commit/220d1203e66116bfcf69204ebac2092eb638bb75) | fix | improve formatting of image warnings ([#47299](https://github.com/angular/angular/pull/47299)) |
-| [93d7d9101e](https://github.com/angular/angular/commit/93d7d9101e56a51f1ce315b1d0e67fa02e8916d9) | fix | use DOCUMENT token to query for preconnect links ([#47353](https://github.com/angular/angular/pull/47353)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [cf0c53aa1c](https://github.com/angular/angular/commit/cf0c53aa1c54bf747529a9f7899e68c71249fc9d) | fix | avoid errors for inputs with Object-builtin names ([#47220](https://github.com/angular/angular/pull/47220)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [16f96eeabf](https://github.com/angular/angular/commit/16f96eeabf77964092b4b6a830e29f2761ffaeec) | refactor | remove `enableIvy` options ([#47346](https://github.com/angular/angular/pull/47346)) |
-### localize
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d36fd3d9e4](https://github.com/angular/angular/commit/d36fd3d9e41984818af5e1aad5e3004574d837bb) | refactor | remove deprecated `canParse` method from TranslationParsers ([#47275](https://github.com/angular/angular/pull/47275)) |
-### service-worker
-| Commit | Type | Description |
-| -- | -- | -- |
-| [e1bb638e0b](https://github.com/angular/angular/commit/e1bb638e0bc9cf2da4ba3aa8ad7b549164ad5c12) | fix | include headers in requests for assets ([#47260](https://github.com/angular/angular/pull/47260)) |
-| [a0c3326485](https://github.com/angular/angular/commit/a0c3326485548e8d9b193f5472a9b02a02d679a6) | fix | only consider GET requests as navigation requests ([#47263](https://github.com/angular/angular/pull/47263)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, Aristeidis Bampakos, Asaf M, Bingo's Code, Bob Watson, Daniel Ostrovsky, George Kalpakas, Giovanni Alberto Rivas, Jeremy Elbourn, JiaLiPassion, Jobayer Hossain, Joe Martin (Crowdstaffing), Joey Perrott, JoostK, Kara Erickson, Kristiyan Kostadinov, Maina Wycliffe, Sabareesh Kappagantu, Simona Cotin, Sonu Sindhu, Yann Provoost, abergquist, angular-robot[bot], jaybell and vyom1611
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="14.2.1"></a>
 # 14.2.1 (2022-09-07)
 ### common
@@ -509,16 +321,6 @@ Alan Agius, Andrew Kushnir, Aristeidis Bampakos, Asaf M, Bingo's Code, Bob Watso
 | [28d33505fd](https://github.com/angular/angular/commit/28d33505fd4be00eaf4bf417cd27e20733ddfb80) | fix | only consider GET requests as navigation requests ([#47263](https://github.com/angular/angular/pull/47263)) |
 ## Special Thanks
 Aristeidis Bampakos, Asaf M, Bingo's Code, Bob Watson, Daniel Ostrovsky, George Kalpakas, Giovanni Alberto Rivas, Jeremy Elbourn, Jobayer Hossain, Joe Martin (Crowdstaffing), Joey Perrott, JoostK, Kara Erickson, Kristiyan Kostadinov, Maina Wycliffe, Sabareesh Kappagantu, Simona Cotin, Sonu Sindhu, Yann Provoost, abergquist, jaybell and vyom1611
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.0.0-next.0"></a>
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5163e3d876](https://github.com/angular/angular/commit/5163e3d876cdfd6d309d7e35aefa6f07ef62715e) | feat | Add UrlTree constructor to public API ([#47186](https://github.com/angular/angular/pull/47186)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Scott, Joey Perrott, Kara Erickson, Kristiyan Kostadinov and Pawel Kozlowski
 
 <!-- CHANGELOG SPLIT MARKER -->
 
