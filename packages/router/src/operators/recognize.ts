@@ -11,8 +11,8 @@ import {MonoTypeOperatorFunction} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
 import {Route} from '../models';
+import {NavigationTransition} from '../navigation_transition';
 import {recognize as recognizeFn} from '../recognize';
-import {NavigationTransition} from '../router';
 import {UrlSerializer} from '../url_tree';
 
 export function recognize(
