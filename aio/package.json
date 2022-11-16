@@ -19,7 +19,7 @@
     "build-local": "yarn ~~build",
     "prebuild-local-ci": "yarn setup-local-ci",
     "build-local-ci": "yarn ~~build --progress=false",
-    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js 50d813140",
+    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js aa7d3b377",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint && yarn tools-lint && yarn security-lint",
     "test": "yarn check-env && ng test",
     "test:bazel": "bazelisk test //aio:test",
