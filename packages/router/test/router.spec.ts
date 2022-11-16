@@ -14,9 +14,10 @@ import {of} from 'rxjs';
 
 import {ChildActivationStart} from '../src/events';
 import {Routes} from '../src/models';
+import {NavigationTransition} from '../src/navigation_transition';
 import {checkGuards as checkGuardsOperator} from '../src/operators/check_guards';
 import {resolveData as resolveDataOperator} from '../src/operators/resolve_data';
-import {NavigationTransition, Router} from '../src/router';
+import {Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
 import {createEmptyStateSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';

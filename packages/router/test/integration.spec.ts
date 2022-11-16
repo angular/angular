@@ -1598,14 +1598,14 @@ describe('Integration', () => {
        advance(fixture);
 
        router.navigateByUrl('/user/victor');
-       expect((router as any).currentNavigation).not.toBe(null);
+       expect(router.getCurrentNavigation()).not.toBe(null);
        router.navigateByUrl('/user/fedor');
        // Due to https://github.com/angular/angular/issues/29389, this would be `false`
        // when running a second navigation.
-       expect((router as any).currentNavigation).not.toBe(null);
+       expect(router.getCurrentNavigation()).not.toBe(null);
        advance(fixture);
 
-       expect((router as any).currentNavigation).toBe(null);
+       expect(router.getCurrentNavigation()).toBe(null);
        expect(fixture.nativeElement).toHaveText('user fedor');
      })));
 
