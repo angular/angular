@@ -8,6 +8,7 @@
 import '../../util/ng_dev_mode';
 import '../../util/ng_i18n_closure_mode';
 
+import {XSS_SECURITY_URL} from '../../error_details_base_url';
 import {getTemplateContent, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
 import {getInertBodyHelper} from '../../sanitization/inert_body';
 import {_sanitizeUrl} from '../../sanitization/url_sanitizer';
@@ -632,7 +633,7 @@ function walkIcuTree(
                     console.warn(
                         `WARNING: ignoring unsafe attribute value ` +
                         `${lowerAttrName} on element ${tagName} ` +
-                        `(see https://g.co/ng/security#xss)`);
+                        `(see ${XSS_SECURITY_URL})`);
               }
             } else {
               addCreateAttribute(create, newIndex, attr);
