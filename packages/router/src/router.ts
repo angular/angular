@@ -178,8 +178,6 @@ export class Router {
   /** @internal */
   readonly transitions: BehaviorSubject<NavigationTransition>;
   private navigations: Observable<NavigationTransition>;
-  /** @internal */
-  lastSuccessfulNavigation: Navigation|null = null;
   private disposed = false;
 
   private locationSubscription?: SubscriptionLike;
@@ -729,7 +727,6 @@ export class Router {
           (this.events as Subject<Event>)
               .next(new NavigationEnd(
                   t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree)));
-          this.lastSuccessfulNavigation = this.getCurrentNavigation();
           this.titleStrategy?.updateTitle(this.routerState.snapshot);
           t.resolve(true);
         },
