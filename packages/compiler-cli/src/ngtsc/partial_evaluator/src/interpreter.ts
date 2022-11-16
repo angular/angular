@@ -704,6 +704,10 @@ export class StaticInterpreter {
       return this.visitTupleType(node, context);
     } else if (ts.isNamedTupleMember(node)) {
       return this.visitType(node.type, context);
+    } else if (ts.isTypeOperatorNode(node) && node.operator === ts.SyntaxKind.ReadonlyKeyword) {
+      return this.visitType(node.type, context);
+    } else if (ts.isTypeQueryNode(node)) {
+      return this.visitTypeQuery(node, context);
     }
 
     return DynamicValue.fromDynamicType(node);
@@ -717,6 +721,20 @@ export class StaticInterpreter {
     }
 
     return res;
+  }
+
+  private visitTypeQuery(node: ts.TypeQueryNode, context: Context): ResolvedValue {
+    if (!ts.isIdentifier(node.exprName)) {
+      return DynamicValue.fromUnknown(node);
+    }
+
+    const decl = this.host.getDeclarationOfIdentifier(node.exprName);
+    if (decl === null) {
+      return DynamicValue.fromUnknownIdentifier(node.exprName);
+    }
+
+    const declContext: Context = {...context, ...joinModuleContext(context, node, decl)};
+    return this.visitAmbiguousDeclaration(decl, declContext);
   }
 }
 
