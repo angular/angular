@@ -263,7 +263,6 @@ export interface NavigationTransition {
  */
 interface InternalRouterInterface {
   events: Observable<Event>;
-  lastSuccessfulNavigation: Navigation|null;
   browserUrlTree: UrlTree;
   currentUrlTree: UrlTree;
   rawUrlTree: UrlTree;
@@ -300,6 +299,7 @@ interface InternalRouterInterface {
 
 export class NavigationTransitions {
   currentNavigation: Navigation|null = null;
+  lastSuccessfulNavigation: Navigation|null = null;
 
   constructor(readonly router: InternalRouterInterface) {}
 
@@ -328,8 +328,8 @@ export class NavigationTransitions {
                              extractedUrl: t.extractedUrl,
                              trigger: t.source,
                              extras: t.extras,
-                             previousNavigation: !this.router.lastSuccessfulNavigation ? null : {
-                               ...this.router.lastSuccessfulNavigation,
+                             previousNavigation: !this.lastSuccessfulNavigation ? null : {
+                               ...this.lastSuccessfulNavigation,
                                previousNavigation: null,
                              },
                            };
@@ -615,10 +615,11 @@ export class NavigationTransitions {
                              (evt: Event) => this.router.triggerEvent(evt)),
 
                          tap({
-                           next() {
+                           next: () => {
                              completed = true;
+                             this.lastSuccessfulNavigation = this.currentNavigation;
                            },
-                           complete() {
+                           complete: () => {
                              completed = true;
                            }
                          }),
