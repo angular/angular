@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {inject, Injectable, NgModuleRef, Type} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable, Type} from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rxjs';
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
@@ -268,7 +268,6 @@ interface InternalRouterInterface {
   rawUrlTree: UrlTree;
   transitions: BehaviorSubject<NavigationTransition>;
   navigationId: number;
-  ngModule: NgModuleRef<any>;
   readonly routerState: RouterState;
   errorHandler: ErrorHandler;
   titleStrategy?: TitleStrategy;
@@ -299,6 +298,7 @@ export class NavigationTransitions {
   lastSuccessfulNavigation: Navigation|null = null;
   readonly events = new Subject<Event>();
   private readonly configLoader = inject(RouterConfigLoader);
+  private readonly environmentInjector = inject(EnvironmentInjector);
 
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
@@ -387,7 +387,7 @@ export class NavigationTransitions {
 
                                  // ApplyRedirects
                                  applyRedirects(
-                                     router.ngModule.injector, this.configLoader,
+                                     this.environmentInjector, this.configLoader,
                                      router.urlSerializer, router.config),
 
                                  // Update the currentNavigation
@@ -402,7 +402,7 @@ export class NavigationTransitions {
 
                                  // Recognize
                                  recognize(
-                                     router.ngModule.injector, router.rootComponentType,
+                                     this.environmentInjector, router.rootComponentType,
                                      router.config, router.urlSerializer,
                                      router.paramsInheritanceStrategy),
 
@@ -487,7 +487,7 @@ export class NavigationTransitions {
                          }),
 
                          checkGuards(
-                             router.ngModule.injector, (evt: Event) => this.events.next(evt)),
+                             this.environmentInjector, (evt: Event) => this.events.next(evt)),
                          tap(t => {
                            overallTransitionState.guardsResult = t.guardsResult;
                            if (isUrlTree(t.guardsResult)) {
@@ -527,7 +527,7 @@ export class NavigationTransitions {
                                    return of(t).pipe(
                                        resolveData(
                                            router.paramsInheritanceStrategy,
-                                           router.ngModule.injector),
+                                           this.environmentInjector),
                                        tap({
                                          next: () => dataResolved = true,
                                          complete: () => {

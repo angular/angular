@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, inject, Injectable, Injector, NgModuleRef, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Compiler, inject, Injectable, Injector, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {BehaviorSubject, Observable, of, SubscriptionLike} from 'rxjs';
 
 import {createUrlTree} from './create_url_tree';
@@ -201,8 +201,6 @@ export class Router {
   private get browserPageId(): number|undefined {
     return (this.location.getState() as RestoredState | null)?.ɵrouterPageId;
   }
-  /** @internal */
-  ngModule: NgModuleRef<any>;
   private console: Console;
   private isNgZoneEnabled: boolean = false;
 
@@ -366,7 +364,6 @@ export class Router {
       compiler: Compiler,
       public config: Routes,
   ) {
-    this.ngModule = injector.get(NgModuleRef);
     this.console = injector.get(Console);
     const ngZone = injector.get(NgZone);
     this.isNgZoneEnabled = ngZone instanceof NgZone && NgZone.isInAngularZone();
