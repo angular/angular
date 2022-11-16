@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {XSS_SECURITY_URL} from '../error_details_base_url';
 import {TrustedHTML} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString} from '../util/security/trusted_types';
 
@@ -268,8 +269,7 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
     const safeHtml = sanitizer.sanitizeChildren(
         getTemplateContent(inertBodyElement!) as Element || inertBodyElement);
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && sanitizer.sanitizedSomething) {
-      console.warn(
-          'WARNING: sanitizing HTML stripped some content, see https://g.co/ng/security#xss');
+      console.warn(`WARNING: sanitizing HTML stripped some content, see ${XSS_SECURITY_URL}`);
     }
 
     return trustedHTMLFromString(safeHtml);
