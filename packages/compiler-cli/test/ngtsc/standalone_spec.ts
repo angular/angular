@@ -870,6 +870,35 @@ runInEachFileSystem(() => {
         const jsCode = env.getContents('test.js');
         expect(jsCode).toContain('dependencies: [StandalonePipe]');
       });
+
+      it('should compile imports using a const tuple in external library', () => {
+        env.write('node_modules/external/index.d.ts', `
+          import {ɵɵDirectiveDeclaration} from '@angular/core';
+
+          export declare class StandaloneDir {
+            static ɵdir: ɵɵDirectiveDeclaration<StandaloneDir, "[dir]", never, {}, {}, never, never, true>;
+          }
+
+          export declare const DECLARATIONS: readonly [typeof StandaloneDir];
+        `);
+        env.write('test.ts', `
+          import {Component, Directive} from '@angular/core';
+          import {DECLARATIONS} from 'external';
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+            imports: [DECLARATIONS],
+          })
+          export class TestCmp {}
+        `);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('import * as i1 from "external";');
+        expect(jsCode).toContain('dependencies: [i1.StandaloneDir]');
+      });
     });
 
     describe('optimizations', () => {
