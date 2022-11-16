@@ -202,6 +202,37 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('can retrieve candidate pipes` ', () => {
+      it('which are out of scope', () => {
+        env.write('one.ts', `
+			 import {Pipe} from '@angular/core';
+	 
+			 @Pipe({
+				name: 'foo-pipe',
+				standalone: true,
+			  })
+			  export class OnePipe {
+			  }
+			 `);
+
+        env.write('two.ts', `
+			 import {Component} from '@angular/core';
+	 
+			 @Component({
+				 standalone: true,
+				 selector: 'two-cmp',
+				 template: '<div></div>',
+			 })
+			 export class TwoCmp {}
+			 `);
+        const {program, checker} = env.driveTemplateTypeChecker();
+        const sf = program.getSourceFile(_('/one.ts'));
+        expect(sf).not.toBeNull();
+        const pipes = checker.getPotentialPipes(getClass(sf!, 'OnePipe'));
+        expect(pipes.map(p => p.name)).toContain('foo-pipe');
+      });
+    });
+
     describe('can generate imports` ', () => {
       it('for out of scope standalone components', () => {
         env.write('one.ts', `

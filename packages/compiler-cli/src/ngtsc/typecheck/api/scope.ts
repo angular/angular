@@ -72,6 +72,8 @@ export interface PotentialDirective {
  * Metadata for a pipe which is available in a template.
  */
 export interface PotentialPipe {
+  ref: Reference<ClassDeclaration>;
+
   /**
    * The `ts.Symbol` for the pipe class.
    */
