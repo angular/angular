@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {PotentialImport, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 /**
@@ -289,6 +290,147 @@ export function nonCollidingImportName(
   }
   return name;
 }
+
+
+/**
+ * If the provided trait is standalone, just return it. Otherwise, returns the owning ngModule.
+ */
+export function standaloneTraitOrNgModule(
+    checker: TemplateTypeChecker, trait: ts.ClassDeclaration): ts.ClassDeclaration|null {
+  const componentDecorator = checker.getPrimaryAngularDecorator(trait);
+  if (componentDecorator == null) {
+    return null;
+  }
+  const owningNgModule = checker.getOwningNgModule(trait);
+  const isMarkedStandalone = isStandaloneDecorator(componentDecorator);
+  if (owningNgModule === null && !isMarkedStandalone) {
+    // TODO(dylhunn): This is a "moduleless component." We should probably suggest the user add
+    // `standalone: true`.
+    return null;
+  }
+  return owningNgModule ?? trait;
+}
+
+/**
+ * Updates the imports on a TypeScript file, by ensuring the provided import is present.
+ * Returns the text changes, as well as the name with which the imported symbol can be referred to.
+ */
+export function updateImportsForTypescriptFile(
+    tsChecker: ts.TypeChecker, file: ts.SourceFile, newImport: PotentialImport,
+    tsFileToImport: ts.SourceFile): [ts.TextChange[], string] {
+  // If the expression is already imported, we can just return its name.
+  if (newImport.moduleSpecifier === undefined) {
+    return [[], newImport.symbolName];
+  }
+
+  // The trait might already be imported, possibly under a different name. If so, determine the
+  // local name of the imported trait.
+  const allImports = findAllMatchingNodes(file, {filter: ts.isImportDeclaration});
+  const existingImportName: string|null =
+      hasImport(tsChecker, allImports, newImport.symbolName, tsFileToImport);
+  if (existingImportName !== null) {
+    return [[], existingImportName];
+  }
+
+  // If the trait has not already been imported, we need to insert the new import.
+  const existingImportDeclaration = allImports.find(
+      decl => moduleSpecifierPointsToFile(tsChecker, decl.moduleSpecifier, tsFileToImport));
+  const importName = nonCollidingImportName(allImports, newImport.symbolName);
+
+  if (existingImportDeclaration !== undefined) {
+    // Update an existing import declaration.
+    const bindings = existingImportDeclaration.importClause?.namedBindings;
+    if (bindings === undefined || ts.isNamespaceImport(bindings)) {
+      // This should be impossible. If a namespace import is present, the symbol was already
+      // considered imported above.
+      console.error(`Unexpected namespace import ${existingImportDeclaration.getText()}`);
+      return [[], ''];
+    }
+    let span = {start: bindings.getStart(), length: bindings.getWidth()};
+    const updatedBindings = updateImport(bindings, newImport.symbolName, importName);
+    const importString = printNode(updatedBindings, file);
+    return [[{span, newText: importString}], importName];
+  }
+
+  // Find the last import in the file.
+  let lastImport: ts.ImportDeclaration|null = null;
+  file.forEachChild(child => {
+    if (ts.isImportDeclaration(child)) lastImport = child;
+  });
+
+  // Generate a new import declaration, and insert it after the last import declaration, only
+  // looking at root nodes in the AST. If no import exists, place it at the start of the file.
+  let span: ts.TextSpan = {start: 0, length: 0};
+  if (lastImport as any !== null) {  // TODO: Why does the compiler insist this is null?
+    span.start = lastImport!.getStart() + lastImport!.getWidth();
+  }
+  const newImportDeclaration =
+      generateImport(newImport.symbolName, importName, newImport.moduleSpecifier);
+  const importString = '\n' + printNode(newImportDeclaration, file);
+  return [[{span, newText: importString}], importName];
+}
+
+/**
+ * Updates a given Angular trait, such as an NgModule or standalone Component, by adding
+ * `importName` to the list of imports on the decorator arguments.
+ */
+export function updateImportsForAngularTrait(
+    checker: TemplateTypeChecker, trait: ts.ClassDeclaration, importName: string): ts.TextChange[] {
+  // Get the object with arguments passed into the primary Angular decorator for this trait.
+  const decorator = checker.getPrimaryAngularDecorator(trait);
+  if (decorator === null) {
+    return [];
+  }
+  const decoratorProps = findFirstMatchingNode(decorator, {filter: ts.isObjectLiteralExpression});
+  if (decoratorProps === null) {
+    return [];
+  }
+
+  let updateRequired = true;
+  // Update the trait's imports.
+  const newDecoratorProps =
+      updateObjectValueForKey(decoratorProps, 'imports', (oldValue?: ts.Expression) => {
+        if (oldValue && !ts.isArrayLiteralExpression(oldValue)) {
+          return oldValue;
+        }
+        const newArr = ensureArrayWithIdentifier(ts.factory.createIdentifier(importName), oldValue);
+        updateRequired = newArr !== null;
+        return newArr!;
+      });
+
+  if (!updateRequired) {
+    return [];
+  }
+  return [{
+    span: {
+      start: decoratorProps.getStart(),
+      length: decoratorProps.getEnd() - decoratorProps.getStart()
+    },
+    newText: printNode(newDecoratorProps, trait.getSourceFile())
+  }];
+}
+
+/**
+ * Return whether a given Angular decorator specifies `standalone: true`.
+ */
+export function isStandaloneDecorator(decorator: ts.Decorator): boolean|null {
+  const decoratorProps = findFirstMatchingNode(decorator, {filter: ts.isObjectLiteralExpression});
+  if (decoratorProps === null) {
+    return null;
+  }
+
+  for (const property of decoratorProps.properties) {
+    if (!ts.isPropertyAssignment(property)) {
+      continue;
+    }
+    // TODO(dylhunn): What if this is a dynamically evaluated expression?
+    if (property.name.getText() === 'standalone' && property.initializer.getText() === 'true') {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 /**
  * Generate a new import. Follows the format:
