@@ -11,8 +11,8 @@ import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {ActivationEnd, ChildActivationEnd, Event} from '../events';
+import {NavigationTransition} from '../navigation_transition';
 import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
-import {NavigationTransition} from '../router';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state';
 import {forEach} from '../utils/collection';

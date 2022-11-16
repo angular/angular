@@ -11,7 +11,7 @@ import {EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 
 import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {ResolveData, Route} from '../models';
-import {NavigationTransition} from '../router';
+import {NavigationTransition} from '../navigation_transition';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
 import {RouteTitleKey} from '../shared';
 import {wrapIntoObservable} from '../utils/collection';
