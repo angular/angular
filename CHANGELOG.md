@@ -1,5 +1,8 @@
 <a name="15.0.0"></a>
 # 15.0.0 (2022-11-16)
+
+[Blog post "Angular v15 is now available"](http://goo.gle/angular-v15).
+
 ## Breaking Changes
 ### compiler
 - Keyframes names are now prefixed with the component's "scope name".
