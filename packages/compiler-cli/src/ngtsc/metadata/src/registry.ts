@@ -9,7 +9,7 @@
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {DirectiveMeta, MetadataReaderWithIndex, MetadataRegistry, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, MetadataReaderWithIndex, MetadataRegistry, MetaKind, NgModuleMeta, PipeMeta} from './api';
 
 /**
  * A registry of directive, pipe, and module metadata for types defined in the current compilation
@@ -40,8 +40,15 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReaderWi
     this.pipes.set(meta.ref.node, meta);
   }
 
-  getKnownDirectives(): Iterable<ClassDeclaration> {
-    return this.directives.keys();
+  getKnown(kind: MetaKind): Iterable<ClassDeclaration> {
+    switch (kind) {
+      case MetaKind.Directive:
+        return this.directives.keys();
+      case MetaKind.Pipe:
+        return this.pipes.keys();
+      case MetaKind.NgModule:
+        return this.ngModules.keys();
+    }
   }
 }
 

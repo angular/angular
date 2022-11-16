@@ -135,9 +135,9 @@ export interface TemplateTypeChecker {
   getPotentialTemplateDirectives(component: ts.ClassDeclaration): PotentialDirective[];
 
   /**
-   * Get basic metadata on the pipes which are in scope for the given component.
+   * Get basic metadata on the pipes which are in scope or can be imported for the given component.
    */
-  getPipesInScope(component: ts.ClassDeclaration): PotentialPipe[]|null;
+  getPotentialPipes(component: ts.ClassDeclaration): PotentialPipe[];
 
   /**
    * Retrieve a `Map` of potential template element tags, to either the `PotentialDirective` that

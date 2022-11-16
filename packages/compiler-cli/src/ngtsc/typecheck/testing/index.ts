@@ -577,8 +577,13 @@ function getFakeMetadataReader(fakeMetadataRegistry: Map<any, DirectiveMeta|null
         null {
           return fakeMetadataRegistry.get(node.debugName) ?? null;
         },
-    getKnownDirectives(): Iterable<ClassDeclaration> {
-      return fakeMetadataRegistry.keys();
+    getKnown(kind: MetaKind): Iterable<ClassDeclaration> {
+      switch (kind) {
+        case MetaKind.Directive:
+          return fakeMetadataRegistry.keys();
+        default:
+          return [];
+      }
     }
   } as MetadataReaderWithIndex;
 }
