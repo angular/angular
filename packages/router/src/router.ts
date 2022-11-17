@@ -8,14 +8,14 @@
 
 import {Location} from '@angular/common';
 import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {Observable, of, SubscriptionLike} from 'rxjs';
+import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
 import {INPUT_BINDER} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
-import {Event, IMPERATIVE_NAVIGATION, NavigationTrigger} from './events';
+import {BeforeActivateRoutes, Event, IMPERATIVE_NAVIGATION, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, NavigationTrigger, PrivateRouterEvents, RedirectRequest, RoutesRecognized} from './events';
 import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
-import {Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
+import {isBrowserTriggeredNavigation, Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
 import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ROUTER_CONFIGURATION} from './router_config';
@@ -162,6 +162,12 @@ export class Router {
   private isNgZoneEnabled: boolean = false;
 
   /**
+   * The private `Subject` type for the public events exposed in the getter. This is used internally
+   * to push events to. The separate field allows us to expose separate types in the public API
+   * (i.e., an Observable rather than the Subject).
+   */
+  private _events = new Subject<Event>();
+  /**
    * An event stream for routing events.
    */
   public get events(): Observable<Event> {
@@ -169,7 +175,7 @@ export class Router {
     // cleanup: tests are doing `(route.events as Subject<Event>).next(...)`. This isn't
     // allowed/supported but we still have to fix these or file bugs against the teams before making
     // the change.
-    return this.navigationTransitions.events;
+    return this._events;
   }
   /**
    * The current state of routing in this NgModule.
@@ -329,14 +335,109 @@ export class Router {
 
     this.routerState = createEmptyState(this.currentUrlTree, null);
 
-    this.navigationTransitions.setupNavigations(this).subscribe(
-        t => {
-          this.lastSuccessfulId = t.id;
-          this.currentPageId = this.browserPageId;
-        },
-        e => {
-          this.console.warn(`Unhandled Navigation Error: ${e}`);
-        });
+    this.navigationTransitions.setupNavigations(this, this.currentUrlTree, this.routerState)
+        .subscribe(
+            t => {
+              this.lastSuccessfulId = t.id;
+              this.currentPageId = this.browserPageId;
+            },
+            e => {
+              this.console.warn(`Unhandled Navigation Error: ${e}`);
+            });
+    this.subscribeToNavigationEvents();
+  }
+
+
+  private eventsSubscription = new Subscription();
+  private subscribeToNavigationEvents() {
+    const subscription = this.navigationTransitions.events.subscribe(e => {
+      try {
+        const {currentTransition} = this.navigationTransitions;
+        if (currentTransition === null) {
+          if (isPublicRouterEvent(e)) {
+            this._events.next(e);
+          }
+          return;
+        }
+
+        if (e instanceof NavigationStart) {
+          // If the source of the navigation is from a browser event, the URL is
+          // already updated. We already need to sync the internal state.
+          if (isBrowserTriggeredNavigation(currentTransition.source)) {
+            this.browserUrlTree = currentTransition.extractedUrl;
+          }
+        } else if (e instanceof NavigationSkipped) {
+          this.rawUrlTree = currentTransition.rawUrl;
+        } else if (e instanceof RoutesRecognized) {
+          if (this.urlUpdateStrategy === 'eager') {
+            if (!currentTransition.extras.skipLocationChange) {
+              const rawUrl = this.urlHandlingStrategy.merge(
+                  currentTransition.urlAfterRedirects!, currentTransition.rawUrl);
+              this.setBrowserUrl(rawUrl, currentTransition);
+            }
+            this.browserUrlTree = currentTransition.urlAfterRedirects!;
+          }
+        } else if (e instanceof BeforeActivateRoutes) {
+          this.currentUrlTree = currentTransition.urlAfterRedirects!;
+          this.rawUrlTree = this.urlHandlingStrategy.merge(
+              currentTransition.urlAfterRedirects!, currentTransition.rawUrl);
+          (this as {routerState: RouterState}).routerState = currentTransition.targetRouterState!;
+          if (this.urlUpdateStrategy === 'deferred') {
+            if (!currentTransition.extras.skipLocationChange) {
+              this.setBrowserUrl(this.rawUrlTree, currentTransition);
+            }
+            this.browserUrlTree = currentTransition.urlAfterRedirects!;
+          }
+        } else if (e instanceof NavigationCancel) {
+          if (e.code !== NavigationCancellationCode.Redirect &&
+              e.code !== NavigationCancellationCode.SupersededByNewNavigation) {
+            // It seems weird that `navigated` is set to `true` when the navigation is rejected,
+            // however it's how things were written initially. Investigation would need to be done
+            // to determine if this can be removed.
+            this.navigated = true;
+          }
+          if (e.code === NavigationCancellationCode.GuardRejected ||
+              e.code === NavigationCancellationCode.NoDataFromResolver) {
+            this.restoreHistory(currentTransition);
+          }
+        } else if (e instanceof RedirectRequest) {
+          const mergedTree = this.urlHandlingStrategy.merge(e.url, currentTransition.currentRawUrl);
+          const extras = {
+            skipLocationChange: currentTransition.extras.skipLocationChange,
+            // The URL is already updated at this point if we have 'eager' URL
+            // updates or if the navigation was triggered by the browser (back
+            // button, URL bar, etc). We want to replace that item in history
+            // if the navigation is rejected.
+            replaceUrl: this.urlUpdateStrategy === 'eager' ||
+                isBrowserTriggeredNavigation(currentTransition.source)
+          };
+
+          this.scheduleNavigation(mergedTree, IMPERATIVE_NAVIGATION, null, extras, {
+            resolve: currentTransition.resolve,
+            reject: currentTransition.reject,
+            promise: currentTransition.promise
+          });
+        }
+
+        if (e instanceof NavigationError) {
+          this.restoreHistory(currentTransition, true);
+        }
+
+        if (e instanceof NavigationEnd) {
+          this.navigated = true;
+        }
+
+        // Note that it's important to have the Router process the events _before_ the event is
+        // pushed through the public observable. This ensures the correct router state is in place
+        // before applications observe the events.
+        if (isPublicRouterEvent(e)) {
+          this._events.next(e);
+        }
+      } catch (e: unknown) {
+        this.navigationTransitions.transitionAbortSubject.next(e as Error);
+      }
+    });
+    this.eventsSubscription.add(subscription);
   }
 
   /** @internal */
@@ -474,6 +575,7 @@ export class Router {
       this.locationSubscription = undefined;
     }
     this.disposed = true;
+    this.eventsSubscription.unsubscribe();
   }
 
   /**
@@ -741,6 +843,7 @@ export class Router {
       restoredState,
       currentUrlTree: this.currentUrlTree,
       currentRawUrl: this.currentUrlTree,
+      currentBrowserUrl: this.browserUrlTree,
       rawUrl,
       extras,
       resolve,
@@ -850,4 +953,8 @@ function validateCommands(commands: string[]): void {
               `The requested path contains ${cmd} segment at index ${i}`);
     }
   }
+}
+
+function isPublicRouterEvent(e: Event|PrivateRouterEvents): e is Event {
+  return (!(e instanceof BeforeActivateRoutes) && !(e instanceof RedirectRequest));
 }
