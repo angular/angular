@@ -175,9 +175,6 @@ export class Router {
    * @internal
    */
   browserUrlTree: UrlTree;
-  /** @internal */
-  readonly transitions: BehaviorSubject<NavigationTransition>;
-  private navigations: Observable<NavigationTransition>;
   private disposed = false;
 
   private locationSubscription?: SubscriptionLike;
@@ -208,7 +205,11 @@ export class Router {
    * An event stream for routing events.
    */
   public get events(): Observable<Event> {
-    return this.navigationTransitions.events.asObservable();
+    // TODO(atscott): This _should_ be events.asObservable(). However, this change requires internal
+    // cleanup: tests are doing `(route.events as Subject<Event>).next(...)`. This isn't
+    // allowed/supported but we still have to fix these or file bugs against the teams before making
+    // the change.
+    return this.navigationTransitions.events;
   }
   /**
    * The current state of routing in this NgModule.
@@ -372,29 +373,14 @@ export class Router {
 
     this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
 
-    this.transitions = new BehaviorSubject<NavigationTransition>({
-      id: 0,
-      targetPageId: 0,
-      currentUrlTree: this.currentUrlTree,
-      extractedUrl: this.urlHandlingStrategy.extract(this.currentUrlTree),
-      urlAfterRedirects: this.urlHandlingStrategy.extract(this.currentUrlTree),
-      rawUrl: this.currentUrlTree,
-      extras: {},
-      resolve: null,
-      reject: null,
-      promise: Promise.resolve(true),
-      source: 'imperative',
-      restoredState: null,
-      currentSnapshot: this.routerState.snapshot,
-      targetSnapshot: null,
-      currentRouterState: this.routerState,
-      targetRouterState: null,
-      guards: {canActivateChecks: [], canDeactivateChecks: []},
-      guardsResult: null,
-    });
-    this.navigations = this.navigationTransitions.setupNavigations(this.transitions, this);
-
-    this.processNavigations();
+    this.navigationTransitions.setupNavigations(this).subscribe(
+        t => {
+          this.lastSuccessfulId = t.id;
+          this.currentPageId = t.targetPageId;
+        },
+        e => {
+          this.console.warn(`Unhandled Navigation Error: ${e}`);
+        });
   }
 
   /**
@@ -409,7 +395,8 @@ export class Router {
   }
 
   private setTransition(t: Partial<NavigationTransition>): void {
-    this.transitions.next({...this.transitions.value, ...t});
+    this.navigationTransitions.transitions?.next(
+        {...this.navigationTransitions.transitions?.value, ...t});
   }
 
   /**
@@ -512,7 +499,7 @@ export class Router {
 
   /** Disposes of the router. */
   dispose(): void {
-    this.transitions.complete();
+    this.navigationTransitions.transitions?.complete();
     if (this.locationSubscription) {
       this.locationSubscription.unsubscribe();
       this.locationSubscription = undefined;
@@ -724,17 +711,6 @@ export class Router {
       }
       return result;
     }, {});
-  }
-
-  private processNavigations(): void {
-    this.navigations.subscribe(
-        t => {
-          this.lastSuccessfulId = t.id;
-          this.currentPageId = t.targetPageId;
-        },
-        e => {
-          this.console.warn(`Unhandled Navigation Error: ${e}`);
-        });
   }
 
   /** @internal */

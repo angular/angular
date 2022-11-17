@@ -239,6 +239,7 @@ export interface NavigationTransition {
   targetPageId: number;
   currentUrlTree: UrlTree;
   extractedUrl: UrlTree;
+  currentRawUrl: UrlTree;
   urlAfterRedirects?: UrlTree;
   rawUrl: UrlTree;
   extras: NavigationExtras;
@@ -265,7 +266,6 @@ interface InternalRouterInterface {
   browserUrlTree: UrlTree;
   currentUrlTree: UrlTree;
   rawUrlTree: UrlTree;
-  transitions: BehaviorSubject<NavigationTransition>;
   navigationId: number;
   readonly routerState: RouterState;
   errorHandler: ErrorHandler;
@@ -297,6 +297,10 @@ export class NavigationTransitions {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
+  private _transitions?: BehaviorSubject<NavigationTransition>;
+  get transitions(): BehaviorSubject<NavigationTransition>|undefined {
+    return this._transitions;
+  }
 
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
@@ -305,9 +309,29 @@ export class NavigationTransitions {
     this.configLoader.onLoadStartListener = onLoadStart;
   }
 
-  setupNavigations(transitions: Observable<NavigationTransition>, router: InternalRouterInterface):
-      Observable<NavigationTransition> {
-    return transitions.pipe(
+  setupNavigations(router: InternalRouterInterface): Observable<NavigationTransition> {
+    this._transitions = new BehaviorSubject<NavigationTransition>({
+      id: 0,
+      targetPageId: 0,
+      currentUrlTree: router.currentUrlTree,
+      currentRawUrl: router.currentUrlTree,
+      extractedUrl: router.urlHandlingStrategy.extract(router.currentUrlTree),
+      urlAfterRedirects: router.urlHandlingStrategy.extract(router.currentUrlTree),
+      rawUrl: router.currentUrlTree,
+      extras: {},
+      resolve: null,
+      reject: null,
+      promise: Promise.resolve(true),
+      source: 'imperative',
+      restoredState: null,
+      currentSnapshot: router.routerState.snapshot,
+      targetSnapshot: null,
+      currentRouterState: router.routerState,
+      targetRouterState: null,
+      guards: {canActivateChecks: [], canDeactivateChecks: []},
+      guardsResult: null,
+    });
+    return this._transitions.pipe(
                filter(t => t.id !== 0),
 
                // Extract URL
@@ -354,8 +378,8 @@ export class NavigationTransitions {
                                      t.rawUrl} was ignored because it is the same as the current Router URL.` :
                                  '';
                              this.events.next(new NavigationSkipped(
-                                 t.id, router.serializeUrl(overallTransitionState.rawUrl),
-                                 reason, NavigationSkippedCode.IgnoredSameUrlNavigation));
+                                 t.id, router.serializeUrl(overallTransitionState.rawUrl), reason,
+                                 NavigationSkippedCode.IgnoredSameUrlNavigation));
                              router.rawUrlTree = t.rawUrl;
                              t.resolve(null);
                              return EMPTY;
@@ -370,11 +394,11 @@ export class NavigationTransitions {
                              return of(t).pipe(
                                  // Fire NavigationStart event
                                  switchMap(t => {
-                                   const transition = router.transitions.getValue();
+                                   const transition = this.transitions?.getValue();
                                    this.events.next(new NavigationStart(
                                        t.id, this.urlSerializer.serialize(t.extractedUrl), t.source,
                                        t.restoredState));
-                                   if (transition !== router.transitions.getValue()) {
+                                   if (transition !== this.transitions?.getValue()) {
                                      return EMPTY;
                                    }
 
@@ -425,19 +449,17 @@ export class NavigationTransitions {
                                  }));
                            } else if (
                                urlTransition &&
-                               router.urlHandlingStrategy.shouldProcessUrl(
-                                   router.rawUrlTree)) {
+                               router.urlHandlingStrategy.shouldProcessUrl(router.rawUrlTree)) {
                              /* When the current URL shouldn't be processed, but the previous one
                               * was, we handle this "error condition" by navigating to the
                               * previously successful URL, but leaving the URL intact.*/
-                               const {id, extractedUrl, source, restoredState, extras} = t;
-                               const navStart = new NavigationStart(
-                                   id, this.urlSerializer.serialize(extractedUrl), source,
-                                   restoredState);
-                               this.events.next(navStart);
-                               const targetSnapshot =
-                                   createEmptyState(extractedUrl, router.rootComponentType)
-                                       .snapshot;
+                             const {id, extractedUrl, source, restoredState, extras} = t;
+                             const navStart = new NavigationStart(
+                                 id, this.urlSerializer.serialize(extractedUrl), source,
+                                 restoredState);
+                             this.events.next(navStart);
+                             const targetSnapshot =
+                                 createEmptyState(extractedUrl, router.rootComponentType).snapshot;
 
                              overallTransitionState = {
                                ...t,
@@ -459,8 +481,7 @@ export class NavigationTransitions {
                                          t.rawUrl} should be processed.` :
                                  '';
                              this.events.next(new NavigationSkipped(
-                                 t.id,
-                                 router.serializeUrl(overallTransitionState.extractedUrl),
+                                 t.id, router.serializeUrl(overallTransitionState.extractedUrl),
                                  reason, NavigationSkippedCode.IgnoredByUrlHandlingStrategy));
                              router.rawUrlTree = t.rawUrl;
                              t.resolve(null);
