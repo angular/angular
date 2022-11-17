@@ -700,4 +700,3 @@ export class NavigationTransitions {
 export function isBrowserTriggeredNavigation(source: 'imperative'|'popstate'|'hashchange') {
   return source !== 'imperative';
 }
- 
