@@ -13,6 +13,7 @@ import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {RouterTestingHarness} from '@angular/router/testing';
 import {concat, EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
@@ -1901,6 +1902,26 @@ describe('Integration', () => {
        expect(() => advance(fixture)).toThrow();
      })));
 
+  it('should not swallow errors from browser state update', async () => {
+    const routerEvents: Event[] = [];
+    TestBed.inject(Router).resetConfig([{path: '**', component: BlankCmp}]);
+    TestBed.inject(Router).events.subscribe((e) => {
+      routerEvents.push(e);
+    });
+    spyOn(TestBed.inject(Location), 'go').and.callFake(() => {
+      throw new Error();
+    });
+    try {
+      await RouterTestingHarness.create('/abc123');
+    } catch {
+    }
+    // Ensure the first event is the start and that we get to the ResolveEnd event. If this is not
+    // true, then NavigationError may have been triggered at a time we don't expect here.
+    expect(routerEvents[0]).toBeInstanceOf(NavigationStart);
+    expect(routerEvents[routerEvents.length - 2]).toBeInstanceOf(ResolveEnd);
+
+    expect(routerEvents[routerEvents.length - 1]).toBeInstanceOf(NavigationError);
+  });
 
   it('should replace state when path is equal to current path',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
