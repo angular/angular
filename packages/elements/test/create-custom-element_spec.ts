@@ -49,7 +49,7 @@ if (browserDetection.supportsCustomElements) {
 
     afterAll(() => {
       destroyPlatform();
-      document.body.removeChild(testContainer);
+      testContainer.remove();
       (testContainer as any) = null;
     });
 

@@ -338,7 +338,7 @@ describe('EventManager', () => {
     expect(timeoutId).not.toBe(null);
 
     // cleanup the DOM by removing the test element we attached earlier.
-    doc.body.removeChild(element);
+    element.remove();
     timeoutId && clearTimeout(timeoutId);
   });
 

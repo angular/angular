@@ -71,8 +71,7 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
             const delay = 5000;
             win.console.warn(
                 `\n[${new Date().toISOString()}] Retrying to load "${scriptUrl}" in ${delay}ms...`);
-
-            document.body.removeChild(script);
+            script.remove();
             setTimeout(() => loadScript(scriptUrl, --retry).then(resolve, reject), delay);
           } : () => {
             // Whenever the script failed loading, browsers will just pass an "ErrorEvent" which
@@ -84,7 +83,7 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
             reject(`An error occurred while loading "${scriptUrl}".`);
           };
           script.onload = () => {
-            document.body.removeChild(script);
+            script.remove();
             resolve();
           };
           script.src = `base/npm/node_modules/${scriptUrl}`;

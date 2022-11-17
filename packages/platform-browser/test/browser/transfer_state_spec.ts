@@ -13,10 +13,7 @@ import {escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/
 
 (function() {
 function removeScriptTag(doc: Document, id: string) {
-  const existing = doc.getElementById(id);
-  if (existing) {
-    doc.body.removeChild(existing);
-  }
+  doc.getElementById(id)?.remove();
 }
 
 function addScriptTag(doc: Document, appId: string, data: {}) {

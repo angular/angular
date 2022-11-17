@@ -65,9 +65,8 @@ describe('AnimationRenderer', () => {
   it('should hook into the engine\'s insert operations when removing children', () => {
     const renderer = makeRenderer();
     const engine = TestBed.inject(AnimationEngine) as MockAnimationEngine;
-    const container = el('<div></div>');
 
-    renderer.removeChild(container, element);
+    renderer.removeChild(null, element);
     expect(engine.captures['onRemove'].pop()).toEqual([element]);
   });
 

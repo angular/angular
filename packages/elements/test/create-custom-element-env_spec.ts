@@ -22,7 +22,7 @@ if (browserDetection.supportsCustomElements) {
     });
 
     afterEach(() => {
-      document.body.removeChild(testContainer);
+      testContainer.remove();
       (testContainer as any) = null;
     });
 

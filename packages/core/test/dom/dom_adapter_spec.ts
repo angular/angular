@@ -50,7 +50,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
           headEl.appendChild(baseEl);
 
           const baseHref = getDOM().getBaseHref(defaultDoc);
-          headEl.removeChild(baseEl);
+          baseEl.remove();
           getDOM().resetBaseElement();
 
           expect(baseHref).toEqual('/drop/bass/connon/');
@@ -63,7 +63,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
           headEl.appendChild(baseEl);
 
           const baseHref = getDOM().getBaseHref(defaultDoc)!;
-          headEl.removeChild(baseEl);
+          baseEl.remove();
           getDOM().resetBaseElement();
 
           expect(baseHref.endsWith('/base')).toBe(true);

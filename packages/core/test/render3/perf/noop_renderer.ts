@@ -16,9 +16,7 @@ export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
   parentNode: RNode|null = null;
   parentElement: RElement|null = null;
   nextSibling: RNode|null = null;
-  removeChild(oldChild: RNode): RNode {
-    return oldChild;
-  }
+  remove(): void {}
   insertBefore(newChild: RNode, refChild: RNode|null, isViewRoot: boolean): void {}
   appendChild(newChild: RNode): RNode {
     return newChild;
@@ -121,9 +119,7 @@ class MicroBenchmarkDomRenderer implements Renderer {
   }
 
   removeChild(parent: any, oldChild: any): void {
-    if (parent) {
-      parent.removeChild(oldChild);
-    }
+    oldChild.remove();
   }
 
   selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {

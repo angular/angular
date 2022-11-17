@@ -278,7 +278,7 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
     if (inertBodyElement) {
       const parent = getTemplateContent(inertBodyElement) || inertBodyElement;
       while (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
+        parent.firstChild.remove();
       }
     }
   }

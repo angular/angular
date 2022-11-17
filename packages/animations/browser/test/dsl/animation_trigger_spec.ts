@@ -30,7 +30,7 @@ import {makeTrigger} from '../shared';
     });
 
     afterEach(() => {
-      document.body.removeChild(element);
+      element.remove();
     });
 
     describe('trigger validation', () => {

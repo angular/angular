@@ -99,10 +99,8 @@ class DefaultServerRenderer2 implements Renderer2 {
     }
   }
 
-  removeChild(parent: any, oldChild: any): void {
-    if (parent) {
-      parent.removeChild(oldChild);
-    }
+  removeChild(_parent: any, oldChild: any): void {
+    oldChild.remove();
   }
 
   selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
@@ -113,7 +111,7 @@ class DefaultServerRenderer2 implements Renderer2 {
     }
     if (!preserveContent) {
       while (el.firstChild) {
-        el.removeChild(el.firstChild);
+        el.firstChild.remove();
       }
     }
     return el;

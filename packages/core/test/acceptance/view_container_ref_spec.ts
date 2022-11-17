@@ -2461,9 +2461,7 @@ describe('ViewContainerRef', () => {
           containerEl!.appendChild(rootEl);
         },
         removeAllRootElements() {
-          if (containerEl) {
-            containerEl.parentNode?.removeChild(containerEl);
-          }
+          containerEl?.remove();
         }
       };
     }

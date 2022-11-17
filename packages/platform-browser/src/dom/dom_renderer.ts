@@ -180,10 +180,8 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  removeChild(parent: any, oldChild: any): void {
-    if (parent) {
-      parent.removeChild(oldChild);
-    }
+  removeChild(_parent: any, oldChild: any): void {
+    oldChild.remove();
   }
 
   selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
@@ -351,8 +349,8 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   override insertBefore(parent: any, newChild: any, refChild: any): void {
     return super.insertBefore(this.nodeOrShadowRoot(parent), newChild, refChild);
   }
-  override removeChild(parent: any, oldChild: any): void {
-    return super.removeChild(this.nodeOrShadowRoot(parent), oldChild);
+  override removeChild(_parent: any, oldChild: any): void {
+    return super.removeChild(null, oldChild);
   }
   override parentNode(node: any): any {
     return this.nodeOrShadowRoot(super.parentNode(this.nodeOrShadowRoot(node)));
