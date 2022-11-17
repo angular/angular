@@ -14,6 +14,7 @@ import {createUrlTree} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
 import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationTrigger, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
 import {NavigationBehaviorOptions, Route, Routes} from './models';
+import {Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
 import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
@@ -25,7 +26,6 @@ import {UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
 import {standardizeConfig, validateConfig} from './utils/config';
-import { Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions } from './navigation_transition';
 
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
@@ -844,10 +844,13 @@ export class Router {
   }
 
   /** @internal */
-  setBrowserUrl(url: UrlTree, t: NavigationTransition) {
+  setBrowserUrl(url: UrlTree, transition: NavigationTransition) {
     const path = this.urlSerializer.serialize(url);
-    const state = {...t.extras.state, ...this.generateNgRouterState(t.id, t.targetPageId)};
-    if (this.location.isCurrentPathEqualTo(path) || !!t.extras.replaceUrl) {
+    const state = {
+      ...transition.extras.state,
+      ...this.generateNgRouterState(transition.id, transition.targetPageId)
+    };
+    if (this.location.isCurrentPathEqualTo(path) || !!transition.extras.replaceUrl) {
       this.location.replaceState(path, '', state);
     } else {
       this.location.go(path, '', state);
@@ -859,16 +862,16 @@ export class Router {
    * state before the transition.
    * @internal
    */
-  restoreHistory(t: NavigationTransition, restoringFromCaughtError = false) {
+  restoreHistory(transition: NavigationTransition, restoringFromCaughtError = false) {
     if (this.canceledNavigationResolution === 'computed') {
-      const targetPagePosition = this.currentPageId - t.targetPageId;
+      const targetPagePosition = this.currentPageId - transition.targetPageId;
       // The navigator change the location before triggered the browser event,
       // so we need to go back to the current url if the navigation is canceled.
       // Also, when navigation gets cancelled while using url update strategy eager, then we need to
       // go back. Because, when `urlUpdateStrategy` is `eager`; `setBrowserUrl` method is called
       // before any verification.
       const browserUrlUpdateOccurred =
-          (t.source === 'popstate' || this.urlUpdateStrategy === 'eager' ||
+          (transition.source === 'popstate' || this.urlUpdateStrategy === 'eager' ||
            this.currentUrlTree === this.getCurrentNavigation()?.finalUrl);
       if (browserUrlUpdateOccurred && targetPagePosition !== 0) {
         this.location.historyGo(targetPagePosition);
@@ -878,10 +881,10 @@ export class Router {
         // We got to the activation stage (where currentUrlTree is set to the navigation's
         // finalUrl), but we weren't moving anywhere in history (skipLocationChange or replaceUrl).
         // We still need to reset the router state back to what it was when the navigation started.
-        this.resetState(t);
+        this.resetState(transition);
         // TODO(atscott): resetting the `browserUrlTree` should really be done in `resetState`.
         // Investigate if this can be done by running TGP.
-        this.browserUrlTree = t.currentUrlTree;
+        this.browserUrlTree = transition.currentUrlTree;
         this.resetUrlToCurrentUrlTree();
       } else {
         // The browser URL and router state was not updated before the navigation cancelled so
@@ -893,7 +896,7 @@ export class Router {
       // reject. For 'eager' navigations, it seems like we also really should reset the state
       // because the navigation was cancelled. Investigate if this can be done by running TGP.
       if (restoringFromCaughtError) {
-        this.resetState(t);
+        this.resetState(transition);
       }
       this.resetUrlToCurrentUrlTree();
     }
@@ -918,10 +921,11 @@ export class Router {
 
   /** @internal */
   cancelNavigationTransition(
-      t: NavigationTransition, reason: string, code: NavigationCancellationCode) {
-    const navCancel = new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), reason, code);
+      transition: NavigationTransition, reason: string, code: NavigationCancellationCode) {
+    const navCancel = new NavigationCancel(
+        transition.id, this.serializeUrl(transition.extractedUrl), reason, code);
     this.triggerEvent(navCancel);
-    t.resolve(false);
+    transition.resolve(false);
   }
 
   private generateNgRouterState(navigationId: number, routerPageId?: number) {
