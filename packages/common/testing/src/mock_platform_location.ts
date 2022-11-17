@@ -105,6 +105,7 @@ export const MOCK_PLATFORM_LOCATION_CONFIG =
 export class MockPlatformLocation implements PlatformLocation {
   private baseHref: string = '';
   private hashUpdate = new Subject<LocationChangeEvent>();
+  private popStateSubject = new Subject<LocationChangeEvent>();
   private urlChangeIndex: number = 0;
   private urlChanges: {
     hostname: string,
@@ -155,9 +156,8 @@ export class MockPlatformLocation implements PlatformLocation {
   }
 
   onPopState(fn: LocationChangeListener): VoidFunction {
-    // No-op: a state stack is not implemented, so
-    // no events will ever come.
-    return () => {};
+    const subscription = this.popStateSubject.subscribe(fn);
+    return () => subscription.unsubscribe();
   }
 
   onHashChange(fn: LocationChangeListener): VoidFunction {
@@ -204,7 +204,7 @@ export class MockPlatformLocation implements PlatformLocation {
     if (this.urlChangeIndex < this.urlChanges.length) {
       this.urlChangeIndex++;
     }
-    this.scheduleHashUpdate(oldHash, oldUrl);
+    this.emitEvents(oldHash, oldUrl);
   }
 
   back(): void {
@@ -213,7 +213,7 @@ export class MockPlatformLocation implements PlatformLocation {
     if (this.urlChangeIndex > 0) {
       this.urlChangeIndex--;
     }
-    this.scheduleHashUpdate(oldHash, oldUrl);
+    this.emitEvents(oldHash, oldUrl);
   }
 
   historyGo(relativePosition: number = 0): void {
@@ -223,22 +223,30 @@ export class MockPlatformLocation implements PlatformLocation {
     if (nextPageIndex >= 0 && nextPageIndex < this.urlChanges.length) {
       this.urlChangeIndex = nextPageIndex;
     }
-    this.scheduleHashUpdate(oldHash, oldUrl);
+    this.emitEvents(oldHash, oldUrl);
   }
 
   getState(): unknown {
     return this.state;
   }
 
-  private scheduleHashUpdate(oldHash: string, oldUrl: string) {
+  /**
+   * Browsers are inconsistent in when they fire events and perform the state updates
+   * The most easiest thing to do in our mock is synchronous and that happens to match
+   * Firefox and Chrome, at least somewhat closely
+   *
+   * https://github.com/WICG/navigation-api#watching-for-navigations
+   * https://docs.google.com/document/d/1Pdve-DJ1JCGilj9Yqf5HxRJyBKSel5owgOvUJqTauwU/edit#heading=h.3ye4v71wsz94
+   * popstate is always sent before hashchange:
+   * https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event#when_popstate_is_sent
+   */
+  private emitEvents(oldHash: string, oldUrl: string) {
+    this.popStateSubject.next(
+        {type: 'popstate', state: this.getState(), oldUrl, newUrl: this.url} as
+        LocationChangeEvent);
     if (oldHash !== this.hash) {
-      scheduleMicroTask(
-          () => this.hashUpdate.next(
-              {type: 'hashchange', state: null, oldUrl, newUrl: this.url} as LocationChangeEvent));
+      this.hashUpdate.next(
+          {type: 'hashchange', state: null, oldUrl, newUrl: this.url} as LocationChangeEvent);
     }
   }
-}
-
-export function scheduleMicroTask(cb: () => any) {
-  Promise.resolve().then(cb);
 }
