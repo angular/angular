@@ -157,8 +157,9 @@ describe('bootstrap', () => {
          }
        }
 
-       await Promise.all(
-           [platformBrowserDynamic([]).bootstrapModule(TestModule), navigationEndPromise]);
+       await expectAsync(Promise.all([
+         platformBrowserDynamic([]).bootstrapModule(TestModule), navigationEndPromise
+       ])).toBeResolved();
      });
 
   it('should wait for redirect when initialNavigation = enabledBlocking', async () => {
