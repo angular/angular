@@ -1,6 +1,5 @@
 // #docplaster
-import { Component, ContentChild, Injector, Input, OnInit, StaticProvider, TemplateRef } from '@angular/core';
-import { ReflectiveInjector } from '@angular/core';
+import { Component, ContentChild, Input, OnInit, TemplateRef } from '@angular/core';
 import {
   FormControl,
 } from '@angular/forms';
@@ -45,16 +44,3 @@ export class AppComponent implements OnInit {
     // #enddocregion reactive-form-example
   }
 }
-
-class InjectorExample {}
-
-const Provider  = [InjectorExample];
-const providers: StaticProvider[] = [Provider];
-
-// #docregion reflective-injector-deprecated-example
-ReflectiveInjector.resolveAndCreate(providers);
-// #enddocregion reflective-injector-deprecated-example
-
-// #docregion static-injector-example
-Injector.create({providers});
-// #enddocregion static-injector-example

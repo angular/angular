@@ -43,9 +43,7 @@ v16 - v19
 
 | Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
 |:---                                 |:---                                                                                                        |:---           |:---               |
-| `@angular/common`                   | [`ReflectiveInjector`](#reflectiveinjector)                                                                |  v8           | v11               |
 | `@angular/core`                     | [`DefaultIterableDiffer`](#core)                                                                           |  v7           | v11         |
-| `@angular/core`                     | [`ReflectiveKey`](#core)                                                                                   |  v8           | v11         |
 | `@angular/core`                     | [`defineInjectable`](#core)                                                                                |  v8           | v11         |
 | `@angular/core`                     | [`entryComponents`](api/core/NgModule)                                                                     |  v9           | v11         |
 | `@angular/core`                     | [`ANALYZE_FOR_ENTRY_COMPONENTS`](#core)                                                                    |  v9           | v11         |
@@ -157,9 +155,7 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 
 | API                                                                                                        | Replacement                                                                                                                                                       | Deprecation announced | Details |
 |:---                                                                                                        |:---                                                                                                                                                               |:---                   |:---     |
-| [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer)                                                  | n/a                                                                                                                                                               | v4                    | Not part of public API.                                                                                                                                                                                                                                            |
-| [`ReflectiveInjector`](api/core/ReflectiveInjector)                                                        | [`Injector.create()`](api/core/Injector#create)                                                                                                                   | v5                    | See [`ReflectiveInjector`](#reflectiveinjector)                                                                                                                                                                                                                    |
-| [`ReflectiveKey`](api/core/ReflectiveKey)                                                                  | none                                                                                                                                                              | v5                    | none                                                                                                                                                                                                                                                               |
+| [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer)                                                  | n/a                                                                                                                                                               | v4                    | Not part of public API.                                                                                                                                                                                                                                            |                                                                                                                                                                                                                                                            |
 | [`defineInjectable`](api/core/defineInjectable)                                                            | `ɵɵdefineInjectable`                                                                                                                                              | v8                    | Used only in generated code. No source code should depend on this API.                                                                                                                                                                                             |
 | [`entryComponents`](api/core/NgModule)                                                     | none                                                                                                                                                              | v9                    | See [`entryComponents`](#entryComponents)                                                                                                                                                                                                                          |
 | `ANALYZE_FOR_ENTRY_COMPONENTS`                                   | none                                                                                                                                                              | v9                    | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents)                                                                                                                                                                                                             |
@@ -353,20 +349,6 @@ You can choose to silence this warning by configuring `ReactiveFormsModule` at i
 Alternatively, you can choose to surface a separate warning for each instance of this pattern with a configuration value of `"always"`.
 This may help to track down where in the code the pattern is being used as the code is being updated.
 
-<a id="reflectiveinjector"></a>
-
-### `ReflectiveInjector`
-
-In version 5, Angular replaced the `ReflectiveInjector` with the `StaticInjector`.
-The injector no longer requires the Reflect polyfill, reducing application size for most developers.
-
-**Before**:
-
-<code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="reflective-injector-deprecated-example"></code-example>
-
-**After**:
-
-<code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="static-injector-example"></code-example>
 
 <a id="router-class-and-injection-token-guards"></a>
 

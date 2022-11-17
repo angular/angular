@@ -96,10 +96,6 @@
     "packages/core/src/di/r3_injector.ts"
   ],
   [
-    "packages/core/src/di/reflective_errors.ts",
-    "packages/core/src/di/reflective_injector.ts"
-  ],
-  [
     "packages/core/src/linker/component_factory_resolver.ts",
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/linker/ng_module_factory.ts"

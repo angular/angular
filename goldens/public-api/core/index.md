@@ -1223,34 +1223,6 @@ export class QueryList<T> implements Iterable<T> {
 // @public
 export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> | null;
 
-// @public @deprecated
-export abstract class ReflectiveInjector implements Injector {
-    abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
-    static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector): ReflectiveInjector;
-    // (undocumented)
-    abstract get(token: any, notFoundValue?: any): any;
-    abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
-    abstract get parent(): Injector | null;
-    static resolve(providers: Provider[]): ResolvedReflectiveProvider[];
-    static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector;
-    abstract resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
-    abstract resolveAndInstantiate(provider: Provider): any;
-}
-
-// @public @deprecated
-export class ReflectiveKey {
-    constructor(token: Object, id: number);
-    // (undocumented)
-    readonly displayName: string;
-    static get(token: Object): ReflectiveKey;
-    // (undocumented)
-    id: number;
-    // (undocumented)
-    static get numberOfKeys(): number;
-    // (undocumented)
-    token: Object;
-}
-
 // @public
 export abstract class Renderer2 {
     abstract addClass(el: any, name: string): void;
@@ -1300,22 +1272,6 @@ export interface RendererType2 {
     encapsulation: ViewEncapsulation;
     id: string;
     styles: string[];
-}
-
-// @public
-export class ResolvedReflectiveFactory {
-    constructor(
-    factory: Function,
-    dependencies: ReflectiveDependency[]);
-    dependencies: ReflectiveDependency[];
-    factory: Function;
-}
-
-// @public
-export interface ResolvedReflectiveProvider {
-    key: ReflectiveKey;
-    multiProvider: boolean;
-    resolvedFactories: ResolvedReflectiveFactory[];
 }
 
 // @public
