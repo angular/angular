@@ -669,7 +669,8 @@ export class Router {
     malformedUriErrorHandler: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
-    navigated: boolean;
+    get navigated(): boolean;
+    set navigated(value: boolean);
     // (undocumented)
     ngOnDestroy(): void;
     // @deprecated

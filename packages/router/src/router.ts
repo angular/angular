@@ -463,11 +463,23 @@ export class Router {
       (error: URIError, urlSerializer: UrlSerializer,
        url: string) => UrlTree = defaultMalformedUriErrorHandler;
 
+  private _navigated = false;
   /**
-   * True if at least one navigation event has occurred,
-   * false otherwise.
+   * True if at least one navigation has occurred, false otherwise.
    */
-  navigated: boolean = false;
+  get navigated() {
+    return this._navigated;
+  }
+  /**
+   * @deprecated The navigated property is not meant to be writable. If you want to force the
+   *     router to reprocess a URL during navigation, set `onSameUrlNavigation: 'reload'` in the
+   *     extra options of `Router.navigate`.
+   *
+   * @see NavigationBehaviorOptions
+   */
+  set navigated(value: boolean) {
+    this._navigated = value;
+  }
   private lastSuccessfulId: number = -1;
 
   /**

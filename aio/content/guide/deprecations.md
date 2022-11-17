@@ -379,8 +379,7 @@ The injector no longer requires the Reflect polyfill, reducing application size 
 <a id="router-writable-properties"></a>
 
 None of the public properties of the `Router` are meant to be writeable.
-They should all be configured using other methods, all of which have been
-documented.
+They should all be configured using other methods.
 
 The following strategies are meant to be configured by registering the
 application strategy in DI via the `providers` in the root `NgModule` or
@@ -402,6 +401,9 @@ available in `provideRouter`:
   There are currently no plans to make this available in `provideRouter`.
 * `errorHandler` - Developers should instead subscribe to `Router.events`
   and filter for `NavigationError`.
+
+The following properties are meant to be read-only:
+* navigated - This has been found to be used as a way to force the router to reprocess a URL when `onSameUrlNavigation` is set to `'ignore'`. Instead, set `onSameUrlNavigation: 'reload'` in the extra options of the `Router.navigate` method.
 
 <a id="relativeLinkResolution"></a>
 
