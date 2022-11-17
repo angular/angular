@@ -537,6 +537,66 @@ describe('standalone components, directives, and pipes', () => {
     expect(fixture.nativeElement.innerHTML).toBe('<div red="true">blue</div>');
   });
 
+  it('should support readonly arrays in @NgModule.imports and @NgModule.exports', () => {
+    @Directive({selector: '[red]', standalone: true, host: {'[attr.red]': 'true'}})
+    class RedIdDirective {}
+
+    @Pipe({name: 'blue', pure: true, standalone: true})
+    class BluePipe implements PipeTransform {
+      transform() {
+        return 'blue';
+      }
+    }
+
+    const DirAndPipe = [RedIdDirective, BluePipe] as const;
+
+    @NgModule({
+      imports: [DirAndPipe],
+      exports: [DirAndPipe],
+    })
+    class TestNgModule {}
+
+    @Component({
+      selector: 'uses-standalone',
+      template: `<div red>{{'' | blue}}</div>`,
+    })
+    class TestComponent {}
+
+    const fixture = TestBed.configureTestingModule({
+      declarations: [TestComponent],
+      imports: [TestNgModule],
+    }).createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toBe('<div red="true">blue</div>');
+  });
+
+  it('should support readonly arrays in TestBed testing module imports', () => {
+    @Directive({selector: '[red]', standalone: true, host: {'[attr.red]': 'true'}})
+    class RedIdDirective {}
+
+    @Pipe({name: 'blue', pure: true, standalone: true})
+    class BluePipe implements PipeTransform {
+      transform() {
+        return 'blue';
+      }
+    }
+
+    const DirAndPipe = [RedIdDirective, BluePipe] as const;
+
+    @Component({
+      selector: 'uses-standalone',
+      template: `<div red>{{'' | blue}}</div>`,
+    })
+    class TestComponent {}
+
+    const fixture = TestBed.configureTestingModule({
+      declarations: [TestComponent],
+      imports: [DirAndPipe],
+    }).createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toBe('<div red="true">blue</div>');
+  });
+
   it('should deduplicate declarations', () => {
     @Component({selector: 'test-red', standalone: true, template: 'red(<ng-content></ng-content>)'})
     class RedComponent {}

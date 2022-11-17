@@ -1173,9 +1173,9 @@ export type NgIterable<T> = Array<T> | Iterable<T>;
 export interface NgModule {
     bootstrap?: Array<Type<any> | any[]>;
     declarations?: Array<Type<any> | any[]>;
-    exports?: Array<Type<any> | any[]>;
+    exports?: Array<Type<any> | ReadonlyArray<any>>;
     id?: string;
-    imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
+    imports?: Array<Type<any> | ModuleWithProviders<{}> | ReadonlyArray<any>>;
     jit?: true;
     providers?: Array<Provider | EnvironmentProviders>;
     schemas?: Array<SchemaMetadata | any[]>;
