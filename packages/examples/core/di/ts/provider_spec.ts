@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from '@angular/core';
+import {Injectable, InjectionToken, Injector, Optional} from '@angular/core';
 
 {
   describe('Provider examples', () => {
@@ -18,9 +18,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
           salutation = 'Hello';
         }
 
-        const injector = ReflectiveInjector.resolveAndCreate([
-          Greeting,  // Shorthand for { provide: Greeting, useClass: Greeting }
-        ]);
+        const injector = Injector.create({providers: [{provide: Greeting, useClass: Greeting}]});
 
         expect(injector.get(Greeting).salutation).toBe('Hello');
         // #enddocregion
@@ -45,7 +43,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
           providers: [
             {provide: locale, multi: true, useValue: 'en'},
             {provide: locale, multi: true, useValue: 'sk'},
-          ]
+          ],
         });
 
         const locales: string[] = injector.get(locale);
@@ -65,7 +63,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
           override name = 'square';
         }
 
-        const injector = ReflectiveInjector.resolveAndCreate([{provide: Shape, useClass: Square}]);
+        const injector = Injector.create({providers: [{provide: Shape, useValue: new Square()}]});
 
         const shape: Shape = injector.get(Shape);
         expect(shape.name).toEqual('square');
@@ -83,8 +81,12 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
           override salutation = 'Greetings';
         }
 
-        const injector = ReflectiveInjector.resolveAndCreate(
-            [FormalGreeting, {provide: Greeting, useClass: FormalGreeting}]);
+        const injector = Injector.create({
+          providers: [
+            {provide: FormalGreeting, useClass: FormalGreeting},
+            {provide: Greeting, useClass: FormalGreeting},
+          ],
+        });
 
         // The injector returns different instances.
         // See: {provide: ?, useExisting: ?} if you want the same instance.
@@ -104,8 +106,9 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
           override name = 'square';
         }
 
-        const injector =
-            Injector.create({providers: [{provide: Shape, useClass: Square, deps: []}]});
+        const injector = Injector.create({
+          providers: [{provide: Shape, useClass: Square, deps: []}],
+        });
 
         const shape: Shape = injector.get(Shape);
         expect(shape.name).toEqual('square');
@@ -166,8 +169,9 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
 
         const injector = Injector.create({
           providers: [
-            {provide: FormalGreeting, deps: []}, {provide: Greeting, useExisting: FormalGreeting}
-          ]
+            {provide: FormalGreeting, deps: []},
+            {provide: Greeting, useExisting: FormalGreeting},
+          ],
         });
 
         expect(injector.get(Greeting).salutation).toEqual('Greetings');
