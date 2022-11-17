@@ -39,11 +39,15 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T>): T | null;
+    transform<T, K>(obj: Observable<T> | Subscribable<T> | Promise<T>, initialValue: K): T | K;
     // (undocumented)
-    transform<T>(obj: null | undefined): null;
+    transform<T>(obj: null | undefined, initialValue: T): T;
+    // (undocumented)
+    transform(obj: null | undefined): null;
     // (undocumented)
     transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T> | null | undefined): T | null;
+    // (undocumented)
+    transform<T, K>(obj: Observable<T> | Subscribable<T> | Promise<T> | null | undefined, initialValue?: K): T | K | null;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<AsyncPipe, never>;
     // (undocumented)

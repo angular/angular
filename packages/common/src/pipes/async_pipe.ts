@@ -14,6 +14,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 interface SubscriptionStrategy {
   createSubscription(async: Subscribable<any>|Promise<any>, updateLatestValue: any): Unsubscribable
       |Promise<any>;
+
   dispose(subscription: Unsubscribable|Promise<any>): void;
 }
 
@@ -107,20 +108,27 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   // TypeScript has a hard time matching Observable to Subscribable, for more information
   // see https://github.com/microsoft/TypeScript/issues/43643
 
-  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>): T|null;
-  transform<T>(obj: null|undefined): null;
+  transform<T, K>(obj: Observable<T>|Subscribable<T>|Promise<T>, initialValue: K): T|K;
+  transform<T>(obj: null|undefined, initialValue: T): T;
+  transform(obj: null|undefined): null;
   transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null;
-  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null {
+  transform<T, K>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined, initialValue?: K): T
+      |K|null;
+  transform<T, K>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined, initialValue?: K): T
+      |K|null {
     if (!this._obj) {
+      this._setInitialValue(initialValue);
+
       if (obj) {
         this._subscribe(obj);
       }
+
       return this._latestValue;
     }
 
     if (obj !== this._obj) {
       this._dispose();
-      return this.transform(obj);
+      return this.transform(obj, initialValue);
     }
 
     return this._latestValue;
@@ -153,6 +161,10 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     this._latestValue = null;
     this._subscription = null;
     this._obj = null;
+  }
+
+  private _setInitialValue(value: any): void {
+    this._latestValue = value ?? null;
   }
 
   private _updateLatestValue(async: any, value: Object): void {

@@ -49,6 +49,11 @@ import {of, Subscribable, Unsubscribable} from 'rxjs';
           expect(pipe.transform(subscribable)).toBe(null);
         });
 
+        it('should return "initial" when subscribing to an observable and initial value passed',
+           () => {
+             expect(pipe.transform(subscribable, 'initial')).toBe('initial');
+           });
+
         it('should return the latest available value', done => {
           pipe.transform(subscribable);
           emitter.emit(message);
@@ -158,6 +163,10 @@ import {of, Subscribable, Unsubscribable} from 'rxjs';
       describe('transform', () => {
         it('should return null when subscribing to a promise', () => {
           expect(pipe.transform(promise)).toBe(null);
+        });
+
+        it('should return "initial" when subscribing to a promise and initial value passed', () => {
+          expect(pipe.transform(promise, 'initial')).toBe('initial');
         });
 
         it('should return the latest available value', done => {
