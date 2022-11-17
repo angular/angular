@@ -178,8 +178,6 @@ export class Router {
   private disposed = false;
 
   private locationSubscription?: SubscriptionLike;
-  /** @internal */
-  navigationId: number = 0;
 
   /**
    * The id of the currently active page in the router.
@@ -394,17 +392,12 @@ export class Router {
     this.routerState.root.component = this.rootComponentType;
   }
 
-  private setTransition(t: Partial<NavigationTransition>): void {
-    this.navigationTransitions.transitions?.next(
-        {...this.navigationTransitions.transitions?.value, ...t});
-  }
-
   /**
    * Sets up the location change listener and performs the initial navigation.
    */
   initialNavigation(): void {
     this.setUpLocationChangeListener();
-    if (this.navigationId === 0) {
+    if (!this.navigationTransitions.hasRequestedNavigation) {
       this.navigateByUrl(this.location.path(true), {replaceUrl: true});
     }
   }
@@ -499,7 +492,7 @@ export class Router {
 
   /** Disposes of the router. */
   dispose(): void {
-    this.navigationTransitions.transitions?.complete();
+    this.navigationTransitions.complete();
     if (this.locationSubscription) {
       this.locationSubscription.unsubscribe();
       this.locationSubscription = undefined;
@@ -736,7 +729,6 @@ export class Router {
       });
     }
 
-    const id = ++this.navigationId;
     let targetPageId: number;
     if (this.canceledNavigationResolution === 'computed') {
       const isInitialPage = this.currentPageId === 0;
@@ -762,12 +754,12 @@ export class Router {
       targetPageId = 0;
     }
 
-    this.setTransition({
-      id,
+    this.navigationTransitions.handleNavigationRequest({
       targetPageId,
       source,
       restoredState,
       currentUrlTree: this.currentUrlTree,
+      currentRawUrl: this.currentUrlTree,
       rawUrl,
       extras,
       resolve,
