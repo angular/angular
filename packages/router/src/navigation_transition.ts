@@ -266,7 +266,6 @@ interface InternalRouterInterface {
   browserUrlTree: UrlTree;
   currentUrlTree: UrlTree;
   rawUrlTree: UrlTree;
-  navigationId: number;
   readonly routerState: RouterState;
   errorHandler: ErrorHandler;
   titleStrategy?: TitleStrategy;
@@ -297,10 +296,11 @@ export class NavigationTransitions {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
-  private _transitions?: BehaviorSubject<NavigationTransition>;
-  get transitions(): BehaviorSubject<NavigationTransition>|undefined {
-    return this._transitions;
+  private navigationId = 0;
+  get hasRequestedNavigation() {
+    return this.navigationId !== 0;
   }
+  private transitions?: BehaviorSubject<NavigationTransition>;
 
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
@@ -309,8 +309,21 @@ export class NavigationTransitions {
     this.configLoader.onLoadStartListener = onLoadStart;
   }
 
+  complete() {
+    this.transitions?.complete();
+  }
+
+  handleNavigationRequest(
+      request: Pick<
+          NavigationTransition,
+          'targetPageId'|'source'|'restoredState'|'currentUrlTree'|'currentRawUrl'|'rawUrl'|
+          'extras'|'resolve'|'reject'|'promise'|'currentSnapshot'|'currentRouterState'>) {
+    const id = ++this.navigationId;
+    this.transitions?.next({...this.transitions.value, ...request, id});
+  }
+
   setupNavigations(router: InternalRouterInterface): Observable<NavigationTransition> {
-    this._transitions = new BehaviorSubject<NavigationTransition>({
+    this.transitions = new BehaviorSubject<NavigationTransition>({
       id: 0,
       targetPageId: 0,
       currentUrlTree: router.currentUrlTree,
@@ -331,7 +344,7 @@ export class NavigationTransitions {
       guards: {canActivateChecks: [], canDeactivateChecks: []},
       guardsResult: null,
     });
-    return this._transitions.pipe(
+    return this.transitions.pipe(
                filter(t => t.id !== 0),
 
                // Extract URL
@@ -662,7 +675,7 @@ export class NavigationTransitions {
                                  `Navigation ID ${
                                      overallTransitionState
                                          .id} is not equal to the current navigation id ${
-                                     router.navigationId}` :
+                                     this.navigationId}` :
                                  '';
                              this.cancelNavigationTransition(
                                  overallTransitionState, cancelationReason,
