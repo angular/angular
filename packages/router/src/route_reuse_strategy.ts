@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentRef, inject, Injectable} from '@angular/core';
+import {ComponentRef} from '@angular/core';
 
 import {OutletContext} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
@@ -38,7 +38,6 @@ export type DetachedRouteHandleInternal = {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useFactory: () => inject(DefaultRouteReuseStrategy)})
 export abstract class RouteReuseStrategy {
   /** Determines if this route (and its subtree) should be detached to be reused later */
   abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
@@ -111,6 +110,4 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
   }
 }
 
-@Injectable({providedIn: 'root'})
-export class DefaultRouteReuseStrategy extends BaseRouteReuseStrategy {
-}
+export class DefaultRouteReuseStrategy extends BaseRouteReuseStrategy {}

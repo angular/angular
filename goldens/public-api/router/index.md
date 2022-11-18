@@ -699,10 +699,6 @@ export abstract class RouteReuseStrategy {
     abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
     abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
     abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<RouteReuseStrategy, never>;
-    // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<RouteReuseStrategy>;
 }
 
 // @public
@@ -954,10 +950,6 @@ export abstract class UrlHandlingStrategy {
     abstract extract(url: UrlTree): UrlTree;
     abstract merge(newUrlPart: UrlTree, rawUrl: UrlTree): UrlTree;
     abstract shouldProcessUrl(url: UrlTree): boolean;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<UrlHandlingStrategy, never>;
-    // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<UrlHandlingStrategy>;
 }
 
 // @public
