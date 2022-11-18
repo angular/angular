@@ -3,7 +3,7 @@ name: DevInfra
 on:
   push:
   pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
 
 # Declare default permissions as read only.
 permissions:
