@@ -788,6 +788,9 @@ export interface InputDecorator {
 export function isDevMode(): boolean;
 
 // @public
+export function isStandalone(type: Type<unknown>): boolean;
+
+// @public
 export interface IterableChangeRecord<V> {
     readonly currentIndex: number | null;
     readonly item: V;

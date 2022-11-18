@@ -173,9 +173,7 @@ export function compileNgModuleDefs(
   Object.defineProperty(moduleType, NG_INJ_DEF, {
     get: () => {
       if (ngInjectorDef === null) {
-        ngDevMode &&
-            verifySemanticsOfNgModuleDef(
-                moduleType as any as NgModuleType, allowDuplicateDeclarationsInRoot);
+        ngDevMode && verifySemanticsOfNgModuleDef(moduleType, allowDuplicateDeclarationsInRoot);
         const meta: R3InjectorMetadataFacade = {
           name: moduleType.name,
           type: moduleType,
