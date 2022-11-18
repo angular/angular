@@ -13,7 +13,31 @@ if [[ -z "${extension_repo}" ]]; then
   exit 1
 fi
 
+# sedi makes `sed -i` work on both OSX & Linux
+# See https://stackoverflow.com/questions/2320564/i-need-my-sed-i-command-for-in-place-editing-to-work-with-both-gnu-sed-and-bsd
+_sedi () {
+  case $(uname) in
+    Darwin*) sedi=('-i' '') ;;
+    *) sedi=('-i') ;;
+  esac
+
+  sed "${sedi[@]}" "$@"
+}
+
 yarn bazel build --config=release //packages/language-service:npm_package
 pushd "${extension_repo}"
-yarn add @angular/language-service@file:"${bazel_bin}/packages/language-service/npm_package"
+rm -rf .angular_packages/language-service
+mkdir -p .angular_packages/language-service
+cp -r "${bazel_bin}/packages/language-service/npm_package/" .angular_packages/language-service
+chmod -R +w .angular_packages/language-service
+cat <<EOT >> .angular_packages/language-service/BUILD.bazel
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+npm_package(
+  name = "language-service",
+  srcs = glob(["**"], exclude = ["BUILD.bazel"]),
+  visibility = ["//visibility:public"],
+)
+EOT
+_sedi 's#\# PLACE_HOLDER_FOR_packages/language-service/build.sh_IN_angular_REPO#data = ["//.angular_packages/language-service:package.json"], \# FOR TESTING ONLY! DO NOT COMMIT THIS LINE!#' WORKSPACE
+yarn add @angular/language-service@file:".angular_packages/language-service"
 popd
