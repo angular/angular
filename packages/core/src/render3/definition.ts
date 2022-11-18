@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {NG_PROV_DEF} from '../di/interface/defs';
 import {Mutable, Type} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
@@ -741,7 +740,15 @@ export function getPipeDef<T>(type: any): PipeDef<T>|null {
   return type[NG_PIPE_DEF] || null;
 }
 
-export function isStandalone<T>(type: Type<T>): boolean {
+/**
+ * Checks whether a given Component, Directive or Pipe is marked as standalone.
+ * This will return false if passed anything other than a Component, Directive, or Pipe class
+ * See this guide for additional information: https://angular.io/guide/standalone-components
+ *
+ * @param type A reference to a Component, Directive or Pipe.
+ * @publicApi
+ */
+export function isStandalone(type: Type<unknown>): boolean {
   const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
   return def !== null ? def.standalone : false;
 }
