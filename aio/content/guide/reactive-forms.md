@@ -277,6 +277,7 @@ For complete syntax details, see the API reference documentation for the [Forms 
 | `FormGroup`       | Manages the value and validity state of a group of `AbstractControl` instances. The group's properties include its child controls. The top-level form in your component is `FormGroup`. |
 | `FormArray`       | Manages the value and validity state of a numerically indexed array of `AbstractControl` instances.                                                                                     |
 | `FormBuilder`     | An injectable service that provides factory methods for creating control instances.                                                                                                     |
+| `FormRecord`      | Tracks the value and validity state of a collection of `FormControl` instances, each of which has the same value type.                                                                  |
 
 </table>
 
