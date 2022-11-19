@@ -1019,9 +1019,12 @@ export class Router {
           setTimeout(() => {
             const extras: NavigationExtras = {replaceUrl: true};
 
-            // NavigationStart.restoredState was originally set to either
-            // {{ navigationdId: number }} | null, so preserve this behavior for apps that
-            // rely on it (even though we include the entire state since #27198).
+            // TODO: restoredState should always include the entire state, regardless
+            // of navigationId. This requires a breaking change to update the type on
+            // NavigationStart’s restoredState, which currently requires navigationId
+            // to always be present. The Router used to only restore history state if
+            // a navigationId was present.
+
             // The stored navigationId is used by the RouterScroller to retrieve the scroll
             // position for the page.
             const restoredState = event.state?.navigationId ? event.state : null;
