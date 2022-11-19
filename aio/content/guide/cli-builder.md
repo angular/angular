@@ -48,7 +48,7 @@ For example, your `myBuilder` folder could contain the following files.
 | `tsconfig.json`          | [TypeScript configuration](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).              |
 
 Publish the builder to `npm` \(see [Publishing your Library](guide/creating-libraries#publishing-your-library)\).
-If you publish it as `&commat;example/my-builder`, install it using the following command.
+If you publish it as `@example/my-builder`, install it using the following command.
 
 <code-example format="shell" language="shell">
 
