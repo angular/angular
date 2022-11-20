@@ -126,7 +126,13 @@
     "name": "DefaultIfEmptySubscriber"
   },
   {
+    "name": "DefaultRouteReuseStrategy"
+  },
+  {
     "name": "DefaultTitleStrategy"
+  },
+  {
+    "name": "DefaultUrlHandlingStrategy"
   },
   {
     "name": "DefaultUrlSerializer"
@@ -465,6 +471,9 @@
     "name": "RootViewRef"
   },
   {
+    "name": "RouteReuseStrategy"
+  },
+  {
     "name": "RouteTitleKey"
   },
   {
@@ -616,6 +625,9 @@
   },
   {
     "name": "UnsubscriptionError"
+  },
+  {
+    "name": "UrlHandlingStrategy"
   },
   {
     "name": "UrlParser"
@@ -1089,6 +1101,9 @@
     "name": "getFactoryDef"
   },
   {
+    "name": "getFactoryOf"
+  },
+  {
     "name": "getFirstLContainer"
   },
   {
@@ -1347,6 +1362,9 @@
     "name": "isEnvironmentProviders"
   },
   {
+    "name": "isForwardRef"
+  },
+  {
     "name": "isFunction"
   },
   {
@@ -1525,6 +1543,9 @@
   },
   {
     "name": "noMatch2"
+  },
+  {
+    "name": "noSideEffects"
   },
   {
     "name": "nodeChildrenAsMap"
