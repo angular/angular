@@ -1413,7 +1413,11 @@ export class Router {
       currentRouterState: this.routerState
     });
 
-    return promise;
+    // Make sure that the error is propagated even though `processNavigations` catch
+    // handler does not rethrow
+    return promise.catch((e: any) => {
+      return Promise.reject(e);
+    });
   }
 
   private setBrowserUrl(url: UrlTree, t: NavigationTransition) {
