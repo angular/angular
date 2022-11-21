@@ -228,7 +228,7 @@ export interface TestDirective extends Partial<Pick<
     Exclude<
         keyof TypeCheckableDirectiveMeta,
         'ref'|'coercedInputFields'|'restrictedInputFields'|'stringLiteralInputFields'|
-        'undeclaredInputFields'|'inputs'|'outputs'>>> {
+        'undeclaredInputFields'|'inputs'|'outputs'|'hostDirectives'>>> {
   selector: string;
   name: string;
   file?: AbsoluteFsPath;
