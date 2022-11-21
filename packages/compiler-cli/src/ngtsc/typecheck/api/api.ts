@@ -10,9 +10,8 @@ import {AbsoluteSourceSpan, BoundTarget, DirectiveMeta, ParseSourceSpan, SchemaM
 import ts from 'typescript';
 
 import {ErrorCode} from '../../diagnostics';
-import {AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta} from '../../metadata';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta, HostDirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 
@@ -26,6 +25,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   inputs: ClassPropertyMapping;
   outputs: ClassPropertyMapping;
   isStandalone: boolean;
+  hostDirectives: HostDirectiveMeta[]|null;
 }
 
 export type TemplateId = string&{__brand: 'TemplateId'};
