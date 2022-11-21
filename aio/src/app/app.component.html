@@ -11,16 +11,11 @@
 <header>
   <mat-toolbar #appToolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
     <mat-toolbar-row class="notification-container">
-      <aio-notification notificationId="war-ukraine" expirationDate="2022-09-26" [dismissOnContentClick]="false" (dismissed)="notificationDismissed()">
-        <a class="link" target="_blank" rel="noopener" href="https://www.google.org/ukraine-relief/">
-          <span class="title">Support Ukraine</span>
-        <mat-icon class="icon" aria-label="Ukraine flag">
-          <svg height="24" width="24" version="1.1" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
-            <rect fill="#0057b7" height="72" width="240" x="0" y="48"/>
-            <rect fill="#ffd700" height="72" width="240" x="0" y="120"/>
-          </svg>
-        </mat-icon>
-          <span class="message">Help Provide Humanitarian Aid to Ukraine.</span>
+      <aio-notification notificationId="survey-november-2022" expirationDate="2023-02-01" [dismissOnContentClick]="true" (dismissed)="notificationDismissed()">
+        <a href="https://survey.devographics.com/survey/state-of-js/2022">
+          <mat-icon class="icon" svgIcon="insert_comment" aria-label="Announcement"></mat-icon>
+          <span class="message">Share your experience with Angular in <b>The State of JavaScript</b></span>
+          <span class="action-button">Go to survey</span>
         </a>
       </aio-notification>
     </mat-toolbar-row>
