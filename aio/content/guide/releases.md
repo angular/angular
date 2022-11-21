@@ -112,8 +112,6 @@ Dates are offered as general guidance and are subject to change.
 
 | Version | Date               |
 | :---    | :---               |
-| v14.1   | Week of 2022-07-18 |
-| v14.2   | Week of 2022-08-22 |
 | v15.0   | Week of 2022-11-18 |
 
 ### Support window
@@ -131,7 +129,8 @@ The following table provides the status for Angular versions under support.
 
 | Version | Status | Released   | Active ends | LTS ends   |
 |:---     |:---    |:---        |:---         |:---        |
-| ^14.0.0 | Active | 2022-06-02 | 2022-12-02  | 2023-12-02 |
+| ^15.0.0 | Active | 2022-11-18 | 2022-05-18  | 2023-05-18 |
+| ^14.0.0 | LTS    | 2022-06-02 | 2022-12-02  | 2023-11-18 |
 | ^13.0.0 | LTS    | 2021-11-04 | 2022-06-02  | 2023-05-04 |
 
 Angular versions v2 to v12 are no longer under support.
@@ -188,4 +187,4 @@ The policies and practices that are described in this document do not apply to A
 
 <!-- end links -->
 
-@reviewed 2022-11-14
+@reviewed 2022-11-21
