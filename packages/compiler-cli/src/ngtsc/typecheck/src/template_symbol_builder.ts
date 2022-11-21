@@ -11,6 +11,7 @@ import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
+import {HostDirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader} from '../../scope';
 import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
@@ -118,38 +119,80 @@ export class SymbolBuilder {
 
     const nodes = findAllMatchingNodes(
         this.typeCheckBlock, {withSpan: elementSourceSpan, filter: isDirectiveDeclaration});
-    return nodes
-        .map(node => {
-          const symbol = this.getSymbolOfTsNode(node.parent);
-          if (symbol === null || !isSymbolWithValueDeclaration(symbol.tsSymbol) ||
-              !ts.isClassDeclaration(symbol.tsSymbol.valueDeclaration)) {
-            return null;
-          }
-          const meta = this.getDirectiveMeta(element, symbol.tsSymbol.valueDeclaration);
-          if (meta === null) {
-            return null;
-          }
+    const symbols: DirectiveSymbol[] = [];
 
-          const ngModule = this.getDirectiveModule(symbol.tsSymbol.valueDeclaration);
-          if (meta.selector === null) {
-            return null;
-          }
-          const isComponent = meta.isComponent ?? null;
-          const ref = new Reference<ClassDeclaration>(symbol.tsSymbol.valueDeclaration as any);
-          const directiveSymbol: DirectiveSymbol = {
-            ...symbol,
-            ref,
-            tsSymbol: symbol.tsSymbol,
-            selector: meta.selector,
-            isComponent,
-            ngModule,
-            kind: SymbolKind.Directive,
-            isStructural: meta.isStructural,
-            isInScope: true,
-          };
-          return directiveSymbol;
-        })
-        .filter((d): d is DirectiveSymbol => d !== null);
+    for (const node of nodes) {
+      const symbol = this.getSymbolOfTsNode(node.parent);
+      if (symbol === null || !isSymbolWithValueDeclaration(symbol.tsSymbol) ||
+          !ts.isClassDeclaration(symbol.tsSymbol.valueDeclaration)) {
+        continue;
+      }
+
+      const meta = this.getDirectiveMeta(element, symbol.tsSymbol.valueDeclaration);
+
+      if (meta !== null && meta.selector !== null) {
+        const ref = new Reference<ClassDeclaration>(symbol.tsSymbol.valueDeclaration as any);
+
+        if (meta.hostDirectives !== null) {
+          this.addHostDirectiveSymbols(element, meta.hostDirectives, symbols);
+        }
+
+        const directiveSymbol: DirectiveSymbol = {
+          ...symbol,
+          ref,
+          tsSymbol: symbol.tsSymbol,
+          selector: meta.selector,
+          isComponent: meta.isComponent,
+          ngModule: this.getDirectiveModule(symbol.tsSymbol.valueDeclaration),
+          kind: SymbolKind.Directive,
+          isStructural: meta.isStructural,
+          isInScope: true,
+          isHostDirective: false,
+        };
+
+        symbols.push(directiveSymbol);
+      }
+    }
+
+    return symbols;
+  }
+
+  private addHostDirectiveSymbols(
+      host: TmplAstTemplate|TmplAstElement, hostDirectives: HostDirectiveMeta[],
+      symbols: DirectiveSymbol[]): void {
+    for (const current of hostDirectives) {
+      if (!ts.isClassDeclaration(current.directive.node)) {
+        continue;
+      }
+
+      const symbol = this.getSymbolOfTsNode(current.directive.node);
+      const meta = this.getDirectiveMeta(host, current.directive.node);
+
+      if (meta !== null && symbol !== null && isSymbolWithValueDeclaration(symbol.tsSymbol)) {
+        if (meta.hostDirectives !== null) {
+          this.addHostDirectiveSymbols(host, meta.hostDirectives, symbols);
+        }
+
+        const directiveSymbol: DirectiveSymbol = {
+          ...symbol,
+          isHostDirective: true,
+          ref: current.directive,
+          tsSymbol: symbol.tsSymbol,
+          exposedInputs: current.inputs,
+          exposedOutputs: current.outputs,
+          // TODO(crisbeto): rework `DirectiveSymbol` to make
+          // `selector` nullable and remove the `|| ''` here.
+          selector: meta.selector || '',
+          isComponent: meta.isComponent,
+          ngModule: this.getDirectiveModule(current.directive.node),
+          kind: SymbolKind.Directive,
+          isStructural: meta.isStructural,
+          isInScope: true,
+        };
+
+        symbols.push(directiveSymbol);
+      }
+    }
   }
 
   private getDirectiveMeta(
@@ -376,6 +419,7 @@ export class SymbolBuilder {
       isStructural,
       selector,
       ngModule,
+      isHostDirective: false,
       isInScope: true,  // TODO: this should always be in scope in this context, right?
     };
   }

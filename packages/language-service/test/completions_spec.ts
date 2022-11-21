@@ -613,6 +613,129 @@ describe('completions', () => {
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['myInput']);
         });
+
+        it('should return completion for input coming from a host directive', () => {
+          const {templateFile} = setup(`<input dir my>`, '', {
+            'Dir': `
+              @Directive({
+                standalone: true,
+                inputs: ['myInput']
+              })
+              export class HostDir {
+                myInput = 'foo';
+              }
+
+              @Directive({
+                selector: '[dir]',
+                hostDirectives: [{
+                  directive: HostDir,
+                  inputs: ['myInput']
+                }]
+              })
+              export class Dir {
+              }
+             `
+          });
+          templateFile.moveCursorToText('my¦>');
+
+          const completions = templateFile.getCompletionsAtPosition();
+
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[myInput]']);
+        });
+
+        it('should not return completion for hidden host directive input', () => {
+          const {templateFile} = setup(`<input dir my>`, '', {
+            'Dir': `
+              @Directive({
+                standalone: true,
+                inputs: ['myInput']
+              })
+              export class HostDir {
+                myInput = 'foo';
+              }
+
+              @Directive({
+                selector: '[dir]',
+                hostDirectives: [HostDir]
+              })
+              export class Dir {
+              }
+             `
+          });
+          templateFile.moveCursorToText('my¦>');
+
+          const completions = templateFile.getCompletionsAtPosition();
+
+          expectDoesNotContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[myInput]']);
+        });
+
+        it('should return completion for aliased host directive input', () => {
+          const {templateFile} = setup(`<input dir ali>`, '', {
+            'Dir': `
+              @Directive({
+                standalone: true,
+                inputs: ['myInput']
+              })
+              export class HostDir {
+                myInput = 'foo';
+              }
+
+              @Directive({
+                selector: '[dir]',
+                hostDirectives: [{
+                  directive: HostDir,
+                  inputs: ['myInput: alias']
+                }]
+              })
+              export class Dir {
+              }
+             `
+          });
+          templateFile.moveCursorToText('ali¦>');
+
+          const completions = templateFile.getCompletionsAtPosition();
+
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[alias]']);
+        });
+
+        it('should return completion for aliased host directive input that has a different public name',
+           () => {
+             const {templateFile} = setup(`<input dir ali>`, '', {
+               'Dir': `
+                  @Directive({
+                    standalone: true,
+                    inputs: ['myInput: myPublicInput']
+                  })
+                  export class HostDir {
+                    myInput = 'foo';
+                  }
+
+                  @Directive({
+                    selector: '[dir]',
+                    hostDirectives: [{
+                      directive: HostDir,
+                      inputs: ['myPublicInput: alias']
+                    }]
+                  })
+                  export class Dir {
+                  }
+             `
+             });
+             templateFile.moveCursorToText('ali¦>');
+
+             const completions = templateFile.getCompletionsAtPosition();
+
+             expectContain(
+                 completions,
+                 unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+                 ['[alias]']);
+           });
       });
 
       describe('structural directive present', () => {
@@ -868,6 +991,96 @@ describe('completions', () => {
             completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
             ['customModelChange']);
       });
+
+      it('should return completion for output coming from a host directive', () => {
+        const {templateFile} = setup(`<input dir (my)>`, '', {
+          'Dir': `
+            @Directive({
+              standalone: true,
+              outputs: ['myOutput']
+            })
+            export class HostDir {
+              myOutput: any;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{
+                directive: HostDir,
+                outputs: ['myOutput']
+              }]
+            })
+            export class Dir {
+            }
+           `
+        });
+        templateFile.moveCursorToText('(my¦)');
+
+        const completions = templateFile.getCompletionsAtPosition();
+        expectContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+            ['myOutput']);
+        expectReplacementText(completions, templateFile.contents, 'my');
+      });
+
+      it('should not return completion for hidden host directive output', () => {
+        const {templateFile} = setup(`<input dir (my)>`, '', {
+          'Dir': `
+            @Directive({
+              standalone: true,
+              outputs: ['myOutput']
+            })
+            export class HostDir {
+              myOutput: any;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [HostDir]
+            })
+            export class Dir {
+            }
+           `
+        });
+        templateFile.moveCursorToText('(my¦)');
+
+        const completions = templateFile.getCompletionsAtPosition();
+        expectDoesNotContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+            ['myOutput']);
+      });
+
+      it('should return completion for aliased host directive output that has a different public name',
+         () => {
+           const {templateFile} = setup(`<input dir (ali)>`, '', {
+             'Dir': `
+            @Directive({
+              standalone: true,
+              outputs: ['myOutput: myPublicOutput']
+            })
+            export class HostDir {
+              myOutput: any;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{
+                directive: HostDir,
+                outputs: ['myPublicOutput: alias']
+              }]
+            })
+            export class Dir {
+            }
+           `
+           });
+           templateFile.moveCursorToText('(ali¦)');
+
+           const completions = templateFile.getCompletionsAtPosition();
+           expectContain(
+               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+               ['alias']);
+           expectReplacementText(completions, templateFile.contents, 'ali');
+         });
     });
   });
 
