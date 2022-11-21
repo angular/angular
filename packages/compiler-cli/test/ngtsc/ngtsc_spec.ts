@@ -2960,6 +2960,37 @@ function allTests(os: string) {
                   `or add an explicit constructor to ConcreteDirWithoutCtor.`);
           expect(getDiagnosticSourceCode(diags[2])).toBe('ConcreteDirWithoutCtor');
         });
+
+        // https://github.com/angular/angular/issues/48152
+        it('should not give a compile-time error when a class inherits from foreign compilation unit',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('node_modules/external/index.d.ts', `
+               import * as i0 from '@angular/core';
+
+               export abstract class ExternalClass {
+                 static ɵprov: i0.ɵɵInjectableDeclaration<ExternalClass>;
+                 static ɵfac: i0.ɵɵFactoryDeclaration<ExternalClass, never>
+
+                 constructor(invalid: string) {}
+               }
+          `);
+             env.write('test.ts', `
+               import {Directive} from '@angular/core';
+               import {ExternalClass} from 'external';
+
+               @Directive()
+               export abstract class AbstractMiddleDir extends ExternalClass {}
+
+               @Directive()
+               export class ConcreteMiddleDir extends AbstractMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithoutCtor extends ConcreteMiddleDir {}
+             `);
+
+             env.driveMain();
+           });
       });
 
       describe('with strictInjectionParameters = false', () => {

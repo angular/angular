@@ -14,7 +14,7 @@ import {DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectiveMeta, Met
 import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../../reflection';
 import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
-import {identifierOfNode} from '../../../util/src/typescript';
+import {identifierOfNode, isFromDtsFile} from '../../../util/src/typescript';
 
 import {InjectableClassRegistry} from './injectable_registry';
 import {isAbstractClassDeclaration, readBaseClass} from './util';
@@ -254,6 +254,14 @@ export function checkInheritanceOfInjectable(
     // This is an error, as there won't be a factory definition available for DI to invoke
     // the constructor.
     return getInheritedUndecoratedCtorDiagnostic(node, classWithCtor.ref, kind);
+  }
+
+  if (isFromDtsFile(classWithCtor.ref.node)) {
+    // The inherited class is declared in a declaration file, in which case there is not enough
+    // information to detect invalid constructors as `@Inject()` metadata is not present in the
+    // declaration file. Consequently, we have to accept such occurrences, although they might
+    // still fail at runtime.
+    return null;
   }
 
   if (!strictInjectionParameters || isAbstractClassDeclaration(node)) {
