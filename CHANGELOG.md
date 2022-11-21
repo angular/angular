@@ -1,3 +1,17 @@
+<a name="14.2.12"></a>
+# 14.2.12 (2022-11-21)
+## Breaking Changes
+### core
+- Existing iframe usages may have security-sensitive attributes applied as an attribute or property binding in a template or via host bindings in a directive. Such usages would require an update to ensure compliance with the new stricter rules around iframe bindings.
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [54814c8e9b](https://github.com/angular/angular/commit/54814c8e9ba6b82a7f4748ef2b2f47507efd758b) | fix | hardening attribute and property binding rules for <iframe> elements ([#48028](https://github.com/angular/angular/pull/48028)) |
+## Special Thanks
+Andrew Kushnir
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0"></a>
 # 15.0.0 (2022-11-16)
 
