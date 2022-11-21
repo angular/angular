@@ -151,7 +151,6 @@ describe('bootstrap', () => {
            router.events.subscribe(e => {
              if (e instanceof NavigationEnd) {
                resolveFn();
-               expect(router.url).toEqual('/other');
              }
            });
          }
