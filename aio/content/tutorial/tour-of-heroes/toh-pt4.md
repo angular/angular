@@ -174,7 +174,7 @@ and have [`HttpClient.get()`](guide/http) return an `Observable`.
 
 `Observable` is one of the key classes in the [RxJS library](https://rxjs.dev).
 
-In [the tutorial on HTTP](tutorial/toh-pt6), you can see how Angular's `HttpClient` methods return RxJS `Observable` objects.
+In [the tutorial on HTTP](tutorial/tour-of-heroes/toh-pt6), you can see how Angular's `HttpClient` methods return RxJS `Observable` objects.
 This tutorial simulates getting data from the server with the RxJS `of()` function.
 
 Open the `HeroService` file and import the `Observable` and `of` symbols from RxJS.
@@ -189,7 +189,7 @@ Replace the `getHeroes()` method with the following:
 
 <div class="alert is-helpful">
 
-The [HTTP tutorial](tutorial/toh-pt6) shows you how to call `HttpClient.get<Hero[]>()`, which also returns an `Observable<Hero[]>` that emits  *a single value*, an array of heroes from the body of the HTTP response.
+The [HTTP tutorial](tutorial/tour-of-heroes/toh-pt6) shows you how to call `HttpClient.get<Hero[]>()`, which also returns an `Observable<Hero[]>` that emits  *a single value*, an array of heroes from the body of the HTTP response.
 
 </div>
 
@@ -332,7 +332,7 @@ The messages look better after you add the private CSS styles to `messages.compo
 ## Add messages to hero service
 
 The following example shows how to display a history of each time the user clicks on a hero.
-This helps when you get to the next section on [Routing](tutorial/toh-pt5).
+This helps when you get to the next section on [Routing](tutorial/tour-of-heroes/toh-pt5).
 
 <code-example header="src/app/heroes/heroes.component.ts" path="toh-pt4/src/app/heroes/heroes.component.ts"></code-example>
 

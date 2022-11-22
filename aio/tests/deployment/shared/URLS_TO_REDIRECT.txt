@@ -233,5 +233,13 @@
 /styleguide --> /guide/styleguide
 /testing --> /guide/testing
 /testing/first-app-tests.html --> /guide/testing
+/tutorial/index --> /tutorial/tour-of-heroes/index
+/tutorial/toh-pt0 --> /tutorial/tour-of-heroes/toh-pt0
+/tutorial/toh-pt1 --> /tutorial/tour-of-heroes/toh-pt1
+/tutorial/toh-pt2 --> /tutorial/tour-of-heroes/toh-pt2
+/tutorial/toh-pt3 --> /tutorial/tour-of-heroes/toh-pt3
+/tutorial/toh-pt4 --> /tutorial/tour-of-heroes/toh-pt4
+/tutorial/toh-pt5 --> /tutorial/tour-of-heroes/toh-pt5
+/tutorial/toh-pt6 --> /tutorial/tour-of-heroes/toh-pt6
 /cli/usage-analytics-gathering --> /cli/analytics
 /analytics --> /cli/analytics

@@ -151,7 +151,7 @@ describe('SearchResultsComponent', () => {
         topics: '',
       },
       {
-        path: 'tutorial/toh-pt1',
+        path: 'tutorial/tour-of-heroes/toh-pt1',
         title: 'Tutorial - part 1',
         type: '',
         keywords: '',
@@ -198,7 +198,7 @@ describe('SearchResultsComponent', () => {
             topics: '',
           },
           {
-            path: 'tutorial/toh-pt1',
+            path: 'tutorial/tour-of-heroes/toh-pt1',
             title: 'Tutorial - part 1',
             type: '',
             keywords: '',

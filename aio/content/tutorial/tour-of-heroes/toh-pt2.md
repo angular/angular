@@ -87,7 +87,7 @@ For more details on accessibility, see [Accessibility in Angular](guide/accessib
 The heroes list should be attractive and should respond visually when users
 hover over and select a hero from the list.
 
-In the [first tutorial](tutorial/toh-pt0#app-wide-styles), you set the basic styles for the entire application in `styles.css`.
+In the [first tutorial](tutorial/tour-of-heroes/toh-pt0#app-wide-styles), you set the basic styles for the entire application in `styles.css`.
 That style sheet didn't include styles for this list of heroes.
 
 You could add more styles to `styles.css` and keep growing that style sheet as you add components.
