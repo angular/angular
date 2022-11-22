@@ -685,7 +685,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * const minValidator = Validators.min(3);
    * const ctrl = new FormControl<string | null>('', minValidator);
    * expect(ctrl.hasValidator(minValidator)).toEqual(true)
-   * expect(ctrl.hasValidator(Validators.min(3)).toEqual(false)
+   * expect(ctrl.hasValidator(Validators.min(3))).toEqual(false)
    *
    * ctrl.removeValidators(minValidator);
    * ```
@@ -731,7 +731,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * const minValidator = Validators.min(3);
    * const ctrl = new FormControl<number | null>(0, minValidator);
    * expect(ctrl.hasValidator(minValidator)).toEqual(true)
-   * expect(ctrl.hasValidator(Validators.min(3)).toEqual(false)
+   * expect(ctrl.hasValidator(Validators.min(3))).toEqual(false)
    * ```
    *
    * @param validator The validator to check for presence. Compared by function reference.
