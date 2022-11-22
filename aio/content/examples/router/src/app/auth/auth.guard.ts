@@ -1,16 +1,12 @@
 // #docplaster
 import { inject } from '@angular/core';
 import {
-  CanActivateFn, CanMatchFn, Router,
-  CanActivateChildFn,
+  Router,
   NavigationExtras,
-  CanLoadFn, UrlTree
 } from '@angular/router';
 import { AuthService } from './auth.service';
 
-// #docregion canLoad
-export const authGuard: CanMatchFn|CanActivateChildFn|CanActivateFn|CanLoadFn = () => {
-// #enddocregion canLoad
+export const authGuard = () => {
   const router = inject(Router);
   const authService = inject(AuthService);
 

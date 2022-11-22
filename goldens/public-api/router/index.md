@@ -139,13 +139,13 @@ export interface CanDeactivate<T> {
 // @public
 export type CanDeactivateFn<T> = (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 
-// @public
+// @public @deprecated
 export interface CanLoad {
     // (undocumented)
     canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
-// @public
+// @public @deprecated
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 
 // @public
@@ -610,6 +610,7 @@ export interface Route {
     canActivate?: Array<CanActivateFn | any>;
     canActivateChild?: Array<CanActivateChildFn | any>;
     canDeactivate?: Array<CanDeactivateFn<any> | any>;
+    // @deprecated
     canLoad?: Array<CanLoadFn | any>;
     canMatch?: Array<Type<CanMatch> | InjectionToken<CanMatchFn> | CanMatchFn>;
     children?: Routes;
