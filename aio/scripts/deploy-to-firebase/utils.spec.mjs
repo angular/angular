@@ -282,10 +282,12 @@ describe('deploy-to-firebase/utils:', () => {
   describe('yarn()', () => {
     let execSpy;
 
-    beforeEach(() => execSpy = spyOn(sh, 'exec'));
+    beforeEach(() => {
+      process.env.YARN_BIN = '/foo/yarn';
+      execSpy = spyOn(sh, 'exec');
+    });
 
     it('should execute the yarn binary in process.env.YARN_BIN', () => {
-      process.env.YARN_BIN = '/foo/yarn';
       u.yarn('foo --bar');
       const cmd = execSpy.calls.argsFor(0)[0];
       expect(cmd.startsWith('/foo/yarn')).toEqual(true);

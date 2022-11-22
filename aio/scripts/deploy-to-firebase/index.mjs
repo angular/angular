@@ -59,7 +59,17 @@ sh.set('-e');
 
 // Constants
 const RUNFILES_ROOT = process.cwd();
-const DIRNAME = path.join(RUNFILES_ROOT, 'aio', 'scripts', 'deploy-to-firebase');
+// TODO: Run this script in the source tree for now (BUILD_WORKSPACE_DIRECTORY) to avoid
+// calls to `yarn` within this script from performing installs inside the runfiles root.
+// The long-term solution is to either not call yarn from this script, or stop running
+// this script under Bazel. The script was originally Bazel-ified in order to run the tests
+// under Bazel, but that may have been short-sighted.
+const DIRNAME = path.join(
+  process.env.BUILD_WORKSPACE_DIRECTORY || RUNFILES_ROOT,
+    'aio',
+    'scripts',
+    'deploy-to-firebase'
+  );
 const ROOT_PKG_PATH = path.join(RUNFILES_ROOT, 'package.json');
 
 // Exports
