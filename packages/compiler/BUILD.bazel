@@ -10,6 +10,7 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
+    deps = ["//packages/localize"],
 )
 
 tsec_test(

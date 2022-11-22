@@ -10,7 +10,4 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
-    deps = [
-        "//packages/compiler",
-    ],
 )

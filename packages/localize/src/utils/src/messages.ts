@@ -5,15 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {computeMsgId} from '@angular/compiler';
-
 import {BLOCK_MARKER, ID_SEPARATOR, LEGACY_ID_INDICATOR, MEANING_SEPARATOR} from './constants';
-
-/**
- * Re-export this helper function so that users of `@angular/localize` don't need to actively import
- * from `@angular/compiler`.
- */
-export {computeMsgId} from '@angular/compiler';
+import {computeMsgId} from './digest';
 
 /**
  * A string containing a translation source message.

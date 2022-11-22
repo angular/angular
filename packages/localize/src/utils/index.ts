@@ -6,5 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export * from './src/constants';
+export * from './src/digest';
 export * from './src/messages';
 export * from './src/translations';

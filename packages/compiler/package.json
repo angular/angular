@@ -11,6 +11,7 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
+    "@angular/localize": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER"
   },
   "peerDependenciesMeta": {

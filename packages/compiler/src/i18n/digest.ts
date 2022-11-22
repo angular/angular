@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵcomputeMsgId as computeMsgId} from '@angular/localize';
+
 import {Byte, newArray, utf8Encode} from '../util';
-import {BigIntExponentiation} from './big_integer';
 
 import * as i18n from './i18n_ast';
 
@@ -187,20 +188,6 @@ export function fingerprint(str: string): [number, number] {
   return [hi, lo];
 }
 
-export function computeMsgId(msg: string, meaning: string = ''): string {
-  let msgFingerprint = fingerprint(msg);
-
-  if (meaning) {
-    const meaningFingerprint = fingerprint(meaning);
-    msgFingerprint = add64(rol64(msgFingerprint, 1), meaningFingerprint);
-  }
-
-  const hi = msgFingerprint[0];
-  const lo = msgFingerprint[1];
-
-  return wordsToDecimalString(hi & 0x7fffffff, lo);
-}
-
 function hash32(bytes: Byte[], c: number): number {
   let a = 0x9e3779b9, b = 0x9e3779b9;
   let i: number;
@@ -333,33 +320,4 @@ function bytesToHexString(bytes: Byte[]): string {
     hex += (b >>> 4).toString(16) + (b & 0x0f).toString(16);
   }
   return hex.toLowerCase();
-}
-
-/**
- * Create a shared exponentiation pool for base-256 computations. This shared pool provides memoized
- * power-of-256 results with memoized power-of-two computations for efficient multiplication.
- *
- * For our purposes, this can be safely stored as a global without memory concerns. The reason is
- * that we encode two words, so only need the 0th (for the low word) and 4th (for the high word)
- * exponent.
- */
-const base256 = new BigIntExponentiation(256);
-
-/**
- * Represents two 32-bit words as a single decimal number. This requires a big integer storage
- * model as JS numbers are not accurate enough to represent the 64-bit number.
- *
- * Based on https://www.danvk.org/hex2dec.html
- */
-function wordsToDecimalString(hi: number, lo: number): string {
-  // Encode the four bytes in lo in the lower digits of the decimal number.
-  // Note: the multiplication results in lo itself but represented by a big integer using its
-  // decimal digits.
-  const decimal = base256.toThePowerOf(0).multiplyBy(lo);
-
-  // Encode the four bytes in hi above the four lo bytes. lo is a maximum of (2^8)^4, which is why
-  // this multiplication factor is applied.
-  base256.toThePowerOf(4).multiplyByAndAddTo(hi, decimal);
-
-  return decimal.toString();
 }

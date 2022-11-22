@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computeMsgId} from '../i18n/digest';
+import {ɵcomputeMsgId as computeMsgId} from '@angular/localize';
+
 import {Message} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 import {I18nMeta} from '../render3/view/i18n/meta';

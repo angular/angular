@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
+import {digest, sha1} from '../../src/i18n/digest';
 
 {
   describe('digest', () => {
@@ -72,55 +72,6 @@ import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
           result = result.slice(-size);
         }
         expect(sha1(result)).toEqual('24c2dae5c1ac6f604dbe670a60290d7ce6320b45');
-      });
-    });
-
-    describe('decimal fingerprint', () => {
-      it('should work on well known inputs w/o meaning', () => {
-        const fixtures: {[msg: string]: string} = {
-          '  Spaced  Out  ': '3976450302996657536',
-          'Last Name': '4407559560004943843',
-          'First Name': '6028371114637047813',
-          'View': '2509141182388535183',
-          'START_BOLDNUMEND_BOLD of START_BOLDmillionsEND_BOLD': '29997634073898638',
-          'The customer\'s credit card was authorized for AMOUNT and passed all risk checks.':
-              '6836487644149622036',
-          'Hello world!': '3022994926184248873',
-          'Jalape\u00f1o': '8054366208386598941',
-          'The set of SET_NAME is {XXX, ...}.': '135956960462609535',
-          'NAME took a trip to DESTINATION.': '768490705511913603',
-          'by AUTHOR (YEAR)': '7036633296476174078',
-          '': '4416290763660062288',
-        };
-
-        Object.keys(fixtures).forEach(msg => {
-          expect(computeMsgId(msg, '')).toEqual(fixtures[msg]);
-        });
-      });
-
-      it('should work on well known inputs with meaning', () => {
-        const fixtures: {[msg: string]: [string, string]} = {
-          '7790835225175622807': ['Last Name', 'Gmail UI'],
-          '1809086297585054940': ['First Name', 'Gmail UI'],
-          '3993998469942805487': ['View', 'Gmail UI'],
-        };
-
-        Object.keys(fixtures).forEach(id => {
-          expect(computeMsgId(fixtures[id][0], fixtures[id][1])).toEqual(id);
-        });
-      });
-
-      it('should support arbitrary string size', () => {
-        const prefix = `你好，世界`;
-        let result = computeMsgId(prefix, '');
-        for (let size = prefix.length; size < 5000; size += 101) {
-          result = prefix + computeMsgId(result, '');
-          while (result.length < size) {
-            result += result;
-          }
-          result = result.slice(-size);
-        }
-        expect(computeMsgId(result, '')).toEqual('2122606631351252558');
       });
     });
   });
