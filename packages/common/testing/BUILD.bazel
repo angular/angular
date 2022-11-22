@@ -19,6 +19,5 @@ filegroup(
     srcs = glob([
         "*.ts",
         "src/**/*.ts",
-        "PACKAGE.md",
-    ]),
+    ]) + ["PACKAGE.md"],
 )
