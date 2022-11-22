@@ -644,6 +644,32 @@
           "url": "guide/prerendering",
           "title": "Prerendering",
           "tooltip": "Prerender HTML server-side with Angular Universal."
+        },
+        {
+          "title": "Angular Libraries",
+          "tooltip": "Extending Angular with shared libraries.",
+          "children": [
+            {
+              "url": "guide/libraries",
+              "title": "Libraries overview",
+              "tooltip": "Understand how and when to use or create libraries."
+            },
+            {
+              "url": "guide/using-libraries",
+              "title": "Using published libraries",
+              "tooltip": "Integrate published libraries into an app."
+            },
+            {
+              "url": "guide/creating-libraries",
+              "title": "Creating libraries",
+              "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
+            },
+            {
+              "url": "guide/angular-package-format",
+              "title": "Angular package format",
+              "tooltip": "Information about the Angular Package Format."
+            }
+          ]
         }
       ]
     },
@@ -776,42 +802,42 @@
           "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
           "children": [
             {
-              "url": "tutorial",
+              "url": "tutorial/tour-of-heroes",
               "title": "Introduction",
               "tooltip": "Introduction to the Tour of Heroes app and tutorial"
             },
             {
-              "url": "tutorial/toh-pt0",
+              "url": "tutorial/tour-of-heroes/toh-pt0",
               "title": "Create a project",
               "tooltip": "Creating the application shell"
             },
             {
-              "url": "tutorial/toh-pt1",
+              "url": "tutorial/tour-of-heroes/toh-pt1",
               "title": "1. The hero editor",
               "tooltip": "Part 1: Build a simple editor"
             },
             {
-              "url": "tutorial/toh-pt2",
+              "url": "tutorial/tour-of-heroes/toh-pt2",
               "title": "2. Display a list",
               "tooltip": "Part 2: Build a master/detail page with a list of heroes."
             },
             {
-              "url": "tutorial/toh-pt3",
+              "url": "tutorial/tour-of-heroes/toh-pt3",
               "title": "3. Create a feature component",
               "tooltip": "Part 3: Refactor the master/detail views into separate components."
             },
             {
-              "url": "tutorial/toh-pt4",
+              "url": "tutorial/tour-of-heroes/toh-pt4",
               "title": "4. Add services",
               "tooltip": "Part 4: Create a reusable service to manage hero data."
             },
             {
-              "url": "tutorial/toh-pt5",
+              "url": "tutorial/tour-of-heroes/toh-pt5",
               "title": "5. Add navigation",
               "tooltip": "Part 5: Add the Angular router and navigate among the views."
             },
             {
-              "url": "tutorial/toh-pt6",
+              "url": "tutorial/tour-of-heroes/toh-pt6",
               "title": "6. Get data from a server",
               "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
             }
@@ -821,32 +847,6 @@
           "url": "guide/forms",
           "title": "Building a template-driven form",
           "tooltip": "Create a template-driven form using directives and Angular template syntax."
-        },
-        {
-          "title": "Angular Libraries",
-          "tooltip": "Extending Angular with shared libraries.",
-          "children": [
-            {
-              "url": "guide/libraries",
-              "title": "Libraries overview",
-              "tooltip": "Understand how and when to use or create libraries."
-            },
-            {
-              "url": "guide/using-libraries",
-              "title": "Using published libraries",
-              "tooltip": "Integrate published libraries into an app."
-            },
-            {
-              "url": "guide/creating-libraries",
-              "title": "Creating libraries",
-              "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
-            },
-            {
-              "url": "guide/angular-package-format",
-              "title": "Angular package format",
-              "tooltip": "Information about the Angular Package Format."
-            }
-          ]
         }
       ]
     },

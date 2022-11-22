@@ -28,7 +28,7 @@ Along the way, it highlights key features of the router such as:
 
 This guide proceeds as a sequence of milestones as if you were building the application step-by-step, but assumes you are familiar with basic [Angular concepts](guide/architecture).
 For a general introduction to angular, see the [Getting Started](start).
-For a more in-depth overview, see the [Tour of Heroes](tutorial) tutorial.
+For a more in-depth overview, see the [Tour of Heroes](tutorial/tour-of-heroes) tutorial.
 
 ## Prerequisites
 
@@ -39,7 +39,7 @@ To complete this tutorial, you should have a basic understanding of the followin
 *   CSS
 *   [Angular CLI](cli)
 
-You might find the [Tour of Heroes tutorial](tutorial) helpful, but it is not required.
+You might find the [Tour of Heroes tutorial](tutorial/tour-of-heroes) helpful, but it is not required.
 
 ## The sample application in action
 
@@ -547,7 +547,7 @@ This milestone covers the following:
 *   Navigating imperatively from one component to another
 *   Passing required and optional information in route parameters
 
-This sample application recreates the heroes feature in the "Services" section of the [Tour of Heroes tutorial](tutorial/toh-pt4 "Tour of Heroes: Services"), and reuses much of the code from the <live-example name="toh-pt4" title="Tour of Heroes: Services example code"></live-example>.
+This sample application recreates the heroes feature in the "Services" section of the [Tour of Heroes tutorial](tutorial/tour-of-heroes/toh-pt4 "Tour of Heroes: Services"), and reuses much of the code from the <live-example name="toh-pt4" title="Tour of Heroes: Services example code"></live-example>.
 
 A typical application has multiple feature areas, each dedicated to a particular business purpose with its own folder.
 

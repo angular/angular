@@ -159,7 +159,7 @@ are a good place to learn how to setup and use this in-memory web api library.
 
 See also the example source code in the official Angular.io documentation such as the
 [HttpClient](https://angular.io/guide/http) guide and the
-[Tour of Heroes](https://angular.io/tutorial/toh-pt6).
+[Tour of Heroes](https://angular.io/tutorial/tour-of-heroes/toh-pt6).
 
 # Advanced Features
 Some features are not readily apparent in the basic usage described above.
