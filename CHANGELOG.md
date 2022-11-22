@@ -1,12 +1,12 @@
 <a name="12.2.17"></a>
-# 12.2.17 (2022-11-21)
+# 12.2.17 (2022-11-22)
 ## Breaking Changes
 ### core
 - Existing iframe usages may have security-sensitive attributes applied as an attribute or property binding in a template or via host bindings in a directive. Such usages would require an update to ensure compliance with the new stricter rules around iframe bindings.
 ### core
 | Commit | Type | Description |
 | -- | -- | -- |
-| [b1d7b79ff4](https://github.com/angular/angular/commit/b1d7b79ff4619d6e7967455d7cda72754f5dab9a) | fix | hardening attribute and property binding rules for <iframe> elements ([#48029](https://github.com/angular/angular/pull/48029)) |
+| [b871db57da](https://github.com/angular/angular/commit/b871db57daab10ef6d4d92041177458f19fd3ebd) | fix | hardening attribute and property binding rules for <iframe> elements ([#48059](https://github.com/angular/angular/pull/48059)) |
 ## Special Thanks
 Andrew Kushnir, Andrew Scott, George Looshch, Joey Perrott and Paul Gschwendtner
 
