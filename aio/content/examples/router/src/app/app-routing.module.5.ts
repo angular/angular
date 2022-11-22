@@ -20,7 +20,7 @@ const appRoutes: Routes = [
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
 // #enddocregion admin-1
-    canLoad: [authGuard]
+    canMatch: [authGuard]
 // #docregion admin-1
   },
 // #enddocregion admin, admin-1
