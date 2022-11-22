@@ -1,6 +1,7 @@
 load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 load("//tools:defaults.bzl", "nodejs_binary")
 load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load("//:yarn.bzl", "YARN_LABEL")
 
 DEPLOY_TO_FIREBASE_SOURCES = glob(
     ["**/*.mjs"],
@@ -11,12 +12,16 @@ DEPLOY_TO_FIREBASE_DEPS = [
     "@aio_npm//shelljs",
     "//aio:build",
     "//:package.json",
+    YARN_LABEL,
 ]
 
 nodejs_binary(
     name = "deploy-to-firebase",
     data = DEPLOY_TO_FIREBASE_SOURCES + DEPLOY_TO_FIREBASE_DEPS,
     entry_point = "index.mjs",
+    env = {
+        "YARN_BIN": "$(rootpath %s)" % YARN_LABEL,
+    },
 )
 
 jasmine_node_test(
