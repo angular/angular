@@ -22,7 +22,7 @@ const appRoutes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
-    canLoad: [authGuard]
+    canMatch: [authGuard]
   },
   {
     path: 'crisis-center',

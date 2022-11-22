@@ -553,6 +553,7 @@ export interface Route {
    *
    * When using a function rather than DI tokens, the function can call `inject` to get any required
    * dependencies. This `inject` call must be done in a synchronous context.
+   * @deprecated Use `canMatch` instead
    */
   canLoad?: Array<CanLoadFn|any>;
   /**
@@ -1196,6 +1197,7 @@ export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSna
  * ```
  *
  * @publicApi
+ * @deprecated Use `CanMatch` instead
  */
 export interface CanLoad {
   canLoad(route: Route, segments: UrlSegment[]):
@@ -1208,6 +1210,8 @@ export interface CanLoad {
  * @publicApi
  * @see `CanLoad`
  * @see `Route`
+ * @see `CanMatchFn`
+ * @deprecated Use `Route.canMatch` and `CanMatchFn` instead
  */
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
     Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;

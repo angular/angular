@@ -116,6 +116,7 @@ v15 - v18
 | `@angular/core`                     | NgModule and `'any'` options for [`providedIn`](#core)                                                     | v15           | v17         |
 | `@angular/router`                   | [`RouterLinkWithHref` directive](#router)                                                                  | v15           | v17         |
 | `@angular/router`                   | [Router writeable properties](#router-writable-properties)                                                 | v15.1         | v17         |
+| `@angular/router`                   | [Router CanLoad guards](#router-can-load)                                                 | v15.1         | v17         |
 
 ### Deprecated features with no planned removal version
 
@@ -402,6 +403,14 @@ available in `provideRouter`:
   There are currently no plans to make this available in `provideRouter`.
 * `errorHandler` - Developers should instead subscribe to `Router.events`
   and filter for `NavigationError`.
+
+<a id="router-can-load"></a>
+
+`CanLoad` guards in the Router are deprecated in favor of `CanMatch`. These guards execute at the same time
+in the lifecycle of a navigation. A `CanMatch` guard which returns false will prevent the `Route` from being
+matched at all and also prevent loading the children of the `Route`. `CanMatch` guards can accomplish the same
+goals as `CanLoad` but with the addition of allowing the navigation to match other routes when they reject
+(such as a wildcard route). There is no need to have both types of guards in the API surface.
 
 <a id="relativeLinkResolution"></a>
 
