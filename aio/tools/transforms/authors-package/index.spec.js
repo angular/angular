@@ -31,23 +31,23 @@ describe('authors-package (integration tests)', () => {
   });
 
   it('should generate tutorial docs if the "fileChanged" is a tutorial doc', () => {
-    return generateDocs('aio/content/tutorial/toh-pt5.md', { silent: true }).then(() => {
+    return generateDocs('aio/content/tutorial/tour-of-heroes/toh-pt5.md', { silent: true }).then(() => {
       expect(fs.writeFile).toHaveBeenCalled();
-      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'tutorial/toh-pt5.json'));
+      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'tutorial/tour-of-heroes/toh-pt5.json'));
     });
   });
 
   it('should generate tutorial docs if the "fileChanged" is the tutorial index', () => {
-    return generateDocs('aio/content/tutorial/index.md', { silent: true }).then(() => {
+    return generateDocs('aio/content/tutorial/tour-of-heroes/index.md', { silent: true }).then(() => {
       expect(fs.writeFile).toHaveBeenCalled();
-      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'tutorial.json'));
+      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'tutorial/tour-of-heroes.json'));
     });
   });
 
   it('should generate tutorial docs if the "fileChanged" is a tutorial example', () => {
-    return generateDocs('aio/content/examples/toh-pt3/app/app.component.1.html', { silent: true }).then(() => {
+    return generateDocs('aio/content/examples/toh-pt3/src/app/app.component.1.html', { silent: true }).then(() => {
       expect(fs.writeFile).toHaveBeenCalled();
-      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'tutorial/toh-pt3.json'));
+      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'tutorial/tour-of-heroes/toh-pt3.json'));
     });
   });
 

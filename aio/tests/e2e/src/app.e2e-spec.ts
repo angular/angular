@@ -58,9 +58,9 @@ describe('site App', () => {
     }
   });
 
-  it('should show the tutorial index page at `/tutorial` after jitterbugging through features', async () => {
-    // check that we can navigate directly to the tutorial page
-    await page.navigateTo('tutorial');
+  it('should show the ToH home page at `/tutorial/tour-of-heroes` after jitterbugging through features', async () => {
+    // check that we can navigate directly to the tour-of-heroes page
+    await page.navigateTo('tutorial/tour-of-heroes');
     expect(await page.getDocViewerText()).toMatch(/Tour of Heroes application and tutorial/i);
 
     // Show the menu
@@ -105,7 +105,7 @@ describe('site App', () => {
 
   describe('tutorial docs', () => {
     it('should not render a paragraph element inside the h1 element', async () => {
-      await page.navigateTo('tutorial/toh-pt1');
+      await page.navigateTo('tutorial/tour-of-heroes/toh-pt1');
       expect(await element(by.css('h1 p')).isPresent()).toBeFalsy();
     });
   });
@@ -208,11 +208,11 @@ describe('site App', () => {
 
   describe('suggest edit link', () => {
     it('should be present on all docs pages', async () => {
-      await page.navigateTo('tutorial/toh-pt1');
+      await page.navigateTo('tutorial/tour-of-heroes/toh-pt1');
       expect(await page.ghLinks.count()).toEqual(1);
       /* eslint-disable max-len */
       expect(await page.ghLinks.get(0).getAttribute('href'))
-        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/main\/aio\/content\/tutorial\/toh-pt1\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
+        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/main\/aio\/content\/tutorial\/tour-of-heroes\/toh-pt1\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
 
       await page.navigateTo('guide/router');
       expect(await page.ghLinks.count()).toEqual(1);

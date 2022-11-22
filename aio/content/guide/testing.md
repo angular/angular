@@ -17,7 +17,7 @@ Before writing tests for your Angular application, you should have a basic under
 *   [Angular CLI](cli)
 
 The testing documentation offers tips and techniques for unit and integration testing Angular applications through a sample application created with the [Angular CLI](cli).
-This sample application is much like the one in the [*Tour of Heroes* tutorial](tutorial).
+This sample application is much like the one in the [*Tour of Heroes* tutorial](tutorial/tour-of-heroes).
 
 <div class="alert is-helpful">
 

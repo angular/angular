@@ -345,7 +345,7 @@ The [`ActivatedRoute`](api/router/ActivatedRoute) holds information about the ro
 This component is interested in the route's parameters extracted from the URL.
 The "id" parameter is the `id` of the hero to display.
 
-The [`HeroService`](tutorial/toh-pt4) gets hero data from the remote server and this component uses it to get the hero-to-display.
+The [`HeroService`](tutorial/tour-of-heroes/toh-pt4) gets hero data from the remote server and this component uses it to get the hero-to-display.
 
 The [`location`](api/common/Location) is an Angular service for interacting with the browser.
 This service lets you navigate back to the previous view.
@@ -382,7 +382,7 @@ The backtick \( <code>&grave;</code> \) characters define a JavaScript [template
 
 </div>
 
-Like [`getHeroes()`](tutorial/toh-pt4#observable-heroservice), `getHero()` has an asynchronous signature.
+Like [`getHeroes()`](tutorial/tour-of-heroes/toh-pt4#observable-heroservice), `getHero()` has an asynchronous signature.
 It returns a *mock hero* as an `Observable`, using the RxJS `of()` function.
 
 You can rewrite `getHero()` as a real `Http` request without having to change the `HeroDetailComponent` that calls it.

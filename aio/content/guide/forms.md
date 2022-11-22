@@ -21,7 +21,7 @@ You can build almost any kind of form with an Angular template &mdash;login form
 You can lay out the controls creatively and bind them to the data in your object model.
 You can specify validation rules and display validation errors, conditionally allow input from specific controls, trigger built-in visual feedback, and much more.
 
-This tutorial shows you how to build a simplified form like the one from the [Tour of Heroes tutorial](tutorial "Tour of Heroes") to illustrate the techniques.
+This tutorial shows you how to build a simplified form like the one from the [Tour of Heroes tutorial](tutorial/tour-of-heroes "Tour of Heroes") to illustrate the techniques.
 
 <div class="alert is-helpful">
 
