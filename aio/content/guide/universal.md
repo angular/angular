@@ -29,7 +29,7 @@ See the `engines` property in the [package.json](https://unpkg.com/browse/@angul
 
 ## Universal tutorial
 
-The [Tour of Heroes tutorial](tutorial) is the foundation for this walkthrough.
+The [Tour of Heroes tutorial](tutorial/tour-of-heroes) is the foundation for this walkthrough.
 
 In this example, the Angular CLI compiles and bundles the Universal version of the application with the [Ahead-of-Time (AOT) compiler](guide/aot-compiler).
 A Node.js Express web server compiles HTML pages with Universal based on client requests.

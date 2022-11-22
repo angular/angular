@@ -14,7 +14,7 @@ See the <live-example name="dependency-injection"></live-example> for a working 
 
 You should be familiar with the Angular apps in general, and have the fundamental knowledge of Components, Directives, and NgModules. It's highly recommended that you complete the following tutorial:
 
-[Tour of Heroes application and tutorial](tutorial)
+[Tour of Heroes application and tutorial](tutorial/tour-of-heroes)
 
 ## Learn about Angular dependency injection
 

@@ -113,7 +113,7 @@ If your installation and setup was successful, you should see a page similar to 
 
 *   For a more thorough introduction to the fundamental concepts and terminology of Angular single-page app architecture and design principles, read the [Angular Concepts](guide/architecture) section.
 
-*   Work through the [Tour of Heroes Tutorial](tutorial), a complete hands-on exercise that introduces you to the app development process using the Angular CLI and walks through important subsystems.
+*   Work through the [Tour of Heroes Tutorial](tutorial/tour-of-heroes), a complete hands-on exercise that introduces you to the app development process using the Angular CLI and walks through important subsystems.
 
 *   To learn more about using the Angular CLI, see the [CLI Overview](cli "CLI Overview").
     In addition to creating the initial workspace and app scaffolding, use the CLI to generate Angular code such as components and services.

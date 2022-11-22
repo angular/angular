@@ -32,7 +32,7 @@ To complete this tutorial, you should have a basic understanding of the followin
 *   CSS
 *   [Angular CLI](cli)
 
-You might find the [Tour of Heroes tutorial](tutorial) helpful, but it is not required.
+You might find the [Tour of Heroes tutorial](tutorial/tour-of-heroes) helpful, but it is not required.
 
 ## Create a sample application
 
