@@ -5,11 +5,10 @@ js_library(
     name = "angular-base-package",
     srcs = glob(
         [
-            "ignore-words.json",
             "**/*.js",
         ],
         exclude = ["**/*.spec.js"],
-    ),
+    ) + ["ignore-words.json"],
     visibility = ["//aio/tools/transforms:__subpackages__"],
     deps = [
         "//:package_json",
