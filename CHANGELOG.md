@@ -1,3 +1,30 @@
+<a name="15.0.1"></a>
+# 15.0.1 (2022-11-22)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [930af9dd26](https://github.com/angular/angular/commit/930af9dd2607754e778922a4bb31055123229e24) | fix | Fix MockPlatformLocation events and missing onPopState implementation ([#48113](https://github.com/angular/angular/pull/48113)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b342e55509](https://github.com/angular/angular/commit/b342e5550928c14ddfb33861189f67b39e163d05) | fix | don't mutate validators array ([#47830](https://github.com/angular/angular/pull/47830)) |
+| [a12a120272](https://github.com/angular/angular/commit/a12a120272024e49bd3d80d9ed1ae30dcf8622f8) | fix | FormBuilder.group return right type with shorthand parameters. ([#48084](https://github.com/angular/angular/pull/48084)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cc8b76ef7c](https://github.com/angular/angular/commit/cc8b76ef7cb908d2c95229f39bf82a13ca59570b) | fix | correctly handle host directive inputs/outputs ([#48147](https://github.com/angular/angular/pull/48147)) |
+| [a8c33bf931](https://github.com/angular/angular/commit/a8c33bf93132425a617381e4aa9a6f0e8e0ddf5b) | fix | update packages/language-service/build.sh script to work with vscode-ng-language-service's new Bazel build ([#48120](https://github.com/angular/angular/pull/48120)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e4309d57d8](https://github.com/angular/angular/commit/e4309d57d893e111bda3744a61630d1888ddbc02) | fix | correct type of nextState parameter in canDeactivate ([#48038](https://github.com/angular/angular/pull/48038)) |
+| [9baefd085f](https://github.com/angular/angular/commit/9baefd085fb079c312c4c03d79775a0fcff933b9) | fix | Ensure renavigating in component init works with enabledBlocking ([#48063](https://github.com/angular/angular/pull/48063)) |
+| [fa5528fb5f](https://github.com/angular/angular/commit/fa5528fb5f0fe6e4e6ea85d39e43262018520c43) | fix | restore 'history.state' on popstate even if navigationId missing ([#48033](https://github.com/angular/angular/pull/48033)) |
+## Special Thanks
+Alan Agius, Andrew Scott, Bjarki, Bob Watson, Brooke, Derek Cormier, Dylan Hunn, George Kalpakas, Greg Magolan, Ikko Ashimine, Ivan Rodriguez, Jessica Janiuk, Joe Roxbury, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Mikhail Savchuk, Nebojsa Cvetkovic, Pawel Kozlowski, Volodymyr and Wooshaah
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.0"></a>
 # 15.0.0 (2022-11-16)
 
