@@ -2,7 +2,7 @@
   // Docs on Firebase hosting configuration: https://firebase.google.com/docs/hosting/full-config
   "hosting": {
     "target": "aio",
-    "public": "../dist/bin/aio/build",
+    "public": "dist",
     "cleanUrls": true,
     //////////////////////////////////////////////////////////////////////////////////////////////
     // ADDING REDIRECTS
