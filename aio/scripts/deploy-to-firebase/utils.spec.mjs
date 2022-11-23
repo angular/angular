@@ -284,25 +284,11 @@ describe('deploy-to-firebase/utils:', () => {
 
     beforeEach(() => execSpy = spyOn(sh, 'exec'));
 
-    it('should execute the yarn binary in process.env.YARN_BIN', () => {
-      process.env.YARN_BIN = '/foo/yarn';
-      u.yarn('foo --bar');
-      const cmd = execSpy.calls.argsFor(0)[0];
-      expect(cmd.startsWith('/foo/yarn')).toEqual(true);
-    });
-
     it('should execute yarn in silent mode', () => {
       u.yarn('foo --bar');
 
       const cmd = execSpy.calls.argsFor(0)[0];
       expect(cmd.endsWith('--silent foo --bar')).toEqual(true);
-    });
-
-    it('should cd into aio', () => {
-      u.yarn('foo --bar');
-
-      const options = execSpy.calls.argsFor(0)[1];
-      expect(options.cwd).toEqual('aio');
     });
 
     it('should return the output from the command\'s execution', () => {
