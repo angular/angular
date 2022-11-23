@@ -61,6 +61,15 @@ build:aio_local_deps --workspace_status_command="yarn -s --cwd aio local-workspa
 build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
 
+##########################################################
+# AIO architect build configuration                      #
+# See aio/angular.json for available configurations.     #
+# To build with a partiular configuration:               #
+#   bazel build //aio:build --aio_build_config=<config>  #
+# Default config is `stable``.                           #
+##########################################################
+build --flag_alias=aio_build_config=//aio:flag_aio_build_config
+
 ####################################
 # AIO first party dep substitution # 
 # Turn on with                     #

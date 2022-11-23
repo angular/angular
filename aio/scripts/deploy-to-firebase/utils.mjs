@@ -105,5 +105,5 @@ function yarn(cmd) {
   // This is not strictly necessary, since CircleCI will mask secret environment variables in the
   // output (see https://circleci.com/docs/2.0/env-vars/#secrets-masking), but is an extra
   // precaution.
-  return sh.exec(`${process.env.YARN_BIN} --silent ${cmd}`, {cwd: 'aio'});
+  return sh.exec(`yarn --silent ${cmd}`);
 }

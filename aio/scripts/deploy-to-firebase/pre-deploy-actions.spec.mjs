@@ -28,12 +28,12 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should build the app for the appropriate mode', () => {
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
-      expect(yarnSpy).toHaveBeenCalledWith('build --configuration=bar --progress=false');
+      expect(yarnSpy).toHaveBeenCalledWith('build --aio_build_config=bar');
     });
 
     it('should add mode-specific files into the distribution', () => {
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
-      expect(cpSpy).toHaveBeenCalledWith('-rf', 'src/extra-files/bar/.', 'dist');
+      expect(cpSpy).toHaveBeenCalledWith('-rf', 'src/extra-files/bar/.', 'dist/bin/aio/build');
     });
 
     it('should update the opensearch descriptor', () => {
@@ -56,8 +56,8 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
       expect(logs).toEqual([
-        'yarn build --configuration=bar --progress=false',
-        'cp -rf src/extra-files/bar/. dist',
+        'yarn build --aio_build_config=bar',
+        'cp -rf src/extra-files/bar/. dist/bin/aio/build',
         'yarn set-opensearch-url http://example.com/foo/',
       ]);
     });
@@ -81,7 +81,8 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should disable the ServiceWorker by renaming the `ngsw.json` manifest', () => {
       pre.disableServiceWorker();
-      expect(mvSpy).toHaveBeenCalledWith('dist/ngsw.json', 'dist/ngsw.json.bak');
+      expect(mvSpy).toHaveBeenCalledWith('dist/bin/aio/build/ngsw.json',
+          'dist/bin/aio/build/ngsw.json.bak');
     });
   });
 
@@ -148,7 +149,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should undo `build()`', () => {
       pre.undo.build();
-      expect(rmSpy).toHaveBeenCalledWith('-rf', 'dist');
+      expect(rmSpy).toHaveBeenCalledWith('-rf', 'dist/bin/aio/build');
     });
   });
 
@@ -164,7 +165,8 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should undo `disableServiceWorker()`', () => {
       pre.undo.disableServiceWorker();
-      expect(mvSpy).toHaveBeenCalledWith('dist/ngsw.json.bak', 'dist/ngsw.json');
+      expect(mvSpy).toHaveBeenCalledWith('dist/bin/aio/build/ngsw.json.bak',
+          'dist/bin/aio/build/ngsw.json');
     });
   });
 
