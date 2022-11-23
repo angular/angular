@@ -11769,10 +11769,10 @@ safeps@7.0.1:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-safevalues@^0.3.1:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/safevalues/-/safevalues-0.3.4.tgz#82e846a02b6956d7d40bf9f41e92e13fce0186db"
-  integrity sha512-LRneZZRXNgjzwG4bDQdOTSbze3fHm1EAKN/8bePxnlEZiBmkYEDggaHbuvHI9/hoqHbGfsEA7tWS9GhYHZBBsw==
+safevalues@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/safevalues/-/safevalues-0.4.2.tgz#d2fdb3bcf15b2040868bcc4a6d9aa89958514cda"
+  integrity sha512-TYFWXLvMchkKd0Kwt2nMTWUeNqCfnUFBr93khoOGcXRsimtHtwe+RAsy5Diib2gD8saSRf5ABILQNARv7Q3q5Q==
 
 sass-loader@13.0.2:
   version "13.0.2"
