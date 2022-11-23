@@ -14,6 +14,7 @@ const exp = {
   build,
   checkPayloadSize,
   disableServiceWorker,
+  DIST_DIR,
   undo: {
     build: undoBuild,
     checkPayloadSize: undoCheckPayloadSize,
