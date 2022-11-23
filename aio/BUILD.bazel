@@ -3,7 +3,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "npm_package_bin")
 load("//tools:defaults.bzl", "nodejs_binary")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load(":local_packages_util.bzl", "link_local_packages", "substitute_local_package_deps")
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load("//aio/scripts:local_server_test.bzl", "local_server_test")
 load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 load(":aio_targets.bzl", "aio_test")
@@ -26,6 +26,46 @@ config_setting(
     name = "aio_local_deps",
     flag_values = {
         ":flag_aio_local_deps": "true",
+    },
+)
+
+# Config setting controlling the AIO architect configuration to build with
+string_flag(
+    name = "flag_aio_build_config",
+    build_setting_default = "stable",
+    values = [
+        "stable",
+        "rc",
+        "next",
+        "archive",
+    ],
+)
+
+config_setting(
+    name = "aio_build_config_stable",
+    flag_values = {
+        ":flag_aio_build_config": "stable",
+    },
+)
+
+config_setting(
+    name = "aio_build_config_rc",
+    flag_values = {
+        ":flag_aio_build_config": "rc",
+    },
+)
+
+config_setting(
+    name = "aio_build_config_next",
+    flag_values = {
+        ":flag_aio_build_config": "next",
+    },
+)
+
+config_setting(
+    name = "aio_build_config_archive",
+    flag_values = {
+        ":flag_aio_build_config": "archive",
     },
 )
 
@@ -186,8 +226,12 @@ copy_to_bin(
 
 architect(
     name = "build-app",
-    args = [
-        "site:build:stable",
+    args = select({
+        ":aio_build_config_stable": ["site:build:stable"],
+        ":aio_build_config_next": ["site:build:next"],
+        ":aio_build_config_rc": ["site:build:rc"],
+        ":aio_build_config_archive": ["site:build:archive"],
+    }) + [
         "--output-path=build-app",
     ],
     chdir = "$(RULEDIR)",

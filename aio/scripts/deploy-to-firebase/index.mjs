@@ -50,6 +50,7 @@
 
 import path from 'path';
 import sh from 'shelljs';
+import {fileURLToPath} from 'url';
 import post from './post-deploy-actions.mjs';
 import pre from './pre-deploy-actions.mjs';
 import u from './utils.mjs';
@@ -58,9 +59,11 @@ sh.set('-e');
 
 
 // Constants
-const RUNFILES_ROOT = process.cwd();
-const DIRNAME = path.join(RUNFILES_ROOT, 'aio', 'scripts', 'deploy-to-firebase');
-const ROOT_PKG_PATH = path.join(RUNFILES_ROOT, 'package.json');
+const inBazelTest = !!process.env.TEST_SRCDIR;
+const DIRNAME = !inBazelTest
+  ? u.getDirname(import.meta.url)
+  : path.join('.', 'aio', 'scripts', 'deploy-to-firebase');
+const ROOT_PKG_PATH = `${DIRNAME}/../../../package.json`;
 
 // Exports
 export {
@@ -75,7 +78,9 @@ export {
 // references the full file path (including the file extension).
 // See https://stackoverflow.com/questions/45136831/node-js-require-main-module#answer-60309682 for
 // more details.
-if (path.resolve(DIRNAME, 'index.mjs') === process.argv[1]) {
+const isMain = inBazelTest ||
+  (fileURLToPath(import.meta.url) === process.argv[1]);
+if (isMain) {
   const isDryRun = process.argv[2] === '--dry-run';
   const inputVars = computeInputVars(process.env);
   const deploymentsInfo = computeDeploymentsInfo(inputVars);
