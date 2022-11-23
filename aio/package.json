@@ -24,7 +24,7 @@
     "smoke-tests": "protractor tests/deployment/e2e/protractor.conf.js --suite smoke --baseUrl",
     "test-a11y-score": "bazel run //aio/scripts:test-aio-a11y",
     "test-a11y-score-localhost": "bazel test //aio:test-a11y-score-localhost",
-    "test-pwa-score": "sh -c 'bazel run //aio/scripts:audit-web-app ${0} ${1}'",
+    "test-pwa-score": "sh -c 'bazel run //aio/scripts:audit-web-app ${0} all:0,pwa:${1}'",
     "test-pwa-score-localhost": "bazel test //aio:test-pwa-score-localhost",
     "example-e2e": "node --experimental-import-meta-resolve tools/examples/run-filtered-example-e2es.mjs",
     "example-list-overrides": "bazel run //aio/tools/examples:example-boilerplate list-overrides",
