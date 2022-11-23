@@ -19,16 +19,23 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
   describe('build()', () => {
     let cpSpy;
+    let chmodSpy;
     let yarnSpy;
 
     beforeEach(() => {
       cpSpy = spyOn(sh, 'cp');
+      chmodSpy = spyOn(sh, 'chmod');
       yarnSpy = spyOn(u, 'yarn');
     });
 
     it('should build the app for the appropriate mode', () => {
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
       expect(yarnSpy).toHaveBeenCalledWith('build --aio_build_config=bar');
+    });
+
+    it('should remove write protection from the dist folder', () => {
+      pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
+      expect(chmodSpy).toHaveBeenCalledWith('-R', 'u+w', '../dist/bin/aio/build');
     });
 
     it('should add mode-specific files into the distribution', () => {
