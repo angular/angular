@@ -50,7 +50,7 @@ export interface PotentialDirective {
   /**
    * The selector for the directive or component.
    */
-  selector: string;
+  selector: string|null;
 
   /**
    * `true` if this directive is a component.
