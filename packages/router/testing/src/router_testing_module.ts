@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
-import {Compiler, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
+import {Compiler, inject, Injector, ModuleWithProviders, NgModule} from '@angular/core';
 import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
 
 import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
@@ -18,6 +18,12 @@ function isUrlHandlingStrategy(opts: ExtraOptions|
   // This property check is needed because UrlHandlingStrategy is an interface and doesn't exist at
   // runtime.
   return 'shouldProcessUrl' in opts;
+}
+
+function throwInvalidConfigError(parameter: string): never {
+  throw new Error(
+      `Parameter ${parameter} does not match the one available in the injector. ` +
+      '`setupTestingRouter` is meant to be used as a factory function with dependencies coming from DI.');
 }
 
 /**
@@ -31,8 +37,30 @@ export function setupTestingRouter(
     compiler: Compiler, injector: Injector, routes: Route[][],
     opts?: ExtraOptions|UrlHandlingStrategy|null, urlHandlingStrategy?: UrlHandlingStrategy,
     routeReuseStrategy?: RouteReuseStrategy, titleStrategy?: TitleStrategy) {
-  const router =
-      new Router(null!, urlSerializer, contexts, location, injector, compiler, flatten(routes));
+  // Note: The checks below are to detect misconfigured providers and invalid uses of
+  // `setupTestingRouter`. This function is not used internally (neither in router code or anywhere
+  // in g3). It appears this function was exposed as publicApi by mistake and should not be used
+  // externally either. However, if it is, the documented intent is to be used as a factory function
+  // and parameter values should always match what's available in DI.
+  const router = new Router();
+  if (urlSerializer !== inject(UrlSerializer)) {
+    throwInvalidConfigError('urlSerializer');
+  }
+  if (contexts !== inject(ChildrenOutletContexts)) {
+    throwInvalidConfigError('contexts');
+  }
+  if (location !== inject(Location)) {
+    throwInvalidConfigError('location');
+  }
+  if (compiler !== inject(Compiler)) {
+    throwInvalidConfigError('compiler');
+  }
+  if (injector !== inject(Injector)) {
+    throwInvalidConfigError('injector');
+  }
+  if (routes !== inject(ROUTES)) {
+    throwInvalidConfigError('routes');
+  }
   if (opts) {
     // Handle deprecated argument ordering.
     if (isUrlHandlingStrategy(opts)) {
