@@ -61,32 +61,6 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
   queryParams: 'subset'
 };
 
-export function assignExtraOptionsToRouter(opts: ExtraOptions, router: Router): void {
-  if (opts.errorHandler) {
-    router.errorHandler = opts.errorHandler;
-  }
-
-  if (opts.malformedUriErrorHandler) {
-    router.malformedUriErrorHandler = opts.malformedUriErrorHandler;
-  }
-
-  if (opts.onSameUrlNavigation) {
-    router.onSameUrlNavigation = opts.onSameUrlNavigation;
-  }
-
-  if (opts.paramsInheritanceStrategy) {
-    router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
-  }
-
-  if (opts.urlUpdateStrategy) {
-    router.urlUpdateStrategy = opts.urlUpdateStrategy;
-  }
-
-  if (opts.canceledNavigationResolution) {
-    router.canceledNavigationResolution = opts.canceledNavigationResolution;
-  }
-}
-
 /**
  * @description
  *
@@ -195,12 +169,14 @@ export class Router {
    */
   public readonly routerState: RouterState;
 
+  private options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
+
   /**
    * A handler for navigation errors in this NgModule.
    *
    * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
    */
-  errorHandler: ErrorHandler = defaultErrorHandler;
+  errorHandler = this.options.errorHandler || defaultErrorHandler;
 
   /**
    * A handler for errors thrown by `Router.parseUrl(url)`
@@ -212,9 +188,8 @@ export class Router {
    *   `RouterModule.forRoot(routes, {malformedUriErrorHandler: myHandler})`
    * @see `RouterModule`
    */
-  malformedUriErrorHandler:
-      (error: URIError, urlSerializer: UrlSerializer,
-       url: string) => UrlTree = defaultMalformedUriErrorHandler;
+  malformedUriErrorHandler =
+      this.options.malformedUriErrorHandler || defaultMalformedUriErrorHandler;
 
   /**
    * True if at least one navigation event has occurred,
@@ -265,7 +240,7 @@ export class Router {
    * @see `provideRouter`
    * @see `RouterModule`
    */
-  onSameUrlNavigation: OnSameUrlNavigation = 'ignore';
+  onSameUrlNavigation: OnSameUrlNavigation = this.options.onSameUrlNavigation || 'ignore';
 
   /**
    * How to merge parameters, data, resolved data, and title from parent to child
@@ -281,7 +256,8 @@ export class Router {
    * @see `provideRouter`
    * @see `RouterModule`
    */
-  paramsInheritanceStrategy: 'emptyOnly'|'always' = 'emptyOnly';
+  paramsInheritanceStrategy: 'emptyOnly'|'always' =
+      this.options.paramsInheritanceStrategy || 'emptyOnly';
 
   /**
    * Determines when the router updates the browser URL.
@@ -295,7 +271,7 @@ export class Router {
    * @see `provideRouter`
    * @see `RouterModule`
    */
-  urlUpdateStrategy: 'deferred'|'eager' = 'deferred';
+  urlUpdateStrategy: 'deferred'|'eager' = this.options.urlUpdateStrategy || 'deferred';
 
   /**
    * Configures how the Router attempts to restore state when a navigation is cancelled.
@@ -323,7 +299,8 @@ export class Router {
    * @see `provideRouter`
    * @see `RouterModule`
    */
-  canceledNavigationResolution: 'replace'|'computed' = 'replace';
+  canceledNavigationResolution: 'replace'|'computed' =
+      this.options.canceledNavigationResolution || 'replace';
 
   config: Routes = flatten(inject(ROUTES, {optional: true}) ?? []);
 
@@ -335,9 +312,6 @@ export class Router {
   rootComponentType: Type<any>|null = null;
 
   constructor() {
-    const opts = inject(ROUTER_CONFIGURATION, {optional: true}) ?? {};
-    assignExtraOptionsToRouter(opts, this);
-
     this.isNgZoneEnabled = inject(NgZone) instanceof NgZone && NgZone.isInAngularZone();
 
     this.resetConfig(this.config);

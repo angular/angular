@@ -9,7 +9,7 @@
 import {Location} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
 import {Compiler, inject, Injector, ModuleWithProviders, NgModule} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
+import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
 
 import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
 
@@ -42,7 +42,6 @@ export function setupTestingRouter(
   // in g3). It appears this function was exposed as publicApi by mistake and should not be used
   // externally either. However, if it is, the documented intent is to be used as a factory function
   // and parameter values should always match what's available in DI.
-  const router = new Router();
   if (urlSerializer !== inject(UrlSerializer)) {
     throwInvalidConfigError('urlSerializer');
   }
@@ -64,24 +63,29 @@ export function setupTestingRouter(
   if (opts) {
     // Handle deprecated argument ordering.
     if (isUrlHandlingStrategy(opts)) {
-      router.urlHandlingStrategy = opts;
+      if (opts !== inject(UrlHandlingStrategy)) {
+        throwInvalidConfigError('opts (UrlHandlingStrategy)');
+      }
     } else {
-      // Handle ExtraOptions
-      assignExtraOptionsToRouter(opts, router);
+      if (opts !== inject(ROUTER_CONFIGURATION)) {
+        throwInvalidConfigError('opts (ROUTER_CONFIGURATION)');
+      }
     }
   }
 
-  if (urlHandlingStrategy) {
-    router.urlHandlingStrategy = urlHandlingStrategy;
+  if (urlHandlingStrategy !== inject(UrlHandlingStrategy)) {
+    throwInvalidConfigError('urlHandlingStrategy');
   }
 
-  if (routeReuseStrategy) {
-    router.routeReuseStrategy = routeReuseStrategy;
+  if (routeReuseStrategy !== inject(RouteReuseStrategy)) {
+    throwInvalidConfigError('routeReuseStrategy');
   }
 
-  router.titleStrategy = titleStrategy;
+  if (titleStrategy !== inject(TitleStrategy)) {
+    throwInvalidConfigError('titleStrategy');
+  }
 
-  return router;
+  return new Router();
 }
 
 /**
