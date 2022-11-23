@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "index.js",
   "repository": "git@github.com:angular/angular.git",
-  "author": "Angular",
+  "author": "Angular-",
   "license": "MIT",
   "scripts": {
     "postinstall": "node tools/cli-patches/patch.js",
