@@ -47,9 +47,9 @@ http_archive(
 # Fetch Aspect lib for utilities like write_source_files
 http_archive(
     name = "aspect_bazel_lib",
-    sha256 = "8860aab705fe9f427fbebe388bdfacf8a6b267cb3c0d71ebeaf1dcceedd29193",
-    strip_prefix = "bazel-lib-1.3.0",
-    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.3.0.tar.gz",
+    sha256 = "695d319362b227725e4daa60d863b4d1969b167889902511f1fd3051cea1071f",
+    strip_prefix = "bazel-lib-1.16.3",
+    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.16.3.tar.gz",
 )
 
 # Download cli source from angular/cli-builds for doc generation at a specific tag or commit.
