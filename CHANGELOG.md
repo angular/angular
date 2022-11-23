@@ -1,3 +1,62 @@
+<a name="15.1.0-next.0"></a>
+# 15.1.0-next.0 (2022-11-22)
+## Deprecations
+### router
+- router writable properties
+  
+  The following strategies are meant to be configured by registering the
+  application strategy in DI via the `providers` in the root `NgModule` or
+  `bootstrapApplication`:
+  * `routeReuseStrategy`
+  * `titleStrategy`
+  * `urlHandlingStrategy`
+  
+  The following options are meant to be configured using the options
+  available in `RouterModule.forRoot` or `provideRouter`.
+  * `onSameUrlNavigation`
+  * `paramsInheritanceStrategy`
+  * `urlUpdateStrategy`
+  * `canceledNavigationResolution`
+  
+  The following options are available in `RouterModule.forRoot` but not
+  available in `provideRouter`:
+  * `malformedUriErrorHandler` - This was found to not be used anywhere
+    internally.
+  * `errorHandler` - Developers can instead subscribe to `Router.events`
+    and filter for `NavigationError`.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b0a62bea47](https://github.com/angular/angular/commit/b0a62bea475480768f2cffeb134960dc1165181c) | fix | Fix MockPlatformLocation events and missing onPopState implementation ([#48113](https://github.com/angular/angular/pull/48113)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6acae1477a](https://github.com/angular/angular/commit/6acae1477a212bbd85d0670913c2925fa3bc0c24) | feat | Add `TestBed.runInInjectionContext` to help test functions which use `inject` ([#47955](https://github.com/angular/angular/pull/47955)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0329c13e95](https://github.com/angular/angular/commit/0329c13e95127fd6f0044b6809b9bccb27f3cb91) | fix | don't mutate validators array ([#47830](https://github.com/angular/angular/pull/47830)) |
+| [d321880440](https://github.com/angular/angular/commit/d3218804401fb35d8da1de91960bbdf9ab0aa823) | fix | FormBuilder.group return right type with shorthand parameters. ([#48084](https://github.com/angular/angular/pull/48084)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5f0b53c735](https://github.com/angular/angular/commit/5f0b53c7352f19480185c6b5c769e5012a2d2faa) | feat | Allow auto-imports to suggest multiple possible imports. ([#47787](https://github.com/angular/angular/pull/47787)) |
+| [fd2eea5961](https://github.com/angular/angular/commit/fd2eea59613ab3cdde871046b6086216d77a386e) | fix | correctly handle host directive inputs/outputs ([#48147](https://github.com/angular/angular/pull/48147)) |
+| [ce8160ecb2](https://github.com/angular/angular/commit/ce8160ecb28d6765d438eb65035835984eb956ec) | fix | Prevent crashes on unemitable references ([#47938](https://github.com/angular/angular/pull/47938)) |
+| [764fa3d9c3](https://github.com/angular/angular/commit/764fa3d9c37eb70acd21879296ec039de07173ea) | fix | update packages/language-service/build.sh script to work with vscode-ng-language-service's new Bazel build ([#48120](https://github.com/angular/angular/pull/48120)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0a8b8a66cd](https://github.com/angular/angular/commit/0a8b8a66cdfb86586811c79bec938b3ab7215e8f) | docs | Deprecate public members of Router that are meant to be configured elsewhere ([#48006](https://github.com/angular/angular/pull/48006)) |
+| [73f03ad2d2](https://github.com/angular/angular/commit/73f03ad2d29811dda2ee03c5f18c79ebc9519c0b) | feat | Add new NavigationSkipped event for ignored navigations ([#48024](https://github.com/angular/angular/pull/48024)) |
+| [b51929a394](https://github.com/angular/angular/commit/b51929a394acaa129699bc72e34882b7e577dd7f) | fix | correct type of nextState parameter in canDeactivate ([#48038](https://github.com/angular/angular/pull/48038)) |
+| [1df0ed7d6e](https://github.com/angular/angular/commit/1df0ed7d6e636d921ad617465c3956dc1b6292eb) | fix | Ensure renavigating in component init works with enabledBlocking ([#48063](https://github.com/angular/angular/pull/48063)) |
+| [1976e37475](https://github.com/angular/angular/commit/1976e37475e144d4df27b1558b2acd929bd439be) | fix | restore 'history.state' on popstate even if navigationId missing ([#48033](https://github.com/angular/angular/pull/48033)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Bjarki, Bob Watson, Brooke, Derek Cormier, Dylan Hunn, George Kalpakas, Greg Magolan, Ikko Ashimine, Ivan Rodriguez, Jessica Janiuk, JiaLiPassion, Joe Roxbury, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Mikhail Savchuk, Nebojsa Cvetkovic, Pawel Kozlowski, Volodymyr, Wooshaah and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="12.2.17"></a>
 # 12.2.17 (2022-11-22)
 ## Breaking Changes
