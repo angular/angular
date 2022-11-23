@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Byte, newArray, utf8Encode} from '../util';
-import {BigIntExponentiation} from './big_integer';
+import {Byte} from '../util';
 
+import {BigIntExponentiation} from './big_integer';
 import * as i18n from './i18n_ast';
+
+/**
+ * A lazily created TextEncoder instance for converting strings into UTF-8 bytes
+ */
+let textEncoder: TextEncoder|undefined;
 
 /**
  * Return the message id or compute it using the XLIFF1 digest.
@@ -109,11 +114,12 @@ class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
  *          DO NOT USE IT IN A SECURITY SENSITIVE CONTEXT.
  */
 export function sha1(str: string): string {
-  const utf8 = utf8Encode(str);
+  textEncoder ??= new TextEncoder();
+  const utf8 = [...textEncoder.encode(str)];
   const words32 = bytesToWords32(utf8, Endian.Big);
   const len = utf8.length * 8;
 
-  const w = newArray(80);
+  const w = new Uint32Array(80);
   let a = 0x67452301, b = 0xefcdab89, c = 0x98badcfe, d = 0x10325476, e = 0xc3d2e1f0;
 
   words32[len >> 5] |= 0x80 << (24 - len % 32);
@@ -174,7 +180,8 @@ function fk(index: number, b: number, c: number, d: number): [number, number] {
  * https://github.com/google/closure-compiler/blob/master/src/com/google/javascript/jscomp/GoogleJsMessageIdGenerator.java
  */
 export function fingerprint(str: string): [number, number] {
-  const utf8 = utf8Encode(str);
+  textEncoder ??= new TextEncoder();
+  const utf8 = [...textEncoder.encode(str)];
 
   let hi = hash32(utf8, 0);
   let lo = hash32(utf8, 102072);
