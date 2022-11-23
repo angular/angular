@@ -4,7 +4,7 @@ import u from './utils.mjs';
 
 
 // Constants
-const DIST_DIR = 'dist/bin/aio/build';
+const DIST_DIR = '../dist/bin/aio/build';
 const FIREBASE_JSON_PATH = 'firebase.json';
 const NGSW_JSON_PATH = `${DIST_DIR}/ngsw.json`;
 const NGSW_JSON_BAK_PATH = `${NGSW_JSON_PATH}.bak`;
