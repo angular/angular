@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ErrorHandler } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { unwrapHtml } from 'safevalues';
-import { concatHtmls } from 'safevalues/builders/html_builders';
+import { unwrapHtml, concatHtmls } from 'safevalues';
 import { CustomIconRegistry, SvgIconInfo } from './custom-icon-registry';
 import { svg } from './security';
 
