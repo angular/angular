@@ -10,7 +10,9 @@ import {SimpleChanges} from './simple_change';
 
 /**
  * @description
- * A lifecycle hook that is called when any data-bound property of a directive changes.
+ * A lifecycle hook that invokes a custom change-detection function for a directive,
+in addition to the check performed by the default change-detector on the input bindings for this directive usage. 
+ * Developers might use this hook to implement a custom change detection strategy for some of the inputs.
  * Define an `ngOnChanges()` method to handle the changes.
  *
  * @see `DoCheck`
@@ -65,8 +67,7 @@ export interface OnInit {
 }
 
 /**
- * A lifecycle hook that invokes a custom change-detection function for a directive,
- * in addition to the check performed by the default change-detector.
+ * A lifecycle hook that invokes a custom change-detection function for a directive.
  *
  * The default change-detection algorithm looks for differences by comparing
  * bound-property values by reference across change detection runs. You can use this
