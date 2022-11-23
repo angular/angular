@@ -16,7 +16,6 @@ import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
-import { Location as Location_2 } from '@angular/common';
 import { LocationStrategy } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
@@ -629,11 +628,7 @@ export class RouteConfigLoadStart {
 
 // @public
 export class Router {
-    constructor(
-    rootComponentType: Type<any> | null,
-    urlSerializer: UrlSerializer,
-    rootContexts: ChildrenOutletContexts,
-    location: Location_2, injector: Injector, compiler: Compiler, config: Routes);
+    constructor();
     canceledNavigationResolution: 'replace' | 'computed';
     // (undocumented)
     config: Routes;
