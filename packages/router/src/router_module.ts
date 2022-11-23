@@ -17,7 +17,7 @@ import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
 import {NavigationTransitions} from './navigation_transition';
 import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
-import {Router, setupRouter} from './router';
+import {Router} from './router';
 import {ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -45,7 +45,7 @@ export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
 export const ROUTER_PROVIDERS: Provider[] = [
   Location,
   {provide: UrlSerializer, useClass: DefaultUrlSerializer},
-  {provide: Router, useFactory: setupRouter},
+  Router,
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
   RouterConfigLoader,

@@ -87,22 +87,6 @@ export function assignExtraOptionsToRouter(opts: ExtraOptions, router: Router): 
   }
 }
 
-export function setupRouter() {
-  const urlSerializer = inject(UrlSerializer);
-  const contexts = inject(ChildrenOutletContexts);
-  const location = inject(Location);
-  const injector = inject(Injector);
-  const compiler = inject(Compiler);
-  const config = inject(ROUTES, {optional: true}) ?? [];
-  const opts = inject(ROUTER_CONFIGURATION, {optional: true}) ?? {};
-  const router =
-      new Router(null, urlSerializer, contexts, location, injector, compiler, flatten(config));
-
-  assignExtraOptionsToRouter(opts, router);
-
-  return router;
-}
-
 /**
  * @description
  *
@@ -115,10 +99,7 @@ export function setupRouter() {
  *
  * @publicApi
  */
-@Injectable({
-  providedIn: 'root',
-  useFactory: setupRouter,
-})
+@Injectable({providedIn: 'root'})
 export class Router {
   /**
    * Represents the activated `UrlTree` that the `Router` is configured to handle (through
@@ -201,7 +182,7 @@ export class Router {
   private get browserPageId(): number|undefined {
     return (this.location.getState() as RestoredState | null)?.ɵrouterPageId;
   }
-  private console: Console;
+  private console = inject(Console);
   private isNgZoneEnabled: boolean = false;
 
   /**
@@ -349,27 +330,22 @@ export class Router {
    */
   canceledNavigationResolution: 'replace'|'computed' = 'replace';
 
+  config: Routes = flatten(inject(ROUTES, {optional: true}) ?? []);
+
   private readonly navigationTransitions = inject(NavigationTransitions);
+  private readonly urlSerializer = inject(UrlSerializer);
+  private readonly location = inject(Location);
 
-  /**
-   * Creates the router service.
-   */
-  // TODO: vsavkin make internal after the final is out.
-  constructor(
-      /** @internal */
-      public rootComponentType: Type<any>|null,
-      private readonly urlSerializer: UrlSerializer,
-      private readonly rootContexts: ChildrenOutletContexts,
-      private readonly location: Location,
-      injector: Injector,
-      compiler: Compiler,
-      public config: Routes,
-  ) {
-    this.console = injector.get(Console);
-    const ngZone = injector.get(NgZone);
-    this.isNgZoneEnabled = ngZone instanceof NgZone && NgZone.isInAngularZone();
+  /** @internal */
+  rootComponentType: Type<any>|null = null;
 
-    this.resetConfig(config);
+  constructor() {
+    const opts = inject(ROUTER_CONFIGURATION, {optional: true}) ?? {};
+    assignExtraOptionsToRouter(opts, this);
+
+    this.isNgZoneEnabled = inject(NgZone) instanceof NgZone && NgZone.isInAngularZone();
+
+    this.resetConfig(this.config);
     this.currentUrlTree = new UrlTree();
     this.rawUrlTree = this.currentUrlTree;
     this.browserUrlTree = this.currentUrlTree;
@@ -386,10 +362,7 @@ export class Router {
         });
   }
 
-  /**
-   * @internal
-   * TODO: this should be removed once the constructor of the router made internal
-   */
+  /** @internal */
   resetRootComponentType(rootComponentType: Type<any>): void {
     this.rootComponentType = rootComponentType;
     // TODO: vsavkin router 4.0 should make the root component set to null
