@@ -180,9 +180,7 @@ export class SymbolBuilder {
           tsSymbol: symbol.tsSymbol,
           exposedInputs: current.inputs,
           exposedOutputs: current.outputs,
-          // TODO(crisbeto): rework `DirectiveSymbol` to make
-          // `selector` nullable and remove the `|| ''` here.
-          selector: meta.selector || '',
+          selector: meta.selector,
           isComponent: meta.isComponent,
           ngModule: this.getDirectiveModule(current.directive.node),
           kind: SymbolKind.Directive,
