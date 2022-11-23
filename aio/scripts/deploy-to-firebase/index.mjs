@@ -384,6 +384,10 @@ function deploy(data) {
   u.logSectionHeader('Run pre-deploy actions.');
   preDeployActions.forEach(fn => fn(data));
 
+  // Firebase requires that the distributable be in the same folder as firebase.json.
+  u.logSectionHeader('Copy AIO distributable from Bazel output tree to aio/.');
+  sh.cp('-rf', pre.DIST_DIR, 'dist');
+
   u.logSectionHeader('Deploy AIO to Firebase hosting.');
   const firebase = cmd => u.yarn(`firebase ${cmd} --token "${firebaseToken}"`);
   firebase(`use "${projectId}"`);
