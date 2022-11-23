@@ -67,10 +67,6 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
     {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map(feature => feature.ɵproviders),
-    // TODO: All options used by the `assignExtraOptionsToRouter` factory need to be reviewed for
-    // how we want them to be configured. This API doesn't currently have a way to configure them
-    // and we should decide what the _best_ way to do that is rather than just sticking with the
-    // status quo of how it's done today.
   ]);
 }
 
