@@ -58,7 +58,7 @@ def _create_bundle_targets(pkg, entry_point, module_name):
         entry_point = "@npm//:node_modules/@angular/%s/%s" % (pkg.name, fesm_bundle_path),
         config = "//devtools/tools/esbuild:esbuild_config_esm",
         # List of dependencies which should never be bundled into these linker-processed bundles.
-        external = ["rxjs", "@angular", "domino", "xhr2"],
+        external = ["rxjs", "@angular", "domino", "xhr2", "@material"],
     )
 
     _linker_mapping(
