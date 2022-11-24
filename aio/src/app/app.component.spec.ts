@@ -2,7 +2,7 @@ import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, flushMicrotasks, inject, TestBed, tick } from '@angular/core/testing';
-import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatLegacyProgressBar as MatProgressBar } from '@angular/material/legacy-progress-bar';
 import { MatSidenav } from '@angular/material/sidenav';
 import { By, Title } from '@angular/platform-browser';
 import { ElementsLoader } from 'app/custom-elements/elements-loader';
