@@ -1,12 +1,12 @@
 {
   "name": "angular-in-memory-web-api",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "An in-memory web api for Angular demos and tests",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "^14.0.0",
-    "@angular/common": "^14.0.0",
+    "@angular/core": "^15.0.0",
+    "@angular/common": "^15.0.0",
     "rxjs": "^6.5.3 || ^7.4.0"
   },
   "dependencies": {
