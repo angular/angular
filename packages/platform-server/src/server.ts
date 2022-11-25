@@ -27,7 +27,7 @@ import {TRANSFER_STATE_SERIALIZATION_PROVIDERS} from './transfer_state';
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
   {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-  {provide: PLATFORM_INITIALIZER, useFactory: initDominoAdapter, multi: true, deps: [Injector]}, {
+  {provide: PLATFORM_INITIALIZER, useFactory: initDominoAdapter, multi: true}, {
     provide: PlatformLocation,
     useClass: ServerPlatformLocation,
     deps: [DOCUMENT, [Optional, INITIAL_CONFIG]]
@@ -37,7 +37,7 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true}
 ];
 
-function initDominoAdapter(injector: Injector) {
+function initDominoAdapter() {
   return () => {
     DominoAdapter.makeCurrent();
   };
