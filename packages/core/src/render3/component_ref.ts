@@ -239,19 +239,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   }
 }
 
-const componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver();
-
-/**
- * Creates a ComponentFactoryResolver and stores it on the injector. Or, if the
- * ComponentFactoryResolver
- * already exists, retrieves the existing ComponentFactoryResolver.
- *
- * @returns The ComponentFactoryResolver instance to use
- */
-export function injectComponentFactoryResolver(): AbstractComponentFactoryResolver {
-  return componentFactoryResolver;
-}
-
 /**
  * Represents an instance of a Component created via a {@link ComponentFactory}.
  *
