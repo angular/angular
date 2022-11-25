@@ -23,4 +23,4 @@ export class HeroOfTheMonthComponent {
 @NgModule({
   declarations: [ HeroOfTheMonthComponent ]
 })
-class NoopModule {}
+export class NoopModule {}

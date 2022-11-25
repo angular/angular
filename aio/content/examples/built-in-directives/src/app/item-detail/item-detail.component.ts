@@ -9,9 +9,6 @@ import { Item } from '../item';
 })
 export class ItemDetailComponent {
 
-
   @Input() item!: Item;
-
-  constructor() { }
 
 }
