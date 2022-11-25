@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ComponentFactoryResolver} from '@angular/core/src/render3/component_ref';
 import {Renderer} from '@angular/core/src/render3/interfaces/renderer';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {TestBed} from '@angular/core/testing';
 
-import {ChangeDetectionStrategy, Component, Injector, Input, NgModuleRef, OnChanges, Output, RendererType2, SimpleChanges, Type, ViewEncapsulation} from '../../src/core';
+import {ChangeDetectionStrategy, Component, Injector, Input, NgModuleRef, OnChanges, Output, RendererType2, SimpleChanges, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
-import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 import {MockRendererFactory} from './instructions/mock_renderer_factory';
@@ -28,7 +28,7 @@ const THROWING_RENDERER_FACTOR2_PROVIDER = {
 };
 
 describe('ComponentFactory', () => {
-  const cfr = injectComponentFactoryResolver();
+  const cfr = new ComponentFactoryResolver();
 
   describe('constructor()', () => {
     it('should correctly populate default properties', () => {

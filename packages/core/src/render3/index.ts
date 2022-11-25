@@ -18,7 +18,7 @@ import {ɵɵComponentDeclaration, ɵɵDirectiveDeclaration, ɵɵFactoryDeclarati
 import {ComponentDebugMetadata, DirectiveDebugMetadata, getComponent, getDirectiveMetadata, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
 export {NgModuleType} from '../metadata/ng_module_def';
-export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
+export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
 export {ɵɵgetInheritedFactory} from './di';
 export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 // clang-format off
