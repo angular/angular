@@ -286,11 +286,12 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
       eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
       private component: RendererType2, appId: string) {
     super(eventManager);
-    const styles = flattenStyles(appId + '-' + component.id, component.styles, []);
+    const compId = (component as any).selectors.join('|');
+    const styles = flattenStyles(appId + '-' + compId, component.styles, []);
     sharedStylesHost.addStyles(styles);
 
-    this.contentAttr = shimContentAttribute(appId + '-' + component.id);
-    this.hostAttr = shimHostAttribute(appId + '-' + component.id);
+    this.contentAttr = shimContentAttribute(appId + '-' + compId);
+    this.hostAttr = shimHostAttribute(appId + '-' + compId);
   }
 
   applyToHost(element: any) {

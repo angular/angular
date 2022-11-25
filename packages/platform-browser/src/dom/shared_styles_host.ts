@@ -7,7 +7,9 @@
  */
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {Inject, Injectable, OnDestroy, Optional} from '@angular/core';
+
+import {TRANSITION_ID} from '../browser/server-transition';
 
 @Injectable()
 export class SharedStylesHost {
@@ -36,18 +38,39 @@ export class SharedStylesHost {
 export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
   // Maps all registered host nodes to a list of style nodes that have been added to the host node.
   private _hostNodes = new Map<Node, Node[]>();
+  private _styleNodesInDOM: Map<string|null, HTMLStyleElement>|undefined;
 
-  constructor(@Inject(DOCUMENT) private _doc: any) {
+  constructor(
+      @Inject(DOCUMENT) private doc: Document,
+      @Optional() @Inject(TRANSITION_ID) private transitionId?: string) {
     super();
-    this._hostNodes.set(_doc.head, []);
+
+    const styles: NodeListOf<HTMLStyleElement> =
+        doc.querySelectorAll(`style[ng-transition="${this.transitionId}"]`);
+    if (styles?.length) {
+      this._styleNodesInDOM = new Map(Array.from(styles).map((el) => [el.textContent, el]));
+    }
+
+    this._hostNodes.set(doc.head, []);
   }
 
   private _addStylesToHost(styles: Set<string>, host: Node, styleNodes: Node[]): void {
-    styles.forEach((style: string) => {
-      const styleEl = this._doc.createElement('style');
-      styleEl.textContent = style;
-      styleNodes.push(host.appendChild(styleEl));
-    });
+    for (const style of styles) {
+      const styleEl = this._styleNodesInDOM?.get(style);
+      if (styleEl && styleEl.parentNode === host) {
+        if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+          styleEl.setAttribute('ng-style-reused', '');
+        }
+
+        styleEl.removeAttribute('ng-transition');
+        this._styleNodesInDOM?.delete(style);
+        styleNodes.push(styleEl);
+      } else {
+        const styleEl = this.doc.createElement('style');
+        styleEl.textContent = style;
+        styleNodes.push(host.appendChild(styleEl));
+      }
+    }
   }
 
   addHost(hostNode: Node): void {
