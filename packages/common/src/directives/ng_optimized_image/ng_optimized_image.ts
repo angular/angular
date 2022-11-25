@@ -12,7 +12,10 @@ import {RuntimeErrorCode} from '../../errors';
 import {isPlatformServer} from '../../platform_id';
 
 import {imgDirectiveDetails} from './error_helper';
-import {IMAGE_LOADER} from './image_loaders/image_loader';
+import {cloudinaryLoaderInfo} from './image_loaders/cloudinary_loader';
+import {IMAGE_LOADER, ImageLoader, noopImageLoader} from './image_loaders/image_loader';
+import {imageKitLoaderInfo} from './image_loaders/imagekit_loader';
+import {imgixLoaderInfo} from './image_loaders/imgix_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
 import {PreloadLinkCreator} from './preload-link-creator';
@@ -71,6 +74,9 @@ const ASPECT_RATIO_TOLERANCE = .1;
  * into account a typical device pixel ratio). In pixels.
  */
 const OVERSIZED_IMAGE_TOLERANCE = 1000;
+
+/** Info about built-in loaders we can test for. */
+export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo];
 
 /**
  * A configuration object for the NgOptimizedImage directive. Contains:
@@ -197,11 +203,10 @@ export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
  * ```
  *
  * @publicApi
- * @developerPreview
  */
 @Directive({
   standalone: true,
-  selector: 'img[ngSrc],img[rawSrc]',
+  selector: 'img[ngSrc]',
   host: {
     '[style.position]': 'fill ? "absolute" : null',
     '[style.width]': 'fill ? "100%" : null',
@@ -230,29 +235,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private _renderedSrc: string|null = null;
 
   /**
-   * Previously, the `rawSrc` attribute was used to activate the directive.
-   * The attribute was renamed to `ngSrc` and this input just produces an error,
-   * suggesting to switch to `ngSrc` instead.
-   *
-   * This error should be removed in v15.
-   *
-   * @nodoc
-   * @deprecated Use `ngSrc` instead.
-   */
-  @Input()
-  set rawSrc(value: string) {
-    if (ngDevMode) {
-      throw new RuntimeError(
-          RuntimeErrorCode.INVALID_INPUT,
-          `${imgDirectiveDetails(value, false)} the \`rawSrc\` attribute was used ` +
-              `to activate the directive. Newer version of the directive uses the \`ngSrc\` ` +
-              `attribute instead. Please replace \`rawSrc\` with \`ngSrc\` and ` +
-              `\`rawSrcset\` with \`ngSrcset\` attributes in the template to ` +
-              `enable image optimizations.`);
-    }
-  }
-
-  /**
    * Name of the source image.
    * Image name will be processed by the image loader and the final URL will be applied as the `src`
    * property of the image.
@@ -279,7 +261,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   @Input() sizes?: string;
 
   /**
-   * The intrinsic width of the image in pixels.
+   * For responsive images: the intrinsic width of the image in pixels.
+   * For fixed size images: the desired rendered width of the image in pixels.
    */
   @Input()
   set width(value: string|number|undefined) {
@@ -292,7 +275,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private _width?: number;
 
   /**
-   * The intrinsic height of the image in pixels.
+   * For responsive images: the intrinsic height of the image in pixels.
+   * For fixed size images: the desired rendered height of the image in pixels.* The intrinsic
+   * height of the image in pixels.
    */
   @Input()
   set height(value: string|number|undefined) {
@@ -337,8 +322,10 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private _disableOptimizedSrcset = false;
 
   /**
-   * Sets the image to "fill mode," which eliminates the height/width requirement and adds
+   * Sets the image to "fill mode", which eliminates the height/width requirement and adds
    * styles such that the image fills its containing element.
+   *
+   * @developerPreview
    */
   @Input()
   set fill(value: string|boolean|undefined) {
@@ -365,6 +352,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    */
   @Input() srcset?: string;
 
+  /** @nodoc */
   ngOnInit() {
     if (ngDevMode) {
       assertNonEmptyInput(this, 'ngSrc', this.ngSrc);
@@ -377,14 +365,18 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNotBlobUrl(this);
       if (this.fill) {
         assertEmptyWidthAndHeight(this);
+        assertNonZeroRenderedHeight(this, this.imgElement, this.renderer);
       } else {
         assertNonEmptyWidthAndHeight(this);
+        // Only check for distorted images when not in fill mode, where
+        // images may be intentionally stretched, cropped or letterboxed.
+        assertNoImageDistortion(this, this.imgElement, this.renderer);
       }
       assertValidLoadingInput(this);
-      assertNoImageDistortion(this, this.imgElement, this.renderer);
       if (!this.ngSrcset) {
         assertNoComplexSizes(this);
       }
+      assertNotMissingBuiltInLoader(this.ngSrc, this.imageLoader);
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
@@ -430,7 +422,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
     if (this.ngSrcset) {
       rewrittenSrcset = this.getRewrittenSrcset();
-    } else if (!this._disableOptimizedSrcset && !this.srcset) {
+    } else if (
+        !this._disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader) {
       rewrittenSrcset = this.getAutomaticSrcset();
     }
 
@@ -444,10 +437,20 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     if (ngDevMode) {
-      assertNoPostInitInputChange(
-          this, changes, ['ngSrc', 'ngSrcset', 'width', 'height', 'priority']);
+      assertNoPostInitInputChange(this, changes, [
+        'ngSrc',
+        'ngSrcset',
+        'width',
+        'height',
+        'priority',
+        'fill',
+        'loading',
+        'sizes',
+        'disableOptimizedSrcset',
+      ]);
     }
   }
 
@@ -514,6 +517,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     return finalSrcs.join(', ');
   }
 
+  /** @nodoc */
   ngOnDestroy() {
     if (ngDevMode) {
       if (!this.priority && this._renderedSrc !== null && this.lcpObserver !== null) {
@@ -693,12 +697,20 @@ function assertUnderDensityCap(dir: NgOptimizedImage, value: string) {
  * the directive has initialized.
  */
 function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} {
+  let reason!: string;
+  if (inputName === 'width' || inputName === 'height') {
+    reason = `Changing \`${inputName}\` may result in different attribute value ` +
+        `applied to the underlying image element and cause layout shifts on a page.`;
+  } else {
+    reason = `Changing the \`${inputName}\` would have no effect on the underlying ` +
+        `image element, because the resource loading has already occurred.`;
+  }
   return new RuntimeError(
       RuntimeErrorCode.UNEXPECTED_INPUT_CHANGE,
       `${imgDirectiveDetails(dir.ngSrc)} \`${inputName}\` was updated after initialization. ` +
-          `The NgOptimizedImage directive will not react to this input change. ` +
-          `To fix this, switch \`${inputName}\` a static value or wrap the image element ` +
-          `in an *ngIf that is gated on the necessary value.`);
+          `The NgOptimizedImage directive will not react to this input change. ${reason} ` +
+          `To fix this, either switch \`${inputName}\` to a static value ` +
+          `or wrap the image element in an *ngIf that is gated on the necessary value.`);
 }
 
 /**
@@ -830,7 +842,8 @@ function assertNonEmptyWidthAndHeight(dir: NgOptimizedImage) {
         `${imgDirectiveDetails(dir.ngSrc)} these required attributes ` +
             `are missing: ${missingAttributes.map(attr => `"${attr}"`).join(', ')}. ` +
             `Including "width" and "height" attributes will prevent image-related layout shifts. ` +
-            `To fix this, include "width" and "height" attributes on the image tag.`);
+            `To fix this, include "width" and "height" attributes on the image tag or turn on ` +
+            `"fill" mode with the \`fill\` attribute.`);
   }
 }
 
@@ -848,6 +861,27 @@ function assertEmptyWidthAndHeight(dir: NgOptimizedImage) {
             `along with the \`fill\` attribute. Because \`fill\` mode causes an image to fill its containing ` +
             `element, the size attributes have no effect and should be removed.`);
   }
+}
+
+/**
+ * Verifies that the rendered image has a nonzero height. If the image is in fill mode, provides
+ * guidance that this can be caused by the containing element's CSS position property.
+ */
+function assertNonZeroRenderedHeight(
+    dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
+  const removeListenerFn = renderer.listen(img, 'load', () => {
+    removeListenerFn();
+    const renderedHeight = parseFloat(img.clientHeight as any);
+    if (dir.fill && renderedHeight === 0) {
+      console.warn(formatRuntimeError(
+          RuntimeErrorCode.INVALID_INPUT,
+          `${imgDirectiveDetails(dir.ngSrc)} the height of the fill-mode image is zero. ` +
+              `This is likely because the containing element does not have the CSS 'position' ` +
+              `property set to one of the following: "relative", "fixed", or "absolute". ` +
+              `To fix this problem, make sure the container element has the CSS 'position' ` +
+              `property defined and the height of the element is not zero.`));
+    }
+  });
 }
 
 /**
@@ -871,5 +905,37 @@ function assertValidLoadingInput(dir: NgOptimizedImage) {
         `${imgDirectiveDetails(dir.ngSrc)} the \`loading\` attribute ` +
             `has an invalid value (\`${dir.loading}\`). ` +
             `To fix this, provide a valid value ("lazy", "eager", or "auto").`);
+  }
+}
+
+/**
+ * Warns if NOT using a loader (falling back to the generic loader) and
+ * the image appears to be hosted on one of the image CDNs for which
+ * we do have a built-in image loader. Suggests switching to the
+ * built-in loader.
+ *
+ * @param ngSrc Value of the ngSrc attribute
+ * @param imageLoader ImageLoader provided
+ */
+function assertNotMissingBuiltInLoader(ngSrc: string, imageLoader: ImageLoader) {
+  if (imageLoader === noopImageLoader) {
+    let builtInLoaderName = '';
+    for (const loader of BUILT_IN_LOADERS) {
+      if (loader.testUrl(ngSrc)) {
+        builtInLoaderName = loader.name;
+        break;
+      }
+    }
+    if (builtInLoaderName) {
+      console.warn(formatRuntimeError(
+          RuntimeErrorCode.MISSING_BUILTIN_LOADER,
+          `NgOptimizedImage: It looks like your images may be hosted on the ` +
+              `${builtInLoaderName} CDN, but your app is not using Angular's ` +
+              `built-in loader for that CDN. We recommend switching to use ` +
+              `the built-in by calling \`provide${builtInLoaderName}Loader()\` ` +
+              `in your \`providers\` and passing it your instance's base URL. ` +
+              `If you don't want to use the built-in loader, define a custom ` +
+              `loader function using IMAGE_LOADER to silence this warning.`));
+    }
   }
 }

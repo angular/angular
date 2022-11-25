@@ -21,6 +21,7 @@ generated_file_test(
 
 ng_module(
     name = "common",
+    package_name = "@angular/common",
     srcs = glob(
         [
             "*.ts",
@@ -45,6 +46,9 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
         "//integration:__subpackages__",
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
@@ -82,4 +86,12 @@ api_golden_test(
     ],
     entry_point = "angular/packages/common/src/errors.d.ts",
     golden = "angular/goldens/public-api/common/errors.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
 )

@@ -35,6 +35,7 @@ genrule(
 
 ng_package(
     name = "npm_package",
+    package_name = "@angular/service-worker",
     srcs = [
         "package.json",
         "safety-worker.js",
@@ -47,7 +48,12 @@ ng_package(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//integration:__subpackages__"],
+    visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
+        "//integration:__subpackages__",
+    ],
     deps = [
         ":service-worker",
         "//packages/service-worker/config",
@@ -62,4 +68,12 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/service-worker",
     npm_package = "angular/packages/service-worker/npm_package",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
 )

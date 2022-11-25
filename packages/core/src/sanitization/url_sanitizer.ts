@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {XSS_SECURITY_URL} from '../error_details_base_url';
 
 /**
  * A pattern that recognizes a commonly useful subset of URLs that are safe.
@@ -40,7 +41,7 @@ export function _sanitizeUrl(url: string): string {
   if (url.match(SAFE_URL_PATTERN)) return url;
 
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    console.warn(`WARNING: sanitizing unsafe URL value ${url} (see https://g.co/ng/security#xss)`);
+    console.warn(`WARNING: sanitizing unsafe URL value ${url} (see ${XSS_SECURITY_URL})`);
   }
 
   return 'unsafe:' + url;

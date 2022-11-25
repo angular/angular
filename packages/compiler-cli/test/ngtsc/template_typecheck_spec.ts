@@ -3072,52 +3072,6 @@ suppress
           `Argument of type 'string' is not assignable to parameter of type 'number'.`
         ]);
       });
-
-      it('should check bindings to host directive inputs referring to the private name when there is a different public name',
-         () => {
-           env.write('test.ts', `
-            import {Component, Directive, NgModule, Input, Output} from '@angular/core';
-
-            @Directive({
-              standalone: true,
-            })
-            class HostDir {
-              @Input('inputAlias') input: number;
-              @Output('outputAlias') output: string;
-            }
-
-            @Directive({
-              selector: '[dir]',
-              hostDirectives: [{directive: HostDir, inputs: ['input'], outputs: ['output']}]
-            })
-            class Dir {}
-
-            @Component({
-              selector: 'test',
-              template: '<div dir [input]="person.name" (output)="handleStringEvent($event)"></div>',
-            })
-            class TestCmp {
-              person: {
-                name: string;
-              };
-              handleStringEvent(event: string): void {}
-            }
-
-            @NgModule({
-              declarations: [TestCmp, Dir],
-            })
-            class Module {}
-          `);
-
-           const messages = env.driveDiagnostics().map(d => d.messageText);
-
-           // These messages are expected to refer to the native
-           // typings since the inputs/outputs haven't been exposed.
-           expect(messages).toEqual([
-             `Argument of type 'Event' is not assignable to parameter of type 'string'.`,
-             `Can't bind to 'input' since it isn't a known property of 'div'.`
-           ]);
-         });
     });
   });
 });

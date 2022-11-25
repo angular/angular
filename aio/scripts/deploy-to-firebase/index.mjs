@@ -48,6 +48,7 @@
  *     in human-readable format to stdout).)
  */
 
+import path from 'path';
 import sh from 'shelljs';
 import {fileURLToPath} from 'url';
 import post from './post-deploy-actions.mjs';
@@ -58,7 +59,10 @@ sh.set('-e');
 
 
 // Constants
-const DIRNAME = u.getDirname(import.meta.url);
+const inBazelTest = !!process.env.TEST_SRCDIR;
+const DIRNAME = !inBazelTest
+  ? u.getDirname(import.meta.url)
+  : path.join('.', 'aio', 'scripts', 'deploy-to-firebase');
 const ROOT_PKG_PATH = `${DIRNAME}/../../../package.json`;
 
 // Exports
@@ -74,7 +78,9 @@ export {
 // references the full file path (including the file extension).
 // See https://stackoverflow.com/questions/45136831/node-js-require-main-module#answer-60309682 for
 // more details.
-if (fileURLToPath(import.meta.url) === process.argv[1]) {
+const isMain = inBazelTest ||
+  (fileURLToPath(import.meta.url) === process.argv[1]);
+if (isMain) {
   const isDryRun = process.argv[2] === '--dry-run';
   const inputVars = computeInputVars(process.env);
   const deploymentsInfo = computeDeploymentsInfo(inputVars);
@@ -377,6 +383,10 @@ function deploy(data) {
 
   u.logSectionHeader('Run pre-deploy actions.');
   preDeployActions.forEach(fn => fn(data));
+
+  // Firebase requires that the distributable be in the same folder as firebase.json.
+  u.logSectionHeader('Copy AIO distributable from Bazel output tree to aio/.');
+  sh.cp('-rf', pre.DIST_DIR, 'dist');
 
   u.logSectionHeader('Deploy AIO to Firebase hosting.');
   const firebase = cmd => u.yarn(`firebase ${cmd} --token "${firebaseToken}"`);

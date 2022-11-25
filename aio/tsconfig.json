@@ -7,8 +7,6 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
-    // NOTE: Intentionally deviate from default Angular CLI settings
-    //       (due to many violations and uglier syntax).
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
@@ -20,15 +18,15 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2020",
+    "target": "ES2022",
     "module": "es2020",
     "lib": [
       "es2020",
       "dom"
     ],
     "skipLibCheck": true,
-    // disabled because this is on by default in tsc 2.7 breaking our codebase - we need to refactor
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "useDefineForClassFields": false
   },
   "exclude": [
     "aio-builds-setup",

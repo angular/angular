@@ -1,7 +1,11 @@
+<!-- vale Angular.Google_Headings = NO -->
+
 # NgZone
 
+<!-- vale Angular.Google_Headings = YES -->
+
 A zone is an execution context that persists across async tasks.
-You can think of it as [thread-local storage](https://en.wikipedia.org/wiki/Thread-local_storage) for JavaScript VMs.
+You can think of it as [thread-local storage](https://en.wikipedia.org/wiki/Thread-local_storage) for the JavaScript VM.
 This guide describes how to use Angular's NgZone to automatically detect changes in the component to update HTML.
 
 ## Fundamentals of change detection
@@ -14,13 +18,13 @@ In Angular, you can display data by binding controls in an HTML template to the 
 
 <code-example header="src/app/app.component.ts" path="displaying-data/src/app/app.component.1.ts"></code-example>
 
-In addition, you can bind DOM events to a method of an Angular component.
+You can also bind DOM events to a method of an Angular component.
 In such methods, you can also update a property of the Angular component, which updates the corresponding data displayed in the template.
 
 <code-example header="src/app/click-me.component.ts" path="user-input/src/app/click-me.component.ts" region="click-me-component"></code-example>
 
-In both of the above examples, the component's code updates only the property of the component.
-However, the HTML is also updated automatically.
+In both of the preceding examples, the component's code updates only the property of the component.
+The HTML is also updated automatically.
 This guide describes how and when Angular renders the HTML based on the data from the Angular component.
 
 ### Detecting changes with plain JavaScript
@@ -96,7 +100,7 @@ To clarify how changes are detected and values updated, consider the following c
 
 </code-example>
 
-After you update the data, you need to call `detectChange()` manually to check whether the data changed.
+After you update the data, you need to call `detectChange()` manually to see whether the data changed.
 If the data changed, you render the HTML to reflect the updated data.
 
 In Angular, this step is unnecessary.
@@ -187,7 +191,7 @@ Typically, updates occur for one of the following reasons:
     </code-example>
 
 1.  Other async operations.
-    In addition to `addEventListener()`, `setTimeout()` and `Promise.then()`, there are other operations that can update the data asynchronously.
+    Besides `addEventListener()`, `setTimeout()` and `Promise.then()`, there are other operations that can update the data asynchronously.
     Some examples include `WebSocket.onmessage()` and `Canvas.toBlob()`.
 
     The preceding list contains most common scenarios in which the application might change the data.
@@ -278,10 +282,10 @@ zone.run(() =&gt; {
 
 </code-example>
 
-The above example creates a zone with several hooks.
+The preceding example creates a zone with several hooks.
 
 The `onXXXTask` hooks trigger when the status of the task changes.
-The concept of a *Zone Task* is very similar to the JavaScript VM Task concept:
+The concept of a *Zone Task* is comparable to the JavaScript VM Task concept:
 
 *   `macroTask`: such as `setTimeout()`
 *   `microTask`: such as `Promise.then()`
@@ -292,13 +296,13 @@ These hooks trigger under the following circumstances:
 | Hooks            | Details |
 |:---              |:---     |
 | `onScheduleTask` | Triggers when a new asynchronous task is scheduled, such as when you call `setTimeout()`.                                                                                                                                                         |
-| `onInvokeTask`   | Triggers when an asynchronous task is about to execute, such as when the callback of `setTimeout()` is about to execute.                                                                                                                          |
+| `onInvokeTask`   | Triggers when an asynchronous task is about to run, such as when the callback of `setTimeout()` is about to run.                                                                                                                          |
 | `onHasTask`      | Triggers when the status of one kind of task inside a zone changes from stable to unstable or from unstable to stable. A status of "stable" means there are no tasks inside the zone, while "unstable" means a new task is scheduled in the zone. |
-| `onInvoke`       | Triggers when a synchronous function is going to execute in the zone.                                                                                                                                                                             |
+| `onInvoke`       | Triggers when a synchronous function is going to run in the zone.                                                                                                                                                                             |
 
-With these hooks, `Zone` can monitor the status of all synchronous and asynchronous operations inside a zone.
+With these hooks, `Zone` can observe the status of all synchronous and asynchronous operations inside a zone.
 
-The above example returns the following output:
+The preceding example returns the following output:
 
 <code-example format="output" hideCopy language="shell">
 
@@ -323,24 +327,32 @@ task state changed in the zone: { microTask: false,
 
 All of the functions of `Zone` are provided by a library called [Zone.js](https://github.com/angular/angular/tree/main/packages/zone.js/README.md).
 This library implements those features by intercepting asynchronous APIs through monkey patching.
-Monkey patching is a technique to add or modify the default behavior of a function at runtime without changing the source code.
+Monkey patching is a technique to add or alter the default behavior of a function at runtime without changing the source code.
+
+<!-- vale Angular.Google_Headings = NO -->
 
 ## NgZone
 
-While Zone.js can monitor all the states of synchronous and asynchronous operations, Angular additionally provides a service called NgZone.
+<!-- vale Angular.Google_Headings = YES -->
+
+While Zone.js can observe all the states of synchronous and asynchronous operations, Angular additionally provides a service called NgZone.
 This service creates a zone named `angular` to automatically trigger change detection when the following conditions are satisfied:
 
 1.  When a sync or async function is executed
 1.  When there is no `microTask` scheduled
 
+<!-- vale Angular.Google_Headings = NO -->
+
 ### NgZone `run()` and `runOutsideOfAngular()`
+
+<!-- vale Angular.Google_Headings = YES -->
 
 `Zone` handles most asynchronous APIs such as `setTimeout()`, `Promise.then()`, and `addEventListener()`.
 For the full list, see the [Zone Module document](https://github.com/angular/angular/blob/main/packages/zone.js/MODULE.md).
-Therefore in those asynchronous APIs, you don't need to trigger change detection manually.
+In those asynchronous APIs, you don't need to trigger change detection manually.
 
-There are still some third party APIs that Zone does not handle.
-In those cases, the `NgZone` service provides a [`run()`](api/core/NgZone#run) method that allows you to execute a function inside the Angular zone.
+Some third party APIs are not handled by Zone.
+In those cases, the `NgZone` service provides a [`run()`](api/core/NgZone#run) method that allows you to run a function inside the Angular zone.
 This function, and all asynchronous operations in that function, triggers change detection automatically at the correct time.
 
 <code-example format="typescript" language="typescript">
@@ -384,10 +396,14 @@ export class AppComponent implements OnInit {
 
 </code-example>
 
+<!-- vale Angular.Google_Headings = NO -->
+
 ### Setting up Zone.js
 
+<!-- vale Angular.Google_Headings = YES -->
+
 To make Zone.js available in Angular, you need to import the `zone.js` package.
-If you are using the Angular CLI, this step is done automatically, and you will see the following line in the `src/polyfills.ts`:
+If you are using the Angular CLI, this step is done automatically, and you can see the following line in the `src/polyfills.ts`:
 
 <code-example format="typescript" language="typescript">
 
@@ -398,15 +414,15 @@ import 'zone.js';  // Included with Angular CLI.
 
 </code-example>
 
-Before importing the  `zone.js` package, you can set the following configurations:
+Before importing the `zone.js` package, you can set the following configurations:
 
-*   You can disable some asynchronous API monkey patching for better performance.
-    For example, you can disable the `requestAnimationFrame()` monkey patch, so the callback of `requestAnimationFrame()` will not trigger change detection.
-    This is useful if, in your application, the callback of the `requestAnimationFrame()` will not update any data.
+*   Disabling some asynchronous API monkey patching for better performance.
+    For example, disabling the `requestAnimationFrame()` monkey patch, so the callback of `requestAnimationFrame()` does not trigger change detection.
+    This is useful if, in your application, the callback of the `requestAnimationFrame()` does not update any data.
 
-*   You can specify that certain DOM events do not run inside the Angular zone; for example, to prevent a `mousemove` or `scroll` event to trigger change detection
+*   Specify that certain DOM events do not run inside the Angular zone. For example, to prevent a `mousemove` or `scroll` event to trigger change detection
 
-There are several other settings you can change.
+Several other settings can be changed.
 To make these changes, you need to create a `zone-flags.ts` file, such as the following.
 
 <code-example format="typescript" language="typescript">
@@ -433,18 +449,22 @@ import 'zone.js';  // Included with Angular CLI.
 
 For more information about what you can configure, see the [Zone.js](https://github.com/angular/angular/tree/main/packages/zone.js) documentation.
 
+<!-- vale Angular.Google_Headings = NO -->
+
 ### NoopZone
 
+<!-- vale Angular.Google_Headings = YES -->
+
 `Zone` helps Angular know when to trigger change detection and let the developers focus on the application development.
-By default, `Zone` is loaded and works without additional configuration.
-However, you don't necessarily have to use `Zone` to make Angular work.
+By default, `Zone` is loaded and works without further configuration.
+You don't necessarily have to use `Zone` to make Angular work.
 Instead, you can opt to trigger change detection on your own.
 
 <div class="callout is-helpful">
 
 <header>Disabling Zone</header>
 
-**If you disable `Zone`, you will need to trigger all change detection at the correct timing yourself, which requires comprehensive knowledge of change detection**.
+**Disabling `Zone` requires you to trigger all change detection at the correct timing yourself, which requires comprehensive knowledge of change detection**.
 
 </div>
 

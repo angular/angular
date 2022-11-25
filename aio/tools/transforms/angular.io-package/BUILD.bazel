@@ -1,0 +1,22 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+
+js_library(
+    name = "angular.io-package",
+    srcs = glob(
+        ["**/*.js"],
+        exclude = [
+            "**/*.spec.js",
+        ],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//aio/tools/transforms/angular-api-package",
+        "//aio/tools/transforms/angular-content-package",
+        "//aio/tools/transforms/angular-errors-package",
+        "//aio/tools/transforms/angular-extended-diagnostics-package",
+        "//aio/tools/transforms/cli-docs-package",
+        "@aio_npm//dgeni",
+        "@aio_npm//dgeni-packages",
+        "@aio_npm//rimraf",
+    ],
+)

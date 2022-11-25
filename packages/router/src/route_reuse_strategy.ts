@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentRef} from '@angular/core';
+import {ComponentRef, inject, Injectable} from '@angular/core';
 
 import {OutletContext} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
@@ -38,6 +38,7 @@ export type DetachedRouteHandleInternal = {
  *
  * @publicApi
  */
+@Injectable({providedIn: 'root', useFactory: () => inject(DefaultRouteReuseStrategy)})
 export abstract class RouteReuseStrategy {
   /** Determines if this route (and its subtree) should be detached to be reused later */
   abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
@@ -64,7 +65,7 @@ export abstract class RouteReuseStrategy {
  *
  * This base route reuse strategy only reuses routes when the matched router configs are
  * identical. This prevents components from being destroyed and recreated
- * when just the fragment or query parameters change
+ * when just the route parameters, query parameters or fragment change
  * (that is, the existing component is _reused_).
  *
  * This strategy does not store any routes for later reuse.
@@ -110,4 +111,6 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
   }
 }
 
-export class DefaultRouteReuseStrategy extends BaseRouteReuseStrategy {}
+@Injectable({providedIn: 'root'})
+export class DefaultRouteReuseStrategy extends BaseRouteReuseStrategy {
+}

@@ -12,7 +12,7 @@ import {map, switchMap} from 'rxjs/operators';
 
 import {applyRedirects as applyRedirectsFn} from '../apply_redirects';
 import {Routes} from '../models';
-import {NavigationTransition} from '../router';
+import {NavigationTransition} from '../navigation_transition';
 import {RouterConfigLoader} from '../router_config_loader';
 import {UrlSerializer} from '../url_tree';
 

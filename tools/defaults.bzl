@@ -214,21 +214,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
     _ng_package(
         name = name,
         deps = deps,
-        # We never set a `package_name` for NPM packages, neither do we enable validation.
-        # This is necessary because the source targets of the NPM packages all have
-        # package names set and setting a similar `package_name` on the NPM package would
-        # result in duplicate linker mappings that will conflict. e.g. consider the following
-        # scenario: We have a `ts_library` for `@angular/core`. We will configure a package
-        # name for the target so that it can be resolved in NodeJS executions from `node_modules`.
-        # If we'd also set a `package_name` for the associated `pkg_npm` target, there would be
-        # two mappings for `@angular/core` and the linker will complain. For a better development
-        # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
-        # instead of requiring tests and other targets to assemble the NPM package first.
-        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
-        # linker mappings where transitive-determined mappings are skipped on conflicts.
-        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
-        package_name = None,
-        validate = False,
+        validate = True,
         readme_md = readme_md,
         license_banner = license_banner,
         substitutions = select({
@@ -252,7 +238,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         visibility = visibility,
     )
 
-def pkg_npm(name, use_prodmode_output = False, **kwargs):
+def pkg_npm(name, validate = True, use_prodmode_output = False, **kwargs):
     """Default values for pkg_npm"""
     visibility = kwargs.pop("visibility", None)
 
@@ -286,21 +272,7 @@ def pkg_npm(name, use_prodmode_output = False, **kwargs):
 
     _pkg_npm(
         name = name,
-        # We never set a `package_name` for NPM packages, neither do we enable validation.
-        # This is necessary because the source targets of the NPM packages all have
-        # package names set and setting a similar `package_name` on the NPM package would
-        # result in duplicate linker mappings that will conflict. e.g. consider the following
-        # scenario: We have a `ts_library` for `@angular/core`. We will configure a package
-        # name for the target so that it can be resolved in NodeJS executions from `node_modules`.
-        # If we'd also set a `package_name` for the associated `pkg_npm` target, there would be
-        # two mappings for `@angular/core` and the linker will complain. For a better development
-        # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
-        # instead of requiring tests and other targets to assemble the NPM package first.
-        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
-        # linker mappings where transitive-determined mappings are skipped on conflicts.
-        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
-        package_name = None,
-        validate = False,
+        validate = validate,
         substitutions = select({
             "//:stamp": stamped_substitutions,
             "//conditions:default": substitutions,
@@ -392,22 +364,62 @@ def protractor_web_test_suite(**kwargs):
         **kwargs
     )
 
-def nodejs_binary(data = [], templated_args = [], **kwargs):
+def nodejs_binary(data = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
+    data = data + [
+        "@%s//source-map-support" % _node_modules_workspace_name(),
+    ]
+
+    if not enable_linker:
+        templated_args = templated_args + [
+            # Disable the linker and rely on patched resolution which works better on Windows
+            # and is less prone to race conditions when targets build concurrently.
+            "--nobazel_run_linker",
+        ]
+
+        (env, templated_args, data) = _apply_esm_import_patch(env, templated_args, data)
+
     _nodejs_binary(
-        data = data + ["@npm//source-map-support"],
-        # Disable the linker and rely on patched resolution which works better on Windows
-        # and is less prone to race conditions when targets build concurrently.
-        templated_args = ["--nobazel_run_linker"] + templated_args,
+        data = data,
+        env = env,
+        templated_args = templated_args,
         **kwargs
     )
 
-def nodejs_test(templated_args = [], **kwargs):
+def nodejs_test(data = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
+    if not enable_linker:
+        templated_args = templated_args + [
+            # Disable the linker and rely on patched resolution which works better on Windows
+            # and is less prone to race conditions when targets build concurrently.
+            "--nobazel_run_linker",
+        ]
+
+        (env, templated_args, data) = _apply_esm_import_patch(env, templated_args, data)
+
     _nodejs_test(
-        # Disable the linker and rely on patched resolution which works better on Windows
-        # and is less prone to race conditions when targets build concurrently.
-        templated_args = ["--nobazel_run_linker"] + templated_args,
+        data = data,
+        env = env,
+        templated_args = templated_args,
         **kwargs
     )
+
+def _node_modules_workspace_name():
+    return "npm" if not native.package_name().startswith("aio") else "aio_npm"
+
+def _apply_esm_import_patch(env, templated_args, data):
+    """Adjust properties from a nodejs_binary/test to provide a custom esm loader
+    to resolve third-party deps. Unlike for cjs modules, rules_nodejs doesn't patch
+    imports when the linker is disabled."""
+
+    env = dict(env, **{"NODE_MODULES_WORKSPACE_NAME": _node_modules_workspace_name()})
+    templated_args = templated_args + [
+        "--node_options=--loader=file:///$$(rlocation $(rootpath //tools/esm-loader:esm-loader.mjs))",
+    ]
+    data = data + [
+        "//tools/esm-loader",
+        "//tools/esm-loader:esm-loader.mjs",
+    ]
+
+    return (env, templated_args, data)
 
 def npm_package_bin(args = [], **kwargs):
     _npm_package_bin(

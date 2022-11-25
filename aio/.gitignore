@@ -5,7 +5,6 @@
 /tmp
 /out-tsc
 /bazel-out
-/src/generated
 
 # Node
 /node_modules
@@ -42,6 +41,9 @@ testem.log
 
 # e2e
 protractor-results*.txt
+
+# Example playground
+content/example-playground
 
 # System files
 .DS_Store

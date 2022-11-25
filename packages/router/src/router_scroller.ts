@@ -7,7 +7,7 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {Injectable, InjectionToken, OnDestroy} from '@angular/core';
+import {Injectable, InjectionToken, NgZone, OnDestroy} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {NavigationEnd, NavigationStart, Scroll} from './events';
@@ -29,7 +29,8 @@ export class RouterScroller implements OnDestroy {
 
   constructor(
       private router: Router,
-      /** @docsNotRequired */ public readonly viewportScroller: ViewportScroller, private options: {
+      /** @docsNotRequired */ public readonly viewportScroller: ViewportScroller,
+      private readonly zone: NgZone, private options: {
         scrollPositionRestoration?: 'disabled'|'enabled'|'top',
         anchorScrolling?: 'disabled'|'enabled'
       } = {}) {
@@ -85,8 +86,18 @@ export class RouterScroller implements OnDestroy {
   }
 
   private scheduleScrollEvent(routerEvent: NavigationEnd, anchor: string|null): void {
-    this.router.triggerEvent(new Scroll(
-        routerEvent, this.lastSource === 'popstate' ? this.store[this.restoredId] : null, anchor));
+    this.zone.runOutsideAngular(() => {
+      // The scroll event needs to be delayed until after change detection. Otherwise, we may
+      // attempt to restore the scroll position before the router outlet has fully rendered the
+      // component by executing its update block of the template function.
+      setTimeout(() => {
+        this.zone.run(() => {
+          this.router.triggerEvent(new Scroll(
+              routerEvent, this.lastSource === 'popstate' ? this.store[this.restoredId] : null,
+              anchor));
+        });
+      }, 0);
+    });
   }
 
   /** @nodoc */

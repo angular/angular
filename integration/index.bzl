@@ -7,29 +7,7 @@
 
 load("//integration:npm_package_archives.bzl", "NPM_PACKAGE_ARCHIVES", "npm_package_archive_label")
 load("@npm//@angular/build-tooling/bazel/integration:index.bzl", "integration_test")
-
-# The generated npm packages should ALWAYS be replaced in integration tests
-# so we pass them to the `check_npm_packages` attribute of npm_integration_test
-FRAMEWORK_PACKAGES = [
-    "@angular/animations",
-    "@angular/bazel",
-    "@angular/benchpress",
-    "@angular/common",
-    "@angular/compiler",
-    "@angular/compiler-cli",
-    "@angular/core",
-    "@angular/elements",
-    "@angular/forms",
-    "@angular/language-service",
-    "@angular/localize",
-    "@angular/platform-browser",
-    "@angular/platform-browser-dynamic",
-    "@angular/platform-server",
-    "@angular/router",
-    "@angular/service-worker",
-    "@angular/upgrade",
-    "zone.js",
-]
+load("//:packages.bzl", "INTEGRATION_PACKAGES")
 
 def _ng_integration_test(name, setup_chromium = False, **kwargs):
     "Set defaults for the npm_integration_test common to the angular repo"
@@ -75,7 +53,7 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     for pkg in NPM_PACKAGE_ARCHIVES:
         if pkg not in pinned_npm_packages:
             npm_packages["@npm//:" + npm_package_archive_label(pkg)] = pkg
-    for pkg in FRAMEWORK_PACKAGES:
+    for pkg in INTEGRATION_PACKAGES:
         # If the generated Angular framework package is listed in the `use_view_engine_packages`
         # list, we will not use the local-built NPM package, but instead map to the
         # corresponding View Engine v12.x package from the `@npm//` workspace.

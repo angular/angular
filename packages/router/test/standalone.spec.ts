@@ -9,9 +9,8 @@
 import {Component, Injectable, NgModule} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {NavigationEnd, Router, RouterModule} from '@angular/router';
+import {provideRoutes, Router, RouterModule, ROUTES} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
-import {filter, first} from 'rxjs/operators';
 
 @Component({template: '<div>simple standalone</div>', standalone: true})
 export class SimpleStandaloneComponent {
@@ -370,6 +369,16 @@ describe('standalone in Router API', () => {
       expect(root.nativeElement.innerHTML).toContain('default exported');
     });
   });
+});
+
+describe('provideRoutes', () => {
+  it('warns if provideRoutes is used without provideRouter, RouterTestingModule, or RouterModule.forRoot',
+     () => {
+       spyOn(console, 'warn');
+       TestBed.configureTestingModule({providers: [provideRoutes([])]});
+       TestBed.inject(ROUTES);
+       expect(console.warn).toHaveBeenCalled();
+     });
 });
 
 function advance(fixture: ComponentFixture<unknown>) {

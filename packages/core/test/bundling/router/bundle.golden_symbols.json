@@ -126,7 +126,13 @@
     "name": "DefaultIfEmptySubscriber"
   },
   {
+    "name": "DefaultRouteReuseStrategy"
+  },
+  {
     "name": "DefaultTitleStrategy"
+  },
+  {
+    "name": "DefaultUrlHandlingStrategy"
   },
   {
     "name": "DefaultUrlSerializer"
@@ -345,6 +351,9 @@
     "name": "NavigationError"
   },
   {
+    "name": "NavigationSkipped"
+  },
+  {
     "name": "NavigationStart"
   },
   {
@@ -463,6 +472,9 @@
   },
   {
     "name": "RootViewRef"
+  },
+  {
+    "name": "RouteReuseStrategy"
   },
   {
     "name": "RouteTitleKey"
@@ -616,6 +628,9 @@
   },
   {
     "name": "UnsubscriptionError"
+  },
+  {
+    "name": "UrlHandlingStrategy"
   },
   {
     "name": "UrlParser"
@@ -1089,6 +1104,9 @@
     "name": "getFactoryDef"
   },
   {
+    "name": "getFactoryOf"
+  },
+  {
     "name": "getFirstLContainer"
   },
   {
@@ -1347,6 +1365,9 @@
     "name": "isEnvironmentProviders"
   },
   {
+    "name": "isForwardRef"
+  },
+  {
     "name": "isFunction"
   },
   {
@@ -1527,6 +1548,9 @@
     "name": "noMatch2"
   },
   {
+    "name": "noSideEffects"
+  },
+  {
     "name": "nodeChildrenAsMap"
   },
   {
@@ -1576,9 +1600,6 @@
   },
   {
     "name": "promise"
-  },
-  {
-    "name": "provideRoutes"
   },
   {
     "name": "redirectIfUrlTree"
@@ -1639,6 +1660,9 @@
   },
   {
     "name": "rootRoute"
+  },
+  {
+    "name": "routes"
   },
   {
     "name": "rxSubscriber"

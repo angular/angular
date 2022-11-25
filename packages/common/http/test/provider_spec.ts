@@ -14,7 +14,7 @@ import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable} from 'rxjs';
 
 import {HttpInterceptorFn} from '../src/interceptor';
-import {provideHttpClient, withInterceptors, withJsonpSupport, withLegacyInterceptors, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from '../src/provider';
+import {provideHttpClient, withInterceptors, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from '../src/provider';
 
 describe('provideHttp', () => {
   beforeEach(() => {
@@ -62,10 +62,10 @@ describe('provideHttp', () => {
     req.flush('');
   });
 
-  it('withLegacyInterceptors() should enable legacy interceptors', () => {
+  it('withInterceptorsFromDi() should enable legacy interceptors', () => {
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(withLegacyInterceptors()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideLegacyInterceptor('alpha'),
         provideLegacyInterceptor('beta'),
         provideHttpClientTesting(),
@@ -144,7 +144,7 @@ describe('provideHttp', () => {
               withInterceptors([
                 makeLiteralTagInterceptorFn('functional'),
               ]),
-              withLegacyInterceptors(),
+              withInterceptorsFromDi(),
               ),
           provideHttpClientTesting(),
           provideLegacyInterceptor('legacy'),
@@ -161,7 +161,7 @@ describe('provideHttp', () => {
       TestBed.configureTestingModule({
         providers: [
           provideHttpClient(
-              withLegacyInterceptors(),
+              withInterceptorsFromDi(),
               withInterceptors([
                 makeLiteralTagInterceptorFn('functional'),
               ]),

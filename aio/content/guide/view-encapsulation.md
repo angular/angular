@@ -2,19 +2,23 @@
 
 In Angular, a component's styles can be encapsulated within the component's host element so that they don't affect the rest of the application.
 
-The `Component`'s decorator provides the [`encapsulation`](api/core/Component#encapsulation) option which can be used to control how the encapsulation is applied on a *per component* basis.
+The `Component` decorator provides the [`encapsulation`](api/core/Component#encapsulation) option which can be used to control how the encapsulation is applied on a *per component* basis.
 
 Choose from the following modes:
 
+<!-- vale off -->
+
 | Modes                         | Details |
 |:---                           |:---     |
-| `ViewEncapsulation.ShadowDom` | Angular uses the browser's built-in [Shadow DOM API](https://developer.mozilla.org/docs/Web/Web_Components/Shadow_DOM) to enclose the component's view inside a ShadowRoot \(used as the component's host element\) and apply the provided styles in an isolated manner. <div class="alert is-important"> `ViewEncapsulation.ShadowDom` only works on browsers that have built-in support for the shadow DOM \(see [Can I use - Shadow DOM v1](https://caniuse.com/shadowdomv1)\). Not all browsers support it, which is why the `ViewEncapsulation.Emulated` is the recommended and default mode. </div> |
-| `ViewEncapsulation.Emulated`  | Angular modifies the component's CSS selectors so that they are only applied to the component's view and do not affect other elements in the application \(*emulating* Shadow DOM behavior\). For more details, see [Inspecting generated CSS](guide/view-encapsulation#inspect-generated-css).                                                                                                                                                                                                                                                                                                           |
+| `ViewEncapsulation.ShadowDom` | Angular uses the browser's built-in [Shadow DOM API](https://developer.mozilla.org/docs/Web/Web_Components/Shadow_DOM) to enclose the component's view inside a ShadowRoot, used as the component's host element, and apply the provided styles in an isolated manner. <div class="alert is-important"> `ViewEncapsulation.ShadowDom` only works on browsers that have built-in support for the shadow DOM \(see [Can I use - Shadow DOM v1](https://caniuse.com/shadowdomv1)\). Not all browsers support it, which is why the `ViewEncapsulation.Emulated` is the recommended and default mode. </div> |
+| `ViewEncapsulation.Emulated`  | Angular modifies the component's CSS selectors so that they are only applied to the component's view and do not affect other elements in the application, *emulating* Shadow DOM behavior. For more details, see [Inspecting generated CSS](guide/view-encapsulation#inspect-generated-css).                                                                                                                                                                                                                                                                                                           |
 | `ViewEncapsulation.None`      | Angular does not apply any sort of view encapsulation meaning that any styles specified for the component are actually globally applied and can affect any HTML element present within the application. This mode is essentially the same as including the styles into the HTML itself.                                                                                                                                                                                                                                                                                                                   |
 
 <a id="inspect-generated-css"></a>
 
 ## Inspecting generated CSS
+
+<!-- vale on -->
 
 When using the emulated view encapsulation, Angular pre-processes all the component's styles so that they are only applied to the component's view.
 
@@ -31,7 +35,7 @@ In the DOM of a running Angular application, elements belonging to components us
 
 </code-example>
 
-There are two kinds of such attributes:
+Two kinds of these attributes exist:
 
 | Attributes   | Details |
 |:---          |:---     |
@@ -39,9 +43,9 @@ There are two kinds of such attributes:
 | `_ngcontent` | Are added to child element within a component's view, those are used to match the elements with their respective emulated ShadowRoots \(host elements with a matching `_nghost` attribute\). |
 
 The exact values of these attributes are a private implementation detail of Angular.
-They are automatically generated and you should never refer to them in application code.
+They are automatically created and you should never refer to them in application code.
 
-They are targeted by the generated component styles, which are injected in the `<head>` section of the DOM:
+They are targeted by the created component styles, which are injected in the `<head>` section of the DOM:
 
 <code-example format="css" language="css">
 
@@ -61,10 +65,10 @@ These modified selectors make sure the styles to be applied to components' views
 
 ## Mixing encapsulation modes
 
-As previously mentioned you specify the encapsulation mode in the Component's decorator on a *per component* basis, this means that within your application you can have different components using different encapsulation strategies.
+As mentioned earlier, you specify the encapsulation mode in the Component's decorator on a *per component* basis. This means that within your application you can have different components using different encapsulation strategies.
 
 Although possible, this is not recommended.
-If it is really needed you should be aware of how the styles of components using different encapsulation modes will interact with each other:
+If it is really needed, you should be aware of how the styles of components using different encapsulation modes interact with each other:
 
 | Modes                         | Details |
 |:---                           |:---     |
@@ -76,9 +80,9 @@ If it is really needed you should be aware of how the styles of components using
 
 Styles of `ViewEncapsulation.Emulated` and `ViewEncapsulation.None` components are also added to the shadow DOM host of each `ViewEncapsulation.ShadowDom` component.
 
-This means that styles for components with `ViewEncapsulation.None` will affect matching elements within shadow DOMs.
+This means that styles for components with `ViewEncapsulation.None` affect matching elements within the shadow DOM.
 
-This approach may seem counter-intuitive at first, but without it a component with `ViewEncapsulation.None` would be rendered differently within a component using `ViewEncapsulation.ShadowDom`, since its styles would not be available.
+This approach may seem counter-intuitive at first. But without it a component with `ViewEncapsulation.None` would be rendered differently within a component using `ViewEncapsulation.ShadowDom`, since its styles would not be available.
 
 </div>
 
@@ -97,8 +101,7 @@ This component colors its template elements red.
 
 Angular adds the styles for this component as global styles to the `<head>` of the document.
 
-As already mentioned Angular also adds the styles to all shadow DOM hosts.
-Therefore, the styles are available throughout the whole application.
+As already mentioned, Angular also adds the styles to all shadow DOM hosts, making the styles available throughout the whole application.
 
 <div class="lightbox">
 
@@ -113,12 +116,12 @@ This component colors its template elements green.
 
 <code-example header="src/app/emulated-encapsulation.component.ts" path="view-encapsulation/src/app/emulated-encapsulation.component.ts"></code-example>
 
-Similar to `ViewEncapsulation.None`, Angular adds the styles for this component to the `<head>` of the document, but with "scoped" styles.
+Comparable to `ViewEncapsulation.None`, Angular adds the styles for this component to the `<head>` of the document, but with "scoped" styles.
 
-Therefore, only the elements directly within this component's template will match its styles.
-Since the "scoped" styles from the `EmulatedEncapsulationComponent` are very specific, they override the global styles from the `NoEncapsulationComponent`.
+Only the elements directly within this component's template are going to match its styles.
+Since the "scoped" styles from the `EmulatedEncapsulationComponent` are specific, they override the global styles from the `NoEncapsulationComponent`.
 
-In this example, the `EmulatedEncapsulationComponent` contains a `NoEncapsulationComponent`, but `NoEncapsulationComponent` is still styled as expected since the `EmulatedEncapsulationComponent`'s "scoped" styles do not match elements in its template.
+In this example, the `EmulatedEncapsulationComponent` contains a `NoEncapsulationComponent`, but `NoEncapsulationComponent` is still styled as expected since the `EmulatedEncapsulationComponent` 's "scoped" styles do not match elements in its template.
 
 <div class="lightbox">
 
@@ -138,7 +141,7 @@ Angular adds styles for this component only to the shadow DOM host, so they are 
 <div class="alert is-helpful">
 
 **NOTE**: <br />
-Angular also adds the global styles from the `NoEncapsulationComponent` and `EmulatedEncapsulationComponent` to the shadow DOM host, so those styles are still available to the elements in the template of this component.
+Angular also adds the global styles from the `NoEncapsulationComponent` and `EmulatedEncapsulationComponent` to the shadow DOM host. Those styles are still available to the elements in the template of this component.
 
 </div>
 
@@ -148,7 +151,7 @@ The styles added by the `ShadowDomEncapsulationComponent` component are availabl
 
 The `EmulatedEncapsulationComponent` has specific "scoped" styles, so the styling of this component's template is unaffected.
 
-But since styles from `ShadowDomEncapsulationComponent` are added to the shadow host after the global styles, the `h2` style overrides the style from the `NoEncapsulationComponent`.
+Since styles from `ShadowDomEncapsulationComponent` are added to the shadow host after the global styles, the `h2` style overrides the style from the `NoEncapsulationComponent`.
 The result is that the `<h2>` element in the `NoEncapsulationComponent` is colored blue rather than red, which may not be what the component's author intended.
 
 <div class="lightbox">

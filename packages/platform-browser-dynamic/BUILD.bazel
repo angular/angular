@@ -4,6 +4,7 @@ package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "platform-browser-dynamic",
+    package_name = "@angular/platform-browser-dynamic",
     srcs = glob(
         [
             "*.ts",
@@ -30,6 +31,9 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
         "//integration:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
@@ -47,4 +51,12 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/platform-browser-dynamic",
     npm_package = "angular/packages/platform-browser-dynamic/npm_package",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
 )

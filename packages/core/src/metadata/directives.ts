@@ -328,15 +328,18 @@ export interface Directive {
    *
    * More information about standalone components, directives, and pipes can be found in [this
    * guide](guide/standalone-components).
-   *
-   * @developerPreview
    */
   standalone?: boolean;
 
   /**
    * Standalone directives that should be applied to the host whenever the directive is matched.
-   * By default none of the inputs or outputs of the host directives will be available on the host,
+   * By default, none of the inputs or outputs of the host directives will be available on the host,
    * unless they are specified in the `inputs` or `outputs` properties.
+   *
+   * You can additionally alias inputs and outputs by putting a colon and the alias after the
+   * original input or output name. For example, if a directive applied via `hostDirectives`
+   * defines an input named `menuDisabled`, you can alias this to `disabled` by adding
+   * `'menuDisabled: disabled'` as an entry to `inputs`.
    */
   hostDirectives?: (Type<unknown>|{
     directive: Type<unknown>,
@@ -617,8 +620,6 @@ export interface Component extends Directive {
    *
    * More information about standalone components, directives, and pipes can be found in [this
    * guide](guide/standalone-components).
-   *
-   * @developerPreview
    */
   standalone?: boolean;
 
@@ -632,10 +633,8 @@ export interface Component extends Directive {
    *
    * More information about standalone components, directives, and pipes can be found in [this
    * guide](guide/standalone-components).
-   *
-   * @developerPreview
    */
-  imports?: (Type<any>|any[])[];
+  imports?: (Type<any>|ReadonlyArray<any>)[];
 
   /**
    * The set of schemas that declare elements to be allowed in a standalone component. Elements and

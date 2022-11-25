@@ -17,7 +17,6 @@ import {isAbsoluteUrl, isValidPath, normalizePath, normalizeSrc} from '../url';
  * @see `ImageLoader`
  * @see `NgOptimizedImage`
  * @publicApi
- * @developerPreview
  */
 export interface ImageLoaderConfig {
   /**
@@ -35,7 +34,6 @@ export interface ImageLoaderConfig {
  * NgOptimizedImage directive to produce full image URL based on the image name and its width.
  *
  * @publicApi
- * @developerPreview
  */
 export type ImageLoader = (config: ImageLoaderConfig) => string;
 
@@ -46,7 +44,15 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
  * @see `ImageLoader`
  * @see `NgOptimizedImage`
  */
-const noopImageLoader = (config: ImageLoaderConfig) => config.src;
+export const noopImageLoader = (config: ImageLoaderConfig) => config.src;
+
+/**
+ * Metadata about the image loader.
+ */
+export type ImageLoaderInfo = {
+  name: string,
+  testUrl: (url: string) => boolean
+};
 
 /**
  * Injection token that configures the image loader function.
@@ -54,7 +60,6 @@ const noopImageLoader = (config: ImageLoaderConfig) => config.src;
  * @see `ImageLoader`
  * @see `NgOptimizedImage`
  * @publicApi
- * @developerPreview
  */
 export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
   providedIn: 'root',

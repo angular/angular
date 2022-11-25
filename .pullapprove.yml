@@ -61,9 +61,8 @@
 
 version: 3
 
-availability:
-  users_unavailable:
-    - atscott
+# availability:
+#   users_unavailable:
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -326,6 +325,7 @@ groups:
           'aio/content/guide/two-way-binding.md',
           'aio/content/examples/two-way-binding/**/{*,.*}',
           'aio/content/guide/built-in-directives.md',
+          'aio/content/guide/directive-composition-api.md',
           'aio/content/examples/built-in-directives/**/{*,.*}',
           'aio/content/images/guide/built-in-directives/**/{*,.*}',
           'aio/content/guide/template-reference-variables.md',
@@ -933,6 +933,8 @@ groups:
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
           'aio/content/guide/update-to-latest-version.md',
+          'aio/content/guide/update-to-version-14.md',
+          'aio/content/guide/update-to-version-15.md'
           ])
     reviewers:
       users:
@@ -1071,6 +1073,7 @@ groups:
           'aio/tests/**/{*,.*}',
           'aio/tools/**/{*,.*}',
           'aio/tools/examples/shared/boilerplate/cli/.vscode/**/{*,.*}',
+          'aio/content/BUILD.bazel',
           'aio/content/images/guide/contributors-guide/**/{*,.*}',
           'aio/content/guide/contributors-guide-overview.md',
           'aio/content/guide/docs-style-guide.md',
@@ -1160,6 +1163,7 @@ groups:
           'tools/bazel-repo-patches/**/{*,.*}',
           'tools/circular_dependency_test/**/{*,.*}',
           'tools/contributing-stats/**/{*,.*}',
+          'tools/esm-loader/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
           'tools/legacy-saucelabs/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',

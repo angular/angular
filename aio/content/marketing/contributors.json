@@ -178,6 +178,14 @@
     "bio": "Bob is the documentation lead for angular.io. When he's not obsessing over the i-dotting and t-crossing of documentation, he enjoys seeing the world from up in the air and below the sea.",
     "groups": ["Angular"]
   },
+  "bravery08": {
+    "name": "Brooke Avery",
+    "picture": "bravery_pic.png",
+    "twitter": "JediBravery",
+    "website": "https://devlife.show",
+    "bio": "Brooke is a software engineer, GDE, & community builder. She is the director of the Angular Community Meetup, a co-producer/host of the Dev.Life Podcast, & has been a co-organizer for ng-conf. Brooke has a strong passion for education & helping others find success in their developer journeys. Outside of programming, Brooke loves to geek out on Star Wars and the Disney Parks.",
+    "groups": ["GDE"]
+  },
   "brocco": {
     "name": "Mike Brocchi",
     "picture": "mike-brocchi.jpg",

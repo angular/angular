@@ -1,15 +1,8 @@
 // #docregion
-import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivateFn } from '@angular/router';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthGuard implements CanActivate {
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): boolean {
-    console.log('AuthGuard#canActivate called');
-    return true;
-  }
-}
+export const authGuard: CanActivateFn = () => {
+  console.log('authGuard#canActivate called');
+  return true;
+};
+// #enddocregion

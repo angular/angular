@@ -1,0 +1,51 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+
+js_library(
+    name = "angular-base-package",
+    srcs = glob(
+        [
+            "**/*.js",
+        ],
+        exclude = ["**/*.spec.js"],
+    ) + ["ignore-words.json"],
+    visibility = ["//aio/tools/transforms:__subpackages__"],
+    deps = [
+        "//:package_json",
+        "//aio/tools/transforms",
+        "//aio/tools/transforms/examples-package",
+        "//aio/tools/transforms/links-package",
+        "//aio/tools/transforms/remark-package",
+        "//aio/tools/transforms/target-package",
+        "@aio_npm//canonical-path",
+        "@aio_npm//dgeni",
+        "@aio_npm//dgeni-packages",
+        "@aio_npm//fs-extra",
+        "@aio_npm//hast-util-has-property",
+        "@aio_npm//image-size",
+        "@aio_npm//rehype-slug",
+        "@aio_npm//semver",
+        "@aio_npm//stemmer",
+        "@aio_npm//unist-util-filter",
+        "@aio_npm//unist-util-source",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["**/*.spec.js"]),
+    env = {
+        "GIT_BIN": "$(GIT_BIN_PATH)",
+    },
+    shard_count = 8,
+    toolchains = [
+        "@npm//@angular/build-tooling/bazel/git-toolchain:current_git_toolchain",
+    ],
+    deps = [
+        ":angular-base-package",
+        "//aio/tools/transforms/angular-api-package",
+        "//aio/tools/transforms/angular-content-package",
+        "//aio/tools/transforms/helpers",
+        "@aio_npm//semver",
+    ],
+)

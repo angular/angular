@@ -188,7 +188,7 @@ export interface Component extends Directive {
     encapsulation?: ViewEncapsulation;
     // @deprecated
     entryComponents?: Array<Type<any> | any[]>;
-    imports?: (Type<any> | any[])[];
+    imports?: (Type<any> | ReadonlyArray<any>)[];
     interpolation?: [string, string];
     moduleId?: string;
     preserveWhitespaces?: boolean;

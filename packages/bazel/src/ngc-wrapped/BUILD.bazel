@@ -9,7 +9,6 @@ ts_library(
         "index.ts",
     ],
     module_name = "@angular/bazel",
-    tsconfig = ":tsconfig.json",
     visibility = [
         "//packages/bazel:__pkg__",
         "//packages/bazel/test/ngc-wrapped:__subpackages__",

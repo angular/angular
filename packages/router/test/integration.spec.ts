@@ -12,7 +12,7 @@ import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreI
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {concat, EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
@@ -60,14 +60,18 @@ describe('Integration', () => {
      })));
 
   describe('navigation', function() {
-    it('should navigate to the current URL', fakeAsync(inject([Router], (router: Router) => {
-         router.onSameUrlNavigation = 'reload';
+    it('should navigate to the current URL', fakeAsync(() => {
+         TestBed.configureTestingModule({
+           providers: [
+             provideRouter([], withRouterConfig({onSameUrlNavigation: 'reload'})),
+           ]
+         });
+         const router = TestBed.inject(Router);
          router.resetConfig([
            {path: '', component: SimpleCmp},
            {path: 'simple', component: SimpleCmp},
          ]);
 
-         const fixture = createRoot(router, RootCmp);
          const events: Event[] = [];
          router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
 
@@ -81,8 +85,34 @@ describe('Integration', () => {
            [NavigationStart, '/simple'], [NavigationEnd, '/simple'], [NavigationStart, '/simple'],
            [NavigationEnd, '/simple']
          ]);
-       })));
+       }));
 
+    it('should override default onSameUrlNavigation with extras', async () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([], withRouterConfig({onSameUrlNavigation: 'ignore'})),
+        ]
+      });
+      const router = TestBed.inject(Router);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'simple', component: SimpleCmp},
+      ]);
+
+      const events: Event[] = [];
+      router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
+
+      await router.navigateByUrl('/simple');
+      await router.navigateByUrl('/simple');
+      // By default, the second navigation is ignored
+      expectEvents(events, [[NavigationStart, '/simple'], [NavigationEnd, '/simple']]);
+      await router.navigateByUrl('/simple', {onSameUrlNavigation: 'reload'});
+      // We overrode the `onSameUrlNavigation` value. This navigation should be processed.
+      expectEvents(events, [
+        [NavigationStart, '/simple'], [NavigationEnd, '/simple'], [NavigationStart, '/simple'],
+        [NavigationEnd, '/simple']
+      ]);
+    });
 
     it('should ignore empty paths in relative links',
        fakeAsync(inject([Router], (router: Router) => {
@@ -163,9 +193,20 @@ describe('Integration', () => {
            }
          });
 
-         const state = {foo: 'bar'};
+         let state: any = {foo: 'bar'};
          router.navigateByUrl('/simple', {state});
          tick();
+         location.back();
+         tick();
+         location.forward();
+         tick();
+
+         expect(navigation.extras.state).toBeDefined();
+         expect(navigation.extras.state).toEqual(state);
+
+         // Manually set state rather than using navigate()
+         state = {bar: 'foo'};
+         location.replaceState(location.path(), '', state);
          location.back();
          tick();
          location.forward();
@@ -1587,14 +1628,14 @@ describe('Integration', () => {
        advance(fixture);
 
        router.navigateByUrl('/user/victor');
-       expect((router as any).currentNavigation).not.toBe(null);
+       expect(router.getCurrentNavigation()).not.toBe(null);
        router.navigateByUrl('/user/fedor');
        // Due to https://github.com/angular/angular/issues/29389, this would be `false`
        // when running a second navigation.
-       expect((router as any).currentNavigation).not.toBe(null);
+       expect(router.getCurrentNavigation()).not.toBe(null);
        advance(fixture);
 
-       expect((router as any).currentNavigation).toBe(null);
+       expect(router.getCurrentNavigation()).toBe(null);
        expect(fixture.nativeElement).toHaveText('user fedor');
      })));
 
@@ -3018,6 +3059,21 @@ describe('Integration', () => {
 
          expect(location.path()).toEqual('/team/22');
        })));
+
+    it('can redirect from componentless named outlets', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'main', outlet: 'aux', component: BlankCmp},
+           {path: '', pathMatch: 'full', outlet: 'aux', redirectTo: 'main'},
+         ]);
+
+         router.navigateByUrl('');
+         advance(fixture);
+
+         expect(TestBed.inject(Location).path()).toEqual('/(aux:main)');
+       }));
 
     it('should update Navigation object after redirects are applied',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -6326,7 +6382,8 @@ describe('Integration', () => {
            advance(fixture);
 
            expect(location.path()).toEqual('/exclude/two');
-           expectEvents(events, []);
+           expectEvents(events, [[NavigationSkipped, '/exclude/two']]);
+           events.splice(0);
 
            // back to a supported URL
            location.simulateHashChange('/include/simple');
@@ -6371,7 +6428,8 @@ describe('Integration', () => {
 
            location.simulateHashChange('/include/user/kate(aux:excluded2)');
            advance(fixture);
-           expectEvents(events, []);
+           expectEvents(events, [[NavigationSkipped, '/include/user/kate(aux:excluded2)']]);
+           events.splice(0);
 
            router.navigateByUrl('/include/simple');
            advance(fixture);

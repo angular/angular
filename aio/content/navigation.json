@@ -269,6 +269,11 @@
               "url": "guide/structural-directives",
               "title": "Structural directives",
               "tooltip": "Structural directives manipulate the layout of the page."
+            },
+            {
+              "url": "guide/directive-composition-api",
+              "title": "Directive composition API",
+              "tooltip": "Apply directive to host elements."
             }
           ]
         },
@@ -313,6 +318,11 @@
           "url": "guide/developer-guide-overview",
           "title": "Overview",
           "tooltip": "A list of developer guides for building Angular applications."
+        },
+        {
+          "url": "guide/standalone-components",
+          "title": "Standalone components",
+          "tooltip": "Standalone components, directives, and pipes"
         },
         {
           "title": "Change detection",
@@ -411,6 +421,11 @@
           "url": "guide/http",
           "title": "HTTP client",
           "tooltip": "Use HTTP to talk to a remote server."
+        },
+        {
+          "url": "guide/image-directive",
+          "title": "Image optimization",
+          "tooltip": "Performant images with the Angular image directive."
         },
         {
           "title": "Testing",
@@ -816,11 +831,6 @@
           "tooltip": "Create a template-driven form using directives and Angular template syntax."
         },
         {
-          "url": "guide/image-directive-setup",
-          "title": "Setting up NgOptimizedImage",
-          "tooltip": "Setup the Angular image directive"
-        },
-        {
           "title": "Angular Libraries",
           "tooltip": "Extending Angular with shared libraries.",
           "children": [
@@ -849,29 +859,13 @@
       ]
     },
     {
-      "title": "Feature preview",
-      "tooltip": "Angular preview features and APIs",
-      "children": [
-        {
-          "url": "guide/standalone-components",
-          "title": "Standalone components",
-          "tooltip": "Standalone components, directives, and pipes"
-        },
-        {
-          "url": "guide/image-directive",
-          "title": "Image Directive",
-          "tooltip": "Performant images with the Angular image directive."
-        }
-      ]
-    },
-    {
-      "title": "Release Information",
+      "title": "Updates and releases",
       "tooltip": "Angular release practices, updating, and upgrading.",
       "children": [
         {
-          "url": "guide/releases",
-          "title": "Release practices",
-          "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+          "url": "guide/update-to-version-15",
+          "title": "Update Angular to the latest version",
+          "tooltip": "Update your Angular application to the latest version."
         },
         {
           "url": "guide/roadmap",
@@ -879,14 +873,14 @@
           "tooltip": "Roadmap of the Angular team."
         },
         {
+          "url": "guide/releases",
+          "title": "Release practices",
+          "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+        },
+        {
           "url": "guide/browser-support",
           "title": "Browser support",
           "tooltip": "Browser support and polyfills guide."
-        },
-        {
-          "url": "guide/update-to-latest-version",
-          "title": "Update to version 14",
-          "tooltip": "Support to update your application to version 14"
         },
         {
           "url": "guide/deprecations",
@@ -1120,11 +1114,6 @@
               "title": "Overview",
               "tooltip": "An introduction to the CLI tool, commands, and syntax.",
               "url": "cli"
-            },
-            {
-              "title": "Usage analytics",
-              "tooltip": "For administrators, guide to gathering usage analytics from your users.",
-              "url": "cli/usage-analytics-gathering"
             }
           ]
         },
@@ -1230,7 +1219,7 @@
             {
               "url": "guide/doc-select-issue",
               "title": "Select a documentation issue",
-              "tooltip": "The procedures used to identify and select a documenation issue."
+              "tooltip": "The procedures used to identify and select a documentation issue."
             },
             {
               "url": "guide/doc-update-start",
@@ -1316,11 +1305,6 @@
           "url": "https://blog.angular.io/",
           "title": "Blog",
           "tooltip": "Angular Blog"
-        },
-        {
-          "url": "analytics",
-          "title": "Usage analytics",
-          "tooltip": "Angular Usage Analytics"
         }
       ]
     },

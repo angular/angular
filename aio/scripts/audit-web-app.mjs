@@ -27,13 +27,17 @@
 import lighthouse from 'lighthouse';
 import * as printer from 'lighthouse/lighthouse-cli/printer.js';
 import logger from 'lighthouse-logger';
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import path from 'path';
+import {getAdjustedChromeBinPathForWindows} from '../tools/windows-chromium-path.js';
 
 // Constants
 const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];
 const LIGHTHOUSE_FLAGS = {logLevel: process.env.CI ? 'error' : 'info'};  // Be less verbose on CI.
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer';
 const WAIT_FOR_SW_DELAY = 5000;
+
+process.env.CHROME_BIN = getAdjustedChromeBinPathForWindows();
 
 // Run
 _main(process.argv.slice(2));
@@ -57,7 +61,7 @@ async function _main(args) {
   try {
     console.log('');
     const startTime = Date.now();
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({executablePath: path.resolve(process.env.CHROME_BIN), args: ['--no-sandbox', '--headless']});
     const browserVersion = await browser.version();
     const results = await runLighthouse(browser, url, lhFlags, lhConfig);
 

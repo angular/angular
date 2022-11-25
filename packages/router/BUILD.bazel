@@ -20,6 +20,7 @@ ng_module(
 
 ng_package(
     name = "npm_package",
+    package_name = "@angular/router",
     srcs = [
         "package.json",
     ],
@@ -29,6 +30,9 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
         "//integration:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
@@ -59,4 +63,12 @@ api_golden_test(
     ],
     entry_point = "angular/packages/router/src/errors.d.ts",
     golden = "angular/goldens/public-api/router/errors.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
 )

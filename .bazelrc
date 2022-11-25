@@ -52,9 +52,31 @@ build --enable_runfiles
 build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=release"
 build:release --stamp
 
+# Building AIO against local Angular deps requires stamping
+# versions in Angular packages due to CLI version checks.
+build:aio_local_deps --stamp
+build:aio_local_deps --workspace_status_command="yarn -s --cwd aio local-workspace-status"
+
 # Snapshots should also be stamped with version control information.
 build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
+
+##########################################################
+# AIO architect build configuration                      #
+# See aio/angular.json for available configurations.     #
+# To build with a partiular configuration:               #
+#   bazel build //aio:build --aio_build_config=<config>  #
+# Default config is `stable``.                           #
+##########################################################
+build --flag_alias=aio_build_config=//aio:flag_aio_build_config
+
+####################################
+# AIO first party dep substitution # 
+# Turn on with                     #
+#  --config=aio_local_deps         #
+####################################
+
+build:aio_local_deps --//aio:flag_aio_local_deps
 
 ###############################
 # Output                      #
@@ -91,6 +113,10 @@ build:remote --remote_timeout=600
 build:remote --jobs=150
 build:remote --google_default_credentials
 
+# Limit the number of test jobs for on an AIO local deps build. The example tests running
+# concurrently pushes the circleci executor RAM usage to its limits.
+test:aio_local_deps --jobs=24
+
 # Force remote exeuctions to consider the entire run as linux
 build:remote --cpu=k8
 build:remote --host_cpu=k8
@@ -107,6 +133,21 @@ build:remote --remote_instance_name=projects/internal-200822/instances/primary_i
 build:remote --project_id=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
+
+# Ensure that tags like "no-remote-exec" get propagated to actions created by rules.
+# https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
+build --experimental_allow_tags_propagation
+
+# Disable network access in the sandbox by default. To enable network access
+# for a particular target, use:
+#
+# load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+# my_target(
+#   ...,
+#   exec_properties = ENABLE_NETWORK,   # Enables network in remote exec
+#   tags = ["requires-network"]         # Enables network in sandbox
+# )
+build --nosandbox_default_allow_network
 
 ##################################
 # Saucelabs tests settings       #

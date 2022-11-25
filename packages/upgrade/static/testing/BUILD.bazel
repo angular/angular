@@ -17,3 +17,11 @@ ng_module(
         "//packages/upgrade/src/common",
     ],
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)

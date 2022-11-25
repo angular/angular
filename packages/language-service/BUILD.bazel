@@ -18,6 +18,7 @@ ts_library(
 
 pkg_npm(
     name = "npm_package",
+    package_name = "@angular/language-service",
     srcs = ["package.json"],
     tags = [
         "release-with-framework",
@@ -25,6 +26,9 @@ pkg_npm(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
         "//integration:__subpackages__",
     ],
     deps = [

@@ -25,6 +25,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NAME_AND_FORM_CONTROL_NAME_MUST_MATCH = 1202,
     // (undocumented)
+    NG_MISSING_VALUE_ACCESSOR = -1203,
+    // (undocumented)
     NG_VALUE_ACCESSOR_NOT_PROVIDED = 1200,
     // (undocumented)
     NGMODEL_IN_FORM_GROUP = 1350,

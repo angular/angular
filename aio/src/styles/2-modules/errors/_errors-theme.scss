@@ -1,6 +1,9 @@
+@use 'sass:map';
 @use '../../constants';
 
 @mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
   .error-list {
     li {
       .symbol {
@@ -17,7 +20,7 @@
         color: constants.$blue-grey-600;
 
         &:hover {
-          background: constants.$blue-grey-50;
+          background: if($is-dark-theme, constants.$darkgray, constants.$blue-grey-50);
           color: constants.$blue-500;
         }
       }

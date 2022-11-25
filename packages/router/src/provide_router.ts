@@ -7,7 +7,7 @@
  */
 
 import {LOCATION_INITIALIZED, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, Provider, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 
@@ -54,14 +54,15 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
  * @see `RouterFeatures`
  *
  * @publicApi
- * @developerPreview
  * @param routes A set of `Route`s to use for the application routing table.
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to setup a Router.
  */
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   return makeEnvironmentProviders([
-    provideRoutes(routes), {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
+    {provide: ROUTES, multi: true, useValue: routes},
+    NG_DEV_MODE ? {provide: ROUTER_IS_PROVIDED, useValue: true} : [],
+    {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map(feature => feature.ɵproviders),
     // TODO: All options used by the `assignExtraOptionsToRouter` factory need to be reviewed for
@@ -79,7 +80,6 @@ export function rootRoute(router: Router): ActivatedRoute {
  * Helper type to represent a Router feature.
  *
  * @publicApi
- * @developerPreview
  */
 export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
   ɵkind: FeatureKind;
@@ -94,6 +94,28 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
   return {ɵkind: kind, ɵproviders: providers};
 }
 
+
+/**
+ * An Injection token used to indicate whether `provideRouter` or `RouterModule.forRoot` was ever
+ * called.
+ */
+export const ROUTER_IS_PROVIDED =
+    new InjectionToken<boolean>('', {providedIn: 'root', factory: () => false});
+
+const routerIsProvidedDevModeCheck = {
+  provide: ENVIRONMENT_INITIALIZER,
+  multi: true,
+  useFactory() {
+    return () => {
+      if (!inject(ROUTER_IS_PROVIDED)) {
+        console.warn(
+            '`provideRoutes` was called without `provideRouter` or `RouterModule.forRoot`. ' +
+            'This is likely a mistake.');
+      }
+    };
+  }
+};
+
 /**
  * Registers a [DI provider](guide/glossary#provider) for a set of routes.
  * @param routes The route configuration to provide.
@@ -107,11 +129,14 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
  * class LazyLoadedChildModule {}
  * ```
  *
+ * @deprecated If necessary, provide routes using the `ROUTES` `InjectionToken`.
+ * @see `ROUTES`
  * @publicApi
  */
 export function provideRoutes(routes: Routes): Provider[] {
   return [
     {provide: ROUTES, multi: true, useValue: routes},
+    NG_DEV_MODE ? routerIsProvidedDevModeCheck : [],
   ];
 }
 
@@ -122,7 +147,6 @@ export function provideRoutes(routes: Routes): Provider[] {
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type InMemoryScrollingFeature = RouterFeature<RouterFeatureKind.InMemoryScrollingFeature>;
 
@@ -147,7 +171,6 @@ export type InMemoryScrollingFeature = RouterFeature<RouterFeatureKind.InMemoryS
  * @see `ViewportScroller`
  *
  * @publicApi
- * @developerPreview
  * @param options Set of configuration parameters to customize scrolling behavior, see
  *     `InMemoryScrollingOptions` for additional information.
  * @returns A set of providers for use with `provideRouter`.
@@ -159,7 +182,8 @@ export function withInMemoryScrolling(options: InMemoryScrollingOptions = {}):
     useFactory: () => {
       const router = inject(Router);
       const viewportScroller = inject(ViewportScroller);
-      return new RouterScroller(router, viewportScroller, options);
+      const zone = inject(NgZone);
+      return new RouterScroller(router, viewportScroller, zone, options);
     },
   }];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
@@ -184,8 +208,10 @@ export function getBootstrapListener() {
     injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
     injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional)?.init();
     router.resetRootComponentType(ref.componentTypes[0]);
-    bootstrapDone.next();
-    bootstrapDone.complete();
+    if (!bootstrapDone.closed) {
+      bootstrapDone.next();
+      bootstrapDone.unsubscribe();
+    }
   };
 }
 
@@ -236,7 +262,6 @@ const INITIAL_NAVIGATION = new InjectionToken<InitialNavigation>(
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type EnabledBlockingInitialNavigationFeature =
     RouterFeature<RouterFeatureKind.EnabledBlockingInitialNavigationFeature>;
@@ -250,7 +275,6 @@ export type EnabledBlockingInitialNavigationFeature =
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type InitialNavigationFeature =
     EnabledBlockingInitialNavigationFeature|DisabledInitialNavigationFeature;
@@ -278,7 +302,6 @@ export type InitialNavigationFeature =
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature {
@@ -291,7 +314,6 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
       useFactory: (injector: Injector) => {
         const locationInitialized: Promise<any> =
             injector.get(LOCATION_INITIALIZED, Promise.resolve());
-        let initNavigation = false;
 
         /**
          * Performs the given action once the router finishes its next/current navigation.
@@ -335,7 +357,6 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
                 // Unblock APP_INITIALIZER in case the initial navigation was canceled or errored
                 // without a redirect.
                 resolve(true);
-                initNavigation = true;
               });
 
               router.afterPreactivation = () => {
@@ -343,13 +364,7 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
                 // assume activation will complete successfully (even though this is not
                 // guaranteed).
                 resolve(true);
-                // only the initial navigation should be delayed until bootstrapping is done.
-                if (!initNavigation) {
-                  return bootstrapDone.closed ? of(void 0) : bootstrapDone;
-                  // subsequent navigations should not be delayed
-                } else {
-                  return of(void 0);
-                }
+                return bootstrapDone.closed ? of(void 0) : bootstrapDone;
               };
               router.initialNavigation();
             });
@@ -369,7 +384,6 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type DisabledInitialNavigationFeature =
     RouterFeature<RouterFeatureKind.DisabledInitialNavigationFeature>;
@@ -399,7 +413,6 @@ export type DisabledInitialNavigationFeature =
  * @returns A set of providers for use with `provideRouter`.
  *
  * @publicApi
- * @developerPreview
  */
 export function withDisabledInitialNavigation(): DisabledInitialNavigationFeature {
   const providers = [
@@ -425,7 +438,6 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFeature>;
 
@@ -452,7 +464,6 @@ export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFe
  * @returns A set of providers for use with `provideRouter`.
  *
  * @publicApi
- * @developerPreview
  */
 export function withDebugTracing(): DebugTracingFeature {
   let providers: Provider[] = [];
@@ -488,7 +499,6 @@ const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(NG_DEV_MODE ? 'rout
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type PreloadingFeature = RouterFeature<RouterFeatureKind.PreloadingFeature>;
 
@@ -517,7 +527,6 @@ export type PreloadingFeature = RouterFeature<RouterFeatureKind.PreloadingFeatur
  * @returns A set of providers for use with `provideRouter`.
  *
  * @publicApi
- * @developerPreview
  */
 export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): PreloadingFeature {
   const providers = [
@@ -534,7 +543,6 @@ export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): Pr
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type RouterConfigurationFeature =
     RouterFeature<RouterFeatureKind.RouterConfigurationFeature>;
@@ -565,7 +573,6 @@ export type RouterConfigurationFeature =
  * @returns A set of providers for use with `provideRouter`.
  *
  * @publicApi
- * @developerPreview
  */
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature {
   const providers = [
@@ -583,7 +590,6 @@ export function withRouterConfig(options: RouterConfigOptions): RouterConfigurat
  * @see `provideRouter`
  *
  * @publicApi
- * @developerPreview
  */
 export type RouterFeatures = PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|
     InMemoryScrollingFeature|RouterConfigurationFeature;

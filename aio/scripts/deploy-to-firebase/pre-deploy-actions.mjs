@@ -4,7 +4,7 @@ import u from './utils.mjs';
 
 
 // Constants
-const DIST_DIR = 'dist';
+const DIST_DIR = '../dist/bin/aio/build';
 const FIREBASE_JSON_PATH = 'firebase.json';
 const NGSW_JSON_PATH = `${DIST_DIR}/ngsw.json`;
 const NGSW_JSON_BAK_PATH = `${NGSW_JSON_PATH}.bak`;
@@ -14,6 +14,7 @@ const exp = {
   build,
   checkPayloadSize,
   disableServiceWorker,
+  DIST_DIR,
   undo: {
     build: undoBuild,
     checkPayloadSize: undoCheckPayloadSize,
@@ -34,7 +35,10 @@ export default exp;
 // Helpers
 function build({deployedUrl, deployEnv}) {
   u.logSectionHeader('Build the AIO app.');
-  u.yarn(`build --configuration=${deployEnv} --progress=false`);
+  u.yarn(`build --aio_build_config=${deployEnv}`);
+
+  u.logSectionHeader('Remove write protection on the Bazel AIO distribution.');
+  sh.chmod('-R', 'u+w', DIST_DIR);
 
   u.logSectionHeader('Add any mode-specific files into the AIO distribution.');
   sh.cp('-rf', `src/extra-files/${deployEnv}/.`, DIST_DIR);

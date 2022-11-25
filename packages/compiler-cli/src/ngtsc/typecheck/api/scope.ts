@@ -18,7 +18,8 @@ import {SymbolWithValueDeclaration} from '../../util/src/typescript';
  */
 export interface PotentialImport {
   kind: PotentialImportKind;
-  moduleSpecifier: string;
+  // If no moduleSpecifier is present, the given symbol name is already in scope.
+  moduleSpecifier?: string;
   symbolName: string;
 }
 
@@ -49,7 +50,7 @@ export interface PotentialDirective {
   /**
    * The selector for the directive or component.
    */
-  selector: string;
+  selector: string|null;
 
   /**
    * `true` if this directive is a component.
@@ -71,6 +72,8 @@ export interface PotentialDirective {
  * Metadata for a pipe which is available in a template.
  */
 export interface PotentialPipe {
+  ref: Reference<ClassDeclaration>;
+
   /**
    * The `ts.Symbol` for the pipe class.
    */

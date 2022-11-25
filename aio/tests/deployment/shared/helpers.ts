@@ -11,7 +11,7 @@ import { processNavigationUrls } from '../../../../packages/service-worker/confi
 import { FirebaseRedirector, FirebaseRedirectConfig } from '../../../tools/firebase-test-utils/FirebaseRedirector';
 
 
-const AIO_DIR = resolvePath(__dirname, '../../..');
+const AIO_DIR = resolvePath('aio');
 export const PATH_TO_LEGACY_URLS = resolvePath(__dirname, 'URLS_TO_REDIRECT.txt');
 
 export function getRedirector() {
@@ -19,7 +19,7 @@ export function getRedirector() {
 }
 
 export function getSwNavigationUrlChecker() {
-  const config = loadJson(`${AIO_DIR}/ngsw-config.json`);
+  const config = loadJson(`${AIO_DIR}/src/generated/ngsw-config.json`);
   const navigationUrlSpecs = processNavigationUrls('', config.navigationUrls);
 
   const includePatterns = navigationUrlSpecs
@@ -49,7 +49,7 @@ export function loadLegacyUrls() {
 }
 
 export function loadLocalSitemapUrls() {
-  const pathToSiteMap = `${AIO_DIR}/src/generated/sitemap.xml`;
+  const pathToSiteMap = `${AIO_DIR}/dgeni/generated/sitemap.xml`;
   const xml = readFileSync(pathToSiteMap, 'utf8');
   return extractSitemapUrls(xml);
 }

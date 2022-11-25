@@ -2960,6 +2960,37 @@ function allTests(os: string) {
                   `or add an explicit constructor to ConcreteDirWithoutCtor.`);
           expect(getDiagnosticSourceCode(diags[2])).toBe('ConcreteDirWithoutCtor');
         });
+
+        // https://github.com/angular/angular/issues/48152
+        it('should not give a compile-time error when a class inherits from foreign compilation unit',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('node_modules/external/index.d.ts', `
+               import * as i0 from '@angular/core';
+
+               export abstract class ExternalClass {
+                 static ɵprov: i0.ɵɵInjectableDeclaration<ExternalClass>;
+                 static ɵfac: i0.ɵɵFactoryDeclaration<ExternalClass, never>
+
+                 constructor(invalid: string) {}
+               }
+          `);
+             env.write('test.ts', `
+               import {Directive} from '@angular/core';
+               import {ExternalClass} from 'external';
+
+               @Directive()
+               export abstract class AbstractMiddleDir extends ExternalClass {}
+
+               @Directive()
+               export class ConcreteMiddleDir extends AbstractMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithoutCtor extends ConcreteMiddleDir {}
+             `);
+
+             env.driveMain();
+           });
       });
 
       describe('with strictInjectionParameters = false', () => {
@@ -7504,6 +7535,144 @@ function allTests(os: string) {
 
         expect(jsContents).toContain('defineComponent');
       });
+    });
+
+    describe('iframe processing', () => {
+      it('should generate attribute and property bindings with a validator fn when on <iframe>',
+         () => {
+           env.write('test.ts', `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  template: \`
+                    <iframe src="http://angular.io"
+                      [sandbox]="''" [attr.allow]="''"
+                      [title]="'Hi!'"
+                    ></iframe>
+                  \`
+                })
+                export class SomeComponent {}
+              `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // Only `sandbox` has an extra validation fn (since it's security-sensitive),
+           // the `title` property doesn't have an extra validation fn.
+           expect(jsContents)
+               .toContain(
+                   'ɵɵproperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)("title", "Hi!")');
+
+           // The `allow` property is also security-sensitive, thus an extra validation fn.
+           expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateIframeAttribute)');
+         });
+
+      it('should generate an attribute binding instruction with a validator function ' +
+             '(making sure it\'s case-insensitive, since this is allowed in Angular templates)',
+         () => {
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <IFRAME
+                    src="http://angular.io"
+                    [attr.SANDBOX]="''"
+                  ></IFRAME>
+                \`
+              })
+              export class SomeComponent {}
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // Make sure that the `sandbox` has an extra validation fn,
+           // and the check is case-insensitive (since the `setAttribute` DOM API
+           // is case-insensitive as well).
+           expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateIframeAttribute)');
+         });
+
+      it('should *not* generate a validator fn for attribute and property bindings when *not* on <iframe>',
+         () => {
+           env.write('test.ts', `
+                import {Component, Directive} from '@angular/core';
+
+                @Directive({
+                  standalone: true,
+                  selector: '[sandbox]',
+                  inputs: ['sandbox']
+                })
+                class Dir {}
+
+                @Component({
+                  standalone: true,
+                  imports: [Dir],
+                  template: \`
+                    <div [sandbox]="''" [title]="'Hi!'"></div>
+                  \`
+                })
+                export class SomeComponent {}
+              `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // Note: no extra validation fn, since a security-sensitive attribute is *not* on an
+           // <iframe>.
+           expect(jsContents).toContain('ɵɵproperty("sandbox", "")("title", "Hi!")');
+         });
+
+      it('should generate a validator fn for attribute and property host bindings on a directive',
+         () => {
+           env.write('test.ts', `
+              import {Directive} from '@angular/core';
+
+              @Directive({
+                host: {
+                  '[sandbox]': "''",
+                  '[attr.allow]': "''",
+                  'src': 'http://angular.io'
+                }
+              })
+              export class SomeDir {}
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // The `sandbox` is potentially a security-sensitive attribute of an <iframe>.
+           // Generate an extra validation function to invoke at runtime, which would
+           // check if an underlying host element is an <iframe>.
+           expect(jsContents)
+               .toContain('ɵɵhostProperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)');
+
+           // Similar to the above, but for an attribute binding (host attributes are
+           // represented via `ɵɵattribute`).
+           expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateIframeAttribute)');
+         });
+
+      it('should generate a validator fn for attribute host bindings on a directive ' +
+             '(making sure the check is case-insensitive)',
+         () => {
+           env.write('test.ts', `
+              import {Directive} from '@angular/core';
+
+              @Directive({
+                host: {
+                  '[attr.SANDBOX]': "''"
+                }
+              })
+              export class SomeDir {}
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // Make sure that we generate a validation fn for the `sandbox` attribute,
+           // even when it was declared as `SANDBOX`.
+           expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateIframeAttribute)');
+         });
     });
 
     describe('undecorated providers', () => {

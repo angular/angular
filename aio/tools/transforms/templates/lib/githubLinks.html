@@ -1,5 +1,5 @@
 {% macro projectRelativePath(fileInfo) -%}
-{$ fileInfo.realProjectRelativePath if fileInfo.realProjectRelativePath else fileInfo.projectRelativePath $}
+{$ fileInfo.projectRelativePath $}
 {%- endmacro %}
 
 {% macro githubBaseUrl(versionInfo) -%}

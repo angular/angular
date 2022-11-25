@@ -21,7 +21,7 @@ const linksPackage = require('../links-package');
 const remarkPackage = require('../remark-package');
 const targetPackage = require('../target-package');
 
-const { PROJECT_ROOT, CONTENTS_PATH, OUTPUT_PATH, DOCS_OUTPUT_PATH, TEMPLATES_PATH, AIO_PATH, requireFolder } = require('../config');
+const { BAZEL_OUTPUT_PATH, PROJECT_ROOT, CONTENTS_PATH, OUTPUT_PATH, DOCS_OUTPUT_PATH, TEMPLATES_PATH, AIO_PATH, requireFolder } = require('../config');
 
 module.exports = new Package('angular-base', [
   gitPackage, jsdocPackage, nunjucksPackage, linksPackage, examplesPackage, targetPackage, remarkPackage, postProcessPackage
@@ -43,6 +43,7 @@ module.exports = new Package('angular-base', [
   .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
   .factory(require('./readers/json'))
   .factory(require('./services/copyFolder'))
+  .factory(require('./services/bazelStampedProperties'))
   .factory(require('./services/getImageDimensions'))
   .factory(require('./services/getPreviousMajorVersions'))
   .factory(require('./services/auto-link-filters/filterPipes'))
@@ -136,7 +137,8 @@ module.exports = new Package('angular-base', [
     //  That being said do this only add 500ms onto the ~30sec doc-gen run - so not a huge issue)
     checkAnchorLinksProcessor.ignoredLinks.push({
       test(url) {
-        return (existsSync(resolve(SRC_PATH, url)));
+        // Some links point to assets in the source tree while others point to the generated bazel output
+        return existsSync(resolve(SRC_PATH, url)) || existsSync(resolve(BAZEL_OUTPUT_PATH, url));
       }
     });
     checkAnchorLinksProcessor.pathVariants = ['', '/', '.html', '/index.html', '#top-of-page'];
@@ -154,9 +156,12 @@ module.exports = new Package('angular-base', [
     ];
   })
 
-
   .config(function(postProcessHtml, addImageDimensions, autoLinkCode, filterPipes, filterAmbiguousDirectiveAliases, ignoreHttpInUrls, ignoreGenericWords) {
-    addImageDimensions.basePath = path.resolve(AIO_PATH, 'src');
+    // Some images exist within the source tree while others are in the generated bazel output
+    addImageDimensions.basePaths = [
+      path.resolve(AIO_PATH, 'src'),
+      BAZEL_OUTPUT_PATH,
+    ];
     autoLinkCode.customFilters = [ignoreGenericWords, ignoreHttpInUrls, filterPipes, filterAmbiguousDirectiveAliases];
     autoLinkCode.failOnMissingDocPath = true;
     postProcessHtml.plugins = [

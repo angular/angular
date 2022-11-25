@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {XSS_SECURITY_URL} from '../error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {getDocument} from '../render3/interfaces/document';
 import {SANITIZER} from '../render3/interfaces/view';
@@ -120,8 +121,7 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
   }
   throw new RuntimeError(
       RuntimeErrorCode.UNSAFE_VALUE_IN_RESOURCE_URL,
-      ngDevMode &&
-          'unsafe value used in a resource URL context (see https://g.co/ng/security#xss)');
+      ngDevMode && `unsafe value used in a resource URL context (see ${XSS_SECURITY_URL})`);
 }
 
 /**

@@ -92,6 +92,15 @@ export enum ErrorCode {
    */
   INJECTABLE_INHERITS_INVALID_CONSTRUCTOR = 2016,
 
+  /** Raised when a host tries to alias a host directive binding that does not exist. */
+  HOST_DIRECTIVE_UNDEFINED_BINDING = 2017,
+
+  /**
+   * Raised when a host tries to alias a host directive
+   * binding to a pre-existing binding's public name.
+   */
+  HOST_DIRECTIVE_CONFLICTING_ALIAS = 2018,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be

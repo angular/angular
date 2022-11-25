@@ -636,13 +636,18 @@ The `AnimalService` in the logical tree would look like this:
             &commat;Inject(AnimalService=&gt;"&#x1F436;")&gt;
         &lt;!-- ^^using viewProviders means AnimalService is available in &lt;#VIEW&gt;--&gt;
         &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
-        &lt;app-inspector&gt;
-          &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
-        &lt;/app-inspector&gt;
+  
+        &lt;div class="container"&gt;
+          &lt;h3&gt;Content projection&lt;/h3&gt;
+          &lt;app-inspector &commat;Inject(AnimalService) animal=&gt;"&#x1F433;"&gt;
+            &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F433;)&lt;/p&gt;
+          &lt;/app-inspector&gt;
+        &lt;/div&gt;
+  
       &lt;/#VIEW&gt;
       &lt;app-inspector&gt;
         &lt;#VIEW&gt;
-          &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F433;)&lt;/p&gt;
+          &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
         &lt;/#VIEW&gt;
       &lt;/app-inspector&gt;
     &lt;/app-child&gt;
@@ -736,7 +741,7 @@ The example application uses `@Optional()` so the application does not throw an 
 The `<app-child>` currently provides the `AnimalService` in the `viewProviders` array with the value of dog <code>&#x1F436;</code>.
 Because the injector has only to look at the `ElementInjector` of the `<app-child>` for the `AnimalService`, it never sees the whale <code>&#x1F433;</code>.
 
-As in the `FlowerService` example, if you add `@SkipSelf()` to the constructor for the `AnimalService`, the injector won't look in the  `ElementInjector` oh the current `<app-child>` for the `AnimalService`.
+As in the `FlowerService` example, if you add `@SkipSelf()` to the constructor for the `AnimalService`, the injector won't look in the  `ElementInjector` or the current `<app-child>` for the `AnimalService`.
 
 <code-example format="typescript" language="typescript">
 

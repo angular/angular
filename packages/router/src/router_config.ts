@@ -8,7 +8,7 @@
 
 import {InjectionToken} from '@angular/core';
 
-import {InternalExtraOptions} from './patchable_relative_link_resolution';
+import {OnSameUrlNavigation} from './models';
 import {UrlSerializer, UrlTree} from './url_tree';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
@@ -49,7 +49,6 @@ export type InitialNavigation = 'disabled'|'enabledBlocking'|'enabledNonBlocking
  * Extra configuration options that can be used with the `withRouterConfig` function.
  *
  * @publicApi
- * @developerPreview
  */
 export interface RouterConfigOptions {
   /**
@@ -76,13 +75,13 @@ export interface RouterConfigOptions {
   canceledNavigationResolution?: 'replace'|'computed';
 
   /**
-   * Define what the router should do if it receives a navigation request to the current URL.
-   * Default is `ignore`, which causes the router ignores the navigation.
-   * This can disable features such as a "refresh" button.
-   * Use this option to configure the behavior when navigating to the
-   * current URL. Default is 'ignore'.
+   * Configures the default for handling a navigation request to the current URL.
+   *
+   * If unset, the `Router` will use `'ignore'`.
+   *
+   * @see `OnSameUrlNavigation`
    */
-  onSameUrlNavigation?: 'reload'|'ignore';
+  onSameUrlNavigation?: OnSameUrlNavigation;
 
   /**
    * Defines how the router merges parameters, data, and resolved data from parent to child
@@ -115,7 +114,6 @@ export interface RouterConfigOptions {
  * function.
  *
  * @publicApi
- * @developerPreview
  */
 export interface InMemoryScrollingOptions {
   /**
@@ -173,8 +171,7 @@ export interface InMemoryScrollingOptions {
  *
  * @publicApi
  */
-export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions,
-                                      InternalExtraOptions {
+export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
   /**
    * When true, log all internal navigation events to the console.
    * Use for debugging.

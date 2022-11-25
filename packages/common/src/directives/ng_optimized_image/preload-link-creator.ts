@@ -65,6 +65,7 @@ export class PreloadLinkCreator {
     renderer.setAttribute(preload, 'as', 'image');
     renderer.setAttribute(preload, 'href', src);
     renderer.setAttribute(preload, 'rel', 'preload');
+    renderer.setAttribute(preload, 'fetchpriority', 'high');
 
     if (sizes) {
       renderer.setAttribute(preload, 'imageSizes', sizes);

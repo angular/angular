@@ -19,13 +19,19 @@ ng_module(
 
 ng_package(
     name = "npm_package",
+    package_name = "@angular/elements",
     srcs = ["package.json"],
     tags = [
         "release-with-framework",
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//integration:__subpackages__"],
+    visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
+        "//integration:__subpackages__",
+    ],
     deps = [
         ":elements",
     ],
@@ -39,4 +45,12 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/elements",
     npm_package = "angular/packages/elements/npm_package",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
 )

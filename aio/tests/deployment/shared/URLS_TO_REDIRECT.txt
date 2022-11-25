@@ -40,7 +40,6 @@
 /api/upgrade/static/downgradeComponent-function.html --> /api/upgrade/static/downgradeComponent
 /api/upgrade/static/index/downgradeComponent-function --> /api/upgrade/static/downgradeComponent
 /api/upgrade/static/UpgradeModule-class --> /api/upgrade/static/UpgradeModule
-/config/app-package-json --> /guide/strict-mode#non-local-side-effects-in-applications
 /config/solution-tsconfig --> https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig
 /config/tsconfig --> /guide/typescript-configuration
 /devtools --> /guide/devtools
@@ -215,9 +214,11 @@
 /guide/service-worker-configref --> /guide/service-worker-config
 /guide/setup --> /guide/setup-local
 /guide/setup-systemjs-anatomy --> /guide/file-structure
+/guide/update-to-latest-version --> /guide/update-to-version-15
 /guide/updating-to-version-10 --> https://v10.angular.io/guide/updating-to-version-10
 /guide/updating-to-version-11 --> https://v11.angular.io/guide/updating-to-version-11
-/guide/updating-to-version-12 --> /guide/update-to-latest-version
+/guide/updating-to-version-12 --> https://v12.angular.io/guide/updating-to-version-12
+/guide/updating-to-version-13 --> https://v13.angular.io/guide/update-to-latest-version
 /guide/set-document-title --> /guide/router#setting-the-page-title
 /guide/webpack --> https://v5.angular.io/guide/webpack
 /index.html?foo=bar --> /?foo=bar
@@ -232,3 +233,5 @@
 /styleguide --> /guide/styleguide
 /testing --> /guide/testing
 /testing/first-app-tests.html --> /guide/testing
+/cli/usage-analytics-gathering --> /cli/analytics
+/analytics --> /cli/analytics

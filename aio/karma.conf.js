@@ -1,6 +1,9 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
-process.env.CHROME_BIN = require('puppeteer').executablePath();
+
+const {getAdjustedChromeBinPathForWindows} = require('./tools/windows-chromium-path');
+
+process.env.CHROME_BIN = getAdjustedChromeBinPathForWindows();
 
 module.exports = function (config) {
   config.set({

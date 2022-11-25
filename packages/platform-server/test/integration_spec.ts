@@ -10,10 +10,10 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostBinding, HostListener, importProvidersFrom, Inject, Injectable, Input, NgModule, NgZone, OnInit, PLATFORM_ID, PlatformRef, Type, ViewEncapsulation} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostListener, Inject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation} from '@angular/core';
 import {inject, TestBed, waitForAsync} from '@angular/core/testing';
-import {BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule, ServerTransferStateModule} from '@angular/platform-server';
+import {BrowserModule, Title} from '@angular/platform-browser';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule} from '@angular/platform-server';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -389,19 +389,6 @@ const [MyHostComponentStandalone, _] = createFalseAttributesComponents(true);
 class FalseAttributesModule {
 }
 
-@Component({selector: 'app', template: '<div [innerText]="foo"></div>'})
-class InnerTextComponent {
-  foo = 'Some text';
-}
-
-@NgModule({
-  declarations: [InnerTextComponent],
-  bootstrap: [InnerTextComponent],
-  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'inner-text'})]
-})
-class InnerTextModule {
-}
-
 function createMyInputComponent(standalone: boolean) {
   @Component({
     standalone,
@@ -447,47 +434,6 @@ const HTMLTypesAppStandalone = createHTMLTypesApp(true);
   bootstrap: [HTMLTypesApp]
 })
 class HTMLTypesModule {
-}
-
-const TEST_KEY = makeStateKey<number>('test');
-const STRING_KEY = makeStateKey<string>('testString');
-
-@Component({selector: 'app', template: 'Works!'})
-class TransferComponent {
-  constructor(private transferStore: TransferState) {}
-  ngOnInit() {
-    this.transferStore.set(TEST_KEY, 10);
-  }
-}
-
-@Component({selector: 'esc-app', template: 'Works!'})
-class EscapedComponent {
-  constructor(private transferStore: TransferState) {}
-  ngOnInit() {
-    this.transferStore.set(STRING_KEY, '</script><script>alert(\'Hello&\' + "World");');
-  }
-}
-
-@NgModule({
-  bootstrap: [TransferComponent],
-  declarations: [TransferComponent],
-  imports: [
-    BrowserModule.withServerTransition({appId: 'transfer'}),
-    ServerModule,
-  ]
-})
-class TransferStoreModule {
-}
-
-@NgModule({
-  bootstrap: [EscapedComponent],
-  declarations: [EscapedComponent],
-  imports: [
-    BrowserModule.withServerTransition({appId: 'transfer'}),
-    ServerModule,
-  ]
-})
-class EscapedTransferStoreModule {
 }
 
 function createMyHiddenComponent(standalone: boolean) {
@@ -1309,51 +1255,6 @@ describe('platform-server integration', () => {
         });
       });
     });
-  });
-
-  describe('ServerTransferStoreModule', () => {
-    let called = false;
-    const defaultExpectedOutput =
-        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app><script id="transfer-state" type="application/json">{&q;test&q;:10}</script></body></html>';
-
-    beforeEach(() => {
-      called = false;
-    });
-    afterEach(() => {
-      expect(called).toBe(true);
-    });
-
-    it('adds transfer script tag when using renderModule', waitForAsync(() => {
-         renderModule(TransferStoreModule, {document: '<app></app>'}).then(output => {
-           expect(output).toBe(defaultExpectedOutput);
-           called = true;
-         });
-       }));
-
-    it('adds transfer script tag when using renderModuleFactory',
-       waitForAsync(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
-         const compilerFactory: CompilerFactory =
-             defaultPlatform.injector.get(CompilerFactory, null)!;
-         const moduleFactory =
-             compilerFactory.createCompiler().compileModuleSync(TransferStoreModule);
-         renderModuleFactory(moduleFactory, {document: '<app></app>'}).then(output => {
-           expect(output).toBe(defaultExpectedOutput);
-           called = true;
-         });
-       })));
-
-    it('cannot break out of <script> tag in serialized output', waitForAsync(() => {
-         renderModule(EscapedTransferStoreModule, {
-           document: '<esc-app></esc-app>'
-         }).then(output => {
-           expect(output).toBe(
-               '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</esc-app>' +
-               '<script id="transfer-state" type="application/json">' +
-               '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
-               'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');
-           called = true;
-         });
-       }));
   });
 });
 })();

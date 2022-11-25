@@ -1,6 +1,14 @@
 const path = require('canonical-path');
 
-exports.EXAMPLES_BASE_PATH = path.resolve(__dirname, '../../content/examples');
+exports.RUNFILES_ROOT = path.resolve(process.env.RUNFILES, 'angular');
+
+exports.getExamplesBasePath = function(root) {
+    return path.join(root, 'aio', 'content', 'examples');
+}
+
+exports.getSharedPath = function(root) {
+    return path.join(root, 'aio', 'tools', 'examples', 'shared');
+}
+  
 exports.EXAMPLE_CONFIG_FILENAME = 'example-config.json';
-exports.SHARED_PATH = path.resolve(__dirname, 'shared');
 exports.STACKBLITZ_CONFIG_FILENAME = 'stackblitz.json';

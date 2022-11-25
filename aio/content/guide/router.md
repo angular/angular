@@ -231,7 +231,7 @@ The `Router` sets the document's title using the `title` property from the `Rout
 
 <div class="alert is-helpful">
 
-**NOTE**: <br /> The `title` property follows the same rules as static route `data` and dynamic values that implement `Resolve`.
+**NOTE**: <br /> The `title` property follows the same rules as static route `data` and dynamic values that implement `ResolveFn`.
 
 </div>
 
@@ -359,35 +359,35 @@ For more information on lazy loading and preloading see the dedicated guide [Laz
 Use route guards to prevent users from navigating to parts of an application without authorization.
 The following route guards are available in Angular:
 
-*   [`CanActivate`](api/router/CanActivate)
-*   [`CanActivateChild`](api/router/CanActivateChild)
-*   [`CanDeactivate`](api/router/CanDeactivate)
-*   [`CanMatch`](api/router/CanMatch)
-*   [`Resolve`](api/router/Resolve)
-*   [`CanLoad`](api/router/CanLoad)
+*   [`canActivate`](api/router/CanActivateFn)
+*   [`canActivateChild`](api/router/CanActivateChildFn)
+*   [`canDeactivate`](api/router/CanDeactivateFn)
+*   [`canMatch`](api/router/CanMatchFn)
+*   [`resolve`](api/router/ResolveFn)
+*   [`canLoad`](api/router/CanLoadFn)
 
 To use route guards, consider using [component-less routes](api/router/Route#componentless-routes) as this facilitates guarding child routes.
 
 Create a service for your guard:
 
+<!-- TODO: update CLI 
 <code-example format="shell" language="shell">
 
 ng generate guard your-guard
 
 </code-example>
+-->
 
-In your guard class, implement the guard you want to use.
-The following example uses `CanActivate` to guard the route.
+In your guard function, implement the guard you want to use.
+The following example uses `canActivate` to guard the route.
 
-<code-example header="Component (excerpt)">
+<code-example header="guard (excerpt)">
 
-export class YourGuard implements CanActivate {
-  canActivate(
+export const yourGuard: CanActivateFn = (
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): boolean {
+    state: RouterStateSnapshot) => {
       // your  logic goes here
   }
-}
 
 </code-example>
 
@@ -399,7 +399,7 @@ Here, `canActivate` tells the router to mediate navigation to this particular ro
 {
   path: '/your-path',
   component: YourComponent,
-  canActivate: [YourGuard],
+  canActivate: [yourGuard],
 }
 
 </code-example>

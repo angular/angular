@@ -149,7 +149,6 @@ function patchDeclaredInputs(
 function validateHostDirective(
     hostDirectiveConfig: HostDirectiveDef<unknown>, directiveDef: DirectiveDef<any>|null,
     matchedDefs: DirectiveDef<unknown>[]): asserts directiveDef is DirectiveDef<unknown> {
-  // TODO(crisbeto): implement more of these checks in the compiler.
   const type = hostDirectiveConfig.directive;
 
   if (directiveDef === null) {
@@ -186,16 +185,16 @@ function validateHostDirective(
  * Checks that the host directive inputs/outputs configuration is valid.
  * @param bindingType Kind of binding that is being validated. Used in the error message.
  * @param def Definition of the host directive that is being validated against.
- * @param hostDirectiveDefs Host directive mapping object that shold be validated.
+ * @param hostDirectiveBindings Host directive mapping object that shold be validated.
  */
 function validateMappings(
     bindingType: 'input'|'output', def: DirectiveDef<unknown>,
-    hostDirectiveDefs: HostDirectiveBindingMap) {
+    hostDirectiveBindings: HostDirectiveBindingMap) {
   const className = def.type.name;
   const bindings: Record<string, string> = bindingType === 'input' ? def.inputs : def.outputs;
 
-  for (const publicName in hostDirectiveDefs) {
-    if (hostDirectiveDefs.hasOwnProperty(publicName)) {
+  for (const publicName in hostDirectiveBindings) {
+    if (hostDirectiveBindings.hasOwnProperty(publicName)) {
       if (!bindings.hasOwnProperty(publicName)) {
         throw new RuntimeError(
             RuntimeErrorCode.HOST_DIRECTIVE_UNDEFINED_BINDING,
@@ -203,7 +202,7 @@ function validateMappings(
                 publicName}.`);
       }
 
-      const remappedPublicName = hostDirectiveDefs[publicName];
+      const remappedPublicName = hostDirectiveBindings[publicName];
 
       if (bindings.hasOwnProperty(remappedPublicName) &&
           bindings[remappedPublicName] !== publicName) {

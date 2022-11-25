@@ -1,4 +1,4 @@
-# Angular Developer Guides
+# Angular developer guides
 
 As an application framework, Angular includes a collection of well-integrated libraries that cover a wide variety of features.
 

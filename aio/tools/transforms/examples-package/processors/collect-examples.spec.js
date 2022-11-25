@@ -188,17 +188,6 @@ describe('collectExampleRegions processor', () => {
       });
     });
   });
-
-  describe('filtered examples', () => {
-    it('should indicate if an example was filtered', () => {
-      processor.registerIgnoredExamples(['c/d/e', 'e/f/g'], 'path/to/gitignore');
-      processor.registerIgnoredExamples(['x/y/z'], 'path/to/other/gitignore');
-      expect(processor.isExampleIgnored('a/b/c')).toBeFalsy();
-      expect(processor.isExampleIgnored('c/d/e')).toEqual('path/to/gitignore');
-      expect(processor.isExampleIgnored('e/f/g')).toEqual('path/to/gitignore');
-      expect(processor.isExampleIgnored('x/y/z')).toEqual('path/to/other/gitignore');
-    });
-  });
 });
 
 

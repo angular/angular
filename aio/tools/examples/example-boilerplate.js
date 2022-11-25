@@ -4,9 +4,11 @@ const ignore = require('ignore');
 const path = require('canonical-path');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
-const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, SHARED_PATH} = require('./constants');
+const {RUNFILES_ROOT, getExamplesBasePath, getSharedPath, EXAMPLE_CONFIG_FILENAME} = require('./constants');
 
-const SHARED_NODE_MODULES_PATH = path.resolve(SHARED_PATH, 'node_modules');
+const PROJECT_ROOT = RUNFILES_ROOT;
+const EXAMPLES_BASE_PATH = getExamplesBasePath(PROJECT_ROOT);
+const SHARED_PATH = getSharedPath(PROJECT_ROOT);
 
 const BOILERPLATE_BASE_PATH = path.resolve(SHARED_PATH, 'boilerplate');
 const BOILERPLATE_CLI_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'cli');
@@ -14,63 +16,42 @@ const BOILERPLATE_COMMON_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'common');
 
 class ExampleBoilerPlate {
   /**
-   * Add boilerplate files to all the examples
+   * Add boilerplate files to an example
    */
-  add() {
-    // Get all the examples folders, indicated by those that contain a `example-config.json` file
-    const exampleFolders =
-        this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
+  add(exampleFolder, outputDir) {
     const gitignore = ignore().add(fs.readFileSync(path.resolve(BOILERPLATE_BASE_PATH, '.gitignore'), 'utf8'));
 
-    if (!fs.existsSync(SHARED_NODE_MODULES_PATH)) {
-      throw new Error(
-          `The shared node_modules folder for the examples (${SHARED_NODE_MODULES_PATH}) is missing.\n` +
-          'Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?');
+    const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
+
+    // Compute additional boilerplate files that should not be copied over for this specific example
+    // This allows the example to override boilerplate files locally, perhaps to include doc-regions specific to the example.
+    const overrideBoilerplate = exampleConfig['overrideBoilerplate'] || [];
+    const boilerplateIgnore = ignore().add(gitignore).add(
+      // Note that the `*` here is to skip over the boilerplate folder itself.
+      // E.g. if the override is `a/b` then we what to match `cli/a/b` and `i18n/a/b` etc.
+      overrideBoilerplate.map(p => path.join('*', p))
+    );
+    const isPathIgnored = absolutePath => boilerplateIgnore.ignores(path.relative(BOILERPLATE_BASE_PATH, absolutePath));
+
+    const boilerPlateType = exampleConfig.projectType || 'cli';
+    const boilerPlateBasePath = path.resolve(BOILERPLATE_BASE_PATH, boilerPlateType);
+    shelljs.mkdir('-p', outputDir);
+
+    // All example types other than `cli` and `systemjs` are based on `cli`. Copy over the `cli`
+    // boilerplate files first.
+    // (Some of these files might be later overwritten by type-specific files.)
+    if (boilerPlateType !== 'cli' && boilerPlateType !== 'systemjs') {
+      this.copyDirectoryContents(BOILERPLATE_CLI_PATH, outputDir, isPathIgnored);
     }
 
-    shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 main`);
+    // Copy the type-specific boilerplate files.
+    this.copyDirectoryContents(boilerPlateBasePath, outputDir, isPathIgnored);
 
-    exampleFolders.forEach(exampleFolder => {
-      const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
-
-      // Compute additional boilerplate files that should not be copied over for this specific example
-      // This allows the example to override boilerplate files locally, perhaps to include doc-regions specific to the example.
-      const overrideBoilerplate = exampleConfig['overrideBoilerplate'] || [];
-      const boilerplateIgnore = ignore().add(gitignore).add(
-        // Note that the `*` here is to skip over the boilerplate folder itself.
-        // E.g. if the override is `a/b` then we what to match `cli/a/b` and `i18n/a/b` etc.
-        overrideBoilerplate.map(p => path.join('*', p))
-      );
-      const isPathIgnored = absolutePath => boilerplateIgnore.ignores(path.relative(BOILERPLATE_BASE_PATH, absolutePath));
-
-      // Link the node modules - requires admin access (on Windows) because it adds symlinks
-      const destinationNodeModules = path.resolve(exampleFolder, 'node_modules');
-      fs.ensureSymlinkSync(SHARED_NODE_MODULES_PATH, destinationNodeModules);
-
-      const boilerPlateType = exampleConfig.projectType || 'cli';
-      const boilerPlateBasePath = path.resolve(BOILERPLATE_BASE_PATH, boilerPlateType);
-
-      // All example types other than `cli` and `systemjs` are based on `cli`. Copy over the `cli`
-      // boilerplate files first.
-      // (Some of these files might be later overwritten by type-specific files.)
-      if (boilerPlateType !== 'cli' && boilerPlateType !== 'systemjs') {
-        this.copyDirectoryContents(BOILERPLATE_CLI_PATH, exampleFolder, isPathIgnored);
-      }
-
-      // Copy the type-specific boilerplate files.
-      this.copyDirectoryContents(boilerPlateBasePath, exampleFolder, isPathIgnored);
-
-      // Copy the common boilerplate files (unless explicitly not used).
-      if (exampleConfig.useCommonBoilerplate !== false) {
-        this.copyDirectoryContents(BOILERPLATE_COMMON_PATH, exampleFolder, isPathIgnored);
-      }
-    });
+    // Copy the common boilerplate files (unless explicitly not used).
+    if (exampleConfig.useCommonBoilerplate !== false) {
+      this.copyDirectoryContents(BOILERPLATE_COMMON_PATH, outputDir, isPathIgnored);
+    }
   }
-
-  /**
-   * Remove all the boilerplate files from all the examples
-   */
-  remove() { shelljs.exec('git clean -xdfq', {cwd: EXAMPLES_BASE_PATH}); }
 
   listOverrides() {
     const exampleFolders =
@@ -102,8 +83,7 @@ class ExampleBoilerPlate {
 
   main() {
     yargs.usage('$0 <cmd> [args]')
-        .command('add', 'add the boilerplate to each example', yrgs => this.add())
-        .command('remove', 'remove the boilerplate from each example', () => this.remove())
+        .command('add <exampleDir> <outputDir>', 'create boilerplate for an example', yrgs => this.add(yrgs.argv._[1], yrgs.argv._[2]))
         .command('list-overrides', 'list all the boilerplate files that have been overridden in examples', () => this.listOverrides())
         .demandCommand(1, 'Please supply a command from the list above')
         .argv;

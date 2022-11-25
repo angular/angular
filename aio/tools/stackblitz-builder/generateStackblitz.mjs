@@ -1,9 +1,12 @@
-import {dirname, join} from 'path';
-import {fileURLToPath} from 'url';
 import {StackblitzBuilder} from './builder.mjs';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const EXAMPLES_PATH = join(__dirname, '../../content/examples');
-const LIVE_EXAMPLES_PATH = join(__dirname, '../../src/generated/live-examples');
+const argv = process.argv.slice(2);
+if (argv.length !== 2) {
+    console.error("Usage: node generateStackblitz.mjs [example-path] [output-path]");
+    process.exit(1);
+}
 
-new StackblitzBuilder(EXAMPLES_PATH, LIVE_EXAMPLES_PATH).build();
+const EXAMPLE_PATH = argv[0];
+const OUTPUT_PATH = argv[1];
+
+new StackblitzBuilder(EXAMPLE_PATH, OUTPUT_PATH).build();

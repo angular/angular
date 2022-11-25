@@ -4,9 +4,17 @@ const ignore = require('ignore');
 const path = require('canonical-path');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
-
-const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, SHARED_PATH, STACKBLITZ_CONFIG_FILENAME} =
+const buildozer = require('@bazel/buildozer');
+const {RUNFILES_ROOT, getExamplesBasePath, getSharedPath, EXAMPLE_CONFIG_FILENAME, STACKBLITZ_CONFIG_FILENAME} =
     require('./constants');
+
+// BUILD_WORKSPACE_DIRECTORY is set by Bazel when calling `bazel run` and points to the
+// root of the source tree (e.g., for creating a new example in the source tree). Otherwise,
+// we are in a test so use the runfiles root.
+const PROJECT_ROOT = path.resolve(process.env.BUILD_WORKSPACE_DIRECTORY || RUNFILES_ROOT);
+const EXAMPLES_BASE_PATH = getExamplesBasePath(PROJECT_ROOT);
+const SHARED_PATH = getSharedPath(PROJECT_ROOT);
+
 const BASIC_SOURCE_PATH = path.resolve(SHARED_PATH, 'example-scaffold');
 
 shelljs.set('-e');
@@ -32,12 +40,14 @@ if (require.main === module) {
   createEmptyExample(exampleName, examplePath);
 
   const sourcePath =
-      options.source !== undefined ? path.resolve(options.source) : BASIC_SOURCE_PATH;
+      options.source !== undefined ? path.resolve(EXAMPLES_BASE_PATH, options.source) : BASIC_SOURCE_PATH;
   console.log('Copying files from', sourcePath);
   copyExampleFiles(sourcePath, examplePath, exampleName);
 
+  buildozer.runWithOptions([{commands: [`set name ${exampleName}`], targets: [`//aio/content/examples/${exampleName}:%docs_example`]}], {cwd: PROJECT_ROOT});
+
   console.log(`The new "${exampleName}" example has been created.`);
-  console.log('Now run "yarn boilerplate:add" to set it up for development.');
+  console.log(`To include this example, add a "${exampleName}" entry in aio/content/examples/examples.bzl`)
   console.log(
       'You can find more info on working with docs examples in aio/tools/examples/README.md.')
 }
@@ -46,9 +56,18 @@ if (require.main === module) {
  * Create the directory and marker files for the new example.
  */
 function createEmptyExample(exampleName, examplePath) {
+  validateExampleName(exampleName);
   ensureExamplePath(examplePath);
   writeExampleConfigFile(examplePath);
   writeStackBlitzFile(exampleName, examplePath);
+}
+
+function validateExampleName(exampleName) {
+  if (/\s/.test(exampleName)) {
+    throw new Error(
+      `Unable to create example. The example name contains spaces: '${exampleName}'`
+    )
+  }
 }
 
 /**
@@ -84,12 +103,11 @@ function writeStackBlitzFile(exampleName, examplePath) {
 }
 
 /**
- * Copy all the files from the `sourcePath`, which are not ignored by the `.gitignore` file in the
- * `EXAMPLES_BASE_PATH`, to the `examplePath`.
+ * Copy all the files from the `sourcePath` to the `examplePath`, except for files
+ * ignored by the source example.
  */
 function copyExampleFiles(sourcePath, examplePath, exampleName) {
   const gitIgnoreSource = getGitIgnore(sourcePath);
-  const gitIgnoreExamples = getGitIgnore(EXAMPLES_BASE_PATH);
 
   // Grab the files in the source folder and filter them based on the gitignore rules.
   const sourceFiles =
@@ -103,8 +121,6 @@ function copyExampleFiles(sourcePath, examplePath, exampleName) {
           .filter(filePath => !/\/$/.test(filePath))
           // Filter out files that match the source directory .gitignore rules
           .filter(filePath => !gitIgnoreSource.ignores(filePath))
-          // Filter out files that match the examples directory .gitignore rules
-          .filter(filePath => !gitIgnoreExamples.ignores(path.join(exampleName, filePath)));
 
   for (const sourceFile of sourceFiles) {
     console.log(' - ', sourceFile);

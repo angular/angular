@@ -220,7 +220,18 @@ export function buildAttributeCompletionTable(
         continue;
       }
 
-      for (const [classPropertyName, propertyName] of meta.inputs) {
+      for (const [classPropertyName, rawProperyName] of meta.inputs) {
+        let propertyName: string;
+
+        if (dirSymbol.isHostDirective) {
+          if (!dirSymbol.exposedInputs?.hasOwnProperty(rawProperyName)) {
+            continue;
+          }
+          propertyName = dirSymbol.exposedInputs[rawProperyName];
+        } else {
+          propertyName = rawProperyName;
+        }
+
         if (table.has(propertyName)) {
           continue;
         }
@@ -234,7 +245,18 @@ export function buildAttributeCompletionTable(
         });
       }
 
-      for (const [classPropertyName, propertyName] of meta.outputs) {
+      for (const [classPropertyName, rawProperyName] of meta.outputs) {
+        let propertyName: string;
+
+        if (dirSymbol.isHostDirective) {
+          if (!dirSymbol.exposedOutputs?.hasOwnProperty(rawProperyName)) {
+            continue;
+          }
+          propertyName = dirSymbol.exposedOutputs[rawProperyName];
+        } else {
+          propertyName = rawProperyName;
+        }
+
         if (table.has(propertyName)) {
           continue;
         }

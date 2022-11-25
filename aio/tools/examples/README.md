@@ -5,20 +5,13 @@ These snippets are extracted from real working example applications, which are s
 Each example can be built and run independently.
 Each example also provides tests (mostly e2e and occasionally unit tests), which are run as part of our CircleCI `test_docs_examples*` jobs, to verify that the examples continue to work as expected, as changes are made to the core Angular libraries.
 
-In order to build, run and test these examples independently, you need to install dependencies into their sub-folder.
-Also there are a number of common boilerplate files that are needed to configure each example's project.
+There are a number of common boilerplate files that are needed to configure each example's project.
 These common boilerplate files are maintained centrally to reduce the amount of effort if one of them needs to change.
-
-> **Note for Windows users**
->
-> Setting up the examples involves creating some [symbolic links](https://en.wikipedia.org/wiki/Symbolic_link) (see [here](#symlinked-node_modules) for details).
-> On Windows, this requires to either have [Developer Mode enabled](https://blogs.windows.com/windowsdeveloper/2016/12/02/symlinks-windows-10) (supported on Windows 10 or newer) or run the setup commands as administrator.
-
 
 ## Boilerplate overview
 
 As mentioned above, many of the documentation pages contain snippets extracted from real example applications.
-To achieve that, all those applications need to contain some basic boilerplate, such as a `node_modules/` folder, a `package.json` file with scripts and dependencies, etc.
+To achieve that, all those applications need to contain some basic boilerplate, such as a `package.json` file with scripts and dependencies, etc.
 
 There are also different project types, each with its own boilerplate.
 For example, there are projects based on the Angular CLI, projects that use AngularJS, Custom Elements, i18n, server-side rendering, etc.
@@ -26,6 +19,8 @@ For example, there are projects based on the Angular CLI, projects that use Angu
 
 To avoid having to maintain the boilerplate in each example, we use the [example-boilerplate-js](./example-boilerplate.js) script to provide a set of files that works across all the examples of a specific type.
 
+After a `yarn build`, the boilerplate files are combined with the example sources in the Bazel
+output tree rooted at `../dist/bin/aio/content/examples`.
 
 ### Boilerplate files
 
@@ -70,7 +65,6 @@ The file is expected to contain a JSON object with zero or more of the following
   Default: `true`
 - `"overrideBoilerplate": string[]`: A list of paths to boilerplate files that are overridden by custom files in this example.
   Commonly this is used when a boilerplate file is referenced in a guide and so needs to have doc-regions added.
-  When adding such overrides, ensure that the file is "unignored" by adding an appropriate negation pattern to the `content/examples/.gitignore` file.
 
 **SystemJS-only properties:**
 - `build: string`: The npm script to run in order to build the example app.
@@ -90,7 +84,7 @@ The file is expected to contain a JSON object with zero or more of the following
       "args": [
         "e2e",
         "--configuration=production",
-        "--protractor-config=e2e/protractor-puppeteer.conf.js",
+        "--protractor-config=e2e/protractor-bazel.conf.js",
         "--no-webdriver-update",
         "--port={PORT}"
       ]
@@ -107,10 +101,7 @@ An empty `example-config.json` file is equivalent with `{"projectType": "cli"}`.
 With all the boilerplate files in place, the only missing piece is the installed packages.
 For that we have [shared/package.json](./shared/package.json), which contains **all** the packages needed to run any example type.
 
-Upon installing these dependencies, a [shared/node_modules/](./shared/node_modules) folder is created.
-This folder will be **symlinked** into each example.
-So it is not a copy like the other boilerplate files.
-
+Each test is run in a temporary directory where the node_modules folder is **symlinked** in before the test run.
 
 ### End-to-end tests
 
@@ -130,25 +121,15 @@ yarn protractor [--params.outputFile=path/to/logfile.txt]
 
 ### `example-boilerplate.js`
 
-The [example-boilerplate.js](./example-boilerplate.js) script manages the dependencies for all examples.
-
-- `example-boilerplate.js add`: create the `node_modules/` symlinks and copy the necessary boilerplate files into example folders.
-- `example-boilerplate.js remove`: remove all the boilerplate files from examples.
-  It uses `git clean -xdf` to do the job.
-  It will remove all files that are not tracked by git, **including any new files that you are working on that haven't been staged yet.**
-  So, be sure to commit your work before removing the boilerplate.
-- `example-boilerplate.js list-overrides`: print out a list of all example files that override boilerplate files.
-  This is useful when updating the boilerplate files to a new version of Angular.
+The [example-boilerplate.js](./example-boilerplate.js) script that adds boilerplate to examples.
+It is used by the Bazel build behind the scenes, but can also be invoked via `yarn example-list-overrides` to print a list of all example files that override boilerplate files.
 
 ### `run-example-e2e.mjs`
 
-The [run-example-e2e.mjs](./run-example-e2e.mjs) script will find and run the e2e tests for all examples.
-Although it only runs e2e tests by default, it can be configured to run any test command (for CLI-based examples) by using the `tests` property of the [example-config.json](#example-config) file.
+The [run-example-e2e.mjs](./run-example-e2e.mjs) script will find and run the e2e tests for a single example. Although it only runs e2e tests by default, it can be configured to run any test command (for CLI-based examples) by using the `tests` property of the [example-config.json](#example-config) file.
 It is named `*-e2e` for historical reasons, but it is not limited to running e2e tests.
 
 See [aio/README.md](../../README.md#developer-tasks) for the available command-line options.
-
-Running the script will create an `aio/protractor-results.txt` file with the results of the tests.
 
 ### `create-example.js`
 
@@ -158,6 +139,16 @@ You must provide a new name for the example.
 By default the script will place basic scaffold files into the new example (from [shared/example-scaffold](./shared/example-scaffold)).
 But you can also specify the path to a separate CLI project, from which the script will copy files that would not be considered "boilerplate".
 See the [Boilerplate overview](#boilerplate-overview) for more information.
+
+### `create-example-playground.mjs`
+
+The [create-example-playground.mjs](./create-example-playground.mjs) script combines example sources, boilerplate, and shared node_modules deps into git-ignored playground directory `content/example-playground/{{EXAMPLE}}` that can be used for manual testing. This should be invoked via the yarn script:
+
+```bash
+yarn example-playground <exampleName> [--local]
+```
+
+The `--local` flag links in locally-built angular packages as dependencies.
 
 ### Updating example dependencies
 

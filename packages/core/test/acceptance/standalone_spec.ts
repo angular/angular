@@ -152,7 +152,7 @@ describe('standalone components, directives, and pipes', () => {
   });
 
 
-  it('should render a standalone component with dependenices and ambient providers', () => {
+  it('should render a standalone component with dependencies and ambient providers', () => {
     @Component({
       standalone: true,
       template: 'Inner',
@@ -444,6 +444,34 @@ describe('standalone components, directives, and pipes', () => {
       standalone: true,
       template: `<div red>{{'' | blue}}</div>`,
       imports: [[RedIdDirective, [BluePipe]]],
+    })
+    class TestComponent {
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toBe('<div red="true">blue</div>');
+  });
+
+  it('should support readonly arrays in @Component.imports', () => {
+    @Directive({selector: '[red]', standalone: true, host: {'[attr.red]': 'true'}})
+    class RedIdDirective {
+    }
+
+    @Pipe({name: 'blue', pure: true, standalone: true})
+    class BluePipe implements PipeTransform {
+      transform() {
+        return 'blue';
+      }
+    }
+
+    const DirAndPipe = [RedIdDirective, BluePipe] as const;
+
+    @Component({
+      selector: 'standalone',
+      standalone: true,
+      template: `<div red>{{'' | blue}}</div>`,
+      imports: [DirAndPipe],
     })
     class TestComponent {
     }

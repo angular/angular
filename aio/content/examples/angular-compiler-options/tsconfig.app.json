@@ -9,8 +9,7 @@
       "types": []
     },
     "files": [
-      "src/main.ts",
-      "src/polyfills.ts"
+      "src/main.ts"
     ],
     "include": [
       "src/**/*.d.ts"
@@ -39,7 +38,6 @@
       "sourceMap": true,
       "declaration": false
       // #docregion angular-compiler-options-app
-    },
+    }
   }
   // #enddocregion angular-compiler-options-app
-  

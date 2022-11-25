@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "ts_config", "ts_library")
+load("//:packages.bzl", "DOCS_ENTRYPOINTS")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -34,4 +35,11 @@ ts_config(
 exports_files([
     "license-banner.txt",
     "README.md",
+    "examples",
 ])
+
+# All docgen targets for AIO. Add package entrypoints to DOCS_ENTRYPOINTS in `packages.bzl`.
+filegroup(
+    name = "files_for_docgen",
+    srcs = ["//packages/%s:files_for_docgen" % entrypoint for entrypoint in DOCS_ENTRYPOINTS],
+)

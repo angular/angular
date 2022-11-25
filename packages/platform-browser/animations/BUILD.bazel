@@ -26,3 +26,11 @@ tsec_test(
     target = "animations",
     tsconfig = "//packages:tsec_config",
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)

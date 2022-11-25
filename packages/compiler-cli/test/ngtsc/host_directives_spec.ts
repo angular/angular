@@ -357,8 +357,8 @@ runInEachFileSystem(() => {
         import {ɵɵDirectiveDeclaration} from '@angular/core';
 
         export declare class ExternalDir {
-          static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never, never,
-            {input: "input"}, {output: "output"}, never, true, never>;
+          static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never,
+            {input: "input"}, {output: "output"}, never, never, true, never>;
         }
       `);
 
@@ -434,7 +434,7 @@ runInEachFileSystem(() => {
                                                       diag.messageText.messageText;
       }
 
-      it('should throw if a host directive is not standalone', () => {
+      it('should produce a diagnostic if a host directive is not standalone', () => {
         env.write('test.ts', `
           import {Directive, Component, NgModule} from '@angular/core';
 
@@ -451,7 +451,7 @@ runInEachFileSystem(() => {
         expect(messages).toEqual(['Host directive HostDir must be standalone']);
       });
 
-      it('should throw if a host directive is a component', () => {
+      it('should produce a diagnostic if a host directive is a component', () => {
         env.write('test.ts', `
           import {Directive, Component, NgModule} from '@angular/core';
 
@@ -471,7 +471,7 @@ runInEachFileSystem(() => {
         expect(messages).toEqual(['Host directive HostComp cannot be a component']);
       });
 
-      it('should throw if hostDirectives is not an array', () => {
+      it('should produce a diagnostic if hostDirectives is not an array', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
 
@@ -486,7 +486,7 @@ runInEachFileSystem(() => {
         expect(messages).toContain('hostDirectives must be an array');
       });
 
-      it('should throw if a host directive is not a reference', () => {
+      it('should produce a diagnostic if a host directive is not a reference', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
 
@@ -503,7 +503,7 @@ runInEachFileSystem(() => {
         expect(messages).toEqual(['Host directive must be a reference']);
       });
 
-      it('should throw if a host directive is not a reference to a class', () => {
+      it('should produce a diagnostic if a host directive is not a reference to a class', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
 
@@ -520,7 +520,7 @@ runInEachFileSystem(() => {
         expect(messages).toEqual(['Host directive reference must be a class']);
       });
 
-      it('should only throw host directive error once in a chain of directives', () => {
+      it('should only produce a diagnostic once in a chain of directives', () => {
         env.write('test.ts', `
           import {Directive, Component, NgModule} from '@angular/core';
 
@@ -544,12 +544,221 @@ runInEachFileSystem(() => {
           export class Host {}
         `);
 
-        // What we're checking here is that the errors aren't produced recursively. If that were
-        // the case, the same error would show up more than once in the diagnostics since `HostDirB`
-        // is in the chain of both `Host` and `HostDirA`.
+        // What we're checking here is that the diagnostics aren't produced recursively. If that
+        // were the case, the same diagnostic would show up more than once in the diagnostics since
+        // `HostDirB` is in the chain of both `Host` and `HostDirA`.
         const messages = env.driveDiagnostics().map(extractMessage);
         expect(messages).toEqual(['Host directive HostDirB must be standalone']);
       });
+
+      it('should produce a diagnostic if a host directive output does not exist', () => {
+        env.write('test.ts', `
+          import {Directive, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true})
+          class HostDir {
+            @Output() foo = new EventEmitter();
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{
+              directive: HostDir,
+              outputs: ['doesNotExist'],
+            }]
+          })
+          class Dir {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual(
+            ['Directive HostDir does not have an output with a public name of doesNotExist.']);
+      });
+
+      it('should produce a diagnostic if a host directive output alias does not exist', () => {
+        env.write('test.ts', `
+          import {Directive, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true})
+          class HostDir {
+            @Output('alias') foo = new EventEmitter();
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{
+              directive: HostDir,
+              outputs: ['foo'],
+            }]
+          })
+          class Dir {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual(
+            ['Directive HostDir does not have an output with a public name of foo.']);
+      });
+
+      it('should produce a diagnostic if a host directive input does not exist', () => {
+        env.write('test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({standalone: true})
+          class HostDir {
+            @Input() foo: any;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{
+              directive: HostDir,
+              inputs: ['doesNotExist'],
+            }]
+          })
+          class Dir {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual(
+            ['Directive HostDir does not have an input with a public name of doesNotExist.']);
+      });
+
+      it('should produce a diagnostic if a host directive input alias does not exist', () => {
+        env.write('test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({standalone: true})
+          class HostDir {
+            @Input('alias') foo: any;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{directive: HostDir, inputs: ['foo']}],
+          })
+          class Dir {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual(
+            ['Directive HostDir does not have an input with a public name of foo.']);
+      });
+
+      it('should produce a diagnostic if a host directive tries to alias to an existing input',
+         () => {
+           env.write('test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({selector: '[host-dir]', standalone: true})
+          class HostDir {
+            @Input('colorAlias') color?: string;
+            @Input() buttonColor?: string;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
+          })
+          class Dir {}
+        `);
+
+           const messages = env.driveDiagnostics().map(extractMessage);
+           expect(messages).toEqual([
+             'Cannot alias input colorAlias of host directive HostDir to buttonColor, because it ' +
+             'already has a different input with the same public name.'
+           ]);
+         });
+
+      it('should produce a diagnostic if a host directive tries to alias to an existing input alias',
+         () => {
+           env.write('test.ts', `
+            import {Directive, Input} from '@angular/core';
+
+            @Directive({selector: '[host-dir]', standalone: true})
+            class HostDir {
+              @Input('colorAlias') color?: string;
+              @Input('buttonColorAlias') buttonColor?: string;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColorAlias']}]
+            })
+            class Dir {}
+          `);
+
+           const messages = env.driveDiagnostics().map(extractMessage);
+           expect(messages).toEqual(
+               ['Cannot alias input colorAlias of host directive HostDir to buttonColorAlias, ' +
+                'because it already has a different input with the same public name.']);
+         });
+
+      it('should not produce a diagnostic if a host directive input aliases to the same name',
+         () => {
+           env.write('test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({selector: '[host-dir]', standalone: true})
+          class HostDir {
+            @Input('color') color?: string;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}]
+          })
+          class Dir {}
+        `);
+
+           const messages = env.driveDiagnostics().map(extractMessage);
+           expect(messages).toEqual([]);
+         });
+
+      it('should produce a diagnostic if a host directive tries to alias to an existing output alias',
+         () => {
+           env.write('test.ts', `
+          import {Directive, Output, EventEmitter} from '@angular/core';
+
+          @Directive({selector: '[host-dir]', standalone: true})
+          class HostDir {
+            @Output('clickedAlias') clicked = new EventEmitter();
+            @Output('tappedAlias') tapped = new EventEmitter();
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{directive: HostDir, outputs: ['clickedAlias: tappedAlias']}]
+          })
+          class Dir {}
+        `);
+
+           const messages = env.driveDiagnostics().map(extractMessage);
+           expect(messages).toEqual([
+             'Cannot alias output clickedAlias of host directive HostDir ' +
+             'to tappedAlias, because it already has a different output with the same public name.'
+           ]);
+         });
+
+      it('should not produce a diagnostic if a host directive output aliases to the same name',
+         () => {
+           env.write('test.ts', `
+          import {Directive, Output, EventEmitter} from '@angular/core';
+
+          @Directive({selector: '[host-dir]', standalone: true})
+          class HostDir {
+            @Output('clicked') clicked = new EventEmitter();
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{directive: HostDir, outputs: ['clicked: wasClicked']}]
+          })
+          class Dir {}
+        `);
+
+           const messages = env.driveDiagnostics().map(extractMessage);
+           expect(messages).toEqual([]);
+         });
     });
   });
 });

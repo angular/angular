@@ -1,214 +1,187 @@
 import path from 'canonical-path';
 import {spawn} from 'cross-spawn';
-import findFreePort from 'find-free-port';
 import fs from 'fs-extra';
-import {globby} from 'globby';
-import puppeteer from 'puppeteer';
+import {globbySync} from 'globby';
+import os from 'os';
 import shelljs from 'shelljs';
 import treeKill from 'tree-kill';
-import {fileURLToPath} from 'url';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers'
+import getPort from 'get-port';
+import {constructExampleSandbox} from "./example-sandbox.mjs";
+import { getAdjustedChromeBinPathForWindows } from '../windows-chromium-path.js';
 
 shelljs.set('-e');
 
-// Set `CHROME_BIN` as an environment variable for Karma to pick up in unit tests.
-process.env.CHROME_BIN = puppeteer.executablePath();
+process.env.CHROME_BIN = getAdjustedChromeBinPathForWindows();
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const {argv} = yargs(hideBin(process.argv));
+// Resolve CHROME_BIN and CHROMEDRIVER_BIN from relative paths to absolute paths within the
+// runfiles tree so that subprocesses spawned in a different working directory can still find them.
+process.env.CHROME_BIN = path.resolve(process.env.CHROME_BIN);
+process.env.CHROMEDRIVER_BIN = path.resolve(process.env.CHROMEDRIVER_BIN);
 
-const AIO_PATH = path.join(__dirname, '../../');
-const EXAMPLES_PATH = path.join(AIO_PATH, './content/examples/');
+const {argv} = yargs(hideBin(process.argv))
+  .command("* <examplePath> <yarnPath> <exampleDepsWorkspaceName>")
+  .option('localPackage', {array: true, type: 'string', default: [], describe: 'Locally built package to substitute, in the form `packageName#packagePath`'})
+  .version(false)
+  .strict();
+
+const EXAMPLE_PATH = path.resolve(argv.examplePath);
+const NODE = process.execPath;
+const VENDORED_YARN = path.resolve(argv.yarnPath);
+const EXAMPLE_DEPS_WORKSPACE_NAME = argv.exampleDepsWorkspaceName;
+const LOCAL_PACKAGES = argv.localPackage.reduce((pkgs, pkgNameAndPath) => {
+  const [pkgName, pkgPath] = pkgNameAndPath.split('#');
+  pkgs[pkgName] = path.resolve(pkgPath);
+  return pkgs;
+}, {});
+
 const SJS_SPEC_FILENAME = 'e2e-spec.ts';
 const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
-const DEFAULT_CLI_EXAMPLE_PORT = 4200;
-const DEFAULT_CLI_SPECS_CONCURRENCY = 1;
 const MAX_NO_OUTPUT_TIMEOUT = 1000 * 60 * 5;  // 5 minutes
-const IGNORED_EXAMPLES = [];
 
 /**
- * Run Protractor End-to-End Tests for Doc Samples
+ * Run Protractor End-to-End Tests for a Docs Example
+ *
+ * Usage: node run-example-e2e.mjs <examplePath> <yarnPath> <exampleDepsWorkspaceName> [localPackage...]
+ *
+ * Args:
+ *  examplePath: path to the example
+ *  yarnPath: path to a vendored version of yarn
+ *  exampleDepsWorkspaceName: name of bazel workspace containing example node_omodules
+ *  localPackages: a vararg of local packages to substitute in place npm deps, in the form @package/name#pathToPackage.
  *
  * Flags
- *  --filter to filter/select example app subdir names
- *    Can be used multiple times to include multiple patterns.
- *    e.g. --filter=foo  // all example apps with 'foo' in their folder names.
- *
- *  --exclude to exclude example app subdir names
- *    Can be used multiple times to exclude multiple patterns.
- *    NOTE: `--exclude` is always considered after `--filter`.
- *    e.g. --exclude=bar  // Exclude all example apps with 'bar' in their folder names.
- *
- *  --setup to run yarn install, copy boilerplate and update webdriver
- *    e.g. --setup
- *
- *  --local to use the locally built Angular packages, rather than versions from npm
- *    Must be used in conjunction with --setup as this is when the packages are copied.
- *    e.g. --setup --local
- *
- *  --shard to shard the specs into groups to allow you to run them in parallel
- *    e.g. --shard=0/2 // the even specs: 0, 2, 4, etc
- *    e.g. --shard=1/2 // the odd specs: 1, 3, 5, etc
- *    e.g. --shard=1/3 // the second of every three specs: 1, 4, 7, etc
- *
- *  --cliSpecsConcurrency Amount of CLI example specs that should be executed concurrently.
- *    By default runs specs sequentially.
- *
  *  --retry to retry failed tests (useful for overcoming flakes)
  *    e.g. --retry 3  // To try each test up to 3 times.
  */
-function runE2e() {
-  if (argv.setup) {
-    // Run setup.
-    console.log('runE2e: setup boilerplate');
-    const installPackagesCommand = `example-use-${argv.local ? 'local' : 'npm'}`;
-    shelljs.exec(`yarn ${installPackagesCommand}`, {cwd: AIO_PATH});
-    shelljs.exec(`yarn boilerplate:add`, {cwd: AIO_PATH});
+
+async function runE2e(examplePath) {
+  const exampleName = path.basename(examplePath);
+  const maxAttempts = argv.retry || 1;
+  const exampleTestPath = generatePathForExampleTest(exampleName);
+
+  try {
+
+    await constructExampleSandbox(examplePath, exampleTestPath, path.resolve('..', EXAMPLE_DEPS_WORKSPACE_NAME, 'node_modules'), LOCAL_PACKAGES);
+
+    let testFn;
+    if (isSystemJsTest(exampleTestPath)) {
+      testFn = () => runE2eTestsSystemJS(exampleName, exampleTestPath);
+    } else if (isCliTest(exampleTestPath)) {
+      testFn = () => runE2eTestsCLI(exampleName, exampleTestPath);
+    } else {
+      throw new Error(`Unknown e2e test type for example ${exampleName}`);
+    }
+  
+    await attempt(testFn, maxAttempts);
+  } catch (e) {
+    console.error(e);
+    process.exitCode = 1;
+  } finally {
+    fs.rmSync(exampleTestPath, {recursive: true, force: true});
+  }
+}
+
+async function attempt(testFn, maxAttempts) {
+  let attempts = 0;
+  let passed = false;
+
+  while (true) {
+    attempts++;
+    passed = await testFn();
+
+    if (passed || (attempts >= maxAttempts)) break;
   }
 
-  const outputFile = path.join(AIO_PATH, './protractor-results.txt');
-
-  return Promise.resolve()
-      .then(
-          () => findAndRunE2eTests(
-              argv.filter, argv.exclude, outputFile, argv.shard,
-              argv.cliSpecsConcurrency || DEFAULT_CLI_SPECS_CONCURRENCY, argv.retry || 1))
-      .then((status) => {
-        reportStatus(status, outputFile);
-        if (status.failed.length > 0) {
-          return Promise.reject('Some test suites failed');
-        }
-      })
-      .catch(function(e) {
-        console.log(e);
-        process.exitCode = 1;
-      });
+  if (!passed) {
+    throw new Error('Test failed');
+  }
 }
 
-// Finds all of the *e2e-spec.tests under the examples folder along with the corresponding apps
-// that they should run under. Then run each app/spec collection sequentially.
-function findAndRunE2eTests(
-    includeFilter, excludeFilter, outputFile, shard, cliSpecsConcurrency, maxAttempts) {
-  const filter = {include: includeFilter, exclude: excludeFilter};
-  const shardParts = shard ? shard.split('/') : [0, 1];
-  const shardModulo = parseInt(shardParts[0], 10);
-  const shardDivider = parseInt(shardParts[1], 10);
-
-  // create an output file with header.
-  const startTime = new Date().getTime();
-  let header = `Doc Sample Protractor Results on ${new Date().toLocaleString()}\n`;
-  header += `  Include: ${filter.include || 'All tests'}\n`;
-  header += `  Exclude: ${filter.exclude || 'No tests'}\n\n`;
-  fs.writeFileSync(outputFile, header);
-
-  const status = {passed: [], failed: []};
-  const updateStatus = (specDescription, passed) => {
-    const arr = passed ? status.passed : status.failed;
-    arr.push(specDescription);
-  };
-  const runTest = async (specPath, testFn) => {
-    let attempts = 0;
-    let passed = false;
-
-    while (true) {
-      attempts++;
-      passed = await testFn();
-
-      if (passed || (attempts >= maxAttempts)) break;
-    }
-
-    updateStatus(`${specPath} (attempts: ${attempts})`, passed);
-  };
-
-  return getE2eSpecs(EXAMPLES_PATH, filter)
-      .then(e2eSpecPaths => {
-        console.log('All e2e specs:');
-        logSpecs(e2eSpecPaths);
-
-        Object.keys(e2eSpecPaths).forEach(key => {
-          const value = e2eSpecPaths[key];
-          e2eSpecPaths[key] = value.filter((p, index) => index % shardDivider === shardModulo);
-        });
-
-        console.log(`E2e specs for shard ${shardParts.join('/')}:`);
-        logSpecs(e2eSpecPaths);
-
-        return e2eSpecPaths.systemjs
-            .reduce(
-                async (prevPromise, specPath) => {
-                  await prevPromise;
-
-                  const examplePath = path.dirname(specPath);
-                  const testFn = () => runE2eTestsSystemJS(examplePath, outputFile);
-
-                  await runTest(examplePath, testFn);
-                },
-                Promise.resolve())
-            .then(async () => {
-              const specQueue = [...e2eSpecPaths.cli];
-              // Determine free ports for the amount of pending CLI specs before starting
-              // any tests. This is necessary because ports can stuck in the "TIME_WAIT"
-              // state after others specs which used that port exited. This works around
-              // this potential race condition which surfaces on Windows.
-              const ports = await findFreePort(4000, 6000, '127.0.0.1', specQueue.length);
-              // Enable buffering of the process output in case multiple CLI specs will
-              // be executed concurrently. This means that we can can print out the full
-              // output at once without interfering with other CLI specs printing as well.
-              const bufferOutput = cliSpecsConcurrency > 1;
-              while (specQueue.length) {
-                const chunk = specQueue.splice(0, cliSpecsConcurrency);
-                await Promise.all(chunk.map(testDir => {
-                  const port = ports.pop();
-                  const testFn = () => runE2eTestsCLI(testDir, outputFile, bufferOutput, port);
-
-                  return runTest(testDir, testFn);
-                }));
-              }
-            });
-      })
-      .then(() => {
-        const stopTime = new Date().getTime();
-        status.elapsedTime = (stopTime - startTime) / 1000;
-        return status;
-      });
+function generatePathForExampleTest(exampleName) {
+  // Note that bazel provides a writeable tmp dir for tests in the env var TEST_TMPDIR,
+  // however we do not use it here as in non-sandboxed mode the temp dir sits under the
+  // execroot, so yarn will find the .yarnrc in the root of the workspace. If there is ever
+  // a version mismatch (e.g., if we use multiple vendored yarn versions) then this could
+  // cause subtle errors. Instead, just use a temp dir that bazel doesn't know about.
+  return fs.mkdtempSync(`${os.tmpdir()}${path.sep}${exampleName}-`)
 }
 
-// Start the example in appDir; then run protractor with the specified
-// fileName; then shut down the example.
-// All protractor output is appended to the outputFile.
-// SystemJS version
-function runE2eTestsSystemJS(appDir, outputFile) {
+function isSystemJsTest(examplePath) {
+  return fs.existsSync(path.join(examplePath, SJS_SPEC_FILENAME));
+}
+
+function isCliTest(examplePath) {
+  return fs.existsSync(path.join(examplePath, CLI_SPEC_FILENAME));
+}
+
+async function runE2eTestsSystemJS(exampleName, appDir) {
   const config = loadExampleConfig(appDir);
 
-  const appBuildSpawnInfo = spawnExt('yarn', [config.build], {cwd: appDir});
-  const appRunSpawnInfo = spawnExt('yarn', [config.run, '-s'], {cwd: appDir}, true);
+  const runArgs = await overrideSystemJsExampleToUseRandomPort(config, appDir);
 
-  let run = runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
+  const appBuildSpawnInfo = spawnExt(NODE, [VENDORED_YARN, config.build], {cwd: appDir});
+  const appRunSpawnInfo = spawnExt(NODE, [VENDORED_YARN, ...runArgs, '-s'], {cwd: appDir}, true);
+
+  let run = runProtractorSystemJS(exampleName, appBuildSpawnInfo.promise, appDir, appRunSpawnInfo);
 
   if (fs.existsSync(appDir + '/aot/index.html')) {
-    run = run.then((ok) => ok && runProtractorAoT(appDir, outputFile));
+    run = run.then((ok) => ok && runProtractorAoT(exampleName, appDir));
   }
 
   return run;
 }
 
-function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile) {
+// The SystemJS examples spawn an http server and protractor using a hardcoded
+// port. In order to run these tests concurrently under bazel without contention,
+// we need to dynamically acquire a port and overwrite configuration to use that port.
+// This is further complicated by the SystemJS tests using two different http servers
+// (http-server, lite-server) depending on the example (and sometimes both),
+// and the two servers need to be configured differently.
+async function overrideSystemJsExampleToUseRandomPort(exampleConfig, exampleDir) {
+  const freePort = await getPort();
+  let runArgs = [exampleConfig.run];
+
+  const isUsingHttpServerLibrary = exampleConfig.run === 'serve:upgrade';
+  if (isUsingHttpServerLibrary) {
+    // Override the port in http-server by passing as an argument
+    runArgs = [...runArgs, "-p", freePort];
+  }
+
+  // Override the port in any lite-server config files
+  const liteServerConfigs = globbySync(['bs-config*.json'], {cwd: exampleDir});
+  liteServerConfigs.forEach(configFile => {
+    const config = JSON.parse(fs.readFileSync(path.join(exampleDir, configFile), 'utf8'));
+    if (config.port) {
+      config.port = freePort;
+      fs.writeFileSync(path.join(exampleDir, configFile), JSON.stringify(config));
+    }
+  });
+
+  // Override hardcoded port in protractor.config.js
+  let protractorConfig = fs.readFileSync(path.join(exampleDir, 'protractor.config.js'), 'utf8');
+  protractorConfig = protractorConfig.replaceAll('http://localhost:8080', `http://localhost:${freePort}`);
+  fs.writeFileSync(path.join(exampleDir, 'protractor.config.js'), protractorConfig);
+
+  return runArgs;
+}
+
+function runProtractorSystemJS(exampleName, prepPromise, appDir, appRunSpawnInfo) {
   const specFilename = path.resolve(`${appDir}/${SJS_SPEC_FILENAME}`);
   return prepPromise
-      .catch(function() {
+      .catch(() => {
         const emsg = `Application at ${appDir} failed to transpile.\n\n`;
         console.log(emsg);
-        fs.appendFileSync(outputFile, emsg);
         return Promise.reject(emsg);
       })
-      .then(function() {
+      .then(() => {
         let transpileError = false;
 
         // Start protractor.
-        console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
-        const spawnInfo = spawnExt('yarn', [ 'protractor', '--params.outputFile=' + outputFile ], {cwd: appDir});
+        console.log(`\n\n=========== Running aio example tests for: ${exampleName}`);
+        const spawnInfo = spawnExt(NODE, [VENDORED_YARN, 'protractor'], {cwd: appDir});
 
         spawnInfo.proc.stderr.on('data', function(data) {
           transpileError = transpileError || /npm ERR! Exit status 100/.test(data.toString());
@@ -217,18 +190,14 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
           if (transpileError) {
             const emsg = `${specFilename} failed to transpile.\n\n`;
             console.log(emsg);
-            fs.appendFileSync(outputFile, emsg);
           }
           return Promise.reject();
         });
       })
       .then(
-          function() {
-            return finish(appRunSpawnInfo.proc.pid, true);
-          },
-          function() {
-            return finish(appRunSpawnInfo.proc.pid, false);
-          });
+        () => finish(appRunSpawnInfo.proc.pid, true),
+        () => finish(appRunSpawnInfo.proc.pid, false)
+      );
 }
 
 function finish(spawnProcId, ok) {
@@ -239,102 +208,62 @@ function finish(spawnProcId, ok) {
 }
 
 // Run e2e tests over the AOT build for projects that examples it.
-function runProtractorAoT(appDir, outputFile) {
-  fs.appendFileSync(outputFile, '++ AoT version ++\n');
-  const aotBuildSpawnInfo = spawnExt('yarn', ['build:aot'], {cwd: appDir});
+function runProtractorAoT(exampleName, appDir) {
+  const aotBuildSpawnInfo = spawnExt(NODE, [VENDORED_YARN, 'build:aot'], {cwd: appDir});
   let promise = aotBuildSpawnInfo.promise;
 
   const copyFileCmd = 'copy-dist-files.js';
   if (fs.existsSync(appDir + '/' + copyFileCmd)) {
     promise = promise.then(() => spawnExt('node', [copyFileCmd], {cwd: appDir}).promise);
   }
-  const aotRunSpawnInfo = spawnExt('yarn', ['serve:aot'], {cwd: appDir}, true);
-  return runProtractorSystemJS(promise, appDir, aotRunSpawnInfo, outputFile);
+  const aotRunSpawnInfo = spawnExt(NODE, [VENDORED_YARN, 'serve:aot'], {cwd: appDir}, true);
+  return runProtractorSystemJS(exampleName, promise, appDir, aotRunSpawnInfo);
 }
 
 // Start the example in appDir; then run protractor with the specified
 // fileName; then shut down the example.
 // All protractor output is appended to the outputFile.
 // CLI version
-function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
-  if (!bufferOutput) {
-    console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
+function runE2eTestsCLI(exampleName, appDir) {
+  console.log(`\n\n=========== Running aio example tests for: ${exampleName}`);
+
+  const config = loadExampleConfig(appDir);
+
+  // Replace any calls with yarn (which requires yarn to be on the PATH) to instead call our vendored yarn
+  if (config.tests) {
+    for (let test of config.tests) {
+      if (test.cmd === 'yarn') {
+        test.cmd = NODE;
+        test.args = [VENDORED_YARN, ...test.args];
+      }
+    }
   }
 
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
-  const config = loadExampleConfig(appDir);
   const testCommands = config.tests || [{
-                         cmd: 'yarn',
+                        cmd: NODE,
                          args: [
+                          VENDORED_YARN,
                            'e2e',
                            '--configuration=production',
-                           '--protractor-config=e2e/protractor-puppeteer.conf.js',
+                           '--protractor-config=e2e/protractor-bazel.conf.js',
                            '--no-webdriver-update',
-                           '--port={PORT}',
+                           '--port=0',
                          ],
                        }];
-  let bufferedOutput = `\n\n============== AIO example output for: ${appDir}\n\n`;
 
   const e2eSpawnPromise = testCommands.reduce((prevSpawnPromise, {cmd, args}) => {
-    // Replace the port placeholder with the specified port if present. Specs that
-    // define their e2e test commands in the example config are able to use the
-    // given available port. This ensures that the CLI tests can be run concurrently.
-    args = args.map(a => a.replace('{PORT}', port || DEFAULT_CLI_EXAMPLE_PORT));
-
     return prevSpawnPromise.then(() => {
       const currSpawn = spawnExt(
-          cmd, args, {cwd: appDir}, false, bufferOutput ? msg => bufferedOutput += msg : undefined);
+          cmd, args, {cwd: appDir}, false);
       return currSpawn.promise.then(
-          () => Promise.resolve(finish(currSpawn.proc.pid, true)),
-          () => Promise.reject(finish(currSpawn.proc.pid, false)));
+          () => finish(currSpawn.proc.pid, true),
+          () => finish(currSpawn.proc.pid, false),
+      )
     });
   }, Promise.resolve());
 
-  return e2eSpawnPromise
-      .then(
-          () => {
-            fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`);
-            return true;
-          },
-          () => {
-            fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`);
-            return false;
-          })
-      .then(passed => {
-        if (bufferOutput) {
-          process.stdout.write(bufferedOutput);
-        }
-        return passed;
-      });
-}
-
-// Report final status.
-function reportStatus(status, outputFile) {
-  let log = [''];
-
-  log.push('Suites ignored:');
-  IGNORED_EXAMPLES.forEach(function(val) {
-    log.push('  ' + val);
-  });
-
-  log.push('');
-  log.push('Suites passed:');
-  status.passed.forEach(function(val) {
-    log.push('  ' + val);
-  });
-
-  if (status.failed.length == 0) {
-    log.push('All tests passed');
-  } else {
-    log.push('Suites failed:');
-    status.failed.forEach(function(val) {
-      log.push('  ' + val);
-    });
-  }
-  log.push('\nElapsed time: ' + status.elapsedTime + ' seconds');
-  log = log.join('\n');
-  console.log(log);
-  fs.appendFileSync(outputFile, log);
+  return e2eSpawnPromise;
 }
 
 // Returns both a promise and the spawned process so that it can be killed if needed.
@@ -387,47 +316,6 @@ function spawnExt(
   return {proc, promise};
 }
 
-function getE2eSpecs(basePath, filter) {
-  let specs = {};
-
-  return getE2eSpecsFor(basePath, SJS_SPEC_FILENAME, filter)
-      .then(sjsPaths => {
-        specs.systemjs = sjsPaths;
-      })
-      .then(() => {
-        return getE2eSpecsFor(basePath, CLI_SPEC_FILENAME, filter).then(cliPaths => {
-          return cliPaths.map(p => {
-            return p.replace(`${CLI_SPEC_FILENAME}`, '');
-          });
-        });
-      })
-      .then(cliPaths => {
-        specs.cli = cliPaths;
-      })
-      .then(() => specs);
-}
-
-// Find all e2e specs in a given example folder.
-function getE2eSpecsFor(basePath, specFile, filter) {
-  // Only get spec file at the example root.
-  const e2eSpecGlob = [
-    `${filter.include ? filterToGlob(filter.include) : '*'}/${specFile}`,
-    `!${filter.exclude ? filterToGlob(filter.exclude) : ''}/${specFile}`,
-  ];
-  return globby(e2eSpecGlob, {cwd: basePath, nodir: true})
-      .then(
-          paths => paths.filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
-                       .sort()
-                       .map(file => path.join(basePath, file)));
-}
-
-function filterToGlob(filter) {
-  // `filter` can be either a string (if there is one occurrence of the corresponding option) or an
-  // array (if there are two or more occurrences of the corresponding option). In other words, if
-  // `filter` is an array, it will have more than one element.
-  return Array.isArray(filter) ? `*{${filter.join(',')}}*` : `*${filter}*`;
-}
-
 // Load configuration for an example. Used for SystemJS
 function loadExampleConfig(exampleFolder) {
   // Default config.
@@ -442,16 +330,4 @@ function loadExampleConfig(exampleFolder) {
   return config;
 }
 
-// Log the specs (for debugging purposes).
-// `e2eSpecPaths` is of type: `{[type: string]: string[]}`
-// (where `type` is `systemjs`, `cli, etc.)
-function logSpecs(e2eSpecPaths) {
-  Object.keys(e2eSpecPaths).forEach(type => {
-    const paths = e2eSpecPaths[type];
-
-    console.log(`  ${type.toUpperCase()}:`);
-    console.log(paths.map(p => `    ${p}`).join('\n'));
-  });
-}
-
-runE2e();
+runE2e(EXAMPLE_PATH);

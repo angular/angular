@@ -7,11 +7,16 @@ exports_files([
     "schema.json",
 ])
 
-ng_module(
-    name = "config",
+filegroup(
+    name = "sources",
     srcs = glob([
         "*.ts",
         "src/**/*.ts",
     ]),
+)
+
+ng_module(
+    name = "config",
+    srcs = [":sources"],
     deps = ["//packages/core"],
 )

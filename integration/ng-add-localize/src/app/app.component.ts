@@ -23,10 +23,10 @@ import { Component } from '@angular/core';
         <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
       </li>
     </ul>
-    
+
   `,
   styles: []
 })
 export class AppComponent {
-  title = 'ng-add-localize';
+  title = $localize`ng-add-localize`;
 }

@@ -3,6 +3,7 @@ load("//tools:defaults.bzl", "pkg_npm")
 
 pkg_npm(
     name = "npm_package",
+    package_name = "@angular/bazel",
     srcs = glob(
         ["*"],
         exclude = ["yarn.lock"],
@@ -29,7 +30,12 @@ pkg_npm(
     tags = ["release-with-framework"],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//integration:__subpackages__"],
+    visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
+        "//integration:__subpackages__",
+    ],
     deps = [
         "//packages/bazel/src/ng_package:lib",
         "//packages/bazel/src/ngc-wrapped:ngc_lib",

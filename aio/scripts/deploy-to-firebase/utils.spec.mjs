@@ -286,7 +286,9 @@ describe('deploy-to-firebase/utils:', () => {
 
     it('should execute yarn in silent mode', () => {
       u.yarn('foo --bar');
-      expect(execSpy).toHaveBeenCalledWith('yarn --silent foo --bar');
+
+      const cmd = execSpy.calls.argsFor(0)[0];
+      expect(cmd.endsWith('--silent foo --bar')).toEqual(true);
     });
 
     it('should return the output from the command\'s execution', () => {

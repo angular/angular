@@ -19,7 +19,6 @@ The following properties, at the top-level of the file, configure the workspace.
 | `schematics`     | A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See the [Generation schematics](#schematics) section.                                                |
 | `projects`       | Contains a subsection for each library or application in the workspace, with the per-project configuration options.                                                                                                       |
 
-
 The initial application that you create with `ng new app_name` is listed under "projects":
 
 <code-example language="json">
@@ -55,19 +54,12 @@ The following configuration properties are a set of options that customize the A
 
 | Property              | Details                                                                                       | Value type                                              |
 |:---                   |:---                                                                                           |:---                                                     |
-| `analytics`           | Share anonymous [usage data](cli/usage-analytics-gathering) with the Angular Team.            | `boolean` &verbar; `ci`                                 |
-| `analyticsSharing`    | A set of analytics sharing options.                                                           | [Analytics sharing options](#analytics-sharing-options) |
+| `analytics`           | Share anonymous [usage data](cli/analytics) with the Angular Team.                            | `boolean` &verbar; `ci`                                 |
 | `cache`               | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](guide/cli-builder). | [Cache options](#cache-options)                         |
 | `schematicCollections`| A list of default schematics collections to use.                                              | `string[]`                                              |
 | `packageManager`      | The preferred package manager tool to use.                                                    | `npm` &verbar; `cnpm` &verbar; `pnpm` &verbar;`yarn`    |
 | `warnings`            | Control Angular CLI specific console warnings.                                                        | [Warnings options](#warnings-options)                   |
 
-### Analytics sharing options
-
-| Property   | Details                                                        | Value type |
-|:---        |:---                                                            |:---        |
-| `tracking` | Analytics sharing info tracking ID.                            | `string`   |
-| `uuid`     | Analytics sharing info Universally Unique Identifier (UUID).   | `string`   |
 
 ### Cache options
 
