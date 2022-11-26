@@ -1119,9 +1119,7 @@ describe('acceptance integration tests', () => {
 
            const styles = fixture.componentInstance.mockStyleDirective.stylesVal;
 
-           // Use `toContain` since Ivy and ViewEngine have some slight differences in formatting.
-           expect(styles).toContain('width: 100px');
-           expect(styles).toContain('height: 200px');
+           expect(styles).toEqual('width: 100px; height: 200px;');
          });
 
       it('should update `[class]` and bindings in the provided directive if the input is matched',
@@ -1458,8 +1456,7 @@ describe('acceptance integration tests', () => {
             .createComponent(SomeComponent);
       })
           .toThrowError(
-              // The ViewEngine error has a typo, whereas the Ivy one fixes it.
-              /^Unexpected directive 'SomeComponent' imported by the module 'ModuleWithImportedComponent'\. Please add (a|an) @NgModule annotation\.$/);
+              /^Unexpected directive 'SomeComponent' imported by the module 'ModuleWithImportedComponent'\. Please add an @NgModule annotation\.$/);
     });
 
     it('should throw with descriptive error message when a pipe is passed to imports', () => {
@@ -1477,8 +1474,7 @@ describe('acceptance integration tests', () => {
             .createComponent(FixtureComponent);
       })
           .toThrowError(
-              // The ViewEngine error has a typo, whereas the Ivy one fixes it.
-              /^Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'\. Please add (a|an) @NgModule annotation\.$/);
+              /^Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'\. Please add an @NgModule annotation\.$/);
     });
 
     it('should throw with descriptive error message when a module is passed to declarations', () => {
@@ -1530,8 +1526,7 @@ describe('acceptance integration tests', () => {
                .createComponent(FixtureComponent);
          })
              .toThrowError(
-                 // The ViewEngine error has a typo, whereas the Ivy one fixes it.
-                 /^Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'\. Please add (a|an) @NgModule annotation\.$/);
+                 /^Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'\. Please add an @NgModule annotation\.$/);
        });
   });
 
