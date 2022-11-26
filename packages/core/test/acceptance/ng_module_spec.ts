@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, createNgModule, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Directive, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
+import {Component, createNgModule, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Directive, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property,} from '@angular/core';
 import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '@angular/core/src/render3/instructions/element_validation';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -249,10 +249,10 @@ describe('NgModule', () => {
       @Component({
         selector: 'my-comp',
         template: `
-              <ng-container *ngIf="condition">
-                <div [unknown-prop]="true"></div>
-              </ng-container>
-            `,
+          <ng-container *ngIf="condition">
+            <div [unknown-prop]="true"></div>
+          </ng-container>
+        `,
       })
       class MyComp {
         condition = true;
@@ -278,9 +278,7 @@ describe('NgModule', () => {
     it('should log an error on unknown props of `ng-template` if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
         selector: 'my-comp',
-        template: `
-              <ng-template *ngIf="condition"></ng-template>
-            `,
+        template: ` <ng-template *ngIf="condition"></ng-template> `,
       })
       class MyComp {
         condition = true;
@@ -306,9 +304,7 @@ describe('NgModule', () => {
     it('should log an error on unknown props of `ng-container` if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
         selector: 'my-comp',
-        template: `
-              <ng-container *ngIf="condition"></ng-container>
-            `,
+        template: ` <ng-container *ngIf="condition"></ng-container> `,
       })
       class MyComp {
         condition = true;
@@ -334,9 +330,7 @@ describe('NgModule', () => {
     it('should log an error on unknown props of `ng-content` if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
         selector: 'my-comp',
-        template: `
-              <ng-content *ngIf="condition"></ng-content>
-            `,
+        template: ` <ng-content *ngIf="condition"></ng-content> `,
       })
       class MyComp {
         condition = true;
@@ -364,10 +358,10 @@ describe('NgModule', () => {
          @Component({
            selector: 'my-comp',
            template: `
-              <ng-container *ngIf="condition">
-                <div [unknown-prop]="true"></div>
-              </ng-container>
-            `,
+          <ng-container *ngIf="condition">
+            <div [unknown-prop]="true"></div>
+          </ng-container>
+        `,
          })
          class MyComp {
            condition = true;
@@ -483,7 +477,7 @@ describe('NgModule', () => {
          @Component({
            template: `<custom-el></custom-el>`,
            standalone: true,
-           schemas: [CUSTOM_ELEMENTS_SCHEMA]
+           schemas: [CUSTOM_ELEMENTS_SCHEMA],
          })
          class MyComp {
          }
@@ -629,9 +623,9 @@ describe('NgModule', () => {
         `NG0303: Can't bind to 'unknownProp' since it isn't a known property of 'may-be-web-component' \\(used in the 'MyComp' component template\\).`,
         `1. If 'may-be-web-component' is an Angular component and it has the 'unknownProp' input, then verify that it is a part of an @NgModule where this component is declared.`,
         `2. If 'may-be-web-component' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`,
-        `3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`
+        `3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`,
       ];
-      lines.forEach(line => expect(errorMessage).toMatch(line));
+      lines.forEach((line) => expect(errorMessage).toMatch(line));
     });
 
     KNOWN_CONTROL_FLOW_DIRECTIVES.forEach((correspondingImport, directive) => {
@@ -664,9 +658,9 @@ describe('NgModule', () => {
                  directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
              `If the '${directive}' is an Angular control flow directive, please make sure ` +
                  `that either the '${
-                     correspondingImport}' directive or the 'CommonModule' is a part of an @NgModule where this component is declared.`
+                     correspondingImport}' directive or the 'CommonModule' is a part of an @NgModule where this component is declared.`,
            ];
-           lines.forEach(line => expect(errorMessage).toMatch(line));
+           lines.forEach((line) => expect(errorMessage).toMatch(line));
          });
 
       it(`should produce a warning when the '${directive}' directive ` +
@@ -692,9 +686,9 @@ describe('NgModule', () => {
                  directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
              `If the '${directive}' is an Angular control flow directive, please make sure ` +
                  `that either the '${
-                     correspondingImport}' directive or the 'CommonModule' is included in the '@Component.imports' of this component.`
+                     correspondingImport}' directive or the 'CommonModule' is included in the '@Component.imports' of this component.`,
            ];
-           lines.forEach(line => expect(errorMessage).toMatch(line));
+           lines.forEach((line) => expect(errorMessage).toMatch(line));
          });
     });
 
@@ -710,16 +704,17 @@ describe('NgModule', () => {
             vars,
             consts,
             template,
-            encapsulation: 2
+            encapsulation: 2,
           });
         }
         setClassMetadata(
-            Comp, [{
-              type: Component,
-              args: [
-                {selector: 'comp', template: '...'},
-              ]
-            }],
+            Comp,
+            [
+              {
+                type: Component,
+                args: [{selector: 'comp', template: '...'}],
+              },
+            ],
             null, null);
         return Comp;
       }
@@ -730,13 +725,18 @@ describe('NgModule', () => {
           static ɵinj = defineInjector({});
         }
         setClassMetadata(
-            Module, [{
-              type: NgModule,
-              args: [{
-                declarations: [Comp],
-                schemas: [NO_ERRORS_SCHEMA],
-              }]
-            }],
+            Module,
+            [
+              {
+                type: NgModule,
+                args: [
+                  {
+                    declarations: [Comp],
+                    schemas: [NO_ERRORS_SCHEMA],
+                  },
+                ],
+              },
+            ],
             null, null);
         return Module;
       }
@@ -839,7 +839,7 @@ describe('NgModule', () => {
       TestBed.configureTestingModule({
         declarations: [MyComp],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        errorOnUnknownElements: true
+        errorOnUnknownElements: true,
       });
 
       const fixture = TestBed.createComponent(MyComp);
@@ -871,8 +871,11 @@ describe('NgModule', () => {
       }
 
       const spy = spyOn(console, 'error');
-      TestBed.configureTestingModule(
-          {declarations: [MyComp], schemas: [NO_ERRORS_SCHEMA], errorOnUnknownElements: true});
+      TestBed.configureTestingModule({
+        declarations: [MyComp],
+        schemas: [NO_ERRORS_SCHEMA],
+        errorOnUnknownElements: true,
+      });
 
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -914,8 +917,10 @@ describe('NgModule', () => {
       }
 
       const spy = spyOn(console, 'error');
-      TestBed.configureTestingModule(
-          {declarations: [MyComp, CustomEl], errorOnUnknownElements: true});
+      TestBed.configureTestingModule({
+        declarations: [MyComp, CustomEl],
+        errorOnUnknownElements: true,
+      });
 
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -982,17 +987,13 @@ describe('NgModule', () => {
       const TOKEN_A = new InjectionToken('A');
       const TOKEN_B = new InjectionToken('B');
       @NgModule({
-        providers: [
-          {provide: TOKEN_A, useValue: 'TokenValueA'},
-        ]
+        providers: [{provide: TOKEN_A, useValue: 'TokenValueA'}],
       })
       class AppModule {
       }
 
       @NgModule({
-        providers: [
-          {provide: TOKEN_B, useValue: 'TokenValueB'},
-        ]
+        providers: [{provide: TOKEN_B, useValue: 'TokenValueB'}],
       })
       class ChildModule {
       }
@@ -1039,7 +1040,6 @@ describe('NgModule', () => {
        @NgModule({
          declarations: [TestCmp],
          exports: [TestCmp],
-         entryComponents: [TestCmp]  // Only necessary for ViewEngine
        })
        class MyModule {
          constructor(ngModuleRef: NgModuleRef<any>) {
