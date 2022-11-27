@@ -123,18 +123,18 @@ describe('Integration', () => {
         `
          })
          class ComponentWithRouterLink {
-           // TODO(issue/24571): remove '!'.
-           @ViewChild(TemplateRef, {static: true}) templateRef!: TemplateRef<any>;
-           // TODO(issue/24571): remove '!'.
+           @ViewChild(TemplateRef, {static: true}) templateRef?: TemplateRef<any>;
            @ViewChild('container', {read: ViewContainerRef, static: true})
-           container!: ViewContainerRef;
+           container?: ViewContainerRef;
 
            addLink() {
-             this.container.createEmbeddedView(this.templateRef, {$implicit: '/simple'});
+             if (this.templateRef) {
+               this.container?.createEmbeddedView(this.templateRef, {$implicit: '/simple'});
+             }
            }
 
            removeLink() {
-             this.container.clear();
+             this.container?.clear();
            }
          }
 
