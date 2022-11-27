@@ -115,9 +115,9 @@ export class ActivatedRoute {
   /** @internal */
   _routerState!: RouterState;
   /** @internal */
-  _paramMap!: Observable<ParamMap>;
+  _paramMap?: Observable<ParamMap>;
   /** @internal */
-  _queryParamMap!: Observable<ParamMap>;
+  _queryParamMap?: Observable<ParamMap>;
 
   /** An Observable of the resolved route title */
   readonly title: Observable<string|undefined> =
@@ -288,17 +288,13 @@ export class ActivatedRouteSnapshot {
   /** @internal */
   _resolve: ResolveData;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
-  _resolvedData!: Data;
+  _resolvedData?: Data;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
   _routerState!: RouterStateSnapshot;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
-  _paramMap!: ParamMap;
+  _paramMap?: ParamMap;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
-  _queryParamMap!: ParamMap;
+  _queryParamMap?: ParamMap;
 
   /** The resolved route title */
   get title(): string|undefined {

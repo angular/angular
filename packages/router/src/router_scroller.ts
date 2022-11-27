@@ -19,10 +19,8 @@ export const ROUTER_SCROLLER = new InjectionToken<RouterScroller>('');
 
 @Injectable()
 export class RouterScroller implements OnDestroy {
-  // TODO(issue/24571): remove '!'.
-  private routerEventsSubscription!: Unsubscribable;
-  // TODO(issue/24571): remove '!'.
-  private scrollEventsSubscription!: Unsubscribable;
+  private routerEventsSubscription?: Unsubscribable;
+  private scrollEventsSubscription?: Unsubscribable;
 
   private lastId = 0;
   private lastSource: 'imperative'|'popstate'|'hashchange'|undefined = 'imperative';
@@ -105,11 +103,7 @@ export class RouterScroller implements OnDestroy {
 
   /** @nodoc */
   ngOnDestroy() {
-    if (this.routerEventsSubscription) {
-      this.routerEventsSubscription.unsubscribe();
-    }
-    if (this.scrollEventsSubscription) {
-      this.scrollEventsSubscription.unsubscribe();
-    }
+    this.routerEventsSubscription?.unsubscribe();
+    this.scrollEventsSubscription?.unsubscribe();
   }
 }
