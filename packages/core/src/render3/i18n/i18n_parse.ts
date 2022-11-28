@@ -24,6 +24,7 @@ import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
 import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state';
 import {attachDebugGetter} from '../util/debug_utils';
 
+import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
 import {ensureIcuContainerVisitorLoaded} from './i18n_tree_shaking';
 import {createTNodePlaceholder, icuCreateOpCode, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util';
