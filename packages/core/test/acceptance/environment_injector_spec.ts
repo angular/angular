@@ -8,6 +8,7 @@
 
 import {Component, ComponentFactoryResolver, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectFlags, InjectionToken, INJECTOR, Injector, NgModuleRef, ViewContainerRef} from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
+import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {TestBed} from '@angular/core/testing';
 
 describe('environment injector', () => {
@@ -117,11 +118,7 @@ describe('environment injector', () => {
       useValue: () => {},
     }];
     expect(() => createEnvironmentInjector(providers, parentEnvInjector))
-        .toThrowError(
-            'NG0209: Unexpected type of the `ENVIRONMENT_INITIALIZER` token value ' +
-            '(expected an array, but got function). ' +
-            'Please check that the `ENVIRONMENT_INITIALIZER` token is configured as ' +
-            'a `multi: true` provider.');
+        .toThrowMatching((e: RuntimeError) => e.code === RuntimeErrorCode.INVALID_MULTI_PROVIDER);
   });
 
   it('should adopt environment-scoped providers', () => {

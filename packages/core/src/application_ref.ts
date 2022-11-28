@@ -1051,8 +1051,16 @@ export class ApplicationRef {
     this.tick();
     this.components.push(componentRef);
     // Get the listeners lazily to prevent DI cycles.
-    const listeners =
-        this._injector.get(APP_BOOTSTRAP_LISTENER, []).concat(this._bootstrapListeners);
+    const listeners = this._injector.get(APP_BOOTSTRAP_LISTENER, []);
+    if (ngDevMode && !Array.isArray(listeners)) {
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_MULTI_PROVIDER,
+          'Unexpected type of the `APP_BOOTSTRAP_LISTENER` token value ' +
+              `(expected an array, but got ${typeof listeners}). ` +
+              'Please check that the `APP_BOOTSTRAP_LISTENER` token is configured as a ' +
+              '`multi: true` provider.');
+    }
+    listeners.push(...this._bootstrapListeners);
     listeners.forEach((listener) => listener(componentRef));
   }
 
