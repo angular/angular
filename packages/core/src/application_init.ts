@@ -102,6 +102,7 @@ export class ApplicationInitStatus {
 
   constructor(@Inject(APP_INITIALIZER) @Optional() private readonly appInits:
                   ReadonlyArray<() => Observable<unknown>| Promise<unknown>| void>) {
+    // TODO: Throw RuntimeErrorCode.INVALID_MULTI_PROVIDER if appInits is not an array
     this.donePromise = new Promise((res, rej) => {
       this.resolve = res;
       this.reject = rej;
