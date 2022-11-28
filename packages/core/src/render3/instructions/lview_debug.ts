@@ -379,14 +379,6 @@ export class TNodeInitialInputs extends Array {}
 export class LCleanup extends Array {}
 export class TCleanup extends Array {}
 
-export function attachLViewDebug(lView: LView) {
-  attachDebugObject(lView, new LViewDebug(lView));
-}
-
-export function attachLContainerDebug(lContainer: LContainer) {
-  attachDebugObject(lContainer, new LContainerDebug(lContainer));
-}
-
 export function toDebug<T>(obj: LView<T>): ILViewDebug<T>;
 export function toDebug<T>(obj: LView<T>|null): ILViewDebug<T>|null;
 export function toDebug<T>(obj: LView<T>|LContainer|null): ILViewDebug<T>|ILContainerDebug|null;

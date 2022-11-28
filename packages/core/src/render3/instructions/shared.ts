@@ -49,7 +49,7 @@ import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreation
 import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
-import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
+import {cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
 
 /**
  * Invoke `HostBindingsFunction`s for view.
@@ -150,7 +150,6 @@ export function createLView<T>(
           'Embedded views must have parentLView');
   lView[DECLARATION_COMPONENT_VIEW] =
       tView.type == TViewType.Embedded ? parentLView![DECLARATION_COMPONENT_VIEW] : lView;
-  ngDevMode && attachLViewDebug(lView);
   return lView;
 }
 
@@ -1625,7 +1624,6 @@ export function createLContainer(
       assertEqual(
           lContainer.length, CONTAINER_HEADER_OFFSET,
           'Should allocate correct number of slots for LContainer header.');
-  ngDevMode && attachLContainerDebug(lContainer);
   return lContainer;
 }
 
