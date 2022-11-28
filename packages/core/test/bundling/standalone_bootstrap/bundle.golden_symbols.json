@@ -495,9 +495,6 @@
     "name": "collectNativeNodes"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "concatStringsWithSpace"
   },
   {

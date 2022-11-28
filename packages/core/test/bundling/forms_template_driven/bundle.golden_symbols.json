@@ -732,9 +732,6 @@
     "name": "collectStylingFromTAttrs"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "composeAsyncValidators"
   },
   {

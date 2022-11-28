@@ -549,9 +549,6 @@
     "name": "collectNativeNodes"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "computeStaticStyling"
   },
   {
