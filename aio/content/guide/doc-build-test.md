@@ -70,11 +70,12 @@ On your local computer, in a command line tool or the **Terminal** pane of your 
 
     </code-example>
 
-1.  Run this command to start the end-to-end tests.
+1.  Run these commands to run the end-to-end tests.
 
     <code-example format="shell" language="shell">
 
     yarn e2e
+    yarn docs-test
 
     </code-example>
 
