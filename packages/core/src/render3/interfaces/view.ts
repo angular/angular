@@ -8,7 +8,6 @@
 
 import {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';
-import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 
@@ -845,84 +844,3 @@ export type TData = (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|numb
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
-
-
-/**
- * A logical node which comprise into `LView`s.
- *
- */
-export interface DebugNode {
-  /**
-   * HTML representation of the node.
-   */
-  html: string|null;
-
-  /**
-   * Associated `TNode`
-   */
-  tNode: TNode;
-
-  /**
-   * Human readable node type.
-   */
-  type: string;
-
-  /**
-   * DOM native node.
-   */
-  native: Node;
-
-  /**
-   * Child nodes
-   */
-  children: DebugNode[];
-
-  /**
-   * A list of Component/Directive types which need to be instantiated an this location.
-   */
-  factories: Type<unknown>[];
-
-  /**
-   * A list of Component/Directive instances which were instantiated an this location.
-   */
-  instances: unknown[];
-
-  /**
-   * NodeInjector information.
-   */
-  injector: NodeInjectorDebug;
-
-  /**
-   * Injector resolution path.
-   */
-  injectorResolutionPath: any;
-}
-
-export interface NodeInjectorDebug {
-  /**
-   * Instance bloom. Does the current injector have a provider with a given bloom mask.
-   */
-  bloom: string;
-
-
-  /**
-   * Cumulative bloom. Do any of the above injectors have a provider with a given bloom mask.
-   */
-  cumulativeBloom: string;
-
-  /**
-   * A list of providers associated with this injector.
-   */
-  providers: (Type<unknown>|DirectiveDef<unknown>|ComponentDef<unknown>)[];
-
-  /**
-   * A list of providers associated with this injector visible to the view of the component only.
-   */
-  viewProviders: Type<unknown>[];
-
-
-  /**
-   * Location of the parent `TNode`.
-   */
-  parentInjectorIndex: number;
-}

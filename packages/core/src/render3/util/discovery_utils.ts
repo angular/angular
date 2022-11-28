@@ -9,19 +9,16 @@
 import {ChangeDetectionStrategy} from '../../change_detection/constants';
 import {Injector} from '../../di/injector';
 import {ViewEncapsulation} from '../../metadata/view';
-import {assertEqual} from '../../util/assert';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext, readPatchedLView} from '../context_discovery';
 import {getComponentDef, getDirectiveDef} from '../definition';
 import {NodeInjector} from '../di';
-import {buildDebugNode} from '../instructions/lview_debug';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
-import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
+import {CLEANUP, CONTEXT, FLAGS, LView, LViewFlags, TVIEW, TViewType} from '../interfaces/view';
 
 import {getLViewParent, getRootContext} from './view_traversal_utils';
-import {getTNode, unwrapRNode} from './view_utils';
+import {unwrapRNode} from './view_utils';
 
 
 
@@ -444,38 +441,6 @@ function sortListeners(a: Listener, b: Listener) {
  */
 function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
   return obj.type !== undefined && obj.template !== undefined && obj.declaredInputs !== undefined;
-}
-
-/**
- * Returns the attached `DebugNode` instance for an element in the DOM.
- *
- * @param element DOM element which is owned by an existing component's view.
- */
-export function getDebugNode(element: Element): DebugNode|null {
-  if (ngDevMode && !(element instanceof Node)) {
-    throw new Error('Expecting instance of DOM Element');
-  }
-
-  const lContext = getLContext(element)!;
-  const lView = lContext ? lContext.lView : null;
-
-  if (lView === null) {
-    return null;
-  }
-
-  const nodeIndex = lContext.nodeIndex;
-  if (nodeIndex !== -1) {
-    const valueInLView = lView[nodeIndex];
-    // this means that value in the lView is a component with its own
-    // data. In this situation the TNode is not accessed at the same spot.
-    const tNode =
-        isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) : getTNode(lView[TVIEW], nodeIndex);
-    ngDevMode &&
-        assertEqual(tNode.index, nodeIndex, 'Expecting that TNode at index is same as index');
-    return buildDebugNode(tNode, lView);
-  }
-
-  return null;
 }
 
 /**

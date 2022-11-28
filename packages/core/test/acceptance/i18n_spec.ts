@@ -14,7 +14,7 @@ import localeEs from '@angular/common/locales/es';
 import localeRo from '@angular/common/locales/ro';
 import {computeMsgId} from '@angular/compiler';
 import {Attribute, Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, Input, LOCALE_ID, NO_ERRORS_SCHEMA, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef, ɵsetDocument} from '@angular/core';
-import {DebugNode, HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
+import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
