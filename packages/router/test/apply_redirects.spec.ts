@@ -19,7 +19,7 @@ import {getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
 
 describe('applyRedirects', () => {
   const serializer = new DefaultUrlSerializer();
-  let testModule: NgModuleRef<any>;
+  let testModule: NgModuleRef<unknown>;
 
   beforeEach(() => {
     testModule = TestBed.inject(NgModuleRef);
@@ -133,7 +133,6 @@ describe('applyRedirects', () => {
           path: 'a',
           children: [
             {path: 'bb', component: ComponentB}, {path: 'b', redirectTo: 'bb'},
-
             {path: 'cc', component: ComponentC, outlet: 'aux'},
             {path: 'b', redirectTo: 'cc', outlet: 'aux'}
           ]
@@ -148,9 +147,7 @@ describe('applyRedirects', () => {
         [{
           path: 'a',
           children: [
-            {path: 'bb', component: ComponentB}, {path: 'b', redirectTo: 'bb'},
-
-            {
+            {path: 'bb', component: ComponentB}, {path: 'b', redirectTo: 'bb'}, {
               path: 'cc',
               component: ComponentC,
               outlet: 'aux',
@@ -288,8 +285,7 @@ describe('applyRedirects', () => {
 
     it('should handle the case when the loader errors', () => {
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
-        loadChildren: (p: any) =>
-            new Observable<any>((obs: any) => obs.error(new Error('Loading Error')))
+        loadChildren: (p: any) => new Observable((obs) => obs.error(new Error('Loading Error')))
       };
       const config =
           [{path: 'a', component: ComponentA, loadChildren: jasmine.createSpy('children')}];
@@ -1117,7 +1113,7 @@ describe('applyRedirects', () => {
             matcher: matcher,
             component: ComponentA,
             children: [{path: 'b', component: ComponentB}]
-          }] as any,
+          }],
           '/a/1/b', (t: UrlTree) => {
             expectTreeToBe(t, 'a/1/b');
           });
