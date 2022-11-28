@@ -26,7 +26,7 @@
   "cli-hello-world-lazy": {
     "uncompressed": {
       "runtime": 2734,
-      "main": 229515,
+      "main": 229644,
       "polyfills": 33810,
       "src_app_lazy_lazy_routes_ts": 487
     }
@@ -48,8 +48,8 @@
   "standalone-bootstrap": {
     "uncompressed": {
       "runtime": 918,
-      "main": 85542,
-      "polyfills": 33802
+      "main": 85743,
+      "polyfills": 33945
     }
   },
   "hello_world__closure": {

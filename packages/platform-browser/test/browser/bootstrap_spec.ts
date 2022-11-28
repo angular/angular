@@ -628,43 +628,6 @@ function bootstrap(
       })();
     });
 
-    it('should remove styles when transitioning from a server render', done => {
-      @Component({
-        selector: 'root',
-        template: 'root',
-      })
-      class RootCmp {
-      }
-
-      @NgModule({
-        bootstrap: [RootCmp],
-        declarations: [RootCmp],
-        imports: [BrowserModule.withServerTransition({appId: 'my-app'})],
-      })
-      class TestModule {
-      }
-
-      // First, set up styles to be removed.
-      const dom = getDOM();
-      const platform = platformBrowserDynamic();
-      const document = platform.injector.get(DOCUMENT);
-      const style = dom.createElement('style', document);
-      style.setAttribute('ng-transition', 'my-app');
-      document.head.appendChild(style);
-
-      const root = dom.createElement('root', document);
-      document.body.appendChild(root);
-
-      platform.bootstrapModule(TestModule).then(() => {
-        const styles: HTMLElement[] =
-            Array.prototype.slice.apply(document.getElementsByTagName('style') || []);
-        styles.forEach(style => {
-          expect(style.getAttribute('ng-transition')).not.toBe('my-app');
-        });
-        done();
-      }, done.fail);
-    });
-
     it('should register each application with the testability registry', async () => {
       const ngModuleRef1: NgModuleRef<unknown> = await bootstrap(HelloRootCmp, testProviders);
       const ngModuleRef2: NgModuleRef<unknown> = await bootstrap(HelloRootCmp2, testProviders);

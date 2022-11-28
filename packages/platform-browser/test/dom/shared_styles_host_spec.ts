@@ -18,7 +18,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     beforeEach(() => {
       doc = getDOM().createHtmlDocument();
       doc.title = '';
-      ssh = new DomSharedStylesHost(doc);
+      ssh = new DomSharedStylesHost(doc, 'app-id');
       someHost = getDOM().createElement('div');
     });
 
