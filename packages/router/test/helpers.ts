@@ -10,8 +10,8 @@ import {Type} from '@angular/core';
 
 import {Data, ResolveData, Route} from '../src/models';
 import {ActivatedRouteSnapshot} from '../src/router_state';
-import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from '../src/shared';
-import {equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {Params} from '../src/shared';
+import {UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
 export class Logger {
   logs: string[] = [];
@@ -37,7 +37,7 @@ export declare type ARSArgs = {
   queryParams?: Params,
   fragment?: string,
   data?: Data,
-  outlet?: string, component: Type<any>| string | null,
+  outlet?: string, component: Type<unknown>| string | null,
   routeConfig?: Route | null,
   urlSegment?: UrlSegmentGroup,
   lastPathIndex?: number,
@@ -46,8 +46,7 @@ export declare type ARSArgs = {
 
 export function createActivatedRouteSnapshot(args: ARSArgs): ActivatedRouteSnapshot {
   return new (ActivatedRouteSnapshot as any)(
-      args.url || <any>[], args.params || {}, args.queryParams || <any>null,
-      args.fragment || <any>null, args.data || <any>null, args.outlet || <any>null,
-      <any>args.component, args.routeConfig || <any>{}, args.urlSegment || <any>null,
-      args.lastPathIndex || -1, args.resolve || {});
+      args.url || [], args.params || {}, args.queryParams || null, args.fragment || null,
+      args.data || null, args.outlet || null, args.component, args.routeConfig || {},
+      args.urlSegment || null, args.lastPathIndex || -1, args.resolve || {});
 }

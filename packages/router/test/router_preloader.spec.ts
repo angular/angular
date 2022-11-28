@@ -8,6 +8,8 @@
 
 import {provideLocationMocks} from '@angular/common/testing';
 import {Compiler, Component, Injectable, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, Type} from '@angular/core';
+import {R3Injector} from '@angular/core/src/di/r3_injector';
+import {NgModuleRef as R3NgModuleRef} from '@angular/core/src/render3';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader, ROUTES, withPreloading} from '@angular/router';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
@@ -76,7 +78,7 @@ describe('RouterPreloader', () => {
          tick();
 
          const c = router.config;
-         expect((c[0] as any)._loadedConfig).not.toBeDefined();
+         expect((c[0] as any)._loadedRoutes).not.toBeDefined();
        })));
 
     it('should not call the preloading method because children will not be loaded anyways',
@@ -106,7 +108,7 @@ describe('RouterPreloader', () => {
     it('should work',
        fakeAsync(inject(
            [RouterPreloader, Router, NgModuleRef],
-           (preloader: RouterPreloader, router: Router, testModule: NgModuleRef<any>) => {
+           (preloader: RouterPreloader, router: Router, testModule: R3NgModuleRef<unknown>) => {
              const events: Array<RouteConfigLoadStart|RouteConfigLoadEnd> = [];
              @NgModule({
                declarations: [LazyLoadedCmp],
@@ -137,7 +139,7 @@ describe('RouterPreloader', () => {
              const injector: any = getLoadedInjector(c[0]);
              const loadedRoutes: Route[] = getLoadedRoutes(c[0])!;
              expect(loadedRoutes[0].path).toEqual('LoadedModule1');
-             expect(injector.parent).toBe((testModule as any)._r3Injector);
+             expect(injector.parent).toBe(testModule._r3Injector);
 
              const injector2: any = getLoadedInjector(loadedRoutes[0]);
              const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
@@ -209,7 +211,7 @@ describe('RouterPreloader', () => {
     it('should work',
        fakeAsync(inject(
            [RouterPreloader, Router, NgModuleRef, Compiler],
-           (preloader: RouterPreloader, router: Router, testModule: NgModuleRef<any>,
+           (preloader: RouterPreloader, router: Router, testModule: R3NgModuleRef<unknown>,
             compiler: Compiler) => {
              @NgModule()
              class LoadedModule2 {
@@ -241,12 +243,13 @@ describe('RouterPreloader', () => {
 
              const c = router.config;
 
-             const injector = getLoadedInjector(c[0]) as any;
+             const injector = getLoadedInjector(c[0]) as R3Injector;
+
              const loadedRoutes = getLoadedRoutes(c[0])!;
-             expect(injector.parent).toBe((testModule as any)._r3Injector);
+             expect(injector.parent).toBe((testModule)._r3Injector);
 
              const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
-             const injector3: any = getLoadedInjector(loadedRoutes2[0]);
+             const injector3 = getLoadedInjector(loadedRoutes2[0]) as R3Injector;
              expect(injector3.parent).toBe(module2.injector);
            })));
   });
@@ -261,7 +264,7 @@ describe('RouterPreloader', () => {
 
     const mockPreloaderFactory = (): PreloadingStrategy => {
       class DelayedPreLoad implements PreloadingStrategy {
-        preload(route: Route, fn: () => Observable<any>): Observable<any> {
+        preload(route: Route, fn: () => Observable<unknown>): Observable<unknown> {
           const routeName =
               route.loadChildren ? (route.loadChildren as jasmine.Spy).and.identity : 'noChildren';
           return delayLoadObserver$.pipe(
@@ -522,12 +525,12 @@ describe('RouterPreloader', () => {
            }
          });
 
-         class BrokenModuleFactory extends NgModuleFactory<any> {
-           override moduleType: Type<any> = LoadedModule1;
+         class BrokenModuleFactory extends NgModuleFactory<unknown> {
+           override moduleType: Type<unknown> = LoadedModule1;
            constructor() {
              super();
            }
-           override create(_parentInjector: Injector|null): NgModuleRef<any> {
+           override create(_parentInjector: Injector|null): NgModuleRef<unknown> {
              throw 'Error: Broken module';
            }
          }
@@ -590,7 +593,7 @@ describe('RouterPreloader', () => {
          tick();
 
          const c = router.config;
-         expect(getLoadedRoutes(c[0] as any)).not.toBeDefined();
+         expect(getLoadedRoutes(c[0])).not.toBeDefined();
          expect(getLoadedRoutes(c[1])).toBeDefined();
        })));
   });
@@ -698,7 +701,7 @@ describe('RouterPreloader', () => {
          @Injectable({providedIn: 'root'})
          class ErrorTrackingPreloadAllModules implements PreloadingStrategy {
            errors: Error[] = [];
-           preload(route: Route, fn: () => Observable<any>): Observable<any> {
+           preload(route: Route, fn: () => Observable<unknown>): Observable<unknown> {
              return fn().pipe(catchError((e: Error) => {
                this.errors.push(e);
                return of(null);

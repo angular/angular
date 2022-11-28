@@ -176,11 +176,7 @@ describe('prioritizedGuardValue operator', () => {
 
   it('should ignore invalid values', () => {
     testScheduler.run(({hot, cold, expectObservable}) => {
-      const resultLookup = {
-        T: true,
-        U: undefined as any,
-        S: 'I am not a valid guard result' as any
-      };
+      const resultLookup = {T: true, U: undefined, S: 'I am not a valid guard result' as any};
 
       const a = cold('       ----------(T|)', resultLookup);
       const b = cold('       -----(U|)', resultLookup);

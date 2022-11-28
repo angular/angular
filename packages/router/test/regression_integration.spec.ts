@@ -123,7 +123,7 @@ describe('Integration', () => {
         `
          })
          class ComponentWithRouterLink {
-           @ViewChild(TemplateRef, {static: true}) templateRef?: TemplateRef<any>;
+           @ViewChild(TemplateRef, {static: true}) templateRef?: TemplateRef<unknown>;
            @ViewChild('container', {read: ViewContainerRef, static: true})
            container?: ViewContainerRef;
 
