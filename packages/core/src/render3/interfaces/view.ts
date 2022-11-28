@@ -18,7 +18,7 @@ import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
 import {LQueries, TQueries} from './query';
 import {Renderer, RendererFactory} from './renderer';
-import {RComment, RElement} from './renderer_dom';
+import {RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 
 
@@ -78,15 +78,6 @@ export interface OpaqueViewState {
  * don't have to edit the data array based on which views are present.
  */
 export interface LView<T = unknown> extends Array<any> {
-  /**
-   * Human readable representation of the `LView`.
-   *
-   * NOTE: This property only exists if `ngDevMode` is set to `true` and it is not present in
-   * production. Its presence is purely to help debug issue in development, and should not be relied
-   * on in production application.
-   */
-  debug?: LViewDebug;
-
   /**
    * The node into which this `LView` is inserted.
    */
@@ -521,17 +512,6 @@ export const enum TViewType {
 }
 
 /**
- * Converts `TViewType` into human readable text.
- * Make sure this matches with `TViewType`
- */
-export const TViewTypeAsString = [
-  'Root',       // 0
-  'Component',  // 1
-  'Embedded',   // 2
-] as const;
-
-
-/**
  * The static data for an LView (shared between all templates of a
  * given type).
  *
@@ -865,172 +845,6 @@ export type TData = (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|numb
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
-
-/**
- * Human readable version of the `LView`.
- *
- * `LView` is a data structure used internally to keep track of views. The `LView` is designed for
- * efficiency and so at times it is difficult to read or write tests which assert on its values. For
- * this reason when `ngDevMode` is true we patch a `LView.debug` property which points to
- * `LViewDebug` for easier debugging and test writing. It is the intent of `LViewDebug` to be used
- * in tests.
- */
-export interface LViewDebug<T = unknown> {
-  /**
-   * Flags associated with the `LView` unpacked into a more readable state.
-   *
-   * See `LViewFlags` for the flag meanings.
-   */
-  readonly flags: {
-    initPhaseState: number,
-    creationMode: boolean,
-    firstViewPass: boolean,
-    checkAlways: boolean,
-    dirty: boolean,
-    attached: boolean,
-    destroyed: boolean,
-    isRoot: boolean,
-    indexWithinInitPhase: number,
-  };
-
-  /**
-   * Associated TView
-   */
-  readonly tView: TView;
-
-  /**
-   * Parent view (or container)
-   */
-  readonly parent: LViewDebug|LContainerDebug|null;
-
-  /**
-   * Next sibling to the `LView`.
-   */
-  readonly next: LViewDebug|LContainerDebug|null;
-
-  /**
-   * The context used for evaluation of the `LView`
-   *
-   * (Usually the component)
-   */
-  readonly context: T;
-
-  /**
-   * Hierarchical tree of nodes.
-   */
-  readonly nodes: DebugNode[];
-
-  /**
-   * Template structure (no instance data).
-   * (Shows how TNodes are connected)
-   */
-  readonly template: string;
-
-  /**
-   * HTML representation of the `LView`.
-   *
-   * This is only approximate to actual HTML as child `LView`s are removed.
-   */
-  readonly html: string;
-
-  /**
-   * The host element to which this `LView` is attached.
-   */
-  readonly hostHTML: string|null;
-
-  /**
-   * Child `LView`s
-   */
-  readonly childViews: Array<LViewDebug|LContainerDebug>;
-
-  /**
-   * Sub range of `LView` containing decls (DOM elements).
-   */
-  readonly decls: LViewDebugRange;
-
-  /**
-   * Sub range of `LView` containing vars (bindings).
-   */
-  readonly vars: LViewDebugRange;
-
-  /**
-   * Sub range of `LView` containing expando (used by DI).
-   */
-  readonly expando: LViewDebugRange;
-}
-
-/**
- * Human readable version of the `LContainer`
- *
- * `LContainer` is a data structure used internally to keep track of child views. The `LContainer`
- * is designed for efficiency and so at times it is difficult to read or write tests which assert on
- * its values. For this reason when `ngDevMode` is true we patch a `LContainer.debug` property which
- * points to `LContainerDebug` for easier debugging and test writing. It is the intent of
- * `LContainerDebug` to be used in tests.
- */
-export interface LContainerDebug {
-  readonly native: RComment;
-  /**
-   * Child `LView`s.
-   */
-  readonly views: LViewDebug[];
-  readonly parent: LViewDebug|null;
-  readonly movedViews: LView[]|null;
-  readonly host: RElement|RComment|LView;
-  readonly next: LViewDebug|LContainerDebug|null;
-  readonly hasTransplantedViews: boolean;
-}
-
-
-
-/**
- * `LView` is subdivided to ranges where the actual data is stored. Some of these ranges such as
- * `decls` and `vars` are known at compile time. Other such as `i18n` and `expando` are runtime only
- * concepts.
- */
-export interface LViewDebugRange {
-  /**
-   * The starting index in `LView` where the range begins. (Inclusive)
-   */
-  start: number;
-
-  /**
-   * The ending index in `LView` where the range ends. (Exclusive)
-   */
-  end: number;
-
-  /**
-   * The length of the range
-   */
-  length: number;
-
-  /**
-   * The merged content of the range. `t` contains data from `TView.data` and `l` contains `LView`
-   * data at an index.
-   */
-  content: LViewDebugRangeContent[];
-}
-
-/**
- * For convenience the static and instance portions of `TView` and `LView` are merged into a single
- * object in `LViewRange`.
- */
-export interface LViewDebugRangeContent {
-  /**
-   * Index into original `LView` or `TView.data`.
-   */
-  index: number;
-
-  /**
-   * Value from the `TView.data[index]` location.
-   */
-  t: any;
-
-  /**
-   * Value from the `LView[index]` location.
-   */
-  l: any;
-}
 
 
 /**

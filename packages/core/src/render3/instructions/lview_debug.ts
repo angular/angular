@@ -6,25 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
-import {SchemaMetadata} from '../../metadata/schema';
-import {Sanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
-import {assertDefined} from '../../util/assert';
 import {assertNodeInjector} from '../assert';
 import {getInjectorIndex, getParentInjectorLocation} from '../di';
-import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
-import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
+import {DirectiveDef} from '../interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
-import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, toTNodeTypeAsString} from '../interfaces/node';
+import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, toTNodeTypeAsString} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
-import {LQueries, TQueries} from '../interfaces/query';
-import {Renderer, RendererFactory} from '../interfaces/renderer';
-import {RComment, RElement, RNode} from '../interfaces/renderer_dom';
+import {RNode} from '../interfaces/renderer_dom';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, ID, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, NodeInjectorDebug, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
-import {attachDebugObject} from '../util/debug_utils';
+import {DebugNode, LView, NodeInjectorDebug, TView as ITView, TVIEW, TView} from '../interfaces/view';
 import {getParentInjectorIndex, getParentInjectorView} from '../util/injector_utils';
 import {unwrapRNode} from '../util/view_utils';
 
@@ -56,60 +48,6 @@ import {unwrapRNode} from '../util/view_utils';
  * }
  * ```
  */
-
-
-/**
- * This class is a debug version of Object literal so that we can have constructor name show up
- * in
- * debug tools in ngDevMode.
- */
-export const TViewConstructor = class TView implements ITView {
-  constructor(
-      public type: TViewType,
-      public blueprint: LView,
-      public template: ComponentTemplate<{}>|null,
-      public queries: TQueries|null,
-      public viewQuery: ViewQueriesFunction<{}>|null,
-      public declTNode: ITNode|null,
-      public data: TData,
-      public bindingStartIndex: number,
-      public expandoStartIndex: number,
-      public hostBindingOpCodes: HostBindingOpCodes|null,
-      public firstCreatePass: boolean,
-      public firstUpdatePass: boolean,
-      public staticViewQueries: boolean,
-      public staticContentQueries: boolean,
-      public preOrderHooks: HookData|null,
-      public preOrderCheckHooks: HookData|null,
-      public contentHooks: HookData|null,
-      public contentCheckHooks: HookData|null,
-      public viewHooks: HookData|null,
-      public viewCheckHooks: HookData|null,
-      public destroyHooks: DestroyHookData|null,
-      public cleanup: any[]|null,
-      public contentQueries: number[]|null,
-      public components: number[]|null,
-      public directiveRegistry: DirectiveDefList|null,
-      public pipeRegistry: PipeDefList|null,
-      public firstChild: ITNode|null,
-      public schemas: SchemaMetadata[]|null,
-      public consts: TConstants|null,
-      public incompleteFirstPass: boolean,
-      public _decls: number,
-      public _vars: number,
-
-  ) {}
-
-  get template_(): string {
-    const buf: string[] = [];
-    processTNodeChildren(this.firstChild, buf);
-    return buf.join('');
-  }
-
-  get type_(): string {
-    return TViewTypeAsString[this.type] || `TViewType.?${this.type}?`;
-  }
-};
 
 class TNode implements ITNode {
   constructor(
@@ -295,40 +233,6 @@ function processTNodeChildren(tNode: ITNode|null, buf: string[]) {
   }
 }
 
-class TViewData extends Array {}
-let TVIEWDATA_EMPTY: unknown[];  // can't initialize here or it will not be tree shaken, because
-                                 // `LView` constructor could have side-effects.
-/**
- * This function clones a blueprint and creates TData.
- *
- * Simple slice will keep the same type, and we need it to be TData
- */
-export function cloneToTViewData(list: any[]): TData {
-  if (TVIEWDATA_EMPTY === undefined) TVIEWDATA_EMPTY = new TViewData();
-  return TVIEWDATA_EMPTY.concat(list) as any;
-}
-
-export class LViewBlueprint extends Array {}
-export class MatchesArray extends Array {}
-export class TViewComponents extends Array {}
-export class TNodeLocalNames extends Array {}
-export class TNodeInitialInputs extends Array {}
-export class LCleanup extends Array {}
-export class TCleanup extends Array {}
-
-export function toDebug<T>(obj: LView<T>): ILViewDebug<T>;
-export function toDebug<T>(obj: LView<T>|null): ILViewDebug<T>|null;
-export function toDebug<T>(obj: LView<T>|LContainer|null): ILViewDebug<T>|ILContainerDebug|null;
-export function toDebug(obj: any): any {
-  if (obj) {
-    const debug = (obj as any).debug;
-    assertDefined(debug, 'Object does not have a debug representation.');
-    return debug;
-  } else {
-    return obj;
-  }
-}
-
 /**
  * Use this method to unwrap a native element in `LView` and convert it into HTML for easier
  * reading.
@@ -361,136 +265,6 @@ function toHtml(value: any, includeChildren: boolean = false): string|null {
   return null;
 }
 
-export class LViewDebug<T = unknown> implements ILViewDebug<T> {
-  constructor(private readonly _raw_lView: LView<T>) {}
-
-  /**
-   * Flags associated with the `LView` unpacked into a more readable state.
-   */
-  get flags() {
-    const flags = this._raw_lView[FLAGS];
-    return {
-      __raw__flags__: flags,
-      initPhaseState: flags & LViewFlags.InitPhaseStateMask,
-      creationMode: !!(flags & LViewFlags.CreationMode),
-      firstViewPass: !!(flags & LViewFlags.FirstLViewPass),
-      checkAlways: !!(flags & LViewFlags.CheckAlways),
-      dirty: !!(flags & LViewFlags.Dirty),
-      attached: !!(flags & LViewFlags.Attached),
-      destroyed: !!(flags & LViewFlags.Destroyed),
-      isRoot: !!(flags & LViewFlags.IsRoot),
-      indexWithinInitPhase: flags >> LViewFlags.IndexWithinInitPhaseShift,
-    };
-  }
-  get parent(): ILViewDebug<T>|ILContainerDebug|null {
-    return toDebug<T>(this._raw_lView[PARENT] as LView<T>| LContainer | null);
-  }
-  get hostHTML(): string|null {
-    return toHtml(this._raw_lView[HOST], true);
-  }
-  get html(): string {
-    return (this.nodes || []).map(mapToHTML).join('');
-  }
-  get context(): T {
-    return this._raw_lView[CONTEXT];
-  }
-  /**
-   * The tree of nodes associated with the current `LView`. The nodes have been normalized into
-   * a tree structure with relevant details pulled out for readability.
-   */
-  get nodes(): DebugNode[] {
-    const lView = this._raw_lView;
-    const tNode = lView[TVIEW].firstChild;
-    return toDebugNodes(tNode, lView);
-  }
-  get template(): string {
-    return (this.tView as any as {template_: string}).template_;
-  }
-  get tView(): ITView {
-    return this._raw_lView[TVIEW];
-  }
-  get cleanup(): any[]|null {
-    return this._raw_lView[CLEANUP];
-  }
-  get injector(): Injector|null {
-    return this._raw_lView[INJECTOR];
-  }
-  get rendererFactory(): RendererFactory {
-    return this._raw_lView[RENDERER_FACTORY];
-  }
-  get renderer(): Renderer {
-    return this._raw_lView[RENDERER];
-  }
-  get sanitizer(): Sanitizer|null {
-    return this._raw_lView[SANITIZER];
-  }
-  get childHead(): ILViewDebug|ILContainerDebug|null {
-    return toDebug(this._raw_lView[CHILD_HEAD]);
-  }
-  get next(): ILViewDebug<T>|ILContainerDebug|null {
-    return toDebug<T>(this._raw_lView[NEXT] as LView<T>| LContainer | null);
-  }
-  get childTail(): ILViewDebug|ILContainerDebug|null {
-    return toDebug(this._raw_lView[CHILD_TAIL]);
-  }
-  get declarationView(): ILViewDebug|null {
-    return toDebug(this._raw_lView[DECLARATION_VIEW]);
-  }
-  get queries(): LQueries|null {
-    return this._raw_lView[QUERIES];
-  }
-  get tHost(): ITNode|null {
-    return this._raw_lView[T_HOST];
-  }
-  get id(): number {
-    return this._raw_lView[ID];
-  }
-
-  get decls(): LViewDebugRange {
-    return toLViewRange(this.tView, this._raw_lView, HEADER_OFFSET, this.tView.bindingStartIndex);
-  }
-
-  get vars(): LViewDebugRange {
-    return toLViewRange(
-        this.tView, this._raw_lView, this.tView.bindingStartIndex, this.tView.expandoStartIndex);
-  }
-
-  get expando(): LViewDebugRange {
-    return toLViewRange(
-        this.tView, this._raw_lView, this.tView.expandoStartIndex, this._raw_lView.length);
-  }
-
-  /**
-   * Normalized view of child views (and containers) attached at this location.
-   */
-  get childViews(): Array<ILViewDebug<T>|ILContainerDebug> {
-    const childViews: Array<ILViewDebug<T>|ILContainerDebug> = [];
-    let child = this.childHead;
-    while (child) {
-      childViews.push(child as ILViewDebug<T>| ILContainerDebug);
-      child = child.next;
-    }
-    return childViews;
-  }
-}
-
-function mapToHTML(node: DebugNode): string {
-  if (node.type === 'ElementContainer') {
-    return (node.children || []).map(mapToHTML).join('');
-  } else if (node.type === 'IcuContainer') {
-    throw new Error('Not implemented');
-  } else {
-    return toHtml(node.native, true) || '';
-  }
-}
-
-function toLViewRange(tView: TView, lView: LView, start: number, end: number): LViewDebugRange {
-  let content: LViewDebugRangeContent[] = [];
-  for (let index = start; index < end; index++) {
-    content.push({index: index, t: tView.data[index], l: lView[index]});
-  }
-  return {start: start, end: end, length: end - start, content: content};
-}
 
 /**
  * Turns a flat list of nodes into a tree by walking the associated `TNode` tree.
@@ -586,31 +360,4 @@ function toBloom(array: any[], idx: number): string {
   return `${binary(array, idx + 7)}_${binary(array, idx + 6)}_${binary(array, idx + 5)}_${
       binary(array, idx + 4)}_${binary(array, idx + 3)}_${binary(array, idx + 2)}_${
       binary(array, idx + 1)}_${binary(array, idx + 0)}`;
-}
-
-export class LContainerDebug implements ILContainerDebug {
-  constructor(private readonly _raw_lContainer: LContainer) {}
-
-  get hasTransplantedViews(): boolean {
-    return this._raw_lContainer[HAS_TRANSPLANTED_VIEWS];
-  }
-  get views(): ILViewDebug[] {
-    return this._raw_lContainer.slice(CONTAINER_HEADER_OFFSET)
-        .map(toDebug as (l: LView) => ILViewDebug);
-  }
-  get parent(): ILViewDebug|null {
-    return toDebug(this._raw_lContainer[PARENT]);
-  }
-  get movedViews(): LView[]|null {
-    return this._raw_lContainer[MOVED_VIEWS];
-  }
-  get host(): RElement|RComment|LView {
-    return this._raw_lContainer[HOST];
-  }
-  get native(): RComment {
-    return this._raw_lContainer[NATIVE];
-  }
-  get next() {
-    return toDebug(this._raw_lContainer[NEXT]);
-  }
 }
