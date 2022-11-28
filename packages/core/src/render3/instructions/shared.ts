@@ -1514,9 +1514,6 @@ function generateInitialInputs(
 //// ViewContainer & View
 //////////////////////////
 
-// Not sure why I need to do `any` here but TS complains later.
-const LContainerArray: any = class LContainer extends Array {};
-
 /**
  * Creates a LContainer, either from a container instruction, or for a ViewContainerRef.
  *
@@ -1531,19 +1528,18 @@ export function createLContainer(
     hostNative: RElement|RComment|LView, currentView: LView, native: RComment,
     tNode: TNode): LContainer {
   ngDevMode && assertLView(currentView);
-  // https://jsperf.com/array-literal-vs-new-array-really
-  const lContainer: LContainer = new (ngDevMode ? LContainerArray : Array)(
-      hostNative,   // host native
-      true,         // Boolean `true` in this position signifies that this is an `LContainer`
-      false,        // has transplanted views
-      currentView,  // parent
-      null,         // next
-      0,            // transplanted views to refresh count
-      tNode,        // t_host
-      native,       // native,
-      null,         // view refs
-      null,         // moved views
-  );
+  const lContainer: LContainer = [
+    hostNative,   // host native
+    true,         // Boolean `true` in this position signifies that this is an `LContainer`
+    false,        // has transplanted views
+    currentView,  // parent
+    null,         // next
+    0,            // transplanted views to refresh count
+    tNode,        // t_host
+    native,       // native,
+    null,         // view refs
+    null,         // moved views
+  ];
   ngDevMode &&
       assertEqual(
           lContainer.length, CONTAINER_HEADER_OFFSET,
