@@ -321,8 +321,9 @@ describe('animation renderer factory', () => {
 function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([], fakeNgZone);
+  const appId = 'app-id';
   const rendererFactory = new ServerRendererFactory2(
-      eventManager, fakeNgZone, document, new ɵDomSharedStylesHost(document));
+      eventManager, fakeNgZone, document, new ɵDomSharedStylesHost(document, appId), appId);
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
     const renderer = origCreateRenderer.call(this, element, type);

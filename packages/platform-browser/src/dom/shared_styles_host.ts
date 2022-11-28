@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {APP_ID, Inject, Injectable, OnDestroy} from '@angular/core';
 
 @Injectable()
 export class SharedStylesHost implements OnDestroy {
@@ -69,9 +69,12 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
   // Maps all registered host nodes to a list of style nodes that have been added to the host node.
   private readonly styleRef = new Map<string, HTMLStyleElement[]>();
   private hostNodes = new Set<Node>();
+  private styleNodesInDOM: Map<string, HTMLStyleElement>|null;
 
-  constructor(@Inject(DOCUMENT) private readonly doc: any) {
+  constructor(
+      @Inject(DOCUMENT) private readonly doc: Document, @Inject(APP_ID) private appId: string) {
     super();
+    this.styleNodesInDOM = this.collectServerRenderedStyles();
     this.resetHostNodes();
   }
 
@@ -84,7 +87,7 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
   override onStyleRemoved(style: string): void {
     const styleRef = this.styleRef;
     const styleElements = styleRef.get(style);
-    styleElements?.forEach(e => e.remove());
+    styleElements?.forEach(node => node.remove());
     styleRef.delete(style);
   }
 
@@ -92,6 +95,12 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     super.ngOnDestroy();
     this.styleRef.clear();
     this.resetHostNodes();
+
+    const styleNodesInDOM = this.styleNodesInDOM;
+    if (styleNodesInDOM) {
+      styleNodesInDOM.forEach(node => node.remove());
+      styleNodesInDOM.clear();
+    }
   }
 
   addHost(hostNode: Node): void {
@@ -106,16 +115,58 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     this.hostNodes.delete(hostNode);
   }
 
+  private collectServerRenderedStyles(): Map<string, HTMLStyleElement>|null {
+    const styles =
+        this.doc.head?.querySelectorAll<HTMLStyleElement>(`style[ng-app="${this.appId}"]`);
+
+    if (styles?.length) {
+      const styleMap = new Map<string, HTMLStyleElement>();
+
+      styles.forEach(style => {
+        if (style.textContent != null) {
+          styleMap.set(style.textContent, style);
+        }
+      });
+
+      return styleMap;
+    }
+
+    return null;
+  }
+
+  private getStyleElement(host: Node, style: string): HTMLStyleElement {
+    const styleNodesInDOM = this.styleNodesInDOM;
+    const styleEl = styleNodesInDOM?.get(style);
+    if (styleEl?.parentNode === host) {
+      // `styleNodesInDOM` cannot be undefined due to the above `styleNodesInDOM?.get`.
+      styleNodesInDOM!.delete(style);
+      styleEl.removeAttribute('ng-app');
+
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        // This attribute is solely used for debugging purposes.
+        styleEl.setAttribute('ng-style-reused', '');
+      }
+
+      return styleEl;
+    } else {
+      const styleEl = this.doc.createElement('style');
+      styleEl.textContent = style;
+
+      return styleEl;
+    }
+  }
+
   private addStyleToHost(host: Node, style: string): void {
-    const styleEl = this.doc.createElement('style');
-    styleEl.textContent = style;
+    const styleEl = this.getStyleElement(host, style);
+
     host.appendChild(styleEl);
 
-    const styleElRef = this.styleRef.get(style);
+    const styleRef = this.styleRef;
+    const styleElRef = styleRef.get(style);
     if (styleElRef) {
       styleElRef.push(styleEl);
     } else {
-      this.styleRef.set(style, [styleEl]);
+      styleRef.set(style, [styleEl]);
     }
   }
 
