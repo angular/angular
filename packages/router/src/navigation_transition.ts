@@ -750,8 +750,8 @@ export class NavigationTransitions {
                            }
                            return EMPTY;
                          }));
-                 // TODO(jasonaden): remove cast once g3 is on updated TypeScript
-               })) as any as Observable<NavigationTransition>;
+                 // casting because `pipe` returns observable({}) when called with 8+ arguments
+               })) as Observable<NavigationTransition>;
   }
 
   private cancelNavigationTransition(

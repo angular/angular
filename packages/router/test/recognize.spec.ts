@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, NgModuleRef} from '@angular/core';
+import {EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {Routes} from '../src/models';
@@ -781,7 +781,7 @@ describe('recognize', async () => {
     it('should work with terminal route', async () => {
       const matcher = (s: any, g: any, r: any) => s.length === 0 ? ({consumed: s}) : null;
 
-      const s = await recognize([{matcher, component: ComponentA}] as any, '');
+      const s = await recognize([{matcher, component: ComponentA}], '');
       const a = s.root.firstChild!;
       checkActivatedRoute(a, '', {}, ComponentA);
     });
@@ -790,8 +790,7 @@ describe('recognize', async () => {
       const matcher = (s: any, g: any, r: any) => s.length === 0 ? ({consumed: s}) : null;
 
       const s = await recognize(
-          [{path: 'a', component: ComponentA, children: [{matcher, component: ComponentB}]}] as any,
-          'a');
+          [{path: 'a', component: ComponentA, children: [{matcher, component: ComponentB}]}], 'a');
       const a = s.root.firstChild!;
       checkActivatedRoute(a, 'a', {}, ComponentA);
     });
@@ -847,7 +846,7 @@ function checkActivatedRoute(
   } else {
     expect(actual.url.map(s => s.path).join('/')).toEqual(url);
     expect(actual.params).toEqual(params);
-    expect(actual.component as any).toBe(cmp);
+    expect(actual.component).toBe(cmp);
     expect(actual.outlet).toEqual(outlet);
   }
 }

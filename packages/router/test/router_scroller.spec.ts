@@ -141,9 +141,9 @@ describe('RouterScroller', () => {
              {scrollPositionRestoration: 'disabled', anchorScrolling: 'disabled'});
 
          events
-             .pipe(filter(e => e instanceof Scroll && !!e.position), switchMap(p => {
+             .pipe(filter((e): e is Scroll => e instanceof Scroll && !!e.position), switchMap(p => {
                      // can be any delay (e.g., we can wait for NgRx store to emit an event)
-                     const r = new Subject<any>();
+                     const r = new Subject<Scroll>();
                      setTimeout(() => {
                        r.next(p);
                        r.complete();

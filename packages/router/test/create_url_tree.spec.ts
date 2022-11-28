@@ -12,13 +12,12 @@ import {By} from '@angular/platform-browser';
 import {BehaviorSubject} from 'rxjs';
 
 import {createUrlTree, createUrlTreeFromSnapshot} from '../src/create_url_tree';
-import {RouterLink} from '../src/directives/router_link';
 import {Routes} from '../src/models';
 import {Router} from '../src/router';
-import {RouterModule, routerNgProbeToken} from '../src/router_module';
+import {RouterModule} from '../src/router_module';
 import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {RouterTestingModule} from '../testing';
 
 describe('createUrlTree', () => {
@@ -54,7 +53,7 @@ describe('createUrlTree', () => {
 
     it('should stringify query params', () => {
       const p = serializer.parse('/');
-      const t = createRoot(p, [], <any>{a: 1});
+      const t = createRoot(p, [], {a: 1});
       expect(t.queryParams).toEqual({a: '1'});
       expect(t.queryParamMap.get('a')).toEqual('1');
     });
@@ -416,11 +415,10 @@ describe('createUrlTree', () => {
 
 function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragment?: string) {
   const s = new (ActivatedRouteSnapshot as any)(
-      [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, tree.root, -1,
-      <any>null);
+      [], {}, {}, '', {}, PRIMARY_OUTLET, 'someComponent', null, tree.root, -1, null);
   const a = new (ActivatedRoute as any)(
-      new BehaviorSubject(null!), new BehaviorSubject(null!), new BehaviorSubject(null!),
-      new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
+      new BehaviorSubject(null), new BehaviorSubject(null), new BehaviorSubject(null),
+      new BehaviorSubject(null), new BehaviorSubject(null), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
   return createUrlTree(a, tree, commands, queryParams ?? null, fragment ?? null);
 }
@@ -432,11 +430,11 @@ function create(
     expect(segment).toBeDefined();
   }
   const s = new (ActivatedRouteSnapshot as any)(
-      segment.segments, <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null,
-      <any>segment, startIndex, <any>null);
+      segment.segments, {}, {}, '', {}, PRIMARY_OUTLET, 'someComponent', null, segment, startIndex,
+      null);
   const a = new (ActivatedRoute as any)(
-      new BehaviorSubject(null!), new BehaviorSubject(null!), new BehaviorSubject(null!),
-      new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
+      new BehaviorSubject(null), new BehaviorSubject(null), new BehaviorSubject(null),
+      new BehaviorSubject(null), new BehaviorSubject(null), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
   return createUrlTree(a, tree, commands, queryParams ?? null, fragment ?? null);
 }

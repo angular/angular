@@ -151,7 +151,7 @@ describe('router outlet name', () => {
      }));
 });
 
-function advance(fixture: ComponentFixture<any>, millis?: number): void {
+function advance(fixture: ComponentFixture<unknown>, millis?: number): void {
   tick(millis);
   fixture.detectChanges();
 }

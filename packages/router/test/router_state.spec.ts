@@ -71,7 +71,7 @@ describe('RouterState & Snapshot', () => {
 
       const root = new TreeNode(a, [new TreeNode(b, []), new TreeNode(c, [])]);
 
-      state = new (RouterState as any)(root, <any>null);
+      state = new (RouterState as any)(root, null);
     });
 
     it('should return first child', () => {
@@ -105,8 +105,7 @@ describe('RouterState & Snapshot', () => {
   describe('equalParamsAndUrlSegments', () => {
     function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
       const snapshot = new (ActivatedRouteSnapshot as any)(
-          url, params, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null,
-          -1, null!);
+          url, params, null, null, null, null, null, null, null, -1, null);
       snapshot._routerState = new (RouterStateSnapshot as any)('', new TreeNode(snapshot, []));
       return snapshot;
     }
@@ -181,8 +180,7 @@ describe('RouterState & Snapshot', () => {
       const fragment = '';
       const data = {};
       const snapshot = new (ActivatedRouteSnapshot as any)(
-          url, params, queryParams, fragment, data, <any>null, <any>null, <any>null, <any>null, -1,
-          null!);
+          url, params, queryParams, fragment, data, null, null, null, null, -1, null);
       const state = new (RouterStateSnapshot as any)('', new TreeNode(snapshot, []));
       snapshot._routerState = state;
       return snapshot;
@@ -208,8 +206,7 @@ describe('RouterState & Snapshot', () => {
       const data = {[RouteTitleKey]: 'resolved title'};
       const route = createActivatedRoute('a');
       const snapshot = new (ActivatedRouteSnapshot as any)(
-          <any>[], <any>null, <any>null, <any>null, data, <any>null, 'test', <any>null, <any>null,
-          -1, null!);
+          [], null, null, null, data, null, 'test', null, null, -1, null!);
       let resolvedTitle: string|undefined;
 
       route.data.next(data);
@@ -226,12 +223,11 @@ describe('RouterState & Snapshot', () => {
 
 function createActivatedRouteSnapshot(cmp: string) {
   return new (ActivatedRouteSnapshot as any)(
-      <any>[], <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null,
-      <any>null, -1, null!);
+      [], null, null, null, null, null, cmp, null, null, -1, null!);
 }
 
 function createActivatedRoute(cmp: string) {
   return new (ActivatedRoute as any)(
-      new BehaviorSubject([new UrlSegment('', {})]), new BehaviorSubject({}), <any>null, <any>null,
-      new BehaviorSubject({}), <any>null, <any>cmp, <any>null);
+      new BehaviorSubject([new UrlSegment('', {})]), new BehaviorSubject({}), null, null,
+      new BehaviorSubject({}), null, cmp, null);
 }
