@@ -495,9 +495,6 @@
     "name": "collectNativeNodes"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "concatStringsWithSpace"
   },
   {
@@ -604,6 +601,9 @@
   },
   {
     "name": "getComponentDef"
+  },
+  {
+    "name": "getComponentId"
   },
   {
     "name": "getComponentLViewByIndex"

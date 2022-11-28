@@ -20,6 +20,7 @@ import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
 import {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
+import {stringifyCSSSelectorList} from './node_selector_matcher';
 
 interface DirectiveDefinition<T> {
   /**
@@ -266,9 +267,6 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
   schemas?: SchemaMetadata[]|null;
 }
 
-/** Counter used to generate unique IDs for component definitions. */
-let componentDefCount = 0;
-
 /**
  * Create a component definition object.
  *
@@ -307,17 +305,19 @@ export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<
       getStandaloneInjector: null,
       data: componentDefinition.data || {},
       encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
-      id: `c${componentDefCount++}`,
       styles: componentDefinition.styles || EMPTY_ARRAY,
       _: null,
       schemas: componentDefinition.schemas || null,
       tView: null,
+      id: getComponentId(def),
     };
 
     initFeatures(def);
     const dependencies = componentDefinition.dependencies;
     def.directiveDefs = extractDefListOrFactory(dependencies, /* pipeDef */ false);
     def.pipeDefs = extractDefListOrFactory(dependencies, /* pipeDef */ true);
+    def.id = getComponentId(def);
+
     return def;
   });
 }
@@ -654,4 +654,73 @@ function extractDefListOrFactory(
   return () => (typeof dependencies === 'function' ? dependencies() : dependencies)
                    .map(dep => defExtractor(dep))
                    .filter(nonNull);
+}
+
+/**
+ * A map that contains the generated component IDs and type.
+ */
+export const GENERATED_COMP_IDS = new Map<string, Type<unknown>>();
+
+/**
+ * A method can returns a component ID from the component definition using a variant of DJB2 hash
+ * algorithm.
+ */
+function getComponentId(componentDef: ComponentDef<unknown>): string {
+  let hash = 0;
+
+  // We cannot rely solely on the component selector as the same selector can be used in different
+  // modules.
+  //
+  // `componentDef.style` is not used, due to it causing inconsistencies. Ex: when server
+  // component styles has no sourcemaps and browsers do.
+  //
+  // Example:
+  // https://github.com/angular/components/blob/d9f82c8f95309e77a6d82fd574c65871e91354c2/src/material/core/option/option.ts#L248
+  // https://github.com/angular/components/blob/285f46dc2b4c5b127d356cb7c4714b221f03ce50/src/material/legacy-core/option/option.ts#L32
+
+  const hashSelectors = [
+    componentDef.selectors,
+    componentDef.ngContentSelectors,
+    componentDef.hostVars,
+    componentDef.hostAttrs,
+    componentDef.consts,
+    componentDef.vars,
+    componentDef.decls,
+    componentDef.encapsulation,
+    componentDef.standalone,
+    // We cannot use 'componentDef.type.name' as the name of the symbol will change and will not
+    // match in the server and browser bundles.
+    Object.getOwnPropertyNames(componentDef.type.prototype),
+    !!componentDef.contentQueries,
+    !!componentDef.viewQuery,
+  ].join('|');
+
+  for (const char of hashSelectors) {
+    hash = Math.imul(31, hash) + char.charCodeAt(0) << 0;
+  }
+
+  // Force positive number hash.
+  // 2147483647 = equivalent of Integer.MAX_VALUE.
+  hash += 2147483647 + 1;
+
+  const compId = 'c' + hash;
+
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (GENERATED_COMP_IDS.has(compId)) {
+      const previousCompDefType = GENERATED_COMP_IDS.get(compId)!;
+      if (previousCompDefType !== componentDef.type) {
+        // TODO: use `formatRuntimeError` to have an error code and we can later on create an error
+        // guide to explain this further.
+        console.warn(`Component ID generation collision detected. Components '${
+            previousCompDefType.name}' and '${componentDef.type.name}' with selector '${
+            stringifyCSSSelectorList(
+                componentDef
+                    .selectors)}' generated the same component ID. To fix this, you can change the selector of one of those components or add an extra host attribute to force a different ID.`);
+      }
+    } else {
+      GENERATED_COMP_IDS.set(compId, componentDef.type);
+    }
+  }
+
+  return compId;
 }

@@ -753,9 +753,6 @@
     "name": "collectStylingFromTAttrs"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "compose"
   },
   {
@@ -943,6 +940,9 @@
   },
   {
     "name": "getComponentDef"
+  },
+  {
+    "name": "getComponentId"
   },
   {
     "name": "getComponentLViewByIndex"

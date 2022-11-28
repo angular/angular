@@ -444,12 +444,15 @@
     "name": "TRACKED_LVIEWS"
   },
   {
+<<<<<<< HEAD
     "name": "TRANSITION_ID"
   },
   {
     "name": "TYPE"
   },
   {
+=======
+>>>>>>> 0bd0ef957b (fix(core): generate consistent component IDs)
     "name": "TemplateRef"
   },
   {
@@ -651,9 +654,6 @@
     "name": "collectStylingFromTAttrs"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "computeStaticStyling"
   },
   {
@@ -799,6 +799,9 @@
   },
   {
     "name": "getComponentDef"
+  },
+  {
+    "name": "getComponentId"
   },
   {
     "name": "getComponentLViewByIndex"

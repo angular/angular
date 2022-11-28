@@ -34,13 +34,14 @@ export class ServerRendererFactory2 implements RendererFactory2 {
     switch (type.encapsulation) {
       case ViewEncapsulation.Emulated: {
         let renderer = this.rendererByCompId.get(type.id);
-        if (!renderer) {
+        if (renderer instanceof EmulatedEncapsulationServerRenderer2) {
+          renderer.applyToHost(element);
+        } else {
           renderer = new EmulatedEncapsulationServerRenderer2(
               this.eventManager, this.document, this.ngZone, this.sharedStylesHost, this.schema,
               type);
           this.rendererByCompId.set(type.id, renderer);
         }
-        (<EmulatedEncapsulationServerRenderer2>renderer).applyToHost(element);
         return renderer;
       }
       default: {

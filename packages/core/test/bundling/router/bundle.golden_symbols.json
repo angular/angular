@@ -942,9 +942,6 @@
     "name": "compare"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "computeStaticStyling"
   },
   {
@@ -1213,6 +1210,9 @@
   },
   {
     "name": "getComponentDef"
+  },
+  {
+    "name": "getComponentId"
   },
   {
     "name": "getComponentLViewByIndex"
