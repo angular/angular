@@ -184,8 +184,6 @@ class TNode implements ITNode {
         (this.providerIndexes >>> TNodeProviderIndexes.CptViewProvidersCountShift);
   }
 }
-export const TNodeDebug = TNode;
-export type TNodeDebug = TNode;
 
 export interface DebugStyleBindings extends
     Array<KeyValueArray<any>|DebugStyleBinding|string|null> {}
