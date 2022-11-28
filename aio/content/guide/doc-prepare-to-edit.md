@@ -286,7 +286,7 @@ After you clone the origin repo on your local computer, run these commands from 
 
         <code-example format="shell" language="shell">
 
-        yarn install
+        yarn
 
         </code-example>
 
@@ -302,7 +302,7 @@ After you clone the origin repo on your local computer, run these commands from 
 
         <code-example format="shell" language="shell">
 
-        yarn setup
+        yarn
 
         </code-example>
 
@@ -382,7 +382,7 @@ Perform these steps from a command-line tool on your local computer.
 
         <code-example format="shell" language="shell">
 
-        yarn serve-and-sync
+        yarn start
 
         </code-example>
 
@@ -403,13 +403,14 @@ Perform these steps from a command-line tool on your local computer.
     </code-example>
 
 1.  If building the documentation returns one or more errors, fix those and build the documentation again before you continue.
-1.  From the documentation directory, run this command to start the automated tests that verify the docs are consistent.
+1.  From the documentation directory, run these commands to start the automated tests that verify the docs are consistent.
     These are most, but not all, of the tests that are performed after you open your pull request.
     Some tests can only be run in the automated testing environment.
 
     <code-example format="shell" language="shell">
 
     yarn e2e
+    yarn docs-test
 
     </code-example>
 
