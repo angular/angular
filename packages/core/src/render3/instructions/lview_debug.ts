@@ -12,7 +12,6 @@ import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
-import {createNamedArrayType} from '../../util/named_array_type';
 import {assertNodeInjector} from '../assert';
 import {getInjectorIndex, getParentInjectorLocation} from '../di';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
@@ -58,68 +57,6 @@ import {unwrapRNode} from '../util/view_utils';
  * ```
  */
 
-let LVIEW_COMPONENT_CACHE: Map<string|null, Array<any>>|undefined;
-let LVIEW_EMBEDDED_CACHE: Map<string|null, Array<any>>|undefined;
-let LVIEW_ROOT: Array<any>|undefined;
-let LVIEW_COMPONENT: Array<any>|undefined;
-let LVIEW_EMBEDDED: Array<any>|undefined;
-
-interface TViewDebug extends ITView {
-  type: TViewType;
-}
-
-/**
- * This function clones a blueprint and creates LView.
- *
- * Simple slice will keep the same type, and we need it to be LView
- */
-export function cloneToLViewFromTViewBlueprint<T>(tView: TView): LView<T> {
-  const debugTView = tView as TViewDebug;
-  const lView = getLViewToClone(debugTView.type, tView.template && tView.template.name);
-  return lView.concat(tView.blueprint) as any;
-}
-
-class LRootView extends Array {}
-class LComponentView extends Array {}
-class LEmbeddedView extends Array {}
-
-function getLViewToClone(type: TViewType, name: string|null): Array<any> {
-  switch (type) {
-    case TViewType.Root:
-      if (LVIEW_ROOT === undefined) LVIEW_ROOT = new LRootView();
-      return LVIEW_ROOT;
-    case TViewType.Component:
-      if (!ngDevMode || !ngDevMode.namedConstructors) {
-        if (LVIEW_COMPONENT === undefined) LVIEW_COMPONENT = new LComponentView();
-        return LVIEW_COMPONENT;
-      }
-      if (LVIEW_COMPONENT_CACHE === undefined) LVIEW_COMPONENT_CACHE = new Map();
-      let componentArray = LVIEW_COMPONENT_CACHE.get(name);
-      if (componentArray === undefined) {
-        componentArray = new (createNamedArrayType('LComponentView' + nameSuffix(name)))();
-        LVIEW_COMPONENT_CACHE.set(name, componentArray);
-      }
-      return componentArray;
-    case TViewType.Embedded:
-      if (!ngDevMode || !ngDevMode.namedConstructors) {
-        if (LVIEW_EMBEDDED === undefined) LVIEW_EMBEDDED = new LEmbeddedView();
-        return LVIEW_EMBEDDED;
-      }
-      if (LVIEW_EMBEDDED_CACHE === undefined) LVIEW_EMBEDDED_CACHE = new Map();
-      let embeddedArray = LVIEW_EMBEDDED_CACHE.get(name);
-      if (embeddedArray === undefined) {
-        embeddedArray = new (createNamedArrayType('LEmbeddedView' + nameSuffix(name)))();
-        LVIEW_EMBEDDED_CACHE.set(name, embeddedArray);
-      }
-      return embeddedArray;
-  }
-}
-
-function nameSuffix(text: string|null|undefined): string {
-  if (text == null) return '';
-  const index = text.lastIndexOf('_Template');
-  return '_' + (index === -1 ? text : text.slice(0, index));
-}
 
 /**
  * This class is a debug version of Object literal so that we can have constructor name show up
