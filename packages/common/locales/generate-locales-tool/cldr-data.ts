@@ -8,13 +8,8 @@
 
 import {runfiles} from '@bazel/runfiles';
 import {CldrStatic} from 'cldrjs';
+import cldrjs from 'cldrjs';
 import glob from 'glob';
-
-// TypeScript doesn't allow us to import the default export without the `esModuleInterop`. We use
-// the NodeJS require function instead as specifying a custom tsconfig complicates the setup
-// unnecessarily.
-// TODO: See if we can improve this by having better types for `cldrjs`.
-const cldrjs: typeof import('cldrjs') = require('cldrjs');
 
 /**
  * Globs that match CLDR JSON data files that should be fetched. We limit these intentionally

@@ -20,6 +20,4 @@ function main() {
   process.stdout.write(generateClosureLocaleFile(cldrData, baseCurrencies));
 }
 
-if (require.main === module) {
-  main();
-}
+main();
