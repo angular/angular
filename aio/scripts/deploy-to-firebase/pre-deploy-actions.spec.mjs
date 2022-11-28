@@ -40,7 +40,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should add mode-specific files into the distribution', () => {
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
-      expect(cpSpy).toHaveBeenCalledWith('-rf', 'src/extra-files/bar/.', '../dist/bin/aio/build');
+      expect(cpSpy).toHaveBeenCalledWith('-rf', 'src/extra-files/bar/.', 'dist');
     });
 
     it('should update the opensearch descriptor', () => {
@@ -59,13 +59,16 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
     it('should execute the operations in the correct order', () => {
       let logs = [];
       yarnSpy.and.callFake(cmd => logs.push(`yarn ${cmd}`));
+      chmodSpy.and.callFake((opts, mode, file) => logs.push(`chmod ${opts} ${mode} ${file}`));
       cpSpy.and.callFake((opts, from, to) => logs.push(`cp ${opts} ${from} ${to}`));
 
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
       expect(logs).toEqual([
         'yarn build --aio_build_config=bar',
-        'cp -rf src/extra-files/bar/. ../dist/bin/aio/build',
+        'chmod -R u+w ../dist/bin/aio/build',
         'yarn set-opensearch-url http://example.com/foo/',
+        'cp -rf ../dist/bin/aio/build dist',
+        'cp -rf src/extra-files/bar/. dist',
       ]);
     });
   });
@@ -88,8 +91,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should disable the ServiceWorker by renaming the `ngsw.json` manifest', () => {
       pre.disableServiceWorker();
-      expect(mvSpy).toHaveBeenCalledWith('../dist/bin/aio/build/ngsw.json',
-          '../dist/bin/aio/build/ngsw.json.bak');
+      expect(mvSpy).toHaveBeenCalledWith('dist/ngsw.json', 'dist/ngsw.json.bak');
     });
   });
 
@@ -156,7 +158,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should undo `build()`', () => {
       pre.undo.build();
-      expect(rmSpy).toHaveBeenCalledWith('-rf', '../dist/bin/aio/build');
+      expect(rmSpy).toHaveBeenCalledWith('-rf', 'dist');
     });
   });
 
@@ -172,8 +174,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should undo `disableServiceWorker()`', () => {
       pre.undo.disableServiceWorker();
-      expect(mvSpy).toHaveBeenCalledWith('../dist/bin/aio/build/ngsw.json.bak',
-          '../dist/bin/aio/build/ngsw.json');
+      expect(mvSpy).toHaveBeenCalledWith('dist/ngsw.json.bak', 'dist/ngsw.json');
     });
   });
 
