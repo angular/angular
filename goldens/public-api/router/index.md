@@ -668,7 +668,7 @@ export class Router {
     dispose(): void;
     // @deprecated
     errorHandler: ErrorHandler;
-    get events(): Observable<Event_2>;
+    readonly events: Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
     // @deprecated
