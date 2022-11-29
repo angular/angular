@@ -112,18 +112,7 @@
               }
             ],
             "scripts": [],
-            "budgets": [
-              {
-                "type": "initial",
-                "maximumWarning": "850kb",
-                "maximumError": "1mb"
-              },
-              {
-                "type": "anyComponentStyle",
-                "maximumWarning": "2kb",
-                "maximumError": "4kb"
-              }
-            ]
+            "budgets": []
           },
           "configurations": {
             "next": {
