@@ -104,7 +104,7 @@
     "@types/semver": "^7.3.4",
     "@types/shelljs": "^0.8.6",
     "@types/systemjs": "0.19.32",
-    "@types/uuid": "^8.3.1",
+    "@types/uuid": "^9.0.0",
     "@types/yargs": "^17.0.3",
     "@webcomponents/custom-elements": "^1.1.0",
     "angular-1.5": "npm:angular@1.5",
