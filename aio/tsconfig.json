@@ -20,23 +20,12 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2020",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "strictPropertyInitialization": false,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": true
   },
-  "exclude": [
-    "aio-builds-setup",
-    "content",
-    "dist",
-    "node_modules",
-    "out-tsc",
-    "scripts",
-    "tools"
-  ],
+  "exclude": ["aio-builds-setup", "content", "dist", "node_modules", "out-tsc", "scripts", "tools"],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "disableTypeScriptVersionCheck": true,
