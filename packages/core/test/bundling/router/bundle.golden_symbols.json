@@ -354,9 +354,6 @@
     "name": "NavigationStart"
   },
   {
-    "name": "NavigationTransitions"
-  },
-  {
     "name": "NgModuleFactory"
   },
   {
