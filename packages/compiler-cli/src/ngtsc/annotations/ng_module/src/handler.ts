@@ -18,7 +18,6 @@ import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
 import {getDiagnosticNode} from '../../../scope/src/util';
-import {FactoryTracker} from '../../../shims/api';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {getSourceFile} from '../../../util/src/typescript';
 import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, createValueHasWrongTypeError, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getProviderDiagnostics, getValidConstructorDependencies, InjectableClassRegistry, isExpressionForwardReference, ReferencesRegistry, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
@@ -131,8 +130,8 @@ export class NgModuleDecoratorHandler implements
       private metaReader: MetadataReader, private metaRegistry: MetadataRegistry,
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
-      private refEmitter: ReferenceEmitter, private factoryTracker: FactoryTracker|null,
-      private annotateForClosureCompiler: boolean, private onlyPublishPublicTypings: boolean,
+      private refEmitter: ReferenceEmitter, private annotateForClosureCompiler: boolean,
+      private onlyPublishPublicTypings: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -468,12 +467,6 @@ export class NgModuleDecoratorHandler implements
       rawExports: analysis.rawExports,
       decorator: analysis.decorator,
     });
-
-    if (this.factoryTracker !== null) {
-      this.factoryTracker.track(node.getSourceFile(), {
-        name: analysis.factorySymbolName,
-      });
-    }
 
     this.injectableRegistry.registerInjectable(node, {
       ctorDeps: analysis.fac.deps,

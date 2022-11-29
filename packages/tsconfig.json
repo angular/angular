@@ -49,6 +49,5 @@
     "http/**",
     "language-service/ivy/test/legacy/project",
     "platform-server/integrationtest",
-    "router/test/aot_ngsummary_test"
   ]
 }

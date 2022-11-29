@@ -86,33 +86,6 @@ export interface LegacyNgcOptions {
 }
 
 /**
- * Options which were added to the Angular Ivy compiler to support backwards compatibility with
- * existing View Engine applications.
- *
- * These are expected to be removed at some point in the future.
- *
- * @publicApi
- */
-export interface NgcCompatibilityOptions {
-  /**
-   * Controls whether ngtsc will emit `.ngfactory.js` shims for each compiled `.ts` file.
-   *
-   * These shims support legacy imports from `ngfactory` files, by exporting a factory shim
-   * for each component or NgModule in the original `.ts` file.
-   */
-  generateNgFactoryShims?: boolean;
-
-  /**
-   * Controls whether ngtsc will emit `.ngsummary.js` shims for each compiled `.ts` file.
-   *
-   * These shims support legacy imports from `ngsummary` files, by exporting an empty object
-   * for each NgModule in the original `.ts` file. The only purpose of summaries is to feed them to
-   * `TestBed`, which is a no-op in Ivy.
-   */
-  generateNgSummaryShims?: boolean;
-}
-
-/**
  * Options related to template type-checking and its strictness.
  *
  * @publicApi

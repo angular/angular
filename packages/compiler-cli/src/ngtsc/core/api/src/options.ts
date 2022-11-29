@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {BazelAndG3Options, DiagnosticOptions, I18nOptions, LegacyNgcOptions, MiscOptions, NgcCompatibilityOptions, StrictTemplateOptions, TargetOptions} from './public_options';
+import {BazelAndG3Options, DiagnosticOptions, I18nOptions, LegacyNgcOptions, MiscOptions, StrictTemplateOptions, TargetOptions} from './public_options';
 
 
 /**
@@ -53,9 +53,9 @@ export interface InternalOptions {}
  * Also includes a few miscellaneous options.
  */
 export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
-                                           DiagnosticOptions, NgcCompatibilityOptions,
-                                           StrictTemplateOptions, TestOnlyOptions, I18nOptions,
-                                           TargetOptions, InternalOptions, MiscOptions {
+                                           DiagnosticOptions, StrictTemplateOptions,
+                                           TestOnlyOptions, I18nOptions, TargetOptions,
+                                           InternalOptions, MiscOptions {
   // Replace the index signature type from `ts.CompilerOptions` as it is more strict than it needs
   // to be and would conflict with some types from the other interfaces. This is ok because Angular
   // compiler options are actually separate from TS compiler options in the `tsconfig.json` and we

@@ -48,8 +48,6 @@ If this interface is used, an additional asynchronous step after `NgCompiler` cr
 
 Angular compilation generates a number of synthetic files (files which did not exist originally as inputs), depending on configuration. Such files can include:
 
-* `.ngfactory` shim files, if requested.
-* `.ngsummary` shim files, if requested.
 * A flat module index file, if requested.
 * The `__ng_typecheck__.ts` file, which supports template type-checking code.
 

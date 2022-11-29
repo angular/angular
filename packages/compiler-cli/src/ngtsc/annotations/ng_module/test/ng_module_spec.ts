@@ -71,7 +71,7 @@ runInEachFileSystem(() => {
 
       const handler = new NgModuleDecoratorHandler(
           reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
-          /* isCore */ false, refEmitter, /* factoryTracker */ null,
+          /* isCore */ false, refEmitter,
           /* annotateForClosureCompiler */ false, /* onlyPublishPublicTypings */ false,
           injectableRegistry, NOOP_PERF_RECORDER);
       const TestModule =

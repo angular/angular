@@ -11,7 +11,6 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = [
     ng_module(
         name = "%s_sources" % name,
         srcs = srcs,
-        generate_ve_shims = True,
         deps = [
             "@npm//@types/angular",
             "@npm//@types/jasmine",

@@ -23,10 +23,9 @@ interface BazelOptions extends tscw.BazelOptions {
   unusedInputsListPath?: string;
 }
 
-const NGC_GEN_FILES = /^(.*?)\.(ngfactory|ngsummary|ngstyle|shim\.ngstyle)(.*)$/;
 // FIXME: we should be able to add the assets to the tsconfig so FileLoader
 // knows about them
-const NGC_ASSETS = /\.(css|html|ngsummary\.json)$/;
+const NGC_ASSETS = /\.(css|html)$/;
 
 const BAZEL_BIN = /\b(blaze|bazel)-out\b.*?\bbin\b/;
 
@@ -242,19 +241,6 @@ export function compile({
   // synthetic and added to the `programWithStubs` based on real inputs.
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
-    const match = NGC_GEN_FILES.exec(fileName);
-    if (match) {
-      const [, file, suffix, ext] = match;
-      // Performance: skip looking for files other than .d.ts or .ts
-      if (ext !== '.ts' && ext !== '.d.ts') return false;
-      if (suffix.indexOf('ngstyle') >= 0) {
-        // Look for foo.css on disk
-        fileName = file;
-      } else {
-        // Look for foo.d.ts or foo.ts on disk
-        fileName = file + (ext || '');
-      }
-    }
     if (NGC_ASSETS.test(fileName)) {
       return tsHost.fileExists(fileName);
     }
@@ -282,7 +268,7 @@ export function compile({
         fileName === path.posix.join(baseUrl, 'external', targetWorkspace, flatModuleOutPath))
       return true;
 
-    return origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
+    return origBazelHostShouldNameModule(fileName);
   };
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
@@ -419,8 +405,7 @@ export function maybeWriteUnusedInputsList(
 }
 
 function isCompilationTarget(bazelOpts: BazelOptions, sf: ts.SourceFile): boolean {
-  return !NGC_GEN_FILES.test(sf.fileName) &&
-      (bazelOpts.compilationTargetSrc.indexOf(sf.fileName) !== -1);
+  return bazelOpts.compilationTargetSrc.indexOf(sf.fileName) !== -1;
 }
 
 function convertToForwardSlashPath(filePath: string): string {
