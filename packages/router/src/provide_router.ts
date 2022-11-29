@@ -13,14 +13,12 @@ import {filter, map, take} from 'rxjs/operators';
 
 import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, stringifyEvent} from './events';
 import {Routes} from './models';
-import {NavigationTransitions} from './navigation_transition';
 import {Router} from './router';
 import {InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
 import {ROUTES} from './router_config_loader';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
-import {UrlSerializer} from './url_tree';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -182,11 +180,10 @@ export function withInMemoryScrolling(options: InMemoryScrollingOptions = {}):
   const providers = [{
     provide: ROUTER_SCROLLER,
     useFactory: () => {
+      const router = inject(Router);
       const viewportScroller = inject(ViewportScroller);
       const zone = inject(NgZone);
-      const transitions = inject(NavigationTransitions);
-      const urlSerializer = inject(UrlSerializer);
-      return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, options);
+      return new RouterScroller(router, viewportScroller, zone, options);
     },
   }];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);

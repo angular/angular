@@ -32,8 +32,7 @@ describe('RouterScroller', () => {
         'viewportScroller',
         ['getScrollPosition', 'scrollToPosition', 'scrollToAnchor', 'setHistoryScrollRestoration']);
     setScroll(viewportScroller, 0, 0);
-    const scroller = new RouterScroller(
-        new DefaultUrlSerializer(), {events} as any, viewportScroller, fakeZone as any);
+    const scroller = new RouterScroller(router, router, fakeZone as any);
 
     expect((scroller as any).options.scrollPositionRestoration).toBe('disabled');
     expect((scroller as any).options.anchorScrolling).toBe('disabled');
@@ -137,10 +136,10 @@ describe('RouterScroller', () => {
 
   describe('extending a scroll service', () => {
     it('work', fakeAsync(() => {
-         const {events, viewportScroller} = createRouterScroller(
+         const {events, viewportScroller, router} = createRouterScroller(
              {scrollPositionRestoration: 'disabled', anchorScrolling: 'disabled'});
 
-         events
+         router.events
              .pipe(filter(e => e instanceof Scroll && !!e.position), switchMap(p => {
                      // can be any delay (e.g., we can wait for NgRx store to emit an event)
                      const r = new Subject<any>();
@@ -189,7 +188,11 @@ describe('RouterScroller', () => {
     anchorScrolling: 'disabled'|'enabled'
   }) {
     const events = new Subject<Event>();
-    const transitions: any = {events};
+    const router = <any>{
+      events,
+      parseUrl: (url: any) => new DefaultUrlSerializer().parse(url),
+      triggerEvent: (e: any) => events.next(e)
+    };
 
     const viewportScroller = jasmine.createSpyObj(
         'viewportScroller',
@@ -197,11 +200,10 @@ describe('RouterScroller', () => {
     setScroll(viewportScroller, 0, 0);
 
     const scroller = new RouterScroller(
-        new DefaultUrlSerializer(), transitions, viewportScroller, fakeZone as any,
-        {scrollPositionRestoration, anchorScrolling});
+        router, viewportScroller, fakeZone as any, {scrollPositionRestoration, anchorScrolling});
     scroller.init();
 
-    return {events, viewportScroller};
+    return {events, viewportScroller, router};
   }
 
   function setScroll(viewportScroller: any, x: number, y: number) {
