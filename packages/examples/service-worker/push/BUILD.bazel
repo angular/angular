@@ -8,7 +8,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*_spec.ts"],
     ),
-    generate_ve_shims = True,
     deps = [
         "//packages/core",
         "//packages/platform-browser",

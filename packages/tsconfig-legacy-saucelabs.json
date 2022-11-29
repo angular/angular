@@ -28,7 +28,6 @@
     "examples/**",
     "http/**",
     "platform-server/integrationtest",
-    "router/test/aot_ngsummary_test",
 
     // Additional exclusion since tests for the language-service never run within the
     // Saucelabs job and the package is not compatible with ESM TS compilation anyway.

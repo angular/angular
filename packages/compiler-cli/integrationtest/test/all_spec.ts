@@ -17,4 +17,3 @@ import './ng_module_spec';
 import './projection_spec';
 import './query_spec';
 import './source_map_spec';
-import './jit_summaries_spec';

@@ -27,7 +27,6 @@ import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from
 import {AdapterResourceLoader} from '../../resource';
 import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
-import {generatedFactoryTransform} from '../../shims';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
@@ -638,11 +637,6 @@ export class NgCompiler {
       afterDeclarations.push(aliasTransformFactory(compilation.traitCompiler.exportStatements));
     }
 
-    if (this.adapter.factoryTracker !== null) {
-      before.push(
-          generatedFactoryTransform(this.adapter.factoryTracker.sourceInfo, importRewriter));
-    }
-
     return {transformers: {before, afterDeclarations} as ts.CustomTransformers};
   }
 
@@ -1053,7 +1047,7 @@ export class NgCompiler {
           this.delegatingPerfRecorder),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,
-          isCore, refEmitter, this.adapter.factoryTracker, this.closureCompilerEnabled,
+          isCore, refEmitter, this.closureCompilerEnabled,
           this.options.onlyPublishPublicTypingsForNgModules ?? false, injectableRegistry,
           this.delegatingPerfRecorder),
     ];

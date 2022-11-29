@@ -50,26 +50,3 @@ export interface PerFileShimGenerator {
       sf: ts.SourceFile, genFilePath: AbsoluteFsPath,
       priorShimSf: ts.SourceFile|null): ts.SourceFile;
 }
-
-/**
- * Maintains a mapping of which symbols in a .ngfactory file have been used.
- *
- * .ngfactory files are generated with one symbol per defined class in the source file, regardless
- * of whether the classes in the source files are NgModules (because that isn't known at the time
- * the factory files are generated). A `FactoryTracker` supports removing factory symbols which
- * didn't end up being NgModules, by tracking the ones which are.
- */
-export interface FactoryTracker {
-  readonly sourceInfo: Map<string, FactoryInfo>;
-
-  track(sf: ts.SourceFile, moduleInfo: ModuleInfo): void;
-}
-
-export interface FactoryInfo {
-  sourceFilePath: string;
-  moduleSymbols: Map<string, ModuleInfo>;
-}
-
-export interface ModuleInfo {
-  name: string;
-}

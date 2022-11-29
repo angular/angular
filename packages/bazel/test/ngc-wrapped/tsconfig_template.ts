@@ -80,14 +80,6 @@ export function createTsConfig(options: TsConfigOptions) {
       'expectedOut': [
         ...options.compilationTargetSrc.map(src => srcToExpectedOut(src, 'js', options)),
         ...options.compilationTargetSrc.map(src => srcToExpectedOut(src, 'd.ts', options)),
-        ...options.compilationTargetSrc.map(src => srcToExpectedOut(src, 'ngfactory.js', options)),
-        ...options.compilationTargetSrc.map(
-            src => srcToExpectedOut(src, 'ngfactory.d.ts', options)),
-        ...options.compilationTargetSrc.map(src => srcToExpectedOut(src, 'ngsummary.js', options)),
-        ...options.compilationTargetSrc.map(
-            src => srcToExpectedOut(src, 'ngsummary.d.ts', options)),
-        ...options.compilationTargetSrc.map(
-            src => srcToExpectedOut(src, 'ngsummary.json', options)),
       ]
     }
   };

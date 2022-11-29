@@ -57,12 +57,6 @@ export interface MiscOptions {
 }
 
 // @public
-export interface NgcCompatibilityOptions {
-    generateNgFactoryShims?: boolean;
-    generateNgSummaryShims?: boolean;
-}
-
-// @public
 export interface StrictTemplateOptions {
     strictAttributeTypes?: boolean;
     strictContextGenerics?: boolean;
