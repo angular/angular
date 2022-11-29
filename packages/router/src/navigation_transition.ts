@@ -239,7 +239,6 @@ export interface NavigationTransition {
   targetPageId: number;
   currentUrlTree: UrlTree;
   extractedUrl: UrlTree;
-  currentRawUrl: UrlTree;
   urlAfterRedirects?: UrlTree;
   rawUrl: UrlTree;
   extras: NavigationExtras;
@@ -266,6 +265,7 @@ interface InternalRouterInterface {
   browserUrlTree: UrlTree;
   currentUrlTree: UrlTree;
   rawUrlTree: UrlTree;
+  transitions: BehaviorSubject<NavigationTransition>;
   navigationId: number;
   readonly routerState: RouterState;
   errorHandler: ErrorHandler;
@@ -297,10 +297,6 @@ export class NavigationTransitions {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
-  private _transitions?: BehaviorSubject<NavigationTransition>;
-  get transitions(): BehaviorSubject<NavigationTransition>|undefined {
-    return this._transitions;
-  }
 
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
@@ -309,29 +305,9 @@ export class NavigationTransitions {
     this.configLoader.onLoadStartListener = onLoadStart;
   }
 
-  setupNavigations(router: InternalRouterInterface): Observable<NavigationTransition> {
-    this._transitions = new BehaviorSubject<NavigationTransition>({
-      id: 0,
-      targetPageId: 0,
-      currentUrlTree: router.currentUrlTree,
-      currentRawUrl: router.currentUrlTree,
-      extractedUrl: router.urlHandlingStrategy.extract(router.currentUrlTree),
-      urlAfterRedirects: router.urlHandlingStrategy.extract(router.currentUrlTree),
-      rawUrl: router.currentUrlTree,
-      extras: {},
-      resolve: null,
-      reject: null,
-      promise: Promise.resolve(true),
-      source: 'imperative',
-      restoredState: null,
-      currentSnapshot: router.routerState.snapshot,
-      targetSnapshot: null,
-      currentRouterState: router.routerState,
-      targetRouterState: null,
-      guards: {canActivateChecks: [], canDeactivateChecks: []},
-      guardsResult: null,
-    });
-    return this._transitions.pipe(
+  setupNavigations(transitions: Observable<NavigationTransition>, router: InternalRouterInterface):
+      Observable<NavigationTransition> {
+    return transitions.pipe(
                filter(t => t.id !== 0),
 
                // Extract URL
@@ -382,11 +358,11 @@ export class NavigationTransitions {
                              return of(t).pipe(
                                  // Fire NavigationStart event
                                  switchMap(t => {
-                                   const transition = this.transitions?.getValue();
+                                   const transition = router.transitions.getValue();
                                    this.events.next(new NavigationStart(
                                        t.id, this.urlSerializer.serialize(t.extractedUrl), t.source,
                                        t.restoredState));
-                                   if (transition !== this.transitions?.getValue()) {
+                                   if (transition !== router.transitions.getValue()) {
                                      return EMPTY;
                                    }
 
