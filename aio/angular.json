@@ -44,7 +44,7 @@
               "fonts": {
                 "inline": false
               },
-              "scripts": true,
+              "scripts": false,
               "styles": {
                 "inlineCritical": false,
                 "minify": true
