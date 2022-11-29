@@ -15,7 +15,6 @@ import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
-import {NavigationTransitions} from './navigation_transition';
 import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
 import {Router, setupRouter} from './router';
 import {ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
@@ -159,15 +158,14 @@ export function provideRouterScroller(): Provider {
   return {
     provide: ROUTER_SCROLLER,
     useFactory: () => {
+      const router = inject(Router);
       const viewportScroller = inject(ViewportScroller);
       const zone = inject(NgZone);
       const config: ExtraOptions = inject(ROUTER_CONFIGURATION);
-      const transitions = inject(NavigationTransitions);
-      const urlSerializer = inject(UrlSerializer);
       if (config.scrollOffset) {
         viewportScroller.setOffset(config.scrollOffset);
       }
-      return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, config);
+      return new RouterScroller(router, viewportScroller, zone, config);
     },
   };
 }

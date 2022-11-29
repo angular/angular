@@ -8,15 +8,15 @@
 
 import {Location} from '@angular/common';
 import {Compiler, inject, Injectable, Injector, NgModuleRef, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {BehaviorSubject, Observable, of, SubscriptionLike} from 'rxjs';
+import {BehaviorSubject, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 
 import {createUrlTree} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
-import {Event, NavigationTrigger, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
+import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationTrigger, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
 import {NavigationBehaviorOptions, Route, Routes} from './models';
 import {Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
-import {TitleStrategy} from './page_title_strategy';
-import {RouteReuseStrategy} from './route_reuse_strategy';
+import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
+import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -209,11 +209,9 @@ export class Router {
   private isNgZoneEnabled: boolean = false;
 
   /**
-   * An event stream for routing events.
+   * An event stream for routing events in this NgModule.
    */
-  public get events(): Observable<Event> {
-    return this.navigationTransitions.events.asObservable();
-  }
+  public readonly events: Observable<Event> = new Subject<Event>();
   /**
    * The current state of routing in this NgModule.
    */
@@ -324,7 +322,7 @@ export class Router {
    */
   canceledNavigationResolution: 'replace'|'computed' = 'replace';
 
-  private readonly navigationTransitions = inject(NavigationTransitions);
+  private readonly navigationTransitions = new NavigationTransitions(this);
 
   /**
    * Creates the router service.
@@ -381,7 +379,7 @@ export class Router {
       guards: {canActivateChecks: [], canDeactivateChecks: []},
       guardsResult: null,
     });
-    this.navigations = this.navigationTransitions.setupNavigations(this.transitions, this);
+    this.navigations = this.navigationTransitions.setupNavigations(this.transitions);
 
     this.processNavigations();
   }
@@ -471,8 +469,9 @@ export class Router {
     return this.navigationTransitions.currentNavigation;
   }
 
-  private triggerEvent(event: Event): void {
-    this.navigationTransitions.events.next(event);
+  /** @internal */
+  triggerEvent(event: Event): void {
+    (this.events as Subject<Event>).next(event);
   }
 
   /**
@@ -722,8 +721,14 @@ export class Router {
   private processNavigations(): void {
     this.navigations.subscribe(
         t => {
+          this.navigated = true;
           this.lastSuccessfulId = t.id;
           this.currentPageId = t.targetPageId;
+          (this.events as Subject<Event>)
+              .next(new NavigationEnd(
+                  t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree)));
+          this.titleStrategy?.updateTitle(this.routerState.snapshot);
+          t.resolve(true);
         },
         e => {
           this.console.warn(`Unhandled Navigation Error: ${e}`);
@@ -875,6 +880,15 @@ export class Router {
     this.location.replaceState(
         this.urlSerializer.serialize(this.rawUrlTree), '',
         this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId));
+  }
+
+  /** @internal */
+  cancelNavigationTransition(
+      transition: NavigationTransition, reason: string, code: NavigationCancellationCode) {
+    const navCancel = new NavigationCancel(
+        transition.id, this.serializeUrl(transition.extractedUrl), reason, code);
+    this.triggerEvent(navCancel);
+    transition.resolve(false);
   }
 
   private generateNgRouterState(navigationId: number, routerPageId?: number) {
