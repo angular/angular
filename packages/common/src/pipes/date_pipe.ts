@@ -75,7 +75,7 @@ export const DATE_PIPE_DEFAULT_OPTIONS =
  * See the [I18n guide](guide/i18n-common-format-data-locale) for more information.
  *
  * The time zone of the formatted value can be specified either by passing it in as the second
- * parameter of the pipe, or by setting the default through the `DATE_PIPE_DEFAULT_TIMEZONE`
+ * parameter of the pipe, or by setting the default through the `DATE_PIPE_DEFAULT_OPTIONS`
  * injection token. The value that is passed in as the second parameter takes precedence over
  * the one defined using the injection token.
  *
