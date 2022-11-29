@@ -413,6 +413,7 @@ def _apply_esm_import_patch(env, templated_args, data):
     env = dict(env, **{"NODE_MODULES_WORKSPACE_NAME": _node_modules_workspace_name()})
     templated_args = templated_args + [
         "--node_options=--loader=file:///$$(rlocation $(rootpath //tools/esm-loader:esm-loader.mjs))",
+        "--node_options=--no-warnings",  # `--loader` is an experimental feature with warnings.
     ]
     data = data + [
         "//tools/esm-loader",
