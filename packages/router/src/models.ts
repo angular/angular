@@ -9,7 +9,6 @@
 import {EnvironmentInjector, EnvironmentProviders, InjectionToken, NgModuleFactory, Provider, Type} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {DeprecatedLoadChildren} from './deprecated_load_children';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 
@@ -175,7 +174,7 @@ export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Routes|
  * @see `LoadChildrenCallback`
  * @publicApi
  */
-export type LoadChildren = LoadChildrenCallback|DeprecatedLoadChildren;
+export type LoadChildren = LoadChildrenCallback;
 
 /**
  *
