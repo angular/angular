@@ -1,3 +1,23 @@
+<a name="15.1.0-next.1"></a>
+# 15.1.0-next.1 (2022-11-30)
+## Deprecations
+### router
+- CanLoad guards in the Router are deprecated. Use CanMatch
+  instead.
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7d88700933](https://github.com/angular/angular/commit/7d8870093313575d89c8abe584c43d6fa8105fc8) | fix | accept inheriting the constructor from a class in a library ([#48156](https://github.com/angular/angular/pull/48156)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [228e992db7](https://github.com/angular/angular/commit/228e992db75bd7a2213b4596e6e2a8696578aa19) | docs | Deprecate canLoad guards in favor of canMatch ([#48180](https://github.com/angular/angular/pull/48180)) |
+| [332461bd0c](https://github.com/angular/angular/commit/332461bd0c5f5734a9d7f051f0f4c6c173dd87c9) | feat | Add ability to override `onSameUrlNavigation` default per-navigation ([#48050](https://github.com/angular/angular/pull/48050)) |
+## Special Thanks
+Alan Agius, Andrew Scott, Aristeidis Bampakos, Bob Watson, Derek Cormier, Dylan Hunn, JoostK, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Rokas Brazdžionis and piyush132000
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.2"></a>
 # 15.0.2 (2022-11-30)
 ### compiler-cli
