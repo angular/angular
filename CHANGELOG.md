@@ -1,3 +1,14 @@
+<a name="15.0.2"></a>
+# 15.0.2 (2022-11-30)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [86a21f5569](https://github.com/angular/angular/commit/86a21f5569bc4b8060a882bd3d542a6c002438c7) | fix | accept inheriting the constructor from a class in a library ([#48156](https://github.com/angular/angular/pull/48156)) |
+## Special Thanks
+Alan Agius, Andrew Scott, Aristeidis Bampakos, Bob Watson, Derek Cormier, JoostK, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Rokas Brazdžionis, mgechev and piyush132000
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.1"></a>
 # 15.0.1 (2022-11-22)
 ### common
