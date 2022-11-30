@@ -35,7 +35,7 @@
     "@angular/upgrade": "^15.0.0-rc.1",
     "@nguniversal/express-engine": "^15.0.0-next.0",
     "angular": "^1.8.3",
-    "angular-in-memory-web-api": "~0.14.0",
+    "angular-in-memory-web-api": "~0.15.0",
     "angular-route": "1.8.3",
     "core-js": "^2.5.4",
     "express": "^4.18.1",
@@ -43,7 +43,7 @@
     "systemjs": "~0.19.39",
     "systemjs-plugin-babel": "~0.0.25",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.12.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^15.0.0-rc.1",
@@ -65,7 +65,7 @@
     "concurrently": "^7.0.0",
     "copyfiles": "^2.4.1",
     "http-server": "^14.0.0",
-    "jasmine-core": "~4.4.0",
+    "jasmine-core": "~4.5.0",
     "jasmine-marbles": "~0.9.2",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",
