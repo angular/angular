@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LOCATION_INITIALIZED, ViewportScroller} from '@angular/common';
+import {HashLocationStrategy, LOCATION_INITIALIZED, LocationStrategy, ViewportScroller} from '@angular/common';
 import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
@@ -581,6 +581,47 @@ export function withRouterConfig(options: RouterConfigOptions): RouterConfigurat
 }
 
 /**
+ * A type alias for providers returned by `withHashLocation` for use with `provideRouter`.
+ *
+ * @see `withHashLocation`
+ * @see `provideRouter`
+ *
+ * @publicApi
+ */
+export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
+
+/**
+ * Provides the location strategy that uses the URL fragment instead of the history API.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can use the hash location option:
+ * ```
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withHashLocation()
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * @see `provideRouter`
+ * @see `HashLocationStrategy`
+ *
+ * @returns A set of providers for use with `provideRouter`.
+ *
+ * @publicApi
+ */
+export function withHashLocation(): RouterConfigurationFeature {
+  const providers = [
+    {provide: LocationStrategy, useClass: HashLocationStrategy},
+  ];
+  return routerFeature(RouterFeatureKind.RouterConfigurationFeature, providers);
+}
+
+/**
  * A type alias that represents all Router features available for use with `provideRouter`.
  * Features can be enabled by adding special functions to the `provideRouter` call.
  * See documentation for each symbol to find corresponding function name. See also `provideRouter`
@@ -602,5 +643,6 @@ export const enum RouterFeatureKind {
   EnabledBlockingInitialNavigationFeature,
   DisabledInitialNavigationFeature,
   InMemoryScrollingFeature,
-  RouterConfigurationFeature
+  RouterConfigurationFeature,
+  RouterHashLocationFeature
 }
