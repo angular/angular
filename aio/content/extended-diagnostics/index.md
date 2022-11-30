@@ -13,6 +13,7 @@ Currently, Angular supports the following extended diagnostics:
 *   [NG8103 - `missingControlFlowDirective`](extended-diagnostics/NG8103)
 *   [NG8105 - `missingNgForOfLet`](extended-diagnostics/NG8105)
 *   [NG8106 - `suffixNotSupported`](extended-diagnostics/NG8106)
+*   [NG8104 - `textAttributeNotBinding`](extended-diagnostics/NG8104)
 
 ## Configuration
 
