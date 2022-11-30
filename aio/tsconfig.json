@@ -29,7 +29,6 @@
     "useDefineForClassFields": false
   },
   "exclude": [
-    "aio-builds-setup",
     "content",
     "dist",
     "node_modules",

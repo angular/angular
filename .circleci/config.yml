@@ -363,35 +363,6 @@ jobs:
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size aio-local
 
-  # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
-  aio_preview:
-    executor:
-      name: default-executor
-      resource_class: 2xlarge+
-    environment:
-      AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
-      - store_artifacts:
-          path: *aio_preview_artifact_path
-          # The `destination` needs to be kept in sync with the value of
-          # `AIO_ARTIFACT_PATH` in `aio/aio-builds-setup/Dockerfile`
-          destination: aio/dist/aio-snapshot.tgz
-      - run: node ./aio/scripts/create-preview $CIRCLE_BUILD_NUM
-
-  # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
-  test_aio_preview:
-    executor: test-browser-executor
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      - run:
-          name: Wait for preview and run tests
-          command: node aio/scripts/test-preview.js $CI_PULL_REQUEST $CI_COMMIT $CI_AIO_MIN_PWA_SCORE
-
   # The `build-npm-packages` tasks exist for backwards-compatibility with old scripts and
   # tests that rely on the pre-Bazel `dist/packages-dist` output structure (build.sh).
   # Having multiple jobs that independently build in this manner duplicates some work; we build
@@ -752,14 +723,6 @@ workflows:
       - test_aio_local:
           requires:
             - setup
-      - aio_preview:
-          # Only run on PR builds. (There can be no previews for non-PR builds.)
-          <<: *only_on_pull_requests
-          requires:
-            - setup
-      - test_aio_preview:
-          requires:
-            - aio_preview
       - publish_packages_as_artifacts:
           requires:
             - build-npm-packages

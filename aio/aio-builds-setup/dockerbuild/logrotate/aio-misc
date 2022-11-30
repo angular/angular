@@ -1,9 +1,0 @@
-/var/log/aio/clean-up.log /var/log/aio/init.log /var/log/aio/verify-setup.log {
-  compress
-  create
-  delaycompress
-  missingok
-  monthly
-  notifempty
-  rotate 6
-}
