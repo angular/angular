@@ -45,7 +45,7 @@ export class ServerRendererFactory2 implements RendererFactory2 {
       }
       default: {
         if (!this.rendererByCompId.has(type.id)) {
-          const styles = flattenStyles(type.id, type.styles, []);
+          const styles = flattenStyles(type.id, type.styles);
           this.sharedStylesHost.addStyles(styles);
           this.rendererByCompId.set(type.id, this.defaultRenderer);
         }
@@ -257,7 +257,7 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
     super(eventManager, document, ngZone, schema);
     // Add a 's' prefix to style attributes to indicate server.
     const componentId = 's' + component.id;
-    const styles = flattenStyles(componentId, component.styles, []);
+    const styles = flattenStyles(componentId, component.styles);
     sharedStylesHost.addStyles(styles);
 
     this.contentAttr = shimContentAttribute(componentId);

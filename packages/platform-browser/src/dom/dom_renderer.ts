@@ -35,19 +35,10 @@ export function shimHostAttribute(componentShortId: string): string {
   return HOST_ATTR.replace(COMPONENT_REGEX, componentShortId);
 }
 
-export function flattenStyles(
-    compId: string, styles: Array<any|any[]>, target: string[]): string[] {
-  for (let i = 0; i < styles.length; i++) {
-    let style = styles[i];
-
-    if (Array.isArray(style)) {
-      flattenStyles(compId, style, target);
-    } else {
-      style = style.replace(COMPONENT_REGEX, compId);
-      target.push(style);
-    }
-  }
-  return target;
+export function flattenStyles(compId: string, styles: Array<string|string[]>): string[] {
+  // Cannot use `Infinity` as depth as `infinity` is not a number literal in TypeScript.
+  // See: https://github.com/microsoft/TypeScript/issues/32277
+  return styles.flat(100).map(s => s.replace(COMPONENT_REGEX, compId));
 }
 
 function decoratePreventDefault(eventHandler: Function): Function {
@@ -105,7 +96,7 @@ export class DomRendererFactory2 implements RendererFactory2 {
         return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
       default: {
         if (!this.rendererByCompId.has(type.id)) {
-          const styles = flattenStyles(type.id, type.styles, []);
+          const styles = flattenStyles(type.id, type.styles);
           this.sharedStylesHost.addStyles(styles);
           this.rendererByCompId.set(type.id, this.defaultRenderer);
         }
@@ -286,7 +277,7 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
       eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
       private component: RendererType2, appId: string) {
     super(eventManager);
-    const styles = flattenStyles(appId + '-' + component.id, component.styles, []);
+    const styles = flattenStyles(appId + '-' + component.id, component.styles);
     sharedStylesHost.addStyles(styles);
 
     this.contentAttr = shimContentAttribute(appId + '-' + component.id);
@@ -313,7 +304,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     super(eventManager);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
     this.sharedStylesHost.addHost(this.shadowRoot);
-    const styles = flattenStyles(component.id, component.styles, []);
+    const styles = flattenStyles(component.id, component.styles);
     for (let i = 0; i < styles.length; i++) {
       const styleEl = document.createElement('style');
       styleEl.textContent = styles[i];
