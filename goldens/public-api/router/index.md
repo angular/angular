@@ -751,6 +751,9 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature;
 
 // @public
+export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
+
+// @public
 class RouterLink implements OnChanges, OnDestroy {
     constructor(router: Router, route: ActivatedRoute, tabIndexAttribute: string | null | undefined, renderer: Renderer2, el: ElementRef, locationStrategy?: LocationStrategy | undefined);
     fragment?: string;
@@ -1067,6 +1070,9 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
 
 // @public
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature;
+
+// @public
+export function withHashLocation(): RouterConfigurationFeature;
 
 // @public
 export function withInMemoryScrolling(options?: InMemoryScrollingOptions): InMemoryScrollingFeature;
