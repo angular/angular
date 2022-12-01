@@ -97,38 +97,7 @@ class InertDocumentHelper implements InertBodyHelper {
     const inertBody = this.inertDocument.createElement('body');
     inertBody.innerHTML = trustedHTMLFromString(html) as string;
 
-    // Support: IE 11 only
-    // strip custom-namespaced attributes on IE<=11
-    if ((this.defaultDoc as any).documentMode) {
-      this.stripCustomNsAttrs(inertBody);
-    }
-
     return inertBody;
-  }
-
-  /**
-   * When IE11 comes across an unknown namespaced attribute e.g. 'xlink:foo' it adds 'xmlns:ns1'
-   * attribute to declare ns1 namespace and prefixes the attribute with 'ns1' (e.g.
-   * 'ns1:xlink:foo').
-   *
-   * This is undesirable since we don't want to allow any of these custom attributes. This method
-   * strips them all.
-   */
-  private stripCustomNsAttrs(el: Element) {
-    const elAttrs = el.attributes;
-    // loop backwards so that we can support removals.
-    for (let i = elAttrs.length - 1; 0 < i; i--) {
-      const attrib = elAttrs.item(i);
-      const attrName = attrib!.name;
-      if (attrName === 'xmlns:ns1' || attrName.indexOf('ns1:') === 0) {
-        el.removeAttribute(attrName);
-      }
-    }
-    let childNode = el.firstChild as Node | null;
-    while (childNode) {
-      if (childNode.nodeType === Node.ELEMENT_NODE) this.stripCustomNsAttrs(childNode as Element);
-      childNode = childNode.nextSibling;
-    }
   }
 }
 
