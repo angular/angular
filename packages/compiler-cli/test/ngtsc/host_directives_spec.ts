@@ -451,6 +451,24 @@ runInEachFileSystem(() => {
         expect(messages).toEqual(['Host directive HostDir must be standalone']);
       });
 
+      it('should produce a diagnostic if a host directive is not a directive', () => {
+        env.write('test.ts', `
+          import {Directive, Pipe, Component, NgModule} from '@angular/core';
+
+          @Pipe({name: 'hostDir'})
+          export class HostDir {}
+
+          @Directive({
+            hostDirectives: [HostDir],
+          })
+          export class Dir {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual(
+            ['HostDir must be a standalone directive to be used as a host directive']);
+      });
+
       it('should produce a diagnostic if a host directive is a component', () => {
         env.write('test.ts', `
           import {Directive, Component, NgModule} from '@angular/core';
