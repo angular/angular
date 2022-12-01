@@ -21,10 +21,10 @@ import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
  * followed.
  */
 export function flattenInheritedDirectiveMetadata(
-    reader: MetadataReader, dir: Reference<ClassDeclaration>): DirectiveMeta {
+    reader: MetadataReader, dir: Reference<ClassDeclaration>): DirectiveMeta|null {
   const topMeta = reader.getDirectiveMetadata(dir);
   if (topMeta === null) {
-    throw new Error(`Metadata not found for directive: ${dir.debugName}`);
+    return null;
   }
   if (topMeta.baseClass === null) {
     return topMeta;
