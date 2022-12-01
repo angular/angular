@@ -1003,7 +1003,7 @@ In practice you will combine the two techniques in the same setup, as seen in th
 
 <code-example header="app/app.component.spec.ts (mixed setup)" path="testing/src/app/app.component.spec.ts" region="mixed-setup"></code-example>
 
-The Angular compiler creates the `BannerComponentStub` for the `<app-banner>` element and applies the `RouterLinkStubDirective` to the anchors with the `routerLink` attribute, but it ignores the `<app-welcome>` and `<router-outlet>` tags.
+The Angular compiler creates the `BannerStubComponent` for the `<app-banner>` element and applies the `RouterLinkStubDirective` to the anchors with the `routerLink` attribute, but it ignores the `<app-welcome>` and `<router-outlet>` tags.
 
 <a id="routerlink"></a>
 
