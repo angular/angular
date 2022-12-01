@@ -71,7 +71,7 @@ build:snapshot-build --stamp
 build --flag_alias=aio_build_config=//aio:flag_aio_build_config
 
 ####################################
-# AIO first party dep substitution # 
+# AIO first party dep substitution #
 # Turn on with                     #
 #  --config=aio_local_deps         #
 ####################################
@@ -173,4 +173,4 @@ build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
 
 # Load any settings which are specific to the current user. Needs to be *last* statement
 # in this config, as the user configuration should be able to overwrite flags from this file.
-try-import .bazelrc.user
+try-import %workspace%/.bazelrc.user
