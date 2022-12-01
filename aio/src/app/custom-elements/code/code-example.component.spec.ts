@@ -43,20 +43,19 @@ describe('CodeExampleComponent', () => {
   it('should change aio-code classes based on header presence', () => {
     expect(codeExampleComponent.header).toBe('Great Example');
     expect(fixture.nativeElement.querySelector('header')).toBeTruthy();
-    expect(codeExampleComponent.classes).toEqual({
-      'headed-code': true,
-      'simple-code': false
-    });
+
+    const aioCodeEl = fixture.nativeElement.querySelector('aio-code');
+
+    expect(aioCodeEl).toHaveClass('headed-code');
+    expect(aioCodeEl).not.toHaveClass('simple-code');
 
     codeExampleComponent.header = '';
     fixture.detectChanges();
 
     expect(codeExampleComponent.header).toBe('');
     expect(fixture.nativeElement.querySelector('header')).toBeFalsy();
-    expect(codeExampleComponent.classes).toEqual({
-      'headed-code': false,
-      'simple-code': true
-    });
+    expect(aioCodeEl).not.toHaveClass('headed-code');
+    expect(aioCodeEl).toHaveClass('simple-code');
   });
 
   it('should set avoidFile class if path has .avoid.', () => {
