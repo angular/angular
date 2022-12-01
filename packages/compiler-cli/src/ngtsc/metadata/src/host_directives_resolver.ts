@@ -43,12 +43,9 @@ export class HostDirectivesResolver {
     for (const current of directives) {
       const hostMeta = flattenInheritedDirectiveMetadata(this.metaReader, current.directive);
 
-      // This case has been checked for already, but we keep the assertion here so that the
-      // user gets a better error message than "Cannot read property foo of null" in case
-      // something slipped through.
+      // This case has been checked for already and produces a diagnostic
       if (hostMeta === null) {
-        throw new Error(
-            `Could not resolve host directive metadata of ${current.directive.debugName}`);
+        continue;
       }
 
       if (hostMeta.hostDirectives) {
