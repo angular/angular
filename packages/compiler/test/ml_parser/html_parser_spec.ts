@@ -777,6 +777,16 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
               ]);
         });
 
+        it('should interpolate correctly the nbsp entity', () => {
+          const template = `<div title="{{ (1) ? '=&nbsp;=' : '' }}"></div>
+                            <div title="{{ (1 && 1) ? '=&nbsp;=' : '' }}"></div>`;
+          const parsed = parser.parse(template, 'TestComp');
+
+          expect((parsed.rootNodes[0] as any).attrs[0].value).toBe(`{{ (1) ? '=\xA0=' : '' }}`);
+          expect((parsed.rootNodes[2] as any).attrs[0].value)
+              .toBe(`{{ (1 && 1) ? '=\xA0=' : '' }}`);
+        });
+
         it('should set the start and end source spans', () => {
           const node = <html.Element>parser.parse('<div>a</div>', 'TestComp').rootNodes[0];
 

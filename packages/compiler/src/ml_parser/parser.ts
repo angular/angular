@@ -395,7 +395,7 @@ class _TreeBuilder {
           // expressions. This is arguably a bug, but it could be a considerable breaking change to
           // fix it. It should be addressed in a larger project to refactor the entire parser/lexer
           // chain after View Engine has been removed.
-          value += valueToken.parts.join('').replace(/&([^;]+);/g, decodeEntity);
+          value += valueToken.parts.join('').replace(/&([^&;]+);/g, decodeEntity);
         } else if (valueToken.type === TokenType.ENCODED_ENTITY) {
           value += valueToken.parts[0];
         } else {
