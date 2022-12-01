@@ -9,7 +9,6 @@ aio/node_modules
 aio/content/example-playground
 aio/tools/examples/shared/node_modules
 aio/tools/examples/shared/example-scaffold
-packages/bazel/node_modules
 
 # All integration test node_modules folders
 integration/cli-elements-universal/node_modules
@@ -39,32 +38,3 @@ integration/side-effects/node_modules
 integration/terser/node_modules
 integration/typings_test_ts36/node_modules
 integration/typings_test_ts37/node_modules
-
-# All integration test .yarn_local_cache folders
-integration/cli-elements-universal/.yarn_local_cache
-integration/cli-hello-world/.yarn_local_cache
-integration/cli-hello-world-ivy-compat/.yarn_local_cache
-integration/cli-hello-world-ivy-i18n/.yarn_local_cache
-integration/cli-hello-world-ivy-minimal/.yarn_local_cache
-integration/cli-hello-world-lazy/.yarn_local_cache
-integration/cli-hello-world-ts-47/.yarn_local_cache
-integration/dynamic-compiler/.yarn_local_cache
-integration/hello_world__closure/.yarn_local_cache
-integration/hello_world__systemjs_umd/.yarn_local_cache
-integration/i18n/.yarn_local_cache
-integration/injectable-def/.yarn_local_cache
-integration/ivy-i18n/.yarn_local_cache
-integration/ng-add-localize/.yarn_local_cache
-integration/trusted-types/.yarn_local_cache
-integration/forms/.yarn_local_cache
-integration/ng_elements/.yarn_local_cache
-integration/ng_elements_schematics/.yarn_local_cache
-integration/ng_update/.yarn_local_cache
-integration/ng_update_migrations/.yarn_local_cache
-integration/ngcc/.yarn_local_cache
-integration/platform-server/.yarn_local_cache
-integration/service-worker-schema/.yarn_local_cache
-integration/side-effects/.yarn_local_cache
-integration/terser/.yarn_local_cache
-integration/typings_test_ts36/.yarn_local_cache
-integration/typings_test_ts37/.yarn_local_cache
