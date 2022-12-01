@@ -9,6 +9,8 @@ const variableNeeded = true;
 
 class X {
 
+    x = true;
+
     constructor() {
         console.log("Constructed");
     }
@@ -17,9 +19,11 @@ class X {
         console.log("Some method");
     }
 
+    static b = true;
 
-    static { this.Ok = {variableNeeded}; }
-    static { this.Ok2 = {variableNeeded}; }
+    static {
+      this.a = true;
+    }
 }
 
 const el = document.createElement('span');
@@ -27,6 +31,7 @@ el.innerText = 'Hello';
 document.body.appendChild(el);
 `,
   {
+    plugins: [['@babel/plugin-proposal-class-properties', {}]],
     presets: [
       [
         require('@babel/preset-env').default,
