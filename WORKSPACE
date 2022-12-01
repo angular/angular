@@ -123,6 +123,7 @@ yarn_install(
         "//:.yarnrc",
         "//aio:tools/cli-patches/bazel-architect-output.patch",
         "//aio:tools/cli-patches/patch.js",
+        "//aio/patches:@angular-devkit+build-angular+15.0.1.patch",
     ],
     # Currently disabled due to:
     #  1. Missing Windows support currently.

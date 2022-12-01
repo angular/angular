@@ -1,0 +1,5 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "@angular-devkit+build-angular+15.0.1.patch",
+])

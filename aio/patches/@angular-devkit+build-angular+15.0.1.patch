@@ -1,0 +1,51 @@
+diff --git a/node_modules/@angular-devkit/build-angular/src/babel/presets/application.js b/node_modules/@angular-devkit/build-angular/src/babel/presets/application.js
+index d17a010..9125abb 100644
+--- a/node_modules/@angular-devkit/build-angular/src/babel/presets/application.js
++++ b/node_modules/@angular-devkit/build-angular/src/babel/presets/application.js
+@@ -33,6 +33,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ const assert_1 = require("assert");
+ const fs = __importStar(require("fs"));
+ const path = __importStar(require("path"));
++const browserslist = require('browserslist');
++
++
++/**
++ * List of browsers which are affected by a WebKit bug where class field
++ * initializers might have incorrect variable scopes.
++ *
++ * See: https://github.com/angular/angular-cli/issues/24355#issuecomment-1333477033
++ * See: https://github.com/WebKit/WebKit/commit/e8788a34b3d5f5b4edd7ff6450b80936bff396f2
++ */
++ const safariClassFieldScopeBugBrowsers = browserslist(['Safari <=15', 'iOS <=15']);
++
++
+ function createI18nDiagnostics(reporter) {
+     const diagnostics = new (class {
+         constructor() {
+@@ -114,12 +127,26 @@ function default_1(api, options) {
+         }));
+     }
+     if (options.forcePresetEnv) {
++        const selectedBrowsers = browserslist(options.supportedBrowsers);
++        const includePlugins = [];
++
++        // If a Safari browser affected by the class field scope bug is selected, we
++        // downlevel class properties by ensuring the class properties Babel plugin
++        // is always included- regardless of the preset-env targets.
++        if (safariClassFieldScopeBugBrowsers.some((b) => selectedBrowsers.includes(b))) {
++          includePlugins.push('@babel/plugin-proposal-class-properties');
++        }
++
++        console.error();
++        console.error(selectedBrowsers, safariClassFieldScopeBugBrowsers);
++
+         presets.push([
+             require('@babel/preset-env').default,
+             {
+                 bugfixes: true,
+                 modules: false,
+                 targets: options.supportedBrowsers,
++                include: includePlugins,
+                 exclude: ['transform-typeof-symbol'],
+             },
+         ]);
