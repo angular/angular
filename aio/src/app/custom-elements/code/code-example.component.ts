@@ -22,7 +22,8 @@ import { CodeComponent } from './code.component';
 
     <header *ngIf="header">{{header}}</header>
 
-    <aio-code [ngClass]="classes"
+    <aio-code [class.headed-code]="!!this.header"
+              [class.simple-code]="!this.header"
               [language]="language"
               [linenums]="linenums"
               [path]="path"
@@ -41,16 +42,7 @@ export class CodeExampleComponent implements AfterViewInit {
 
   @Input() region: string;
 
-  @Input()
-  set header(header: string) {
-    this._header = header;
-    this.classes = {
-      'headed-code': !!this.header,
-      'simple-code': !this.header,
-    };
-  }
-  get header(): string { return this._header; }
-  private _header: string;
+  @Input() header: string;
 
   @Input()
   set path(path: string) {
