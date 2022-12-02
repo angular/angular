@@ -4,6 +4,9 @@ filegroup(
     name = "shared",
     srcs = glob(
         ["**"],
-        exclude = ["BUILD.bazel"],
+        exclude = [
+            "BUILD.bazel",
+            "**/node_modules/**",  # Node modules may exist from the legacy setup.
+        ],
     ),
 )
