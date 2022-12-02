@@ -1,0 +1,48 @@
+diff --git internal/node/node.bzl internal/node/node.bzl
+index 18d7ce4..3b8ce74 100755
+--- internal/node/node.bzl
++++ internal/node/node.bzl
+@@ -353,10 +353,22 @@ if (process.cwd() !== __dirname) {
+     else:
+         executable = ctx.outputs.launcher_sh
+
+-    # syntax sugar: allows you to avoid repeating the entry point in data
+-    # entry point is only needed in runfiles if it is a javascript file
+-    if len(ctx.files.entry_point) == 1 and is_javascript_file(ctx.files.entry_point[0]):
+-        runfiles.extend(ctx.files.entry_point)
++    # Note: `to_list()` is expensive and should only be called once.
++    sources_list = sources.to_list()
++    entry_point_input_short_path = _ts_to_js(_get_entry_point_file(ctx).short_path)
++    entry_point_script = None
++
++    for f in sources_list:
++        if f.short_path == entry_point_input_short_path:
++            entry_point_script = f
++            break
++
++    if not entry_point_script and len(ctx.files.entry_point) == 1 and is_javascript_file(ctx.files.entry_point[0]):
++        entry_point_script = ctx.files.entry_point[0]
++
++        # Convenience: We add the entry point to the runfiles. This means that users would not
++        # need to explicitly repeat the entry point in the `data` attribute.
++        runfiles.append(entry_point_script)
+
+     return [
+         DefaultInfo(
+@@ -371,14 +383,14 @@ if (process.cwd() !== __dirname) {
+                         # Calling the .to_list() method may have some perfs hits,
+                         # so we should be running this method only once per rule.
+                         # see: https://docs.bazel.build/versions/main/skylark/depsets.html#performance
+-                        node_modules.to_list() + sources.to_list(),
++                        node_modules.to_list() + sources_list,
+                 collect_data = True,
+             ),
+         ),
+         # TODO(alexeagle): remove sources and node_modules from the runfiles
+         # when downstream usage is ready to rely on linker
+         NodeRuntimeDepsInfo(
+-            deps = depset(ctx.files.entry_point, transitive = [node_modules, sources]),
++            deps = depset([entry_point_script], transitive = [node_modules, sources]),
+             pkgs = data,
+         ),
+         # indicates that the this binary should be instrumented by coverage
