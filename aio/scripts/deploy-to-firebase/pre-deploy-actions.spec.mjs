@@ -30,7 +30,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should build the app for the appropriate mode', () => {
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
-      expect(yarnSpy).toHaveBeenCalledWith('build --aio_build_config=bar');
+      expect(yarnSpy).toHaveBeenCalledWith('build-prod --aio_build_config=bar');
     });
 
     it('should remove write protection from the dist folder', () => {
@@ -64,7 +64,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
       expect(logs).toEqual([
-        'yarn build --aio_build_config=bar',
+        'yarn build-prod --aio_build_config=bar',
         'chmod -R u+w ../dist/bin/aio/build',
         'yarn set-opensearch-url http://example.com/foo/',
         'cp -rf ../dist/bin/aio/build dist',
