@@ -36,7 +36,7 @@ export function shimHostAttribute(componentShortId: string): string {
 }
 
 export function flattenStyles(compId: string, styles: Array<string|string[]>): string[] {
-  // Cannot use iInfinity` as depth as `infinity` is not a number literal in TypeScript.
+  // Cannot use `Infinity` as depth as `infinity` is not a number literal in TypeScript.
   // See: https://github.com/microsoft/TypeScript/issues/32277
   return styles.flat(100).map(s => s.replace(COMPONENT_REGEX, compId));
 }
