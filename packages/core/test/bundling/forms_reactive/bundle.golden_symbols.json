@@ -345,6 +345,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "NoneEncapsulationDomRenderer"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -1351,9 +1354,6 @@
   },
   {
     "name": "removeListItem2"
-  },
-  {
-    "name": "removeStyle"
   },
   {
     "name": "removeValidators"

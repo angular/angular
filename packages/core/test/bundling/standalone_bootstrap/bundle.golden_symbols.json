@@ -210,6 +210,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "NoneEncapsulationDomRenderer"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -775,9 +778,6 @@
   },
   {
     "name": "removeFromArray"
-  },
-  {
-    "name": "removeStyle"
   },
   {
     "name": "renderComponent"
