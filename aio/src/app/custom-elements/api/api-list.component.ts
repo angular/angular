@@ -111,6 +111,12 @@ export class ApiListComponent implements OnInit {
     this.showTypeMenu = !this.showTypeMenu;
   }
 
+  trackByPath(idx: number, item: ApiSection|ApiItem) {
+    // TODO: fake usage to make TS happy
+    if (idx) {}
+    return item.path;
+  }
+
   //////// Private //////////
 
   private filterSection(section: ApiSection, { query, status, type }: SearchCriteria) {
