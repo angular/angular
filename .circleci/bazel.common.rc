@@ -1,8 +1,5 @@
 # Settings in this file should be OS agnostic. Use the bazel.<OS>.rc files for OS specific settings.
 
-# Don't be spammy in the logs
-build --noshow_progress
-
 # Print all the options that apply to the build.
 # This helps us diagnose which options override others
 # (e.g. /etc/bazel.bazelrc vs. tools/bazel.rc)
