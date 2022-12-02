@@ -319,6 +319,17 @@ export enum ErrorCode {
   OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
 
   /**
+   * Aria attributes don't have corresponding properties so Angular property bindings and
+   * interpolations are invalid for aria attributes.
+   *
+   * Examples of invalid bindings: `[aria-label]="exp"`, `aria-label="before {{exp}} after"`.
+   * Examples of valid bindings: `[attr.aria-label]="exp"`, `attr.aria-label="before {{exp}}
+   * after"`.
+   *
+   */
+  INVALID_ARIA_BINDING = 8108,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
