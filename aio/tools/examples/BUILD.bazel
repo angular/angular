@@ -17,7 +17,6 @@ js_library(
         "example-boilerplate.js",
     ],
     deps = [
-        "//aio/content/examples",
         "//aio/tools/examples/shared",
         "@aio_npm//canonical-path",
         "@aio_npm//fs-extra",
