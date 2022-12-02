@@ -6,75 +6,107 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 
 @Injectable()
-export class SharedStylesHost {
-  /** @internal */
-  protected _stylesSet = new Set<string>();
+export class SharedStylesHost implements OnDestroy {
+  private readonly usedStyles = new Map<string /** Style string */, number /** Usage count */>();
 
   addStyles(styles: string[]): void {
-    const additions = new Set<string>();
-    styles.forEach(style => {
-      if (!this._stylesSet.has(style)) {
-        this._stylesSet.add(style);
-        additions.add(style);
+    for (const style of styles) {
+      let usedCount = this.usedStyles.get(style) ?? 0;
+      usedCount++;
+      this.usedStyles.set(style, usedCount);
+
+      if (usedCount === 1) {
+        this.onStyleAdded(style);
       }
-    });
-    this.onStylesAdded(additions);
+    }
   }
 
-  onStylesAdded(additions: Set<string>): void {}
+  removeStyles(styles: string[]): void {
+    for (const style of styles) {
+      let usedCount = this.usedStyles.get(style) ?? 0;
+      usedCount--;
 
-  getAllStyles(): string[] {
-    return Array.from(this._stylesSet);
+      if (usedCount > 0) {
+        this.usedStyles.set(style, usedCount);
+      } else {
+        this.usedStyles.delete(style);
+        this.onStyleRemoved(style);
+      }
+    }
+  }
+
+  onStyleRemoved(style: string): void {}
+
+  onStyleAdded(style: string): void {}
+
+  getAllStyles(): IterableIterator<string> {
+    return this.usedStyles.keys();
+  }
+
+  ngOnDestroy(): void {
+    for (const style of this.getAllStyles()) {
+      this.onStyleRemoved(style);
+    }
+
+    this.usedStyles.clear();
   }
 }
 
 @Injectable()
 export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
   // Maps all registered host nodes to a list of style nodes that have been added to the host node.
-  private _hostNodes = new Map<Node, Node[]>();
+  private readonly styleRef = new Map<string, HTMLStyleElement[]>();
+  private hostNodes = new Set<Node>();
 
-  constructor(@Inject(DOCUMENT) private _doc: any) {
+  constructor(@Inject(DOCUMENT) private readonly doc: any) {
     super();
-    this._hostNodes.set(_doc.head, []);
+    this.hostNodes.add(this.doc.head);
   }
 
-  private _addStylesToHost(styles: Set<string>, host: Node, styleNodes: Node[]): void {
-    styles.forEach((style: string) => {
-      const styleEl = this._doc.createElement('style');
-      styleEl.textContent = style;
-      styleNodes.push(host.appendChild(styleEl));
-    });
+  override onStyleAdded(style: string): void {
+    for (const host of this.hostNodes) {
+      this.addStyleToHost(host, style);
+    }
+  }
+
+  override onStyleRemoved(style: string): void {
+    const styleElements = this.styleRef.get(style);
+    styleElements?.forEach(e => e.remove());
+    this.styleRef.delete(style);
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.styleRef.clear();
+    this.hostNodes.clear();
   }
 
   addHost(hostNode: Node): void {
-    const styleNodes: Node[] = [];
-    this._addStylesToHost(this._stylesSet, hostNode, styleNodes);
-    this._hostNodes.set(hostNode, styleNodes);
+    this.hostNodes.add(hostNode);
+
+    for (const style of this.getAllStyles()) {
+      this.addStyleToHost(hostNode, style);
+    }
   }
 
   removeHost(hostNode: Node): void {
-    const styleNodes = this._hostNodes.get(hostNode);
-    if (styleNodes) {
-      styleNodes.forEach(removeStyle);
+    this.hostNodes.delete(hostNode);
+  }
+
+  private addStyleToHost(host: Node, style: string): void {
+    const styleEl = this.doc.createElement('style');
+    styleEl.textContent = style;
+    host.appendChild(styleEl);
+
+    const styleRef = this.styleRef.get(style);
+    if (styleRef) {
+      styleRef.push(styleEl);
+    } else {
+      this.styleRef.set(style, [styleEl]);
     }
-    this._hostNodes.delete(hostNode);
   }
-
-  override onStylesAdded(additions: Set<string>): void {
-    this._hostNodes.forEach((styleNodes, hostNode) => {
-      this._addStylesToHost(additions, hostNode, styleNodes);
-    });
-  }
-
-  ngOnDestroy(): void {
-    this._hostNodes.forEach(styleNodes => styleNodes.forEach(removeStyle));
-  }
-}
-
-function removeStyle(styleNode: Node): void {
-  getDOM().remove(styleNode);
 }

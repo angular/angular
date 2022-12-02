@@ -333,6 +333,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "NoneEncapsulationDomRenderer"
+  },
+  {
     "name": "NoopAnimationDriver"
   },
   {
@@ -1207,9 +1210,6 @@
   },
   {
     "name": "removeNodesAfterAnimationDone"
-  },
-  {
-    "name": "removeStyle"
   },
   {
     "name": "renderComponent"
