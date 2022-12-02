@@ -35,7 +35,7 @@ export default exp;
 // Helpers
 function build({deployedUrl, deployEnv}) {
   u.logSectionHeader('Build the AIO app.');
-  u.yarn(`build --aio_build_config=${deployEnv}`);
+  u.yarn(`build-prod --aio_build_config=${deployEnv}`);
 
   u.logSectionHeader('Remove write protection on the Bazel AIO distribution.');
   sh.chmod('-R', 'u+w', BAZEL_DIST_DIR);
