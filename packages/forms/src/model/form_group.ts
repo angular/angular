@@ -11,6 +11,7 @@ import {ɵWritable as Writable} from '@angular/core';
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
 import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model';
+import {FormControlState} from './form_control';
 
 /**
  * FormGroupValue extracts the type of `.value` from a FormGroup's inner object type. The untyped
@@ -23,6 +24,7 @@ import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertC
 export type ɵFormGroupValue<T extends {[K in keyof T]?: AbstractControl<any>}> =
     ɵTypedOrUntyped<T, Partial<{[K in keyof T]: ɵValue<T[K]>}>, {[key: string]: any}>;
 
+
 /**
  * FormGroupRawValue extracts the type of `.getRawValue()` from a FormGroup's inner object type. The
  * untyped case falls back to {[key: string]: any}.
@@ -33,6 +35,18 @@ export type ɵFormGroupValue<T extends {[K in keyof T]?: AbstractControl<any>}> 
  */
 export type ɵFormGroupRawValue<T extends {[K in keyof T]?: AbstractControl<any>}> =
     ɵTypedOrUntyped<T, {[K in keyof T]: ɵRawValue<T[K]>}, {[key: string]: any}>;
+
+/**
+ * FormGroupState extracts the form state from a FormGroup's inner object type. The
+ * untyped case falls back to {[key: string]: any}.
+ *
+ * Angular uses this type internally to support Typed Forms; do not use it directly.
+ *
+ * For internal use only.
+ */
+export type ɵFormGroupState<T extends {[K in keyof T]?: AbstractControl<any>}> = ɵTypedOrUntyped<
+    T, Partial<{[K in keyof T]: FormControlState<ɵValue<T[K]>>| ɵValue<T[K]>}>,
+    {[key: string]: any}>;
 
 /**
  * OptionalKeys returns the union of all optional keys in the object.

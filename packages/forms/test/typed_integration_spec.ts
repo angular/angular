@@ -617,6 +617,13 @@ describe('Typed Class', () => {
       }
     });
 
+    it('should support reset() with form state ', () => {
+      const form =
+          new FormGroup({first: new FormControl('first name'), last: new FormControl('last name')});
+
+      form.reset({first: {value: 'name', disabled: true}, last: 'last'});
+    });
+
     it('is assignable to AbstractControl', () => {
       let ac: AbstractControl<{a?: boolean}>;
       ac = new FormGroup({a: new FormControl(true, {nonNullable: true})});
