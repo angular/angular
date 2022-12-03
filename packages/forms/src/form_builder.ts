@@ -9,7 +9,6 @@
 import {inject, Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {ReactiveFormsModule} from './form_providers';
 import {AbstractControl, AbstractControlOptions, FormHooks} from './model/abstract_model';
 import {FormArray, UntypedFormArray} from './model/form_array';
 import {FormControl, FormControlOptions, FormControlState, UntypedFormControl} from './model/form_control';
@@ -107,7 +106,7 @@ export type ɵElement<T, N extends null> =
  *
  * @publicApi
  */
-@Injectable({providedIn: ReactiveFormsModule})
+@Injectable({providedIn: 'root'})
 export class FormBuilder {
   private useNonNullable: boolean = false;
 
@@ -370,7 +369,7 @@ export class FormBuilder {
  * @publicApi
  */
 @Injectable({
-  providedIn: ReactiveFormsModule,
+  providedIn: 'root',
   useFactory: () => inject(FormBuilder).nonNullable,
 })
 export abstract class NonNullableFormBuilder {
@@ -416,7 +415,7 @@ export abstract class NonNullableFormBuilder {
 /**
  * UntypedFormBuilder is the same as @see FormBuilder, but it provides untyped controls.
  */
-@Injectable({providedIn: ReactiveFormsModule})
+@Injectable({providedIn: 'root'})
 export class UntypedFormBuilder extends FormBuilder {
   /**
    * Like `FormBuilder#group`, except the resulting group is untyped.
