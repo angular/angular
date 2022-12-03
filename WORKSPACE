@@ -125,8 +125,7 @@ yarn_install(
     data = [
         YARN_LABEL,
         "//:.yarnrc",
-        "//aio:tools/cli-patches/bazel-architect-output.patch",
-        "//aio:tools/cli-patches/patch.js",
+        "//aio:patches/@angular-devkit+architect-cli+0.1500.1.patch",
     ],
     # Currently disabled due to:
     #  1. Missing Windows support currently.
