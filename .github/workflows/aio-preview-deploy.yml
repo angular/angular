@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+      - uses: actions/checkout@e2f20e631ae6d7dd3b768f56a5d2af784dd54791 # tag=v2
       - uses: angular/dev-infra/github-actions/deploy-previews/upload-artifacts-to-firebase@3bc93449e11b733260d0294305bf57240d7e0a81
         with:
           github-token: '${{secrets.GITHUB_TOKEN}}'
