@@ -1,0 +1,30 @@
+diff --git a/node_modules/@angular-devkit/architect-cli/bin/architect.js b/node_modules/@angular-devkit/architect-cli/bin/architect.js
+index 762ae6a..fba44c2 100755
+--- a/node_modules/@angular-devkit/architect-cli/bin/architect.js
++++ b/node_modules/@angular-devkit/architect-cli/bin/architect.js
+@@ -30,6 +30,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
+     __setModuleDefault(result, mod);
+     return result;
+ };
++
++const os = require('os');
++
++setInterval(() => {
++    console.log('Cpus', os.cpus());
++    console.log('Total Mem', os.totalmem());
++    console.log('Free Mem', os.freemem())
++}, 500)
++
++
+ Object.defineProperty(exports, "__esModule", { value: true });
+ const architect_1 = require("@angular-devkit/architect");
+ const node_1 = require("@angular-devkit/architect/node");
+@@ -198,8 +208,6 @@ async function main(args) {
+     // Show usage of deprecated options
+     registry.useXDeprecatedProvider((msg) => logger.warn(msg));
+     const { workspace } = await core_1.workspaces.readWorkspace(configFilePath, core_1.workspaces.createWorkspaceHost(new node_2.NodeJsSyncHost()));
+-    // Clear the console.
+-    process.stdout.write('\u001Bc');
+     return await _executeTarget(logger, workspace, root, argv, registry);
+ }
+ main(process.argv.slice(2)).then((code) => {
