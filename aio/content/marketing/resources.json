@@ -939,10 +939,10 @@
             "title": "Angular.Schule (German)",
             "url": "https://angular.schule/"
           },
-          "strbrw": {
+          "simplified": {
             "desc": "Angular and RxJS trainings, Code Reviews and consultancy. We help software engineers all over the world to create better web-applications...",
-            "title": "StrongBrew",
-            "url": "https://strongbrew.io/"
+            "title": "Simplified Courses",
+            "url": "https://simplified.courses/"
           },
           "angular.de": {
             "desc": "Onsite Angular Training delivered by the greatest community in the german speaking area in Germany, Austria and Switzerland. We also regularly post articles and tutorials on our blog.",
