@@ -8,7 +8,7 @@
   "scripts": {
     "postinstall": "node tools/cli-patches/patch.js",
     "prebuild": "yarn setup",
-    "build": "bazel build //aio:build",
+    "build": "bazel build //aio:build --config=build-results",
     "build-prod": "yarn build --config=release",
     "build-local": "yarn build --config=aio_local_deps",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint && yarn tools-lint && yarn security-lint",

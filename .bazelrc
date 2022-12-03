@@ -166,6 +166,11 @@ test:saucelabs --flaky_test_attempts=1
 # --ng_perf will ask the Ivy compiler to produce performance results for each build.
 build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
 
+build:build-results --bes_instance_name=internal-200822
+build:build-results --bes_backend=buildeventservice.googleapis.com
+build:build-results --bes_timeout=60s
+build:build-results --bes_results_url="https://source.cloud.google.com/results/invocations/"
+
 ####################################################
 # User bazel configuration
 # NOTE: This needs to be the *last* entry in the config.
