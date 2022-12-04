@@ -678,6 +678,16 @@ jobs:
             - *cache_key_win
             - *cache_key_win_fallback
 
+      - run:
+          name: Debug information for flakiness of Windows job
+          command: |
+            node -v
+            yarn -v
+            which node
+            which yarn
+            echo "Path: $PATH"
+            yarn node -v
+
       # Install project dependencies, and install Bazelisk globally. This is necessary as
       # Windows might error when `bazel` is invoked from the project node modules. The Bazel
       # invocation might modify the symlinked project `node_modules` again, causing failures.
