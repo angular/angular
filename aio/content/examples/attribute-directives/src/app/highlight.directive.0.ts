@@ -5,5 +5,5 @@ import { Directive } from '@angular/core';
   selector: '[appHighlight]'
 })
 export class HighlightDirective {
-  constructor() { }
+
 }
