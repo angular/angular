@@ -338,7 +338,9 @@ jobs:
       - run: yarn --cwd aio payload-size
 
   deploy_aio:
-    executor: test-browser-executor
+    executor:
+      name: test-browser-executor
+      resource_class: 2xlarge+
     steps:
       - custom_attach_workspace
       - init_environment
@@ -363,7 +365,9 @@ jobs:
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
-    executor: default-executor
+    executor:
+      name: default-executor
+      resource_class: 2xlarge+
     environment:
       AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
