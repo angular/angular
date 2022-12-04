@@ -16,6 +16,10 @@ permissions:
   # Needed in order to be able to comment on the pull request.
   pull-requests: write
 
+env:
+  # TODO(pgschwendtner): use a different project for framework previews here.
+  PREVIEW_PROJECT: ng-comp-dev
+
 jobs:
   aio-deploy:
     runs-on: ubuntu-latest
@@ -27,9 +31,9 @@ jobs:
         working-directory: aio/
         run: |
           # We can use `npx` as the Firebase deploy actions uses it too.
-          npx -y firebase-tools@latest use ng-comp-dev
-          npx -y firebase-tools@latest target:clear hosting aio
-          npx -y firebase-tools@latest target:apply hosting aio ng-comp-dev
+          # The default site is used as we don't use multi-sites in the project.
+          npx -y firebase-tools@latest target:clear --project ${{env.PREVIEW_PROJECT}} hosting aio
+          npx -y firebase-tools@latest target:apply --project ${{env.PREVIEW_PROJECT}} hosting aio ${{env.PREVIEW_PROJECT}}
 
       - uses: angular/dev-infra/github-actions/deploy-previews/upload-artifacts-to-firebase@3bc93449e11b733260d0294305bf57240d7e0a81
         with:
@@ -37,6 +41,5 @@ jobs:
           workflow-artifact-name: 'aio'
           firebase-config-dir: './aio/'
           firebase-public-dir: './aio/dist'
-          # TODO(pgschwendtner): use a different project for framework previews here / or combine.
-          firebase-project-id: 'ng-comp-dev'
+          firebase-project-id: '${{env.PREVIEW_PROJECT}}'
           firebase-service-key: '${{secrets.FIREBASE_PREVIEW_SERVICE_TOKEN}}'
