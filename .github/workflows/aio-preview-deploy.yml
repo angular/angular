@@ -24,9 +24,11 @@ jobs:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
 
       - name: Configure Firebase deploy target
+        working-directory: aio/
         run: |
-          yarn --cwd aio firebase target:clear hosting aio
-          yarn --cwd aio firebase target:apply hosting aio ng-comp-dev
+          # We can use `npx` as the Firebase deploy actions uses it too.
+          npx -y firebase-tools@latest target:clear hosting aio
+          npx -y firebase-tools@latest target:apply hosting aio ng-comp-dev
 
       - uses: angular/dev-infra/github-actions/deploy-previews/upload-artifacts-to-firebase@3bc93449e11b733260d0294305bf57240d7e0a81
         with:
