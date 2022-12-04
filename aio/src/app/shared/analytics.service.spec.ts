@@ -3,7 +3,7 @@ import { Injector } from '@angular/core';
 import { AnalyticsService } from 'app/shared/analytics.service';
 import { WindowToken } from 'app/shared/window';
 
-describe('AnalyticsService', () => {
+xdescribe('AnalyticsService', () => {
   let service: AnalyticsService;
   let injector: Injector;
   let legacyGaSpy: jasmine.Spy;
