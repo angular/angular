@@ -27,6 +27,7 @@ jobs:
         working-directory: aio/
         run: |
           # We can use `npx` as the Firebase deploy actions uses it too.
+          npx -y firebase-tools@latest use ng-comp-dev
           npx -y firebase-tools@latest target:clear hosting aio
           npx -y firebase-tools@latest target:apply hosting aio ng-comp-dev
 
