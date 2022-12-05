@@ -9,6 +9,9 @@
 import {dirname, resolve} from 'path';
 import ts from 'typescript';
 
+/** Whether the current TypeScript version is after 4.9. */
+const IS_AFTER_TS_49 = isAfterVersion(4, 9);
+
 /** Update recorder for managing imports. */
 export interface ImportManagerUpdateRecorder {
   addNewImport(start: number, importText: string): void;
@@ -147,8 +150,8 @@ export class ImportManager {
       const needsGeneratedUniqueName = generatedUniqueIdentifier.text !== symbolName;
       identifier = needsGeneratedUniqueName ? generatedUniqueIdentifier : propertyIdentifier;
 
-      newImport = ts.factory.createImportDeclaration(
-          undefined, undefined,
+      newImport = createImportDeclaration(
+          undefined,
           ts.factory.createImportClause(
               false, undefined,
               ts.factory.createNamedImports([ts.factory.createImportSpecifier(
@@ -156,8 +159,8 @@ export class ImportManager {
           ts.factory.createStringLiteral(moduleName));
     } else {
       identifier = this._getUniqueIdentifier(sourceFile, 'defaultExport');
-      newImport = ts.factory.createImportDeclaration(
-          undefined, undefined, ts.factory.createImportClause(false, identifier, undefined),
+      newImport = createImportDeclaration(
+          undefined, ts.factory.createImportClause(false, identifier, undefined),
           ts.factory.createStringLiteral(moduleName));
     }
 
@@ -257,4 +260,30 @@ export class ImportManager {
     }
     return commentRanges[commentRanges.length - 1]!.end;
   }
+}
+
+/**
+ * Creates a `ts.ImportDeclaration` declaration.
+ *
+ * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.9.
+ * We should remove it once we have dropped support for the older versions.
+ */
+function createImportDeclaration(
+    modifiers: readonly ts.Modifier[]|undefined, importClause: ts.ImportClause|undefined,
+    moduleSpecifier: ts.Expression, assertClause?: ts.AssertClause): ts.ImportDeclaration {
+  return IS_AFTER_TS_49 ? (ts.factory.createImportDeclaration as any)(
+                              modifiers, importClause, moduleSpecifier, assertClause) :
+                          (ts.factory.createImportDeclaration as any)(
+                              undefined, modifiers, importClause, moduleSpecifier, assertClause);
+}
+
+/** Checks if the current version of TypeScript is after the specified major/minor versions. */
+function isAfterVersion(targetMajor: number, targetMinor: number): boolean {
+  const [major, minor] = ts.versionMajorMinor.split('.').map(part => parseInt(part));
+
+  if (major < targetMajor) {
+    return false;
+  }
+
+  return major === targetMajor ? minor >= targetMinor : true;
 }

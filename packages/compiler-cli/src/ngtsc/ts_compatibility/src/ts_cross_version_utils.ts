@@ -11,6 +11,9 @@ import ts from 'typescript';
 /** Whether the current TypeScript version is after 4.8. */
 const IS_AFTER_TS_48 = isAfterVersion(4, 8);
 
+/** Whether the current TypeScript version is after 4.9. */
+const IS_AFTER_TS_49 = isAfterVersion(4, 9);
+
 /** Equivalent of `ts.ModifierLike` which is only present in TS 4.8+. */
 export type ModifierLike = ts.Modifier|ts.Decorator;
 
@@ -274,6 +277,78 @@ export const getDecorators: (node: ts.Node) => readonly ts.Decorator[] | undefin
  */
 export const getModifiers: (node: ts.Node) => readonly ts.Modifier[] | undefined =
     IS_AFTER_TS_48 ? (ts as any).getModifiers : node => node.modifiers;
+
+/** Type of `ts.factory.CreateParameterDeclaration` in TS 4.9+. */
+type Ts49CreateParameterDeclarationFn =
+    (modifiers: readonly ModifierLike[]|undefined, dotDotDotToken: ts.DotDotDotToken|undefined,
+     name: string|ts.BindingName, questionToken?: ts.QuestionToken|undefined,
+     type?: ts.TypeNode|undefined, initializer?: ts.Expression) => ts.ParameterDeclaration;
+
+/**
+ * Creates a `ts.ParameterDeclaration` declaration.
+ *
+ * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.9.
+ * We should remove it once we have dropped support for the older versions.
+ */
+export const createParameterDeclaration: Ts49CreateParameterDeclarationFn = IS_AFTER_TS_49 ?
+    (ts.factory.createParameterDeclaration as any) :
+    (modifiers, dotDotDotToken, name, questionToken, type, initializer) =>
+        (ts.factory.createParameterDeclaration as any)(
+            ...splitModifiers(modifiers), dotDotDotToken, name, questionToken, type, initializer);
+
+/** Type of `ts.factory.createImportDeclaration` in TS 4.9+. */
+type Ts49CreateImportDeclarationFn =
+    (modifiers: readonly ts.Modifier[]|undefined, importClause: ts.ImportClause|undefined,
+     moduleSpecifier: ts.Expression, assertClause?: ts.AssertClause) => ts.ImportDeclaration;
+
+/**
+ * Creates a `ts.ImportDeclaration` declaration.
+ *
+ * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.9.
+ * We should remove it once we have dropped support for the older versions.
+ */
+export const createImportDeclaration: Ts49CreateImportDeclarationFn = IS_AFTER_TS_49 ?
+    (ts.factory.createImportDeclaration as any) :
+    (modifiers, importClause, moduleSpecifier, assertClause) =>
+        (ts.factory.createImportDeclaration as any)(
+            undefined, modifiers, importClause, moduleSpecifier, assertClause);
+
+/** Type of `ts.factory.createFunctionDeclaration` in TS 4.9+. */
+type Ts49CreateFunctionDeclarationFn =
+    (modifiers: readonly ModifierLike[]|undefined, asteriskToken: ts.AsteriskToken|undefined,
+     name: string|ts.Identifier|undefined,
+     typeParameters: readonly ts.TypeParameterDeclaration[]|undefined,
+     parameters: readonly ts.ParameterDeclaration[], type: ts.TypeNode|undefined,
+     body: ts.Block|undefined) => ts.FunctionDeclaration;
+
+/**
+ * Creates a `ts.FunctionDeclaration` declaration.
+ *
+ * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.9.
+ * We should remove it once we have dropped support for the older versions.
+ */
+export const createFunctionDeclaration: Ts49CreateFunctionDeclarationFn = IS_AFTER_TS_49 ?
+    (ts.factory.createFunctionDeclaration as any) :
+    (modifiers, asteriskToken, name, typeParameters, parameters, type, body) => (
+        ts.factory.createFunctionDeclaration as any)(
+        ...splitModifiers(modifiers), asteriskToken, name, typeParameters, parameters, type, body);
+
+
+/** Type of `ts.factory.createIndexSignature` in TS 4.9+. */
+type Ts49CreateIndexSignatureFn =
+    (modifiers: readonly ts.Modifier[]|undefined, parameters: readonly ts.ParameterDeclaration[],
+     type: ts.TypeNode) => ts.IndexSignatureDeclaration;
+
+/**
+ * Creates a `ts.IndexSignatureDeclaration` declaration.
+ *
+ * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.9.
+ * We should remove it once we have dropped support for the older versions.
+ */
+export const createIndexSignature: Ts49CreateIndexSignatureFn = IS_AFTER_TS_49 ?
+    (ts.factory.createIndexSignature as any) :
+    (modifiers, parameters, type) =>
+        (ts.factory.createIndexSignature as any)(modifiers, parameters, type);
 
 /**
  * Combines an optional array of decorators with an optional array of modifiers into a single

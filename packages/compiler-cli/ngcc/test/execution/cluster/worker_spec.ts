@@ -8,7 +8,7 @@
 
 /// <reference types="node" />
 
-import cluster from 'cluster';
+import cluster, {Worker} from 'cluster';
 import {EventEmitter} from 'events';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
@@ -55,7 +55,7 @@ describe('startWorker()', () => {
 
     beforeEach(() => {
       runAsClusterMaster(false);
-      mockClusterWorker(Object.assign(new EventEmitter(), {id: 42}) as cluster.Worker);
+      mockClusterWorker(Object.assign(new EventEmitter(), {id: 42}) as Worker);
     });
 
     it('should create the `compileFn()`', () => {
@@ -141,7 +141,7 @@ describe('startWorker()', () => {
       } as unknown as Task;
 
       startWorker(mockLogger, createCompileFnSpy);
-      cluster.worker.emit('message', {type: 'process-task', task: mockTask});
+      cluster.worker!.emit('message', {type: 'process-task', task: mockTask});
 
       expect(compileFnSpy).toHaveBeenCalledWith(mockTask);
       expect(processSendSpy).toHaveBeenCalledOnceWith({type: 'ready'}, jasmine.any(Function));
@@ -166,12 +166,12 @@ describe('startWorker()', () => {
       startWorker(mockLogger, createCompileFnSpy);
 
       err = 'Error string.';
-      cluster.worker.emit('message', {type: 'process-task', task: mockTask});
+      cluster.worker!.emit('message', {type: 'process-task', task: mockTask});
       expect(processSendSpy)
           .toHaveBeenCalledWith({type: 'error', error: err}, jasmine.any(Function));
 
       err = new Error('Error object.');
-      cluster.worker.emit('message', {type: 'process-task', task: mockTask});
+      cluster.worker!.emit('message', {type: 'process-task', task: mockTask});
       expect(processSendSpy)
           .toHaveBeenCalledWith({type: 'error', error: err.stack}, jasmine.any(Function));
     });
@@ -198,7 +198,7 @@ describe('startWorker()', () => {
         compileFnSpy.and.throwError(noMemError);
 
         startWorker(mockLogger, createCompileFnSpy);
-        cluster.worker.emit('message', {type: 'process-task', task: mockTask});
+        cluster.worker!.emit('message', {type: 'process-task', task: mockTask});
 
         expect(mockLogger.logs.warn).toEqual([[`[Worker #42] ${noMemError.stack}`]]);
         expect(processExitSpy).toHaveBeenCalledWith(1);
@@ -210,7 +210,7 @@ describe('startWorker()', () => {
 
     it('should throw, when an unknown message type is received', () => {
       startWorker(mockLogger, createCompileFnSpy);
-      cluster.worker.emit('message', {type: 'unknown', foo: 'bar'});
+      cluster.worker!.emit('message', {type: 'unknown', foo: 'bar'});
 
       expect(compileFnSpy).not.toHaveBeenCalled();
       expect(processSendSpy)

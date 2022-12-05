@@ -15,10 +15,10 @@ describe('applyShims()', () => {
 
   afterEach(() => {
     // Un-patch `global`.
-    const currentProps = Object.keys(global) as (keyof NodeJS.Global)[];
+    const currentProps = Object.keys(global);
     for (const prop of currentProps) {
       if (globalClone.hasOwnProperty(prop)) {
-        (global as any)[prop] = globalClone[prop];
+        (global as any)[prop] = (globalClone as any)[prop];
       } else {
         delete (global as any)[prop];
       }
