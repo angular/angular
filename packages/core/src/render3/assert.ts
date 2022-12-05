@@ -73,12 +73,6 @@ export function assertHasParent(tNode: TNode|null) {
   assertDefined(tNode!.parent, 'currentTNode should have a parent');
 }
 
-export function assertDataNext(lView: LView, index: number, arr?: any[]) {
-  if (arr == null) arr = lView;
-  assertEqual(
-      arr.length, index, `index ${index} expected to be at the end of arr (length ${arr.length})`);
-}
-
 export function assertLContainer(value: any): asserts value is LContainer {
   assertDefined(value, 'LContainer must be defined');
   assertEqual(isLContainer(value), true, 'Expecting LContainer');
