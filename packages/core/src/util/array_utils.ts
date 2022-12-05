@@ -9,18 +9,6 @@
 import {assertEqual, assertLessThanOrEqual} from './assert';
 
 /**
- * Equivalent to ES6 spread, add each item to an array.
- *
- * @param items The items to add
- * @param arr The array to which you want to add the items
- */
-export function addAllToArray(items: any[], arr: any[]) {
-  for (let i = 0; i < items.length; i++) {
-    arr.push(items[i]);
-  }
-}
-
-/**
  * Determines if the contents of two arrays is identical
  *
  * @param a first array
@@ -178,48 +166,6 @@ export function arrayInsert2(array: any[], index: number, value1: any, value2: a
     array[index] = value1;
     array[index + 1] = value2;
   }
-}
-
-/**
- * Insert a `value` into an `array` so that the array remains sorted.
- *
- * NOTE:
- * - Duplicates are not allowed, and are ignored.
- * - This uses binary search algorithm for fast inserts.
- *
- * @param array A sorted array to insert into.
- * @param value The value to insert.
- * @returns index of the inserted value.
- */
-export function arrayInsertSorted(array: string[], value: string): number {
-  let index = arrayIndexOfSorted(array, value);
-  if (index < 0) {
-    // if we did not find it insert it.
-    index = ~index;
-    arrayInsert(array, index, value);
-  }
-  return index;
-}
-
-/**
- * Remove `value` from a sorted `array`.
- *
- * NOTE:
- * - This uses binary search algorithm for fast removals.
- *
- * @param array A sorted array to remove from.
- * @param value The value to remove.
- * @returns index of the removed value.
- *   - positive index if value found and removed.
- *   - negative index if value not found. (`~index` to get the value where it should have been
- *     inserted)
- */
-export function arrayRemoveSorted(array: string[], value: string): number {
-  const index = arrayIndexOfSorted(array, value);
-  if (index >= 0) {
-    arraySplice(array, index, 1);
-  }
-  return index;
 }
 
 
