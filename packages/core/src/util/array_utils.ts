@@ -32,27 +32,11 @@ export function arrayEquals<T>(a: T[], b: T[], identityAccessor?: (value: T) => 
   return true;
 }
 
-
 /**
  * Flattens an array.
  */
-export function flatten(list: any[], dst?: any[]): any[] {
-  if (dst === undefined) dst = list;
-  for (let i = 0; i < list.length; i++) {
-    let item = list[i];
-    if (Array.isArray(item)) {
-      // we need to inline it.
-      if (dst === list) {
-        // Our assumption that the list was already flat was wrong and
-        // we need to clone flat since we need to write to it.
-        dst = list.slice(0, i);
-      }
-      flatten(item, dst);
-    } else if (dst !== list) {
-      dst.push(item);
-    }
-  }
-  return dst;
+export function flatten(list: any[]): any[] {
+  return list.flat(Number.POSITIVE_INFINITY);
 }
 
 export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
