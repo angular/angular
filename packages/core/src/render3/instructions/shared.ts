@@ -1142,6 +1142,16 @@ function instantiateAllDirectives(
     tView: TView, lView: LView, tNode: TDirectiveHostNode, native: RNode) {
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
+
+  // The component view needs to be created before creating the node injector
+  // since it is used to inject some special symbols like `ChangeDetectorRef`.
+  if (isComponentHost(tNode)) {
+    ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
+    addComponentLogic(
+        lView, tNode as TElementNode,
+        tView.data[start + tNode.componentOffset] as ComponentDef<unknown>);
+  }
+
   if (!tView.firstCreatePass) {
     getOrCreateNodeInjectorForNode(tNode, lView);
   }
@@ -1151,13 +1161,6 @@ function instantiateAllDirectives(
   const initialInputs = tNode.initialInputs;
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
-    const isComponent = isComponentDef(def);
-
-    if (isComponent) {
-      ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
-      addComponentLogic(lView, tNode as TElementNode, def as ComponentDef<any>);
-    }
-
     const directive = getNodeInjectable(lView, tView, i, tNode);
     attachPatchData(directive, lView);
 
@@ -1165,9 +1168,9 @@ function instantiateAllDirectives(
       setInputsFromAttrs(lView, i - start, directive, def, tNode, initialInputs!);
     }
 
-    if (isComponent) {
+    if (isComponentDef(def)) {
       const componentView = getComponentLViewByIndex(tNode.index, lView);
-      componentView[CONTEXT] = directive;
+      componentView[CONTEXT] = getNodeInjectable(lView, tView, i, tNode);
     }
   }
 }

@@ -711,9 +711,6 @@
     "name": "absoluteRedirect"
   },
   {
-    "name": "addComponentLogic"
-  },
-  {
     "name": "addPropertyAlias"
   },
   {

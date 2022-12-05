@@ -465,9 +465,6 @@
     "name": "_wrapInTimeout"
   },
   {
-    "name": "addComponentLogic"
-  },
-  {
     "name": "addPropertyAlias"
   },
   {
