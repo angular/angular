@@ -19,8 +19,8 @@ jobs:
     # We only want to build and deploy the AIO app if the `aio: preview` label has been
     # added, or if the label is already applied and new changes have been made in the PR.
     if: |
-      (github.event.action == 'labeled' && github.event.label.name == 'test preview') ||
-      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'test preview'))
+      (github.event.action == 'labeled' && github.event.label.name == 'aio: preview') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'aio: preview'))
     steps:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
       - uses: ./.github/actions/yarn-install
