@@ -387,9 +387,6 @@
     "name": "_wrapInTimeout"
   },
   {
-    "name": "addComponentLogic"
-  },
-  {
     "name": "addPropertyAlias"
   },
   {
@@ -742,6 +739,9 @@
   },
   {
     "name": "isComponentDef"
+  },
+  {
+    "name": "isComponentHost"
   },
   {
     "name": "isContentQueryHost"

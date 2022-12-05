@@ -549,9 +549,6 @@
     "name": "addClass"
   },
   {
-    "name": "addComponentLogic"
-  },
-  {
     "name": "addPropertyAlias"
   },
   {
