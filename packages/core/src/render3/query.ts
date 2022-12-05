@@ -16,20 +16,17 @@ import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linke
 import {createContainerRef, ViewContainerRef} from '../linker/view_container_ref';
 import {assertDefined, assertIndexInRange, assertNumber, throwError} from '../util/assert';
 import {stringify} from '../util/stringify';
+
 import {assertFirstCreatePass, assertLContainer} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from './interfaces/container';
-import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
-import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
-import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata} from './interfaces/query';
 import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
 import {isCreationMode} from './util/view_utils';
-
-const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
 class LQuery_<T> implements LQuery<T> {
   matches: (T|null)[]|null = null;
