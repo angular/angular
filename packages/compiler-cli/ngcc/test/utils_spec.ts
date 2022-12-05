@@ -58,7 +58,7 @@ describe('FactoryMap', () => {
 
 describe('getTsHelperFnFromDeclaration()', () => {
   const createFunctionDeclaration = (fnName?: string) => ts.factory.createFunctionDeclaration(
-      undefined, undefined, undefined, fnName, undefined, [], undefined, undefined);
+      undefined, undefined, fnName, undefined, [], undefined, undefined);
   const createVariableDeclaration = (varName: string) =>
       ts.factory.createVariableDeclaration(varName, undefined, undefined, undefined);
 

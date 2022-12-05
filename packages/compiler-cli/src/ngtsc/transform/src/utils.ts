@@ -8,6 +8,7 @@
 import ts from 'typescript';
 
 import {ImportManager} from '../../translator';
+import {createImportDeclaration} from '../../ts_compatibility';
 
 /**
  * Adds extra imports in the import manage for this source file, after the existing imports
@@ -24,8 +25,7 @@ export function addImports(
         /* isTypeOnly */ false,
         /* name */ undefined,
         /* namedBindings */ ts.factory.createNamespaceImport(qualifier));
-    const decl = ts.factory.createImportDeclaration(
-        /* decorators */ undefined,
+    const decl = createImportDeclaration(
         /* modifiers */ undefined,
         /* importClause */ importClause,
         /* moduleSpecifier */ ts.factory.createStringLiteral(i.specifier));

@@ -150,7 +150,7 @@ export function ensureDocument(): void {
     (global as any).Node = domino.impl.Node;
 
     savedRequestAnimationFrame = (global as any).requestAnimationFrame;
-    (global as any).requestAnimationFrame = function(cb: FrameRequestCallback): number {
+    (global as any).requestAnimationFrame = function(cb: () => void): number {
       setImmediate(cb);
       return requestAnimationFrameCount++;
     };
