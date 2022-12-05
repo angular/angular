@@ -48,7 +48,7 @@ function createTestSupportFor(basePath: string) {
     'skipLibCheck': true,
     'strict': true,
     'strictPropertyInitialization': false,
-    'types': Object.freeze<string>([]) as string[],
+    'types': Object.freeze([] as string[]) as string[],
     'outDir': path.resolve(basePath, 'built'),
     'rootDir': basePath,
     'baseUrl': basePath,

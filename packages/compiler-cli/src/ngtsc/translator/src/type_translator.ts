@@ -9,6 +9,8 @@
 import * as o from '@angular/compiler';
 import ts from 'typescript';
 
+import {createIndexSignature, createParameterDeclaration} from '../../ts_compatibility';
+
 import {Context} from './context';
 import {ImportManager} from './import_manager';
 
@@ -61,14 +63,13 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
   }
 
   visitMapType(type: o.MapType, context: Context): ts.TypeLiteralNode {
-    const parameter = ts.factory.createParameterDeclaration(
-        undefined, undefined, undefined, 'key', undefined,
+    const parameter = createParameterDeclaration(
+        undefined, undefined, 'key', undefined,
         ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword));
     const typeArgs = type.valueType !== null ?
         this.translateType(type.valueType, context) :
         ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword);
-    const indexSignature =
-        ts.factory.createIndexSignature(undefined, undefined, [parameter], typeArgs);
+    const indexSignature = createIndexSignature(undefined, [parameter], typeArgs);
     return ts.factory.createTypeLiteralNode([indexSignature]);
   }
 

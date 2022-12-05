@@ -9,6 +9,7 @@
 import ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {createFunctionDeclaration, createParameterDeclaration} from '../../ts_compatibility';
 import {TypeCtorMetadata} from '../api';
 
 import {checkIfGenericTypeBoundsCanBeEmitted, ReferenceEmitEnvironment} from './tcb_util';
@@ -41,8 +42,7 @@ export function generateTypeCtorDeclarationFn(
         /* modifiers */ undefined,
         /* declarationList */ declList);
   } else {
-    return ts.factory.createFunctionDeclaration(
-        /* decorators */ undefined,
+    return createFunctionDeclaration(
         /* modifiers */[ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
         /* asteriskToken */ undefined,
         /* name */ meta.fnName,
@@ -172,8 +172,7 @@ function constructTypeCtorParameter(
   }
 
   // Create the 'init' parameter itself.
-  return ts.factory.createParameterDeclaration(
-      /* decorators */ undefined,
+  return createParameterDeclaration(
       /* modifiers */ undefined,
       /* dotDotDotToken */ undefined,
       /* name */ 'init',

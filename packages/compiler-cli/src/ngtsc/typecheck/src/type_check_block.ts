@@ -12,6 +12,7 @@ import ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassPropertyName} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
+import {createFunctionDeclaration, createParameterDeclaration} from '../../ts_compatibility';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
@@ -118,7 +119,7 @@ export function generateTypeCheckBlock(
     }
   }
 
-  const paramList = [tcbThisParam(ref.node, ctxRawType.typeName, typeArguments)];
+  const paramList = [tcbThisParam(ctxRawType.typeName, typeArguments)];
 
   const scopeStatements = scope.render();
   const innerBody = ts.factory.createBlock([
@@ -130,8 +131,7 @@ export function generateTypeCheckBlock(
   // the `ts.Printer` to format the type-check block nicely.
   const body = ts.factory.createBlock(
       [ts.factory.createIfStatement(ts.factory.createTrue(), innerBody, undefined)]);
-  const fnDecl = ts.factory.createFunctionDeclaration(
-      /* decorators */ undefined,
+  const fnDecl = createFunctionDeclaration(
       /* modifiers */ undefined,
       /* asteriskToken */ undefined,
       /* name */ name,
@@ -1652,16 +1652,13 @@ interface TcbBoundInput {
  * arguments.
  */
 function tcbThisParam(
-    node: ClassDeclaration<ts.ClassDeclaration>, name: ts.EntityName,
-    typeArguments: ts.TypeNode[]|undefined): ts.ParameterDeclaration {
-  const type = ts.factory.createTypeReferenceNode(name, typeArguments);
-  return ts.factory.createParameterDeclaration(
-      /* decorators */ undefined,
+    name: ts.EntityName, typeArguments: ts.TypeNode[]|undefined): ts.ParameterDeclaration {
+  return createParameterDeclaration(
       /* modifiers */ undefined,
       /* dotDotDotToken */ undefined,
       /* name */ 'this',
       /* questionToken */ undefined,
-      /* type */ type,
+      /* type */ ts.factory.createTypeReferenceNode(name, typeArguments),
       /* initializer */ undefined);
 }
 
@@ -1989,8 +1986,7 @@ function tcbCreateEventHandler(
     body = ts.factory.createIfStatement(guards, body);
   }
 
-  const eventParam = ts.factory.createParameterDeclaration(
-      /* decorators */ undefined,
+  const eventParam = createParameterDeclaration(
       /* modifiers */ undefined,
       /* dotDotDotToken */ undefined,
       /* name */ EVENT_PARAMETER,

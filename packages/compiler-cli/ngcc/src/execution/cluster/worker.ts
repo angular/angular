@@ -17,10 +17,11 @@ import {MessageToWorker} from './api';
 import {sendMessageToMaster} from './utils';
 
 export async function startWorker(logger: Logger, createCompileFn: CreateCompileFn): Promise<void> {
-  if (cluster.isMaster) {
+  if (cluster.isMaster || !cluster.worker) {
     throw new Error('Tried to run cluster worker on the master process.');
   }
 
+  const worker = cluster.worker;
   const compile = createCompileFn(
       transformedFiles => sendMessageToMaster({
         type: 'transformed-files',
@@ -29,16 +30,15 @@ export async function startWorker(logger: Logger, createCompileFn: CreateCompile
       (_task, outcome, message) => sendMessageToMaster({type: 'task-completed', outcome, message}));
 
   // Listen for `ProcessTaskMessage`s and process tasks.
-  cluster.worker.on('message', async (msg: MessageToWorker) => {
+  worker.on('message', async (msg: MessageToWorker) => {
     try {
       switch (msg.type) {
         case 'process-task':
-          logger.debug(
-              `[Worker #${cluster.worker.id}] Processing task: ${stringifyTask(msg.task)}`);
+          logger.debug(`[Worker #${worker.id}] Processing task: ${stringifyTask(msg.task)}`);
           return await compile(msg.task);
         default:
           throw new Error(
-              `[Worker #${cluster.worker.id}] Invalid message received: ${JSON.stringify(msg)}`);
+              `[Worker #${worker.id}] Invalid message received: ${JSON.stringify(msg)}`);
       }
     } catch (err: any) {
       switch (err && err.code) {
@@ -48,7 +48,7 @@ export async function startWorker(logger: Logger, createCompileFn: CreateCompile
           // simultaneously.
           //
           // Exit with an error and let the cluster master decide how to handle this.
-          logger.warn(`[Worker #${cluster.worker.id}] ${err.stack || err.message}`);
+          logger.warn(`[Worker #${worker.id}] ${err.stack || err.message}`);
           return process.exit(1);
         default:
           await sendMessageToMaster({
