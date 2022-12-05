@@ -10,12 +10,10 @@ import '../util/ng_dev_mode';
 
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
-import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
-import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
+import {AttributeMarker, TAttributes, TNode, TNodeType} from './interfaces/node';
+import {CssSelector, CssSelectorList, SelectorFlags} from './interfaces/projection';
 import {classIndexOf} from './styling/class_differ';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
-
-const unusedValueToPlacateAjd = unused1 + unused2;
 
 const NG_TEMPLATE_SELECTOR = 'ng-template';
 
