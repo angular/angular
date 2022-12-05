@@ -338,9 +338,6 @@ export function isCurrentTNodeParent(): boolean {
 export function setCurrentTNodeAsNotParent(): void {
   instructionState.lFrame.isParent = false;
 }
-export function setCurrentTNodeAsParent(): void {
-  instructionState.lFrame.isParent = true;
-}
 
 export function getContextLView(): LView {
   const contextLView = instructionState.lFrame.contextLView;

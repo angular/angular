@@ -59,20 +59,6 @@ export function unwrapLView(value: RNode|LView|LContainer): LView|null {
 }
 
 /**
- * Returns `LContainer` or `null` if not found.
- * @param value wrapped value of `RNode`, `LView`, `LContainer`
- */
-export function unwrapLContainer(value: RNode|LView|LContainer): LContainer|null {
-  while (Array.isArray(value)) {
-    // This check is same as `isLContainer()` but we don't call at as we don't want to call
-    // `Array.isArray()` twice and give JITer more work for inlining.
-    if (value[TYPE] === true) return value as LContainer;
-    value = value[HOST] as any;
-  }
-  return null;
-}
-
-/**
  * Retrieves an element value from the provided `viewData`, by unwrapping
  * from any containers, component views, or style contexts.
  */
