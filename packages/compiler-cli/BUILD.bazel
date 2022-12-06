@@ -1,9 +1,6 @@
-load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_config", "ts_library")
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
-
-# Load ng_perf_flag explicitly from ng_perf.bzl as it's private API, and not exposed to other
-# consumers of @angular/bazel.
 load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
+load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_config", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
