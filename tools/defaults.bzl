@@ -8,7 +8,6 @@ load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
-load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
 load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
 load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
@@ -17,6 +16,8 @@ load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract
 load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
+load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
+load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", "extract_esm_outputs", "install_esm_loaders")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -382,10 +383,19 @@ def protractor_web_test_suite(**kwargs):
         **kwargs
     )
 
-def nodejs_binary(data = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
-    data = data + [
-        "@%s//source-map-support" % _node_modules_workspace_name(),
-    ]
+def nodejs_binary(
+        name,
+        entry_point,
+        testonly = False,
+        data = [],
+        env = {},
+        templated_args = [],
+        enable_linker = False,
+        **kwargs):
+    npm_workspace = _node_modules_workspace_name()
+    rule_data = []
+
+    (templated_args, rule_data) = install_esm_loaders(templated_args, rule_data)
 
     if not enable_linker:
         templated_args = templated_args + [
@@ -394,16 +404,30 @@ def nodejs_binary(data = [], env = {}, templated_args = [], enable_linker = Fals
             "--nobazel_run_linker",
         ]
 
-        (env, templated_args, data) = _apply_esm_import_patch(env, templated_args, data)
+        env = enable_esm_node_module_loader(npm_workspace, env)
+
+    extract_esm_outputs(
+        name = "%s_esm_deps" % name,
+        testonly = testonly,
+        deps = data,
+    )
 
     _nodejs_binary(
-        data = data,
+        name = name,
+        data = [":%s_esm_deps" % name] + rule_data,
+        testonly = testonly,
+        entry_point = entry_point.replace(".js", ".mjs"),
         env = env,
         templated_args = templated_args,
+        use_esm = True,
         **kwargs
     )
 
 def nodejs_test(data = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
+    rule_data = []
+
+    (templated_args, rule_data) = install_esm_loaders(templated_args, rule_data)
+
     if not enable_linker:
         templated_args = templated_args + [
             # Disable the linker and rely on patched resolution which works better on Windows
@@ -411,10 +435,11 @@ def nodejs_test(data = [], env = {}, templated_args = [], enable_linker = False,
             "--nobazel_run_linker",
         ]
 
-        (env, templated_args, data) = _apply_esm_import_patch(env, templated_args, data)
+        npm_workspace = _node_modules_workspace_name()
+        env = enable_esm_node_module_loader(npm_workspace, env)
 
     _nodejs_test(
-        data = data,
+        data = data + rule_data,
         env = env,
         templated_args = templated_args,
         **kwargs
@@ -422,23 +447,6 @@ def nodejs_test(data = [], env = {}, templated_args = [], enable_linker = False,
 
 def _node_modules_workspace_name():
     return "npm" if not native.package_name().startswith("aio") else "aio_npm"
-
-def _apply_esm_import_patch(env, templated_args, data):
-    """Adjust properties from a nodejs_binary/test to provide a custom esm loader
-    to resolve third-party deps. Unlike for cjs modules, rules_nodejs doesn't patch
-    imports when the linker is disabled."""
-
-    env = dict(env, **{"NODE_MODULES_WORKSPACE_NAME": _node_modules_workspace_name()})
-    templated_args = templated_args + [
-        "--node_options=--loader=file:///$$(rlocation $(rootpath //tools/esm-loader:esm-loader.mjs))",
-        "--node_options=--no-warnings",  # `--loader` is an experimental feature with warnings.
-    ]
-    data = data + [
-        "//tools/esm-loader",
-        "//tools/esm-loader:esm-loader.mjs",
-    ]
-
-    return (env, templated_args, data)
 
 def npm_package_bin(args = [], **kwargs):
     _npm_package_bin(
