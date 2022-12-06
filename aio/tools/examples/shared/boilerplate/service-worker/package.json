@@ -23,7 +23,7 @@
     "@angular/router": "^15.0.0-rc.1",
     "@angular/service-worker": "^15.0.0-rc.1",
     "angular-in-memory-web-api": "~0.15.0",
-    "rxjs": "~7.5.0",
+    "rxjs": "~7.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
   },
