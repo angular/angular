@@ -32,13 +32,11 @@ export function arrayEquals<T>(a: T[], b: T[], identityAccessor?: (value: T) => 
   return true;
 }
 
-
 /**
  * Flattens an array.
  */
 export function flatten(list: any[]): any[] {
-  // Cannot use `Infinity` as depth as `infinity` is not a number literal in TypeScript.
-  return list.flat(9999);
+  return list.flat(Number.POSITIVE_INFINITY);
 }
 
 export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
