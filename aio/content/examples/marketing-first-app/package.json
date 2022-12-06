@@ -29,7 +29,7 @@
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
     "jasmine-core": "~4.5.0",
-    "jasmine-spec-reporter": "~5.0.0",
+    "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.1",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
