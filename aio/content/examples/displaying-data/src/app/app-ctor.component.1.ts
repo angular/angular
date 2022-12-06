@@ -8,11 +8,6 @@ import { Component } from '@angular/core';
     `
 })
 export class AppComponent {
-  title: string;
-  myHero: string;
-
-  constructor() {
-    this.title = 'Tour of Heroes';
-    this.myHero = 'Windstorm';
-  }
+  title = 'Tour of Heroes';
+  myHero = 'Windstorm';
 }
