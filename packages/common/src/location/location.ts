@@ -57,7 +57,7 @@ export class Location implements OnDestroy {
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
   /** @internal */
-  _baseHref: string;
+  _basePath: string;
   /** @internal */
   _locationStrategy: LocationStrategy;
   /** @internal */
@@ -67,8 +67,8 @@ export class Location implements OnDestroy {
 
   constructor(locationStrategy: LocationStrategy) {
     this._locationStrategy = locationStrategy;
-    const browserBaseHref = this._locationStrategy.getBaseHref();
-    this._baseHref = stripTrailingSlash(_stripIndexHtml(browserBaseHref));
+    const baseHref = this._locationStrategy.getBaseHref();
+    this._basePath = _stripOrigin(stripTrailingSlash(_stripIndexHtml(baseHref)));
     this._locationStrategy.onPopState((ev) => {
       this._subject.emit({
         'url': this.path(true),
@@ -127,7 +127,7 @@ export class Location implements OnDestroy {
    * @returns The normalized URL string.
    */
   normalize(url: string): string {
-    return Location.stripTrailingSlash(_stripBaseHref(this._baseHref, _stripIndexHtml(url)));
+    return Location.stripTrailingSlash(_stripBasePath(this._basePath, _stripIndexHtml(url)));
   }
 
   /**
@@ -294,10 +294,18 @@ export function createLocation() {
   return new Location(ɵɵinject(LocationStrategy as any));
 }
 
-function _stripBaseHref(baseHref: string, url: string): string {
-  return baseHref && url.startsWith(baseHref) ? url.substring(baseHref.length) : url;
+function _stripBasePath(basePath: string, url: string): string {
+  return basePath && url.startsWith(basePath) ? url.substring(basePath.length) : url;
 }
 
 function _stripIndexHtml(url: string): string {
   return url.replace(/\/index.html$/, '');
+}
+
+function _stripOrigin(baseHref: string): string {
+  if (/^(https?:)?\/\//.test(baseHref)) {
+    const [, pathname] = baseHref.split(/\/\/[^\/]+/);
+    return pathname;
+  }
+  return baseHref;
 }
