@@ -1,12 +1,12 @@
 # BEGIN-DEV-ONLY
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-load("@npm//@bazel/concatjs:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
 
 ts_library(
     name = "ngc_lib",
     srcs = [
         "extract_i18n.ts",
         "index.ts",
+        "ngc-wrapped-main.ts",
     ],
     module_name = "@angular/bazel",
     visibility = [
@@ -29,10 +29,8 @@ nodejs_binary(
     data = [
         ":ngc_lib",
         "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
-        "@npm//source-map-support",
-        "@npm//tslib",
     ],
-    entry_point = ":index.ts",
+    entry_point = ":ngc-wrapped-main.ts",
     # Disables the Bazel node modules linker. The node module linker is unreliable for the
     # persistent worker executable, as it would rely on the `node_modules/` folder in the
     # execroot that can be shared in non-sandbox environments or for persistent workers.
@@ -45,7 +43,6 @@ nodejs_binary(
     name = "xi18n",
     data = [
         ":ngc_lib",
-        "@npm//source-map-support",
     ],
     entry_point = ":extract_i18n.ts",
     # Follows the same reasoning as for the actual `ngc-wrapped` target.
