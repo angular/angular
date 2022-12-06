@@ -8,8 +8,15 @@
 
 import fs from 'fs';
 import path from 'path';
+import {createRequire} from 'module';
 import {pathToFileURL} from 'url';
 import {resolve as resolveExports} from '../../third_party/github.com/lukeed/resolve.exports/index.mjs';
+
+// The Bazel NodeJS rules patch `require` to support first-party
+// mapped packages. We cannot replicate this logic without patching
+// the Bazel rules, so instead we leverage the existing `require`
+// patched function as it knows about first party mapped packages.
+const requireFn = createRequire(import.meta.url);
 
 /*
   Custom module loader (see https://nodejs.org/api/cli.html#--experimental-loadermodule) to support
@@ -20,33 +27,30 @@ import {resolve as resolveExports} from '../../third_party/github.com/lukeed/res
   This is required because rules_nodejs only patches requires in cjs modules when the linker
   is disabled, not imports in mjs modules.
 */
-export async function resolve(specifier, context, defaultResolve) {
+export async function resolve(specifier, context, nextResolve) {
+  // Only activate this loader when it is explicitly enabled.
+  if (process.env.ESM_NODE_MODULE_LOADER_ENABLED !== 'true') {
+    return nextResolve(specifier, context);
+  }
+
   if (!isNodeOrNpmPackageImport(specifier)) {
-    return defaultResolve(specifier, context, defaultResolve);
+    return nextResolve(specifier, context);
   }
 
-  const runfilesRoot = path.resolve(process.env.RUNFILES);
-  const nodeModules = path.join(
-    runfilesRoot,
-    process.env.NODE_MODULES_WORKSPACE_NAME,
-    'node_modules'
-  );
   const packageImport = parsePackageImport(specifier);
-  const pathToNodeModule = path.join(nodeModules, packageImport.packageName);
+  const requireResult = tryResolveViaLocalMappings(specifier, packageImport);
+  const isInternalNodePackage = requireResult !== null && !fs.existsSync(requireResult);
 
-  const isInternalNodePackage = !fs.existsSync(pathToNodeModule);
   if (isInternalNodePackage) {
-    return defaultResolve(specifier, context, defaultResolve);
+    return nextResolve(specifier, context);
   }
 
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(pathToNodeModule, 'package.json'), 'utf-8')
-  );
+  if (requireResult !== null) {
+    return {url: pathToFileURL(requireResult).href};
+  }
 
-  const localPackagePath = resolvePackageLocalFilepath(packageImport, packageJson);
-  const resolvedFilePath = path.join(pathToNodeModule, localPackagePath);
-
-  return {url: pathToFileURL(resolvedFilePath).href};
+  // This is unexpected as we expected, though we still pass to the next resolver.
+  return nextResolve(specifier, context);
 }
 
 function isNodeOrNpmPackageImport(specifier) {
@@ -56,6 +60,22 @@ function isNodeOrNpmPackageImport(specifier) {
     !specifier.startsWith('node:') &&
     !specifier.startsWith('file:')
   );
+}
+
+function tryResolveViaLocalMappings(actualSpecifier, packageImport) {
+  try {
+    return requireFn.resolve(actualSpecifier);
+  } catch {}
+
+  try {
+    const pkgJsonPath = requireFn.resolve(path.join(packageImport.packageName, 'package.json'));
+    const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+    const localPath = resolvePackageLocalFilepath(packageImport, pkgJson);
+    if (localPath) throw new Error('is this needed?');
+    return path.join(path.dirname(pkgJsonPath, localPath));
+  } catch {}
+
+  return null;
 }
 
 function parsePackageImport(specifier) {
