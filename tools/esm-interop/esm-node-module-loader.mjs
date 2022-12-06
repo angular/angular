@@ -8,47 +8,61 @@
 
 import fs from 'fs';
 import path from 'path';
+import {createRequire} from 'module';
 import {pathToFileURL} from 'url';
 import {resolve as resolveExports} from '../../third_party/github.com/lukeed/resolve.exports/index.mjs';
 
+// The Bazel NodeJS rules patch `require` to support first-party
+// mapped packages. We cannot replicate this logic without patching
+// the Bazel rules, so instead we leverage the existing `require`
+// patched function as it knows about first party mapped packages.
+const requireFn = createRequire(import.meta.url);
+
+const npmDepsWorkspace = process.env.NODE_MODULES_WORKSPACE_NAME;
+const runfilesRoot = path.resolve(process.env.RUNFILES);
+const nodeModulesPath = path.join(runfilesRoot, npmDepsWorkspace, 'node_modules');
+
 /*
-  Custom module loader (see https://nodejs.org/api/cli.html#--experimental-loadermodule) to support
-  loading third-party packages in esm modules when the rules_nodejs linker is disabled. Resolves
-  third-party imports from the node_modules folder in the bazel workspace defined by
-  process.env.NODE_MODULES_WORKSPACE_NAME, and uses default resolution for all other imports.
-
-  This is required because rules_nodejs only patches requires in cjs modules when the linker
-  is disabled, not imports in mjs modules.
+  Custom module loader to support loading 1st-party and 3rd-party node
+  modules when the linker is disabled. This is required because `rules_nodejs`
+  only patches requires in cjs modules when the linker is disabled.
 */
-export async function resolve(specifier, context, defaultResolve) {
+export async function resolve(specifier, context, nextResolve) {
+  // Only activate this loader when explicitly enabled.
+  if (process.env.ESM_NODE_MODULE_LOADER_ENABLED !== 'true') {
+    return nextResolve(specifier, context);
+  }
+
   if (!isNodeOrNpmPackageImport(specifier)) {
-    return defaultResolve(specifier, context, defaultResolve);
+    return nextResolve(specifier, context);
   }
 
-  const runfilesRoot = path.resolve(process.env.RUNFILES);
-  const nodeModules = path.join(
-    runfilesRoot,
-    process.env.NODE_MODULES_WORKSPACE_NAME,
-    'node_modules'
-  );
   const packageImport = parsePackageImport(specifier);
-  const pathToNodeModule = path.join(nodeModules, packageImport.packageName);
+  const pathToNodeModule = path.join(nodeModulesPath, packageImport.packageName);
 
-  const isInternalNodePackage = !fs.existsSync(pathToNodeModule);
-  if (isInternalNodePackage) {
-    return defaultResolve(specifier, context, defaultResolve);
+  // If the module can be directly found in the `node_modules`, then we know it's
+  // a third-party package coming from NPM. In this case we properly respect ESM
+  // resolution by respecting the `exports`.
+  const npmModuleResult = fs.existsSync(pathToNodeModule)
+    ? resolvePackageWithExportsSupport(pathToNodeModule, packageImport)
+    : null;
+  if (npmModuleResult !== null) {
+    return npmModuleResult;
   }
 
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(pathToNodeModule, 'package.json'), 'utf-8')
-  );
+  // If the package does not exist on disk, then it may just be an invalid
+  // import, or the package is 1st-party one that is mapped within Bazel.
+  // We attempt to resolve it that way and return the path if there is a result.
+  const localMappingResult = tryResolveViaLocalMappings(specifier, packageImport);
+  if (localMappingResult !== null) {
+    return localMappingResult;
+  }
 
-  const localPackagePath = resolvePackageLocalFilepath(packageImport, packageJson);
-  const resolvedFilePath = path.join(pathToNodeModule, localPackagePath);
-
-  return {url: pathToFileURL(resolvedFilePath).href};
+  // Process built-in modules or unknown specifiers.
+  return nextResolve(specifier, context);
 }
 
+/** Gets whether the specifier refers to a module. */
 function isNodeOrNpmPackageImport(specifier) {
   return (
     !specifier.startsWith('./') &&
@@ -58,6 +72,24 @@ function isNodeOrNpmPackageImport(specifier) {
   );
 }
 
+/**
+ * Attempts to resolve a specifier using the Bazel patched resolution,
+ * supporting first-party package mappings from `rules_nodejs`.
+ */
+function tryResolveViaLocalMappings(actualSpecifier) {
+  try {
+    const res = requireFn.resolve(actualSpecifier);
+    // Note: It may not resolve to a path if the specifier is a builtin
+    // module. In such cases we do not want to return it as result.
+    if (fs.existsSync(res)) {
+      return {url: pathToFileURL(res).href};
+    }
+  } catch {}
+
+  return null;
+}
+
+/** Parses the given specifier into its package and subpath. */
 function parsePackageImport(specifier) {
   const [, packageName, pathInPackage = ''] =
     /^((?:@[^/]+\/)?[^/]+)(?:\/(.+))?$/.exec(specifier) ?? [];
@@ -67,10 +99,27 @@ function parsePackageImport(specifier) {
   return {packageName, pathInPackage, specifier};
 }
 
+/** Resolves an import to a module by respecting the `package.json` `exports`. */
+function resolvePackageWithExportsSupport(pathToNodeModule, packageImport) {
+  const packageJson = JSON.parse(
+    fs.readFileSync(path.join(pathToNodeModule, 'package.json'), 'utf8')
+  );
+  const localPackagePath = resolvePackageLocalFilepath(packageImport, packageJson);
+  const resolvedFilePath = path.join(pathToNodeModule, localPackagePath);
+
+  if (fs.existsSync(resolvedFilePath)) {
+    return {url: pathToFileURL(resolvedFilePath).href};
+  }
+  return null;
+}
+
+/**
+ * Resolves the remaining package-local portion of an import. Leverages
+ * the `package.json` `exports` field information for resolution.
+ */
 function resolvePackageLocalFilepath(packageImport, packageJson) {
   if (packageJson.exports) {
     return resolveExports(packageJson, packageImport.specifier);
   }
-
   return packageImport.pathInPackage || packageJson.module || packageJson.main || 'index.js';
 }
