@@ -1170,7 +1170,7 @@ groups:
           'tools/bazel-repo-patches/**/{*,.*}',
           'tools/circular_dependency_test/**/{*,.*}',
           'tools/contributing-stats/**/{*,.*}',
-          'tools/esm-loader/**/{*,.*}',
+          'tools/esm-interop/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
           'tools/legacy-saucelabs/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',
