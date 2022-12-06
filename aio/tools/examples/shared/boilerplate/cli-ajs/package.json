@@ -24,7 +24,7 @@
     "angular": "^1.8.3",
     "angular-in-memory-web-api": "~0.15.0",
     "angular-route": "1.8.3",
-    "rxjs": "~7.5.0",
+    "rxjs": "~7.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
   },

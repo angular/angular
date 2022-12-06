@@ -74,7 +74,7 @@
     "@angular/platform-browser-dynamic": "15.0.1",
     "@angular/router": "15.0.1",
     "@angular/service-worker": "15.0.1",
-    "rxjs": "~7.5.0",
+    "rxjs": "~7.6.0",
     "safevalues": "^0.4.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
