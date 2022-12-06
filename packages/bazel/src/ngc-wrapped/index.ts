@@ -7,31 +7,19 @@
  */
 
 // `tsc-wrapped` helpers are not exposed in the primary `@bazel/concatjs` entry-point.
-// TODO: Update when https://github.com/bazelbuild/rules_nodejs/pull/3286 is available.
-import {BazelOptions as ExternalBazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/concatjs/internal/tsc_wrapped';
-
-import type {AngularCompilerOptions, CompilerHost as NgCompilerHost, TsEmitCallback, Program, CompilerOptions} from '@angular/compiler-cli';
+import * as ng from '@angular/compiler-cli';
+import {PerfPhase} from '@angular/compiler-cli/private/bazel';
+import tscw from '@bazel/concatjs/internal/tsc_wrapped/index.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
 import ts from 'typescript';
-import {pathToFileURL} from 'url';
-
-type CompilerCliModule =
-    typeof import('@angular/compiler-cli')&typeof import('@angular/compiler-cli/private/bazel');
 
 // Add devmode for blaze internal
-interface BazelOptions extends ExternalBazelOptions {
+interface BazelOptions extends tscw.BazelOptions {
   allowedInputs?: string[];
   unusedInputsListPath?: string;
 }
-
-/**
- * Reference to the previously loaded `compiler-cli` module exports. We cache the exports
- * as `ngc-wrapped` can run as part of a worker where the Angular compiler should not be
- * resolved through a dynamic import for every build.
- */
-let _cachedCompilerCliModule: CompilerCliModule|null = null;
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const NGC_GEN_FILES = /^(.*?)\.(ngfactory|ngsummary|ngstyle|shim\.ngstyle)(.*)$/;
@@ -47,8 +35,8 @@ const ALL_DEPS_COMPILED_WITH_BAZEL = false;
 const NODE_MODULES = 'node_modules/';
 
 export async function main(args: string[]) {
-  if (runAsWorker(args)) {
-    await runWorkerLoop(runOneBuild);
+  if (tscw.runAsWorker(args)) {
+    await tscw.runWorkerLoop(runOneBuild);
   } else {
     return await runOneBuild(args) ? 0 : 1;
   }
@@ -56,46 +44,7 @@ export async function main(args: string[]) {
 }
 
 /** The one FileCache instance used in this process. */
-const fileCache = new FileCache<ts.SourceFile>(debug);
-
-/**
- * Loads a module that can either be CommonJS or an ESModule. This is done
- * as interop with the current devmode CommonJS and prodmode ESM output.
- */
-async function loadModuleInterop<T>(moduleName: string): Promise<T> {
-  // Note: This assumes that there are no conditional exports switching between `import`
-  // or `require`. We cannot fully rely on the dynamic import expression here because the
-  // Bazel NodeJS rules do not patch the `import` NodeJS module resolution, and this would
-  // make ngc-wrapped dependent on the linker. The linker is not enabled when the `ngc-wrapped`
-  // binary is shipped in the NPM package and is not available in Google3 either.
-  const resolvedUrl = pathToFileURL(require.resolve(moduleName));
-  const exports: Partial<T>&{default?: T} =
-      await new Function('m', `return import(m);`)(resolvedUrl);
-  return exports.default ?? exports as T;
-}
-
-/**
- * Fetches the Angular compiler CLI module dynamically, allowing for an ESM
- * variant of the compiler.
- */
-async function fetchCompilerCliModule(): Promise<CompilerCliModule> {
-  if (_cachedCompilerCliModule !== null) {
-    return _cachedCompilerCliModule;
-  }
-
-  // Note: We load the compiler-cli package dynamically using `loadModuleInterop` as
-  // this script runs as CommonJS module but the compiler-cli could be built as strict ESM
-  // package. Unfortunately we have a mix of CommonJS and ESM output here because the devmode
-  // output is still using CommonJS and this is primarily used for testing. Also inside G3,
-  // the devmode output will remain CommonJS regardless for now.
-  // TODO: Fix this up once devmode and prodmode are combined and we use ESM everywhere.
-  const compilerExports =
-      await loadModuleInterop<typeof import('@angular/compiler-cli')>('@angular/compiler-cli');
-  const compilerPrivateExports =
-      await loadModuleInterop<typeof import('@angular/compiler-cli/private/bazel')>(
-          '@angular/compiler-cli/private/bazel');
-  return _cachedCompilerCliModule = {...compilerExports, ...compilerPrivateExports};
-}
+const fileCache = new tscw.FileCache<ts.SourceFile>(tscw.debug);
 
 export async function runOneBuild(
     args: string[], inputs?: {[path: string]: string}): Promise<boolean> {
@@ -105,9 +54,8 @@ export async function runOneBuild(
 
   // Strip leading at-signs, used to indicate a params file
   const project = args[0].replace(/^@+/, '');
-  const ng = await fetchCompilerCliModule();
 
-  const [parsedOptions, errors] = parseTsconfig(project);
+  const [parsedOptions, errors] = tscw.parseTsconfig(project);
   if (errors?.length) {
     console.error(ng.formatDiagnostics(errors));
     return false;
@@ -153,9 +101,9 @@ export async function runOneBuild(
 
   // Angular Compiler options are always set under Bazel. See `ng_module.bzl`.
   const angularConfigRawOptions =
-      (config as {angularCompilerOptions: AngularCompilerOptions})['angularCompilerOptions'];
+      (config as {angularCompilerOptions: ng.AngularCompilerOptions})['angularCompilerOptions'];
 
-  const compilerOpts: AngularCompilerOptions = {
+  const compilerOpts: ng.AngularCompilerOptions = {
     ...userOverrides,
     ...angularConfigRawOptions,
     ...tsOptions,
@@ -175,7 +123,6 @@ export async function runOneBuild(
     bazelOpts,
     files,
     inputs,
-    ng,
   });
   if (diagnostics.length) {
     console.error(ng.formatDiagnostics(diagnostics));
@@ -205,18 +152,17 @@ export function compile({
   expectedOuts,
   gatherDiagnostics,
   bazelHost,
-  ng,
 }: {
   allDepsCompiledWithBazel?: boolean,
-  useManifestPathsAsModuleName?: boolean, compilerOpts: CompilerOptions, tsHost: ts.CompilerHost,
+  useManifestPathsAsModuleName?: boolean, compilerOpts: ng.CompilerOptions, tsHost: ts.CompilerHost,
   inputs?: {[path: string]: string},
         bazelOpts: BazelOptions,
         files: string[],
         expectedOuts: string[],
-  gatherDiagnostics?: (program: Program) => readonly ts.Diagnostic[],
-  bazelHost?: CompilerHost, ng: CompilerCliModule,
-}): {diagnostics: readonly ts.Diagnostic[], program: Program|undefined} {
-  let fileLoader: FileLoader;
+  gatherDiagnostics?: (program: ng.Program) => readonly ts.Diagnostic[],
+  bazelHost?: tscw.CompilerHost,
+}): {diagnostics: readonly ts.Diagnostic[], program: ng.Program|undefined} {
+  let fileLoader: tscw.FileLoader;
 
   // These options are expected to be set in Bazel. See:
   // https://github.com/bazelbuild/rules_nodejs/blob/591e76edc9ee0a71d604c5999af8bad7909ef2d4/packages/concatjs/internal/common/tsconfig.bzl#L246.
@@ -232,17 +178,17 @@ export function compile({
   }
 
   if (inputs) {
-    fileLoader = new CachedFileLoader(fileCache);
+    fileLoader = new tscw.CachedFileLoader(fileCache);
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs = new Map<string, string>();
     const inputKeys = Object.keys(inputs);
     for (let i = 0; i < inputKeys.length; i++) {
       const key = inputKeys[i];
-      resolvedInputs.set(resolveNormalizedPath(key), inputs[key]);
+      resolvedInputs.set(tscw.resolveNormalizedPath(key), inputs[key]);
     }
     fileCache.updateCache(resolvedInputs);
   } else {
-    fileLoader = new UncachedFileLoader();
+    fileLoader = new tscw.UncachedFileLoader();
   }
 
   // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
@@ -268,7 +214,7 @@ export function compile({
       };
 
   if (!bazelHost) {
-    bazelHost = new CompilerHost(files, compilerOpts, bazelOpts, tsHost, fileLoader);
+    bazelHost = new tscw.CompilerHost(files, compilerOpts, bazelOpts, tsHost, fileLoader);
   }
 
   const delegate = bazelHost.shouldSkipTsickleProcessing.bind(bazelHost);
@@ -370,7 +316,7 @@ export function compile({
     // as that has a different implementation of fromSummaryFileName / toSummaryFileName
     ngHost.fromSummaryFileName = (fileName: string, referringLibFileName: string) => {
       const workspaceRelative = fileName.split('/').splice(1).join('/');
-      return resolveNormalizedPath(bazelBin, workspaceRelative) + '.d.ts';
+      return tscw.resolveNormalizedPath(bazelBin, workspaceRelative) + '.d.ts';
     };
   }
   // Patch a property on the ngHost that allows the resourceNameToModuleName function to
@@ -380,7 +326,7 @@ export function compile({
     console.error('Check that it\'s included in the `assets` attribute of the `ng_module` rule.\n');
   };
 
-  const emitCallback: TsEmitCallback<tsickle.EmitResult> = ({
+  const emitCallback: ng.TsEmitCallback<tsickle.EmitResult> = ({
     program,
     targetSourceFile,
     writeFile,
@@ -398,7 +344,7 @@ export function compile({
 
   if (!gatherDiagnostics) {
     gatherDiagnostics = (program) =>
-        gatherDiagnosticsForInputsOnly(compilerOpts, bazelOpts, program, ng);
+        gatherDiagnosticsForInputsOnly(compilerOpts, bazelOpts, program);
   }
   const {diagnostics, emitResult, program} = ng.performCompilation({
     rootNames: files,
@@ -416,7 +362,7 @@ export function compile({
       externs += tsickle.getGeneratedExterns(tsickleEmitResult.externs, rootDir);
     }
     if (bazelOpts.manifest) {
-      const manifest = constructManifest(tsickleEmitResult.modulesManifest, bazelHost);
+      const manifest = tscw.constructManifest(tsickleEmitResult.modulesManifest, bazelHost);
       fs.writeFileSync(bazelOpts.manifest, manifest);
     }
   }
@@ -499,14 +445,13 @@ function convertToForwardSlashPath(filePath: string): string {
 }
 
 function gatherDiagnosticsForInputsOnly(
-    options: CompilerOptions, bazelOpts: BazelOptions, ngProgram: Program,
-    ng: CompilerCliModule): ts.Diagnostic[] {
+    options: ng.CompilerOptions, bazelOpts: BazelOptions, ngProgram: ng.Program): ts.Diagnostic[] {
   const tsProgram = ngProgram.getTsProgram();
 
   // For the Ivy compiler, track the amount of time spent fetching TypeScript diagnostics.
-  let previousPhase = ng.PerfPhase.Unaccounted;
+  let previousPhase = PerfPhase.Unaccounted;
   if (ngProgram instanceof ng.NgtscProgram) {
-    previousPhase = ngProgram.compiler.perfRecorder.phase(ng.PerfPhase.TypeScriptDiagnostics);
+    previousPhase = ngProgram.compiler.perfRecorder.phase(PerfPhase.TypeScriptDiagnostics);
   }
   const diagnostics: ts.Diagnostic[] = [];
   // These checks mirror ts.getPreEmitDiagnostics, with the important
@@ -536,13 +481,6 @@ function gatherDiagnosticsForInputsOnly(
   return diagnostics;
 }
 
-if (require.main === module) {
-  main(process.argv.slice(2)).then(exitCode => process.exitCode = exitCode).catch(e => {
-    console.error(e);
-    process.exitCode = 1;
-  });
-}
-
 /**
  * Adds support for the optional `fileNameToModuleName` operation to a given `ng.CompilerHost`.
  *
@@ -552,7 +490,7 @@ if (require.main === module) {
  * correctly.
  */
 export function patchNgHostWithFileNameToModuleName(
-    ngHost: NgCompilerHost, compilerOpts: CompilerOptions, bazelOpts: BazelOptions,
+    ngHost: ng.CompilerHost, compilerOpts: ng.CompilerOptions, bazelOpts: BazelOptions,
     rootDirs: string[], useManifestPathsAsModuleName: boolean): void {
   const fileNameToModuleNameCache = new Map<string, string>();
   ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath?: string) => {
