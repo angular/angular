@@ -234,7 +234,7 @@ Define your size boundaries in the CLI configuration file, `angular.json`, in a 
   "configurations": {
     "production": {
       &hellip;
-      budgets: []
+      "budgets": []
     }
   }
 }
