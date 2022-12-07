@@ -28,6 +28,7 @@ http_archive(
     patches = [
         # TODO(devversion): remove when https://github.com/bazelbuild/rules_nodejs/pull/3605 is available.
         "//tools:bazel-repo-patches/rules_nodejs__#3605.patch",
+        "//tools/esm-interop:patches/nodejs_binary_mjs_execution.patch",
     ],
     sha256 = "c29944ba9b0b430aadcaf3bf2570fece6fc5ebfb76df145c6cdad40d65c20811",
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.7.0/rules_nodejs-5.7.0.tar.gz"],
