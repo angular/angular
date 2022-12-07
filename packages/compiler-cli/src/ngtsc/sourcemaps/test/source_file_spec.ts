@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {encode} from 'sourcemap-codec';
+import {encode} from '@jridgewell/sourcemap-codec';
 
 import {absoluteFrom, getFileSystem, PathManipulation} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
