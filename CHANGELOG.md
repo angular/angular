@@ -1,3 +1,27 @@
+<a name="15.0.3"></a>
+# 15.0.3 (2022-12-07)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [50b1c2bf52](https://github.com/angular/angular/commit/50b1c2bf520e88828eadefcb2d0acaf151f8118e) | fix | Don't generate srcsets with very large sources ([#47997](https://github.com/angular/angular/pull/47997)) |
+| [bf44dc234a](https://github.com/angular/angular/commit/bf44dc234a32069cb297ef7d3a87c2004cad8b00) | fix | Update `Location` to support base href containing `origin` ([#48327](https://github.com/angular/angular/pull/48327)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9a5d84249a](https://github.com/angular/angular/commit/9a5d84249a0fd6b5c2a77c7ab6cbf72d90c45ee3) | fix | make sure selectors inside container queries are correctly scoped ([#48353](https://github.com/angular/angular/pull/48353)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [167bc0d163](https://github.com/angular/angular/commit/167bc0d1638ffd6fe91bcb40f96c2ab90f3e01cb) | fix | Produce diagnostic rather than crash when using invalid hostDirective ([#48314](https://github.com/angular/angular/pull/48314)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e4dcaa513e](https://github.com/angular/angular/commit/e4dcaa513e7d5ccd3a63edf6132792873f01f7c1) | fix | unable to inject ChangeDetectorRef inside host directives ([#48355](https://github.com/angular/angular/pull/48355)) |
+## Special Thanks
+Alan Agius, Alex Castle, Andrew Kushnir, Andrew Scott, Bob Watson, Derek Cormier, Joey Perrott, Konstantin Kharitonov, Kristiyan Kostadinov, Paul Gschwendtner, Pawel Kozlowski, dario-piotrowicz and piyush132000
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.1.0-next.1"></a>
 # 15.1.0-next.1 (2022-11-30)
 ## Deprecations
