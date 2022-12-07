@@ -1,3 +1,29 @@
+<a name="15.1.0-next.2"></a>
+# 15.1.0-next.2 (2022-12-07)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8e52ca2714](https://github.com/angular/angular/commit/8e52ca271496b0feebf66b2dc7c8f396b73d61a0) | fix | Don't generate srcsets with very large sources ([#47997](https://github.com/angular/angular/pull/47997)) |
+| [f8ecc194e9](https://github.com/angular/angular/commit/f8ecc194e93bf9f80af0cb0e77032341bf2f9886) | fix | Update `Location` to support base href containing `origin` ([#48327](https://github.com/angular/angular/pull/48327)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c023956d8](https://github.com/angular/angular/commit/4c023956d8dd05d8455612dff185a7e7918c9fed) | fix | make sure selectors inside container queries are correctly scoped ([#48353](https://github.com/angular/angular/pull/48353)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [27eaded62d](https://github.com/angular/angular/commit/27eaded62dbe059fc9ac02cfa7f53ccf8aebccbf) | fix | Produce diagnostic rather than crash when using invalid hostDirective ([#48314](https://github.com/angular/angular/pull/48314)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [38421578a2](https://github.com/angular/angular/commit/38421578a2573bcbc86c927ed4015e20fc39f04a) | feat | Make the `isStandalone()` function available in public API ([#48114](https://github.com/angular/angular/pull/48114)) |
+| [dd42974b07](https://github.com/angular/angular/commit/dd42974b070b068135c1bc34072486ae440e45e0) | feat | support TypeScript 4.9 ([#48005](https://github.com/angular/angular/pull/48005)) |
+| [5f9c7ceb90](https://github.com/angular/angular/commit/5f9c7ceb907be47dff3e203dd837fd6ee9133fcb) | fix | unable to inject ChangeDetectorRef inside host directives ([#48355](https://github.com/angular/angular/pull/48355)) |
+## Special Thanks
+Alan Agius, Alex Castle, Andrew Kushnir, Andrew Scott, Bob Watson, Charles Lyding, Derek Cormier, Joey Perrott, Konstantin Kharitonov, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, dario-piotrowicz, piyush132000 and sr5434
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.3"></a>
 # 15.0.3 (2022-12-07)
 ### common
