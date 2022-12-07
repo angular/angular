@@ -12,13 +12,9 @@ module.exports = {
   format: 'esm',
   banner: {
     // Workaround for: https://github.com/evanw/esbuild/issues/946
-    // We also define `__ESM_IMPORT_META_URL__` because we cannot use `import.meta.url`
-    // in our sources yet. The devmode CommonJS output will otherwise break.
-    // TODO: Remove this workaround in the future once devmode is ESM as well.
     js: `
       import {createRequire as __cjsCompatRequire} from 'module';
       const require = __cjsCompatRequire(import.meta.url);
-      const __ESM_IMPORT_META_URL__ = import.meta.url;
     `,
   },
 };

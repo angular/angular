@@ -91,10 +91,8 @@ export class LockFileWithChildProcess implements LockFile {
 
 /** Gets the absolute file path to the lock file unlocker script. */
 export function getLockFileUnlockerScriptPath(fileSystem: FileSystem): AbsoluteFsPath {
-  // This is an interop allowing for the unlocking script to be determined in both
-  // a CommonJS module, or an ES module which does not come with `require` by default.
-  const requireFn =
-      typeof require !== 'undefined' ? require : module.createRequire(__ESM_IMPORT_META_URL__);
+  // NodeJS `import.meta.resolve` is experimental. We leverage `require`.
+  const requireFn = module.createRequire(import.meta.url);
   // We resolve the worker script using module resolution as in the package output,
   // the worker might be bundled but exposed through a subpath export mapping.
   const unlockerScriptPath = requireFn.resolve(
