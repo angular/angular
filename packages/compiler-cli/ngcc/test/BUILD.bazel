@@ -27,11 +27,11 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/translator",
+        "@npm//@jridgewell/sourcemap-codec",
         "@npm//@types/convert-source-map",
         "@npm//@types/yargs",
         "@npm//dependency-graph",
         "@npm//magic-string",
-        "@npm//sourcemap-codec",
         "@npm//typescript",
     ],
 )

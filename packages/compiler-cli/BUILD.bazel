@@ -49,7 +49,7 @@ esbuild(
         "dependency-graph",
         "magic-string",
         "semver",
-        "sourcemap-codec",
+        "@jridgewell/sourcemap-codec",
         "tslib",
         "yargs",
     ],
