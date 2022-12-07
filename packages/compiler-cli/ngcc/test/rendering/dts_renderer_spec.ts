@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {encode} from '@jridgewell/sourcemap-codec';
 import mapHelpers from 'convert-source-map';
 import MagicString from 'magic-string';
-import {encode} from 'sourcemap-codec';
 import ts from 'typescript';
 
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
