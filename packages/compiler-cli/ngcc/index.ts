@@ -25,12 +25,9 @@ export function process(options: AsyncNgccOptions|SyncNgccOptions): void|Promise
   return mainNgcc(options);
 }
 
-
-// CommonJS/ESM interop for determining the current file name and containing
-// directory. These path is needed for providing an absolute path to the ngcc
-// command line entry-point script (for the CLI).
-export const containingDirPath =
-    typeof __dirname !== 'undefined' ? __dirname : dirname(fileURLToPath(__ESM_IMPORT_META_URL__));
+// The current script path is needed for providing an absolute path to the
+// ngcc command line entry-point script (leveraged by the Angular CLI).
+const containingDirPath = dirname(fileURLToPath(import.meta.url));
 
 /**
  * Absolute file path that points to the `ngcc` command line entry-point.
