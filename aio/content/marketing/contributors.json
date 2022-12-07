@@ -1071,6 +1071,14 @@
     "bio": "GDE (Google Developer Expert) Angular and Web Technologies, GDG Salvador organizer, passionate about technology and active in communities with a focus on web development, including Angular, JavaScript, HTML5, CSS3, Workflow, web performance, security and Internet of things. Participates in events organization, speaker at conferences in Brazil and other countries and contributes to several open source projects.",
     "groups": ["GDE"]
   },
+  "yannickbaron": {
+    "name": "Yannick Baron",
+    "picture": "yannickbaron.jpg",
+    "twitter": "yannick_baron",
+    "website": "https://thinktecture.com",
+    "bio": "Yannick is an Angular GDE (Google Developer Expert) and a consultant at Thinktecture in Germany. He has a passion for RxJS and reactive programming, and loves to help others improve their understanding of development with TypeScript and Angular. In his spare time, Yannick enjoys staying up-to-date with the latest trends and techniques in the world of web development. In addition to his work as a consultant, Yannick is also an active blogger and frequently speaks at conferences and meetups about topics related to Angular, RxJS, and reactive state management.",
+    "groups": ["GDE"]
+  },
   "yharaskrik": {
     "name": "Jay Bell",
     "picture": "jaybell.jpg",
