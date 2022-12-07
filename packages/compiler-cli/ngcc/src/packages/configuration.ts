@@ -268,11 +268,6 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
 
 const NGCC_CONFIG_FILENAME = 'ngcc.config.js';
 
-// CommonJS/ESM interop for determining the current file name and containing
-// directory. The path is needed for loading the user configuration.
-const isCommonJS = typeof require !== 'undefined';
-const currentFileUrl = isCommonJS ? null : __ESM_IMPORT_META_URL__;
-
 /**
  * The processed package level configuration as a result of processing a raw package level config.
  */
@@ -443,7 +438,7 @@ export class NgccConfiguration {
   }
 
   private evalSrcFile(srcPath: AbsoluteFsPath): any {
-    const requireFn = isCommonJS ? require : module.createRequire(currentFileUrl!);
+    const requireFn = module.createRequire(import.meta.url);
     const src = this.fs.readFile(srcPath);
     const theExports = {};
     const sandbox = {
