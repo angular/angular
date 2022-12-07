@@ -513,8 +513,8 @@ UndecoratedBase.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: Undeco
                  .toEqual(
                      RENDERED_CONTENTS + '\n' + mapHelpers.generateMapFileComment('file.js.map'));
              expect(mapFile.path).toEqual(_('/node_modules/test-package/src/file.js.map'));
-             //  expect(JSON.parse(mapFile.contents) as any)
-             //      .toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
+             expect(JSON.parse(mapFile.contents) as any)
+                 .toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
            });
 
 
