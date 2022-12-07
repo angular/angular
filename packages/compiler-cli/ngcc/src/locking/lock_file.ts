@@ -11,10 +11,8 @@ import module from 'module';
 import {AbsoluteFsPath, PathManipulation} from '../../../src/ngtsc/file_system';
 
 export function getLockFilePath(fs: PathManipulation) {
-  // This is an interop allowing for the unlocking script to be determined in both
-  // a CommonJS module, or an ES module which does not come with `require` by default.
-  const requireFn =
-      typeof require !== 'undefined' ? require : module.createRequire(__ESM_IMPORT_META_URL__);
+  // NodeJS `import.meta.resolve` is experimental. We leverage `require`.
+  const requireFn = module.createRequire(import.meta.url);
   // The lock file location is resolved based on the location of the `ngcc` entry-point as this
   // allows us to have a consistent position for the lock file to reside. We are unable to rely
   // on `__dirname` (or equivalent) as this code is being bundled and different entry-points
