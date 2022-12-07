@@ -423,9 +423,8 @@ def nodejs_binary(
         **kwargs
     )
 
-def nodejs_test(data = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
+def nodejs_test(name, data = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
     rule_data = []
-
     (templated_args, rule_data) = install_esm_loaders(templated_args, rule_data)
 
     if not enable_linker:
@@ -438,10 +437,18 @@ def nodejs_test(data = [], env = {}, templated_args = [], enable_linker = False,
         npm_workspace = _node_modules_workspace_name()
         env = enable_esm_node_module_loader(npm_workspace, env)
 
+    extract_esm_outputs(
+        name = "%s_esm_deps" % name,
+        testonly = True,
+        deps = data,
+    )
+
     _nodejs_test(
-        data = data + rule_data,
+        name = name,
+        data = [":%s_esm_deps" % name] + rule_data,
         env = env,
         templated_args = templated_args,
+        use_esm = True,
         **kwargs
     )
 
