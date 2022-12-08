@@ -160,18 +160,15 @@ def ts_library(
     )
 
     # The `ts_library` targets by default only expose the type definitions as `DefaultInfo`.
-    # This is an auto-generated target that can be used to access the plain ES2015 devmode output.
-    # TODO(devversion): Should be renamed once we have devmode & prodmode combined.
+    # This is an auto-generated target that can be used to access the plain JS output.
+    # TODO(devversion): Should be replaced once we have devmode & prodmode combined.
     native.filegroup(
         # Note: When changing the suffix of this target, update the `jasmine_node_test` bootstrap
         # logic which has special logic for resolving such targets.
-        name = "%s_es2015" % name,
+        name = "%s_files" % name,
         srcs = [":%s" % name],
         testonly = testonly,
-        # Note: Ironically this is named `es5_sources` but it refers to the devmode output.
-        # This is just an artifact of many iterations in `@bazel/concatjs`. This is being
-        # solved together with us combining devmode & prodmode.
-        output_group = "es5_sources",
+        output_group = "es6_sources",
     )
 
 def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, **kwargs):
@@ -468,15 +465,15 @@ def jasmine_node_test(bootstrap = [], **kwargs):
                  file.
 
                  The label is automatically added to the deps of jasmine_node_test.
-                 If the label ends in `_es2015` which by convention selects the es2015 outputs
-                 of a ts_library rule, then corresponding ts_library target sans `_es2015`
+                 If the label ends in `_files` which by convention selects the JS outputs
+                 of a ts_library rule, then corresponding ts_library target sans `_files`
                  is also added to the deps of jasmine_node_test.
 
                  For example with,
 
                  jasmine_node_test(
                      name = "test",
-                     bootstrap = ["//tools/testing:node_es2015"],
+                     bootstrap = ["//tools/testing:node_files"],
                      deps = [":test_lib"],
                  )
 
@@ -503,12 +500,12 @@ def jasmine_node_test(bootstrap = [], **kwargs):
     for label in bootstrap:
         deps.append(label)
         templated_args.append("--node_options=--require=$$(rlocation $(rootpath %s))" % label)
-        if label.endswith("_es2015"):
+        if label.endswith("_files"):
             # If this label is a filegroup derived from a ts_library then automatically
-            # add the ts_library target (which is the label sans `_es2015`) to deps so we pull
+            # add the ts_library target (which is the label sans `_files`) to deps so we pull
             # in all of its transitive deps. This removes the need for duplicate deps on the
             # target and makes the usage of this rule less verbose.
-            deps.append(label[:-len("_es2015")])
+            deps.append(label[:-len("_files")])
 
     _jasmine_node_test(
         deps = deps,
