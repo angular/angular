@@ -18,6 +18,6 @@ def extract_esm_outputs(name, deps, testonly = False):
         provider = "JSEcmaScriptModuleInfo",
         forward_linker_mappings = True,
         include_external_npm_packages = True,
-        include_default_files = False,
+        include_default_files = True,
         include_declarations = False,
     )
