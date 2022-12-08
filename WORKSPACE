@@ -105,6 +105,7 @@ yarn_install(
         "//:scripts/puppeteer-chromedriver-versions.js",
         "//:scripts/webdriver-manager-update.js",
         "//tools:postinstall-patches.js",
+        "//tools/esm-interop:patches/npm/@bazel+concatjs+5.7.1.patch",
     ],
     # Currently disabled due to:
     #  1. Missing Windows support currently.
