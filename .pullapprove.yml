@@ -843,7 +843,7 @@ groups:
           'aio/content/images/guide/setup-local/**/{*,.*}',
           'aio/content/tutorial/**/{*,.*}',
           'aio/content/images/guide/toh/**/{*,.*}',
-          'aio/content/examples/marketing-first-app/**/{*,.*}',
+          'aio/content/demos/first-app/**/{*,.*}',
           'aio/content/examples/toh-pt0/**/{*,.*}',
           'aio/content/examples/toh-pt1/**/{*,.*}',
           'aio/content/examples/toh-pt2/**/{*,.*}',
