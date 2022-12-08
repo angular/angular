@@ -1,0 +1,57 @@
+diff --git a/node_modules/@bazel/concatjs/internal/common/compilation.bzl b/node_modules/@bazel/concatjs/internal/common/compilation.bzl
+index fed787a..ec76478 100755
+--- a/node_modules/@bazel/concatjs/internal/common/compilation.bzl
++++ b/node_modules/@bazel/concatjs/internal/common/compilation.bzl
+@@ -272,10 +272,6 @@ def compile_ts(
+     # Not all existing implementations of outputs() may return transpilation_infos
+     transpilation_infos = getattr(outs, "transpilation_infos", [])
+ 
+-    if has_sources and _get_runtime(ctx) != "nodejs":
+-        # Note: setting this variable controls whether tsickle is run at all.
+-        tsickle_externs = [ctx.actions.declare_file(ctx.label.name + ".externs.js")]
+-
+     dep_declarations = _collect_dep_declarations(ctx, declaration_infos)
+ 
+     type_blocklisted_declarations = dep_declarations.type_blocklisted_declarations
+@@ -298,7 +294,6 @@ def compile_ts(
+         perf_trace = str(ctx.label) == ctx.var["TYPESCRIPT_PERF_TRACE_TARGET"]
+ 
+     compilation_inputs = dep_declarations.transitive_declarations.to_list() + srcs_files
+-    tsickle_externs_path = tsickle_externs[0] if tsickle_externs else None
+ 
+     # Calculate allowed dependencies for strict deps enforcement.
+     allowed_deps = depset(
+@@ -313,7 +308,7 @@ def compile_ts(
+         compilation_inputs,
+         srcs_files,
+         jsx_factory = jsx_factory,
+-        tsickle_externs = tsickle_externs_path,
++        tsickle_externs = None,
+         type_blocklisted_declarations = type_blocklisted_declarations.to_list(),
+         allowed_deps = allowed_deps,
+     )
+@@ -322,7 +317,7 @@ def compile_ts(
+     # .d.ts (or even errors) from the altered Closure-style JS emit.
+     tsconfig_es6["compilerOptions"]["declaration"] = False
+     tsconfig_es6["compilerOptions"].pop("declarationDir")
+-    outputs = transpiled_closure_js + tsickle_externs
++    outputs = transpiled_closure_js
+ 
+     node_profile_args = []
+     if perf_trace and has_sources:
+@@ -412,13 +407,13 @@ def compile_ts(
+     # both ts_library and ts_declarations generate .mjs files:
+     # - for libraries, this is the ES6/production code
+     # - for declarations, these are generated shims
+-    es6_sources = depset(transpiled_closure_js + tsickle_externs)
++    es6_sources = depset(transpiled_closure_js)
+     if is_library:
+         es5_sources = depset(transpiled_devmode_js)
+     else:
+         # In development mode, no code ever references shims as they only
+         # contain types, and the ES5 code does not get type annotated.
+-        es5_sources = depset(tsickle_externs)
++        es5_sources = depset()
+ 
+         # Similarly, in devmode these sources do not get loaded, so do not need
+         # to be in a manifest.
