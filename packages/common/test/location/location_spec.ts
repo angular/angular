@@ -266,4 +266,25 @@ describe('Location Class', () => {
       expect(location.normalize(url)).toBe(route);
     });
   });
+
+  describe('location.normalize(url) should return properly normalized url', () => {
+    it('in case url starts with the substring equals APP_BASE_HREF', () => {
+      const baseHref = '/en';
+      const path = '/enigma';
+      const queryParams = '?param1=123';
+      const matrixParams = ';param1=123';
+      const fragment = '#anchor1';
+
+      TestBed.configureTestingModule({providers: [{provide: APP_BASE_HREF, useValue: baseHref}]});
+
+      const location = TestBed.inject(Location);
+
+      expect(location.normalize(path)).toBe(path);
+      expect(location.normalize(baseHref)).toBe('');
+      expect(location.normalize(baseHref + path)).toBe(path);
+      expect(location.normalize(baseHref + queryParams)).toBe(queryParams);
+      expect(location.normalize(baseHref + matrixParams)).toBe(matrixParams);
+      expect(location.normalize(baseHref + fragment)).toBe(fragment);
+    });
+  });
 });
