@@ -13,8 +13,6 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
     """This test verifies that a set of top level symbols from a javascript file match a gold file.
     """
     all_data = data + [
-        src,
-        golden,
         Label("//tools/symbol-extractor:lib"),
         Label("@npm//typescript"),
     ]
@@ -25,9 +23,8 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         data = all_data,
         entry_point = entry_point,
         tags = kwargs.pop("tags", []) + ["symbol_extractor"],
-        # Disable the linker and rely on patched resolution which works better on Windows
-        # and is less prone to race conditions when targets build concurrently.
-        templated_args = ["--nobazel_run_linker", "$(rootpath %s)" % src, "$(rootpath %s)" % golden],
+        data_for_args = [src, golden],
+        templated_args = ["$(rootpath %s)" % src, "$(rootpath %s)" % golden],
         **kwargs
     )
 
@@ -36,8 +33,7 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         testonly = True,
         data = all_data,
         entry_point = entry_point,
-        # Disable the linker and rely on patched resolution which works better on Windows
-        # and is less prone to race conditions when targets build concurrently.
-        templated_args = ["--nobazel_run_linker", "$(rootpath %s)" % src, "$(rootpath %s)" % golden, "--accept"],
+        data_for_args = [src, golden],
+        templated_args = ["$(rootpath %s)" % src, "$(rootpath %s)" % golden, "--accept"],
         **kwargs
     )
