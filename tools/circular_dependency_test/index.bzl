@@ -15,8 +15,9 @@ MADGE_CONFIG_LABEL = "//tools/circular_dependency_test:madge-resolve.config.js"
 def circular_dependency_test(name, deps, entry_point, **kwargs):
     nodejs_test(
         name = name,
-        data = ["@npm//madge", MADGE_CONFIG_LABEL] + deps,
+        data = ["@npm//madge"] + deps,
         entry_point = "@npm//:node_modules/madge/bin/cli.js",
+        data_for_args = [MADGE_CONFIG_LABEL],
         templated_args = [
             "--circular",
             "--no-spinner",
