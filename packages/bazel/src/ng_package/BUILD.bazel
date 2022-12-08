@@ -53,7 +53,6 @@ ts_library(
     tsconfig = ":tsconfig.json",
     deps = [
         "@npm//@types/node",
-        "@npm//@types/shelljs",
     ],
 )
 
@@ -69,7 +68,6 @@ nodejs_binary(
     name = "packager",
     data = [
         "lib",
-        "@npm//shelljs",
     ],
     entry_point = ":packager.ts",
     # Disable the linker and rely on patched resolution which works better on Windows
