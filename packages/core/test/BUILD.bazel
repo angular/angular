@@ -5,13 +5,13 @@ package(default_visibility = ["//visibility:public"])
 
 circular_dependency_test(
     name = "circular_deps_test",
-    entry_point = "angular/packages/core/index.js",
+    entry_point = "angular/packages/core/index.mjs",
     deps = ["//packages/core"],
 )
 
 circular_dependency_test(
     name = "testing_circular_deps_test",
-    entry_point = "angular/packages/core/testing/index.js",
+    entry_point = "angular/packages/core/testing/index.mjs",
     deps = ["//packages/core/testing"],
 )
 
