@@ -15,6 +15,9 @@
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {"enabled": true},
   "labels": ["target: patch", "area: build & ci", "action: review"],
+  "ignorePaths": [
+    "aio/content/demos/first-app/package.json"
+  ],
   "ignoreDeps": [
     "@angular/animations-12",
     "@angular/common-12",
