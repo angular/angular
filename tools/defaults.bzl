@@ -389,6 +389,7 @@ def nodejs_binary(
         testonly = False,
         data = [],
         env = {},
+        data_for_args = [],
         templated_args = [],
         enable_linker = False,
         **kwargs):
@@ -414,7 +415,7 @@ def nodejs_binary(
 
     _nodejs_binary(
         name = name,
-        data = [":%s_esm_deps" % name] + rule_data,
+        data = [":%s_esm_deps" % name] + rule_data + data_for_args,
         testonly = testonly,
         entry_point = entry_point.replace(".js", ".mjs"),
         env = env,
@@ -423,7 +424,7 @@ def nodejs_binary(
         **kwargs
     )
 
-def nodejs_test(name, data = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
+def nodejs_test(name, data = [], env = {}, data_for_args = [], templated_args = [], enable_linker = False, **kwargs):
     rule_data = []
     (templated_args, rule_data) = install_esm_loaders(templated_args, rule_data)
 
@@ -445,7 +446,7 @@ def nodejs_test(name, data = [], env = {}, templated_args = [], enable_linker = 
 
     _nodejs_test(
         name = name,
-        data = [":%s_esm_deps" % name] + rule_data,
+        data = [":%s_esm_deps" % name] + rule_data + data_for_args,
         env = env,
         templated_args = templated_args,
         use_esm = True,
