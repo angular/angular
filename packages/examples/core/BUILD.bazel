@@ -78,7 +78,7 @@ protractor_web_test_suite(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node_files"],
     deps = [
         ":core_tests_lib",
         "//packages/examples/core/di/ts/forward_ref:forward_ref_tests_lib",
