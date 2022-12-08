@@ -15,6 +15,7 @@ load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", "extract_esm_outputs")
@@ -455,32 +456,7 @@ def npm_package_bin(args = [], **kwargs):
         **kwargs
     )
 
-def jasmine_node_test(bootstrap = [], **kwargs):
-    """Default values for jasmine_node_test
-
-    Args:
-      bootstrap: A list of labels of scripts to run before the entry_point.
-
-                 The labels can either be individual files or a filegroup that contain a single
-                 file.
-
-                 The label is automatically added to the deps of jasmine_node_test.
-                 If the label ends in `_files` which by convention selects the JS outputs
-                 of a ts_library rule, then corresponding ts_library target sans `_files`
-                 is also added to the deps of jasmine_node_test.
-
-                 For example with,
-
-                 jasmine_node_test(
-                     name = "test",
-                     bootstrap = ["//tools/testing:node_files"],
-                     deps = [":test_lib"],
-                 )
-
-                 the `//tools/testing:node` target will automatically get added to deps
-                 by this macro. This removes the need for duplicate deps on the
-                 target and makes the usage of this rule less verbose."""
-
+def jasmine_node_test(name, srcs = [], bootstrap = [], env = {}, **kwargs):
     # Very common dependencies for tests
     deps = kwargs.pop("deps", []) + [
         "@npm//chokidar",
@@ -497,20 +473,37 @@ def jasmine_node_test(bootstrap = [], **kwargs):
     # and is less prone to race conditions when targets build concurrently.
     templated_args = ["--nobazel_run_linker"] + kwargs.pop("templated_args", [])
 
-    for label in bootstrap:
-        deps.append(label)
-        templated_args.append("--node_options=--require=$$(rlocation $(rootpath %s))" % label)
-        if label.endswith("_files"):
-            # If this label is a filegroup derived from a ts_library then automatically
-            # add the ts_library target (which is the label sans `_files`) to deps so we pull
-            # in all of its transitive deps. This removes the need for duplicate deps on the
-            # target and makes the usage of this rule less verbose.
-            deps.append(label[:-len("_files")])
+    # We disable the linker, so the ESM node module loader needs to be enabled.
+    npm_workspace = _node_modules_workspace_name()
+    env = enable_esm_node_module_loader(npm_workspace, env)
+
+    extract_esm_outputs(
+        name = "%s_esm_deps" % name,
+        testonly = True,
+        deps = deps + srcs,
+    )
+
+    extract_esm_outputs(
+        name = "%s_esm_bootstrap" % name,
+        testonly = True,
+        deps = bootstrap,
+    )
+
+    spec_entrypoint(
+        name = "%s_spec_entrypoint.spec" % name,
+        testonly = True,
+        deps = ["%s_esm_deps" % name],
+        bootstrap = ["%s_esm_bootstrap" % name],
+    )
 
     _jasmine_node_test(
-        deps = deps,
+        name = name,
+        srcs = [":%s_spec_entrypoint.spec" % name],
+        use_direct_specs = True,
         configuration_env_vars = configuration_env_vars,
+        env = env,
         templated_args = templated_args,
+        use_esm = True,
         **kwargs
     )
 

@@ -17,7 +17,8 @@ import 'reflect-metadata/Reflect';
 
 // Initialize jasmine with @bazel/jasmine boot() function. This will initialize
 // global.jasmine so that it can be patched by zone.js jasmine-patch.js.
-require('@bazel/jasmine').boot();
+(await import('@bazel/jasmine' as any)).boot();
+
 import 'zone.js/lib/jasmine/jasmine';
 
 (global as any).isNode = true;
