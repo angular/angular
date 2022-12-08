@@ -303,7 +303,13 @@ function _stripIndexHtml(url: string): string {
 }
 
 function _stripOrigin(baseHref: string): string {
-  if (/^(https?:)?\/\//.test(baseHref)) {
+  // DO NOT REFACTOR! Previously, this check looked like this:
+  // `/^(https?:)?\/\//.test(baseHref)`, but that resulted in
+  // syntactically incorrect code after Closure Compiler minification.
+  // This was likely caused by a bug in Closure Compiler, but
+  // for now, the check is rewritten to use `new RegExp` instead.
+  const isAbsoluteUrl = (new RegExp('^(https?:)?//')).test(baseHref);
+  if (isAbsoluteUrl) {
     const [, pathname] = baseHref.split(/\/\/[^\/]+/);
     return pathname;
   }
