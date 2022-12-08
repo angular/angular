@@ -87,7 +87,7 @@ ts_library(
 ts_library(
     name = "node_entry_point",
     testonly = True,
-    srcs = ["node_entry_point.ts"],
+    srcs = ["node_entry_point.init.ts"],
     deps = [
         ":common_spec_env",
         ":common_spec_srcs",
@@ -104,7 +104,7 @@ ts_library(
 ts_library(
     name = "node_entry_point_no_patch_clock",
     testonly = True,
-    srcs = ["node_entry_point_no_patch_clock.ts"],
+    srcs = ["node_entry_point_no_patch_clock.init.ts"],
     deps = [
         ":common_spec_env",
         ":common_spec_srcs",
@@ -134,7 +134,7 @@ ts_library(
 ts_library(
     name = "node_bluebird_entry_point",
     testonly = True,
-    srcs = ["node_bluebird_entry_point.ts"],
+    srcs = ["node_bluebird_entry_point.init.ts"],
     deps = [
         ":common_spec_env",
         "//packages/zone.js/lib",
@@ -145,7 +145,7 @@ ts_library(
 ts_library(
     name = "node_error_disable_policy_entry_point",
     testonly = True,
-    srcs = ["node_error_disable_policy_entry_point.ts"],
+    srcs = ["node_error_disable_policy_entry_point.init.ts"],
     deps = [
         ":common_spec_env",
         ":common_spec_util",
@@ -158,7 +158,7 @@ ts_library(
 ts_library(
     name = "node_error_entry_point",
     testonly = True,
-    srcs = ["node_error_entry_point.ts"],
+    srcs = ["node_error_entry_point.init.ts"],
     deps = [
         ":common_spec_env",
         ":common_spec_util",
@@ -170,7 +170,7 @@ ts_library(
 ts_library(
     name = "node_error_lazy_policy_entry_point",
     testonly = True,
-    srcs = ["node_error_lazy_policy_entry_point.ts"],
+    srcs = ["node_error_lazy_policy_entry_point.init.ts"],
     deps = [
         ":common_spec_env",
         ":common_spec_util",
