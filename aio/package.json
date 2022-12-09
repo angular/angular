@@ -86,7 +86,7 @@
     "@angular-eslint/eslint-plugin": "^15.0.0",
     "@angular-eslint/eslint-plugin-template": "^15.0.0",
     "@angular-eslint/template-parser": "^15.0.0",
-    "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#52dc51b85b8430b40a0b49304cc6b888ea142354",
+    "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#8bfc7e1aca9125487c1d52a5a2c09cc9e134e421",
     "@angular/cli": "15.1.0-next.2",
     "@angular/compiler-cli": "15.1.0-next.2",
     "@bazel/bazelisk": "^1.7.5",
