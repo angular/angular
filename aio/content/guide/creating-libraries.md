@@ -13,7 +13,7 @@ Use the Angular CLI to generate a new library skeleton in a new workspace with t
 
 ng new my-workspace --no-create-application
 cd my-workspace
-ng generate library my-lib
+ng generate library ngx-my-lib
 
 </code-example>
 
@@ -31,7 +31,7 @@ It is also an excellent indication to consumers of the registry to differentiate
 
 </div>
 
-The `ng generate` command creates the `projects/my-lib` folder in your workspace, which contains a component and a service inside an NgModule.
+The `ng generate` command creates the `projects/ngx-my-lib` folder in your workspace, which contains a component and a service inside an NgModule.
 
 <div class="alert is-helpful">
 
@@ -48,9 +48,9 @@ When you generate a new library, the workspace configuration file, `angular.json
 
 "projects": {
   &hellip;
-  "my-lib": {
-    "root": "projects/my-lib",
-    "sourceRoot": "projects/my-lib/src",
+  "ngx-my-lib": {
+    "root": "projects/ngx-my-lib",
+    "sourceRoot": "projects/ngx-my-lib/src",
     "projectType": "library",
     "prefix": "lib",
     "architect": {
@@ -64,9 +64,9 @@ Build, test, and lint the project with CLI commands:
 
 <code-example format="shell" language="shell">
 
-ng build my-lib --configuration development
-ng test my-lib
-ng lint my-lib
+ng build ngx-my-lib --configuration development
+ng test ngx-my-lib
+ng lint ngx-my-lib
 
 </code-example>
 
@@ -150,8 +150,8 @@ This ensures that generated output uses the appropriate optimizations and the co
 
 <code-example format="shell" language="shell">
 
-ng build my-lib
-cd dist/my-lib
+ng build ngx-my-lib
+cd dist/ngx-my-lib
 npm publish
 
 </code-example>
@@ -206,7 +206,7 @@ To use your own library in an application:
 
     <code-example format="shell" language="shell">
 
-    ng build my-lib
+    ng build ngx-my-lib
 
     </code-example>
 
@@ -214,14 +214,14 @@ To use your own library in an application:
 
     <code-example format="typescript" language="typescript">
 
-    import { myExport } from 'my-lib';
+    import { myExport } from 'ngx-my-lib';
 
     </code-example>
 
 ### Building and rebuilding your library
 
 The build step is important if you haven't published your library as an npm package and then installed the package back into your application from npm.
-For instance, if you clone your git repository and run `npm install`, your editor shows the `my-lib` imports as missing if you haven't yet built your library.
+For instance, if you clone your git repository and run `npm install`, your editor shows the `ngx-my-lib` imports as missing if you haven't yet built your library.
 
 <div class="alert is-helpful">
 
@@ -247,7 +247,7 @@ To take advantage of this feature add the `--watch` flag to the build command:
 
 <code-example format="shell" language="shell">
 
-ng build my-lib --watch
+ng build ngx-my-lib --watch
 
 </code-example>
 
@@ -257,7 +257,7 @@ The CLI `build` command uses a different builder and invokes a different build t
 
 *   The build system for applications, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects
 *   The build system for libraries is based on `ng-packagr`.
-    It is only added to your dependencies when you add a library using `ng generate library my-lib`.
+    It is only added to your dependencies when you add a library using `ng generate library ngx-my-lib`.
 
 The two build systems support different things, and even where they support the same things, they do those things differently.
 This means that the TypeScript source can result in different JavaScript code in a built library than it would in a built application.
