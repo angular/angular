@@ -106,6 +106,7 @@ yarn_install(
         "//:scripts/webdriver-manager-update.js",
         "//tools:postinstall-patches.js",
         "//tools/esm-interop:patches/npm/@bazel+concatjs+5.7.1.patch",
+        "//tools/esm-interop:patches/npm/rxjs+6.6.7.patch",
     ],
     # Currently disabled due to:
     #  1. Missing Windows support currently.
