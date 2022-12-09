@@ -17,7 +17,7 @@ load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "e
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", "extract_esm_outputs", "install_esm_loaders")
+load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", "extract_esm_outputs")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -394,9 +394,6 @@ def nodejs_binary(
         enable_linker = False,
         **kwargs):
     npm_workspace = _node_modules_workspace_name()
-    rule_data = []
-
-    (templated_args, rule_data) = install_esm_loaders(templated_args, rule_data)
 
     if not enable_linker:
         templated_args = templated_args + [
@@ -415,7 +412,7 @@ def nodejs_binary(
 
     _nodejs_binary(
         name = name,
-        data = [":%s_esm_deps" % name] + rule_data + data_for_args,
+        data = [":%s_esm_deps" % name] + data_for_args,
         testonly = testonly,
         entry_point = entry_point.replace(".js", ".mjs"),
         env = env,
@@ -425,9 +422,6 @@ def nodejs_binary(
     )
 
 def nodejs_test(name, data = [], env = {}, data_for_args = [], templated_args = [], enable_linker = False, **kwargs):
-    rule_data = []
-    (templated_args, rule_data) = install_esm_loaders(templated_args, rule_data)
-
     if not enable_linker:
         templated_args = templated_args + [
             # Disable the linker and rely on patched resolution which works better on Windows
@@ -446,7 +440,7 @@ def nodejs_test(name, data = [], env = {}, data_for_args = [], templated_args = 
 
     _nodejs_test(
         name = name,
-        data = [":%s_esm_deps" % name] + rule_data + data_for_args,
+        data = [":%s_esm_deps" % name] + data_for_args,
         env = env,
         templated_args = templated_args,
         use_esm = True,
