@@ -8,11 +8,8 @@ ts_library(
         "//packages/core/schematics:migrations.json",
     ],
     deps = [
-        "//packages/core/schematics/migrations/entry-components",
-        "//packages/core/schematics/migrations/path-match-type",
         "//packages/core/schematics/migrations/relative-link-resolution",
         "//packages/core/schematics/migrations/router-link-with-href",
-        "//packages/core/schematics/migrations/typed-forms",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
