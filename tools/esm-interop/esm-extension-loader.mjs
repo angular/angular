@@ -46,6 +46,10 @@ export async function resolve(specifier, context, nextResolve) {
   if (!explicitExtensionRe.test(specifier)) {
     interopAttempts.push(`${specifier}.mjs`);
     interopAttempts.push(`${specifier}/index.mjs`);
+    // Last attempts are normal `.js` extensions. These could still
+    // be valid ESM when there is an type:module `package.json` file
+    interopAttempts.push(`${specifier}.js`);
+    interopAttempts.push(`${specifier}/index.js`);
   }
 
   for (const attempt of interopAttempts) {

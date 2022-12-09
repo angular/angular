@@ -1,0 +1,18 @@
+diff --git a/node_modules/rxjs/_esm2015/package.json b/node_modules/rxjs/_esm2015/package.json
+new file mode 100644
+index 0000000..4720025
+--- /dev/null
++++ b/node_modules/rxjs/_esm2015/package.json
+@@ -0,0 +1,3 @@
++{
++    "type": "module"
++}
+diff --git a/node_modules/rxjs/_esm5/package.json b/node_modules/rxjs/_esm5/package.json
+new file mode 100644
+index 0000000..4720025
+--- /dev/null
++++ b/node_modules/rxjs/_esm5/package.json
+@@ -0,0 +1,3 @@
++{
++    "type": "module"
++}
