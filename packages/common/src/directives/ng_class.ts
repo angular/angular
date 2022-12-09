@@ -5,9 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer2, ɵisListLikeIterable as isListLikeIterable, ɵstringify as stringify} from '@angular/core';
+import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, Renderer2, ɵstringify as stringify} from '@angular/core';
 
 type NgClassSupportedTypes = string[]|Set<string>|{[klass: string]: any}|null|undefined;
+
+const SPLIT_BY_WS_REGEXP = /\s+/;
+
+const EMPTY_SET = new Set();
 
 /**
  * @ngModule CommonModule
@@ -42,110 +46,66 @@ type NgClassSupportedTypes = string[]|Set<string>|{[klass: string]: any}|null|un
   standalone: true,
 })
 export class NgClass implements DoCheck {
-  private _iterableDiffer: IterableDiffer<string>|null = null;
-  private _keyValueDiffer: KeyValueDiffer<string, any>|null = null;
-  private _initialClasses: string[] = [];
-  private _rawClass: NgClassSupportedTypes = null;
+  private _initialClasses = new Set<string>();
+  private _rawClass: NgClassSupportedTypes;
+  private _iterableDiffer: IterableDiffer<string>;
 
   constructor(
-      private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
-      private _ngEl: ElementRef, private _renderer: Renderer2) {}
-
+      _iterableDiffers: IterableDiffers, private _ngEl: ElementRef, private _renderer: Renderer2) {
+    this._iterableDiffer = _iterableDiffers.find(EMPTY_SET).create();
+  }
 
   @Input('class')
   set klass(value: string) {
-    this._removeClasses(this._initialClasses);
-    this._initialClasses = typeof value === 'string' ? value.split(/\s+/) : [];
-    this._applyClasses(this._initialClasses);
-    this._applyClasses(this._rawClass);
+    this._initialClasses = new Set(value.trim().split(SPLIT_BY_WS_REGEXP));
   }
 
   @Input('ngClass')
   set ngClass(value: string|string[]|Set<string>|{[klass: string]: any}|null|undefined) {
-    this._removeClasses(this._rawClass);
-    this._applyClasses(this._initialClasses);
+    this._rawClass = typeof value === 'string' ? value.trim().split(SPLIT_BY_WS_REGEXP) : value;
+  }
 
-    this._iterableDiffer = null;
-    this._keyValueDiffer = null;
+  ngDoCheck(): void {
+    // build a new list to diff
 
-    this._rawClass = typeof value === 'string' ? value.split(/\s+/) : value;
-
-    if (this._rawClass) {
-      if (isListLikeIterable(this._rawClass)) {
-        this._iterableDiffer = this._iterableDiffers.find(this._rawClass).create();
-      } else {
-        this._keyValueDiffer = this._keyValueDiffers.find(this._rawClass).create();
+    if (this._rawClass == null) {
+      this._diff(this._initialClasses);
+    } else if (Array.isArray(this._rawClass) || this._rawClass instanceof Set) {
+      // TODO(pk): could speed it up by building a custom iterator - not sure if it is worth it
+      // given the additional code / complexity
+      this._diff([...this._initialClasses, ...this._rawClass]);
+    } else {
+      // it is an object
+      const next = new Set(this._initialClasses);
+      for (const classNames of Object.keys(this._rawClass)) {
+        const classToggleValue = Boolean(this._rawClass[classNames]);
+        if (classToggleValue) {
+          next.add(classNames);
+        } else {
+          next.delete(classNames);
+        }
       }
+
+      this._diff(next);
     }
   }
 
-  ngDoCheck() {
-    if (this._iterableDiffer) {
-      const iterableChanges = this._iterableDiffer.diff(this._rawClass as string[]);
-      if (iterableChanges) {
-        this._applyIterableChanges(iterableChanges);
-      }
-    } else if (this._keyValueDiffer) {
-      const keyValueChanges = this._keyValueDiffer.diff(this._rawClass as {[k: string]: any});
-      if (keyValueChanges) {
-        this._applyKeyValueChanges(keyValueChanges);
-      }
+  private _diff(next: NgIterable<string>) {
+    const iterableChanges = this._iterableDiffer.diff(new Set(next));
+    if (iterableChanges) {
+      this._applyIterableChanges(iterableChanges);
     }
-  }
-
-  private _applyKeyValueChanges(changes: KeyValueChanges<string, any>): void {
-    changes.forEachAddedItem((record) => this._toggleClass(record.key, record.currentValue));
-    changes.forEachChangedItem((record) => this._toggleClass(record.key, record.currentValue));
-    changes.forEachRemovedItem((record) => {
-      if (record.previousValue) {
-        this._toggleClass(record.key, false);
-      }
-    });
   }
 
   private _applyIterableChanges(changes: IterableChanges<string>): void {
+    changes.forEachRemovedItem((record) => this._toggleClass(record.item, false));
     changes.forEachAddedItem((record) => {
-      if (typeof record.item === 'string') {
-        this._toggleClass(record.item, true);
-      } else {
+      if (typeof record.item !== 'string') {
         throw new Error(`NgClass can only toggle CSS classes expressed as strings, got ${
             stringify(record.item)}`);
       }
+      this._toggleClass(record.item, true);
     });
-
-    changes.forEachRemovedItem((record) => this._toggleClass(record.item, false));
-  }
-
-  /**
-   * Applies a collection of CSS classes to the DOM element.
-   *
-   * For argument of type Set and Array CSS class names contained in those collections are always
-   * added.
-   * For argument of type Map CSS class name in the map's key is toggled based on the value (added
-   * for truthy and removed for falsy).
-   */
-  private _applyClasses(rawClassVal: NgClassSupportedTypes) {
-    if (rawClassVal) {
-      if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
-        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, true));
-      } else {
-        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, !!rawClassVal[klass]));
-      }
-    }
-  }
-
-  /**
-   * Removes a collection of CSS classes from the DOM element. This is mostly useful for cleanup
-   * purposes.
-   */
-  private _removeClasses(rawClassVal: NgClassSupportedTypes) {
-    if (rawClassVal) {
-      if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
-        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, false));
-      } else {
-        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, false));
-      }
-    }
   }
 
   private _toggleClass(klass: string, enabled: boolean): void {
