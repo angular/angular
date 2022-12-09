@@ -68,6 +68,12 @@ export class Location implements OnDestroy {
   constructor(locationStrategy: LocationStrategy) {
     this._locationStrategy = locationStrategy;
     const baseHref = this._locationStrategy.getBaseHref();
+    // Note: This class's interaction with base HREF does not fully follow the rules
+    // outlined in the spec https://www.freesoft.org/CIE/RFC/1808/18.htm.
+    // Instead of trying to fix individual bugs with more and more code, we should
+    // investigate using the URL constructor and providing the base as a second
+    // argument.
+    // https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#parameters
     this._basePath = _stripOrigin(stripTrailingSlash(_stripIndexHtml(baseHref)));
     this._locationStrategy.onPopState((ev) => {
       this._subject.emit({
