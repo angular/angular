@@ -2,9 +2,7 @@
 
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("//tools/esm-interop:esm-node-module-loader.bzl", _enable_esm_node_module_loader = "enable_esm_node_module_loader")
-load("//tools/esm-interop:esm-loaders.bzl", _install_esm_loaders = "install_esm_loaders")
 
-install_esm_loaders = _install_esm_loaders
 enable_esm_node_module_loader = _enable_esm_node_module_loader
 
 def extract_esm_outputs(name, deps, testonly = False):
