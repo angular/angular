@@ -16,7 +16,7 @@
   "lockFileMaintenance": {"enabled": true},
   "labels": ["target: patch", "area: build & ci", "action: review"],
   "ignorePaths": [
-    "aio/content/examples/marketing-first-app/package.json"
+    "aio/content/demos/first-app/package.json"
   ],
   "ignoreDeps": [
     "@angular/animations-12",
