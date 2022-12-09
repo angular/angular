@@ -282,7 +282,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   private imageLoader = inject(IMAGE_LOADER);
   private config: ImageConfig = processConfig(inject(IMAGE_CONFIG));
   private renderer = inject(Renderer2);
-  private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
+  private imgElement = inject(ElementRef<HTMLImageElement>).nativeElement;
   private injector = inject(Injector);
 
   // An LCP image observer should be injected only in development mode.

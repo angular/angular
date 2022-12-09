@@ -30,9 +30,7 @@ export function isType(v: any): v is Type<any> {
  *
  * @publicApi
  */
-export interface AbstractType<T> extends Function {
-  prototype: T;
-}
+export type AbstractType<T> = abstract new (...args: unknown[]) => T;
 
 export interface Type<T> extends Function {
   new (...args: any[]): T;

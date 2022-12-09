@@ -9,10 +9,7 @@ import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
 
 // @public
-export interface AbstractType<T> extends Function {
-    // (undocumented)
-    prototype: T;
-}
+export type AbstractType<T> = abstract new (...args: unknown[]) => T;
 
 // @public
 export interface AfterContentChecked {
