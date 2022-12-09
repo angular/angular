@@ -24,7 +24,7 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
  * `ROUTES` is a low level API for router configuration via dependency injection.
  *
  * We recommend that in almost all cases to use higher level APIs such as `RouterModule.forRoot()`,
- * `RouterModule.forChild()`, `provideRoutes`, or `Router.resetConfig()`.
+ * `provideRouter`, or `Router.resetConfig()`.
  *
  * @publicApi
  */
