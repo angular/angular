@@ -331,6 +331,9 @@ describe('binding to CSS class list', () => {
 
          getComponent().strExpr = 'bar';
          detectChangesAndExpectClassName(`bar small`);
+
+         getComponent().strExpr = undefined;
+         detectChangesAndExpectClassName(`small`);
        }));
 
     it('should co-operate with the class attribute and binding to it', waitForAsync(() => {
@@ -409,6 +412,48 @@ describe('binding to CSS class list', () => {
       detectChangesAndExpectClassName('color-red');
     });
 
+    it('should not write to the native node when values are the same (obj reference change)',
+       () => {
+         fixture = createTestComponent(`<div [ngClass]="objExpr"></div>`);
+         detectChangesAndExpectClassName('foo');
+
+         // Overwrite CSS classes so that we can check if ngClass performed DOM manipulation to
+         // update it
+         fixture.debugElement.children[0].nativeElement.className = '';
+         // Assert that the DOM node still has the same value after change detection
+         detectChangesAndExpectClassName('');
+
+         // change the object reference (without changing values)
+         fixture.componentInstance.objExp = {...fixture.componentInstance.objExp};
+         detectChangesAndExpectClassName('');
+       });
+
+    it('should not write to the native node when values are the same (array reference change)',
+       () => {
+         fixture = createTestComponent(`<div [ngClass]="arrExpr"></div>`);
+         detectChangesAndExpectClassName('foo');
+
+         // Overwrite CSS classes so that we can check if ngClass performed DOM manipulation to
+         // update it
+         fixture.debugElement.children[0].nativeElement.className = '';
+         // Assert that the DOM node still has the same value after change detection
+         detectChangesAndExpectClassName('');
+
+         // change the object reference (without changing values)
+         fixture.componentInstance.arrExpr = [...fixture.componentInstance.arrExpr];
+         detectChangesAndExpectClassName('');
+       });
+
+    it('should not add css class when bound initial class is removed by ngClass binding', () => {
+      fixture = createTestComponent(`<div [class]="'bar'" [ngClass]="objExpr"></div>`);
+      detectChangesAndExpectClassName('foo');
+    });
+
+    it('should not add css class when static initial class is removed by ngClass binding', () => {
+      fixture = createTestComponent(`<div class="bar" [ngClass]="objExpr"></div>`);
+      detectChangesAndExpectClassName('foo');
+    });
+
     it('should allow classes with trailing and leading spaces in [ngClass]', () => {
       @Component({
         template: `
@@ -428,6 +473,27 @@ describe('binding to CSS class list', () => {
       const trailing = fixture.nativeElement.querySelector('[trailing-space]');
       expect(leading.className).toBe('foo');
       expect(trailing.className).toBe('foo');
+    });
+
+    it('should mix class and ngClass bindings with the same value', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [NgClass],
+        template: `<div class="{{'option-' + level}}" [ngClass]="'option-' + level"></div>`,
+        standalone: true,
+      })
+      class TestComponent {
+        level = 1;
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.firstChild.className).toBe('option-1');
+
+      fixture.componentInstance.level = 5;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.firstChild.className).toBe('option-5');
     });
 
     it('should be available as a standalone directive', () => {
