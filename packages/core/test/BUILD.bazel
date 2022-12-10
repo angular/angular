@@ -108,7 +108,7 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_files"],
+    bootstrap = ["//tools/testing:node"],
     data = [
         ":downleveled_es5_fixture",
     ],
