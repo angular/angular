@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, Renderer2, ɵstringify as stringify} from '@angular/core';
+import {Directive, DoCheck, ElementRef, Input, Renderer2, ɵstringify as stringify} from '@angular/core';
 
 type NgClassSupportedTypes = string[]|Set<string>|{[klass: string]: any}|null|undefined;
 
 const SPLIT_BY_WS_REGEXP = /\s+/;
 
-const EMPTY_SET = new Set();
+const EMPTY_SET = new Set<string>();
 
 /**
  * @ngModule CommonModule
@@ -46,14 +46,12 @@ const EMPTY_SET = new Set();
   standalone: true,
 })
 export class NgClass implements DoCheck {
-  private _initialClasses = new Set<string>();
+  private _initialClasses = EMPTY_SET;
   private _rawClass: NgClassSupportedTypes;
-  private _iterableDiffer: IterableDiffer<string>;
 
-  constructor(
-      _iterableDiffers: IterableDiffers, private _ngEl: ElementRef, private _renderer: Renderer2) {
-    this._iterableDiffer = _iterableDiffers.find(EMPTY_SET).create();
-  }
+  private _prevSet = EMPTY_SET;
+
+  constructor(private _renderer: Renderer2, private _ngEl: ElementRef) {}
 
   @Input('class')
   set klass(value: string) {
@@ -66,46 +64,49 @@ export class NgClass implements DoCheck {
   }
 
   ngDoCheck(): void {
-    // build a new list to diff
+    const nextSet = new Set(this._initialClasses);
 
-    if (this._rawClass == null) {
-      this._diff(this._initialClasses);
-    } else if (Array.isArray(this._rawClass) || this._rawClass instanceof Set) {
-      // TODO(pk): could speed it up by building a custom iterator - not sure if it is worth it
-      // given the additional code / complexity
-      this._diff([...this._initialClasses, ...this._rawClass]);
-    } else {
-      // it is an object
-      const next = new Set(this._initialClasses);
-      for (const classNames of Object.keys(this._rawClass)) {
-        const classToggleValue = Boolean(this._rawClass[classNames]);
-        if (classToggleValue) {
-          next.add(classNames);
+    const rawClass = this._rawClass;
+    if (Array.isArray(rawClass) || rawClass instanceof Set) {
+      for (const classNames of rawClass) {
+        nextSet.add(classNames);
+      }
+    } else if (rawClass != null) {
+      for (const classNames of Object.keys(rawClass)) {
+        const toggle = rawClass[classNames];
+        if (toggle) {
+          nextSet.add(classNames);
         } else {
-          next.delete(classNames);
+          nextSet.delete(classNames);
         }
       }
-
-      this._diff(next);
     }
+
+    this._diff(nextSet);
+    this._prevSet = nextSet;
   }
 
-  private _diff(next: NgIterable<string>) {
-    const iterableChanges = this._iterableDiffer.diff(new Set(next));
-    if (iterableChanges) {
-      this._applyIterableChanges(iterableChanges);
-    }
-  }
+  private _diff(next: Set<string>) {
+    const prev = this._prevSet;
 
-  private _applyIterableChanges(changes: IterableChanges<string>): void {
-    changes.forEachRemovedItem((record) => this._toggleClass(record.item, false));
-    changes.forEachAddedItem((record) => {
-      if (typeof record.item !== 'string') {
-        throw new Error(`NgClass can only toggle CSS classes expressed as strings, got ${
-            stringify(record.item)}`);
+    // detect deleted items
+    for (const prevClass of prev) {
+      if (!next.has(prevClass)) {
+        this._toggleClass(prevClass, false);
       }
-      this._toggleClass(record.item, true);
-    });
+    }
+
+    // detect added items
+    for (const nextClass of next) {
+      if (!prev.has(nextClass)) {
+        // TODO: dev mode only
+        if (typeof nextClass !== 'string') {
+          throw new Error(`NgClass can only toggle CSS classes expressed as strings, got ${
+              stringify(nextClass)}`);
+        }
+        this._toggleClass(nextClass, true);
+      }
+    }
   }
 
   private _toggleClass(klass: string, enabled: boolean): void {

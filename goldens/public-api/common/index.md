@@ -430,7 +430,7 @@ export class LowerCasePipe implements PipeTransform {
 
 // @public
 export class NgClass implements DoCheck {
-    constructor(_iterableDiffers: IterableDiffers, _ngEl: ElementRef, _renderer: Renderer2);
+    constructor(_renderer: Renderer2, _ngEl: ElementRef);
     // (undocumented)
     set klass(value: string);
     // (undocumented)
