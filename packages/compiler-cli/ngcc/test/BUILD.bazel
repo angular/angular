@@ -38,7 +38,7 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_no_angular_files"],
+    bootstrap = ["//tools/testing:node_no_angular"],
     data = [
         "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
     ],
@@ -90,7 +90,7 @@ babel(
 jasmine_node_test(
     name = "integration",
     timeout = "long",
-    bootstrap = ["//tools/testing:node_no_angular_files"],
+    bootstrap = ["//tools/testing:node_no_angular"],
     data = [
         ":fesm5_angular_core",
         "@npm//@angular/common-12",
