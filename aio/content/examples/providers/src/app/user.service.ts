@@ -9,9 +9,6 @@ export interface User {
   providedIn: 'root',
 })
 export class UserService {
-
-  constructor() { }
-
   getUsers(): Promise<User[]> {
     return Promise.resolve([
       { id: 1, name: 'Maria' },
@@ -26,5 +23,4 @@ export class UserService {
       { id: 10, name: 'Seth' }
     ]);
   }
-
 }
