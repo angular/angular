@@ -191,7 +191,7 @@ export class AnimationStateStyles {
           }
           const normalizedProp = this.normalizer.normalizePropertyName(prop, errors);
           val = this.normalizer.normalizeStyleValue(prop, normalizedProp, val, errors);
-          finalStyles.set(normalizedProp, val);
+          finalStyles.set(prop, val);
         });
       }
     });
