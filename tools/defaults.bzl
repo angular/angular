@@ -160,18 +160,6 @@ def ts_library(
         **kwargs
     )
 
-    # The `ts_library` targets by default only expose the type definitions as `DefaultInfo`.
-    # This is an auto-generated target that can be used to access the plain JS output.
-    # TODO(devversion): Should be replaced once we have devmode & prodmode combined.
-    native.filegroup(
-        # Note: When changing the suffix of this target, update the `jasmine_node_test` bootstrap
-        # logic which has special logic for resolving such targets.
-        name = "%s_files" % name,
-        srcs = [":%s" % name],
-        testonly = testonly,
-        output_group = "es6_sources",
-    )
-
 def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, **kwargs):
     """Default values for ng_module"""
     deps = deps + ["@npm//tslib"]
@@ -456,7 +444,7 @@ def npm_package_bin(args = [], **kwargs):
         **kwargs
     )
 
-def jasmine_node_test(name, srcs = [], bootstrap = [], env = {}, **kwargs):
+def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kwargs):
     # Very common dependencies for tests
     deps = kwargs.pop("deps", []) + [
         "@npm//chokidar",
@@ -492,13 +480,14 @@ def jasmine_node_test(name, srcs = [], bootstrap = [], env = {}, **kwargs):
     spec_entrypoint(
         name = "%s_spec_entrypoint.spec" % name,
         testonly = True,
-        deps = ["%s_esm_deps" % name],
-        bootstrap = ["%s_esm_bootstrap" % name],
+        deps = [":%s_esm_deps" % name],
+        bootstrap = [":%s_esm_bootstrap" % name],
     )
 
     _jasmine_node_test(
         name = name,
         srcs = [":%s_spec_entrypoint.spec" % name],
+        data = data + [":%s_esm_bootstrap" % name, ":%s_esm_deps" % name],
         use_direct_specs = True,
         configuration_env_vars = configuration_env_vars,
         env = env,
