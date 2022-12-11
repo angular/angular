@@ -4,7 +4,7 @@ Angular directives offer a great way to encapsulate reusable behaviors— direct
 attributes, CSS classes, and event listeners to an element.
 
 The *directive composition API* lets you apply directives to a component's host element from
-_within_ the component.
+_within_ the component TypeScript class.
 
 ## Adding directives to a component
 
@@ -217,3 +217,5 @@ component and one for each host directive. For a few checkboxes on a page, this 
 significant issues. However, if your page renders _hundreds_ of checkboxes, such as in a table, then
 you could start to see an impact of the additional object allocations. Always be sure to profile
 your application to determine the right composition pattern for your use case.
+
+@reviewed 2022-12-11
