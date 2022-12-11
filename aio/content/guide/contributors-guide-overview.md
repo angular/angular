@@ -40,9 +40,7 @@ For information about configuring your local computer to make larger documentati
 
 <!-- markdownLint-disable MD033 -->
 
-#### To make a minor change to a documentation topic
-
-Perform these steps in a browser.
+To make a minor change to a documentation topic, perform these steps in a browser:
 
 1.  Confirm you have a [signed Contributor License Agreement (CLA)][GoogleDeveloperClaClas] on file.
     If you don't, [sign a CLA][GithubAngularAngularBlobMainContributingMdSigningTheCla].
