@@ -114,15 +114,6 @@ export function el(html: string): HTMLElement {
   return <HTMLElement>getContent(createTemplate(html)).firstChild;
 }
 
-export function normalizeCSS(css: string): string {
-  return css.replace(/\s+/g, ' ')
-      .replace(/:\s/g, ':')
-      .replace(/'/g, '"')
-      .replace(/ }/g, '}')
-      .replace(/url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, (...match: string[]) => `url("${match[2]}")`)
-      .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
-}
-
 function getAttributeMap(element: any): Map<string, string> {
   const res = new Map<string, string>();
   const elAttrs = element.attributes;
