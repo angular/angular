@@ -131,4 +131,4 @@ For information about localizing the Angular documentation in a new language, se
 
 <!--end links -->
 
-@reviewed 2022-10-12
+@reviewed 2022-12-11
