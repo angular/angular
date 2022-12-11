@@ -112,49 +112,54 @@ let savedDocument: Document|undefined = undefined;
 let savedRequestAnimationFrame: ((callback: FrameRequestCallback) => number)|undefined = undefined;
 let savedNode: typeof Node|undefined = undefined;
 let requestAnimationFrameCount = 0;
+let domino: typeof import('domino')|null|undefined = undefined;
 
-/**
- * System.js uses regexp to look for `require` statements. `domino` has to be
- * extracted into a constant so that the regexp in the System.js does not match
- * and does not try to load domino in the browser.
- */
-const domino: any = (function(domino) {
-  if (typeof global == 'object' && global.process && typeof require == 'function') {
-    try {
-      return require(domino);
-    } catch (e) {
-      // It is possible that we don't have domino available in which case just give up.
-    }
+async function loadDominoOrNull(): Promise<typeof import('domino')|null> {
+  if (domino !== undefined) {
+    return domino;
   }
-  // Seems like we don't have domino, give up.
-  return null;
-})('domino');
+
+  try {
+    return domino = (await import('domino')).default;
+  } catch {
+    return domino = null;
+  }
+}
 
 /**
  * Ensure that global has `Document` if we are in node.js
  * @publicApi
  */
-export function ensureDocument(): void {
-  if (domino) {
-    // we are in node.js.
-    const window = domino.createWindow('', 'http://localhost');
-    savedDocument = (global as any).document;
-    (global as any).window = window;
-    (global as any).document = window.document;
-    // Trick to avoid Event patching from
-    // https://github.com/angular/angular/blob/7cf5e95ac9f0f2648beebf0d5bd9056b79946970/packages/platform-browser/src/dom/events/dom_events.ts#L112-L132
-    // It fails with Domino with TypeError: Cannot assign to read only property
-    // 'stopImmediatePropagation' of object '#<Event>'
-    (global as any).Event = null;
-    savedNode = (global as any).Node;
-    (global as any).Node = domino.impl.Node;
-
-    savedRequestAnimationFrame = (global as any).requestAnimationFrame;
-    (global as any).requestAnimationFrame = function(cb: () => void): number {
-      setImmediate(cb);
-      return requestAnimationFrameCount++;
-    };
+export async function ensureDocument(): Promise<void> {
+  if ((global as any).isBrowser) {
+    return;
   }
+
+  const domino = await loadDominoOrNull();
+  if (domino === null) {
+    return;
+  }
+
+  // we are in node.js.
+  const window = domino.createWindow('', 'http://localhost');
+  savedDocument = (global as any).document;
+  (global as any).window = window;
+  (global as any).document = window.document;
+  // Trick to avoid Event patching from
+  // https://github.com/angular/angular/blob/7cf5e95ac9f0f2648beebf0d5bd9056b79946970/packages/platform-browser/src/dom/events/dom_events.ts#L112-L132
+  // It fails with Domino with TypeError: Cannot assign to read only property
+  // 'stopImmediatePropagation' of object '#<Event>'
+  (global as any).Event = null;
+  savedNode = (global as any).Node;
+  // Domino types do not type `impl`, but it's a documented field.
+  // See: https://www.npmjs.com/package/domino#usage.
+  (global as any).Node = (domino as typeof domino&{impl: any}).impl.Node;
+
+  savedRequestAnimationFrame = (global as any).requestAnimationFrame;
+  (global as any).requestAnimationFrame = function(cb: () => void): number {
+    setImmediate(cb);
+    return requestAnimationFrameCount++;
+  };
 }
 
 /**
