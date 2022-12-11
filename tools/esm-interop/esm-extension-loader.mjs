@@ -29,15 +29,6 @@ const explicitJsExtensionRe = /\.js$/;
  *        2. It results in additional churn, having to put `package.json` into `bin`.
  */
 export async function resolve(specifier, context, nextResolve) {
-  // Actual resolution is the actual specifier. This is where errors
-  // should not be silenced as it's the actual user-specifier.
-  let resolveError = null;
-  try {
-    return await nextResolve(specifier, context);
-  } catch (e) {
-    resolveError = e;
-  }
-
   const interopAttempts = [];
   if (explicitJsExtensionRe.test(specifier)) {
     interopAttempts.push(specifier.replace(explicitJsExtensionRe, '.mjs'));
@@ -58,6 +49,7 @@ export async function resolve(specifier, context, nextResolve) {
     } catch {}
   }
 
-  // Rethrow the existing resolution error.
-  throw resolveError;
+  // Original specifier is attempted at the end because
+  // we want to prioritize the ESM variants first.
+  return await nextResolve(specifier, context);
 }

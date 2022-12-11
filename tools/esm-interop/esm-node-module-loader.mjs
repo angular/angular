@@ -104,15 +104,14 @@ function resolvePackageWithExportsSupport(pathToNodeModule, packageImport) {
   const packageJson = JSON.parse(
     fs.readFileSync(path.join(pathToNodeModule, 'package.json'), 'utf8')
   );
-  const localPackagePath = resolvePackageLocalFilepath(
+  const localResolvedPackagePath = resolvePackageLocalFilepath(
     pathToNodeModule,
     packageImport,
     packageJson
   );
-  const resolvedFilePath = path.join(pathToNodeModule, localPackagePath);
 
-  if (fs.existsSync(resolvedFilePath)) {
-    return {url: pathToFileURL(resolvedFilePath).href};
+  if (fs.existsSync(localResolvedPackagePath)) {
+    return {url: pathToFileURL(localResolvedPackagePath).href};
   }
   return null;
 }
@@ -123,9 +122,10 @@ function resolvePackageWithExportsSupport(pathToNodeModule, packageImport) {
  */
 function resolvePackageLocalFilepath(pathToNodeModule, packageImport, packageJson) {
   if (packageJson.exports) {
-    return resolveExports(packageJson, packageImport.specifier);
+    return path.join(pathToNodeModule, resolveExports(packageJson, packageImport.specifier));
   }
 
+  let pkgJsonDir = pathToNodeModule;
   // If we couldn't resolve the subpath via `exports`, we check if the subpath
   // already points to an explicit file, or respect deep `package.json` files.
   if (packageImport.pathInPackage !== '') {
@@ -133,11 +133,12 @@ function resolvePackageLocalFilepath(pathToNodeModule, packageImport, packageJso
     const deepPackageJsonPath = path.join(fullPath, 'package.json');
 
     if (fs.existsSync(deepPackageJsonPath)) {
+      pkgJsonDir = fullPath;
       packageJson = JSON.parse(fs.readFileSync(deepPackageJsonPath, 'utf8'));
-    } else if (fs.existsSync(fullPath)) {
-      return packageImport.pathInPackage;
+    } else {
+      return fullPath;
     }
   }
 
-  return packageJson.module || packageJson.main || 'index.js';
+  return path.join(pkgJsonDir, packageJson.module || packageJson.main || 'index.js');
 }
