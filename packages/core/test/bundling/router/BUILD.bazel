@@ -38,6 +38,7 @@ ts_library(
         "//packages/core",
         "//packages/core/testing",
         "//packages/private/testing",
+        "@npm//@bazel/runfiles",
     ],
 )
 
