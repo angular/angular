@@ -16,5 +16,6 @@ ng_module(
     module_name = "@angular/private/testing",
     deps = [
         "//packages/core",
+        "@npm//domino",
     ],
 )

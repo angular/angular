@@ -16,10 +16,18 @@ import {BrowserModule} from '@angular/platform-browser';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {createTemplate, dispatchEvent, getContent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import type {ServerModule} from '@angular/platform-server';
 
 import {ApplicationRef} from '../src/application_ref';
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
+
+let serverPlatformModule: Promise<Type<ServerModule>>|null = null;
+if (isNode) {
+  // Only when we are in Node, we load the platform-server module. It will
+  // be required later in specs for declaring the platform module.
+  serverPlatformModule = import('@angular/platform-server').then(m => m.ServerModule);
+}
 
 @Component({selector: 'bootstrap-app', template: 'hello'})
 class SomeComponent {
@@ -47,9 +55,10 @@ class SomeComponent {
     type CreateModuleOptions =
         {providers?: any[], ngDoBootstrap?: any, bootstrap?: any[], component?: Type<any>};
 
-    function createModule(providers?: any[]): Type<any>;
-    function createModule(options: CreateModuleOptions): Type<any>;
-    function createModule(providersOrOptions: any[]|CreateModuleOptions|undefined): Type<any> {
+    async function createModule(providers?: any[]): Promise<Type<any>>;
+    async function createModule(options: CreateModuleOptions): Promise<Type<any>>;
+    async function createModule(providersOrOptions: any[]|CreateModuleOptions|
+                                undefined): Promise<Type<any>> {
       let options: CreateModuleOptions = {};
       if (Array.isArray(providersOrOptions)) {
         options = {providers: providersOrOptions};
@@ -59,9 +68,8 @@ class SomeComponent {
       const errorHandler = new ErrorHandler();
       (errorHandler as any)._console = mockConsole as any;
 
-      const platformModule = getDOM().supportsDOMEvents ?
-          BrowserModule :
-          require('@angular/platform-server').ServerModule;
+      const platformModule =
+          getDOM().supportsDOMEvents ? BrowserModule : await serverPlatformModule!;
 
       @NgModule({
         providers: [{provide: ErrorHandler, useValue: errorHandler}, options.providers || []],
@@ -138,8 +146,8 @@ class SomeComponent {
            })));
 
     describe('ApplicationRef', () => {
-      beforeEach(() => {
-        TestBed.configureTestingModule({imports: [createModule()]});
+      beforeEach(async () => {
+        TestBed.configureTestingModule({imports: [await createModule()]});
       });
 
       it('should throw when reentering tick', () => {
@@ -363,7 +371,7 @@ class SomeComponent {
         defaultPlatform = _platform;
       }));
 
-      it('should wait for asynchronous app initializers', waitForAsync(() => {
+      it('should wait for asynchronous app initializers', waitForAsync(async () => {
            let resolve: (result: any) => void;
            const promise: Promise<any> = new Promise((res) => {
              resolve = res;
@@ -375,17 +383,17 @@ class SomeComponent {
            }, 1);
 
            defaultPlatform
-               .bootstrapModule(
-                   createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]))
+               .bootstrapModule(await createModule(
+                   [{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]))
                .then(_ => {
                  expect(initializerDone).toBe(true);
                });
          }));
 
       it('should rethrow sync errors even if the exceptionHandler is not rethrowing',
-         waitForAsync(() => {
+         waitForAsync(async () => {
            defaultPlatform
-               .bootstrapModule(createModule([{
+               .bootstrapModule(await createModule([{
                  provide: APP_INITIALIZER,
                  useValue: () => {
                    throw 'Test';
@@ -401,9 +409,9 @@ class SomeComponent {
          }));
 
       it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
-         waitForAsync(() => {
+         waitForAsync(async () => {
            defaultPlatform
-               .bootstrapModule(createModule([
+               .bootstrapModule(await createModule([
                  {provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}
                ]))
                .then(() => expect(false).toBe(true), (e) => {
@@ -426,17 +434,18 @@ class SomeComponent {
          }));
 
       it('should call the `ngDoBootstrap` method with `ApplicationRef` on the main module',
-         waitForAsync(() => {
+         waitForAsync(async () => {
            const ngDoBootstrap = jasmine.createSpy('ngDoBootstrap');
-           defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: ngDoBootstrap}))
+           defaultPlatform.bootstrapModule(await createModule({ngDoBootstrap: ngDoBootstrap}))
                .then((moduleRef) => {
                  const appRef = moduleRef.injector.get(ApplicationRef);
                  expect(ngDoBootstrap).toHaveBeenCalledWith(appRef);
                });
          }));
 
-      it('should auto bootstrap components listed in @NgModule.bootstrap', waitForAsync(() => {
-           defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
+      it('should auto bootstrap components listed in @NgModule.bootstrap',
+         waitForAsync(async () => {
+           defaultPlatform.bootstrapModule(await createModule({bootstrap: [SomeComponent]}))
                .then((moduleRef) => {
                  const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
                  expect(appRef.componentTypes).toEqual([SomeComponent]);
@@ -444,8 +453,8 @@ class SomeComponent {
          }));
 
       it('should error if neither `ngDoBootstrap` nor @NgModule.bootstrap was specified',
-         waitForAsync(() => {
-           defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: false}))
+         waitForAsync(async () => {
+           defaultPlatform.bootstrapModule(await createModule({ngDoBootstrap: false}))
                .then(() => expect(false).toBe(true), (e) => {
                  const expectedErrMsg =
                      `NG0403: The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
@@ -454,14 +463,14 @@ class SomeComponent {
                });
          }));
 
-      it('should add bootstrapped module into platform modules list', waitForAsync(() => {
-           defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
+      it('should add bootstrapped module into platform modules list', waitForAsync(async () => {
+           defaultPlatform.bootstrapModule(await createModule({bootstrap: [SomeComponent]}))
                .then(module => expect((<any>defaultPlatform)._modules).toContain(module));
          }));
 
-      it('should bootstrap with NoopNgZone', waitForAsync(() => {
+      it('should bootstrap with NoopNgZone', waitForAsync(async () => {
            defaultPlatform
-               .bootstrapModule(createModule({bootstrap: [SomeComponent]}), {ngZone: 'noop'})
+               .bootstrapModule(await createModule({bootstrap: [SomeComponent]}), {ngZone: 'noop'})
                .then((module) => {
                  const ngZone = module.injector.get(NgZone);
                  expect(ngZone instanceof NoopNgZone).toBe(true);
@@ -477,7 +486,7 @@ class SomeComponent {
         }
 
         const loadResourceSpy = jasmine.createSpy('load resource').and.returnValue('fakeContent');
-        const testModule = createModule({component: WithTemplateUrlComponent});
+        const testModule = await createModule({component: WithTemplateUrlComponent});
 
         await defaultPlatform.bootstrapModule(testModule, {
           providers: [
@@ -497,7 +506,7 @@ class SomeComponent {
         class I18nComponent {
         }
 
-        const testModule = createModule(
+        const testModule = await createModule(
             {component: I18nComponent, providers: [{provide: LOCALE_ID, useValue: 'ro'}]});
         await defaultPlatform.bootstrapModule(testModule);
 
@@ -507,7 +516,7 @@ class SomeComponent {
       it('should wait for APP_INITIALIZER to set providers for `LOCALE_ID`', async () => {
         let locale: string = '';
 
-        const testModule = createModule({
+        const testModule = await createModule({
           providers: [
             {provide: APP_INITIALIZER, useValue: () => locale = 'fr-FR', multi: true},
             {provide: LOCALE_ID, useFactory: () => locale}
@@ -524,7 +533,7 @@ class SomeComponent {
         createRootEl();
         defaultPlatform = _platform;
       }));
-      it('should wait for asynchronous app initializers', waitForAsync(() => {
+      it('should wait for asynchronous app initializers', waitForAsync(async () => {
            let resolve: (result: any) => void;
            const promise: Promise<any> = new Promise((res) => {
              resolve = res;
@@ -537,24 +546,26 @@ class SomeComponent {
 
            const compilerFactory: CompilerFactory =
                defaultPlatform.injector.get(CompilerFactory, null)!;
-           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(
-               createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]));
+           const moduleFactory =
+               compilerFactory.createCompiler().compileModuleSync(await createModule(
+                   [{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]));
            defaultPlatform.bootstrapModuleFactory(moduleFactory).then(_ => {
              expect(initializerDone).toBe(true);
            });
          }));
 
       it('should rethrow sync errors even if the exceptionHandler is not rethrowing',
-         waitForAsync(() => {
+         waitForAsync(async () => {
            const compilerFactory: CompilerFactory =
                defaultPlatform.injector.get(CompilerFactory, null)!;
-           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule([{
-             provide: APP_INITIALIZER,
-             useValue: () => {
-               throw 'Test';
-             },
-             multi: true
-           }]));
+           const moduleFactory =
+               compilerFactory.createCompiler().compileModuleSync(await createModule([{
+                 provide: APP_INITIALIZER,
+                 useValue: () => {
+                   throw 'Test';
+                 },
+                 multi: true
+               }]));
            expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
            // Error rethrown will be seen by the exception handler since it's after
            // construction.
@@ -562,11 +573,13 @@ class SomeComponent {
          }));
 
       it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
-         waitForAsync(() => {
+         waitForAsync(async () => {
            const compilerFactory: CompilerFactory =
                defaultPlatform.injector.get(CompilerFactory, null)!;
-           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
-               [{provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}]));
+           const moduleFactory =
+               compilerFactory.createCompiler().compileModuleSync(await createModule([
+                 {provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}
+               ]));
            defaultPlatform.bootstrapModuleFactory(moduleFactory)
                .then(() => expect(false).toBe(true), (e) => {
                  expect(e).toBe('Test');
