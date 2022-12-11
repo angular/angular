@@ -26,7 +26,7 @@ Perform these steps in a browser.
     </code-example>
 
 1.  [Update or add the `@reviewed` entry](guide/reviewing-content#update-the-last-reviewed-date) at the end of the topic's source code.
-1.  Propose your changes from as described in [make a minor change](guide/contributors-guide-overview#to-make-a-minor-change-to-a-documentation-topic).
+1.  Propose your changes as described in [make a minor change](guide/contributors-guide-overview#to-make-a-minor-change-to-a-documentation-topic).
 
 <!-- links -->
 
@@ -34,4 +34,4 @@ Perform these steps in a browser.
 
 <!-- end links -->
 
-@reviewed 2022-10-12
+@reviewed 2022-12-11
