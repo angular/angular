@@ -11,7 +11,9 @@ This topic describes how you can review and update the Angular documentation to 
 <!-- markdownLint-disable MD001 -->
 <!-- markdownLint-disable MD033 -->
 
-To review a topic in angular.io perform these steps in a browser:
+#### To review a topic in angular.io
+
+Perform these steps in a browser.
 
 1.  [Find a topic to review](#find-topics-to-review) by:
     1.  Finding a topic with a **Last reviewed** date that is six months or more in the past.
