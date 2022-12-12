@@ -3,14 +3,25 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 package(default_visibility = ["//visibility:public"])
 
 ts_library(
+    name = "zone_base_setup_lib",
+    testonly = 1,
+    srcs = ["zone_base_setup.ts"],
+    deps = [
+        "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
     name = "browser",
     testonly = 1,
     srcs = ["browser_tests.init.ts"],
     deps = [
+        ":zone_base_setup_lib",
         "//packages/compiler",
         "//packages/core/testing",
         "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/animations",
+        "//packages/zone.js/lib",
     ],
 )
 
@@ -19,6 +30,7 @@ ts_library(
     testonly = 1,
     srcs = ["node_tests.init.ts"],
     deps = [
+        ":zone_base_setup_lib",
         "//packages/compiler",
         "//packages/core/testing",
         "//packages/platform-server",

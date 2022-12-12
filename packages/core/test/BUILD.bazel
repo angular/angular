@@ -127,6 +127,7 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
+    external = ["@angular/platform-server"],
     runtime_deps = [":downleveled_es5_fixture"],
     deps = [
         ":test_lib",

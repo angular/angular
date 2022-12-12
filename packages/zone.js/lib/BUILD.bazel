@@ -16,6 +16,7 @@ ts_library(
 
 ts_library(
     name = "lib",
+    package_name = "zone.js/lib",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["zone.ts"],
