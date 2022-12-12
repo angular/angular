@@ -22,7 +22,7 @@ import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
 import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
-import {ErrorHandler, ROUTER_CONFIGURATION} from './router_config';
+import {ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
@@ -213,6 +213,12 @@ export interface Navigation {
    */
   finalUrl?: UrlTree;
   /**
+   * TODO(atscott): If we want to make StateManager public, they will need access to this. Note that
+   * it's already eventually exposed through router.routerState.
+   * @internal
+   */
+  targetRouterState?: RouterState;
+  /**
    * Identifies how this navigation was triggered.
    *
    * * 'imperative'--Triggered by `router.navigateByUrl` or `router.navigate`.
@@ -266,7 +272,7 @@ interface InternalRouterInterface {
   // All of these are public API of router interface and can change during runtime because they are
   // writeable. Ideally, these would be removed and the values retrieved instead from the values
   // available in DI.
-  errorHandler: ErrorHandler;
+  errorHandler: (error: any) => any;
   navigated: boolean;
   urlHandlingStrategy: UrlHandlingStrategy;
   routeReuseStrategy: RouteReuseStrategy;
@@ -470,6 +476,7 @@ export class NavigationTransitions {
                                urlAfterRedirects: extractedUrl,
                                extras: {...extras, skipLocationChange: false, replaceUrl: false},
                              };
+                             this.currentNavigation!.finalUrl = extractedUrl;
                              return of(overallTransitionState);
                            } else {
                              /* When neither the current or previous URL can be processed, do
@@ -607,6 +614,7 @@ export class NavigationTransitions {
                                router.routeReuseStrategy, t.targetSnapshot!, t.currentRouterState);
                            this.currentTransition =
                                overallTransitionState = {...t, targetRouterState};
+                           this.currentNavigation!.targetRouterState = targetRouterState;
                            return overallTransitionState;
                          }),
 
