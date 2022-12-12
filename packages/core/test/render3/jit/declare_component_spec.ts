@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, Component, Directive, ElementRef, forwardRef, Pipe, Type, ViewEncapsulation, ɵɵngDeclareComponent} from '@angular/core';
 
-import {AttributeMarker, ComponentDef} from '../../../src/render3';
+import {AttributeMarker, ComponentDef, ɵɵInheritDefinitionFeature, ɵɵNgOnChangesFeature} from '../../../src/render3';
 
 import {functionContaining} from './matcher';
 
@@ -220,7 +220,7 @@ describe('component declaration jit compilation', () => {
                 }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
-      features: [functionContaining(['ɵɵInheritDefinitionFeature'])],
+      features: [ɵɵInheritDefinitionFeature],
     });
   });
 
@@ -232,7 +232,7 @@ describe('component declaration jit compilation', () => {
                 }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
-      features: [functionContaining(['ɵɵNgOnChangesFeature'])],
+      features: [ɵɵNgOnChangesFeature],
     });
   });
 

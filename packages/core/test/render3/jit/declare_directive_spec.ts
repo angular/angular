@@ -8,7 +8,7 @@
 
 import {ElementRef, forwardRef, ɵɵngDeclareDirective} from '@angular/core';
 
-import {AttributeMarker, DirectiveDef} from '../../../src/render3';
+import {AttributeMarker, DirectiveDef, ɵɵInheritDefinitionFeature, ɵɵNgOnChangesFeature} from '../../../src/render3';
 
 import {functionContaining} from './matcher';
 
@@ -236,7 +236,7 @@ describe('directive declaration jit compilation', () => {
                 }) as DirectiveDef<TestClass>;
 
     expectDirectiveDef(def, {
-      features: [functionContaining(['ɵɵInheritDefinitionFeature'])],
+      features: [ɵɵInheritDefinitionFeature],
     });
   });
 
@@ -246,8 +246,10 @@ describe('directive declaration jit compilation', () => {
                   usesOnChanges: true,
                 }) as DirectiveDef<TestClass>;
 
+    console.error(def.features)
+
     expectDirectiveDef(def, {
-      features: [functionContaining(['ɵɵNgOnChangesFeature'])],
+      features: [ɵɵNgOnChangesFeature],
     });
   });
 });
