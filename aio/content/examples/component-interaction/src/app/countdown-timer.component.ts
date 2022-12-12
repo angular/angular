@@ -19,7 +19,7 @@ export class CountdownTimerComponent implements OnDestroy {
     this.message = `Holding at T-${this.seconds} seconds`;
   }
 
-  private clearTimer() { clearInterval(this.intervalId); }
+  private clearTimer() { window.clearInterval(this.intervalId); }
 
   private countDown() {
     this.clearTimer();

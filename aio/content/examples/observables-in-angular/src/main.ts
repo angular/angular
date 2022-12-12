@@ -44,7 +44,7 @@ export class ZippyComponent {
 })
 export class AsyncObservablePipeComponent {
   time = new Observable<string>(observer => {
-    setInterval(() => observer.next(new Date().toString()), 1000);
+    window.setInterval(() => observer.next(new Date().toString()), 1000);
   });
 }
 
