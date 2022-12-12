@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="jasmine-ajax" />
+import 'jasmine-ajax';
 
 import {HTTP_INTERCEPTORS, HttpBackend, HttpClient, HttpClientModule, HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
