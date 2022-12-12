@@ -188,15 +188,15 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#8bfc7e1aca9125487c1d52a5a2c09cc9e134e421":
-  version "0.0.0-96fdaaa056f1cfa7ffbc4c69b7e9007279f76c94"
-  uid "8bfc7e1aca9125487c1d52a5a2c09cc9e134e421"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#8bfc7e1aca9125487c1d52a5a2c09cc9e134e421"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#558babc9c5ca06bedb01cce505fe7036fe8805f7":
+  version "0.0.0-2fe6d743f60e2e1ba91f9e49c417927a46dcd90f"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#558babc9c5ca06bedb01cce505fe7036fe8805f7"
   dependencies:
     "@angular-devkit/build-angular" "15.1.0-next.2"
     "@angular/benchpress" "0.3.0"
     "@babel/core" "^7.16.0"
     "@babel/helper-annotate-as-pure" "^7.18.6"
+    "@babel/plugin-proposal-async-generator-functions" "^7.20.1"
     "@bazel/buildifier" "5.1.0"
     "@bazel/concatjs" "5.7.3"
     "@bazel/esbuild" "5.7.3"
