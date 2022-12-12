@@ -1,36 +1,31 @@
 diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs b/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
-index 618bbc5..96c6c92 100755
+index dde2164..772c153 100755
 --- a/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
 +++ b/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
-@@ -9,9 +9,9 @@
+@@ -9,7 +9,7 @@
  import * as path from 'path';
  
  import {createEsbuildAngularOptimizePlugin} from '@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs';
--import {createEs2015LinkerPlugin} from '@angular/compiler-cli/linker/babel';
--import {ConsoleLogger, NodeJSFileSystem, LogLevel} from '@angular/compiler-cli';
 -import {GLOBAL_DEFS_FOR_TERSER_WITH_AOT} from '@angular/compiler-cli/private/tooling';
-+import {createEs2015LinkerPlugin} from '@angular/compiler-cli/linker/babel/index.js';
-+import {ConsoleLogger, NodeJSFileSystem, LogLevel} from '@angular/compiler-cli/index.mjs';
-+import {GLOBAL_DEFS_FOR_TERSER_WITH_AOT} from '@angular/compiler-cli/private/tooling.js';
++import {GLOBAL_DEFS_FOR_TERSER_WITH_AOT} from '@angular/compiler-cli/private/tooling.mjs';
  
  /** Root path pointing to the app bundle source entry-point file. */
  const entryPointSourceRootPath = path.normalize(`TMPL_ENTRY_POINT_ROOTPATH`);
 diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl b/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl
-index 1edd96d..b1c2ed1 100755
+index 1edd96d..3d423f4 100755
 --- a/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl
-@@ -64,7 +64,8 @@ def app_bundle(
+@@ -64,7 +64,7 @@ def app_bundle(
          name = "%s_esbuild_config" % name,
          config_file = ":%s_config_file" % name,
          deps = [
 -            "@npm//@angular/compiler-cli",
-+            "@angular//packages/compiler-cli",
-+            "@angular//packages/compiler-cli/linker/babel",
++            "@angular//packages/compiler-cli/private",
              "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
          ],
          **common_base_attributes
 diff --git a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
-index 6213703..7c0abd3 100755
+index 6213703..4d91aa3 100755
 --- a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 @@ -1,7 +1,7 @@
@@ -58,36 +53,36 @@ index 6213703..7c0abd3 100755
          # scope and to make it easier to replace this dependency inside the `angular/angular`
          # repository with its corresponding source target that does not come with any typings.
 -        ng_bundle_deps.append("@npm//zone.js")
-+        ng_bundle_deps.append("//packages/zone.js/dist:zone")
++        ng_bundle_deps.append("@angular//packages/zone.js/dist:zone")
  
      if not assets:
          html = prefix + "index.html"
-diff --git a/node_modules/@angular/build-tooling/shared-scripts/angular-linker/BUILD.bazel b/node_modules/@angular/build-tooling/shared-scripts/angular-linker/BUILD.bazel
-index b14dbdb..eb21619 100755
---- a/node_modules/@angular/build-tooling/shared-scripts/angular-linker/BUILD.bazel
-+++ b/node_modules/@angular/build-tooling/shared-scripts/angular-linker/BUILD.bazel
-@@ -19,7 +19,8 @@ js_library(
-     package_name = "@angular/build-tooling/shared-scripts/angular-linker",
+diff --git a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
+index 79afcb8..ebbb37b 100755
+--- a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
++++ b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
+@@ -43,7 +43,8 @@ js_library(
      srcs = [":js_lib_files"],
      deps = [
+         ":angular_devkit_plugins",
 -        "@npm//@angular/compiler-cli",
 +        "@angular//packages/compiler-cli",
 +        "@angular//packages/compiler-cli/linker/babel",
          "@npm//@babel/core",
+         "@npm//@babel/plugin-proposal-async-generator-functions",
      ],
- )
-diff --git a/node_modules/@angular/build-tooling/shared-scripts/angular-linker/esbuild-plugin.mjs b/node_modules/@angular/build-tooling/shared-scripts/angular-linker/esbuild-plugin.mjs
-index 965a10e..175aa92 100755
---- a/node_modules/@angular/build-tooling/shared-scripts/angular-linker/esbuild-plugin.mjs
-+++ b/node_modules/@angular/build-tooling/shared-scripts/angular-linker/esbuild-plugin.mjs
-@@ -7,8 +7,8 @@
-  */
+diff --git a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs
+index fbaf182..e690328 100755
+--- a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs
++++ b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs
+@@ -54,8 +54,8 @@ export async function createEsbuildAngularOptimizePlugin(opts, additionalBabelPl
  
- import fs from 'fs';
--import {NodeJSFileSystem, ConsoleLogger, LogLevel} from '@angular/compiler-cli';
--import {createEs2015LinkerPlugin} from '@angular/compiler-cli/linker/babel';
-+import {NodeJSFileSystem, ConsoleLogger, LogLevel} from '@angular/compiler-cli/index.mjs';
-+import {createEs2015LinkerPlugin} from '@angular/compiler-cli/linker/babel/index.mjs';
- import babel from '@babel/core';
+   if (opts.enableLinker) {
+     linkerCreator = {
+-      compiler: await import('@angular/compiler-cli'),
+-      babel: await import('@angular/compiler-cli/linker/babel'),
++      compiler: await import('@angular/compiler-cli/index.mjs'),
++      babel: await import('@angular/compiler-cli/linker/babel/index.mjs'),
+     };
+   }
  
- /** Naively checks whether this node path resolves to an Angular declare invocation. */
