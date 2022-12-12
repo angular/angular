@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import 'zone.js/lib/browser/rollup-main';
+import './zone_base_setup';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
 
 import {TestBed} from '@angular/core/testing';
