@@ -66,9 +66,17 @@ describe('ng-add schematic', () => {
         },
       },
     }));
+
+    const tsConfig = JSON.stringify({
+      compilerOptions: {
+        types: ['jasmine'],
+      },
+    });
+
+    host.create('tsconfig.spec.json', tsConfig);
   });
 
-  it(`should add '@angular/localize' in 'types' in the root level 'tsconfig.json'`, async () => {
+  it(`should add all 'types' in the root level 'tsconfig.json'`, async () => {
     host.create('tsconfig.json', JSON.stringify({
       compilerOptions: {
         types: ['node'],
@@ -78,8 +86,7 @@ describe('ng-add schematic', () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const {compilerOptions} = host.readJson('tsconfig.json') as TsConfig;
     const types = compilerOptions?.types;
-    expect(types).toContain(localizeType);
-    expect(types).toHaveSize(2);
+    expect(types).toEqual(['jasmine', 'node', '@angular/localize']);
   });
 
   it(`should not add '@angular/localize' in 'types' tsconfig when '@angular/localize/init' is present`,
@@ -93,8 +100,7 @@ describe('ng-add schematic', () => {
        host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
        const {compilerOptions} = host.readJson('tsconfig.json') as TsConfig;
        const types = compilerOptions?.types;
-       expect(types).not.toContain(localizeType);
-       expect(types).toHaveSize(2);
+       expect(types).toEqual(['jasmine', 'node', '@angular/localize']);
      });
 
 
@@ -135,14 +141,6 @@ describe('ng-add schematic', () => {
 
   it(`should add '@angular/localize' in 'types' tsconfigs referenced in karma builder`,
      async () => {
-       const tsConfig = JSON.stringify({
-         compilerOptions: {
-           types: ['node'],
-         },
-       });
-
-       host.create('tsconfig.spec.json', tsConfig);
-
        host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
        const {compilerOptions} = host.readJson('tsconfig.spec.json') as TsConfig;
        const types = compilerOptions?.types;
