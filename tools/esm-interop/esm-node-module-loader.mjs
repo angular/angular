@@ -18,7 +18,7 @@ import {resolve as resolveExports} from '../../third_party/github.com/lukeed/res
 // patched function as it knows about first party mapped packages.
 const requireFn = createRequire(import.meta.url);
 
-const npmDepsWorkspace = process.env.NODE_MODULES_WORKSPACE_NAME;
+const npmDepsWorkspace = process.env.NODE_MODULES_WORKSPACE_NAME ?? '';
 const runfilesRoot = path.resolve(process.env.RUNFILES);
 const nodeModulesPath = path.join(runfilesRoot, npmDepsWorkspace, 'node_modules');
 
