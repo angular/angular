@@ -1,9 +1,13 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+# TODO(ESM): Use rule from defaults if schematics run as ESM.
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
+    # TODO(ESM): Change when schematics support ESM.
+    devmode_module = "commonjs",
     deps = [
         "//packages/core/schematics/migrations/google3",
         "@npm//@types/shelljs",
@@ -13,6 +17,7 @@ ts_library(
 
 jasmine_node_test(
     name = "google3",
+    templated_args = ["--nobazel_run_linker"],
     deps = [
         ":test_lib",
         "@npm//shelljs",
