@@ -52,7 +52,6 @@ karma_web_test_suite(
     name = "test_web",
     bootstrap = [
         "dom/events/zone_event_unpatched_init.js",
-        "//:web_test_bootstrap_scripts",
     ],
     static_files = [
         ":static_assets/test.html",
