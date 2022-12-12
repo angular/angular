@@ -149,15 +149,15 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#8bfc7e1aca9125487c1d52a5a2c09cc9e134e421":
-  version "0.0.0-96fdaaa056f1cfa7ffbc4c69b7e9007279f76c94"
-  uid "8bfc7e1aca9125487c1d52a5a2c09cc9e134e421"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#8bfc7e1aca9125487c1d52a5a2c09cc9e134e421"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#26d9ed4ee00cd07b8a9e21b0611054fd58a3e5c5":
+  version "0.0.0-47f34200c206f119acb14e2e00e478b7fe2d4725"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#26d9ed4ee00cd07b8a9e21b0611054fd58a3e5c5"
   dependencies:
     "@angular-devkit/build-angular" "15.1.0-next.2"
     "@angular/benchpress" "0.3.0"
     "@babel/core" "^7.16.0"
     "@babel/helper-annotate-as-pure" "^7.18.6"
+    "@babel/plugin-proposal-async-generator-functions" "^7.20.1"
     "@bazel/buildifier" "5.1.0"
     "@bazel/concatjs" "5.7.3"
     "@bazel/esbuild" "5.7.3"
@@ -305,7 +305,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#05278122c48e06eff8e5398d59c49ed6688c949b":
   version "0.0.0-96fdaaa056f1cfa7ffbc4c69b7e9007279f76c94"
-  uid "05278122c48e06eff8e5398d59c49ed6688c949b"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#05278122c48e06eff8e5398d59c49ed6688c949b"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
