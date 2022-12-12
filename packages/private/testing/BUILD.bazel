@@ -9,6 +9,7 @@ exports_files(["package.json"])
 
 ng_module(
     name = "testing",
+    package_name = "@angular/private/testing",
     testonly = True,
     srcs = glob(
         ["**/*.ts"],
