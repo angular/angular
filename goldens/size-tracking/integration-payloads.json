@@ -45,7 +45,7 @@
   "platform-server/ngmodule/browser": {
     "uncompressed": {
       "runtime": 2688,
-      "main": 244602,
+      "main": 249925,
       "polyfills": 33778
     }
   },
