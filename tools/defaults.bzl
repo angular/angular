@@ -16,6 +16,7 @@ load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract
 load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
+load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", "extract_esm_outputs", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
@@ -297,35 +298,33 @@ def pkg_npm(name, validate = True, use_prodmode_output = False, **kwargs):
         visibility = visibility,
     )
 
-def karma_web_test_suite(name, **kwargs):
+def karma_web_test_suite(name, external = [], **kwargs):
     """Default values for karma_web_test_suite"""
 
     # Default value for bootstrap
     bootstrap = kwargs.pop("bootstrap", [
-        "//:web_test_bootstrap_scripts",
+        "//tools/testing:browser",
     ])
 
     # Add common deps
-    deps = kwargs.pop("deps", []) + [
-        "@npm//karma-sauce-launcher",
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-        "//packages/zone.js:npm_package",
-    ]
-
-    # Add common runtime deps
-    runtime_deps = kwargs.pop("runtime_deps", []) + [
-        "//tools/testing:browser",
-    ]
-
+    deps = kwargs.pop("deps", [])
     data = kwargs.pop("data", [])
     tags = kwargs.pop("tags", [])
 
+    spec_bundle(
+        name = "%s_bundle" % name,
+        # Specs from this attribute are filtered and will be executed. We
+        # add bootstrap here for discovery of the module mappings aspect.
+        deps = deps + bootstrap,
+        bootstrap = bootstrap,
+        workspace_name = "angular",
+        external = external,
+        platform = "browser",
+    )
+
     _karma_web_test_suite(
         name = name,
-        runtime_deps = runtime_deps,
-        bootstrap = bootstrap,
-        deps = deps,
+        deps = [":%s_bundle" % name],
         browsers = [
             "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium",
             "@npm//@angular/build-tooling/bazel/browsers/firefox:firefox",
@@ -343,10 +342,12 @@ def karma_web_test_suite(name, **kwargs):
         # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
         # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
         timeout = "long",
-        runtime_deps = runtime_deps,
         bootstrap = bootstrap,
         config_file = "//:karma-js.conf.js",
-        deps = deps,
+        deps = [
+            "@npm//karma-sauce-launcher",
+            ":%s_bundle" % name,
+        ],
         data = data + [
             "//:browser-providers.conf.js",
         ],
