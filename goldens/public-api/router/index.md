@@ -26,6 +26,7 @@ import { Provider } from '@angular/core';
 import { ProviderToken } from '@angular/core';
 import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
+import { RouterState as RouterState_2 } from '@angular/router';
 import { SimpleChanges } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Type } from '@angular/core';
@@ -712,12 +713,13 @@ export class Router {
     resetConfig(config: Routes): void;
     // @deprecated
     routeReuseStrategy: RouteReuseStrategy;
-    readonly routerState: RouterState;
+    get routerState(): RouterState_2;
     serializeUrl(url: UrlTree): string;
     setUpLocationChangeListener(): void;
     get url(): string;
     // @deprecated
-    urlHandlingStrategy: UrlHandlingStrategy;
+    get urlHandlingStrategy(): UrlHandlingStrategy;
+    set urlHandlingStrategy(value: UrlHandlingStrategy);
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Router, never>;
     // (undocumented)

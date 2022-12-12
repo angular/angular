@@ -657,6 +657,9 @@
     "name": "StandaloneService"
   },
   {
+    "name": "StateManager"
+  },
+  {
     "name": "Subject"
   },
   {
@@ -1606,9 +1609,6 @@
   },
   {
     "name": "isPromise2"
-  },
-  {
-    "name": "isPublicRouterEvent"
   },
   {
     "name": "isScheduler"
