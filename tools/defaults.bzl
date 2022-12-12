@@ -112,8 +112,6 @@ def ts_library(
         deps = [],
         module_name = None,
         package_name = None,
-        # TODO(devversion): disallow configuration of the target when binaries/schematics can be ESM.
-        devmode_target = None,
         devmode_module = None,
         **kwargs):
     """Default values for ts_library"""
@@ -143,9 +141,8 @@ def ts_library(
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
-        # We also set devmode output to the same settings as prodmode as a first step in
-        # combining devmode and prodmode output.
-        devmode_target = devmode_target if devmode_target != None else default_target,
+        # TODO(ESM): Remove when schematics work with ESM.
+        devmode_target = default_target,
         devmode_module = devmode_module if devmode_module != None else default_module,
         # For prodmode, the target is set to `ES2020`. `@bazel/typecript` sets `ES2015` by
         # default. Note that this should be in sync with the `ng_module` tsconfig generation.

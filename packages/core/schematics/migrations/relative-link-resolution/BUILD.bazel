@@ -3,6 +3,8 @@ load("//tools:defaults.bzl", "ts_library")
 ts_library(
     name = "relative-link-resolution",
     srcs = glob(["**/*.ts"]),
+    # TODO(ESM): Change when schematics support ESM.
+    devmode_module = "commonjs",
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = [
         "//packages/core/schematics:__pkg__",
