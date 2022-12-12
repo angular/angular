@@ -1,7 +1,7 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
-load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _concatjs_devserver = "concatjs_devserver", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
@@ -18,7 +18,7 @@ load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild
 load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", "extract_esm_outputs")
+load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", "extract_esm_outputs", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -191,7 +191,7 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         deps = deps,
         compiler = _INTERNAL_NG_MODULE_COMPILER,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
-        # `module_name` is used for AMD module names within emitted JavaScript files.
+        # `module_name` is used for AMD module names within emitted JavaScxzAxzasq  `32ript files.
         module_name = module_name,
         # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
         # allows for resolution of the given target within the `node_modules/`.
@@ -371,11 +371,6 @@ def protractor_web_test_suite(**kwargs):
 
 def nodejs_binary(
         name,
-        entry_point,
-        testonly = False,
-        data = [],
-        env = {},
-        data_for_args = [],
         templated_args = [],
         enable_linker = False,
         **kwargs):
@@ -388,26 +383,17 @@ def nodejs_binary(
             "--nobazel_run_linker",
         ]
 
-        env = enable_esm_node_module_loader(npm_workspace, env)
-
-    extract_esm_outputs(
-        name = "%s_esm_deps" % name,
-        testonly = testonly,
-        deps = data,
-    )
-
     _nodejs_binary(
         name = name,
-        data = [":%s_esm_deps" % name] + data_for_args,
-        testonly = testonly,
-        entry_point = entry_point.replace(".js", ".mjs"),
-        env = env,
+        npm_workspace = npm_workspace,
+        linker_enabled = enable_linker,
         templated_args = templated_args,
-        use_esm = True,
         **kwargs
     )
 
-def nodejs_test(name, data = [], env = {}, data_for_args = [], templated_args = [], enable_linker = False, **kwargs):
+def nodejs_test(name, templated_args = [], enable_linker = False, **kwargs):
+    npm_workspace = _node_modules_workspace_name()
+
     if not enable_linker:
         templated_args = templated_args + [
             # Disable the linker and rely on patched resolution which works better on Windows
@@ -415,21 +401,11 @@ def nodejs_test(name, data = [], env = {}, data_for_args = [], templated_args = 
             "--nobazel_run_linker",
         ]
 
-        npm_workspace = _node_modules_workspace_name()
-        env = enable_esm_node_module_loader(npm_workspace, env)
-
-    extract_esm_outputs(
-        name = "%s_esm_deps" % name,
-        testonly = True,
-        deps = data,
-    )
-
     _nodejs_test(
         name = name,
-        data = [":%s_esm_deps" % name] + data_for_args,
-        env = env,
         templated_args = templated_args,
-        use_esm = True,
+        linker_enabled = enable_linker,
+        npm_workspace = npm_workspace,
         **kwargs
     )
 
