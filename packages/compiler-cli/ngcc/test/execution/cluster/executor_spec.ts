@@ -20,6 +20,7 @@ import {FileWriter} from '../../../src/writing/file_writer';
 import {PackageJsonUpdater} from '../../../src/writing/package_json_updater';
 import {MockLockFile} from '../../helpers/mock_lock_file';
 import {mockProperty} from '../../helpers/spy_utils';
+import {mockRequireResolveForWorkerScript} from '../../helpers/utils';
 
 runInEachFileSystem(() => {
   describe('ClusterExecutor', () => {
@@ -33,6 +34,8 @@ runInEachFileSystem(() => {
     let createTaskCompletedCallback: jasmine.Spy;
 
     beforeEach(() => {
+      mockRequireResolveForWorkerScript();
+
       masterRunSpy = spyOn(ClusterMaster.prototype, 'run')
                          .and.returnValue(Promise.resolve('ClusterMaster#run()' as any));
       createTaskCompletedCallback = jasmine.createSpy('createTaskCompletedCallback');
