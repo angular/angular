@@ -40,7 +40,7 @@ module.exports = function(config) {
 
       // ZoneJS configuration needed for some event manager tests. This config could
       // affect all legacy tests but in reality is scoped to certain special tests.
-      'packages/platform-browser/test/dom/events/zone_event_unpatched_init.js',
+      'packages/platform-browser/test/dom/events/zone_event_unpatched.init.js',
 
       // Dependencies built by Bazel. See `config.yml` for steps running before
       // the legacy Saucelabs tests run.
@@ -56,7 +56,7 @@ module.exports = function(config) {
       {
         pattern: 'node_modules/@webcomponents/custom-elements/**/*.js',
         included: false,
-        watched: false
+        watched: false,
       },
 
       'node_modules/reflect-metadata/Reflect.js',
