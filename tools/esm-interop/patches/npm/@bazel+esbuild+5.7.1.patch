@@ -6,7 +6,7 @@ index 7d84b1d..d008b4b 100755
 -exports_files(["launcher.js"])
 +exports_files(["launcher.mjs"])
 diff --git a/node_modules/@bazel/esbuild/esbuild.bzl b/node_modules/@bazel/esbuild/esbuild.bzl
-index 9600076..5a69c8d 100755
+index 9600076..8a0cace 100755
 --- a/node_modules/@bazel/esbuild/esbuild.bzl
 +++ b/node_modules/@bazel/esbuild/esbuild.bzl
 @@ -4,7 +4,7 @@ esbuild rule
@@ -18,12 +18,13 @@ index 9600076..5a69c8d 100755
  load("@build_bazel_rules_nodejs//:providers.bzl", "ExternalNpmPackageInfo", "JSEcmaScriptModuleInfo", "node_modules_aspect", "run_node")
  load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "LinkerPackageMappingInfo", "module_mappings_aspect")
  load("@build_bazel_rules_nodejs//internal/common:expand_variables.bzl", "expand_variables")
-@@ -420,7 +420,7 @@ def esbuild_macro(name, output_dir = False, splitting = False, **kwargs):
+@@ -420,7 +420,8 @@ def esbuild_macro(name, output_dir = False, splitting = False, **kwargs):
      _launcher = "_%s_esbuild_launcher" % name
      nodejs_binary(
          name = _launcher,
 -        entry_point = Label("//@bazel/esbuild:launcher.js"),
 +        entry_point = Label("//@bazel/esbuild:launcher.mjs"),
++        linker_enabled = True,
      )
  
      srcs = kwargs.pop("srcs", [])
