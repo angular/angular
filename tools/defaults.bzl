@@ -299,9 +299,9 @@ def karma_web_test_suite(name, external = [], **kwargs):
     """Default values for karma_web_test_suite"""
 
     # Default value for bootstrap
-    bootstrap = kwargs.pop("bootstrap", [
+    bootstrap = kwargs.pop("bootstrap", []) + [
         "//tools/testing:browser",
-    ])
+    ]
 
     # Add common deps
     deps = kwargs.pop("deps", [])
