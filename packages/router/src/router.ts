@@ -205,14 +205,6 @@ export class Router {
   private lastSuccessfulId: number = -1;
 
   /**
-   * Hook that enables you to pause navigation after the preactivation phase.
-   * Used by `RouterModule`.
-   *
-   * @internal
-   */
-  afterPreactivation: () => Observable<void> = () => of(void 0);
-
-  /**
    * A strategy for extracting and merging URLs.
    * Used for AngularJS to Angular migrations.
    *
@@ -317,9 +309,6 @@ export class Router {
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly location = inject(Location);
 
-  /** @internal */
-  rootComponentType: Type<any>|null = null;
-
   constructor() {
     this.isNgZoneEnabled = inject(NgZone) instanceof NgZone && NgZone.isInAngularZone();
 
@@ -328,7 +317,7 @@ export class Router {
     this.rawUrlTree = this.currentUrlTree;
     this.browserUrlTree = this.currentUrlTree;
 
-    this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
+    this.routerState = createEmptyState(this.currentUrlTree, null);
 
     this.navigationTransitions.setupNavigations(this).subscribe(
         t => {
@@ -342,10 +331,10 @@ export class Router {
 
   /** @internal */
   resetRootComponentType(rootComponentType: Type<any>): void {
-    this.rootComponentType = rootComponentType;
     // TODO: vsavkin router 4.0 should make the root component set to null
     // this will simplify the lifecycle of the router.
-    this.routerState.root.component = this.rootComponentType;
+    this.routerState.root.component = rootComponentType;
+    this.navigationTransitions.rootComponentType = rootComponentType;
   }
 
   /**

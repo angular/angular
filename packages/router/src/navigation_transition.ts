@@ -270,7 +270,6 @@ interface InternalRouterInterface {
   errorHandler: ErrorHandler;
   titleStrategy?: TitleStrategy;
   navigated: boolean;
-  afterPreactivation: () => Observable<void>;
   urlHandlingStrategy: UrlHandlingStrategy;
   routeReuseStrategy: RouteReuseStrategy;
   onSameUrlNavigation: 'reload'|'ignore';
@@ -278,7 +277,6 @@ interface InternalRouterInterface {
   urlUpdateStrategy: 'deferred'|'eager';
   serializeUrl(url: UrlTree): string;
   config: Routes;
-  rootComponentType: Type<any>|null;
   setBrowserUrl(url: UrlTree, t: NavigationTransition): void;
   restoreHistory(t: NavigationTransition, restoringFromCaughtError?: boolean): void;
   scheduleNavigation(
@@ -301,6 +299,15 @@ export class NavigationTransitions {
     return this.navigationId !== 0;
   }
   private transitions?: BehaviorSubject<NavigationTransition>;
+  /**
+   * Hook that enables you to pause navigation after the preactivation phase.
+   * Used by `RouterModule`.
+   *
+   * @internal
+   */
+  afterPreactivation: () => Observable<void> = () => of(void 0);
+  /** @internal */
+  rootComponentType: Type<any>|null = null;
 
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
@@ -437,7 +444,7 @@ export class NavigationTransitions {
 
                                  // Recognize
                                  recognize(
-                                     this.environmentInjector, router.rootComponentType,
+                                     this.environmentInjector, this.rootComponentType,
                                      router.config, this.urlSerializer,
                                      router.paramsInheritanceStrategy),
 
@@ -472,7 +479,7 @@ export class NavigationTransitions {
                                  restoredState);
                              this.events.next(navStart);
                              const targetSnapshot =
-                                 createEmptyState(extractedUrl, router.rootComponentType).snapshot;
+                                 createEmptyState(extractedUrl, this.rootComponentType).snapshot;
 
                              overallTransitionState = {
                                ...t,
@@ -614,7 +621,7 @@ export class NavigationTransitions {
                                .pipe(defaultIfEmpty(), take(1));
                          }),
 
-                         switchTap(() => router.afterPreactivation()),
+                         switchTap(() => this.afterPreactivation()),
 
                          map((t: NavigationTransition) => {
                            const targetRouterState = createRouterState(

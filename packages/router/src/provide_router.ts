@@ -358,7 +358,7 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
                 resolve(true);
               });
 
-              router.afterPreactivation = () => {
+              injector.get(NavigationTransitions).afterPreactivation = () => {
                 // Unblock APP_INITIALIZER once we get to `afterPreactivation`. At this point, we
                 // assume activation will complete successfully (even though this is not
                 // guaranteed).
