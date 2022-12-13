@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BabelFile, PluginObj, types as t} from '@babel/core';
 import {NodePath} from '@babel/traverse';
 
 import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker';
 
 import {BabelAstFactory} from './ast/babel_ast_factory';
 import {BabelAstHost} from './ast/babel_ast_host';
-import {BabelFile, PluginObj, types as t} from './babel_core';
 import {BabelDeclarationScope, ConstantScopePath} from './babel_declaration_scope';
 import {LinkerPluginOptions} from './linker_plugin_options';
 
