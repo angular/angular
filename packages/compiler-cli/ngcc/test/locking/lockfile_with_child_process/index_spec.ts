@@ -11,7 +11,7 @@ import * as process from 'process';
 import {FileSystem, getFileSystem} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../../src/ngtsc/logging/testing';
-import {getLockFilePath} from '../../../src/locking/lock_file';
+import {LockFilePathResolver} from '../../../src/locking/lock_file';
 import {LockFileWithChildProcess} from '../../../src/locking/lock_file_with_child_process';
 import {mockRequireResolveForLockfile} from '../../helpers/utils';
 
@@ -72,10 +72,11 @@ runInEachFileSystem(() => {
       it('should write the lock-file to disk', () => {
         const fs = getFileSystem();
         const lockFile = new LockFileUnderTest(fs);
-        expect(fs.exists(getLockFilePath(fs))).toBe(false);
+        const lockPath = LockFilePathResolver.resolve(fs);
+        expect(fs.exists(lockPath)).toBe(false);
         lockFile.write();
-        expect(fs.exists(getLockFilePath(fs))).toBe(true);
-        expect(fs.readFile(getLockFilePath(fs))).toEqual('' + process.pid);
+        expect(fs.exists(lockPath)).toBe(true);
+        expect(fs.readFile(lockPath)).toEqual('' + process.pid);
       });
 
       it('should create the unlocker process if it is not already created', () => {
