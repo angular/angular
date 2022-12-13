@@ -17,7 +17,8 @@ def partial_compliance_golden(filePath):
     nodejs_binary(
         name = generate_partial_name,
         testonly = True,
-        data = data + [filePath],
+        data = data,
+        data_for_args = [filePath],
         visibility = [":__pkg__"],
         entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
         templated_args = ["$(execpath %s)" % filePath],
