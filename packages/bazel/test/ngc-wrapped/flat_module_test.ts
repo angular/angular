@@ -25,8 +25,10 @@ describe('flat_module ng_module', () => {
   });
 
   describe('flat module out file', () => {
-    it('should have a proper AMD module name', () => {
-      expect(readFileSync(flatModuleOutFile, 'utf8')).toContain(`define("flat_module"`);
+    it('should have a proper flat module re-export', () => {
+      expect(readFileSync(flatModuleOutFile, 'utf8')).toContain(`export * from './index';`);
+      expect(readFileSync(flatModuleOutFile, 'utf8'))
+          .toContain(`Generated bundle index. Do not edit.`);
     });
   });
 });
