@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {types as t} from '@babel/core';
+
 import {assert} from '../../../../linker';
 import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, VariableDeclarationType} from '../../../../src/ngtsc/translator';
-import {types as t} from '../babel_core';
 
 /**
  * A Babel flavored implementation of the AstFactory.

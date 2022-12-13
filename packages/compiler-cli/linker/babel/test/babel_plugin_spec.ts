@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {transformSync} from '../src/babel_core';
+import babel from '@babel/core';
 
 describe('default babel plugin entry-point', () => {
-  it('should work as a Babel plugin using the module specifier', () => {
-    const result = transformSync(
+  it('should work as a Babel plugin using the module specifier', async () => {
+    const result = (await babel.transformAsync(
         `
         import * as i0 from "@angular/core";
 
@@ -20,10 +20,10 @@ describe('default babel plugin entry-point', () => {
        `,
         {
           plugins: [
-            '@angular/compiler-cli/linker/babel',
+            '@angular/compiler-cli/linker/babel/index.mjs',
           ],
           filename: 'test.js',
-        })!;
+        }))!;
 
     expect(result).not.toBeNull();
     expect(result.code).not.toContain('ɵɵngDeclareNgModule');
@@ -31,8 +31,8 @@ describe('default babel plugin entry-point', () => {
     expect(result.code).not.toMatch(/declarations:\s*\[MyComponent]/);
   });
 
-  it('should be configurable', () => {
-    const result = transformSync(
+  it('should be configurable', async () => {
+    const result = (await babel.transformAsync(
         `
         import * as i0 from "@angular/core";
 
@@ -43,10 +43,10 @@ describe('default babel plugin entry-point', () => {
        `,
         {
           plugins: [
-            ['@angular/compiler-cli/linker/babel', {linkerJitMode: true}],
+            ['@angular/compiler-cli/linker/babel/index.mjs', {linkerJitMode: true}],
           ],
           filename: 'test.js',
-        })!;
+        }))!;
 
     expect(result).not.toBeNull();
     expect(result.code).not.toContain('ɵɵngDeclareNgModule');
