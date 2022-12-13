@@ -37,6 +37,14 @@ export async function resolve(specifier, context, nextResolve) {
     return nextResolve(specifier, context);
   }
 
+  // Attempt the next (or builtin) resolution first.
+  let nextResolveError = null;
+  try {
+    return await nextResolve(specifier, context);
+  } catch (e) {
+    nextResolveError = e;
+  }
+
   const packageImport = parsePackageImport(specifier);
   const pathToNodeModule = path.join(nodeModulesPath, packageImport.packageName);
 
@@ -58,8 +66,8 @@ export async function resolve(specifier, context, nextResolve) {
     return localMappingResult;
   }
 
-  // Process built-in modules or unknown specifiers.
-  return nextResolve(specifier, context);
+  // Re-throw the next resolve error if the we couldn't find the module.
+  throw nextResolveError;
 }
 
 /** Gets whether the specifier refers to a module. */
