@@ -50,7 +50,8 @@ enum TranslationType {
  * or an [ISO date-time string](https://www.w3.org/TR/NOTE-datetime).
  * @param format The date-time components to include. See `DatePipe` for details.
  * @param locale A locale code for the locale format rules to use.
- * @param timezone The time zone. A time zone offset from GMT (such as `'+0430'`),
+ * @param timezone The time zone. An IANA time zone name (such as `'Europe/Vilnius'`),
+ * or a time zone offset from GMT (such as `'+0430'`),
  * or a standard UTC/GMT or continental US time zone abbreviation.
  * If not specified, uses host system settings.
  *
@@ -86,7 +87,7 @@ export function formatDate(
 
   let dateTimezoneOffset = date.getTimezoneOffset();
   if (timezone) {
-    dateTimezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
+    dateTimezoneOffset = timezoneToOffset(date, timezone, dateTimezoneOffset);
     date = convertTimezoneToLocal(date, timezone, true);
   }
 
@@ -718,7 +719,23 @@ function getDateFormatter(format: string): DateFormatter|null {
   return formatter;
 }
 
-function timezoneToOffset(timezone: string, fallback: number): number {
+function timezoneToOffset(date: Date, timezone: string, fallback: number): number {
+  if (timezone.includes('/')) {
+    // If timezone includes a forward-dash, it's an IANA timezone name (e.g., Europe/Vilnius).
+    // Ideally, we could find out an UTC offset by using the `timeZoneName: 'shortOffset'` option.
+    // Unfortunately, this option is only available from Node.js v17.0.0,
+    // which means it can't be used as long as Angular needs to support older Node.js versions.
+    // Till then, we're left with workaround solutions like such: use a locale (like French),
+    // which uses a short offset that start with "UTC" instead of abbreviation (e.g., EET, CAT, etc)
+    // in all timezones.
+    const shortOffset = Intl.DateTimeFormat('fr', {timeZone: timezone, timeZoneName: 'short'})
+                            .formatToParts(date)
+                            .find(({type}) => type === 'timeZoneName');
+    timezone = shortOffset!.value.replace('UTC', '');
+    // Some offsets use the minus symbol (U+2212) outside the ASCII table which breaks the
+    // `Date.parse` later, therefore replacing it with a proper symbol (U+002D) from the ASCII
+    timezone = timezone.replace('\u2212', '-');
+  }
   // Support: IE 11 only, Edge 13-15+
   // IE/Edge do not "understand" colon (`:`) in timezone
   timezone = timezone.replace(/:/g, '');
@@ -735,7 +752,7 @@ function addDateMinutes(date: Date, minutes: number) {
 function convertTimezoneToLocal(date: Date, timezone: string, reverse: boolean): Date {
   const reverseValue = reverse ? -1 : 1;
   const dateTimezoneOffset = date.getTimezoneOffset();
-  const timezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
+  const timezoneOffset = timezoneToOffset(date, timezone, dateTimezoneOffset);
   return addDateMinutes(date, reverseValue * (timezoneOffset - dateTimezoneOffset));
 }
 

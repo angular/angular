@@ -200,6 +200,29 @@ import {TestBed} from '@angular/core/testing';
            const content = fixture.nativeElement.textContent;
            expect(content).toBe('Jan 10, 2017');
          });
+
+      it('should support IANA timezone name', () => {
+        // In America/Chicago timezone:
+        // UTC-6 offset at 2022-11-07
+        expect(pipe.transform('2022-11-07T14:00:00.000Z', 'short', 'America/Chicago'))
+            .toEqual('11/7/22, 8:00 AM');
+        // UTC-5 offset at 2023-03-14 (because of DST)
+        expect(pipe.transform('2023-03-14T13:00:00.000Z', 'short', 'America/Chicago'))
+            .toEqual('3/14/23, 8:00 AM');
+
+        // In Europe/Vilnius timezone:
+        // UTC+2 offset at 2022-10-31
+        expect(pipe.transform('2022-10-31T06:00:00.000Z', 'short', 'Europe/Vilnius'))
+            .toEqual('10/31/22, 8:00 AM');
+        // UTC+3 offset at 2023-03-27 (because of DST)
+        expect(pipe.transform('2023-03-27T05:00:00.000Z', 'short', 'Europe/Vilnius'))
+            .toEqual('3/27/23, 8:00 AM');
+
+        // In Africa/Freetown timezone:
+        // UTC (no offset) all the time
+        expect(pipe.transform('2022-10-31T08:00:00.000Z', 'short', 'Africa/Freetown'))
+            .toEqual('10/31/22, 8:00 AM');
+      });
     });
 
     it('should be available as a standalone pipe', () => {

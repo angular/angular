@@ -390,6 +390,29 @@ describe('Format date', () => {
              .toEqual(formatDate(localDate, `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID));
        });
 
+    it('should support IANA timezone name', () => {
+      // In America/Chicago timezone:
+      // UTC-6 offset at 2022-11-07
+      expect(formatDate('2022-11-07T14:00:00.000Z', 'short', ɵDEFAULT_LOCALE_ID, 'America/Chicago'))
+          .toEqual('11/7/22, 8:00 AM');
+      // UTC-5 offset at 2023-03-14 (because of DST)
+      expect(formatDate('2023-03-14T13:00:00.000Z', 'short', ɵDEFAULT_LOCALE_ID, 'America/Chicago'))
+          .toEqual('3/14/23, 8:00 AM');
+
+      // In Europe/Vilnius timezone:
+      // UTC+2 offset at 2022-10-31
+      expect(formatDate('2022-10-31T06:00:00.000Z', 'short', ɵDEFAULT_LOCALE_ID, 'Europe/Vilnius'))
+          .toEqual('10/31/22, 8:00 AM');
+      // UTC+3 offset at 2023-03-27 (because of DST)
+      expect(formatDate('2023-03-27T05:00:00.000Z', 'short', ɵDEFAULT_LOCALE_ID, 'Europe/Vilnius'))
+          .toEqual('3/27/23, 8:00 AM');
+
+      // In Africa/Freetown timezone:
+      // UTC (no offset) all the time
+      expect(formatDate('2022-10-31T08:00:00.000Z', 'short', ɵDEFAULT_LOCALE_ID, 'Africa/Freetown'))
+          .toEqual('10/31/22, 8:00 AM');
+    });
+
     it('should remove bidi control characters',
        () => expect(formatDate(date, 'MM/dd/yyyy', ɵDEFAULT_LOCALE_ID)!.length).toEqual(10));
 
