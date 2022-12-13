@@ -10,7 +10,7 @@ import module from 'module';
 
 import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger, LogLevel} from '../../../../src/ngtsc/logging';
-import {getLockFilePath, LockFile} from '../lock_file';
+import {LockFile, LockFilePathResolver} from '../lock_file';
 
 import {removeLockFile} from './util';
 
@@ -38,7 +38,7 @@ export class LockFileWithChildProcess implements LockFile {
   private unlocker: ChildProcess|null;
 
   constructor(protected fs: FileSystem, protected logger: Logger) {
-    this.path = getLockFilePath(fs);
+    this.path = LockFilePathResolver.resolve(fs);
     this.unlocker = this.createUnlocker(this.path);
   }
 
@@ -79,7 +79,7 @@ export class LockFileWithChildProcess implements LockFile {
         this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
     const isWindows = process.platform === 'win32';
     const unlocker = fork(
-        getLockFileUnlockerScriptPath(this.fs), [path, logLevel],
+        LockFileUnlockerScriptResolver.resolve(this.fs), [path, logLevel],
         {detached: true, stdio: isWindows ? 'pipe' : 'inherit'});
     if (isWindows) {
       unlocker.stdout?.on('data', process.stdout.write.bind(process.stdout));
@@ -89,13 +89,15 @@ export class LockFileWithChildProcess implements LockFile {
   }
 }
 
-/** Gets the absolute file path to the lock file unlocker script. */
-export function getLockFileUnlockerScriptPath(fileSystem: FileSystem): AbsoluteFsPath {
-  // NodeJS `import.meta.resolve` is experimental. We leverage `require`.
-  const requireFn = module.createRequire(import.meta.url);
-  // We resolve the worker script using module resolution as in the package output,
-  // the worker might be bundled but exposed through a subpath export mapping.
-  const unlockerScriptPath = requireFn.resolve(
-      '@angular/compiler-cli/ngcc/src/locking/lock_file_with_child_process/ngcc_lock_unlocker');
-  return fileSystem.resolve(unlockerScriptPath);
+/** Wrapper for resolving the lock file unlocker script. Useful for test patching. */
+export class LockFileUnlockerScriptResolver {
+  static resolve(fs: FileSystem): AbsoluteFsPath {
+    // NodeJS `import.meta.resolve` is experimental. We leverage `require`.
+    const requireFn = module.createRequire(import.meta.url);
+    // We resolve the worker script using module resolution as in the package output,
+    // the worker might be bundled but exposed through a subpath export mapping.
+    const unlockerScriptPath = requireFn.resolve(
+        '@angular/compiler-cli/ngcc/src/locking/lock_file_with_child_process/ngcc_lock_unlocker');
+    return fs.resolve(unlockerScriptPath);
+  }
 }

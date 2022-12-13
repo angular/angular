@@ -44,7 +44,7 @@ export class ClusterMaster {
     }
 
     // Set the worker entry-point
-    cluster.setupMaster({exec: getClusterWorkerScriptPath(fileSystem)});
+    cluster.setupMaster({exec: ClusterWorkerScriptResolver.resolve(fileSystem)});
 
     this.taskQueue = analyzeEntryPoints();
     this.onTaskCompleted = createTaskCompletedCallback(this.taskQueue);
@@ -343,13 +343,15 @@ export class ClusterMaster {
   }
 }
 
-/** Gets the absolute file path to the cluster worker script. */
-export function getClusterWorkerScriptPath(fileSystem: PathManipulation): AbsoluteFsPath {
-  // NodeJS `import.meta.resolve` is experimental. We leverage `require`.
-  const requireFn = module.createRequire(import.meta.url);
-  // We resolve the worker script using module resolution as in the package output,
-  // the worker might be bundled but exposed through a subpath export mapping.
-  const workerScriptPath =
-      requireFn.resolve('@angular/compiler-cli/ngcc/src/execution/cluster/ngcc_cluster_worker');
-  return fileSystem.resolve(workerScriptPath);
+/** Wrapper for resolving the cluster worker script. Useful for test patching. */
+export class ClusterWorkerScriptResolver {
+  static resolve(fileSystem: PathManipulation): AbsoluteFsPath {
+    // NodeJS `import.meta.resolve` is experimental. We leverage `require`.
+    const requireFn = module.createRequire(import.meta.url);
+    // We resolve the worker script using module resolution as in the package output,
+    // the worker might be bundled but exposed through a subpath export mapping.
+    const workerScriptPath =
+        requireFn.resolve('@angular/compiler-cli/ngcc/src/execution/cluster/ngcc_cluster_worker');
+    return fileSystem.resolve(workerScriptPath);
+  }
 }
