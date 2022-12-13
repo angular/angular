@@ -5,11 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {types as t} from '@babel/core';
 import {NodePath, Scope} from '@babel/traverse';
 
 import {DeclarationScope} from '../../../linker';
-
-import {types as t} from './babel_core';
 
 export type ConstantScopePath =
     NodePath<t.FunctionDeclaration>|NodePath<t.FunctionExpression>|NodePath<t.Program>;
