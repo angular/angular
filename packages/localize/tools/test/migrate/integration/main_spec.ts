@@ -5,11 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
+import path from 'path';
+import url from 'url';
+
 import {migrateFiles} from '../../../src/migrate/index';
 import {runInNativeFileSystem} from '../../helpers';
+
+const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
 runInNativeFileSystem(() => {
   let fs: FileSystem;
@@ -23,7 +29,7 @@ runInNativeFileSystem(() => {
     rootPath = absoluteFrom('/project');
     mappingFilePath = fs.resolve(rootPath, 'test_files/mapping.json');
 
-    loadTestDirectory(fs, __dirname + '/test_files', absoluteFrom('/project/test_files'));
+    loadTestDirectory(fs, path.join(currentDir, 'test_files'), absoluteFrom('/project/test_files'));
   });
 
   describe('migrateFiles()', () => {
