@@ -3,7 +3,7 @@ load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 circular_dependency_test(
     name = "circular_deps_test",
-    entry_point = "angular/packages/platform-server/init/index.js",
+    entry_point = "angular/packages/platform-server/init/index.mjs",
     deps = ["//packages/platform-server/init"],
 )
 
@@ -13,6 +13,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/platform-server/init",
+        "@npm//domino",
     ],
 )
 
