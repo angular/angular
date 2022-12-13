@@ -3,7 +3,7 @@ load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 circular_dependency_test(
     name = "circular_deps_test",
-    entry_point = "angular/packages/router/upgrade/index.js",
+    entry_point = "angular/packages/router/upgrade/index.mjs",
     deps = ["//packages/router/upgrade"],
 )
 
