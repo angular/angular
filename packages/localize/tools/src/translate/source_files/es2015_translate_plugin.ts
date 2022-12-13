@@ -7,7 +7,7 @@
  */
 import {getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedTranslation} from '@angular/localize';
-import {NodePath, PluginObj, types as t} from '../../babel_core';
+import {NodePath, PluginObj, types as t} from '@babel/core';
 
 import {Diagnostics} from '../../diagnostics';
 import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, TranslatePluginOptions, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils';
