@@ -6,8 +6,8 @@ import { Component, OnDestroy } from '@angular/core';
   template: '<p>{{message}}</p>'
 })
 export class CountdownTimerComponent implements OnDestroy {
-
-  intervalId = 0;
+  // Typed as 'any' for SSR compatibility
+  interval: any;
   message = '';
   seconds = 11;
 
@@ -19,11 +19,11 @@ export class CountdownTimerComponent implements OnDestroy {
     this.message = `Holding at T-${this.seconds} seconds`;
   }
 
-  private clearTimer() { clearInterval(this.intervalId); }
+  private clearTimer() { clearInterval(this.interval); }
 
   private countDown() {
     this.clearTimer();
-    this.intervalId = window.setInterval(() => {
+    this.interval = setInterval(() => {
       this.seconds -= 1;
       if (this.seconds === 0) {
         this.message = 'Blast off!';
