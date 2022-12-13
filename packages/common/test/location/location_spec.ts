@@ -266,18 +266,4 @@ describe('Location Class', () => {
       expect(location.normalize(url)).toBe(route);
     });
   });
-
-  describe('location.normalize(url) should return correct route', () => {
-    it('in case url starts with the substring equals APP_BASE_HREF', () => {
-      const baseHref = '/en';
-      const url = '/enigma';
-
-      TestBed.configureTestingModule({providers: [{provide: APP_BASE_HREF, useValue: baseHref}]});
-
-      const location = TestBed.inject(Location);
-
-      expect(location.normalize(url)).toBe(url);
-      expect(location.normalize(baseHref + url)).toBe(url);
-    });
-  });
 });
