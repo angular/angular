@@ -9,7 +9,6 @@
 import ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../ngtsc/reflection';
-import {combineModifiers, createClassDeclaration, createGetAccessorDeclaration, createMethodDeclaration, createPropertyDeclaration, createSetAccessorDeclaration, getDecorators, getModifiers, ModifierLike, updateConstructorDeclaration, updateParameterDeclaration} from '../../ngtsc/ts_compatibility';
 
 import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './patch_alias_reference_resolution';
 
@@ -137,7 +136,7 @@ function createCtorParametersClassProperty(
       undefined, undefined, [], undefined,
       ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       ts.factory.createArrayLiteralExpression(params, true));
-  const ctorProp = createPropertyDeclaration(
+  const ctorProp = ts.factory.createPropertyDeclaration(
       [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)], 'ctorParameters', undefined, undefined,
       initializer);
   if (isClosureCompilerEnabled) {
@@ -291,8 +290,8 @@ export function getDownlevelDecoratorsTransform(
     // case previously, and adding it back in leads to substantial code size
     // increases as Closure fails to tree shake these props
     // without @nocollapse.
-    const prop =
-        createPropertyDeclaration([modifier], 'decorators', undefined, undefined, initializer);
+    const prop = ts.factory.createPropertyDeclaration(
+        [modifier], 'decorators', undefined, undefined, initializer);
     addJSDocTypeAnnotation(prop, DECORATOR_INVOCATION_JSDOC_TYPE);
     return prop;
   }
@@ -320,7 +319,7 @@ export function getDownlevelDecoratorsTransform(
               decorators.map(deco => extractMetadataFromSingleDecorator(deco, diagnostics)))));
     }
     const initializer = ts.factory.createObjectLiteralExpression(entries, true);
-    const prop = createPropertyDeclaration(
+    const prop = ts.factory.createPropertyDeclaration(
         [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)], 'propDecorators', undefined,
         undefined, initializer);
     addJSDocTypeAnnotation(prop, `!Object<string, ${DECORATOR_INVOCATION_JSDOC_TYPE}>`);
@@ -421,11 +420,14 @@ export function getDownlevelDecoratorsTransform(
         return [undefined, element, []];
       }
 
-      const modifiers = decoratorsToKeep.length ?
-          ts.setTextRange(
-              ts.factory.createNodeArray(combineModifiers(decoratorsToKeep, getModifiers(element))),
-              element.modifiers) :
-          getModifiers(element);
+      const elementModifiers = ts.canHaveModifiers(element) ? ts.getModifiers(element) : undefined;
+      let modifiers: ts.NodeArray<ts.ModifierLike>|undefined;
+
+      if (decoratorsToKeep.length || elementModifiers?.length) {
+        modifiers = ts.setTextRange(
+            ts.factory.createNodeArray([...decoratorsToKeep, ...(elementModifiers || [])]),
+            element.modifiers);
+      }
 
       return [element.name.text, cloneClassElementWithModifiers(element, modifiers), toLower];
     }
@@ -465,16 +467,22 @@ export function getDownlevelDecoratorsTransform(
           paramInfo!.type = param.type;
         }
         parametersInfo.push(paramInfo);
-        const newParam = updateParameterDeclaration(
-            param,
-            combineModifiers(
-                // Must pass 'undefined' to avoid emitting decorator metadata.
-                decoratorsToKeep.length ? decoratorsToKeep : undefined, getModifiers(param)),
-            param.dotDotDotToken, param.name, param.questionToken, param.type, param.initializer);
+
+        // Must pass 'undefined' to avoid emitting decorator metadata.
+        let modifiers: ts.ModifierLike[]|undefined;
+        const paramModifiers = ts.getModifiers(param);
+
+        if (decoratorsToKeep.length || paramModifiers?.length) {
+          modifiers = [...decoratorsToKeep, ...(paramModifiers || [])];
+        }
+
+        const newParam = ts.factory.updateParameterDeclaration(
+            param, modifiers, param.dotDotDotToken, param.name, param.questionToken, param.type,
+            param.initializer);
         newParameters.push(newParam);
       }
-      const updated =
-          updateConstructorDeclaration(ctor, getModifiers(ctor), newParameters, ctor.body);
+      const updated = ts.factory.updateConstructorDeclaration(
+          ctor, ts.getModifiers(ctor), newParameters, ctor.body);
       return [updated, parametersInfo];
     }
 
@@ -520,7 +528,7 @@ export function getDownlevelDecoratorsTransform(
       // decorators that will never be Angular decorators. So we cannot rely on it to capture all
       // the decorators that should be kept. Instead we start off with a set of the raw decorators
       // on the class, and only remove the ones that have been identified for downleveling.
-      const decoratorsToKeep = new Set<ts.Decorator>(getDecorators(classDecl));
+      const decoratorsToKeep = new Set<ts.Decorator>(ts.getDecorators(classDecl));
       const possibleAngularDecorators = host.getDecoratorsOfDeclaration(classDecl) || [];
 
       let hasAngularDecorator = false;
@@ -561,12 +569,15 @@ export function getDownlevelDecoratorsTransform(
       const members = ts.setTextRange(
           ts.factory.createNodeArray(newMembers, classDecl.members.hasTrailingComma),
           classDecl.members);
+      const classModifiers = ts.getModifiers(classDecl);
+      let modifiers: ts.ModifierLike[]|undefined;
 
-      return createClassDeclaration(
-          combineModifiers(
-              decoratorsToKeep.size ? Array.from(decoratorsToKeep) : undefined,
-              getModifiers(classDecl)),
-          classDecl.name, classDecl.typeParameters, classDecl.heritageClauses, members);
+      if (decoratorsToKeep.size || classModifiers?.length) {
+        modifiers = [...decoratorsToKeep, ...(classModifiers || [])];
+      }
+
+      return ts.factory.createClassDeclaration(
+          modifiers, classDecl.name, classDecl.typeParameters, classDecl.heritageClauses, members);
     }
 
     /**
@@ -591,21 +602,22 @@ export function getDownlevelDecoratorsTransform(
 }
 
 function cloneClassElementWithModifiers(
-    node: ts.ClassElement, modifiers: readonly ModifierLike[]|undefined): ts.ClassElement {
+    node: ts.ClassElement, modifiers: readonly ts.ModifierLike[]|undefined): ts.ClassElement {
   let clone: ts.ClassElement;
 
   if (ts.isMethodDeclaration(node)) {
-    clone = createMethodDeclaration(
+    clone = ts.factory.createMethodDeclaration(
         modifiers, node.asteriskToken, node.name, node.questionToken, node.typeParameters,
         node.parameters, node.type, node.body);
   } else if (ts.isPropertyDeclaration(node)) {
-    clone = createPropertyDeclaration(
+    clone = ts.factory.createPropertyDeclaration(
         modifiers, node.name, node.questionToken, node.type, node.initializer);
   } else if (ts.isGetAccessor(node)) {
-    clone =
-        createGetAccessorDeclaration(modifiers, node.name, node.parameters, node.type, node.body);
+    clone = ts.factory.createGetAccessorDeclaration(
+        modifiers, node.name, node.parameters, node.type, node.body);
   } else if (ts.isSetAccessor(node)) {
-    clone = createSetAccessorDeclaration(modifiers, node.name, node.parameters, node.body);
+    clone =
+        ts.factory.createSetAccessorDeclaration(modifiers, node.name, node.parameters, node.body);
   } else {
     throw new Error(`Unsupported decorated member with kind ${ts.SyntaxKind[node.kind]}`);
   }

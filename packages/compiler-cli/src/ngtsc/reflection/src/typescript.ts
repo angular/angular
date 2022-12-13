@@ -8,8 +8,6 @@
 
 import ts from 'typescript';
 
-import {getDecorators, getModifiers} from '../../ts_compatibility';
-
 import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationKind, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
 import {typeToValue} from './type_to_value';
 import {isNamedClassDeclaration} from './util';
@@ -22,7 +20,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   constructor(protected checker: ts.TypeChecker) {}
 
   getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null {
-    const decorators = getDecorators(declaration);
+    const decorators =
+        ts.canHaveDecorators(declaration) ? ts.getDecorators(declaration) : undefined;
 
     return decorators !== undefined && decorators.length ?
         decorators.map(decorator => this._reflectDecorator(decorator))
@@ -208,7 +207,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (ts.isVariableDeclaration(decl) && ts.isVariableDeclarationList(decl.parent)) {
       topLevel = decl.parent.parent;
     }
-    const modifiers = getModifiers(topLevel);
+    const modifiers = ts.canHaveModifiers(topLevel) ? ts.getModifiers(topLevel) : undefined;
     if (modifiers !== undefined &&
         modifiers.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword)) {
       // The node is part of a declaration that's directly exported.
@@ -431,7 +430,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
 
     const decorators = this.getDecoratorsOfDeclaration(node);
-    const modifiers = getModifiers(node);
+    const modifiers = ts.getModifiers(node);
     const isStatic =
         modifiers !== undefined && modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
 
