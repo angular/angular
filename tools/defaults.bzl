@@ -359,11 +359,19 @@ def karma_web_test_suite(name, external = [], **kwargs):
         **kwargs
     )
 
-def protractor_web_test_suite(**kwargs):
+def protractor_web_test_suite(name, deps = [], **kwargs):
     """Default values for protractor_web_test_suite"""
+    spec_bundle(
+        name = "%s_bundle" % name,
+        deps = deps,
+        platform = "cjs-legacy",
+        external = ["protractor"],
+    )
 
     _protractor_web_test_suite(
+        name = name,
         browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
+        deps = [":%s_bundle" % name],
         **kwargs
     )
 
@@ -418,9 +426,9 @@ def npm_package_bin(args = [], **kwargs):
         **kwargs
     )
 
-    # TODO(devversion): Jasmine Node tests are only bundled using `spec_bundle`
-    # because `async/await` syntax needs to be downleveled for ZoneJS. In the
-    # future this can be removed when ZoneJS can work with native async/await in NodeJS.
+# TODO(devversion): Jasmine Node tests are only bundled using `spec_bundle`
+# because `async/await` syntax needs to be downleveled for ZoneJS. In the
+# future this can be removed when ZoneJS can work with native async/await in NodeJS.
 def zone_compatible_jasmine_node_test(name, external = [], deps = [], bootstrap = [], **kwargs):
     spec_bundle(
         name = "%s_bundle" % name,
