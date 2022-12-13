@@ -9,7 +9,7 @@ NODE_ONLY = [
 
 circular_dependency_test(
     name = "circular_deps_test",
-    entry_point = "angular/packages/compiler/index.js",
+    entry_point = "angular/packages/compiler/index.mjs",
     deps = ["//packages/compiler"],
 )
 
