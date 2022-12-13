@@ -10,15 +10,18 @@ import module from 'module';
 
 import {AbsoluteFsPath, PathManipulation} from '../../../src/ngtsc/file_system';
 
-export function getLockFilePath(fs: PathManipulation) {
-  // NodeJS `import.meta.resolve` is experimental. We leverage `require`.
-  const requireFn = module.createRequire(import.meta.url);
-  // The lock file location is resolved based on the location of the `ngcc` entry-point as this
-  // allows us to have a consistent position for the lock file to reside. We are unable to rely
-  // on `__dirname` (or equivalent) as this code is being bundled and different entry-points
-  // will have dedicated bundles where the lock file location would differ then.
-  const ngccEntryPointFile = requireFn.resolve('@angular/compiler-cli/package.json');
-  return fs.resolve(ngccEntryPointFile, '../../../.ngcc_lock_file');
+/** Wrapper for resolving the lcok file path. Useful for test patching. */
+export class LockFilePathResolver {
+  static resolve(fs: PathManipulation): AbsoluteFsPath {
+    // NodeJS `import.meta.resolve` is experimental. We leverage `require`.
+    const requireFn = module.createRequire(import.meta.url);
+    // The lock file location is resolved based on the location of the `ngcc` entry-point as this
+    // allows us to have a consistent position for the lock file to reside. We are unable to rely
+    // on `__dirname` (or equivalent) as this code is being bundled and different entry-points
+    // will have dedicated bundles where the lock file location would differ then.
+    const ngccEntryPointFile = requireFn.resolve('@angular/compiler-cli/package.json');
+    return fs.resolve(ngccEntryPointFile, '../../../.ngcc_lock_file');
+  }
 }
 
 export interface LockFile {
