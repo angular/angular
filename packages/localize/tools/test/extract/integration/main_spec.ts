@@ -9,11 +9,15 @@ import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, setFileSystem} 
 import {InvalidFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/src/invalid_file_system';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
+import path from 'path';
+import url from 'url';
 
 import {extractTranslations} from '../../../src/extract/index';
 import {FormatOptions} from '../../../src/extract/translation_files/format_options';
 import {runInNativeFileSystem} from '../../helpers';
 import {toAttributes} from '../translation_files/utils';
+
+const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
 runInNativeFileSystem(() => {
   let fs: FileSystem;
@@ -34,7 +38,7 @@ runInNativeFileSystem(() => {
     textFile2 = fs.resolve(rootPath, 'test_files/test-2.txt');
 
     fs.ensureDir(fs.dirname(sourceFilePath));
-    loadTestDirectory(fs, __dirname + '/test_files', absoluteFrom('/project/test_files'));
+    loadTestDirectory(fs, path.join(currentDir, 'test_files'), absoluteFrom('/project/test_files'));
     setFileSystem(new InvalidFileSystem());
   });
 

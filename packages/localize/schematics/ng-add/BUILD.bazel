@@ -1,4 +1,6 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_config", "ts_library")
+# TODO(ESM): Use rule from defaults if schematics run as ESM.
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "ts_config", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,6 +19,8 @@ ts_library(
     data = glob(["files/**/*"]) + [
         "schema.json",
     ],
+    # TODO(ESM): Change when schematics support ESM.
+    devmode_module = "commonjs",
     tsconfig = ":tsconfig",
     deps = [
         "@npm//@angular-devkit/core",
@@ -34,6 +38,8 @@ ts_library(
     data = [
         "//packages/localize/schematics:package_assets",
     ],
+    # TODO(ESM): Change when schematics support ESM.
+    devmode_module = "commonjs",
     deps = [
         ":ng-add",
         "@npm//@angular-devkit/schematics",
@@ -43,7 +49,6 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
     deps = [
         ":test_lib",
     ],
