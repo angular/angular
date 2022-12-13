@@ -670,6 +670,14 @@
     "mentor": "mgechev",
     "groups": ["GDE", "Collaborators"]
   },
+  "mariakorneeva": {
+    "name": "Maria Korneeva",
+    "picture": "korneeva.jpg",
+    "twitter": "BrowserPerson",
+    "website": "https://www.linkedin.com/in/maria-korneeva/",
+    "bio": "Maria is a trainer and consultant with focus on Angular. She writes for ng-conf and speaks at tech meetups and conferences. In her tweets and articles Maria likes to share her learnings from everyday coding. Fun fact: she illustrates her stories herself because she likes drawing.",
+    "groups": ["GDE"]
+  },
   "markostanimirovic": {
     "name": "Marko Stanimirović",
     "picture": "marko.jpg",
