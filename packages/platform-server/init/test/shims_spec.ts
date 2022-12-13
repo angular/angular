@@ -5,12 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import domino from 'domino';
+
 import {applyShims} from '../src/shims';
 
 describe('applyShims()', () => {
-  if (isBrowser) return;  // NODE only
-
-  const domino = require('domino');
   const globalClone = {...global};
 
   afterEach(() => {
