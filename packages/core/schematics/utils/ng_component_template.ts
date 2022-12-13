@@ -54,9 +54,7 @@ export class NgComponentTemplateVisitor {
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
-    // TODO(crisbeto): in TS 4.8 the `decorators` are combined with the `modifiers` array.
-    // Once we drop support for older versions, we can rely exclusively on `getDecorators`.
-    const decorators = (ts as any).getDecorators?.(node) || node.decorators;
+    const decorators = ts.getDecorators(node);
 
     if (!decorators || !decorators.length) {
       return;

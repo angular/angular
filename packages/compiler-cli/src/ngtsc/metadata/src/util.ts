@@ -10,7 +10,6 @@ import ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
 import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
-import {getModifiers} from '../../ts_compatibility';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
 import {DirectiveMeta, DirectiveTypeCheckMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
@@ -158,7 +157,7 @@ export function extractDirectiveTypeCheckMeta(
 }
 
 function isRestricted(node: ts.Node): boolean {
-  const modifiers = getModifiers(node);
+  const modifiers = ts.canHaveModifiers(node) ? ts.getModifiers(node) : undefined;
 
   return modifiers !== undefined && modifiers.some(({kind}) => {
     return kind === ts.SyntaxKind.PrivateKeyword || kind === ts.SyntaxKind.ProtectedKeyword ||
