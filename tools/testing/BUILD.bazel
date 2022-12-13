@@ -8,6 +8,7 @@ ts_library(
     srcs = ["zone_base_setup.ts"],
     deps = [
         "//packages/zone.js/lib",
+        "@npm//reflect-metadata",
     ],
 )
 
