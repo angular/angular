@@ -7,8 +7,8 @@
  */
 
 import {runfiles} from '@bazel/runfiles';
-import * as path from 'path';
-import * as shx from 'shelljs';
+import path from 'path';
+import shx from 'shelljs';
 
 import {matchesObjectWithOrder} from './test_utils';
 
