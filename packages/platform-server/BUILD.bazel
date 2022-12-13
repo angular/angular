@@ -24,6 +24,7 @@ ng_module(
         "@npm//@types/node",
         "@npm//domino",
         "@npm//rxjs",
+        "@npm//xhr2",
     ],
 )
 
