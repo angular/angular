@@ -28,7 +28,6 @@ import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegi
 import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
 import {generatedFactoryTransform} from '../../shims';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
-import {getModifiers} from '../../ts_compatibility';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
 import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
@@ -1116,7 +1115,7 @@ export function isAngularCorePackage(program: ts.Program): boolean {
       return false;
     }
     // It must be exported.
-    const modifiers = getModifiers(stmt);
+    const modifiers = ts.getModifiers(stmt);
     if (modifiers === undefined ||
         !modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)) {
       return false;
