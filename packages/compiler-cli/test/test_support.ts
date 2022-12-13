@@ -12,7 +12,7 @@ import ts from 'typescript';
 
 import * as ng from '../index';
 import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
-import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../src/ngtsc/testing';
+import {getAngularPackagesFromRunfiles, resolveFromRunfiles} from '../src/ngtsc/testing';
 
 // TEST_TMPDIR is always set by Bazel.
 const tmpdir = process.env.TEST_TMPDIR!;
@@ -132,14 +132,14 @@ export function setupBazelTo(tmpDirPath: string) {
   });
 
   // Link typescript
-  const typeScriptSource = resolveNpmTreeArtifact('npm/node_modules/typescript');
+  const typeScriptSource = resolveFromRunfiles('npm/node_modules/typescript');
   const typescriptDest = path.join(nodeModulesPath, 'typescript');
   fs.symlinkSync(typeScriptSource, typescriptDest, 'junction');
 
   // Link "rxjs" if it has been set up as a runfile. "rxjs" is linked optionally because
   // not all compiler-cli tests need "rxjs" set up.
   try {
-    const rxjsSource = resolveNpmTreeArtifact('rxjs', 'index.js');
+    const rxjsSource = resolveFromRunfiles('npm/node_modules/rxjs');
     const rxjsDest = path.join(nodeModulesPath, 'rxjs');
     fs.symlinkSync(rxjsSource, rxjsDest, 'junction');
   } catch (e: any) {
