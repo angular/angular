@@ -1647,7 +1647,7 @@ A guard's return value controls the router's behavior:
 <div class="alert is-helpful">
 
 **Note:** The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
-When doing so inside a guard, the guard should return `UrlTree`;
+When doing so inside a guard, the guard should return `UrlTree`.
 
 </div>
 
@@ -1656,7 +1656,7 @@ But in many cases, the guard can't produce an answer synchronously.
 The guard could ask the user a question, save changes to the server, or fetch fresh data.
 These are all asynchronous operations.
 
-Accordingly, a routing guard can return an `Observable<boolean>` or a `Promise<boolean>` and the router will wait for the observable to resolve to `true` or `false`.
+Accordingly, a routing guard can return an `Observable<boolean>` or a `Promise<boolean>` and the router will wait for the observable or the promise to resolve to `true` or `false`.
 
 <div class="alert is-helpful">
 
@@ -1665,7 +1665,7 @@ The observable provided to the `Router` automatically completes after it retriev
 
 </div>
 
-The router supports multiple guard interfaces:
+The router supports multiple guard methods:
 
 | Guard interfaces                                  | Details |
 |:---                                               |:---     |
@@ -1673,7 +1673,7 @@ The router supports multiple guard interfaces:
 | [`canActivateChild`](api/router/CanActivateChildFn) | To mediate navigation *to* a child route                            |
 | [`canDeactivate`](api/router/CanDeactivateFn)       | To mediate navigation *away* from the current route                 |
 | [`resolve`](api/router/ResolveFn)                   | To perform route data retrieval *before* route activation           |
-| [`canMatch`](api/router/CanMatchFn)                 | To control whether a `Route` should be used at all, even if the `path` matches the URL segment. |
+| [`canMatch`](api/router/CanMatchFn)                 | To control whether a `Route` should be used at all, even if the `path` matches the URL segment |
 
 You can have multiple guards at every level of a routing hierarchy.
 The router checks the `canDeactivate` guards first, from the deepest child route to the top.
@@ -1856,7 +1856,7 @@ The new admin feature should be accessible only to authenticated users.
 
 Write a `canActivate()` guard method to redirect anonymous users to the login page when they try to enter the admin area.
 
-Create a new file named `auth.guard.ts` function in the `auth` folder. The `auth.guard.ts` file will contain the `authGuard` function.
+Create a new file named `auth.guard.ts` in the `auth` folder. The `auth.guard.ts` file will contain the `authGuard` function.
 
 <!-- TODO(atscott): update schematics to generate functional guards
 <code-example format="shell" language="shell">
@@ -1866,11 +1866,11 @@ ng generate guard auth/auth
 </code-example>
  -->
 
-To demonstrate the fundamentals, this example only logs to the console, `returns` true immediately, and lets navigation proceed:
+To demonstrate the fundamentals, this example only logs to the console, returns true immediately, and lets navigation proceed:
 
 <code-example header="src/app/auth/auth.guard.ts (excerpt)" path="router/src/app/auth/auth.guard.1.ts"></code-example>
 
-Next, open `admin-routing.module.ts`, import the `authGuard` function, and
+Next, open the `admin-routing.module.ts` file, import the `authGuard` function, and
 update the admin route with a `canActivate` guard property that references it:
 
 <code-example header="src/app/admin/admin-routing.module.ts (guarded admin route)" path="router/src/app/admin/admin-routing.module.2.ts" region="admin-route"></code-example>
@@ -1910,16 +1910,8 @@ Revise the `authGuard` to call the `AuthService`.
 
 <code-example header="src/app/auth/auth.guard.ts (v2)" path="router/src/app/auth/auth.guard.2.ts"></code-example>
 
-Notice that you inject the `AuthService` and the `Router` in the constructor.
-You haven't provided the `AuthService` yet but it's good to know that you can inject helpful services into routing guards.
-
-This guard returns a synchronous boolean result.
-If the user is logged in, it returns true and the navigation continues.
-
-The `ActivatedRouteSnapshot` contains the *future* route that will be activated and the `RouterStateSnapshot` contains the *future* `RouterState` of the application, should you pass through the guard check.
-
-If the user is not logged in, you store the attempted URL the user came from using the `RouterStateSnapshot.url` and tell the router to redirect to a login page &mdash; a page you haven't created yet.
-Returning a `UrlTree` tells the `Router` to cancel the current navigation and schedule a new one to redirect the user.
+This guard returns a synchronous boolean result or a `UrlTree`.
+If the user is logged in, it returns `true` and the navigation continues. Otherwise, it redirects to a login page &mdash; a page you haven't created yet. Returning a `UrlTree` tells the `Router` to cancel the current navigation and schedule a new one to redirect the user.
 
 <a id="add-login-component"></a>
 
@@ -1935,8 +1927,8 @@ ng generate component auth/login
 
 </code-example>
 
-Register a `/login` route in the `auth/auth-routing.module.ts`.
-In `app.module.ts`, import and add the `AuthModule` to the `AppModule` imports.
+Register a `/login` route in the `auth/auth-routing.module.ts` file.
+In the `app.module.ts` file, import and add the `AuthModule` to the `AppModule` imports array.
 
 <code-tabs>
     <code-pane header="src/app/app.module.ts" path="router/src/app/app.module.ts" region="auth"></code-pane>
@@ -2035,7 +2027,7 @@ Paste the following code into your guard.
 
 <code-example header="src/app/can-deactivate.guard.ts" path="router/src/app/can-deactivate.guard.ts"></code-example>
 
-While the guard doesn't have to know which component has a deactivate method, it can detect that the `CrisisDetailComponent` component has the `canDeactivate()` method and call it.
+While the guard doesn't have to know which component has a `deactivate` method, it can detect that the `CrisisDetailComponent` component has the `canDeactivate()` method and call it.
 The guard not knowing the details of any component's deactivation method makes the guard reusable.
 
 Alternatively, you could make a component-specific `canDeactivate` guard for the `CrisisDetailComponent`.
