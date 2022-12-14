@@ -8,15 +8,15 @@
 
 'use strict';
 
-const shell = require('shelljs');
-const karmaBin = require.resolve('karma/bin/karma');
-const {runfiles} = require('@bazel/runfiles');
+import shell from 'shelljs';
+import {runfiles} from '@bazel/runfiles';
+import fs from 'fs';
+
+const karmaBin = runfiles.resolve('npm/node_modules/karma/bin/karma');
 const sauceService = runfiles.resolveWorkspaceRelative(process.argv[2]);
-process.argv = [
-  process.argv[0],
-  karmaBin,
-  ...process.argv.splice(3),
-];
+
+process.argv = [process.argv[0], karmaBin, ...process.argv.splice(3)];
+
 try {
   console.error(`Setting up environment for SauceLabs karma tests...`);
   // KARMA_WEB_TEST_MODE is set which informs /karma-js.conf.js that it should
@@ -26,8 +26,11 @@ try {
   // will be `null` if the test runs locally without the `sauce-service` being started.
   const saucelabsParams = readLocalSauceConnectParams();
   // Setup required SAUCE_* env if they are not already set
-  if (!process.env['SAUCE_USERNAME'] || !process.env['SAUCE_ACCESS_KEY'] ||
-      !process.env['SAUCE_TUNNEL_IDENTIFIER']) {
+  if (
+    !process.env['SAUCE_USERNAME'] ||
+    !process.env['SAUCE_ACCESS_KEY'] ||
+    !process.env['SAUCE_TUNNEL_IDENTIFIER']
+  ) {
     // We print a helpful error message below if the required Saucelabs parameters have not
     // been specified in test environment, and the `sauce-service` params file has not been
     // created either.
@@ -74,7 +77,9 @@ function readLocalSauceConnectParams() {
     // We setup the required saucelabs environment variables here for the karma test
     // from a json file under /tmp/angular/sauce-service  so that we don't break the
     // test cache with a changing SAUCE_TUNNEL_IDENTIFIER provided through --test_env
-    return require('/tmp/angular/sauce-service/sauce-connect-params.json');
+    return JSON.parse(
+      fs.readFileSync('/tmp/angular/sauce-service/sauce-connect-params.json', 'utf8')
+    );
   } catch {
     return null;
   }
