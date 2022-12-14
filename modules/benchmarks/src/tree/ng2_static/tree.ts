@@ -33,7 +33,10 @@ function createTreeComponent(level: number, isLeaf: boolean) {
   return TreeComponent;
 }
 
-@Component({selector: 'tree', template: `<tree0 *ngIf="data.left != null" [data]='data'></tree0>`})
+@Component({
+  selector: 'tree',
+  template: `<tree0 *ngIf="data.left != null" [data]='data'></tree0>`,
+})
 export class RootTreeComponent {
   @Input() data: TreeNode = emptyTree;
 }
