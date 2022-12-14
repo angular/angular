@@ -1,5 +1,5 @@
 diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs b/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
-index dde2164..772c153 100755
+index e4410ba..33d75cd 100755
 --- a/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
 +++ b/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
 @@ -9,7 +9,7 @@
@@ -24,8 +24,35 @@ index 1edd96d..3d423f4 100755
              "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
          ],
          **common_base_attributes
+diff --git a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl
+index d36afe6..fbdc9bb 100755
+--- a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl
++++ b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl
+@@ -1,4 +1,4 @@
+-load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
++load("@angular//tools:defaults.bzl", "protractor_web_test_suite")
+ 
+ """
+   Macro that can be used to define a benchmark test. This differentiates from
+@@ -7,7 +7,7 @@ load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
+   unless explicitly requested.
+ """
+ 
+-def benchmark_test(name, server, tags = [], **kwargs):
++def benchmark_test(name, server, tags = [], data = [], **kwargs):
+     protractor_web_test_suite(
+         name = name,
+         browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
+@@ -19,6 +19,7 @@ def benchmark_test(name, server, tags = [], **kwargs):
+             "manual",
+             "no-remote-exec",
+         ],
++        data = data + ["@angular//packages/benchpress"],
+         test_suite_tags = [
+             "manual",
+             "no-remote-exec",
 diff --git a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
-index 6213703..4d91aa3 100755
+index 6213703..8f1ec71 100755
 --- a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 @@ -1,7 +1,7 @@
@@ -57,6 +84,15 @@ index 6213703..4d91aa3 100755
  
      if not assets:
          html = prefix + "index.html"
+@@ -142,6 +142,8 @@ def component_benchmark(
+     ts_library(
+         name = benchmark_driver,
+         tsconfig = "@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:tsconfig-e2e.json",
++        devmode_module = "esnext",
++        devmode_target = "es2020",
+         testonly = True,
+         srcs = [driver],
+         deps = driver_deps,
 diff --git a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
 index 79afcb8..ebbb37b 100755
 --- a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
@@ -72,7 +108,7 @@ index 79afcb8..ebbb37b 100755
          "@npm//@babel/plugin-proposal-async-generator-functions",
      ],
 diff --git a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs
-index fbaf182..e690328 100755
+index f5908b9..d5fac4f 100755
 --- a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs
 +++ b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs
 @@ -54,8 +54,8 @@ export async function createEsbuildAngularOptimizePlugin(opts, additionalBabelPl
