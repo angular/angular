@@ -1,18 +1,17 @@
-const path = require('canonical-path');
-const fs = require('fs-extra');
-const {glob} = require('glob');
+import path from 'canonical-path';
+import fs from 'fs-extra';
+import glob from 'glob';
 
-const {EXAMPLE_CONFIG_FILENAME, STACKBLITZ_CONFIG_FILENAME} =
-    require('./constants');
+import {EXAMPLE_CONFIG_FILENAME, STACKBLITZ_CONFIG_FILENAME} from './constants.mjs';
 
-const {
+import {
   copyExampleFiles,
   createEmptyExample,
   ensureExamplePath,
   titleize,
   writeExampleConfigFile,
-  writeStackBlitzFile
-} = require('./create-example');
+  writeStackBlitzFile,
+} from './create-example.mjs';
 
 describe('create-example tool', () => {
   describe('createEmptyExample', () => {
@@ -23,17 +22,19 @@ describe('create-example tool', () => {
 
       createEmptyExample('foo-bar', '/path/to/foo-bar');
       expect(writeFileSpy).toHaveBeenCalledTimes(2);
-      expect(writeFileSpy)
-          .toHaveBeenCalledWith(
-              path.resolve(`/path/to/foo-bar/${EXAMPLE_CONFIG_FILENAME}`), jasmine.any(String));
-      expect(writeFileSpy)
-          .toHaveBeenCalledWith(
-              path.resolve(`/path/to/foo-bar/${STACKBLITZ_CONFIG_FILENAME}`), jasmine.any(String));
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        path.resolve(`/path/to/foo-bar/${EXAMPLE_CONFIG_FILENAME}`),
+        jasmine.any(String)
+      );
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        path.resolve(`/path/to/foo-bar/${STACKBLITZ_CONFIG_FILENAME}`),
+        jasmine.any(String)
+      );
     });
 
     it('should fail if the example name contains spaces', () => {
-        expect(() => createEmptyExample('foo bar', '/path/to/foo-bar')).toThrowError(
-            `Unable to create example. The example name contains spaces: 'foo bar'`
+      expect(() => createEmptyExample('foo bar', '/path/to/foo-bar')).toThrowError(
+        `Unable to create example. The example name contains spaces: 'foo bar'`
       );
     });
   });
@@ -41,9 +42,9 @@ describe('create-example tool', () => {
   describe('ensureExamplePath', () => {
     it('should error if the path already exists', () => {
       spyOn(fs, 'existsSync').and.returnValue(true);
-      expect(() => ensureExamplePath('foo/bar'))
-          .toThrowError(
-              `Unable to create example. The path to the new example already exists: foo/bar`);
+      expect(() => ensureExamplePath('foo/bar')).toThrowError(
+        `Unable to create example. The path to the new example already exists: foo/bar`
+      );
     });
 
     it('should create the directory on disk', () => {
@@ -66,23 +67,26 @@ describe('create-example tool', () => {
     it('should write a JSON file to disk', () => {
       const spy = spyOn(fs, 'writeFileSync');
       writeStackBlitzFile('bar-bar', '/foo/bar-bar');
-      expect(spy).toHaveBeenCalledWith(path.resolve(`/foo/bar-bar/${STACKBLITZ_CONFIG_FILENAME}`), [
-        '{',
-        '  "description": "Bar Bar",',
-        '  "files": [',
-        '    "!**/*.d.ts",',
-        '    "!**/*.js",',
-        '    "!**/*.[1,2].*"',
-        '  ],',
-        '  "tags": [',
-        '    [',
-        '      "bar",',
-        '      "bar"',
-        '    ]',
-        '  ]',
-        '}',
-        '',
-      ].join('\n'));
+      expect(spy).toHaveBeenCalledWith(
+        path.resolve(`/foo/bar-bar/${STACKBLITZ_CONFIG_FILENAME}`),
+        [
+          '{',
+          '  "description": "Bar Bar",',
+          '  "files": [',
+          '    "!**/*.d.ts",',
+          '    "!**/*.js",',
+          '    "!**/*.[1,2].*"',
+          '  ],',
+          '  "tags": [',
+          '    [',
+          '      "bar",',
+          '      "bar"',
+          '    ]',
+          '  ]',
+          '}',
+          '',
+        ].join('\n')
+      );
     });
   });
 
@@ -92,7 +96,7 @@ describe('create-example tool', () => {
 
       spyOn(console, 'log');
       spyOn(fs, 'existsSync').and.returnValue(true);
-      const readFileSyncSpy = spyOn(fs, 'readFileSync').and.callFake(p => {
+      const readFileSyncSpy = spyOn(fs, 'readFileSync').and.callFake((p) => {
         switch (p) {
           case sourceGitIgnorePath:
             return '**/*.bad';
@@ -100,9 +104,7 @@ describe('create-example tool', () => {
             throw new Error('Unexpected path');
         }
       });
-      spyOn(glob, 'sync').and.returnValue([
-        'a/', 'a/b/', 'a/c', 'x.ts', 'x.bad'
-      ]);
+      spyOn(glob, 'sync').and.returnValue(['a/', 'a/b/', 'a/c', 'x.ts', 'x.bad']);
       const ensureDirSyncSpy = spyOn(fs, 'ensureDirSync');
       const copySyncSpy = spyOn(fs, 'copySync');
 

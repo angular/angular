@@ -22,7 +22,7 @@ nodejs_binary(
 js_library(
     name = "fast-serve-and-watch",
     srcs = [
-        "fast-serve-and-watch.js",
+        "fast-serve-and-watch.mjs",
     ],
     deps = [
         "//aio/tools/transforms/authors-package:watchdocs",
@@ -84,9 +84,9 @@ nodejs_test(
     testonly = True,
     data = [
         ":audit-web-app",
-        ":audit-web-app-script",
         "@aio_npm//shelljs",
     ],
+    data_for_expansion = [":audit-web-app-script"],
     entry_point = "test-aio-a11y.mjs",
     env = {
         "AUDIT_SCRIPT_PATH": "$(rootpath :audit-web-app-script)",
