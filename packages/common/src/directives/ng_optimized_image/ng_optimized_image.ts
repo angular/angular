@@ -417,6 +417,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
+
+    // The `data-ng-img` attribute flags an image as using the directive, to allow
+    // for analysis of the directive's performance.
+    this.setHostAttribute('ng-img', 'true');
+
     // The `src` and `srcset` attributes should be set last since other attributes
     // could affect the image's loading behavior.
     const rewrittenSrc = this.getRewrittenSrc();
