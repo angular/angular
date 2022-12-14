@@ -15,17 +15,19 @@ def local_server_test(name, entry_point, serve_target, data = [], args = [], **k
     nodejs_test(
         name = name,
         testonly = True,
+        data_for_expansion = [
+            serve_target,
+            entry_point,
+            "@aio_npm//light-server/bin:light-server",
+        ],
         args = [
             "$(rootpath @aio_npm//light-server/bin:light-server)",
             "$(rootpath %s)" % serve_target,
             "$(rootpath %s)" % entry_point,
         ] + args,
         data = [
-            entry_point,
-            serve_target,
             "//aio/scripts:run-with-local-server.mjs",
             "@aio_npm//get-port",
-            "@aio_npm//light-server/bin:light-server",
             "@aio_npm//shelljs",
             "@aio_npm//tree-kill",
         ] + data,

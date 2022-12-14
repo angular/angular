@@ -13,8 +13,9 @@ exports_files([
 js_library(
     name = "example-boilerplate-lib",
     srcs = [
-        "constants.js",
-        "example-boilerplate.js",
+        "constants.mjs",
+        "example-boilerplate.mjs",
+        "example-boilerplate-cli.mjs",
     ],
     deps = [
         "//aio/tools/examples/shared",
@@ -29,20 +30,21 @@ js_library(
 nodejs_binary(
     name = "example-boilerplate",
     data = [":example-boilerplate-lib"],
-    entry_point = "example-boilerplate.js",
+    entry_point = "example-boilerplate-cli.js",
 )
 
 jasmine_node_test(
     name = "example-boilerplate-test",
-    srcs = ["example-boilerplate.spec.js"],
+    srcs = ["example-boilerplate.spec.mjs"],
     deps = [":example-boilerplate-lib"],
 )
 
 js_library(
     name = "create-example-lib",
     srcs = [
-        "create-example.js",
-        "constants.js",
+        "create-example.mjs",
+        "create-example-cli.mjs",
+        "constants.mjs",
     ] + glob(["shared/**"]),
     deps = [
         "@aio_npm//@bazel/buildozer",
@@ -57,12 +59,12 @@ js_library(
 nodejs_binary(
     name = "create-example",
     data = [":create-example-lib"],
-    entry_point = "create-example.js",
+    entry_point = "create-example-cli.mjs",
 )
 
 jasmine_node_test(
     name = "create-example-test",
-    srcs = ["create-example.spec.js"],
+    srcs = ["create-example.spec.mjs"],
     deps = [":create-example-lib"],
 )
 
