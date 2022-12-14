@@ -5,4 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-(global as any)[(global as any).Zone.__symbol__('fakeAsyncAutoFakeAsyncWhenClockPatched')] = false;
+
+process.env['errorpolicy'] = (global as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] =
+    'lazy';
