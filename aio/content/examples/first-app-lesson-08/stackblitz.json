@@ -1,0 +1,17 @@
+{
+  "description": "Angular - First App - Lesson 08",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "tags": [
+    [
+      "first",
+      "angular",
+      "app",
+      "lesson",
+      "08"
+    ]
+  ]
+}
