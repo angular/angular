@@ -8,6 +8,7 @@
 
 const explicitExtensionRe = /\.[mc]?js$/;
 const explicitJsExtensionRe = /\.js$/;
+const builtinNamespaceImportRe = /^node:/;
 
 /*
  * NodeJS resolver that enables the interop with the current Bazel setup.
@@ -34,7 +35,9 @@ export async function resolve(specifier, context, nextResolve) {
     interopAttempts.push(specifier.replace(explicitJsExtensionRe, '.mjs'));
   }
 
-  if (!explicitExtensionRe.test(specifier)) {
+  // If there is no explicit extension and we are not dealing with a
+  // builtin namespace module, attempt various subpaths to prioritize ESM.
+  if (!explicitExtensionRe.test(specifier) && !builtinNamespaceImportRe.test(specifier)) {
     interopAttempts.push(`${specifier}.mjs`);
     interopAttempts.push(`${specifier}/index.mjs`);
     // Last attempts are normal `.js` extensions. These could still
