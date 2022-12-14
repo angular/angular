@@ -21,6 +21,7 @@
         // the ESM interop only exposes statically-discoverable named exports). Instead
         // default imports should be used to ensure compatibility with both ESM or CommonJS.
         "noNamedExports": [
+          "typescript/lib/tsserverlibrary",
           "typescript",
           "minimist",
           "magic-string",
@@ -73,7 +74,10 @@
       true,
       {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
       {"name": "fit", "message": "Don't keep jasmine focus methods."},
-      {"name": ["*", "getMutableClone"], "message": "Use a ts.factory.update* or ts.factory.create* method instead."}
+      {
+        "name": ["*", "getMutableClone"],
+        "message": "Use a ts.factory.update* or ts.factory.create* method instead."
+      }
     ]
   },
   "jsRules": {
