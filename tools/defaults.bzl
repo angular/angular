@@ -363,19 +363,24 @@ def karma_web_test_suite(
         **kwargs
     )
 
-def protractor_web_test_suite(name, deps = [], **kwargs):
+def protractor_web_test_suite(
+        name,
+        deps = [],
+        external = [],
+        browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
+        **kwargs):
     """Default values for protractor_web_test_suite"""
     spec_bundle(
         name = "%s_bundle" % name,
         deps = deps,
         platform = "cjs-legacy",
-        external = ["protractor"],
+        external = external + ["protractor"],
     )
 
     _protractor_web_test_suite(
         name = name,
-        browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
         deps = [":%s_bundle" % name],
+        browsers = browsers,
         **kwargs
     )
 
