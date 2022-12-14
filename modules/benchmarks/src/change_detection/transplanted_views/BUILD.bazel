@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "app_bundle", "ng_module", "ts_devserver")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
@@ -27,12 +27,13 @@ app_bundle(
     ],
 )
 
-ts_devserver(
+http_server(
     name = "prodserver",
-    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
-    port = 4200,
-    static_files = ["index.html"],
-    deps = [":bundle.debug.min.js"],
+    srcs = ["index.html"],
+    deps = [
+        ":bundle.debug.min.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
 )
 
 benchmark_test(

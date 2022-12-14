@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ts_library")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
@@ -14,15 +14,19 @@ ts_library(
     ],
 )
 
-ts_devserver(
+app_bundle(
+    name = "app_bundle",
+    entry_point = ":index.ts",
+    deps = [":incremental_dom"],
+)
+
+http_server(
     name = "devserver",
-    entry_module = "angular/modules/benchmarks/src/largetable/incremental_dom/index",
-    port = 4200,
-    static_files = [
+    srcs = [
         "index.html",
         "@npm//:node_modules/incremental-dom/dist/incremental-dom.js",
     ],
-    deps = [":incremental_dom"],
+    deps = [":app_bundle"],
 )
 
 benchmark_test(
