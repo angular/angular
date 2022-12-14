@@ -295,7 +295,14 @@ def pkg_npm(name, validate = True, use_prodmode_output = False, **kwargs):
         visibility = visibility,
     )
 
-def karma_web_test_suite(name, external = [], **kwargs):
+def karma_web_test_suite(
+        name,
+        external = [],
+        browsers = [
+            "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium",
+            "@npm//@angular/build-tooling/bazel/browsers/firefox:firefox",
+        ],
+        **kwargs):
     """Default values for karma_web_test_suite"""
 
     # Default value for bootstrap
@@ -322,10 +329,7 @@ def karma_web_test_suite(name, external = [], **kwargs):
     _karma_web_test_suite(
         name = name,
         deps = [":%s_bundle" % name],
-        browsers = [
-            "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium",
-            "@npm//@angular/build-tooling/bazel/browsers/firefox:firefox",
-        ],
+        browsers = browsers,
         data = data,
         tags = tags,
         **kwargs
