@@ -190,13 +190,15 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}, f
         nodejs_test(
             name = "e2e",
             data = [
-                ":%s" % name,
-                YARN_LABEL,
                 "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
                 "//aio/tools/examples:run-example-e2e",
                 "//aio/tools:windows-chromium-path",
                 # We install the whole node modules for runtime deps of e2e tests
                 "@{workspace}//:node_modules_files".format(workspace = EXAMPLE_DEPS_WORKSPACE_NAME),
+            ],
+            data_for_expansion = [
+                ":%s" % name,
+                YARN_LABEL,
             ] + select({
                 "//aio:aio_local_deps": LOCAL_PACKAGE_DEPS,
                 "//conditions:default": [],

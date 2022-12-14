@@ -6,7 +6,7 @@ load("//tools/esm-interop:extract-esm-output.bzl", "extract_esm_outputs")
 
 def nodejs_binary(
         name,
-        data_for_args = [],
+        data_for_expansion = [],
         linker_enabled = False,
         npm_workspace = "npm",
         **kwargs):
@@ -25,12 +25,12 @@ def nodejs_binary(
     extract_esm_outputs(
         name = "%s_esm_deps" % name,
         testonly = testonly,
-        deps = data,
+        deps = data + data_for_expansion,
     )
 
     _nodejs_binary(
         name = name,
-        data = [":%s_esm_deps" % name] + data_for_args,
+        data = [":%s_esm_deps" % name] + data_for_expansion,
         testonly = testonly,
         entry_point = str(entry_point).replace(".js", ".mjs"),
         env = env,
@@ -41,7 +41,7 @@ def nodejs_binary(
 
 def nodejs_test(
         name,
-        data_for_args = [],
+        data_for_expansion = [],
         linker_enabled = False,
         npm_workspace = "npm",
         **kwargs):
@@ -58,12 +58,12 @@ def nodejs_test(
     extract_esm_outputs(
         name = "%s_esm_deps" % name,
         testonly = True,
-        deps = data,
+        deps = data + data_for_expansion,
     )
 
     _nodejs_test(
         name = name,
-        data = [":%s_esm_deps" % name] + data_for_args,
+        data = [":%s_esm_deps" % name] + data_for_expansion,
         env = env,
         templated_args = templated_args,
         use_esm = True,
