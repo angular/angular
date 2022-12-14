@@ -6,6 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Note: Make sure to define the policy before loading the basic entry point.
-import './node_error_disable_policy';
-import './node_error_entry_point.init';
+process.env['errorpolicy'] = (global as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] =
+    'disable';

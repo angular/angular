@@ -1,5 +1,6 @@
+import 'zone.js/bundles/zone.umd';
+
 import * as domino from 'domino';
-require('zone.js/bundles/zone.umd');
 
 // Zone public API should be included
 Zone.current.fork({name: 'testZone'}).run(() => {});

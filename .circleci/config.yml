@@ -612,15 +612,30 @@ jobs:
       - custom_attach_workspace
       - init_environment
       - install_java
+
+      - run: |
+          yarn bazel build -- \
+            //packages/zone.js/bundles:zone.umd.js \
+            //packages/zone.js:npm_package \
+            //packages/zone.js/test/closure:closure_js \
+            //packages/zone.js:zone_externs
+
+      - run: |
+          mkdir -p packages/zone.js/build/
+          mkdir -p packages/zone.js/build/test/
+          mkdir -p packages/zone.js/test/
+
+          cp dist/bin/packages/zone.js/bundles/zone.umd.js packages/zone.js/build/zone.umd.js
+          cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/
+          cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/
+          cp dist/bin/packages/zone.js/test/closure/zone.closure.mjs ./packages/zone.js/build/test/zone.closure.mjs
+          cp dist/bin/packages/zone.js/zone_externs.js ./packages/zone.js/build/zone_externs.js
+
         # Install
       - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
         # Run zone.js tools tests
       - run: yarn --cwd packages/zone.js promisetest
       - run: yarn --cwd packages/zone.js promisefinallytest
-      - run: yarn bazel build //packages/zone.js:npm_package &&
-          cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/ &&
-          cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/ &&
-          cp dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js ./packages/zone.js/build/test/closure/zone.js
       - run: yarn --cwd packages/zone.js jest:test
       - run: yarn --cwd packages/zone.js jest:nodetest
       - run: yarn --cwd packages/zone.js electrontest
