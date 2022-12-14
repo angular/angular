@@ -51,6 +51,48 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 }
 
 // @public
+export class BrowserPlatformLocation extends PlatformLocation {
+    constructor(_doc: any);
+    // (undocumented)
+    back(): void;
+    // (undocumented)
+    forward(): void;
+    // (undocumented)
+    getBaseHrefFromDOM(): string;
+    // (undocumented)
+    getState(): unknown;
+    // (undocumented)
+    get hash(): string;
+    // (undocumented)
+    historyGo(relativePosition?: number): void;
+    // (undocumented)
+    get hostname(): string;
+    // (undocumented)
+    get href(): string;
+    // (undocumented)
+    onHashChange(fn: LocationChangeListener): VoidFunction;
+    // (undocumented)
+    onPopState(fn: LocationChangeListener): VoidFunction;
+    // (undocumented)
+    get pathname(): string;
+    set pathname(newPath: string);
+    // (undocumented)
+    get port(): string;
+    // (undocumented)
+    get protocol(): string;
+    // (undocumented)
+    pushState(state: any, title: string, url: string): void;
+    // (undocumented)
+    replaceState(state: any, title: string, url: string): void;
+    // (undocumented)
+    get search(): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<BrowserPlatformLocation, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<BrowserPlatformLocation>;
+}
+
+// @public
 export class CommonModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CommonModule, never>;
