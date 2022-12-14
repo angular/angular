@@ -6,10 +6,23 @@ ts_library(
     name = "api",
     srcs = [
         "api.ts",
+    ],
+    deps = [
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "plugin_entries",
+    srcs = [
         "index.ts",
         "override_rename_ts_plugin.ts",
     ],
+    # TODO: The language-service package and extension require CommonJS, and
+    # in particular UMD to be able to override the resolution of `typescript`.
+    devmode_module = "commonjs",
     deps = [
+        ":api",
         "@npm//@types/node",
         "@npm//typescript",
     ],
@@ -31,8 +44,7 @@ pkg_npm(
         "//integration:__subpackages__",
     ],
     deps = [
-        ":api",
-        # min bundle is not used at the moment; omit from package to speed up build
+        ":plugin_entries",
         "//packages/language-service/bundles:language-service.js",
     ],
 )

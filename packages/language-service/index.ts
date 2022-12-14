@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript/lib/tsserverlibrary';
+
 import {NgLanguageService, PluginConfig} from './api';
 
 interface PluginModule extends ts.server.PluginModule {
