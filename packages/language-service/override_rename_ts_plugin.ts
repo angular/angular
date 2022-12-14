@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript/lib/tsserverlibrary';
 
 function isAngularCore(path: string): boolean {
   return isExternalAngularCore(path) || isInternalAngularCore(path);
