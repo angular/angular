@@ -1,11 +1,16 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//tools:defaults.bzl", "esbuild_config")
 load(":index.bzl", "create_angular_bundle_targets")
 
 package(default_visibility = ["//visibility:public"])
 
-esbuild_config(
+js_library(
     name = "esbuild_base",
-    config_file = "esbuild-base.config.mjs",
+    srcs = ["esbuild-base.config.mjs"],
+    deps = [
+        "//packages/compiler-cli/private",
+        "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
+    ],
 )
 
 esbuild_config(
@@ -13,7 +18,7 @@ esbuild_config(
     config_file = "esbuild-esm.config.mjs",
     deps = [
         ":esbuild_base",
-        "@npm//@angular/build-tooling/shared-scripts/angular-linker:js_lib",
+        "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
     ],
 )
 
@@ -22,9 +27,6 @@ esbuild_config(
     config_file = "esbuild-esm-prod.config.mjs",
     deps = [
         ":esbuild_base",
-        "//packages/compiler-cli/private",
-        "@npm//@angular/build-tooling/shared-scripts/angular-linker:js_lib",
-        "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
     ],
 )
 
@@ -42,7 +44,6 @@ esbuild_config(
     config_file = "esbuild-spec.config.mjs",
     deps = [
         ":esbuild_base",
-        "@npm//@angular/build-tooling/shared-scripts/angular-linker:js_lib",
     ],
 )
 
