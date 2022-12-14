@@ -105,9 +105,10 @@ yarn_install(
         "//:scripts/puppeteer-chromedriver-versions.js",
         "//:scripts/webdriver-manager-update.js",
         "//tools:postinstall-patches.js",
-        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-2fe6d743f60e2e1ba91f9e49c417927a46dcd90f.patch",
+        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-d4d1329adbe1cdb5fd382d618e830c69e578c41b.patch",
         "//tools/esm-interop:patches/npm/@bazel+concatjs+5.7.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+esbuild+5.7.1.patch",
+        "//tools/esm-interop:patches/npm/@bazel+protractor+5.7.1.patch",
         "//tools/esm-interop:patches/npm/rxjs+6.6.7.patch",
     ],
     # Currently disabled due to:
