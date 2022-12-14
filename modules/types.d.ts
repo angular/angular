@@ -14,4 +14,3 @@
 /// <reference types="node" />
 /// <reference types="zone.js" />
 /// <reference lib="es2015" />
-/// <reference path="./system.d.ts" />
