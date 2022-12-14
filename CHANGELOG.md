@@ -8,7 +8,6 @@
 | Commit | Type | Description |
 | -- | -- | -- |
 | [f30d18a942](https://github.com/angular/angular/commit/f30d18a9424afacbd47d70f91e233e286bb94b0d) | fix | Fix TestBed.overrideProvider type to include multi ([#48424](https://github.com/angular/angular/pull/48424)) |
-| [59c6bfb632](https://github.com/angular/angular/commit/59c6bfb6324c5baf53b907afee9170e1ce81ddbc) | fix | Update `Location` to get a normalized URL valid in case a represented URL starts with the substring equals `APP_BASE_HREF` ([#48394](https://github.com/angular/angular/pull/48394)) |
 ### compiler-cli
 | Commit | Type | Description |
 | -- | -- | -- |
