@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ts_library")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
@@ -14,12 +14,16 @@ ts_library(
     ],
 )
 
-ts_devserver(
-    name = "devserver",
-    entry_module = "angular/modules/benchmarks/src/tree/baseline/index",
-    port = 4200,
-    static_files = ["index.html"],
+app_bundle(
+    name = "app_bundle",
+    entry_point = ":index.ts",
     deps = [":baseline"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = ["index.html"],
+    deps = [":app_bundle"],
 )
 
 benchmark_test(

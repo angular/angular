@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "esbuild", "http_server", "ts_library")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
@@ -11,26 +11,31 @@ ts_library(
     deps = [
         "//modules/benchmarks/src:util_lib",
         "//modules/benchmarks/src/tree:util_lib",
+        "//packages/compiler",
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
     ],
 )
 
-ts_devserver(
+# Note: Cannot use `app_bundle` as otherwise the JIT compiler would
+# not be available due to side-effects being optimized away.
+esbuild(
+    name = "app_bundle",
+    entry_point = ":index.ts",
+    deps = [":ng2_static"],
+)
+
+http_server(
     name = "devserver",
-    bootstrap = [
+    srcs = [
+        "index.html",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+    deps = [
+        ":app_bundle",
         "//packages/zone.js/bundles:zone.umd.js",
     ],
-    entry_module = "angular/modules/benchmarks/src/tree/ng2_static/index",
-    port = 4200,
-    scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-    ],
-    static_files = ["index.html"],
-    deps = [":ng2_static"],
 )
 
 benchmark_test(

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "app_bundle", "ng_module", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module", "ts_library")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
@@ -40,25 +40,13 @@ app_bundle(
     ],
 )
 
-ts_devserver(
+http_server(
     name = "prodserver",
-    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
-    port = 4200,
-    static_files = ["index.html"],
-    deps = [":bundle.debug.min.js"],
-)
-
-ts_devserver(
-    name = "devserver",
-    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
-    entry_module = "angular/modules/benchmarks/src/expanding_rows/index_aot",
-    port = 4200,
-    scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
+    srcs = ["index.html"],
+    deps = [
+        ":bundle.debug.min.js",
+        "//packages/zone.js/bundles:zone.umd.js",
     ],
-    static_files = ["index.html"],
-    deps = [":application_lib"],
 )
 
 benchmark_test(
