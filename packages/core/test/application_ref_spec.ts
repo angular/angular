@@ -456,8 +456,10 @@ class SomeComponent {
          waitForAsync(async () => {
            defaultPlatform.bootstrapModule(await createModule({ngDoBootstrap: false}))
                .then(() => expect(false).toBe(true), (e) => {
-                 const expectedErrMsg =
-                     `NG0403: The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
+                 const expectedErrMsg = `NG0403: The module MyModule was bootstrapped, ` +
+                     `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+                     `Please define one of these. ` +
+                     `Find more at https://angular.io/errors/NG0403`;
                  expect(e.message).toEqual(expectedErrMsg);
                  expect(mockConsole.res[0].join('#')).toEqual('ERROR#Error: ' + expectedErrMsg);
                });
