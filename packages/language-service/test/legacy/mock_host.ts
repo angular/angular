@@ -8,7 +8,7 @@
 
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {join} from 'path';
-import * as ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript/lib/tsserverlibrary';
 
 import {isTypeScriptFile} from '../../src/utils';
 

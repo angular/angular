@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "pkg_npm", "ts_library")
+load("//tools:defaults.bzl", "esbuild", "extract_types", "pkg_npm", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -6,20 +6,43 @@ ts_library(
     name = "api",
     srcs = [
         "api.ts",
-        "index.ts",
-        "override_rename_ts_plugin.ts",
     ],
-    prodmode_module = "commonjs",
     deps = [
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "factory_lib",
+    srcs = ["plugin-factory.ts"],
+    deps = [
+        ":api",
         "@npm//@types/node",
         "@npm//typescript",
     ],
 )
 
+esbuild(
+    name = "factory_bundle",
+    entry_point = ":plugin-factory.ts",
+    external = ["./bundles/language-service.js"],
+    format = "cjs",
+    deps = [":factory_lib"],
+)
+
+extract_types(
+    name = "factory_types",
+    deps = [":factory_lib"],
+)
+
 pkg_npm(
     name = "npm_package",
     package_name = "@angular/language-service",
-    srcs = ["package.json"],
+    srcs = [
+        "index.d.ts",
+        "index.js",
+        "package.json",
+    ],
     tags = [
         "release-with-framework",
     ],
@@ -32,8 +55,8 @@ pkg_npm(
         "//integration:__subpackages__",
     ],
     deps = [
-        ":api",
-        # min bundle is not used at the moment; omit from package to speed up build
+        ":factory_bundle",
+        ":factory_types",
         "//packages/language-service/bundles:language-service.js",
     ],
 )
