@@ -1,3 +1,22 @@
+<a name="15.0.4"></a>
+# 15.0.4 (2022-12-14)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c1064c72f](https://github.com/angular/angular/commit/6c1064c72f7d5b9a455813046939ab0161c143bf) | fix | fix incorrect handling of camel-case css properties ([#48436](https://github.com/angular/angular/pull/48436)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f30d18a942](https://github.com/angular/angular/commit/f30d18a9424afacbd47d70f91e233e286bb94b0d) | fix | Fix TestBed.overrideProvider type to include multi ([#48424](https://github.com/angular/angular/pull/48424)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b55d2dab5d](https://github.com/angular/angular/commit/b55d2dab5d76ffa809ac1feb78392a75c3081dec) | fix | evaluate const tuple types statically ([#48091](https://github.com/angular/angular/pull/48091)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, BrowserPerson, Jens, Jessica Janiuk, Joey Perrott, JoostK, Konstantin Kharitonov, Lukas Matta, Piotr Kowalski, Virginia Dooley, Yannick Baron, dario-piotrowicz, lsst25, piyush132000 and why520crazy
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.0.3"></a>
 # 15.0.3 (2022-12-07)
 ### common
