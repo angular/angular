@@ -807,6 +807,29 @@ describe('Image directive', () => {
     });
   });
 
+  describe('meta data', () => {
+    it('should add a data attribute to the element for identification', () => {
+      setupTestingModule();
+      const template = '<img ngSrc="a.png" width="100" height="50">';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('ng-img')).not.toBeNull();
+    });
+    it('should add a data attribute to the element for identification, when ngSrc bound', () => {
+      setupTestingModule();
+      const template = `<img [ngSrc]="'a.png'" width="100" height="50">`;
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('ng-img')).not.toBeNull();
+    });
+  });
+
   describe('fill mode', () => {
     it('should allow unsized images in fill mode', () => {
       setupTestingModule();
