@@ -17,7 +17,7 @@ def circular_dependency_test(name, deps, entry_point, **kwargs):
         name = name,
         data = ["@npm//madge"] + deps,
         entry_point = "@npm//:node_modules/madge/bin/cli.js",
-        data_for_args = [MADGE_CONFIG_LABEL],
+        data_for_expansion = [MADGE_CONFIG_LABEL],
         templated_args = [
             "--circular",
             "--no-spinner",

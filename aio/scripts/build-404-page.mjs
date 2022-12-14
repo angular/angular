@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 // Imports
-const {readFileSync, writeFileSync} = require('fs');
-const {join, resolve} = require('path');
+import {readFileSync, writeFileSync} from 'fs';
+import {join, resolve} from 'path';
 
 // Constants
 const SOURCE_404_BODY_PATH = resolve(process.argv[2]);
@@ -18,13 +18,16 @@ function _main() {
 
   const srcIndexContent = readFileSync(srcIndexPath, 'utf8');
   const src404BodyContent = readFileSync(SOURCE_404_BODY_PATH, 'utf8').trim();
-  const dst404PageContent = srcIndexContent
-      .replace(/(<body>)[\s\S]+(<\/body>)/, `$1\n  ${src404BodyContent}\n$2`);
+  const dst404PageContent = srcIndexContent.replace(
+    /(<body>)[\s\S]+(<\/body>)/,
+    `$1\n  ${src404BodyContent}\n$2`
+  );
 
   if (dst404PageContent === srcIndexContent) {
     throw new Error(
-        'Failed to generate \'404.html\'. ' +
-        'The content of \'index.html\' does not match the expected pattern.');
+      "Failed to generate '404.html'. " +
+        "The content of 'index.html' does not match the expected pattern."
+    );
   }
 
   writeFileSync(DEST_404_PAGE_PATH, dst404PageContent);
