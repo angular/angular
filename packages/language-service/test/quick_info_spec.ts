@@ -7,7 +7,7 @@
  */
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import * as ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript/lib/tsserverlibrary';
 
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv, Project} from '../testing';
 
