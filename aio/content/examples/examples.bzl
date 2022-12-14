@@ -45,6 +45,7 @@ EXAMPLES = {
     "feature-modules": {"stackblitz": True, "zip": True},
     "first-app-lesson-01": {"stackblitz": True, "zip": True},
     "first-app-lesson-02": {"stackblitz": True, "zip": True},
+    "first-app-lesson-03": {"stackblitz": True, "zip": True},
     "form-validation": {"stackblitz": True, "zip": True},
     "forms": {"stackblitz": True, "zip": True},
     "forms-overview": {"stackblitz": True, "zip": True},
