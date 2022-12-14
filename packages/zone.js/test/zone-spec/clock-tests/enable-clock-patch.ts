@@ -6,6 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Note: Make sure to define the policy before loading the basic entry point.
-import './node_error_disable_policy';
-import './node_error_entry_point.init';
+(global as any)['__zone_symbol_test__fakeAsyncAutoFakeAsyncWhenClockPatched'] = true;
