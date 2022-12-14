@@ -319,6 +319,9 @@ architect_test(
         "CHROME_BIN": "../$(CHROMIUM)",
         "CHROMEDRIVER_BIN": "../$(CHROMEDRIVER)",
     },
+    # TODO: investigate why those tests became more flaky
+    #       (presumably after AIO migration to Bazel)
+    flaky = True,
     toolchains = [
         "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
     ],
