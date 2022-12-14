@@ -112,9 +112,9 @@ Dates are offered as general guidance and are subject to change.
 
 | Version | Date               |
 | :---    | :---               |
-| v15.1   | Week of 2022-01-09 |
-| v15.2   | Week of 2022-02-20 |
-| v16.0   | Week of 2022-05-01 |
+| v15.1   | Week of 2023-01-09 |
+| v15.2   | Week of 2023-02-20 |
+| v16.0   | Week of 2023-05-01 |
 
 ### Support window
 
