@@ -9,7 +9,6 @@ ts_library(
         "index.ts",
         "override_rename_ts_plugin.ts",
     ],
-    prodmode_module = "commonjs",
     deps = [
         "@npm//@types/node",
         "@npm//typescript",
