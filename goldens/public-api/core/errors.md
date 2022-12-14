@@ -21,7 +21,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     ASYNC_INITIALIZERS_STILL_RUNNING = 405,
     // (undocumented)
-    BOOTSTRAP_COMPONENTS_NOT_FOUND = 403,
+    BOOTSTRAP_COMPONENTS_NOT_FOUND = -403,
     // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
