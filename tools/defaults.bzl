@@ -429,12 +429,12 @@ def npm_package_bin(args = [], **kwargs):
 # TODO(devversion): Jasmine Node tests are only bundled using `spec_bundle`
 # because `async/await` syntax needs to be downleveled for ZoneJS. In the
 # future this can be removed when ZoneJS can work with native async/await in NodeJS.
-def zone_compatible_jasmine_node_test(name, external = [], deps = [], bootstrap = [], **kwargs):
+def zone_compatible_jasmine_node_test(name, external = [], srcs = [], deps = [], bootstrap = [], **kwargs):
     spec_bundle(
         name = "%s_bundle" % name,
         # Specs from this attribute are filtered and will be executed. We
         # add bootstrap here for discovery of the module mappings aspect.
-        deps = deps + bootstrap,
+        deps = srcs + deps + bootstrap,
         bootstrap = bootstrap,
         external = external + ["domino", "typescript"],
         platform = "node",

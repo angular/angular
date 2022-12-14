@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-process.env['errorpolicy'] = (global as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] =
-    'lazy';
-import './node_error_entry_point';
+// Note: Make sure to define the policy before loading the basic entry point.
+import './node_error_lazy_policy';
+import './node_error_entry_point.init';
