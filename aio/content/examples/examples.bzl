@@ -50,6 +50,7 @@ EXAMPLES = {
     "first-app-lesson-05": {"stackblitz": True, "zip": True},
     "first-app-lesson-06": {"stackblitz": True, "zip": True},
     "first-app-lesson-07": {"stackblitz": True, "zip": True},
+    "first-app-lesson-08": {"stackblitz": True, "zip": True},
     "form-validation": {"stackblitz": True, "zip": True},
     "forms": {"stackblitz": True, "zip": True},
     "forms-overview": {"stackblitz": True, "zip": True},
