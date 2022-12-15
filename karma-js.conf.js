@@ -12,7 +12,7 @@ const {hostname} = require('os');
 const seed = process.env.JASMINE_RANDOM_SEED || String(Math.random()).slice(-5);
 console.info(`Jasmine random seed: ${seed}`);
 
-module.exports = function(config) {
+module.exports = function (config) {
   const conf = {
     frameworks: ['jasmine'],
 
@@ -37,16 +37,6 @@ module.exports = function(config) {
 
       'node_modules/core-js-bundle/index.js',
       'node_modules/jasmine-ajax/lib/mock-ajax.js',
-
-      // ZoneJS configuration needed for some event manager tests. This config could
-      // affect all legacy tests but in reality is scoped to certain special tests.
-      'packages/platform-browser/test/dom/events/zone_event_unpatched.init.js',
-
-      // Dependencies built by Bazel. See `config.yml` for steps running before
-      // the legacy Saucelabs tests run.
-      'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
-      'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
-      'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
 
       // Static test assets.
       {pattern: 'packages/platform-browser/test/static_assets/**/*', included: false},
@@ -158,7 +148,8 @@ module.exports = function(config) {
         break;
       default:
         throw new Error(
-            `Unrecognized process.env.KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`);
+          `Unrecognized process.env.KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`
+        );
     }
   } else {
     // Run the test locally
