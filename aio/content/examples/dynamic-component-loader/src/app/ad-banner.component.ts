@@ -24,7 +24,7 @@ export class AdBannerComponent implements OnInit, OnDestroy {
 
   @ViewChild(AdDirective, {static: true}) adHost!: AdDirective;
 
-  private clearTimer() { }
+  private clearTimer: VoidFunction | undefined;
 
   ngOnInit(): void {
     this.loadComponent();
@@ -32,7 +32,7 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.clearTimer();
+    this.clearTimer?.();
   }
 
   loadComponent() {
