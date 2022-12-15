@@ -8,7 +8,7 @@ index 191622f..24b475e 100755
 
 +if [[ "TEMPLATED_use_esm" == "true" ]]; then
 +  esmLoaderPath=$(rlocation  "angular/tools/esm-interop/esm-main-loader.mjs")
-+  LAUNCHER_NODE_OPTIONS+=( "--loader" "$esmLoaderPath" )
++  LAUNCHER_NODE_OPTIONS+=( "--loader" "file://$esmLoaderPath" )
 +  LAUNCHER_NODE_OPTIONS+=( "--no-warnings" )
 +fi
 +
