@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "app_bundle", "ng_module", "ts_devserver")
-load("@npm//http-server:index.bzl", "http_server")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,34 +22,15 @@ app_bundle(
     ],
 )
 
-ts_devserver(
-    name = "devserver",
-    additional_root_paths = [
-        "npm/node_modules/tslib",
-    ],
-    entry_module = "@angular/core/test/bundling/animation_world",
-    scripts = [
-        "//tools/rxjs:rxjs_umd_modules",
-    ],
-    # Use a serving_path that matches the common static index.html used
-    # in both devserver & prodserver
-    serving_path = "/bundle.min.js.br",
-    static_files = [
-        "animation_world.css",
-        "base.css",
-        "index.html",
-        "@npm//tslib",
-    ],
-    deps = [":animation_world"],
-)
-
 http_server(
-    name = "prodserver",
-    data = [
+    name = "server",
+    srcs = [
         "animation_world.css",
         "base.css",
         "index.html",
-        ":bundle.debug.min.js",
-        ":bundle.min.js",
+    ],
+    deps = [
+        ":bundle.debug.min",
+        ":bundle.min.js.br",
     ],
 )
