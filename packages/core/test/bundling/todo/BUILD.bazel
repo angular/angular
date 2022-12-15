@@ -1,6 +1,5 @@
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_module", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "jasmine_node_test", "ng_module", "ts_library")
 load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
-load("@npm//http-server:index.bzl", "http_server")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -62,41 +61,14 @@ js_expected_symbol_test(
     golden = ":bundle.golden_symbols.json",
 )
 
-genrule(
-    name = "tslib",
-    srcs = [
-        "@npm//:node_modules/tslib/tslib.js",
-    ],
-    outs = [
-        "tslib.js",
-    ],
-    cmd = "cp $< $@",
-)
-
-ts_devserver(
-    name = "devserver",
-    entry_module = "@angular/core/test/bundling/todo",
-    scripts = [
-        "//tools/rxjs:rxjs_umd_modules",
-    ],
-    # Use a serving_path that matches the common static index.html used
-    # in both devserver & prodserver
-    serving_path = "/bundle.min.js.br",
-    static_files = [
-        "index.html",
-        ":tslib",
-        "todo.css",
-        "base.css",
-    ],
-    deps = [":todo"],
-)
-
 http_server(
-    name = "prodserver",
-    data = [
+    name = "server",
+    srcs = [
         "base.css",
         "index.html",
         "todo.css",
+    ],
+    deps = [
         ":bundle.debug.min.js",
         ":bundle.min.js.br",
     ],
