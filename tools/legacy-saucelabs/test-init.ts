@@ -6,7 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Increase the timeout for specs as Saucelabs devices can be slow.
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
-
-import '../testing/init_browser_tests';
+import './pre-setup';
+import '../testing/browser_tests.init';
