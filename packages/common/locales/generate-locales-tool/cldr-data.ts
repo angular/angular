@@ -7,8 +7,7 @@
  */
 
 import {runfiles} from '@bazel/runfiles';
-import {CldrStatic} from 'cldrjs';
-import cldrjs from 'cldrjs';
+import cldrjs, {type CldrStatic} from 'cldrjs';
 import fs from 'fs';
 import glob from 'glob';
 
