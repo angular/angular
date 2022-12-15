@@ -1930,7 +1930,7 @@ ng generate component auth/login
 </code-example>
 
 Register a `/login` route in the `auth/auth-routing.module.ts` file.
-In the `app.module.ts` file, import and add the `AuthModule` to the `AppModule` imports array.
+In `app.module.ts`, import and add `AuthModule` to the `AppModule` imports array.
 
 <code-tabs>
     <code-pane header="src/app/app.module.ts" path="router/src/app/app.module.ts" region="auth"></code-pane>
