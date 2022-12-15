@@ -34,39 +34,34 @@ var_4: &cache_key_fallback v8-angular-node-16-{{ checksum "month.txt" }}-{{ chec
 var_3_win: &cache_key_win v10-angular-win-node-16-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}
 var_4_win: &cache_key_win_fallback v10-angular-win-node-16-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
-# Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
-# cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v2-angular-components-{{ checksum "month.txt" }}-87eb708d162e89897e66809c371e3a1e079de962
-var_6: &components_repo_unit_tests_cache_key_fallback v2-angular-components-{{ checksum "month.txt" }}
-
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages`.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
 # https://circleci.com/blog/deep-diving-into-circleci-workspaces/
-var_7: &workspace_location ~/
+var_5: &workspace_location ~/
 
 # Filter to run a job on builds for pull requests only.
-var_8: &only_on_pull_requests
+var_6: &only_on_pull_requests
   filters:
     branches:
       only:
         - /pull\/\d+/
 
 # Filter to skip a job on builds for pull requests.
-var_9: &skip_on_pull_requests
+var_7: &skip_on_pull_requests
   filters:
     branches:
       ignore:
         - /pull\/\d+/
 
 # Filter to run a job on builds for the main branch only.
-var_10: &only_on_main_branch
+var_8: &only_on_main_branch
   filters:
     branches:
       only:
         - main
 
 # Filter to run a job on all releasable branches.
-var_11: &only_release_branches
+var_9: &only_release_branches
   filters:
     branches:
       only:
@@ -551,59 +546,6 @@ jobs:
           name: Stop Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh stop
 
-  # Job that runs all unit tests of the `angular/components` repository.
-  components-repo-unit-tests:
-    executor:
-      name: default-executor
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      # Restore the cache before cloning the repository because the clone script re-uses
-      # the restored repository if present. This reduces the amount of times the components
-      # repository needs to be cloned (this is slow and increases based on commits in the repo).
-      - restore_cache:
-          keys:
-            - *components_repo_unit_tests_cache_key
-            # Whenever the `angular/components` SHA is updated, the cache key will no longer
-            # match. The fallback cache will still match, and CircleCI will restore the most
-            # recently cached repository folder. Without the fallback cache, we'd need to download
-            # the repository from scratch and it would slow down the job. This is because we can't
-            # clone the repository with reduced `--depth`, but rather need to clone the whole
-            # repository to be able to support arbitrary SHAs.
-            - *components_repo_unit_tests_cache_key_fallback
-      - run:
-          name: 'Fetching angular/components repository'
-          command: ./scripts/ci/clone_angular_components_repo.sh
-      - run:
-          # Run yarn install to fetch the Bazel binaries as used in the components repo.
-          name: Installing dependencies.
-          command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      - save_cache:
-          key: *components_repo_unit_tests_cache_key
-          paths:
-            # Temporary directory must be kept in sync with the `$COMPONENTS_REPO_TMP_DIR` env
-            # variable. It needs to be hardcoded here, because env variables interpolation is
-            # not supported.
-            - '/tmp/angular-components-repo'
-      - run:
-          # Copy zone.js package to dist/packages-dist, so `angular/components` can also use the local zone.js build.
-          name: Setting up zone.js release packages.
-          command: cp -r dist/zone.js-dist/zone.js dist/packages-dist/
-      - run:
-          # Updates the `angular/components` `package.json` file to refer to the release output
-          # inside the `packages-dist` directory.
-          name: Setting up framework release packages.
-          command: node scripts/ci/update-framework-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
-      - run:
-          # Run `yarn install` again to install the Angular packages from `packages-dist/` and update the lockfile.
-          # NOTE: We cannot rely on Bazel to run `yarn install`, because it uses the `--frozen-lockfile` flag and fails.
-          name: Installing local Angular packages.
-          command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --non-interactive --cache-folder ~/.cache/yarn
-      - run:
-          name: 'Running `angular/components` unit tests'
-          command: ./scripts/ci/run_angular_components_unit_tests.sh
-
   test_zonejs:
     executor:
       name: default-executor
@@ -752,9 +694,6 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
-          requires:
-            - build-npm-packages
       - test_zonejs:
           requires:
             - setup
