@@ -601,7 +601,7 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  * bootstrapApplication(AppComponent,
  *   {
  *     providers: [
- *       provideRouter(appRoutes, withHashLocation()
+ *       provideRouter(appRoutes, withHashLocation())
  *     ]
  *   }
  * );
