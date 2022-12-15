@@ -6,13 +6,12 @@ export function docRegionDelaySequence(console: Console) {
   // #docregion delay_sequence
   function sequenceSubscriber(observer: Observer<number>) {
     const seq = [1, 2, 3];
-    // Typed as 'any' for SSR compatibility
-    let timeout: any;
+    let clearTimer = () => { };
 
     // Will run through an array of numbers, emitting one value
     // per second until it gets to the end of the array.
     function doInSequence(arr: number[], idx: number) {
-      timeout = setTimeout(() => {
+      const timeout = setTimeout(() => {
         observer.next(arr[idx]);
         if (idx === arr.length - 1) {
           observer.complete();
@@ -20,6 +19,7 @@ export function docRegionDelaySequence(console: Console) {
           doInSequence(arr, ++idx);
         }
       }, 1000);
+      clearTimer = () => clearTimeout(timeout);
     }
 
     doInSequence(seq, 0);
@@ -27,7 +27,7 @@ export function docRegionDelaySequence(console: Console) {
     // Unsubscribe should clear the timeout to stop execution
     return {
       unsubscribe() {
-        clearTimeout(timeout);
+        clearTimer();
       }
     };
   }
@@ -86,9 +86,9 @@ export function docRegionMulticastSequence(console: Console, runSequence: boolea
     const seq = [1, 2, 3];
     // Keep track of each observer (one for every active subscription)
     const observers: Observer<unknown>[] = [];
-    // Still a single timeout because there will only ever be one
+    // Still a single timer because there will only ever be one
     // set of values being generated, multicasted to each subscriber
-    let timeout: any;
+    let clearTimer = () => { };
 
     // Return the subscriber function (runs when subscribe()
     // function is invoked)
@@ -116,7 +116,7 @@ export function docRegionMulticastSequence(console: Console, runSequence: boolea
           observers.splice(observers.indexOf(observer), 1);
           // If there's no more listeners, do cleanup
           if (observers.length === 0) {
-            clearTimeout(timeout);
+            clearTimer();
           }
         }
       };
@@ -124,7 +124,7 @@ export function docRegionMulticastSequence(console: Console, runSequence: boolea
       // Run through an array of numbers, emitting one value
       // per second until it gets to the end of the array.
       function doSequence(sequenceObserver: Observer<number>, arr: number[], idx: number) {
-        timeout = setTimeout(() => {
+        const timeout = setTimeout(() => {
           console.log('Emitting ' + arr[idx]);
           sequenceObserver.next(arr[idx]);
           if (idx === arr.length - 1) {
@@ -133,6 +133,7 @@ export function docRegionMulticastSequence(console: Console, runSequence: boolea
             doSequence(sequenceObserver, arr, ++idx);
           }
         }, 1000);
+        clearTimer = () => clearTimeout(timeout);
       }
     };
   }
