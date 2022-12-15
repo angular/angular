@@ -530,8 +530,6 @@ jobs:
             mkdir -p packages/common/locales/extra
             cp dist/bin/packages/common/locales/*.ts packages/common/locales
             cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
-      # Build ZoneJS so that it can be loaded globally in the Karma tests.
-      - run: yarn bazel build //packages/zone.js:npm_package
       # Build the bundle for all tests to run within Saucelabs
       - run: node tools/legacy-saucelabs/build-saucelabs-test-bundle.mjs
       - run:

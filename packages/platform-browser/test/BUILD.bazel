@@ -43,7 +43,7 @@ ts_library(
 
 js_library(
     name = "zone_event_unpatched_init_lib",
-    srcs = ["dom/events/zone_event_unpatched.init.js"],
+    srcs = ["dom/events/zone_event_unpatched.init.mjs"],
 )
 
 jasmine_node_test(
