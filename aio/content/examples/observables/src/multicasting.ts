@@ -6,7 +6,7 @@ export function docRegionDelaySequence(console: Console) {
   // #docregion delay_sequence
   function sequenceSubscriber(observer: Observer<number>) {
     const seq = [1, 2, 3];
-    let clearTimer = () => { };
+    let clearTimer: VoidFunction | undefined;
 
     // Will run through an array of numbers, emitting one value
     // per second until it gets to the end of the array.
@@ -27,7 +27,7 @@ export function docRegionDelaySequence(console: Console) {
     // Unsubscribe should clear the timeout to stop execution
     return {
       unsubscribe() {
-        clearTimer();
+        clearTimer?.();
       }
     };
   }
@@ -88,7 +88,7 @@ export function docRegionMulticastSequence(console: Console, runSequence: boolea
     const observers: Observer<unknown>[] = [];
     // Still a single timer because there will only ever be one
     // set of values being generated, multicasted to each subscriber
-    let clearTimer = () => { };
+    let clearTimer: VoidFunction | undefined;
 
     // Return the subscriber function (runs when subscribe()
     // function is invoked)
@@ -116,7 +116,7 @@ export function docRegionMulticastSequence(console: Console, runSequence: boolea
           observers.splice(observers.indexOf(observer), 1);
           // If there's no more listeners, do cleanup
           if (observers.length === 0) {
-            clearTimer();
+            clearTimer?.();
           }
         }
       };
