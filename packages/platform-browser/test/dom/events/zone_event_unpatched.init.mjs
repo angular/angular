@@ -14,4 +14,11 @@
 // strictly needed, but done for a specific test verifying that unpatched events are
 // running outside the zone. See `event_manager_spec.ts` and the
 // `unpatchedEvents handler outside of ngZone` spec.
-window.__zone_symbol__UNPATCHED_EVENTS = ['unpatchedEventManagerTest'];
+
+export function configureZoneUnpatchedEvent() {
+  window.__zone_symbol__UNPATCHED_EVENTS = ['unpatchedEventManagerTest'];
+}
+
+// Invoke the function as a side-effect. We still expose the function so that it could be
+// used e.g. in the Saucelabs legacy-job `test-init.ts` file.
+configureZoneUnpatchedEvent();
