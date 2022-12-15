@@ -1866,7 +1866,7 @@ ng generate guard auth/auth
 </code-example>
  -->
 
-To demonstrate the fundamentals, this example only logs to the console, returns true immediately, and lets navigation proceed:
+To demonstrate the fundamentals, this example only logs to the console, returns `true` immediately, and lets navigation proceed:
 
 <code-example header="src/app/auth/auth.guard.ts (excerpt)" path="router/src/app/auth/auth.guard.1.ts"></code-example>
 
