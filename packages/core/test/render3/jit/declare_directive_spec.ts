@@ -246,8 +246,6 @@ describe('directive declaration jit compilation', () => {
                   usesOnChanges: true,
                 }) as DirectiveDef<TestClass>;
 
-    console.error(def.features)
-
     expectDirectiveDef(def, {
       features: [ɵɵNgOnChangesFeature],
     });
