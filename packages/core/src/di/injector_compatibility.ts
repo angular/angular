@@ -158,7 +158,7 @@ export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T|nu
  * @param token A token that represents a dependency that should be injected.
  * @param flags Optional flags that control how injection is executed.
  * The flags correspond to injection strategies that can be specified with
- * parameter decorators `@Host`, `@Self`, `@SkipSef`, and `@Optional`.
+ * parameter decorators `@Host`, `@Self`, `@SkipSelf`, and `@Optional`.
  * @returns the injected value if operation is successful, `null` otherwise.
  * @throws if called outside of a supported context.
  *
