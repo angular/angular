@@ -151,7 +151,7 @@ function main(args: string[]): void {
     const outputPath = path.join(outputDirExecPath, outputRelativePath);
 
     // Always ensure that the target directory exists.
-    fs.mkdirSync(path.dirname(outputPath), {recursive: true})
+    fs.mkdirSync(path.dirname(outputPath), {recursive: true});
     fs.writeFileSync(outputPath, fileContent);
   }
 
