@@ -16,7 +16,8 @@ interface TsConfig {
 }
 
 describe('ng-add schematic', () => {
-  const localizeType = '@angular/localize';
+  const localizeTripleSlashType = `/// <reference types="@angular/localize" />`;
+
   const defaultOptions = {project: 'demo'};
   const schematicRunner = new SchematicTestRunner(
       '@angular/localize', runfiles.resolvePackageRelative('../collection.json'));
@@ -33,6 +34,11 @@ describe('ng-add schematic', () => {
       },
     }));
 
+    host.create('main.ts', `
+      import { enableProdMode } from '@angular/core';
+      import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+    `);
+
     host.create('angular.json', JSON.stringify({
       version: 1,
       projects: {
@@ -42,6 +48,7 @@ describe('ng-add schematic', () => {
             build: {
               builder: '@angular-devkit/build-angular:browser',
               options: {
+                main: './main.ts',
                 tsConfig: './tsconfig.app.json',
               },
             },
@@ -69,35 +76,21 @@ describe('ng-add schematic', () => {
     }));
   });
 
-  it(`should add '@angular/localize' in 'types' in the root level 'tsconfig.json'`, async () => {
-    host.create('tsconfig.json', JSON.stringify({
-      compilerOptions: {
-        types: ['node'],
-      },
-    }));
-
+  it(`should add '@angular/localize' type reference in 'main.ts'`, async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
-    const {compilerOptions} = host.readJson('tsconfig.json') as TsConfig;
-    const types = compilerOptions?.types;
-    expect(types).toContain(localizeType);
-    expect(types).toHaveSize(2);
+    expect(host.readText('main.ts')).toContain(localizeTripleSlashType);
   });
 
-  it(`should not add '@angular/localize' in 'types' tsconfig when '@angular/localize/init' is present`,
+  it(`should not add '@angular/localize' type reference in 'main.ts' if already present`,
      async () => {
-       host.create('tsconfig.json', JSON.stringify({
-         compilerOptions: {
-           types: ['node', '@angular/localize/init'],
-         },
-       }));
-
+       const mainContentInput = `
+      ${localizeTripleSlashType}
+      import { enableProdMode } from '@angular/core';
+    `;
+       host.overwrite('main.ts', mainContentInput);
        host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
-       const {compilerOptions} = host.readJson('tsconfig.json') as TsConfig;
-       const types = compilerOptions?.types;
-       expect(types).not.toContain(localizeType);
-       expect(types).toHaveSize(2);
+       expect(host.readText('main.ts')).toBe(mainContentInput);
      });
-
 
   it(`should not add '@angular/localize' in 'types' tsconfigs referenced in non official builders`,
      async () => {
