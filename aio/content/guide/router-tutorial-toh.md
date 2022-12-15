@@ -1870,7 +1870,7 @@ To demonstrate the fundamentals, this example only logs to the console, returns 
 
 <code-example header="src/app/auth/auth.guard.ts (excerpt)" path="router/src/app/auth/auth.guard.1.ts"></code-example>
 
-Next, open the `admin-routing.module.ts` file, import the `authGuard` function, and
+Next, open `admin-routing.module.ts`, import the `authGuard` function, and
 update the admin route with a `canActivate` guard property that references it:
 
 <code-example header="src/app/admin/admin-routing.module.ts (guarded admin route)" path="router/src/app/admin/admin-routing.module.2.ts" region="admin-route"></code-example>
