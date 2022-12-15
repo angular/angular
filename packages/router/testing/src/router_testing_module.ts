@@ -11,8 +11,6 @@ import {provideLocationMocks} from '@angular/common/testing';
 import {Compiler, inject, Injector, ModuleWithProviders, NgModule} from '@angular/core';
 import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
 
-import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
-
 function isUrlHandlingStrategy(opts: ExtraOptions|
                                UrlHandlingStrategy): opts is UrlHandlingStrategy {
   // This property check is needed because UrlHandlingStrategy is an interface and doesn't exist at
@@ -117,7 +115,6 @@ export function setupTestingRouter(
   exports: [RouterModule],
   providers: [
     ROUTER_PROVIDERS,
-    EXTRA_ROUTER_TESTING_PROVIDERS,
     provideLocationMocks(),
     withPreloading(NoPreloading).ɵproviders,
     {provide: ROUTES, multi: true, useValue: []},
