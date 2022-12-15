@@ -1911,7 +1911,9 @@ Revise the `authGuard` to call the `AuthService`.
 <code-example header="src/app/auth/auth.guard.ts (v2)" path="router/src/app/auth/auth.guard.2.ts"></code-example>
 
 This guard returns a synchronous boolean result or a `UrlTree`.
-If the user is logged in, it returns `true` and the navigation continues. Otherwise, it redirects to a login page &mdash; a page you haven't created yet. Returning a `UrlTree` tells the `Router` to cancel the current navigation and schedule a new one to redirect the user.
+If the user is logged in, it returns `true` and the navigation continues.
+Otherwise, it redirects to a login page; a page you haven't created yet.
+Returning a `UrlTree` tells the `Router` to cancel the current navigation and schedule a new one to redirect the user.
 
 <a id="add-login-component"></a>
 
