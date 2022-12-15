@@ -70,7 +70,7 @@ export class CreateUrlTreeUsingSnapshot implements CreateUrlTreeStrategy {
   }
 }
 
-@Injectable({providedIn: 'root', useClass: LegacyCreateUrlTree})
+@Injectable({providedIn: 'root', useClass: CreateUrlTreeUsingSnapshot})
 export abstract class CreateUrlTreeStrategy {
   abstract createUrlTree(
       relativeTo: ActivatedRoute|null|undefined, currentState: RouterState, currentUrlTree: UrlTree,

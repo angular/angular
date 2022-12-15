@@ -138,6 +138,9 @@
     "name": "CreateUrlTreeStrategy"
   },
   {
+    "name": "CreateUrlTreeUsingSnapshot"
+  },
+  {
     "name": "DEFAULT_LOCALE_ID"
   },
   {
@@ -298,9 +301,6 @@
   },
   {
     "name": "LQuery_"
-  },
-  {
-    "name": "LegacyCreateUrlTree"
   },
   {
     "name": "LifecycleHooksFeature"
@@ -1012,9 +1012,6 @@
   },
   {
     "name": "createTemplateRef"
-  },
-  {
-    "name": "createUrlTree"
   },
   {
     "name": "deactivateRouteAndItsChildren"
