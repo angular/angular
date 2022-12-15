@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "app_bundle", "ng_module", "ts_devserver")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -25,27 +25,14 @@ app_bundle(
     ],
 )
 
-ts_devserver(
-    name = "prodserver",
-    static_files = [
+http_server(
+    name = "server",
+    srcs = [
+        "index.html",
+    ],
+    deps = [
         ":bundle.debug.min.js",
         ":bundle.min.js",
         "//packages/zone.js/bundles:zone.umd.js",
-        "index.html",
     ],
-)
-
-ts_devserver(
-    name = "devserver",
-    entry_module = "angular/modules/benchmarks/src/views/index",
-    scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-    ],
-    serving_path = "/index.js",
-    static_files = [
-        "//packages/zone.js/bundles:zone.umd.js",
-        "index.html",
-    ],
-    deps = [":application_lib"],
 )

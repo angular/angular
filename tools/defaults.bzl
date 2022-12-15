@@ -3,7 +3,7 @@
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@build_bazel_rules_nodejs//:index.bzl", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm//@bazel/concatjs:index.bzl", _concatjs_devserver = "concatjs_devserver", _ts_config = "ts_config", _ts_library = "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
@@ -94,14 +94,6 @@ def _default_module_name(testonly):
         return "@angular/" + pkg[len("packages/"):]
 
     return None
-
-def ts_devserver(**kwargs):
-    """Default values for ts_devserver"""
-    serving_path = kwargs.pop("serving_path", "/app_bundle.js")
-    _concatjs_devserver(
-        serving_path = serving_path,
-        **kwargs
-    )
 
 ts_config = _ts_config
 

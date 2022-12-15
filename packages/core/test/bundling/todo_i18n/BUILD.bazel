@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_module", "ts_devserver", "ts_library")
-load("@npm//http-server:index.bzl", "http_server")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "jasmine_node_test", "ng_module", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -56,41 +55,14 @@ jasmine_node_test(
     deps = [":test_lib"],
 )
 
-genrule(
-    name = "tslib",
-    srcs = [
-        "@npm//:node_modules/tslib/tslib.js",
-    ],
-    outs = [
-        "tslib.js",
-    ],
-    cmd = "cp $< $@",
-)
-
-ts_devserver(
-    name = "devserver",
-    entry_module = "@angular/core/test/bundling/todo_i18n",
-    scripts = [
-        "//tools/rxjs:rxjs_umd_modules",
-    ],
-    # Use a serving_path that matches the common static index.html used
-    # in both devserver & prodserver
-    serving_path = "/bundle.min.js.br",
-    static_files = [
-        "index.html",
-        ":tslib",
-        "todo.css",
-        "base.css",
-    ],
-    deps = [":todo_i18n"],
-)
-
 http_server(
-    name = "prodserver",
-    data = [
+    name = "server",
+    srcs = [
         "base.css",
         "index.html",
         "todo.css",
+    ],
+    deps = [
         ":bundle.debug.min.js",
         ":bundle.min.js",
     ],
