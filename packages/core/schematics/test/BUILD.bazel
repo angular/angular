@@ -1,22 +1,14 @@
-# TODO(ESM): Use rule from defaults if schematics run as ESM.
-load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    data = [
-        "//packages/core/schematics:migrations.json",
-    ],
-    # TODO(ESM): Change when schematics support ESM.
-    devmode_module = "commonjs",
     deps = [
-        "//packages/core/schematics/migrations/relative-link-resolution",
-        "//packages/core/schematics/migrations/router-link-with-href",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",
         "@npm//tslint",
     ],
@@ -24,6 +16,13 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
+    data = [
+        "//packages/core/schematics:migrations.json",
+        "//packages/core/schematics/migrations/relative-link-resolution",
+        "//packages/core/schematics/migrations/relative-link-resolution:bundle",
+        "//packages/core/schematics/migrations/router-link-with-href",
+        "//packages/core/schematics/migrations/router-link-with-href:bundle",
+    ],
     templated_args = ["--nobazel_run_linker"],
     deps = [
         ":test_lib",
