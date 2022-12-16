@@ -116,6 +116,13 @@
     "twitter": "armandotrue",
     "bio": "Armen is a senior Angular developer from Armenia, tech writer, speaker, mentor and a Google Developer Expert for Angular."
   },
+  "arturovt": {
+    "name": "Artur Androsovych",
+    "picture": "artur-androsovych.jpg",
+    "groups": ["GDE"],
+    "website": "https://ng-guru.io",
+    "bio": "Artur is an Angular expert and OSS core developer of various projects as NGXS, NG-ZORRO, single-spa, ngneat, and RxAngular. He focuses on runtime performance and has taught teams about Angular internals for the past few years."
+  },
   "atscott": {
     "name": "Andrew Scott",
     "picture": "andrewscott.jpg",
