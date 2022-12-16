@@ -1,8 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-
-# BEGIN-DEV-ONLY
-load("@npm//@bazel/concatjs:index.bzl", "ts_library")
-# END-DEV-ONLY
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 

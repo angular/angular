@@ -8,6 +8,7 @@
 
 import {EmptyTree, Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
+import {runfiles} from '@bazel/runfiles';
 import ts from 'typescript';
 
 interface TsConfig {
@@ -17,8 +18,8 @@ interface TsConfig {
 describe('ng-add schematic', () => {
   const localizeType = '@angular/localize';
   const defaultOptions = {project: 'demo'};
-  const schematicRunner =
-      new SchematicTestRunner('@angular/localize', require.resolve('../collection.json'));
+  const schematicRunner = new SchematicTestRunner(
+      '@angular/localize', runfiles.resolvePackageRelative('../collection.json'));
   let host: Tree;
 
   beforeEach(() => {
