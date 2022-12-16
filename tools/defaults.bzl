@@ -19,7 +19,7 @@ load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "sp
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", "extract_esm_outputs", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
+load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -28,7 +28,6 @@ _INTERNAL_NG_PACKAGE_PACKAGER = "//packages/bazel/src/ng_package:packager"
 _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL = "//packages/bazel/src/ng_package:rollup.config.js"
 _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package:rollup_for_ng_package"
 
-esbuild = _esbuild
 esbuild_config = _esbuild_config
 http_server = _http_server
 extract_types = _extract_types
@@ -104,7 +103,6 @@ def ts_library(
         deps = [],
         module_name = None,
         package_name = None,
-        devmode_module = None,
         **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@npm//tslib"]
@@ -133,9 +131,8 @@ def ts_library(
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
-        # TODO(ESM): Remove when schematics work with ESM.
         devmode_target = default_target,
-        devmode_module = devmode_module if devmode_module != None else default_module,
+        devmode_module = default_module,
         # For prodmode, the target is set to `ES2020`. `@bazel/typecript` sets `ES2015` by
         # default. Note that this should be in sync with the `ng_module` tsconfig generation.
         # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
@@ -233,7 +230,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         visibility = visibility,
     )
 
-def pkg_npm(name, validate = True, use_prodmode_output = False, **kwargs):
+def pkg_npm(name, deps = [], validate = True, **kwargs):
     """Default values for pkg_npm"""
     visibility = kwargs.pop("visibility", None)
 
@@ -245,19 +242,14 @@ def pkg_npm(name, validate = True, use_prodmode_output = False, **kwargs):
         "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
     })
 
-    deps = kwargs.pop("deps", [])
-
-    # The `pkg_npm` rule brings in devmode (`JSModuleInfo`) and prodmode (`JSEcmaScriptModuleInfo`)
-    # output into the the NPM package We do not intend to ship the prodmode ECMAScript `.mjs`
-    # files, but the `JSModuleInfo` outputs (which correspond to devmode output). Depending on
-    # the `use_prodmode_output` macro attribute, we either ship the ESM output of dependencies,
-    # or continue shipping the devmode ES5 output.
-    # TODO: Clean this up in the future if we have combined devmode and prodmode output.
-    # https://github.com/bazelbuild/rules_nodejs/commit/911529fd364eb3ee1b8ecdc568a9fcf38a8b55ca.
-    # https://github.com/bazelbuild/rules_nodejs/blob/stable/packages/typescript/internal/build_defs.bzl#L334-L337.
+    # NOTE: We keep this to avoid the linker mappings from `deps` to be forwarded.
+    # e.g. the `pkg_npm` might have a `package_name` but the source `ts_library` too.
+    # This is a bug in `rules_nodejs` that should be fixed.
+    # TODO(devversion): Remove this when we landed a fix in `rules_nodejs`.
+    # Related to: https://github.com/bazelbuild/rules_nodejs/issues/2941.
     extract_js_module_output(
         name = "%s_js_module_output" % name,
-        provider = "JSEcmaScriptModuleInfo" if use_prodmode_output else "JSModuleInfo",
+        provider = "JSModuleInfo",
         include_declarations = True,
         include_default_files = True,
         forward_linker_mappings = False,
@@ -272,8 +264,8 @@ def pkg_npm(name, validate = True, use_prodmode_output = False, **kwargs):
             "//:stamp": stamped_substitutions,
             "//conditions:default": substitutions,
         }),
-        visibility = visibility,
         deps = [":%s_js_module_output" % name],
+        visibility = visibility,
         **kwargs
     )
 
@@ -468,29 +460,19 @@ def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kw
     npm_workspace = _node_modules_workspace_name()
     env = enable_esm_node_module_loader(npm_workspace, env)
 
-    extract_esm_outputs(
-        name = "%s_esm_deps" % name,
-        testonly = True,
-        deps = deps + srcs,
-    )
-
-    extract_esm_outputs(
-        name = "%s_esm_bootstrap" % name,
-        testonly = True,
-        deps = bootstrap,
-    )
-
     spec_entrypoint(
         name = "%s_spec_entrypoint.spec" % name,
         testonly = True,
-        deps = [":%s_esm_deps" % name],
-        bootstrap = [":%s_esm_bootstrap" % name],
+        deps = deps + srcs,
+        bootstrap = bootstrap,
     )
 
     _jasmine_node_test(
         name = name,
         srcs = [":%s_spec_entrypoint.spec" % name],
-        data = data + [":%s_esm_bootstrap" % name, ":%s_esm_deps" % name],
+        # Note: `deps`, `srcs` and `bootstrap` are explicitly added here as otherwise their linker
+        # mappings may not be discovered, given the `bootstrap` attr not being covered by the aspect.
+        data = data + deps + srcs + bootstrap,
         use_direct_specs = True,
         configuration_env_vars = configuration_env_vars,
         env = env,
@@ -620,5 +602,13 @@ def tsec_test(**kwargs):
     """Default values for tsec_test"""
     _tsec_test(
         use_runfiles_on_windows = True,  # We explicitly enable runfiles in .bazelrc
+        **kwargs
+    )
+
+def esbuild(args = None, **kwargs):
+    _esbuild(
+        args = args if args else {
+            "resolveExtensions": [".mjs", ".js", ".json"],
+        },
         **kwargs
     )

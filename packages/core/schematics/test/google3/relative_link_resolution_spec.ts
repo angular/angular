@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runfiles} from '@bazel/runfiles';
 import {readFileSync, writeFileSync} from 'fs';
 import {dirname, join} from 'path';
-import * as shx from 'shelljs';
+import shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 relativeLinkResolution TSLint rule', () => {
-  const rulesDirectory =
-      dirname(require.resolve('../../migrations/google3/relativeLinkResolutionRule'));
-
   let tmpDir: string;
+  const rulesDirectory = dirname(
+      runfiles.resolvePackageRelative('../../migrations/google3/relativeLinkResolutionCjsRule.js'));
 
   beforeEach(() => {
     tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
@@ -34,7 +34,7 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
   function runTSLint(fix: boolean) {
     const program = Linter.createProgram(join(tmpDir, 'tsconfig.json'));
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
-    const config = Configuration.parseConfigFile({rules: {'relativeLinkResolution': true}});
+    const config = Configuration.parseConfigFile({rules: {'relativeLinkResolutionCjs': true}});
 
     program.getRootFileNames().forEach(fileName => {
       linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);

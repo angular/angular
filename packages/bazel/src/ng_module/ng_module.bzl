@@ -19,7 +19,6 @@ load(
     "compile_ts",
     "js_ecma_script_module_info",
     "js_module_info",
-    "js_named_module_info",
     "node_modules_aspect",
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
@@ -184,9 +183,9 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     is_devmode = "devmode_manifest" in kwargs
     outs = _expected_outs(ctx)
     if is_devmode:
-        expected_outs = outs.devmode_js + outs.declarations
+        expected_outs = outs.devmode_js
     else:
-        expected_outs = outs.closure_js
+        expected_outs = outs.closure_js + outs.declarations
 
     if not ctx.attr.type_check and ctx.attr.strict_templates:
         fail("Cannot set type_check = False and strict_templates = True for ng_module()")
@@ -390,11 +389,11 @@ def _compile_action(
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files, tsconfig_file, node_opts, "prodmode")
+    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files + outs.declarations, tsconfig_file, node_opts, "prodmode")
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.dev_perf_files
+    compile_action_outputs = outputs + outs.devmode_js + outs.dev_perf_files
     _compile_action(ctx, inputs, compile_action_outputs, tsconfig_file, node_opts, "devmode")
 
 # Note: We need to define `label` and `srcs_files` as `tsc_wrapped` passes
@@ -448,11 +447,7 @@ def _ng_module_impl(ctx):
     # and issue https://github.com/bazelbuild/rules_nodejs/issues/57 for more details.
     ts_providers["providers"].extend([
         js_module_info(
-            sources = ts_providers["typescript"]["es5_sources"],
-            deps = ctx.attr.deps,
-        ),
-        js_named_module_info(
-            sources = ts_providers["typescript"]["es5_sources"],
+            sources = ts_providers["typescript"]["es6_sources"],
             deps = ctx.attr.deps,
         ),
         js_ecma_script_module_info(
@@ -470,7 +465,7 @@ def _ng_module_impl(ctx):
             package_name = ctx.attr.package_name,
             package_path = ctx.attr.package_path,
             path = path,
-            files = ts_providers["typescript"]["es5_sources"],
+            files = ts_providers["typescript"]["es6_sources"],
         ))
 
     return ts_providers_dict_to_struct(ts_providers)

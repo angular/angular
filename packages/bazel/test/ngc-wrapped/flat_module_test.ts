@@ -16,8 +16,8 @@ describe('flat_module ng_module', () => {
 
   beforeAll(() => {
     packageOutput =
-        dirname(runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.js'));
-    flatModuleOutFile = join(packageOutput, 'flat_module.js');
+        dirname(runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.mjs'));
+    flatModuleOutFile = join(packageOutput, 'flat_module.mjs');
   });
 
   it('should have a flat module out file', () => {
