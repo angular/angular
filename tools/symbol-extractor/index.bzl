@@ -15,6 +15,8 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
     all_data = data + [
         Label("//tools/symbol-extractor:lib"),
         Label("@npm//typescript"),
+        src,
+        golden,
     ]
     entry_point = "//tools/symbol-extractor:cli.ts"
 
@@ -23,7 +25,6 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         data = all_data,
         entry_point = entry_point,
         tags = kwargs.pop("tags", []) + ["symbol_extractor"],
-        data_for_expansion = [src, golden],
         templated_args = ["$(rootpath %s)" % src, "$(rootpath %s)" % golden],
         **kwargs
     )
@@ -33,7 +34,6 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         testonly = True,
         data = all_data,
         entry_point = entry_point,
-        data_for_expansion = [src, golden],
         templated_args = ["$(rootpath %s)" % src, "$(rootpath %s)" % golden, "--accept"],
         **kwargs
     )

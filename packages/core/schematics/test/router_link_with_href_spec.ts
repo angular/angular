@@ -10,7 +10,8 @@ import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import * as shx from 'shelljs';
+import {runfiles} from '@bazel/runfiles';
+import shx from 'shelljs';
 
 describe('RouterLinkWithHref migration', () => {
   let runner: SchematicTestRunner;
@@ -28,7 +29,7 @@ describe('RouterLinkWithHref migration', () => {
   }
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
+    runner = new SchematicTestRunner('test', runfiles.resolvePackageRelative('../migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
