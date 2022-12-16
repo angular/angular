@@ -1620,7 +1620,7 @@ However, you wouldn't use this technique on a custom element.
 
 <div class="s-rule do">
 
-**Do** extract templates and styles into a separate file, when more than 3 lines.
+**Do** extract templates and styles into a separate file, when there are more than 30 lines.
 
 </div>
 
@@ -1646,14 +1646,6 @@ However, you wouldn't use this technique on a custom element.
 
 **Why**? <br />
 Large, inline templates and styles obscure the component's purpose and implementation, reducing readability and maintainability.
-
-</div>
-
-<div class="s-why">
-
-**Why**? <br />
-In most editors, syntax hints and code snippets aren't available when developing inline templates and styles.
-The Angular TypeScript Language Service \(forthcoming\) promises to overcome this deficiency for HTML templates in those editors that support it; it won't help with CSS styles.
 
 </div>
 
