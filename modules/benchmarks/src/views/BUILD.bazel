@@ -25,6 +25,14 @@ app_bundle(
     ],
 )
 
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
+    name = "app_bundle",
+    srcs = [":bundle.debug.min.js"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $< $@",
+)
+
 http_server(
     name = "server",
     srcs = [
