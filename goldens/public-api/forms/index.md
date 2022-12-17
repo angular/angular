@@ -553,7 +553,7 @@ export interface FormRecord<TControl> {
 export class FormsModule {
     static withConfig(opts: {
         callSetDisabledState?: SetDisabledStateOption;
-    }): ModuleWithProviders<ReactiveFormsModule>;
+    }): ModuleWithProviders<FormsModule>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormsModule, never>;
     // (undocumented)
