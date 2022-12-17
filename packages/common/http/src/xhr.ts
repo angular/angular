@@ -68,11 +68,6 @@ export class HttpXhrBackend implements HttpBackend {
       // Add all the requested headers.
       req.headers.forEach((name, values) => xhr.setRequestHeader(name, values.join(',')));
 
-      // Add an Accept header if one isn't present already.
-      if (!req.headers.has('Accept')) {
-        xhr.setRequestHeader('Accept', 'application/json, text/plain, */*');
-      }
-
       // Auto-detect the Content-Type header if one isn't present already.
       if (!req.headers.has('Content-Type')) {
         const detectedType = req.detectContentTypeHeader();
@@ -92,6 +87,13 @@ export class HttpXhrBackend implements HttpBackend {
         // retrieve the prefixed JSON data in order to strip the prefix. Thus, all JSON
         // is parsed by first requesting text and then applying JSON.parse.
         xhr.responseType = ((responseType !== 'json') ? responseType : 'text') as any;
+      }
+
+      // Add an Accept header if one isn't present already.
+      if (!req.headers.has('Accept')) {
+        xhr.setRequestHeader(
+          (xhr.responseType === 'json') ? 'application/json' : ((xhr.responseType === 'text') ? 'text/plain' : '*/*')
+        );
       }
 
       // Serialize the request body if one is present. If not, this will be set to null.
