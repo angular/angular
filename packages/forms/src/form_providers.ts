@@ -38,7 +38,7 @@ export class FormsModule {
    */
   static withConfig(opts: {
     callSetDisabledState?: SetDisabledStateOption,
-  }): ModuleWithProviders<ReactiveFormsModule> {
+  }): ModuleWithProviders<FormsModule> {
     return {
       ngModule: FormsModule,
       providers: [{
