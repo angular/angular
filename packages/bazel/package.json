@@ -8,10 +8,10 @@
     "node": "^14.20.0 || ^16.13.0 || >=18.10.0"
   },
   "bin": {
-    "ngc-wrapped": "./src/ngc-wrapped/index.js",
-    "packager": "./src/ng_package/packager.js",
-    "types_bundler": "./src/types_bundle/index.js",
-    "xi18n": "./src/ngc-wrapped/extract_i18n.js"
+    "ngc-wrapped": "./src/ngc-wrapped/index.mjs",
+    "packager": "./src/ng_package/packager.mjs",
+    "types_bundler": "./src/types_bundle/index.mjs",
+    "xi18n": "./src/ngc-wrapped/extract_i18n.mjs"
   },
   "typings": "./src/ngc-wrapped/index.d.ts",
   "bazelBin": {

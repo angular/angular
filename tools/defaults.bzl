@@ -26,7 +26,7 @@ _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
 _INTERNAL_NG_PACKAGE_PACKAGER = "//packages/bazel/src/ng_package:packager"
 _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL = "//packages/bazel/src/ng_package:rollup.config.js"
-_INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package:rollup_for_ng_package"
+_INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package/rollup"
 
 esbuild_config = _esbuild_config
 http_server = _http_server
