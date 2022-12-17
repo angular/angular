@@ -19,9 +19,17 @@ ng_module(
 )
 
 app_bundle(
-    name = "app_bundle",
+    name = "bundle",
     entry_point = ":index.ts",
     deps = [":ng2_switch"],
+)
+
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
+    name = "app_bundle",
+    srcs = [":bundle.debug.min.js"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $< $@",
 )
 
 http_server(
