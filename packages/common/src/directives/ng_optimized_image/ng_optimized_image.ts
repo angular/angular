@@ -775,16 +775,13 @@ function assertNoImageDistortion(
     dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
   const removeListenerFn = renderer.listen(img, 'load', () => {
     removeListenerFn();
-    // TODO: `clientWidth`, `clientHeight`, `naturalWidth` and `naturalHeight`
-    // are typed as number, but we run `parseFloat` (which accepts strings only).
-    // Verify whether `parseFloat` is needed in the cases below.
-    const renderedWidth = parseFloat(img.clientWidth as any);
-    const renderedHeight = parseFloat(img.clientHeight as any);
+    const renderedWidth = img.clientWidth;
+    const renderedHeight = img.clientHeight;
     const renderedAspectRatio = renderedWidth / renderedHeight;
     const nonZeroRenderedDimensions = renderedWidth !== 0 && renderedHeight !== 0;
 
-    const intrinsicWidth = parseFloat(img.naturalWidth as any);
-    const intrinsicHeight = parseFloat(img.naturalHeight as any);
+    const intrinsicWidth = img.naturalWidth;
+    const intrinsicHeight = img.naturalHeight;
     const intrinsicAspectRatio = intrinsicWidth / intrinsicHeight;
 
     const suppliedWidth = dir.width!;
@@ -888,7 +885,7 @@ function assertNonZeroRenderedHeight(
     dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
   const removeListenerFn = renderer.listen(img, 'load', () => {
     removeListenerFn();
-    const renderedHeight = parseFloat(img.clientHeight as any);
+    const renderedHeight = img.clientHeight;
     if (dir.fill && renderedHeight === 0) {
       console.warn(formatRuntimeError(
           RuntimeErrorCode.INVALID_INPUT,
