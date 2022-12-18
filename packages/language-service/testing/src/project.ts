@@ -176,6 +176,13 @@ export class Project {
     return diagnostics;
   }
 
+  getSuggestionDiagnosticsForFile(projectFileName: string): ts.Diagnostic[] {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    const diagnostics: ts.Diagnostic[] = [];
+    diagnostics.push(...this.ngLS.getSuggestionDiagnostics(fileName));
+    return diagnostics;
+  }
+
   getCodeFixesAtPosition(
     projectFileName: string,
     start: number,

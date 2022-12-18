@@ -97,6 +97,17 @@ export interface TemplateTypeChecker {
   getDiagnosticsForFile(sf: ts.SourceFile, optimizeFor: OptimizeFor): ts.Diagnostic[];
 
   /**
+   * Gets suggestion diagnostics for the given `ts.SourceFile`. These diagnostics tend to
+   * proactively suggest deprecated, as opposed to diagnostics that indicate
+   * potentially incorrect runtime behavior.
+   */
+  getSuggestionDiagnosticsForFile(
+    sf: ts.SourceFile,
+    tsLs: ts.LanguageService,
+    optimizeFor: OptimizeFor,
+  ): ts.DiagnosticWithLocation[];
+
+  /**
    * Given a `shim` and position within the file, returns information for mapping back to a source
    * location.
    */
@@ -108,6 +119,19 @@ export interface TemplateTypeChecker {
    * This method always runs in `OptimizeFor.SingleFile` mode.
    */
   getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[];
+
+  /**
+   * Gets suggestion diagnostics for the given component. These diagnostics tend to
+   * proactively suggest deprecated, as opposed to diagnostics that indicate
+   * potentially incorrect runtime behavior.
+   *
+   *
+   * This method always runs in `OptimizeFor.SingleFile` mode.
+   */
+  getSuggestionDiagnosticsForComponent(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+  ): ts.DiagnosticWithLocation[];
 
   /**
    * Ensures shims for the whole program are generated. This type of operation would be required by
