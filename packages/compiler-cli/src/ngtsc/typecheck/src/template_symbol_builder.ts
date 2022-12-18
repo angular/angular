@@ -65,7 +65,7 @@ import {
   hasExpressionIdentifier,
 } from './comments';
 import {TypeCheckData} from './context';
-import {isAccessExpression} from './ts_util';
+import {isAccessExpression, isDirectiveDeclaration} from './ts_util';
 import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
 
 /**
@@ -212,15 +212,6 @@ export class SymbolBuilder {
     templateNode: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
   ): DirectiveSymbol[] {
     const elementSourceSpan = templateNode.startSourceSpan ?? templateNode.sourceSpan;
-    const tcbSourceFile = this.typeCheckBlock.getSourceFile();
-    // directives could be either:
-    // - var _t1: TestDir /*T:D*/ = null! as TestDir;
-    // - var _t1 /*T:D*/ = _ctor1({});
-    const isDirectiveDeclaration = (node: ts.Node): node is ts.TypeNode | ts.Identifier =>
-      (ts.isTypeNode(node) || ts.isIdentifier(node)) &&
-      ts.isVariableDeclaration(node.parent) &&
-      hasExpressionIdentifier(tcbSourceFile, node, ExpressionIdentifier.DIRECTIVE);
-
     const nodes = findAllMatchingNodes(this.typeCheckBlock, {
       withSpan: elementSourceSpan,
       filter: isDirectiveDeclaration,
