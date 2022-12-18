@@ -592,6 +592,153 @@ describe('getSemanticDiagnostics', () => {
   });
 });
 
+describe('getSuggestedDiagnostics', () => {
+  let env: LanguageServiceTestEnv;
+  beforeEach(() => {
+    initMockFileSystem('Native');
+    env = LanguageServiceTestEnv.setup();
+  });
+
+  it('should report deprecated for component variable', () => {
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<app-bar name=""></app-bar>',
+        standalone: false,
+      })
+      export class AppComponent {}
+    `,
+      'bar.ts': `
+      import {Component, input} from '@angular/core';
+      @Component({
+        selector: 'app-bar',
+        template: '',
+        standalone: false,
+      })
+      export class BarComponent {
+        /**
+         * @deprecated
+         */
+        name = input<string>();
+      }
+    `,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getSuggestionDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(1);
+    const {category, file, messageText} = diags[0];
+    expect(category).toBe(ts.DiagnosticCategory.Suggestion);
+    expect(file?.fileName).toBe('/test/app.ts');
+    expect(messageText).toBe(`'name' is deprecated.`);
+  });
+
+  it('should report deprecated for component tag without generics', () => {
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<app-bar name=""></app-bar>',
+        standalone: false,
+      })
+      export class AppComponent {}
+    `,
+      'bar.ts': `
+      import {Component, input} from '@angular/core';
+      /**
+       * @deprecated
+      */
+      @Component({
+        selector: 'app-bar',
+        template: '',
+        standalone: false,
+      })
+      export class BarComponent {
+        name = input<string>();
+      }
+    `,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getSuggestionDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(1);
+    const {category, file, messageText, start} = diags[0];
+    expect(category).toBe(ts.DiagnosticCategory.Suggestion);
+    expect(file?.fileName).toBe('/test/app.ts');
+    expect(start).toBe(87);
+    expect(messageText).toBe(`'BarComponent' is deprecated.`);
+  });
+
+  it('should report deprecated for component tag with generics', () => {
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<app-bar name=""></app-bar>',
+        standalone: false,
+      })
+      export class AppComponent {}
+    `,
+      'bar.ts': `
+      import {Component, input} from '@angular/core';
+      /**
+       * @deprecated
+      */
+      @Component({
+        selector: 'app-bar',
+        template: '',
+        standalone: false,
+      })
+      export class BarComponent<T> {
+        name = input<string>();
+      }
+    `,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getSuggestionDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(1);
+    const {category, file, messageText, start} = diags[0];
+    expect(category).toBe(ts.DiagnosticCategory.Suggestion);
+    expect(file?.fileName).toBe('/test/app.ts');
+    expect(start).toBe(87);
+    expect(messageText).toBe(`'BarComponent' is deprecated.`);
+  });
+
+  it('should not report deprecated for directive attribute', () => {
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<div my-directive></div>',
+        standalone: false,
+      })
+      export class AppComponent {}
+    `,
+      'bar.ts': `
+      import {Directive, input} from '@angular/core';
+      /**
+       * @deprecated deprecated
+       */
+      @Directive({
+        selector: '[my-directive]',
+        standalone: false,
+      })
+      export class MyDirective {}
+    `,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getSuggestionDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(0);
+  });
+});
+
 function getTextOfDiagnostic(diag: ts.Diagnostic): string {
   expect(diag.file).not.toBeUndefined();
   expect(diag.start).not.toBeUndefined();

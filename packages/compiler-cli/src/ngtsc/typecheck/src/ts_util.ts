@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {addExpressionIdentifier, ExpressionIdentifier} from './comments';
+import {addExpressionIdentifier, ExpressionIdentifier, hasExpressionIdentifier} from './comments';
 
 /**
  * A `Set` of `ts.SyntaxKind`s of `ts.Expression` which are safe to wrap in a `ts.AsExpression`
@@ -200,4 +200,19 @@ export function tsNumericExpression(value: number): ts.NumericLiteral | ts.Prefi
   }
 
   return ts.factory.createNumericLiteral(value);
+}
+
+/**
+ * Check if a node represents a directive declaration in a TypeCheck Block.
+ * Directive declarations can be either:
+ * - var _t1: TestDir /*T:D*\/ = null! as TestDir;
+ * - var _t1 /*T:D*\/ = _ctor1({});
+ */
+export function isDirectiveDeclaration(node: ts.Node): node is ts.TypeNode | ts.Identifier {
+  const sourceFile = node.getSourceFile();
+  return (
+    (ts.isTypeNode(node) || ts.isIdentifier(node)) &&
+    ts.isVariableDeclaration(node.parent) &&
+    hasExpressionIdentifier(sourceFile, node, ExpressionIdentifier.DIRECTIVE)
+  );
 }

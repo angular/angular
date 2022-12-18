@@ -117,5 +117,12 @@ export function translateDiagnostic(
     diagnostic.category,
     diagnostic.code,
     diagnostic.messageText,
+    undefined,
+    diagnostic.reportsDeprecated !== undefined
+      ? {
+          reportsDeprecated: diagnostic.reportsDeprecated,
+          relatedMessages: diagnostic.relatedInformation,
+        }
+      : undefined,
   );
 }
