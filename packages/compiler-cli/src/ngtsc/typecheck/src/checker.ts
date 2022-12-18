@@ -57,7 +57,11 @@ import {
   ComponentScope,
 } from '../../scope';
 import {isShim} from '../../shims';
-import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
+import {
+  getSourceFileOrNull,
+  getTokenAtPosition,
+  isSymbolWithValueDeclaration,
+} from '../../util/src/typescript';
 import {
   ElementSymbol,
   FullSourceMapping,
@@ -97,6 +101,7 @@ import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
+import {ExpressionIdentifier, findAllMatchingNodes, hasExpressionIdentifier} from './comments';
 
 const REGISTRY = new DomElementSchemaRegistry();
 /**
@@ -354,6 +359,43 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     });
   }
 
+  getSuggestionDiagnosticsForFile(
+    sf: ts.SourceFile,
+    tsLs: ts.LanguageService,
+    optimizeFor: OptimizeFor,
+  ): ts.DiagnosticWithLocation[] {
+    switch (optimizeFor) {
+      case OptimizeFor.WholeProgram:
+        this.ensureAllShimsForAllFiles();
+        break;
+      case OptimizeFor.SingleFile:
+        this.ensureAllShimsForOneFile(sf);
+        break;
+    }
+
+    return this.perf.inPhase(PerfPhase.TtcSuggestionDiagnostics, () => {
+      const sfPath = absoluteFromSourceFile(sf);
+      const fileRecord = this.state.get(sfPath)!;
+
+      const diagnostics: (ts.DiagnosticWithLocation | null)[] = [];
+      const program = this.programDriver.getProgram();
+
+      if (fileRecord.hasInlines) {
+        diagnostics.push(
+          ...getDeprecatedSuggestionDiagnostics(tsLs, program, sfPath, fileRecord.sourceManager),
+        );
+      }
+
+      for (const [shimPath] of fileRecord.shimData) {
+        diagnostics.push(
+          ...getDeprecatedSuggestionDiagnostics(tsLs, program, shimPath, fileRecord.sourceManager),
+        );
+      }
+
+      return diagnostics.filter((diag): diag is ts.DiagnosticWithLocation => diag !== null);
+    });
+  }
+
   getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[] {
     this.ensureShimForComponent(component);
 
@@ -398,6 +440,46 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return diagnostics.filter(
         (diag: TemplateDiagnostic | null): diag is TemplateDiagnostic =>
           diag !== null && diag.typeCheckId === id,
+      );
+    });
+  }
+
+  getSuggestionDiagnosticsForComponent(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+  ): ts.DiagnosticWithLocation[] {
+    this.ensureShimForComponent(component);
+
+    return this.perf.inPhase(PerfPhase.TtcSuggestionDiagnostics, () => {
+      const sf = component.getSourceFile();
+      const sfPath = absoluteFromSourceFile(sf);
+      const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
+
+      const fileRecord = this.getFileData(sfPath);
+
+      if (!fileRecord.shimData.has(shimPath)) {
+        return [];
+      }
+
+      const templateId = fileRecord.sourceManager.getTypeCheckId(component);
+      const shimRecord = fileRecord.shimData.get(shimPath)!;
+
+      const diagnostics: (TemplateDiagnostic | null)[] = [];
+      const program = this.programDriver.getProgram();
+
+      if (shimRecord.hasInlines) {
+        diagnostics.push(
+          ...getDeprecatedSuggestionDiagnostics(tsLs, program, sfPath, fileRecord.sourceManager),
+        );
+      }
+
+      diagnostics.push(
+        ...getDeprecatedSuggestionDiagnostics(tsLs, program, shimPath, fileRecord.sourceManager),
+      );
+
+      return diagnostics.filter(
+        (diag: TemplateDiagnostic | null): diag is TemplateDiagnostic =>
+          diag !== null && diag.typeCheckId === templateId,
       );
     });
   }
@@ -1457,4 +1539,148 @@ function getClassDeclFromSymbol(
     return decl;
   }
   return null;
+}
+
+/**
+ * Returns the diagnostics that report deprecated symbols in the given TypeScript language service.
+ *
+ * There are two logins here:
+ *
+ * 1. For input properties, function calls, and so on, the diagnostics reported in the TypeScript
+ *    Language Service can be directly transformed into template diagnostics.
+ * 2. For the element tag deprecation, we need to manually connect the TCB node to the template node
+ *    and generate the template diagnostics.
+ */
+function getDeprecatedSuggestionDiagnostics(
+  tsLs: ts.LanguageService,
+  program: ts.Program,
+  path: string,
+  sourceManager: DirectiveSourceManager,
+): (TemplateDiagnostic | null)[] {
+  const tsDiags = tsLs.getSuggestionDiagnostics(path).filter((diag) => {
+    return diag.reportsDeprecated !== undefined;
+  });
+  const commonTemplateDiags = tsDiags.map((diag) => {
+    return convertDiagnostic(diag, sourceManager);
+  });
+
+  const elementTagDiags = getTheElementTagDeprecatedSuggestionDiagnostics(
+    program.getSourceFile(path)!,
+    tsDiags,
+    program.getTypeChecker(),
+    sourceManager,
+  );
+  return [...commonTemplateDiags, ...elementTagDiags];
+}
+
+/**
+ * Connect the TCB node to the template node and generate the template diagnostics.
+ *
+ * How to generate the template diagnostics:
+ *
+ * 1. For each diagnostic, find the TCB node that is reported.
+ * 2. Build a map called `nodeToDiag` that the key is the type node and value is the diagnostic.
+ *    For example:
+ *    ```
+ *    var _t1 = null! as TestDir;
+ *                       ^^^^^^^------ This is diagnostic node that is reported by the ts.
+ *    ```
+ *    The key is the class component of TestDir.
+ * 3. Find the all directive nodes in the TCB.
+ *    For example:
+ *    In the above example, the directive node is `_t1`, get the type of `_t1` which is the
+ *    class component of `TestDir`. Check if there is a diagnostic in the `nodeToDiag` map
+ *    that matches the class component of `TestDir`.
+ *    If there is a match, it means that the diagnostic is reported for the directive node
+ * 4. Generate the template diagnostic and return the template diagnostics.
+ */
+function getTheElementTagDeprecatedSuggestionDiagnostics(
+  sourceFile: ts.SourceFile,
+  diags: ts.DiagnosticWithLocation[],
+  typeChecker: ts.TypeChecker,
+  resolver: TypeCheckSourceResolver,
+): TemplateDiagnostic[] {
+  const nodeToDiag = new Map<ts.ClassDeclaration, ts.DiagnosticWithLocation>();
+
+  for (const tsDiag of diags) {
+    const diagNode = getTokenAtPosition(sourceFile, tsDiag.start);
+    const nodeType = typeChecker.getTypeAtLocation(diagNode);
+    const nodeSymbolDeclarations = nodeType.symbol.declarations;
+    const decl =
+      nodeSymbolDeclarations !== undefined && nodeSymbolDeclarations.length > 0
+        ? nodeSymbolDeclarations[0]
+        : undefined;
+    if (decl === undefined || !ts.isClassDeclaration(decl)) {
+      continue;
+    }
+    nodeToDiag.set(decl, tsDiag);
+  }
+
+  // directives could be either:
+  // - var _t1: TestDir /*T:D*/ = null! as TestDir;
+  // - var _t1 /*T:D*/ = _ctor1({});
+  const isDirectiveDeclaration = (node: ts.Node): node is ts.TypeNode | ts.Identifier =>
+    (ts.isTypeNode(node) || ts.isIdentifier(node)) &&
+    ts.isVariableDeclaration(node.parent) &&
+    hasExpressionIdentifier(sourceFile, node, ExpressionIdentifier.DIRECTIVE);
+  const directiveNodesInTcb = findAllMatchingNodes(sourceFile, {
+    filter: isDirectiveDeclaration,
+  });
+
+  const templateDiagnostics: TemplateDiagnostic[] = [];
+  for (const directive of directiveNodesInTcb) {
+    const directiveType = typeChecker.getTypeAtLocation(directive);
+    const directiveSymbolDeclarations = directiveType.symbol.declarations;
+
+    const decl =
+      directiveSymbolDeclarations !== undefined && directiveSymbolDeclarations.length > 0
+        ? directiveSymbolDeclarations[0]
+        : undefined;
+    if (decl === undefined) {
+      continue;
+    }
+    if (!ts.isClassDeclaration(decl)) {
+      continue;
+    }
+    const diagnostic = nodeToDiag.get(decl);
+    if (diagnostic === undefined) {
+      continue;
+    }
+    const fullMapping = getSourceMapping(
+      diagnostic.file,
+      directive.getStart(),
+      resolver,
+      /**
+       * Don't set to true, the deprecated diagnostics will be ignored if this is a diagnostics request.
+       * Only the deprecated diagnostics will be reported here.
+       */
+      // For example:
+      // var _t2 /*T:DIR*/ /*87,104*/ = _ctor1({ "name": ("") /*96,103*/ }) /*D:ignore*/;
+      // At the end of the statement, there is a comment `/*D:ignore*/` which means that this diagnostic
+      // should be ignored in diagnostics request.
+      /*isDiagnosticsRequest*/ false,
+    );
+    if (fullMapping === null) {
+      continue;
+    }
+    const {sourceLocation, sourceMapping: templateSourceMapping, span} = fullMapping;
+    const templateDiagnostic = makeTemplateDiagnostic(
+      sourceLocation.id,
+      templateSourceMapping,
+      span,
+      diagnostic.category,
+      diagnostic.code,
+      diagnostic.messageText,
+      undefined,
+      diagnostic.reportsDeprecated !== undefined
+        ? {
+            reportsDeprecated: diagnostic.reportsDeprecated,
+            relatedMessages: diagnostic.relatedInformation,
+          }
+        : undefined,
+    );
+    templateDiagnostics.push(templateDiagnostic);
+  }
+
+  return templateDiagnostics;
 }

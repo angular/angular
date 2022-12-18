@@ -41,12 +41,12 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   }
 
   function getSuggestionDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
+    const diagnostics: ts.DiagnosticWithLocation[] = [];
     if (!angularOnly && isTypeScriptFile(fileName)) {
-      return tsLS.getSuggestionDiagnostics(fileName);
+      diagnostics.push(...tsLS.getSuggestionDiagnostics(fileName));
     }
-
-    // Template files do not currently produce separate suggestion diagnostics
-    return [];
+    diagnostics.push(...ngLS.getSuggestionDiagnostics(fileName));
+    return diagnostics;
   }
 
   function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
