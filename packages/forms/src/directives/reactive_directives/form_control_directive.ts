@@ -6,22 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, forwardRef, Inject, Input, OnChanges, OnDestroy, Optional, Self, SimpleChanges} from '@angular/core';
 
 import {FormControl} from '../../model/form_control';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {disabledAttrWarning} from '../reactive_errors';
-import {_ngModelWarning, CALL_SET_DISABLED_STATE, cleanUpControl, isPropertyUpdated, selectValueAccessor, setDisabledStateDefault, SetDisabledStateOption, setUpControl} from '../shared';
+import {CALL_SET_DISABLED_STATE, cleanUpControl, selectValueAccessor, SetDisabledStateOption, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
-
-/**
- * Token to provide to turn off the ngModel warning on formControl and formControlName.
- */
-export const NG_MODEL_WITH_FORM_CONTROL_WARNING =
-    new InjectionToken('NgModelWithFormControlWarning');
 
 export const formControlBinding: any = {
   provide: NgControl,
@@ -31,11 +25,6 @@ export const formControlBinding: any = {
 /**
  * @description
  * Synchronizes a standalone `FormControl` instance to a form control element.
- *
- * Note that support for using the `ngModel` input property and `ngModelChange` event with reactive
- * form directives was deprecated in Angular v6 and is scheduled for removal in
- * a future version of Angular.
- * For details, see [Deprecated features](guide/deprecations#ngmodel-with-reactive-forms).
  *
  * @see [Reactive Forms Guide](guide/reactive-forms)
  * @see `FormControl`
@@ -52,12 +41,6 @@ export const formControlBinding: any = {
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
 export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
-  /**
-   * Internal reference to the view model value.
-   * @nodoc
-   */
-  viewModel: any;
-
   /**
    * @description
    * Tracks the `FormControl` instance bound to the directive.
@@ -76,39 +59,11 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     }
   }
 
-  // TODO(kara): remove next 4 properties once deprecation period is over
-
-  /** @deprecated as of v6 */
-  @Input('ngModel') model: any;
-
-  /** @deprecated as of v6 */
-  @Output('ngModelChange') update = new EventEmitter();
-
-  /**
-   * @description
-   * Static property used to track whether any ngModel warnings have been sent across
-   * all instances of FormControlDirective. Used to support warning config of "once".
-   *
-   * @internal
-   */
-  static _ngModelWarningSentOnce = false;
-
-  /**
-   * @description
-   * Instance property used to track whether an ngModel warning has been sent out for this
-   * particular `FormControlDirective` instance. Used to support warning config of "always".
-   *
-   * @internal
-   */
-  _ngModelWarningSent = false;
-
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
           (AsyncValidator|AsyncValidatorFn)[],
       @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
-      @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|
-      null,
       @Optional() @Inject(CALL_SET_DISABLED_STATE) private callSetDisabledState?:
           SetDisabledStateOption) {
     super();
@@ -126,13 +81,6 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
       }
       setUpControl(this.form, this, this.callSetDisabledState);
       this.form.updateValueAndValidity({emitEvent: false});
-    }
-    if (isPropertyUpdated(changes, this.viewModel)) {
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        _ngModelWarning('formControl', FormControlDirective, this, this._ngModelWarningConfig);
-      }
-      this.form.setValue(this.model);
-      this.viewModel = this.model;
     }
   }
 
@@ -162,14 +110,11 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
 
   /**
    * @description
-   * Sets the new value for the view model and emits an `ngModelChange` event.
+   * Noop function since reactive form directives don't need to emit `ngModelChange` event.
    *
    * @param newValue The new value for the view model.
    */
-  override viewToModelUpdate(newValue: any): void {
-    this.viewModel = newValue;
-    this.update.emit(newValue);
-  }
+  viewToModelUpdate(newValue: any): void {}
 
   private _isControlChanged(changes: {[key: string]: any}): boolean {
     return changes.hasOwnProperty('form');

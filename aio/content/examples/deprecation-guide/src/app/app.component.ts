@@ -29,21 +29,10 @@ export class AppComponent implements OnInit {
   // #enddocregion template-with-input
 
   ngOnInit() {
-    // #docregion deprecated-example, template-driven-form-example
-
-    this.value = 'some value';
-
-    // #enddocregion deprecated-example, template-driven-form-example
     this.setValue();
   }
 
-  setValue(): void {
-    // #docregion reactive-form-example
-
-    this.control.setValue('some value');
-
-    // #enddocregion reactive-form-example
-  }
+  setValue(): void {}
 }
 
 class InjectorExample {}

@@ -28,16 +28,11 @@ const routes: Routes = [{
     AppComponent,
     SubmitButtonComponent
   ],
-  // #docregion reactive-form-no-warning
   imports: [
-    // #enddocregion reactive-form-no-warning
     RouterModule.forChild(routes),
     FormsModule,
     BrowserModule,
-    // #docregion reactive-form-no-warning
-    ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'})
   ],
-  // #enddocregion reactive-form-no-warning
   providers: [],
   bootstrap: [AppComponent],
   exports: [RouterModule]

@@ -322,48 +322,6 @@ For more information, see the [Ahead-of-Time Compilation](guide/aot-compiler) gu
 
 <a id="ngmodel-reactive"></a>
 
-### `ngModel` with reactive forms
-
-Support for using the `ngModel` input property and `ngModelChange` event with reactive form directives has been deprecated in Angular v6 and can be removed in a future version of Angular.
-
-Now deprecated:
-
-<code-example path="deprecation-guide/src/app/app.component.html" region="deprecated-example"></code-example>
-
-<code-example path="deprecation-guide/src/app/app.component.ts" region="deprecated-example"></code-example>
-
-This support was deprecated for several reasons.
-First, developers found this pattern confusing.
-It seems like the actual `ngModel` directive is being used, but in fact it's an input/output property named `ngModel` on the reactive form directive that approximates some, but not all, of the directive's behavior.
-It allows getting and setting a value and intercepting value events, but some  `ngModel` features, such as delaying updates with`ngModelOptions` or exporting the directive, don't work.
-
-In addition, this pattern mixes template-driven and reactive forms strategies, which prevents taking advantage of the full benefits of either strategy.
-Setting the value in the template violates the template-agnostic principles behind reactive forms, whereas adding a `FormControl`/`FormGroup` layer in the class removes the convenience of defining forms in the template.
-
-To update your code before support is removed, decide whether to stick with reactive form directives \(and get/set values using reactive forms patterns\) or switch to template-driven directives.
-
-**After** \(choice 1 - use reactive forms\):
-
-<code-example path="deprecation-guide/src/app/app.component.html" region="reactive-form-example"></code-example>
-
-<code-example path="deprecation-guide/src/app/app.component.ts" region="reactive-form-example"></code-example>
-
-**After** \(choice 2 - use template-driven forms\):
-
-<code-example path="deprecation-guide/src/app/app.component.html" region="template-driven-form-example"></code-example>
-
-<code-example path="deprecation-guide/src/app/app.component.ts" region="template-driven-form-example"></code-example>
-
-By default, when you use this pattern, you get a deprecation warning once in dev mode.
-You can choose to silence this warning by configuring `ReactiveFormsModule` at import time:
-
-<code-example path="deprecation-guide/src/app/app.module.ts" region="reactive-form-no-warning"></code-example>
-
-Alternatively, you can choose to surface a separate warning for each instance of this pattern with a configuration value of `"always"`.
-This may help to track down where in the code the pattern is being used as the code is being updated.
-
-<a id="reflectiveinjector"></a>
-
 ### `ReflectiveInjector`
 
 In version 5, Angular replaced the `ReflectiveInjector` with the `StaticInjector`.

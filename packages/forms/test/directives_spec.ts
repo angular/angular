@@ -141,7 +141,7 @@ class CustomValidatorDirective implements Validator {
         form.form = formModel;
 
         loginControlDir = new FormControlName(
-            form, [Validators.required], [asyncValidator('expected')], [defaultAccessor], null);
+            form, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
         loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -172,7 +172,7 @@ class CustomValidatorDirective implements Validator {
 
       describe('addControl', () => {
         it('should throw when no control found', () => {
-          const dir = new FormControlName(form, null!, null!, [defaultAccessor], null);
+          const dir = new FormControlName(form, null!, null!, [defaultAccessor]);
           dir.name = 'invalidName';
 
           expect(() => form.addControl(dir))
@@ -180,7 +180,7 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should throw for a named control when no value accessor', () => {
-          const dir = new FormControlName(form, null!, null!, null!, null);
+          const dir = new FormControlName(form, null!, null!, null!);
           dir.name = 'login';
 
           expect(() => form.addControl(dir))
@@ -190,7 +190,7 @@ class CustomValidatorDirective implements Validator {
 
         it('should throw when no value accessor with path', () => {
           const group = new FormGroupName(form, null!, null!);
-          const dir = new FormControlName(group, null!, null!, null!, null);
+          const dir = new FormControlName(group, null!, null!, null!);
           group.name = 'passwords';
           dir.name = 'password';
 
@@ -502,7 +502,7 @@ class CustomValidatorDirective implements Validator {
       };
 
       beforeEach(() => {
-        controlDir = new FormControlDirective([Validators.required], [], [defaultAccessor], null);
+        controlDir = new FormControlDirective([Validators.required], [], [defaultAccessor]);
         controlDir.valueAccessor = new DummyControlValueAccessor();
 
         control = new FormControl(null);
@@ -656,7 +656,7 @@ class CustomValidatorDirective implements Validator {
 
         const parent = new FormGroupDirective([], []);
         parent.form = new FormGroup({'name': formModel});
-        controlNameDir = new FormControlName(parent, [], [], [defaultAccessor], null);
+        controlNameDir = new FormControlName(parent, [], [], [defaultAccessor]);
         controlNameDir.name = 'name';
         (controlNameDir as {control: FormControl}).control = formModel;
       });

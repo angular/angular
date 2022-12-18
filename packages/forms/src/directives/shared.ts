@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {InjectionToken, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 import {AbstractControl} from '../model/abstract_model';
@@ -22,7 +22,6 @@ import {BuiltInControlValueAccessor, ControlValueAccessor} from './control_value
 import {DefaultValueAccessor} from './default_value_accessor';
 import {NgControl} from './ng_control';
 import {FormArrayName} from './reactive_directives/form_group_name';
-import {ngModelWarning} from './reactive_errors';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 /**
@@ -400,18 +399,4 @@ export function selectValueAccessor(
 export function removeListItem<T>(list: T[], el: T): void {
   const index = list.indexOf(el);
   if (index > -1) list.splice(index, 1);
-}
-
-// TODO(kara): remove after deprecation period
-export function _ngModelWarning(
-    name: string, type: {_ngModelWarningSentOnce: boolean},
-    instance: {_ngModelWarningSent: boolean}, warningConfig: string|null) {
-  if (warningConfig === 'never') return;
-
-  if (((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
-      (warningConfig === 'always' && !instance._ngModelWarningSent)) {
-    console.warn(ngModelWarning(name));
-    type._ngModelWarningSentOnce = true;
-    instance._ngModelWarningSent = true;
-  }
 }
