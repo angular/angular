@@ -19,6 +19,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  * @publicApi
  */
 export type NavigationTrigger = 'imperative'|'popstate'|'hashchange';
+export const IMPERATIVE_NAVIGATION = 'imperative';
 
 /**
  * Identifies the type of a router event.

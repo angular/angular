@@ -12,7 +12,7 @@ import {Observable, of, SubscriptionLike} from 'rxjs';
 
 import {CreateUrlTreeStrategy} from './create_url_tree_strategy';
 import {RuntimeErrorCode} from './errors';
-import {Event, NavigationTrigger} from './events';
+import {Event, IMPERATIVE_NAVIGATION, NavigationTrigger} from './events';
 import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
 import {Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
 import {TitleStrategy} from './page_title_strategy';
@@ -354,7 +354,8 @@ export class Router {
   initialNavigation(): void {
     this.setUpLocationChangeListener();
     if (!this.navigationTransitions.hasRequestedNavigation) {
-      this.navigateByUrl(this.location.path(true), {replaceUrl: true});
+      const state = this.location.getState() as RestoredState;
+      this.navigateToSyncWithBrowser(this.location.path(true), IMPERATIVE_NAVIGATION, state);
     }
   }
 
@@ -374,35 +375,47 @@ export class Router {
           // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
           // hybrid apps.
           setTimeout(() => {
-            const extras: NavigationExtras = {replaceUrl: true};
-
-            // TODO: restoredState should always include the entire state, regardless
-            // of navigationId. This requires a breaking change to update the type on
-            // NavigationStart’s restoredState, which currently requires navigationId
-            // to always be present. The Router used to only restore history state if
-            // a navigationId was present.
-
-            // The stored navigationId is used by the RouterScroller to retrieve the scroll
-            // position for the page.
-            const restoredState = event.state?.navigationId ? event.state : null;
-
-            // Separate to NavigationStart.restoredState, we must also restore the state to
-            // history.state and generate a new navigationId, since it will be overwritten
-            if (event.state) {
-              const stateCopy = {...event.state} as Partial<RestoredState>;
-              delete stateCopy.navigationId;
-              delete stateCopy.ɵrouterPageId;
-              if (Object.keys(stateCopy).length !== 0) {
-                extras.state = stateCopy;
-              }
-            }
-
-            const urlTree = this.parseUrl(event['url']!);
-            this.scheduleNavigation(urlTree, source, restoredState, extras);
+            this.navigateToSyncWithBrowser(event['url']!, source, event.state);
           }, 0);
         }
       });
     }
+  }
+
+  /**
+   * Schedules a router navigation to synchronize Router state with the browser state.
+   *
+   * This is done as a response to a popstate event and the initial navigation. These
+   * two scenarios represent times when the browser URL/state has been updated and
+   * the Router needs to respond to ensure its internal state matches.
+   */
+  private navigateToSyncWithBrowser(
+      url: string, source: NavigationTrigger, state: RestoredState|undefined) {
+    const extras: NavigationExtras = {replaceUrl: true};
+
+    // TODO: restoredState should always include the entire state, regardless
+    // of navigationId. This requires a breaking change to update the type on
+    // NavigationStart’s restoredState, which currently requires navigationId
+    // to always be present. The Router used to only restore history state if
+    // a navigationId was present.
+
+    // The stored navigationId is used by the RouterScroller to retrieve the scroll
+    // position for the page.
+    const restoredState = state?.navigationId ? state : null;
+
+    // Separate to NavigationStart.restoredState, we must also restore the state to
+    // history.state and generate a new navigationId, since it will be overwritten
+    if (state) {
+      const stateCopy = {...state} as Partial<RestoredState>;
+      delete stateCopy.navigationId;
+      delete stateCopy.ɵrouterPageId;
+      if (Object.keys(stateCopy).length !== 0) {
+        extras.state = stateCopy;
+      }
+    }
+
+    const urlTree = this.parseUrl(url);
+    this.scheduleNavigation(urlTree, source, restoredState, extras);
   }
 
   /** The current URL. */
@@ -562,7 +575,7 @@ export class Router {
     const urlTree = isUrlTree(url) ? url : this.parseUrl(url);
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
-    return this.scheduleNavigation(mergedTree, 'imperative', null, extras);
+    return this.scheduleNavigation(mergedTree, IMPERATIVE_NAVIGATION, null, extras);
   }
 
   /**
@@ -687,10 +700,6 @@ export class Router {
 
     let targetPageId: number;
     if (this.canceledNavigationResolution === 'computed') {
-      const isInitialPage = this.currentPageId === 0;
-      if (isInitialPage) {
-        restoredState = this.location.getState() as RestoredState | null;
-      }
       // If the `ɵrouterPageId` exist in the state then `targetpageId` should have the value of
       // `ɵrouterPageId`. This is the case for something like a page refresh where we assign the
       // target id to the previously set value for that page.

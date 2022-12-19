@@ -11,7 +11,7 @@ import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rx
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
-import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {Event, GuardsCheckEnd, GuardsCheckStart, IMPERATIVE_NAVIGATION, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
 import {isNavigationCancelingError, isRedirectingNavigationCancelingError, redirectingNavigationError} from './navigation_canceling_error';
 import {activateRoutes} from './operators/activate_routes';
@@ -335,7 +335,7 @@ export class NavigationTransitions {
       resolve: null,
       reject: null,
       promise: Promise.resolve(true),
-      source: 'imperative',
+      source: IMPERATIVE_NAVIGATION,
       restoredState: null,
       currentSnapshot: router.routerState.snapshot,
       targetSnapshot: null,
@@ -726,11 +726,12 @@ export class NavigationTransitions {
                                      isBrowserTriggeredNavigation(overallTransitionState.source)
                                };
 
-                               router.scheduleNavigation(mergedTree, 'imperative', null, extras, {
-                                 resolve: overallTransitionState.resolve,
-                                 reject: overallTransitionState.reject,
-                                 promise: overallTransitionState.promise
-                               });
+                               router.scheduleNavigation(
+                                   mergedTree, IMPERATIVE_NAVIGATION, null, extras, {
+                                     resolve: overallTransitionState.resolve,
+                                     reject: overallTransitionState.reject,
+                                     promise: overallTransitionState.promise
+                                   });
                              }
 
                              /* All other errors should reset to the router's internal URL reference
@@ -764,6 +765,6 @@ export class NavigationTransitions {
   }
 }
 
-export function isBrowserTriggeredNavigation(source: 'imperative'|'popstate'|'hashchange') {
-  return source !== 'imperative';
+export function isBrowserTriggeredNavigation(source: NavigationTrigger) {
+  return source !== IMPERATIVE_NAVIGATION;
 }
