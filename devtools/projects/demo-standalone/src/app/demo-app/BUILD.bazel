@@ -1,0 +1,41 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_library(
+    name = "todo_mvc",
+    srcs = [
+        "@npm//:node_modules/todomvc-app-css/index.css",
+        "@npm//:node_modules/todomvc-common/base.css",
+    ],
+)
+
+sass_binary(
+    name = "demo_app_component_styles",
+    src = "demo-app.component.scss",
+    deps = [
+        ":todo_mvc",
+    ],
+)
+
+ng_module(
+    name = "demo-app",
+    srcs = [
+        "demo-app.component.ts",
+        "heavy.component.ts",
+        "zippy.component.ts",
+    ],
+    angular_assets = [
+        "demo-app.component.html",
+        ":demo_app_component_styles",
+    ],
+    deps = [
+        "//devtools/projects/demo-standalone/src/app/demo-app/todo",
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/src:zone-unaware-iframe_message_bus",
+        "//packages/core",
+        "//packages/elements",
+        "//packages/router",
+    ],
+)
