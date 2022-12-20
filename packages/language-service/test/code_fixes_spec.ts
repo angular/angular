@@ -365,6 +365,115 @@ describe('code fixes', () => {
         ]
       ]);
     });
+
+    it('for a new standalone pipe import', () => {
+      const standaloneFiles = {
+        'foo.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'foo',
+          template: '{{"hello"|bar}}',
+          standalone: true
+        })
+        export class FooComponent {}
+        `,
+        'bar.ts': `
+        import {Pipe} from '@angular/core';
+        @Pipe({
+          name: 'bar',
+          standalone: true
+        })
+        export class BarPipe implements PipeTransform {
+          transform(value: unknown, ...args: unknown[]): unknown {
+            return null;
+          }
+        }
+        `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('foo.ts');
+      const fixFile = project.openFile('foo.ts');
+      fixFile.moveCursorToText('"hello"|b¦ar');
+
+      const codeActions =
+          project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [diags[0].code]);
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+
+      actionChangesMatch(actionChanges, `Import BarPipe from './bar' on FooComponent`, [
+        [
+          ``,
+          `import { BarPipe } from "./bar";`,
+        ],
+        [
+          '{',
+          `{ selector: 'foo', template: '{{"hello"|bar}}', standalone: true, imports: [BarPipe] }`,
+        ]
+      ]);
+    });
+
+    it('for a transitive NgModule-based reexport', () => {
+      const standaloneFiles = {
+        'foo.ts': `
+         import {Component} from '@angular/core';
+         @Component({
+           selector: 'foo',
+           template: '<bar></bar>',
+           standalone: true
+         })
+         export class FooComponent {}
+         `,
+        'bar.ts': `
+         import {Component, NgModule} from '@angular/core';
+         @Component({
+           selector: 'bar',
+           template: '<div>bar</div>',
+         })
+         export class BarComponent {}
+         @NgModule({
+           declarations: [BarComponent],
+           exports: [BarComponent],
+           imports: []
+         })
+         export class BarModule {}
+         @NgModule({
+          declarations: [],
+          exports: [BarModule],
+          imports: []
+        })
+        export class Bar2Module {}
+        `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('foo.ts');
+      const fixFile = project.openFile('foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions =
+          project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [diags[0].code]);
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import BarModule from './bar' on FooComponent`, [
+        [
+          ``,
+          `import { BarModule } from "./bar";`,
+        ],
+        [
+          `{`,
+          `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [BarModule] }`,
+        ]
+      ]);
+      actionChangesMatch(actionChanges, `Import Bar2Module from './bar' on FooComponent`, [
+        [
+          ``,
+          `import { Bar2Module } from "./bar";`,
+        ],
+        [
+          `{`,
+          `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [Bar2Module] }`,
+        ]
+      ]);
+    });
   });
 });
 
