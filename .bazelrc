@@ -49,6 +49,7 @@ build --enable_runfiles
 # Releases should always be stamped with version control info
 # This command assumes node on the path and is a workaround for
 # https://github.com/bazelbuild/bazel/issues/4802
+build:release --//aio:flag_release
 build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=release"
 build:release --stamp
 

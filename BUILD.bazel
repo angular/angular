@@ -1,5 +1,6 @@
 load("//tools:defaults.bzl", "nodejs_binary")
 load("//:yarn.bzl", "YARN_PATH")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -50,6 +51,18 @@ filegroup(
 config_setting(
     name = "stamp",
     values = {"stamp": "true"},
+)
+
+bool_flag(
+    name = "flag_release",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "release",
+    flag_values = {
+        ":flag_release": "true",
+    },
 )
 
 nodejs_binary(

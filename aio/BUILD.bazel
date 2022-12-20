@@ -86,7 +86,6 @@ npm_package_bin(
     },
     exec_properties = ENABLE_NETWORK,
     output_dir = True,
-    stamp = "@rules_nodejs//nodejs/stamp:always",
     # Makes remote git calls to get previous versions
     tags = [
         "requires-network",
@@ -125,7 +124,7 @@ copy_to_directory(
 # All source and configuration files required to build the docs app
 APPLICATION_FILES = [
     "angular.json",
-    "package.json",
+    # "package.json",
     "tsconfig.app.json",
     "tsconfig.json",
     "tsconfig.worker.json",
