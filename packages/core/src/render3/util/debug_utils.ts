@@ -7,23 +7,6 @@
  */
 
 /**
- * Patch a `debug` property on top of the existing object.
- *
- * NOTE: always call this method with `ngDevMode && attachDebugObject(...)`
- *
- * @param obj Object to patch
- * @param debug Value to patch
- */
-export function attachDebugObject(obj: any, debug: any): void {
-  if (ngDevMode) {
-    Object.defineProperty(obj, 'debug', {value: debug, enumerable: false});
-  } else {
-    throw new Error(
-        'This method should be guarded with `ngDevMode` so that it can be tree shaken in production!');
-  }
-}
-
-/**
  * Patch a `debug` property getter on top of the existing object.
  *
  * NOTE: always call this method with `ngDevMode && attachDebugObject(...)`
