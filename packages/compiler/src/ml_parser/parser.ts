@@ -279,7 +279,8 @@ class _TreeBuilder {
       if (!(tagDef.canSelfClose || getNsPrefix(fullName) !== null || tagDef.isVoid)) {
         this.errors.push(TreeError.create(
             fullName, startTagToken.sourceSpan,
-            `Only void and foreign elements can be self closed "${startTagToken.parts[1]}"`));
+            `Only void, custom and foreign elements can be self closed "${
+                startTagToken.parts[1]}"`));
       }
     } else if (this._peek.type === TokenType.TAG_OPEN_END) {
       this._advance();

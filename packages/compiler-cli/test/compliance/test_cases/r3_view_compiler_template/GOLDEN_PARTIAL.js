@@ -921,3 +921,107 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: self_closing_tags.js
+ ****************************************************************************************************/
+import { Component, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComp {
+}
+MyComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComp, selector: "my-comp", ngImport: i0, template: 'hello', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComp, decorators: [{
+            type: Component,
+            args: [{ selector: 'my-comp', template: 'hello' }]
+        }] });
+export class App {
+}
+App.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, deps: [], target: i0.ɵɵFactoryTarget.Component });
+App.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: App, selector: "ng-component", ngImport: i0, template: `<my-comp/>`, isInline: true, dependencies: [{ kind: "component", type: MyComp, selector: "my-comp" }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, decorators: [{
+            type: Component,
+            args: [{ template: `<my-comp/>` }]
+        }] });
+export class MyModule {
+}
+MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [App, MyComp] });
+MyModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [App, MyComp] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: self_closing_tags.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, {}, never, never, false, never>;
+}
+export declare class App {
+    static ɵfac: i0.ɵɵFactoryDeclaration<App, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<App, "ng-component", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof App, typeof MyComp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: self_closing_tags_nested.js
+ ****************************************************************************************************/
+import { Component, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComp {
+}
+MyComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComp, selector: "my-comp", ngImport: i0, template: 'hello', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComp, decorators: [{
+            type: Component,
+            args: [{ selector: 'my-comp', template: 'hello' }]
+        }] });
+export class App {
+}
+App.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, deps: [], target: i0.ɵɵFactoryTarget.Component });
+App.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: App, selector: "ng-component", ngImport: i0, template: `
+    <my-comp title="a">Before<my-comp title="b"></my-comp>After</my-comp>
+  `, isInline: true, dependencies: [{ kind: "component", type: MyComp, selector: "my-comp" }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <my-comp title="a">Before<my-comp title="b"></my-comp>After</my-comp>
+  `
+                }]
+        }] });
+export class MyModule {
+}
+MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [App, MyComp] });
+MyModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [App, MyComp] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: self_closing_tags_nested.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, {}, never, never, false, never>;
+}
+export declare class App {
+    static ɵfac: i0.ɵɵFactoryDeclaration<App, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<App, "ng-component", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof App, typeof MyComp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
