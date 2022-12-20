@@ -319,33 +319,33 @@ def karma_web_test_suite(
         **kwargs
     )
 
-    # Add a saucelabs target for these karma tests
-    _karma_web_test(
-        name = "saucelabs_%s" % name,
-        # Default timeout is moderate (5min). This causes the test to be terminated while
-        # Saucelabs browsers keep running. Ultimately resulting in failing tests and browsers
-        # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
-        # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
-        timeout = "long",
-        bootstrap = bootstrap,
-        config_file = "//:karma-js.conf.js",
-        deps = [
-            "@npm//karma-sauce-launcher",
-            ":%s_bundle" % name,
-        ],
-        data = data + [
-            "//:browser-providers.conf.js",
-        ],
-        karma = "//tools/saucelabs:karma-saucelabs",
-        tags = tags + [
-            "exclusive",
-            "manual",
-            "no-remote-exec",
-            "saucelabs",
-        ],
-        configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
-        **kwargs
-    )
+    # Add a saucelabs target for Karma tests in `//packages/`.
+    if native.package_name().startswith("packages/"):
+        _karma_web_test(
+            name = "saucelabs_%s" % name,
+            # Default timeout is moderate (5min). This causes the test to be terminated while
+            # Saucelabs browsers keep running. Ultimately resulting in failing tests and browsers
+            # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
+            # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
+            timeout = "long",
+            config_file = "//:karma-js.conf.js",
+            deps = [
+                "@npm//karma-sauce-launcher",
+                ":%s_bundle" % name,
+            ],
+            data = data + [
+                "//:browser-providers.conf.js",
+            ],
+            karma = "//tools/saucelabs:karma-saucelabs",
+            tags = tags + [
+                "exclusive",
+                "manual",
+                "no-remote-exec",
+                "saucelabs",
+            ],
+            configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
+            **kwargs
+        )
 
 def protractor_web_test_suite(
         name,
