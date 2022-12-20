@@ -7,8 +7,8 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, inject, Injectable, Injector, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {BehaviorSubject, Observable, of, SubscriptionLike} from 'rxjs';
+import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Observable, of, SubscriptionLike} from 'rxjs';
 
 import {CreateUrlTreeStrategy} from './create_url_tree_strategy';
 import {RuntimeErrorCode} from './errors';
@@ -17,9 +17,8 @@ import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
 import {Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
 import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
-import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
+import {ROUTER_CONFIGURATION} from './router_config';
 import {ROUTES} from './router_config_loader';
-import {ChildrenOutletContexts} from './router_outlet_context';
 import {createEmptyState, RouterState} from './router_state';
 import {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
@@ -180,6 +179,8 @@ export class Router {
    * A handler for navigation errors in this NgModule.
    *
    * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
+   *   `provideRouter` has the `withErrorHandler` feature to make this easier.
+   * @see `withErrorHandler`
    */
   errorHandler = this.options.errorHandler || defaultErrorHandler;
 
@@ -189,8 +190,8 @@ export class Router {
    * The most common case is a `%` sign
    * that's not encoded and is not part of a percent encoded sequence.
    *
-   * @deprecated Configure this through `RouterModule.forRoot` instead:
-   *   `RouterModule.forRoot(routes, {malformedUriErrorHandler: myHandler})`
+   * @deprecated URI parsing errors should be handled in the `UrlSerializer`.
+   *
    * @see `RouterModule`
    */
   malformedUriErrorHandler =

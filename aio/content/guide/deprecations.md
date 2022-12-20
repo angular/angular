@@ -398,10 +398,9 @@ available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
 * `canceledNavigationResolution`
 * `errorHandler`
 
-The following options are available in `RouterModule.forRoot` but not
-available in `provideRouter`:
-* `malformedUriErrorHandler` - This was not found to be used by anyone.
-  There are currently no plans to make this available in `provideRouter`.
+The following options are deprecated in entirely:
+* `malformedUriErrorHandler` - URI parsing errors should be handled in the `UrlSerializer` instead.
+* `errorHandler` - Subscribe to the `Router` events and filter for `NavigationError` instead.
 
 <a id="router-can-load"></a>
 
