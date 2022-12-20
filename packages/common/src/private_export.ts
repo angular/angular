@@ -8,3 +8,4 @@
 
 export {DomAdapter as ɵDomAdapter, getDOM as ɵgetDOM, setRootDomAdapter as ɵsetRootDomAdapter} from './dom_adapter';
 export {BrowserPlatformLocation as ɵBrowserPlatformLocation} from './location/platform_location';
+export {UrlService as ɵUrlService} from './location/url_service';

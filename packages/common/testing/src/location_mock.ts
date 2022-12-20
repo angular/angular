@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location, LocationStrategy} from '@angular/common';
+import {Location, LocationStrategy, ɵUrlService} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
