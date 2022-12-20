@@ -73,6 +73,7 @@ DOCS_ENTRYPOINTS = [
     "examples/forms",
     "examples/platform-browser",
     "examples/router/activated-route",
+    "examples/router/testing",
     "examples/service-worker/push",
     "examples/service-worker/registration-options",
     "examples/test-utils",
