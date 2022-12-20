@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getHtmlTagDefinition} from './ml_parser/html_tags';
-
 const _SELECTOR_REGEXP = new RegExp(
     '(\\:not\\()|' +               // 1: ":not("
         '(([\\.\\#]?)[-\\w]+)|' +  // 2: "tag"; 3: "."/"#";
@@ -170,22 +168,6 @@ export class CssSelector {
 
   setElement(element: string|null = null) {
     this.element = element;
-  }
-
-  /** Gets a template string for an element that matches the selector. */
-  getMatchingElementTemplate(): string {
-    const tagName = this.element || 'div';
-    const classAttr = this.classNames.length > 0 ? ` class="${this.classNames.join(' ')}"` : '';
-
-    let attrs = '';
-    for (let i = 0; i < this.attrs.length; i += 2) {
-      const attrName = this.attrs[i];
-      const attrValue = this.attrs[i + 1] !== '' ? `="${this.attrs[i + 1]}"` : '';
-      attrs += ` ${attrName}${attrValue}`;
-    }
-
-    return getHtmlTagDefinition(tagName).isVoid ? `<${tagName}${classAttr}${attrs}/>` :
-                                                  `<${tagName}${classAttr}${attrs}></${tagName}>`;
   }
 
   getAttrs(): string[] {

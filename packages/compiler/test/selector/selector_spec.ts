@@ -512,36 +512,6 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
       expect(cssSelectors[2].notSelectors[0].classNames).toEqual(['special']);
     });
   });
-
-  describe('CssSelector.getMatchingElementTemplate', () => {
-    it('should create an element with a tagName, classes, and attributes with the correct casing',
-       () => {
-         const selector = CssSelector.parse('Blink.neon.hotpink[Sweet][Dismissable=false]')[0];
-         const template = selector.getMatchingElementTemplate();
-
-         expect(template).toEqual('<Blink class="neon hotpink" Sweet Dismissable="false"></Blink>');
-       });
-
-    it('should create an element without a tag name', () => {
-      const selector = CssSelector.parse('[fancy]')[0];
-      const template = selector.getMatchingElementTemplate();
-
-      expect(template).toEqual('<div fancy></div>');
-    });
-
-    it('should ignore :not selectors', () => {
-      const selector = CssSelector.parse('grape:not(.red)')[0];
-      const template = selector.getMatchingElementTemplate();
-
-      expect(template).toEqual('<grape></grape>');
-    });
-
-    it('should support void tags', () => {
-      const selector = CssSelector.parse('input[fancy]')[0];
-      const template = selector.getMatchingElementTemplate();
-      expect(template).toEqual('<input fancy/>');
-    });
-  });
 }
 
 function getSelectorFor(
