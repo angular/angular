@@ -22,7 +22,6 @@ import {TNode, TNodeType} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
 import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state';
-import {attachDebugGetter} from '../util/debug_utils';
 
 import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
@@ -50,6 +49,23 @@ const PH_REGEXP = /�(\/?[#*]\d+):?\d*�/gi;
 const NGSP_UNICODE_REGEXP = /\uE500/g;
 function replaceNgsp(value: string): string {
   return value.replace(NGSP_UNICODE_REGEXP, ' ');
+}
+
+/**
+ * Patch a `debug` property getter on top of the existing object.
+ *
+ * NOTE: always call this method with `ngDevMode && attachDebugObject(...)`
+ *
+ * @param obj Object to patch
+ * @param debugGetter Getter returning a value to patch
+ */
+function attachDebugGetter<T>(obj: T, debugGetter: (this: T) => any): void {
+  if (ngDevMode) {
+    Object.defineProperty(obj, 'debug', {get: debugGetter, enumerable: false});
+  } else {
+    throw new Error(
+        'This method should be guarded with `ngDevMode` so that it can be tree shaken in production!');
+  }
 }
 
 /**
