@@ -7,7 +7,7 @@
  */
 
 import {HashLocationStrategy, LOCATION_INITIALIZED, LocationStrategy, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 
@@ -622,6 +622,63 @@ export function withHashLocation(): RouterConfigurationFeature {
 }
 
 /**
+ * A type alias for providers returned by `withNavigationErrorHandler` for use with `provideRouter`.
+ *
+ * @see `withNavigationErrorHandler`
+ * @see `provideRouter`
+ *
+ * @publicApi
+ */
+export type NavigationErrorHandlerFeature =
+    RouterFeature<RouterFeatureKind.NavigationErrorHandlerFeature>;
+
+/**
+ * Subscribes to the Router's navigation events and calls the given function when a
+ * `NavigationError` happens.
+ *
+ * This function is run inside application's injection context so you can use the `inject` function.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can use the error handler option:
+ * ```
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withNavigationErrorHandler((e: NavigationError) =>
+ * inject(MyErrorTracker).trackError(e))
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * @see `NavigationError`
+ * @see `inject`
+ * @see `EnvironmentInjector#runInContext`
+ *
+ * @returns A set of providers for use with `provideRouter`.
+ *
+ * @publicApi
+ */
+export function withNavigationErrorHandler(fn: (error: NavigationError) => void):
+    NavigationErrorHandlerFeature {
+  const providers = [{
+    provide: ENVIRONMENT_INITIALIZER,
+    multi: true,
+    useValue: () => {
+      const injector = inject(EnvironmentInjector);
+      inject(Router).events.subscribe((e) => {
+        if (e instanceof NavigationError) {
+          injector.runInContext(() => fn(e));
+        }
+      });
+    }
+  }];
+  return routerFeature(RouterFeatureKind.NavigationErrorHandlerFeature, providers);
+}
+
+/**
  * A type alias that represents all Router features available for use with `provideRouter`.
  * Features can be enabled by adding special functions to the `provideRouter` call.
  * See documentation for each symbol to find corresponding function name. See also `provideRouter`
@@ -632,7 +689,7 @@ export function withHashLocation(): RouterConfigurationFeature {
  * @publicApi
  */
 export type RouterFeatures = PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|
-    InMemoryScrollingFeature|RouterConfigurationFeature;
+    InMemoryScrollingFeature|RouterConfigurationFeature|NavigationErrorHandlerFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -644,5 +701,6 @@ export const enum RouterFeatureKind {
   DisabledInitialNavigationFeature,
   InMemoryScrollingFeature,
   RouterConfigurationFeature,
-  RouterHashLocationFeature
+  RouterHashLocationFeature,
+  NavigationErrorHandlerFeature,
 }
