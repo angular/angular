@@ -396,13 +396,12 @@ available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
 * `paramsInheritanceStrategy`
 * `urlUpdateStrategy`
 * `canceledNavigationResolution`
+* `errorHandler`
 
 The following options are available in `RouterModule.forRoot` but not
 available in `provideRouter`:
 * `malformedUriErrorHandler` - This was not found to be used by anyone.
   There are currently no plans to make this available in `provideRouter`.
-* `errorHandler` - Developers should instead subscribe to `Router.events`
-  and filter for `NavigationError`.
 
 <a id="router-can-load"></a>
 
