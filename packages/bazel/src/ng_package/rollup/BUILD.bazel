@@ -13,6 +13,7 @@ nodejs_binary(
     data = [
         "@npm//@rollup/plugin-commonjs",
         "@npm//@rollup/plugin-node-resolve",
+        "@npm//magic-string",
         "@npm//rollup",
         "@npm//rollup-plugin-sourcemaps",
         "@npm//typescript",
