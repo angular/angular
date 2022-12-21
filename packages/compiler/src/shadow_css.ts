@@ -152,6 +152,7 @@ const animationKeywords = new Set([
   in comments in lieu of the next selector when running under polyfill.
 */
 export class ShadowCss {
+  // TODO: Is never re-assigned, could be removed.
   strictStyling: boolean = true;
 
   /*
@@ -729,6 +730,15 @@ export class ShadowCss {
     while ((res = sep.exec(selector)) !== null) {
       const separator = res[1];
       const part = selector.slice(startIndex, res.index).trim();
+
+      // A space following an escaped hex value and followed by another hex character
+      // (ie: ".\fc ber" for ".über") is not a separator between 2 selectors
+      // also keep in mind that backslashes are replaced by a placeholder by SafeSelector
+      // These escaped selectors happen for example when esbuild runs with optimization.minify.
+      if (part.match(_placeholderRe) && selector[res.index + 1]?.match(/[a-fA-F\d]/)) {
+        continue;
+      }
+
       shouldScope = shouldScope || part.indexOf(_polyfillHostNoCombinator) > -1;
       const scopedPart = shouldScope ? _scopeSelectorPart(part) : part;
       scopedSelector += `${scopedPart} ${separator} `;
@@ -777,7 +787,7 @@ class SafeSelector {
   }
 
   restore(content: string): string {
-    return content.replace(/__ph-(\d+)__/g, (_ph, index) => this.placeholders[+index]);
+    return content.replace(_placeholderRe, (_ph, index) => this.placeholders[+index]);
   }
 
   content(): string {
@@ -832,6 +842,8 @@ const _colonHostRe = /:host/gim;
 const _colonHostContextRe = /:host-context/gim;
 
 const _commentRe = /\/\*[\s\S]*?\*\//g;
+
+const _placeholderRe = /__ph-(\d+)__/g;
 
 function stripComments(input: string): string {
   return input.replace(_commentRe, '');
