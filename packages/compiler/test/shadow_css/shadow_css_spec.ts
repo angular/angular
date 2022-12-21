@@ -76,6 +76,15 @@ describe('ShadowCss', () => {
         .toEqualCss('.one\\:two[contenta] .three\\:four[contenta] {}');
   });
 
+  it('should handle escaped selector with space (if followed by a hex char)', () => {
+    // When esbuild runs with optimization.minify
+    // selectors are escaped: .über becomes .\fc ber.
+    // The space here isn't a separator between 2 selectors
+    expect(shim('.\\fc ber {}', 'contenta')).toEqual('.\\fc ber[contenta] {}');
+    expect(shim('.\\fc ker {}', 'contenta')).toEqual('.\\fc[contenta]   ker[contenta] {}');
+    expect(shim('.pr\\fc fung {}', 'contenta')).toEqual('.pr\\fc fung[contenta] {}');
+  });
+
   it('should handle ::shadow', () => {
     const css = shim('x::shadow > y {}', 'contenta');
     expect(css).toEqualCss('x[contenta] > y[contenta] {}');
