@@ -15,6 +15,29 @@ if (bazel_version_file) {
   }
 }
 
+/** Removed license banners from input files. */
+const stripBannerPlugin = {
+  name: 'strip-license-banner',
+  transform(code, _filePath) {
+    const banner = /(\/\**\s+\*\s@license.*?\*\/)/s.exec(code);
+    if (!banner) {
+      return;
+    }
+
+    const [bannerContent] = banner;
+    const magicString = new MagicString(code);
+    const pos = code.indexOf(bannerContent);
+    magicString.remove(pos, pos + bannerContent.length).trimStart();
+
+    return {
+      code: magicString.toString(),
+      map: magicString.generateMap({
+        hires: true,
+      }),
+    };
+  },
+};
+
 // Add 'use strict' to the bundle, https://github.com/angular/angular/pull/40456
 // When rollup build esm bundle of zone.js, there will be no 'use strict'
 // since all esm bundles are `strict`, but when webpack load the esm bundle,
@@ -57,28 +80,5 @@ module.exports = {
       'rxjs/symbol/rxSubscriber': 'Rx.Symbol',
     },
     banner,
-  },
-};
-
-/** Removed license banners from input files. */
-const stripBannerPlugin = {
-  name: 'strip-license-banner',
-  transform(code, _filePath) {
-    const banner = /(\/\**\s+\*\s@license.*?\*\/)/s.exec(code);
-    if (!banner) {
-      return;
-    }
-
-    const [bannerContent] = banner;
-    const magicString = new MagicString(code);
-    const pos = code.indexOf(bannerContent);
-    magicString.remove(pos, pos + bannerContent.length).trimStart();
-
-    return {
-      code: magicString.toString(),
-      map: magicString.generateMap({
-        hires: true,
-      }),
-    };
   },
 };
