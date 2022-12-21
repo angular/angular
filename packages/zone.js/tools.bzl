@@ -2,7 +2,7 @@
 
 load("//tools:defaults.bzl", "rollup_bundle")
 
-def zone_rollup_bundle(module_name, entry_point, rollup_config):
+def zone_rollup_bundle(module_name, entry_point):
     config_file = "//packages/zone.js:rollup.config.js"
     rollup_bundle(
         name = module_name + "-rollup",
