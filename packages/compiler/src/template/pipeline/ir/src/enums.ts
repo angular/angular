@@ -22,6 +22,46 @@ export enum OpKind {
    * An operation which wraps an output AST statement.
    */
   Statement,
+
+  /**
+   * An operation to begin rendering of an element.
+   */
+  ElementStart,
+
+  /**
+   * An operation to render an element with no children.
+   */
+  Element,
+
+  /**
+   * An operation which declares an embedded view.
+   */
+  Template,
+
+  /**
+   * An operation to end rendering of an element previously started with `ElementStart`.
+   */
+  ElementEnd,
+
+  /**
+   * An operation to render a text node.
+   */
+  Text,
+
+  /**
+   * An operation declaring an event listener for an element.
+   */
+  Listener,
+
+  /**
+   * An operation to interpolate text into a text node.
+   */
+  InterpolateText,
+
+  /**
+   * An operation to bind an expression to a property of an element.
+   */
+  Property,
 }
 
 /**
