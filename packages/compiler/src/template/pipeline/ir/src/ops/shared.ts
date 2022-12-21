@@ -8,7 +8,8 @@
 
 import * as o from '../../../../../output/output_ast';
 import {OpKind} from '../enums';
-import {Op} from '../operations';
+import {Op, XrefId} from '../operations';
+import {SemanticVariable} from '../variable';
 
 /**
  * A special `Op` which is used internally in the `OpList` linked list to represent the head and
@@ -41,6 +42,50 @@ export function createStatementOp<OpT extends Op<OpT>>(statement: o.Statement): 
   return {
     kind: OpKind.Statement,
     statement,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Operation which declares and initializes a `SemanticVariable`, that is valid either in create or
+ * update IR.
+ */
+export interface VariableOp<OpT extends Op<OpT>> extends Op<OpT> {
+  kind: OpKind.Variable;
+
+  /**
+   * `XrefId` which identifies this specific variable, and is used to reference this variable from
+   * other parts of the IR.
+   */
+  xref: XrefId;
+
+  /**
+   * Name assigned to this variable in generated code, or `null` if not yet assigned.
+   */
+  name: string|null;
+
+  /**
+   * The `SemanticVariable` which describes the meaning behind this variable.
+   */
+  variable: SemanticVariable;
+
+  /**
+   * Expression representing the value of the variable.
+   */
+  initializer: o.Expression;
+}
+
+/**
+ * Create a `VariableOp`.
+ */
+export function createVariableOp<OpT extends Op<OpT>>(
+    xref: XrefId, variable: SemanticVariable, initializer: o.Expression): VariableOp<OpT> {
+  return {
+    kind: OpKind.Variable,
+    xref,
+    name: null,
+    variable,
+    initializer,
     ...NEW_OP,
   };
 }

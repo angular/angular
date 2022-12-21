@@ -24,6 +24,11 @@ export enum OpKind {
   Statement,
 
   /**
+   * An operation which declares and initializes a `SemanticVariable`.
+   */
+  Variable,
+
+  /**
    * An operation to begin rendering of an element.
    */
   ElementStart,
@@ -72,4 +77,59 @@ export enum ExpressionKind {
    * Read of a variable in a lexical scope.
    */
   LexicalRead,
+
+  /**
+   * A reference to the current view context.
+   */
+  Context,
+
+  /**
+   * Read of a variable declared in a `VariableOp`.
+   */
+  ReadVariable,
+
+  /**
+   * Runtime operation to navigate to the next view context in the view hierarchy.
+   */
+  NextContext,
+
+  /**
+   * Runtime operation to retrieve the value of a local reference.
+   */
+  Reference,
+
+  /**
+   * Runtime operation to snapshot the current view context.
+   */
+  GetCurrentView,
+
+  /**
+   * Runtime operation to restore a snapshotted view.
+   */
+  RestoreView,
+
+  /**
+   * Runtime operation to reset the current view context after `RestoreView`.
+   */
+  ResetView,
+}
+
+/**
+ * Distinguishes between different kinds of `SemanticVariable`s.
+ */
+export enum SemanticVariableKind {
+  /**
+   * Represents the context of a particular view.
+   */
+  Context,
+
+  /**
+   * Represents an identifier declared in the lexical scope of a view.
+   */
+  Identifier,
+
+  /**
+   * Represents a saved state that can be used to restore a view in a listener handler function.
+   */
+  SavedView,
 }

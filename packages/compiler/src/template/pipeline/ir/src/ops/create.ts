@@ -10,14 +10,14 @@ import {ElementAttributes} from '../element';
 import {OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
 
-import {ListEndOp, NEW_OP, StatementOp} from './shared';
+import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 import type {UpdateOp} from './update';
 
 /**
  * An operation usable on the creation side of the IR.
  */
 export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
-    ElementEndOp|TemplateOp|TextOp|ListenerOp;
+    ElementEndOp|TemplateOp|TextOp|ListenerOp|VariableOp<CreateOp>;
 
 /**
  * Representation of a local reference on an element.
