@@ -18,6 +18,7 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
             ":" + name + "_env",
             "@npm//@rollup/plugin-commonjs",
             "@npm//@rollup/plugin-node-resolve",
+            "@npm//magic-string",
         ],
     )
     ts_library(
@@ -37,6 +38,7 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
             ":" + name + "_test",
             "@npm//@rollup/plugin-commonjs",
             "@npm//@rollup/plugin-node-resolve",
+            "@npm//magic-string",
         ],
     )
 

@@ -1,5 +1,6 @@
 const node = require('@rollup/plugin-node-resolve').default;
 const commonjs = require('@rollup/plugin-commonjs');
+const MagicString = require('magic-string');
 
 // Parse the stamp file produced by Bazel from the version control system
 let version = '<unknown>';
@@ -13,6 +14,29 @@ if (bazel_version_file) {
     version = versionTag.split(' ')[1].trim();
   }
 }
+
+/** Removed license banners from input files. */
+const stripBannerPlugin = {
+  name: 'strip-license-banner',
+  transform(code, _filePath) {
+    const banner = /(\/\**\s+\*\s@license.*?\*\/)/s.exec(code);
+    if (!banner) {
+      return;
+    }
+
+    const [bannerContent] = banner;
+    const magicString = new MagicString(code);
+    const pos = code.indexOf(bannerContent);
+    magicString.remove(pos, pos + bannerContent.length).trimStart();
+
+    return {
+      code: magicString.toString(),
+      map: magicString.generateMap({
+        hires: true,
+      }),
+    };
+  },
+};
 
 // Add 'use strict' to the bundle, https://github.com/angular/angular/pull/40456
 // When rollup build esm bundle of zone.js, there will be no 'use strict'
@@ -35,6 +59,7 @@ module.exports = {
       mainFields: ['es2015', 'module', 'jsnext:main', 'main'],
     }),
     commonjs(),
+    stripBannerPlugin,
   ],
   external: (id) => {
     if (/zone\.js[\\/]lib/.test(id)) {
