@@ -11,6 +11,7 @@
 
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
+const MagicString = require('magic-string');
 const sourcemaps = require('rollup-plugin-sourcemaps');
 const path = require('path');
 const fs = require('fs');
@@ -169,6 +170,29 @@ const downlevelToES2015Plugin = {
   },
 };
 
+/** Removed license banners from input files. */
+const stripBannerPlugin = {
+  name: 'strip-license-banner',
+  transform(code, _filePath) {
+    const banner = /(\/\**\s+\*\s@license.*?\*\/)/s.exec(code);
+    if (!banner) {
+      return;
+    }
+
+    const [bannerContent] = banner;
+    const magicString = new MagicString(code);
+    const pos = code.indexOf(bannerContent);
+    magicString.remove(pos, pos + bannerContent.length).trimStart();
+
+    return {
+      code: magicString.toString(),
+      map: magicString.generateMap({
+        hires: true,
+      }),
+    };
+  }
+};
+
 const plugins = [
   {
     name: 'resolveBazel',
@@ -179,6 +203,7 @@ const plugins = [
     jail: process.cwd(),
     customResolveOptions: {moduleDirectory: nodeModulesRoot}
   }),
+  stripBannerPlugin,
   commonjs({ignoreGlobal: true}),
   sourcemaps(),
 ];
