@@ -14,7 +14,7 @@ import {getDefaultImportDeclaration} from '../../imports/src/default';
 import {PerfPhase, PerfRecorder} from '../../perf';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, RecordWrappedNodeFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator';
-import {combineModifiers, createPropertyDeclaration, getDecorators, getModifiers, updateClassDeclaration, updateConstructorDeclaration, updateGetAccessorDeclaration, updateMethodDeclaration, updateParameterDeclaration, updatePropertyDeclaration, updateSetAccessorDeclaration} from '../../ts_compatibility';
+import {combineModifiers} from '../../ts_compatibility';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
 
 import {CompileResult} from './api';
@@ -110,7 +110,7 @@ class IvyTransformationVisitor extends Visitor {
       const exprNode = translateExpression(field.initializer, this.importManager, translateOptions);
 
       // Create a static property declaration for the new field.
-      const property = createPropertyDeclaration(
+      const property = ts.factory.createPropertyDeclaration(
           [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined, undefined,
           exprNode);
 
@@ -132,11 +132,11 @@ class IvyTransformationVisitor extends Visitor {
 
     const filteredDecorators =
         // Remove the decorator which triggered this compilation, leaving the others alone.
-        maybeFilterDecorator(getDecorators(node), this.compilation.decoratorsFor(node));
+        maybeFilterDecorator(ts.getDecorators(node), this.compilation.decoratorsFor(node));
 
     // Replace the class declaration with an updated version.
-    node = updateClassDeclaration(
-        node, combineModifiers(filteredDecorators, getModifiers(node)), node.name,
+    node = ts.factory.updateClassDeclaration(
+        node, combineModifiers(filteredDecorators, ts.getModifiers(node)), node.name,
         node.typeParameters, node.heritageClauses || [],
         // Map over the class members and remove any Angular decorators from them.
         members.map(member => this._stripAngularDecorators(member)));
@@ -161,8 +161,8 @@ class IvyTransformationVisitor extends Visitor {
     }
   }
 
-  private _nonCoreDecoratorsOnly(node: ts.Declaration): ts.NodeArray<ts.Decorator>|undefined {
-    const decorators = getDecorators(node);
+  private _nonCoreDecoratorsOnly(node: ts.HasDecorators): ts.NodeArray<ts.Decorator>|undefined {
+    const decorators = ts.getDecorators(node);
 
     // Shortcut if the node has no decorators.
     if (decorators === undefined) {
@@ -201,40 +201,41 @@ class IvyTransformationVisitor extends Visitor {
   private _stripAngularDecorators<T extends ts.Node>(node: T): T {
     if (ts.isParameter(node)) {
       // Strip decorators from parameters (probably of the constructor).
-      node = updateParameterDeclaration(
-                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), getModifiers(node)),
+      node = ts.factory.updateParameterDeclaration(
+                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), ts.getModifiers(node)),
                  node.dotDotDotToken, node.name, node.questionToken, node.type, node.initializer) as
               T &
           ts.ParameterDeclaration;
-    } else if (ts.isMethodDeclaration(node) && getDecorators(node) !== undefined) {
+    } else if (ts.isMethodDeclaration(node) && ts.getDecorators(node) !== undefined) {
       // Strip decorators of methods.
-      node = updateMethodDeclaration(
-                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), getModifiers(node)),
+      node = ts.factory.updateMethodDeclaration(
+                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), ts.getModifiers(node)),
                  node.asteriskToken, node.name, node.questionToken, node.typeParameters,
                  node.parameters, node.type, node.body) as T &
           ts.MethodDeclaration;
-    } else if (ts.isPropertyDeclaration(node) && getDecorators(node) !== undefined) {
+    } else if (ts.isPropertyDeclaration(node) && ts.getDecorators(node) !== undefined) {
       // Strip decorators of properties.
-      node = updatePropertyDeclaration(
-                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), getModifiers(node)),
+      node = ts.factory.updatePropertyDeclaration(
+                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), ts.getModifiers(node)),
                  node.name, node.questionToken, node.type, node.initializer) as T &
           ts.PropertyDeclaration;
     } else if (ts.isGetAccessor(node)) {
       // Strip decorators of getters.
-      node = updateGetAccessorDeclaration(
-                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), getModifiers(node)),
+      node = ts.factory.updateGetAccessorDeclaration(
+                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), ts.getModifiers(node)),
                  node.name, node.parameters, node.type, node.body) as T &
           ts.GetAccessorDeclaration;
     } else if (ts.isSetAccessor(node)) {
       // Strip decorators of setters.
-      node = updateSetAccessorDeclaration(
-                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), getModifiers(node)),
+      node = ts.factory.updateSetAccessorDeclaration(
+                 node, combineModifiers(this._nonCoreDecoratorsOnly(node), ts.getModifiers(node)),
                  node.name, node.parameters, node.body) as T &
           ts.SetAccessorDeclaration;
     } else if (ts.isConstructorDeclaration(node)) {
       // For constructors, strip decorators of the parameters.
       const parameters = node.parameters.map(param => this._stripAngularDecorators(param));
-      node = updateConstructorDeclaration(node, getModifiers(node), parameters, node.body) as T &
+      node = ts.factory.updateConstructorDeclaration(
+                 node, ts.getModifiers(node), parameters, node.body) as T &
           ts.ConstructorDeclaration;
     }
     return node;
