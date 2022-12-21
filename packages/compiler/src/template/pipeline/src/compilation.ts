@@ -86,6 +86,11 @@ export class ViewCompilation {
   * ops(): Generator<ir.CreateOp|ir.UpdateOp> {
     for (const op of this.create) {
       yield op;
+      if (op.kind === ir.OpKind.Listener) {
+        for (const listenerOp of op.handlerOps) {
+          yield listenerOp;
+        }
+      }
     }
     for (const op of this.update) {
       yield op;
