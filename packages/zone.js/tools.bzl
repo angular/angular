@@ -45,23 +45,19 @@ def generate_rollup_bundle(bundles):
             entry_point = rollup_config.get("entrypoint")
             zone_rollup_bundle(
                 module_name = module_name + "-es5",
-                rollup_config = rollup_config,
                 entry_point = entry_point,
             )
             zone_rollup_bundle(
                 module_name = module_name + "-es2015",
-                rollup_config = rollup_config,
                 entry_point = entry_point,
             )
         else:
             zone_rollup_bundle(
                 module_name = module_name + "-es5",
-                rollup_config = rollup_config,
                 entry_point = rollup_config.get("es5"),
             )
             zone_rollup_bundle(
                 module_name = module_name + "-es2015",
-                rollup_config = rollup_config,
                 entry_point = rollup_config.get("es2015"),
             )
 
