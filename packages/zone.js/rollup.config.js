@@ -1,5 +1,6 @@
 const node = require('@rollup/plugin-node-resolve').default;
 const commonjs = require('@rollup/plugin-commonjs');
+const MagicString = require('magic-string');
 
 // Parse the stamp file produced by Bazel from the version control system
 let version = '<unknown>';
@@ -35,6 +36,7 @@ module.exports = {
       mainFields: ['es2015', 'module', 'jsnext:main', 'main'],
     }),
     commonjs(),
+    stripBannerPlugin,
   ],
   external: (id) => {
     if (/zone\.js[\\/]lib/.test(id)) {
@@ -55,5 +57,28 @@ module.exports = {
       'rxjs/symbol/rxSubscriber': 'Rx.Symbol',
     },
     banner,
+  },
+};
+
+/** Removed license banners from input files. */
+const stripBannerPlugin = {
+  name: 'strip-license-banner',
+  transform(code, _filePath) {
+    const banner = /(\/\**\s+\*\s@license.*?\*\/)/s.exec(code);
+    if (!banner) {
+      return;
+    }
+
+    const [bannerContent] = banner;
+    const magicString = new MagicString(code);
+    const pos = code.indexOf(bannerContent);
+    magicString.remove(pos, pos + bannerContent.length).trimStart();
+
+    return {
+      code: magicString.toString(),
+      map: magicString.generateMap({
+        hires: true,
+      }),
+    };
   },
 };
