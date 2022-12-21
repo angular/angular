@@ -23,3 +23,13 @@ export enum OpKind {
    */
   Statement,
 }
+
+/**
+ * Distinguishes different kinds of IR expressions.
+ */
+export enum ExpressionKind {
+  /**
+   * Read of a variable in a lexical scope.
+   */
+  LexicalRead,
+}

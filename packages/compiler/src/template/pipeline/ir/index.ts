@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export * from './src/expression';
 export * from './src/enums';
 export * from './src/operations';
 export * from './src/ops/create';
