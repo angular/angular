@@ -1,0 +1,21 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# Generate contents for `index.ts` depending on the value of the template
+# pipeline build flag.
+genrule(
+    name = "gen_index_ts",
+    outs = ["index.ts"],
+    cmd = "echo 'export const USE_TEMPLATE_PIPELINE = " + select({
+        "//packages/compiler:template_pipeline_enabled": "true",
+        "//conditions:default": "false",
+    }) + ";' > $@",
+)
+
+ts_library(
+    name = "switch",
+    srcs = [
+        ":gen_index_ts",
+    ],
+)
