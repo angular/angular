@@ -1,0 +1,250 @@
+{
+  "name": "build",
+  "command": "ng build [project]",
+  "shortDescription": "Compiles an Angular application or library into an output directory named dist/ at the given output path.",
+  "longDescriptionRelativePath": "@angular/cli/src/commands/build/long-description.md",
+  "longDescription": "The command can be used to build a project of type \"application\" or \"library\".\nWhen used to build a library, a different builder is invoked, and only the `ts-config`, `configuration`, and `watch` options are applied.\nAll other options apply only to building applications.\n\nThe application builder uses the [webpack](https://webpack.js.org/) build tool, with default configuration options specified in the workspace configuration file (`angular.json`) or with a named alternative configuration.\nA \"development\" configuration is created by default when you use the CLI to create the project, and you can use that configuration by specifying the `--configuration development`.\n\nThe configuration options generally correspond to the command options.\nYou can override individual configuration defaults by specifying the corresponding options on the command line.\nThe command can accept option names given in either dash-case or camelCase.\nNote that in the configuration file, you must specify names in camelCase.\n\nSome additional options can only be set through the configuration file,\neither by direct editing or with the `ng config` command.\nThese include `assets`, `styles`, and `scripts` objects that provide runtime-global resources to include in the project.\nResources in CSS, such as images and fonts, are automatically written and fingerprinted at the root of the output folder.\n\nFor further details, see [Workspace Configuration](guide/workspace-config).\n",
+  "aliases": [
+    "b"
+  ],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "allowed-common-js-dependencies",
+      "type": "array",
+      "description": "A list of CommonJS packages that are allowed to be used without a build time warning."
+    },
+    {
+      "name": "aot",
+      "type": "boolean",
+      "default": true,
+      "description": "Build using Ahead of Time compilation."
+    },
+    {
+      "name": "base-href",
+      "type": "string",
+      "description": "Base url for the application being built."
+    },
+    {
+      "name": "build-optimizer",
+      "type": "boolean",
+      "default": true,
+      "description": "Enables advanced build optimizations when using the 'aot' option."
+    },
+    {
+      "name": "common-chunk",
+      "type": "boolean",
+      "default": true,
+      "description": "Generate a seperate bundle containing code used across multiple bundles."
+    },
+    {
+      "name": "configuration",
+      "type": "string",
+      "aliases": [
+        "c"
+      ],
+      "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.io/guide/workspace-config#alternate-build-configurations."
+    },
+    {
+      "name": "cross-origin",
+      "type": "string",
+      "default": "none",
+      "enum": [
+        "none",
+        "anonymous",
+        "use-credentials"
+      ],
+      "description": "Define the crossorigin attribute setting of elements that provide CORS support."
+    },
+    {
+      "name": "delete-output-path",
+      "type": "boolean",
+      "default": true,
+      "description": "Delete the output path before building."
+    },
+    {
+      "name": "deploy-url",
+      "type": "string",
+      "deprecated": "Use \"baseHref\" option, \"APP_BASE_HREF\" DI token or a combination of both instead. For more information, see https://angular.io/guide/deployment#the-deploy-url.",
+      "description": "URL where files will be deployed."
+    },
+    {
+      "name": "extract-licenses",
+      "type": "boolean",
+      "default": true,
+      "description": "Extract all licenses in a separate file."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "i18n-duplicate-translation",
+      "type": "string",
+      "default": "warning",
+      "enum": [
+        "warning",
+        "error",
+        "ignore"
+      ],
+      "description": "How to handle duplicate translations for i18n."
+    },
+    {
+      "name": "i18n-missing-translation",
+      "type": "string",
+      "default": "warning",
+      "enum": [
+        "warning",
+        "error",
+        "ignore"
+      ],
+      "description": "How to handle missing translations for i18n."
+    },
+    {
+      "name": "index",
+      "type": "string",
+      "description": "Configures the generation of the application's HTML index."
+    },
+    {
+      "name": "inline-style-language",
+      "type": "string",
+      "default": "css",
+      "enum": [
+        "css",
+        "less",
+        "sass",
+        "scss"
+      ],
+      "description": "The stylesheet language to use for the application's inline component styles."
+    },
+    {
+      "name": "localize",
+      "type": "boolean",
+      "description": "Translate the bundles in one or more locales."
+    },
+    {
+      "name": "main",
+      "type": "string",
+      "description": "The full path for the main entry point to the app, relative to the current workspace."
+    },
+    {
+      "name": "named-chunks",
+      "type": "boolean",
+      "default": false,
+      "description": "Use file name for lazy loaded chunks."
+    },
+    {
+      "name": "ngsw-config-path",
+      "type": "string",
+      "description": "Path to ngsw-config.json."
+    },
+    {
+      "name": "optimization",
+      "type": "boolean",
+      "default": true,
+      "description": "Enables optimization of the build output. Including minification of scripts and styles, tree-shaking, dead-code elimination, inlining of critical CSS and fonts inlining. For more information, see https://angular.io/guide/workspace-config#optimization-configuration."
+    },
+    {
+      "name": "output-hashing",
+      "type": "string",
+      "default": "none",
+      "enum": [
+        "none",
+        "all",
+        "media",
+        "bundles"
+      ],
+      "description": "Define the output filename cache-busting hashing mode."
+    },
+    {
+      "name": "output-path",
+      "type": "string",
+      "description": "The full path for the new output directory, relative to the current workspace.\nBy default, writes output to a folder named dist/ in the current project."
+    },
+    {
+      "name": "poll",
+      "type": "number",
+      "description": "Enable and define the file watching poll time period in milliseconds."
+    },
+    {
+      "name": "polyfills",
+      "type": "string",
+      "description": "Polyfills to be included in the build."
+    },
+    {
+      "name": "preserve-symlinks",
+      "type": "boolean",
+      "description": "Do not use the real path when resolving modules. If unset then will default to `true` if NodeJS option --preserve-symlinks is set."
+    },
+    {
+      "name": "progress",
+      "type": "boolean",
+      "default": true,
+      "description": "Log progress to the console while building."
+    },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "The name of the project to build. Can be an application or a library.",
+      "positional": 0
+    },
+    {
+      "name": "resources-output-path",
+      "type": "string",
+      "description": "The path where style resources will be placed, relative to outputPath."
+    },
+    {
+      "name": "service-worker",
+      "type": "boolean",
+      "default": false,
+      "description": "Generates a service worker config for production builds."
+    },
+    {
+      "name": "source-map",
+      "type": "boolean",
+      "default": false,
+      "description": "Output source maps for scripts and styles. For more information, see https://angular.io/guide/workspace-config#source-map-configuration."
+    },
+    {
+      "name": "stats-json",
+      "type": "boolean",
+      "default": false,
+      "description": "Generates a 'stats.json' file which can be analyzed using tools such as 'webpack-bundle-analyzer'."
+    },
+    {
+      "name": "subresource-integrity",
+      "type": "boolean",
+      "default": false,
+      "description": "Enables the use of subresource integrity validation."
+    },
+    {
+      "name": "ts-config",
+      "type": "string",
+      "description": "The full path for the TypeScript configuration file, relative to the current workspace."
+    },
+    {
+      "name": "vendor-chunk",
+      "type": "boolean",
+      "default": false,
+      "description": "Generate a seperate bundle containing only vendor libraries. This option should only be used for development to reduce the incremental compilation time."
+    },
+    {
+      "name": "verbose",
+      "type": "boolean",
+      "default": false,
+      "description": "Adds more details to output logging."
+    },
+    {
+      "name": "watch",
+      "type": "boolean",
+      "default": false,
+      "description": "Run build when files change."
+    },
+    {
+      "name": "web-worker-ts-config",
+      "type": "string",
+      "description": "TypeScript configuration for Web Worker modules."
+    }
+  ]
+}
