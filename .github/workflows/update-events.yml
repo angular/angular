@@ -30,8 +30,6 @@ jobs:
           # account that is attempted to be used for authentication, instead the remote is set to
           # an authenticated URL.
           persist-credentials: false
-      - name: Install AIO dependencies
-        run: yarn --cwd=aio install
       - name: Generate `events.json`
         run: node aio/scripts/generate-events/index.mjs --ignore-invalid-dates
       - name: Create a PR (if necessary)
