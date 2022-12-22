@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Hero } from '../hero';
 // #docregion import-heroes
 import { HEROES } from '../mock-heroes';
@@ -14,18 +14,13 @@ import { HEROES } from '../mock-heroes';
 // #enddocregion metadata
 
 // #docregion component
-export class HeroesComponent implements OnInit {
+export class HeroesComponent {
 
   heroes = HEROES;
   // #enddocregion component
   // #docregion on-select
   selectedHero?: Hero;
  // #enddocregion on-select
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
   // #docregion on-select
   onSelect(hero: Hero): void {
