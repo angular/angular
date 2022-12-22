@@ -11,13 +11,19 @@
 import shell from 'shelljs';
 import {runfiles} from '@bazel/runfiles';
 import fs from 'fs';
+import childProcess from 'child_process';
 
 const karmaBin = runfiles.resolve('npm/node_modules/karma/bin/karma');
 const sauceService = runfiles.resolveWorkspaceRelative(process.argv[2]);
 
 process.argv = [process.argv[0], karmaBin, ...process.argv.splice(3)];
 
-try {
+main().catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});
+
+async function main() {
   console.error(`Setting up environment for SauceLabs karma tests...`);
   // KARMA_WEB_TEST_MODE is set which informs /karma-js.conf.js that it should
   // run the test with the karma saucelabs launcher
@@ -65,10 +71,20 @@ try {
   }
 
   console.error(`Launching karma ${karmaBin}...`);
-  module.constructor._load(karmaBin, this, /*isMain=*/ true);
-} catch (e) {
-  console.error(e.stack || e);
-  process.exit(1);
+
+  await launchNodeBinaryAndWait(karmaBin, process.argv.slice(2));
+}
+
+function launchNodeBinaryAndWait(entryPointPath, args) {
+  return new Promise((resolve, reject) => {
+    const proc = childProcess.fork(entryPointPath, args, {stdio: 'inherit'});
+    proc.on('error', (err) => reject(err));
+    proc.on('close', (code) =>
+      code !== 0
+        ? reject(new Error(`Script "${entryPointPath}" exited with non-zero status code: ${code}`))
+        : resolve()
+    );
+  });
 }
 
 function readLocalSauceConnectParams() {
