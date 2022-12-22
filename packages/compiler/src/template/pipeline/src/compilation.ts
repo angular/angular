@@ -107,6 +107,12 @@ export class ViewCompilation {
   decls: number|null = null;
 
   /**
+   * Number of variable slots used within this view, or `null` if variables have not yet been
+   * counted.
+   */
+  vars: number|null = null;
+
+  /**
    * Iterate over all `ir.Op`s within this view.
    *
    * Some operations may have child operations, which this iterator will visit.

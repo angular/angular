@@ -9,6 +9,7 @@
 import * as o from '../../../../../output/output_ast';
 import {OpKind} from '../enums';
 import {Op, XrefId} from '../operations';
+import {ConsumesVarsTrait, TRAIT_CONSUMES_VARS} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
@@ -25,7 +26,7 @@ export type UpdateOp =
  * arrays. Thus, the interpolation `A{{b}}C{{d}}E` is stored as 3 static strings `['A', 'C', 'E']`
  * and 2 dynamic expressions `[b, d]`.
  */
-export interface InterpolateTextOp extends Op<UpdateOp> {
+export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
   kind: OpKind.InterpolateText;
 
   /**
@@ -58,6 +59,7 @@ export function createInterpolateTextOp(
     xref,
     strings,
     expressions,
+    ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
   };
 }
@@ -65,7 +67,7 @@ export function createInterpolateTextOp(
 /**
  * A logical operation representing binding to a property in the update IR.
  */
-export interface PropertyOp extends Op<UpdateOp> {
+export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
   kind: OpKind.Property;
 
   /**
@@ -93,6 +95,7 @@ export function createPropertyOp(xref: XrefId, name: string, expression: o.Expre
     xref,
     name,
     expression,
+    ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
   };
 }
