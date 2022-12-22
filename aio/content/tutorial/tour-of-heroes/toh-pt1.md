@@ -41,10 +41,6 @@ You always import the `Component` symbol from the Angular core library and annot
 
 The [CSS element selector](https://developer.mozilla.org/docs/Web/CSS/Type_selectors), `'app-heroes'`, matches the name of the HTML element that identifies this component within a parent component's template.
 
-The `ngOnInit()` is a [lifecycle hook](guide/lifecycle-hooks#oninit).
-Angular calls `ngOnInit()` shortly after creating a component.
-It's a good place to put initialization logic.
-
 Always `export` the component class so you can `import` it elsewhere &hellip; like in the `AppModule`.
 
 ### Add a `hero` property
