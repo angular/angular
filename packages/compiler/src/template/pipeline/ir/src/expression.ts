@@ -9,14 +9,16 @@
 import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
-import {ExpressionKind} from './enums';
+import {ExpressionKind, OpKind} from './enums';
 import {XrefId} from './operations';
+import {CreateOp} from './ops/create';
+import {UpdateOp} from './ops/update';
 
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
 export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr;
+    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr;
 
 /**
  * Transformer type which converts IR expressions into general `o.Expression`s (which may be an
@@ -232,6 +234,79 @@ export class ResetViewExpr extends ExpressionBase {
   }
 }
 
+/**
+ * Read of a variable declared as an `ir.VariableOp` and referenced through its `ir.XrefId`.
+ */
+export class ReadVariableExpr extends ExpressionBase {
+  readonly kind = ExpressionKind.ReadVariable;
+  name: string|null = null;
+  constructor(readonly xref: XrefId) {
+    super();
+  }
+
+  visitExpression(): void {}
+
+  isEquivalent(other: o.Expression): boolean {
+    return other instanceof ReadVariableExpr && other.xref === this.xref;
+  }
+
+  isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(): void {}
+}
+
+/**
+ * Visits all `Expression`s in the AST of `op` with the `visitor` function.
+ */
+export function visitExpressionsInOp(
+    op: CreateOp|UpdateOp, visitor: (expr: Expression) => void): void {
+  transformExpressionsInOp(op, (expr) => {
+    visitor(expr);
+    return expr;
+  });
+}
+
+/**
+ * Transform all `Expression`s in the AST of `op` with the `transform` function.
+ *
+ * All such operations will be replaced with the result of applying `transform`, which may be an
+ * identity transformation.
+ */
+export function transformExpressionsInOp(
+    op: CreateOp|UpdateOp, transform: ExpressionTransform): void {
+  switch (op.kind) {
+    case OpKind.Property:
+      op.expression = transformExpressionsInExpression(op.expression, transform);
+      break;
+    case OpKind.Statement:
+      transformExpressionsInStatement(op.statement, transform);
+      break;
+    case OpKind.Variable:
+      op.initializer = transformExpressionsInExpression(op.initializer, transform);
+      break;
+    case OpKind.InterpolateText:
+      for (let i = 0; i < op.expressions.length; i++) {
+        op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform);
+      }
+      break;
+    case OpKind.Listener:
+      for (const innerOp of op.handlerOps) {
+        transformExpressionsInOp(innerOp, transform);
+      }
+      break;
+    case OpKind.Element:
+    case OpKind.ElementStart:
+    case OpKind.ElementEnd:
+    case OpKind.Template:
+    case OpKind.Text:
+      // These operations contain no expressions.
+      break;
+    default:
+      throw new Error(`AssertionError: transformExpressionsInOp doesn't handle ${OpKind[op.kind]}`);
+  }
+}
 
 /**
  * Transform all `Expression`s in the AST of `expr` with the `transform` function.
