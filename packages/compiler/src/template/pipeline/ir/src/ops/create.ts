@@ -9,6 +9,7 @@
 import {ElementAttributes} from '../element';
 import {OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
+import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 import type {UpdateOp} from './update';
@@ -38,7 +39,7 @@ export interface LocalRef {
  * Base interface for `Element`, `ElementStart`, and `Template` operations, containing common fields
  * used to represent their element-like nature.
  */
-export interface ElementOpBase extends Op<CreateOp> {
+export interface ElementOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
   kind: OpKind.Element|OpKind.ElementStart|OpKind.Template;
 
   /**
@@ -92,6 +93,7 @@ export function createElementStartOp(tag: string, xref: XrefId): ElementStartOp 
     tag,
     attributes: new ElementAttributes(),
     localRefs: [],
+    ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
 }
@@ -108,6 +110,12 @@ export interface ElementOp extends ElementOpBase {
  */
 export interface TemplateOp extends ElementOpBase {
   kind: OpKind.Template;
+
+  /**
+   * The number of declaration slots used by this template, or `null` if slots have not yet been
+   * assigned.
+   */
+  decls: number|null;
 }
 
 /**
@@ -119,7 +127,9 @@ export function createTemplateOp(xref: XrefId, tag: string): TemplateOp {
     xref,
     attributes: new ElementAttributes(),
     tag,
+    decls: null,
     localRefs: [],
+    ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
 }
@@ -152,7 +162,7 @@ export function createElementEndOp(xref: XrefId): ElementEndOp {
 /**
  * Logical operation representing a text node in the creation IR.
  */
-export interface TextOp extends Op<CreateOp> {
+export interface TextOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   kind: OpKind.Text;
 
   /**
@@ -174,6 +184,7 @@ export function createTextOp(xref: XrefId, initialValue: string): TextOp {
     kind: OpKind.Text,
     xref,
     initialValue,
+    ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
 }
