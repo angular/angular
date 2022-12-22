@@ -56,7 +56,7 @@ export abstract class ExpressionBase extends o.Expression {
  * Logical expression representing a lexical read of a variable name.
  */
 export class LexicalReadExpr extends ExpressionBase {
-  readonly kind = ExpressionKind.LexicalRead;
+  override readonly kind = ExpressionKind.LexicalRead;
 
   constructor(readonly name: string) {
     super();
@@ -79,7 +79,7 @@ export class LexicalReadExpr extends ExpressionBase {
  * Runtime operation to retrieve the value of a local reference.
  */
 export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexExprTrait {
-  readonly kind = ExpressionKind.Reference;
+  override readonly kind = ExpressionKind.Reference;
 
   readonly[UsesSlotIndex] = true;
 
@@ -106,7 +106,7 @@ export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexExprTr
  * A reference to the current view context (usually the `ctx` variable in a template function).
  */
 export class ContextExpr extends ExpressionBase {
-  readonly kind = ExpressionKind.Context;
+  override readonly kind = ExpressionKind.Context;
 
   constructor(readonly view: XrefId) {
     super();
@@ -129,7 +129,7 @@ export class ContextExpr extends ExpressionBase {
  * Runtime operation to navigate to the next view context in the view hierarchy.
  */
 export class NextContextExpr extends ExpressionBase {
-  readonly kind = ExpressionKind.NextContext;
+  override readonly kind = ExpressionKind.NextContext;
 
   constructor() {
     super();
@@ -155,7 +155,7 @@ export class NextContextExpr extends ExpressionBase {
  * operation.
  */
 export class GetCurrentViewExpr extends ExpressionBase {
-  readonly kind = ExpressionKind.GetCurrentView;
+  override readonly kind = ExpressionKind.GetCurrentView;
 
   constructor() {
     super();
@@ -178,7 +178,7 @@ export class GetCurrentViewExpr extends ExpressionBase {
  * Runtime operation to restore a snapshotted view.
  */
 export class RestoreViewExpr extends ExpressionBase {
-  readonly kind = ExpressionKind.RestoreView;
+  override readonly kind = ExpressionKind.RestoreView;
 
   constructor(public view: XrefId|o.Expression) {
     super();
@@ -217,7 +217,7 @@ export class RestoreViewExpr extends ExpressionBase {
  * Runtime operation to reset the current view context after `RestoreView`.
  */
 export class ResetViewExpr extends ExpressionBase {
-  readonly kind = ExpressionKind.ResetView;
+  override readonly kind = ExpressionKind.ResetView;
 
   constructor(public expr: o.Expression) {
     super();
@@ -244,19 +244,19 @@ export class ResetViewExpr extends ExpressionBase {
  * Read of a variable declared as an `ir.VariableOp` and referenced through its `ir.XrefId`.
  */
 export class ReadVariableExpr extends ExpressionBase {
-  readonly kind = ExpressionKind.ReadVariable;
+  override readonly kind = ExpressionKind.ReadVariable;
   name: string|null = null;
   constructor(readonly xref: XrefId) {
     super();
   }
 
-  visitExpression(): void {}
+  override visitExpression(): void {}
 
-  isEquivalent(other: o.Expression): boolean {
+  override isEquivalent(other: o.Expression): boolean {
     return other instanceof ReadVariableExpr && other.xref === this.xref;
   }
 
-  isConstant(): boolean {
+  override isConstant(): boolean {
     return false;
   }
 
