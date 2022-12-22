@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as o from '../../../output/output_ast';
 import * as ir from '../ir';
 
 /**
@@ -22,6 +23,13 @@ export class ComponentCompilation {
    * Map of view IDs to `ViewCompilation`s.
    */
   readonly views = new Map<ir.XrefId, ViewCompilation>();
+
+  /**
+   * Constant expressions used by operations within this component's compilation.
+   *
+   * This will eventually become the `consts` array in the component definition.
+   */
+  readonly consts: o.Expression[] = [];
 
   /**
    * The root view, representing the component's template.
@@ -49,6 +57,20 @@ export class ComponentCompilation {
    */
   allocateXrefId(): ir.XrefId {
     return this.nextXrefId++ as ir.XrefId;
+  }
+
+  /**
+   * Add a constant `o.Expression` to the compilation and return its index in the `consts` array.
+   */
+  addConst(newConst: o.Expression): ir.ConstIndex {
+    for (let idx = 0; idx < this.consts.length; idx++) {
+      if (this.consts[idx].isEquivalent(newConst)) {
+        return idx as ir.ConstIndex;
+      }
+    }
+    const idx = this.consts.length;
+    this.consts.push(newConst);
+    return idx as ir.ConstIndex;
   }
 }
 
