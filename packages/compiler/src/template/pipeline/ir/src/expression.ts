@@ -10,9 +10,11 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import {ExpressionKind, OpKind} from './enums';
-import {XrefId} from './operations';
-import {CreateOp} from './ops/create';
-import {UpdateOp} from './ops/update';
+import {UsesSlotIndex, UsesSlotIndexExprTrait} from './traits';
+
+import type {XrefId} from './operations';
+import type {CreateOp} from './ops/create';
+import type {UpdateOp} from './ops/update';
 
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
@@ -76,8 +78,12 @@ export class LexicalReadExpr extends ExpressionBase {
 /**
  * Runtime operation to retrieve the value of a local reference.
  */
-export class ReferenceExpr extends ExpressionBase {
+export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexExprTrait {
   readonly kind = ExpressionKind.Reference;
+
+  readonly[UsesSlotIndex] = true;
+
+  slot: number|null = null;
 
   constructor(readonly target: XrefId, readonly offset: number) {
     super();

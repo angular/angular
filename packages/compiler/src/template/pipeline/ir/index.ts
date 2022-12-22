@@ -13,4 +13,5 @@ export * from './src/operations';
 export * from './src/ops/create';
 export * from './src/ops/shared';
 export * from './src/ops/update';
+export * from './src/traits';
 export * from './src/variable';
