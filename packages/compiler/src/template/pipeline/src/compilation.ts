@@ -101,6 +101,12 @@ export class ViewCompilation {
   readonly contextVariables = new Map<string, string>();
 
   /**
+   * Number of declaration slots used within this view, or `null` if slots have not yet been
+   * allocated.
+   */
+  decls: number|null = null;
+
+  /**
    * Iterate over all `ir.Op`s within this view.
    *
    * Some operations may have child operations, which this iterator will visit.

@@ -25,6 +25,7 @@ export function phaseLocalRefs(cpl: ComponentCompilation): void {
           if (!Array.isArray(op.localRefs)) {
             throw new Error(`AssertionError: expected localRefs to be an array still`);
           }
+          op.numSlotsUsed += op.localRefs.length;
 
           if (op.localRefs.length > 0) {
             const localRefs = serializeLocalRefs(op.localRefs);
