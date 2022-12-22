@@ -116,6 +116,12 @@ export interface TemplateOp extends ElementOpBase {
    * assigned.
    */
   decls: number|null;
+
+  /**
+   * The number of binding variable slots used by this template, or `null` if binding variables have
+   * not yet been counted.
+   */
+  vars: number|null;
 }
 
 /**
@@ -128,6 +134,7 @@ export function createTemplateOp(xref: XrefId, tag: string): TemplateOp {
     attributes: new ElementAttributes(),
     tag,
     decls: null,
+    vars: null,
     localRefs: [],
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
