@@ -7,7 +7,7 @@ https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInf
 {%- endmacro %}
 
 {% macro githubVersionedUrl(versionInfo) -%}
-{% set version = versionInfo.currentVersion.isSnapshot and versionInfo.currentVersion.SHA or versionInfo.currentVersion.raw -%}
+{% set version = versionInfo.currentVersion.isSnapshot and versionInfo.currentVersion.SHA or versionInfo.currentVersion.raw or versionInfo.currentVersion.branchName -%}
 {$ githubBaseUrl(versionInfo) $}/tree/{$ version $}
 {%- endmacro %}
 
