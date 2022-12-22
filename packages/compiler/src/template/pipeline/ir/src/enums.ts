@@ -67,6 +67,11 @@ export enum OpKind {
    * An operation to bind an expression to a property of an element.
    */
   Property,
+
+  /**
+   * An operation to advance the runtime's implicit slot context during the update phase of a view.
+   */
+  Advance,
 }
 
 /**

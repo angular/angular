@@ -9,15 +9,15 @@
 import * as o from '../../../../../output/output_ast';
 import {OpKind} from '../enums';
 import {Op, XrefId} from '../operations';
-import {ConsumesVarsTrait, TRAIT_CONSUMES_VARS} from '../traits';
+import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
 /**
  * An operation usable on the update side of the IR.
  */
-export type UpdateOp =
-    ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|InterpolateTextOp|VariableOp<UpdateOp>;
+export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|InterpolateTextOp|
+    AdvanceOp|VariableOp<UpdateOp>;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -32,7 +32,7 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
   /**
    * Reference to the text node to which the interpolation is bound.
    */
-  xref: XrefId;
+  target: XrefId;
 
   /**
    * All of the literal strings in the text interpolation, in order.
@@ -56,9 +56,10 @@ export function createInterpolateTextOp(
     xref: XrefId, strings: string[], expressions: o.Expression[]): InterpolateTextOp {
   return {
     kind: OpKind.InterpolateText,
-    xref,
+    target: xref,
     strings,
     expressions,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
   };
@@ -67,13 +68,13 @@ export function createInterpolateTextOp(
 /**
  * A logical operation representing binding to a property in the update IR.
  */
-export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
+export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
   kind: OpKind.Property;
 
   /**
    * Reference to the element on which the property is bound.
    */
-  xref: XrefId;
+  target: XrefId;
 
   /**
    * Name of the bound property.
@@ -92,10 +93,34 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
 export function createPropertyOp(xref: XrefId, name: string, expression: o.Expression): PropertyOp {
   return {
     kind: OpKind.Property,
-    xref,
+    target: xref,
     name,
     expression,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Logical operation to advance the runtime's internal slot pointer in the update IR.
+ */
+export interface AdvanceOp extends Op<UpdateOp> {
+  kind: OpKind.Advance;
+
+  /**
+   * Delta by which to advance the pointer.
+   */
+  delta: number;
+}
+
+/**
+ * Create an `AdvanceOp`.
+ */
+export function createAdvanceOp(delta: number): AdvanceOp {
+  return {
+    kind: OpKind.Advance,
+    delta,
     ...NEW_OP,
   };
 }
