@@ -83,6 +83,13 @@ export class ViewCompilation {
       readonly parent: ir.XrefId|null) {}
 
   /**
+   * Name of the function which will be generated for this view.
+   *
+   * May be `null` if not yet determined.
+   */
+  fnName: string|null = null;
+
+  /**
    * List of creation operations for this view.
    *
    * Creation operations may internally contain other operations, including update operations.
