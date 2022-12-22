@@ -1,12 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
-    name = "content",
+    name = "cli",
     srcs = glob(
         ["**"],
         exclude = [
             "BUILD.bazel",
-            "cli/**",
         ],
     ),
 )

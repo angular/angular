@@ -1,27 +1,10 @@
-const {runfiles} = require('@bazel/runfiles');
 const {resolve} = require('canonical-path');
-const { existsSync } = require('fs');
 const semver = require('semver');
 const Package = require('dgeni').Package;
 const basePackage = require('../angular-base-package');
 const contentPackage = require('../content-package');
 const {CONTENTS_PATH, TEMPLATES_PATH, requireFolder} = require('../config');
-
-const CLI_SOURCE_PATH = resolveCliSourcePath();
-const CLI_SOURCE_HELP_PATH = resolve(CLI_SOURCE_PATH, 'help');
-
-// The cli sources are downloaded as an external repository, so where
-// to resolve them depends on whether we are running dgeni under a build
-// target or a test target.
-function resolveCliSourcePath() {
-  // Case: build, find in execroot
-  const path = resolve('external', 'angular_cli_src');
-  if (existsSync(path)) {
-    return path;
-  }
-  // Case: bazel test, find in runfiles
-  return runfiles.resolve('angular_cli_src');
-}
+const CLI_SOURCE_HELP_PATH = resolve(CONTENTS_PATH, 'cli/help');
 
 // Define the dgeni package for generating the docs
 module.exports =
@@ -41,11 +24,12 @@ module.exports =
             {
               basePath: CLI_SOURCE_HELP_PATH,
               include: resolve(CLI_SOURCE_HELP_PATH, '*.json'),
+              exclude: resolve(CLI_SOURCE_HELP_PATH, 'build-info.json'),
               fileReader: 'cliCommandFileReader'
             },
             {
               basePath: CONTENTS_PATH,
-              include: resolve(CONTENTS_PATH, 'cli/**'),
+              include: resolve(CONTENTS_PATH, 'cli/**/*.md'),
               fileReader: 'contentFileReader'
             },
           ]);
@@ -62,11 +46,10 @@ module.exports =
 
         .config(function(renderDocsProcessor) {
 
-          const cliPackage = require(resolve(CLI_SOURCE_PATH, 'package.json'));
-          const repoUrlParts = cliPackage.repository.url.replace(/\.git$/, '').split('/');
+          const cliPackage = require(resolve(CLI_SOURCE_HELP_PATH, 'build-info.json'));
           const version = semver.clean(cliPackage.version);
-          const repo = repoUrlParts.pop();
-          const owner = repoUrlParts.pop();
+          const repo = 'angular-cli';
+          const owner = 'angular';
           const cliVersionInfo = {gitRepoInfo: {owner, repo}, currentVersion: {raw: version}};
 
           // Add the cli version data to the renderer, for use in things like github links
