@@ -123,12 +123,16 @@ function checkNonAnimatableInTimelines(
     return;
   }
 
+  const propsToIgnore = new Set<string>(['easing']);
+
   const invalidNonAnimatableProps = new Set<string>();
 
   timelines.forEach(({keyframes}) => {
     const nonAnimatablePropsInitialValues = new Map<string, string|number>();
     keyframes.forEach(keyframe => {
-      for (const [prop, value] of keyframe.entries()) {
+      const entriesToCheck =
+          Array.from(keyframe.entries()).filter(([prop]) => !propsToIgnore.has(prop));
+      for (const [prop, value] of entriesToCheck) {
         if (!driver.validateAnimatableStyleProperty!(prop)) {
           if (nonAnimatablePropsInitialValues.has(prop) && !invalidNonAnimatableProps.has(prop)) {
             const propInitialValue = nonAnimatablePropsInitialValues.get(prop);
