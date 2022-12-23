@@ -86,7 +86,7 @@ npm_package_bin(
     },
     exec_properties = ENABLE_NETWORK,
     output_dir = True,
-    stamp = "@rules_nodejs//nodejs/stamp:always",
+    stamp = "@rules_nodejs//nodejs/stamp:use_stamp_flag",
     # Makes remote git calls to get previous versions
     tags = [
         "requires-network",
