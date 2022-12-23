@@ -12,8 +12,6 @@ export class SpinnerService {
 
   spinnerState = this.spinnerSubject.asObservable();
 
-  constructor() { }
-
   show() {
     this.spinnerSubject.next({ show: true });
   }
