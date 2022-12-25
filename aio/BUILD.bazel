@@ -125,7 +125,6 @@ copy_to_directory(
 # All source and configuration files required to build the docs app
 APPLICATION_FILES = [
     "angular.json",
-    "package.json",
     "tsconfig.app.json",
     "tsconfig.json",
     "tsconfig.worker.json",

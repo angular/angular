@@ -16,7 +16,20 @@ const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
 
 const aioAngularVersion = pkgJson.dependencies['@angular/core'].replace(/^[\^~]/, '') + "+forAIOLocalBuildToAvoidMismatch";
 
-// Output the workspace status variable format to stdout so Bazel can read it
 console.log(`\
 BUILD_SCM_VERSION ${aioAngularVersion}
 `);
+
+// Fix stable-status.txt values to improve remote cache performance.
+console.log(`\
+BUILD_HOST fake_host
+BUILD_USER fake_user
+`)
+
+// Fix the timestamp in volatile-status.txt to improve remote cache performance.
+// Unlike the local Bazel cache, the remote cache does not ignore volatile-status.txt
+// and will invalidate actions that depend on it when the values change.
+// https://github.com/bazelbuild/bazel/issues/10075#issuecomment-546872111
+console.log(`\
+BUILD_TIMESTAMP 0
+`)
