@@ -182,18 +182,25 @@ export class ExampleZipper {
       // zip.append(fs.createReadStream(fileName), { name: relativePath });
       let output = regionExtractor()(content, extn).contents;
 
-      zip.append(output, { name: relativePath } );
+      appendToZip(zip, output, { name: relativePath });
     });
 
     // also a systemjs config
     if (exampleType === 'systemjs') {
-      zip.append(fs.readFileSync(this.examplesSystemjsConfig, 'utf8'), { name: 'src/systemjs.config.js' });
-      zip.append(fs.readFileSync(this.examplesSystemjsLoaderConfig, 'utf8'), { name: 'src/systemjs-angular-loader.js' });
+      appendToZip(zip, fs.readFileSync(this.examplesSystemjsConfig, 'utf8'), { name: 'src/systemjs.config.js' });
+      appendToZip(zip, fs.readFileSync(this.examplesSystemjsLoaderConfig, 'utf8'), { name: 'src/systemjs-angular-loader.js' });
       // a modified tsconfig
       let tsconfig = fs.readFileSync(this.exampleTsconfig, 'utf8');
-      zip.append(this._changeTypeRoots(tsconfig), {name: 'src/tsconfig.json'});
+      appendToZip(zip, this._changeTypeRoots(tsconfig), {name: 'src/tsconfig.json' });
     }
 
     zip.finalize();
   }
+}
+
+// Fix the timestamp on zip entries in order create reproducible zip
+// files, which improves remote Bazel cache performance.
+function appendToZip(zip, source, data) {
+  const FIXED_DATE = new Date(0);
+  zip.append(source, {...data, date: FIXED_DATE});
 }
