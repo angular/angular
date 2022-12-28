@@ -123,7 +123,13 @@ function checkNonAnimatableInTimelines(
     return;
   }
 
-  const propsToIgnore = new Set<string>(['easing']);
+  const propsToIgnore = new Set<string>([
+    // 'easing' is a utility/synthetic prop we use to represent
+    // easing functions, it represents a property of the animation
+    // which is not animatable but different values can be used
+    // in different steps
+    'easing'
+  ]);
 
   const invalidNonAnimatableProps = new Set<string>();
 
