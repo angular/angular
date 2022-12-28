@@ -123,7 +123,7 @@ function checkNonAnimatableInTimelines(
     return;
   }
 
-  const propsToIgnore = new Set<string>([
+  const allowedNonAnimatableProps = new Set<string>([
     // 'easing' is a utility/synthetic prop we use to represent
     // easing functions, it represents a property of the animation
     // which is not animatable but different values can be used
@@ -137,7 +137,7 @@ function checkNonAnimatableInTimelines(
     const nonAnimatablePropsInitialValues = new Map<string, string|number>();
     keyframes.forEach(keyframe => {
       const entriesToCheck =
-          Array.from(keyframe.entries()).filter(([prop]) => !propsToIgnore.has(prop));
+          Array.from(keyframe.entries()).filter(([prop]) => !allowedNonAnimatableProps.has(prop));
       for (const [prop, value] of entriesToCheck) {
         if (!driver.validateAnimatableStyleProperty!(prop)) {
           if (nonAnimatablePropsInitialValues.has(prop) && !invalidNonAnimatableProps.has(prop)) {
