@@ -183,7 +183,7 @@ describe('insert/remove', () => {
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
        fixture.detectChanges();
 
-       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef']!;
+       const moduleRef = fixture.componentInstance.ngComponentOutlet?.['_moduleRef']!;
        spyOn(moduleRef, 'destroy').and.callThrough();
 
        expect(moduleRef.destroy).not.toHaveBeenCalled();
@@ -197,7 +197,7 @@ describe('insert/remove', () => {
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
        fixture.detectChanges();
 
-       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef']!;
+       const moduleRef = fixture.componentInstance.ngComponentOutlet?.['_moduleRef']!;
        spyOn(moduleRef, 'destroy').and.callThrough();
 
        expect(moduleRef.destroy).not.toHaveBeenCalled();
@@ -213,13 +213,13 @@ describe('insert/remove', () => {
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
        fixture.detectChanges();
        expect(fixture.nativeElement).toHaveText('baz');
-       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
+       const moduleRef = fixture.componentInstance.ngComponentOutlet?.['_moduleRef'];
 
        fixture.componentInstance.currentComponent = Module2InjectedComponent2;
        fixture.detectChanges();
 
        expect(fixture.nativeElement).toHaveText('baz2');
-       expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet['_moduleRef']);
+       expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet?.['_moduleRef']);
      }));
 
   it('should re-create moduleRef when changed (NgModuleFactory)', waitForAsync(() => {
@@ -322,16 +322,16 @@ class TestComponent {
   ngModuleFactory?: NgModuleFactory<unknown>;
 
   get cmpRef(): ComponentRef<any>|undefined {
-    return this.ngComponentOutlet['_componentRef'];
+    return this.ngComponentOutlet?.['_componentRef'];
   }
   set cmpRef(value: ComponentRef<any>|undefined) {
-    this.ngComponentOutlet['_componentRef'] = value;
+    if (this.ngComponentOutlet) {
+      this.ngComponentOutlet['_componentRef'] = value;
+    }
   }
 
-  // TODO(issue/24571): remove '!'.
-  @ViewChildren(TemplateRef) tplRefs!: QueryList<TemplateRef<any>>;
-  // TODO(issue/24571): remove '!'.
-  @ViewChild(NgComponentOutlet, {static: true}) ngComponentOutlet!: NgComponentOutlet;
+  @ViewChildren(TemplateRef) tplRefs: QueryList<TemplateRef<any>> = new QueryList();
+  @ViewChild(NgComponentOutlet, {static: true}) ngComponentOutlet?: NgComponentOutlet;
 
   constructor(public vcRef: ViewContainerRef) {}
 }
