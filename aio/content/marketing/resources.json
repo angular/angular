@@ -54,6 +54,11 @@
             "desc": "Come learn technical skills and network at this monthly, multi-series, multi-event, multi-timezone online meetup.",
             "url": "https://angularcommunity.net",
             "title": "Angular Community Meetup"
+          },
+          "This-is-Angular": {
+            "desc": "Inclusive Angular publication free from conflict of interest. This publication is all about sharing Angular knowledge for free and not at all about money or KPIs. Cross-posts are welcome. Part of This is Learning.",
+            "url": "https://dev.to/this-is-angular",
+            "title": "This is Angular"
           }
         }
       },
