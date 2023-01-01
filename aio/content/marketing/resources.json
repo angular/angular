@@ -818,6 +818,11 @@
             "desc": "An online education platform with a complete path in Angular and TypeScript from zero to advanced. Platzi helps students from all over the world acquire new, in-demand skills.",
             "title": "Platzi (Español)",
             "url": "https://platzi.com/angular-io"
+          },
+          "angular-gettin-started": {
+            "desc": "Want to learn #Angular, but not sure where to start? Check out this in-depth “Angular for Beginners Course“ created by Angular #GDE @SantoshYadavDev.",
+            "title": "Angular for Beginners Course",
+            "url": "https://youtu.be/3qBXWUpoPHo"
           }
         }
       },
