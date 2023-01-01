@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChange} from '@angular/core';
-import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {Component, SimpleChange} from '@angular/core';
+import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {selectValueAccessor} from '@angular/forms/src/directives/shared';
 import {composeValidators} from '@angular/forms/src/validators';
@@ -37,6 +37,23 @@ class CustomValidatorDirective implements Validator {
 
     beforeEach(() => {
       defaultAccessor = new DefaultValueAccessor(null!, null!, null!);
+    });
+
+    describe('DefaultValueAccessor', () => {
+      it('should be available as a standalone directive', () => {
+        @Component({
+          selector: 'test-component',
+          hostDirectives: [DefaultValueAccessor],
+          template: `<input />`,
+        })
+        class TestComponent {
+        }
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance).toBeTruthy();
+      });
     });
 
     describe('shared', () => {

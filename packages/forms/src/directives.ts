@@ -45,11 +45,10 @@ export {NgSelectOption, SelectControlValueAccessor} from './directives/select_co
 export {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 export {CALL_SET_DISABLED_STATE} from './directives/shared';
 
-export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
+const SHARED_FORM_DIRECTIVES: Type<any>[] = [
   NgNoValidate,
   NgSelectOption,
   NgSelectMultipleOption,
-  DefaultValueAccessor,
   NumberValueAccessor,
   RangeValueAccessor,
   CheckboxControlValueAccessor,
@@ -78,8 +77,8 @@ export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
  */
 @NgModule({
   declarations: SHARED_FORM_DIRECTIVES,
-  imports: [RadioControlRegistryModule],
-  exports: SHARED_FORM_DIRECTIVES,
+  imports: [RadioControlRegistryModule, DefaultValueAccessor],
+  exports: [...SHARED_FORM_DIRECTIVES, DefaultValueAccessor],
 })
 export class ɵInternalFormsSharedModule {
 }
