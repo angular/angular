@@ -12,18 +12,16 @@ import {EventEmitter} from '../src/event_emitter';
 
 {
   describe('EventEmitter', () => {
-    let emitter: EventEmitter<any>;
+    let emitter: EventEmitter<number>;
 
     beforeEach(() => {
       emitter = new EventEmitter();
     });
 
     it('should call the next callback', done => {
-      emitter.subscribe({
-        next: (value: any) => {
-          expect(value).toEqual(99);
-          done();
-        }
+      emitter.subscribe((value: number) => {
+        expect(value).toEqual(99);
+        done();
       });
       emitter.emit(99);
     });
@@ -42,7 +40,7 @@ import {EventEmitter} from '../src/event_emitter';
     it('should work when no throw callback is provided', done => {
       emitter.subscribe({
         next: () => {},
-        error: (_: any) => {
+        error: () => {
           done();
         }
       });
@@ -52,7 +50,7 @@ import {EventEmitter} from '../src/event_emitter';
     it('should call the return callback', done => {
       emitter.subscribe({
         next: () => {},
-        error: (_: any) => {},
+        error: () => {},
         complete: () => {
           done();
         }
@@ -63,7 +61,7 @@ import {EventEmitter} from '../src/event_emitter';
     it('should subscribe to the wrapper synchronously', () => {
       let called = false;
       emitter.subscribe({
-        next: (value: any) => {
+        next: () => {
           called = true;
         }
       });
@@ -73,19 +71,18 @@ import {EventEmitter} from '../src/event_emitter';
     });
 
     it('delivers next and error events synchronously', done => {
-      const log: any[] /** TODO #9100 */ = [];
+      const log: number[] = [];
 
-      emitter.subscribe({
-        next: (x: any) => {
-          log.push(x);
-          expect(log).toEqual([1, 2]);
-        },
-        error: (err: any) => {
-          log.push(err);
-          expect(log).toEqual([1, 2, 3, 4]);
-          done();
-        }
-      });
+      emitter.subscribe(
+          (x: number) => {
+            log.push(x);
+            expect(log).toEqual([1, 2]);
+          },
+          (err: any) => {
+            log.push(err);
+            expect(log).toEqual([1, 2, 3, 4]);
+            done();
+          });
       log.push(1);
       emitter.emit(2);
       log.push(3);
@@ -94,14 +91,14 @@ import {EventEmitter} from '../src/event_emitter';
     });
 
     it('delivers next and complete events synchronously', () => {
-      const log: any[] /** TODO #9100 */ = [];
+      const log: number[] = [];
 
       emitter.subscribe({
-        next: (x: any) => {
+        next: (x: number) => {
           log.push(x);
           expect(log).toEqual([1, 2]);
         },
-        error: null,
+        error: undefined,
         complete: () => {
           log.push(4);
           expect(log).toEqual([1, 2, 3, 4]);
@@ -116,9 +113,9 @@ import {EventEmitter} from '../src/event_emitter';
     });
 
     it('delivers events asynchronously when forced to async mode', done => {
-      const e = new EventEmitter(true);
-      const log: any[] /** TODO #9100 */ = [];
-      e.subscribe((x: any) => {
+      const e = new EventEmitter<number>(true);
+      const log: number[] = [];
+      e.subscribe((x) => {
         log.push(x);
         expect(log).toEqual([1, 3, 2]);
         done();

@@ -33,7 +33,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
    * @param callback A handler function that cleans up developer-defined data
    * associated with a view. Called when the `destroy()` method is invoked.
    */
-  abstract onDestroy(callback: Function): any /** TODO #9100 */;
+  abstract onDestroy(callback: Function): any /** TODO #9100, replace by void in a major release*/;
 }
 
 /**
