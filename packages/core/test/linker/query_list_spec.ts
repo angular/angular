@@ -20,7 +20,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
       log = '';
     });
 
-    function logAppend(item: any /** TODO #9100 */) {
+    function logAppend(item: string) {
       log += (log.length == 0 ? '' : ', ') + item;
     }
 
@@ -177,7 +177,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
            }));
 
         it('should provides query list as an argument', fakeAsync(() => {
-             let recorded: any /** TODO #9100 */;
+             let recorded: any; /** TODO #9100, replace with QueryList when #48004 is merged */
              queryList.changes.subscribe({
                next: (v: any) => {
                  recorded = v;
