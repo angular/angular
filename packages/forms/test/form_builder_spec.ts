@@ -11,10 +11,10 @@ import {FormBuilder, NonNullableFormBuilder, ReactiveFormsModule, UntypedFormBui
 import {of} from 'rxjs';
 
 (function() {
-function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ {
+function syncValidator() {
   return null;
 }
-function asyncValidator(_: any /** TODO #9100 */) {
+function asyncValidator() {
   return Promise.resolve(null);
 }
 
