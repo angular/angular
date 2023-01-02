@@ -91,6 +91,15 @@ export interface EventEmitter<T> extends Subject<T> {
    */
   subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void):
       Subscription;
+
+  /**
+   * Registers handlers for events emitted by this instance.
+   * @param observer an observer object.
+   */
+  subscribe(observer:
+                {next?: (value: T) => void; error?: (error: any) => void; complete?: () => void;}):
+      Subscription;
+
   /**
    * Registers handlers for events emitted by this instance.
    * @param observerOrNext When supplied, a custom handler for emitted events, or an observer
