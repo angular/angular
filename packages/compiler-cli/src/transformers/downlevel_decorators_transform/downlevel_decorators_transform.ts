@@ -576,8 +576,9 @@ export function getDownlevelDecoratorsTransform(
         modifiers = [...decoratorsToKeep, ...(classModifiers || [])];
       }
 
-      return ts.factory.createClassDeclaration(
-          modifiers, classDecl.name, classDecl.typeParameters, classDecl.heritageClauses, members);
+      return ts.factory.updateClassDeclaration(
+          classDecl, modifiers, classDecl.name, classDecl.typeParameters, classDecl.heritageClauses,
+          members);
     }
 
     /**
