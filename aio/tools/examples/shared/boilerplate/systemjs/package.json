@@ -35,7 +35,7 @@
     "@angular/router": "^15.0.0-rc.1",
     "@angular/upgrade": "^15.0.0-rc.1",
     "core-js": "^2.5.4",
-    "rxjs": "~7.6.0",
+    "rxjs": "~7.8.0",
     "systemjs": "~0.19.39",
     "systemjs-plugin-babel": "~0.0.25",
     "tslib": "^2.3.0",
