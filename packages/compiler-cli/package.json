@@ -57,7 +57,7 @@
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "reflect-metadata": "^0.1.2",
     "chokidar": "^3.0.0",
-    "convert-source-map": "^1.5.1",
+    "convert-source-map": "^2.0.0",
     "dependency-graph": "^0.11.0",
     "magic-string": "^0.27.0",
     "semver": "^7.0.0",

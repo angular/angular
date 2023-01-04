@@ -3748,10 +3748,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/convert-source-map@^1.5.1":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@types/convert-source-map/-/convert-source-map-1.5.2.tgz#318dc22d476632a4855594c16970c6dc3ed086e7"
-  integrity sha512-tHs++ZeXer40kCF2JpE51Hg7t4HPa18B1b1Dzy96S0eCw8QKECNMYMfwa1edK/x8yCN0r4e6ewvLcc5CsVGkdg==
+"@types/convert-source-map@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/convert-source-map/-/convert-source-map-2.0.0.tgz#a36c2d21963caa18fe32de6cdec3d21a7d2c92b3"
+  integrity sha512-QUm4YOC/ENo0VjPVl2o8HGyTbHHQGDOw8PCg3rXBucYHKyZN/XjXRbPFAV1tB2FvM0/wyFoDct4cTIctzKrQFg==
 
 "@types/cookie@^0.4.1":
   version "0.4.1"
@@ -6473,12 +6473,17 @@ conventional-commits-parser@^3.2.0:
     split2 "^3.0.0"
     through2 "^4.0.0"
 
-convert-source-map@^1.1.0, convert-source-map@^1.5.0, convert-source-map@^1.5.1, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
+convert-source-map@^1.1.0, convert-source-map@^1.5.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.8.0.tgz#f3373c32d21b4d780dd8004514684fb791ca4369"
   integrity sha512-+OQdjP49zViI/6i7nIJpA8rAl4sV/JdPfU9nZs3VqOwGIgizICvuN2ru6fMd+4llL0tar18UYJXfZ/TWtmhUjA==
   dependencies:
     safe-buffer "~5.1.1"
+
+convert-source-map@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-2.0.0.tgz#4b560f649fc4e918dd0ab75cf4961e8bc882d82a"
+  integrity sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==
 
 cookie-signature@1.0.6:
   version "1.0.6"
