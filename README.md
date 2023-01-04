@@ -75,20 +75,20 @@ Install the Angular CLI globally:
 npm install -g @angular/cli
 ```
 
-Create workspace:
+Create workspace (replace [PROJECT NAME] with your project name):
 
 ```
 ng new [PROJECT NAME]
 ```
 
-Run the application:
+Run the application (replace [PROJECT NAME] with your project name):
 
 ```
 cd [PROJECT NAME]
 ng serve
 ```
 
-Angular is cross-platform, fast, scalable, has incredible tooling, and is loved by millions.
+Angular is cross-platform, fast and scalable with incredible tooling, and is loved by millions of people worldwide.
 
 ## Quickstart
 
