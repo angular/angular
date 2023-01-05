@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges} from '@angular/core';
 
 import {FormControl} from '../../model/form_control';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {disabledAttrWarning} from '../reactive_errors';
-import {_ngModelWarning, CALL_SET_DISABLED_STATE, cleanUpControl, isPropertyUpdated, selectValueAccessor, setDisabledStateDefault, SetDisabledStateOption, setUpControl} from '../shared';
+import {_ngModelWarning, CALL_SET_DISABLED_STATE, cleanUpControl, isPropertyUpdated, selectValueAccessor, SetDisabledStateOption, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 
@@ -23,7 +23,7 @@ import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../valid
 export const NG_MODEL_WITH_FORM_CONTROL_WARNING =
     new InjectionToken('NgModelWithFormControlWarning');
 
-export const formControlBinding: any = {
+const formControlBinding: Provider = {
   provide: NgControl,
   useExisting: forwardRef(() => FormControlDirective)
 };
