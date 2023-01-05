@@ -13,7 +13,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} f
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, MatchSource, MetadataReader, MetadataReaderWithIndex, MetaKind} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, MatchSource, MetadataReader, MetadataReaderWithIndex, MetaKind, NgModuleIndex, NgModuleMeta, PipeMeta} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -550,14 +550,15 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
   };
 
   const fakeMetadataReader = getFakeMetadataReader(fakeMetadataRegistry);
+  const fakeNgModuleIndex = getFakeNgModuleIndex(fakeMetadataRegistry);
   const typeCheckScopeRegistry = new TypeCheckScopeRegistry(
       fakeScopeReader, new CompoundMetadataReader([fakeMetadataReader]),
       new HostDirectivesResolver(fakeMetadataReader));
 
   const templateTypeChecker = new TemplateTypeCheckerImpl(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
-      NOOP_INCREMENTAL_BUILD, fakeMetadataReader, fakeMetadataReader, fakeScopeReader,
-      typeCheckScopeRegistry, NOOP_PERF_RECORDER);
+      NOOP_INCREMENTAL_BUILD, fakeMetadataReader, fakeMetadataReader, fakeNgModuleIndex,
+      fakeScopeReader, typeCheckScopeRegistry, NOOP_PERF_RECORDER);
   return {
     templateTypeChecker,
     program,
@@ -577,15 +578,22 @@ function getFakeMetadataReader(fakeMetadataRegistry: Map<any, DirectiveMeta|null
         null {
           return fakeMetadataRegistry.get(node.debugName) ?? null;
         },
-    getKnown(kind: MetaKind): Iterable<ClassDeclaration> {
+    getKnown(kind: MetaKind): Array<ClassDeclaration> {
       switch (kind) {
-        case MetaKind.Directive:
-          return fakeMetadataRegistry.keys();
+        // TODO: This is not needed for these ngtsc tests, but may be wanted in the future.
         default:
           return [];
       }
     }
   } as MetadataReaderWithIndex;
+}
+
+function getFakeNgModuleIndex(fakeMetadataRegistry: Map<any, DirectiveMeta|null>): NgModuleIndex {
+  return {
+    getNgModulesExporting(trait: ClassDeclaration): Array<Reference<ClassDeclaration>> {
+      return [];
+    }
+  } as NgModuleIndex;
 }
 
 type DeclarationResolver = (decl: TestDeclaration) => ClassDeclaration<ts.ClassDeclaration>;
