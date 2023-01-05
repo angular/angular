@@ -10,9 +10,6 @@ import type {TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAst
 
 /**
  * A base class that can be used to implement a Render3 Template AST visitor.
- * This class is used instead of the `NullVisitor` found within the `@angular/compiler` because
- * the `NullVisitor` requires a deep import which is no longer supported with the ESM bundled
- * packages as of v13.
  * Schematics are also currently required to be CommonJS to support execution within the Angular
  * CLI. As a result, the ESM `@angular/compiler` package must be loaded via a native dynamic import.
  * Using a dynamic import makes classes extending from classes present in `@angular/compiler`
