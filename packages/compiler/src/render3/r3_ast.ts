@@ -198,20 +198,6 @@ export interface Visitor<Result = any> {
   visitIcu(icu: Icu): Result;
 }
 
-export class NullVisitor implements Visitor<void> {
-  visitElement(element: Element): void {}
-  visitTemplate(template: Template): void {}
-  visitContent(content: Content): void {}
-  visitVariable(variable: Variable): void {}
-  visitReference(reference: Reference): void {}
-  visitTextAttribute(attribute: TextAttribute): void {}
-  visitBoundAttribute(attribute: BoundAttribute): void {}
-  visitBoundEvent(attribute: BoundEvent): void {}
-  visitText(text: Text): void {}
-  visitBoundText(text: BoundText): void {}
-  visitIcu(icu: Icu): void {}
-}
-
 export class RecursiveVisitor implements Visitor<void> {
   visitElement(element: Element): void {
     visitAll(this, element.attributes);
@@ -239,78 +225,12 @@ export class RecursiveVisitor implements Visitor<void> {
   visitIcu(icu: Icu): void {}
 }
 
-export class TransformVisitor implements Visitor<Node> {
-  visitElement(element: Element): Node {
-    const newAttributes = transformAll(this, element.attributes);
-    const newInputs = transformAll(this, element.inputs);
-    const newOutputs = transformAll(this, element.outputs);
-    const newChildren = transformAll(this, element.children);
-    const newReferences = transformAll(this, element.references);
-    if (newAttributes != element.attributes || newInputs != element.inputs ||
-        newOutputs != element.outputs || newChildren != element.children ||
-        newReferences != element.references) {
-      return new Element(
-          element.name, newAttributes, newInputs, newOutputs, newChildren, newReferences,
-          element.sourceSpan, element.startSourceSpan, element.endSourceSpan);
-    }
-    return element;
-  }
-
-  visitTemplate(template: Template): Node {
-    const newAttributes = transformAll(this, template.attributes);
-    const newInputs = transformAll(this, template.inputs);
-    const newOutputs = transformAll(this, template.outputs);
-    const newTemplateAttrs = transformAll(this, template.templateAttrs);
-    const newChildren = transformAll(this, template.children);
-    const newReferences = transformAll(this, template.references);
-    const newVariables = transformAll(this, template.variables);
-    if (newAttributes != template.attributes || newInputs != template.inputs ||
-        newOutputs != template.outputs || newTemplateAttrs != template.templateAttrs ||
-        newChildren != template.children || newReferences != template.references ||
-        newVariables != template.variables) {
-      return new Template(
-          template.tagName, newAttributes, newInputs, newOutputs, newTemplateAttrs, newChildren,
-          newReferences, newVariables, template.sourceSpan, template.startSourceSpan,
-          template.endSourceSpan);
-    }
-    return template;
-  }
-
-  visitContent(content: Content): Node {
-    return content;
-  }
-
-  visitVariable(variable: Variable): Node {
-    return variable;
-  }
-  visitReference(reference: Reference): Node {
-    return reference;
-  }
-  visitTextAttribute(attribute: TextAttribute): Node {
-    return attribute;
-  }
-  visitBoundAttribute(attribute: BoundAttribute): Node {
-    return attribute;
-  }
-  visitBoundEvent(attribute: BoundEvent): Node {
-    return attribute;
-  }
-  visitText(text: Text): Node {
-    return text;
-  }
-  visitBoundText(text: BoundText): Node {
-    return text;
-  }
-  visitIcu(icu: Icu): Node {
-    return icu;
-  }
-}
 
 export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Result[] {
   const result: Result[] = [];
   if (visitor.visit) {
     for (const node of nodes) {
-      const newNode = visitor.visit(node) || node.visit(visitor);
+      visitor.visit(node) || node.visit(visitor);
     }
   } else {
     for (const node of nodes) {
@@ -321,18 +241,4 @@ export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Resul
     }
   }
   return result;
-}
-
-export function transformAll<Result extends Node>(
-    visitor: Visitor<Node>, nodes: Result[]): Result[] {
-  const result: Result[] = [];
-  let changed = false;
-  for (const node of nodes) {
-    const newNode = node.visit(visitor);
-    if (newNode) {
-      result.push(newNode as Result);
-    }
-    changed = changed || newNode != node;
-  }
-  return changed ? result : nodes;
 }
