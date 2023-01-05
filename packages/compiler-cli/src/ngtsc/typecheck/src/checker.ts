@@ -13,7 +13,7 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
-import {DirectiveMeta, MetadataReader, MetadataReaderWithIndex, MetaKind, NgModuleMeta, PipeMeta} from '../../metadata';
+import {DirectiveMeta, MetadataReader, MetadataReaderWithIndex, MetaKind, NgModuleIndex, PipeMeta} from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
 import {ProgramDriver, UpdateMode} from '../../program_driver';
 import {ClassDeclaration, DeclarationNode, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
@@ -86,6 +86,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>,
       private readonly metaReader: MetadataReader,
       private readonly localMetaReader: MetadataReaderWithIndex,
+      private readonly ngModuleIndex: NgModuleIndex,
       private readonly componentScopeReader: ComponentScopeReader,
       private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry,
       private readonly perf: PerfRecorder) {}
@@ -687,46 +688,58 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return scope.ngModule;
   }
 
-  getPotentialImportsFor(toImport: PotentialDirective, inContext: ts.ClassDeclaration):
-      ReadonlyArray<PotentialImport> {
-    // Look up the original reference associated with the trait's ngModule, so we don't lose the
-    // Reference context (such as identifiers). If the trait is standalone, this will be
-    // `undefined`.
-    let ngModuleRef: Reference<ClassDeclaration<DeclarationNode>>|undefined;
-    if (toImport.ngModule !== null) {
-      ngModuleRef = this.metaReader.getNgModuleMetadata(new Reference(toImport.ngModule))?.ref;
+  private emit(
+      kind: PotentialImportKind, refTo: Reference<ClassDeclaration>,
+      inContext: ts.ClassDeclaration): PotentialImport|null {
+    const emittedRef = this.refEmitter.emit(refTo, inContext.getSourceFile());
+    if (emittedRef.kind === ReferenceEmitKind.Failed) {
+      return null;
     }
-    const kind = ngModuleRef ? PotentialImportKind.NgModule : PotentialImportKind.Standalone;
-
-    // Import the ngModule if one exists. Otherwise, import the standalone trait directly.
-    const importTarget = ngModuleRef ?? toImport.ref;
-
-    // Using the compiler's ReferenceEmitter, try to emit a reference to the trait.
-    // TODO(dylhunn): In the future, we can use a more sophisticated strategy for generating and
-    // ranking references, such as keeping a record of import specifiers used in existing code.
-    const emittedRef = this.refEmitter.emit(importTarget, inContext.getSourceFile());
-    if (emittedRef.kind === ReferenceEmitKind.Failed) return [];
-    const emittedExpression = emittedRef.expression;
-
-    // This is not be a true import if an appropriate identifier is already in scope.
-    if (emittedExpression instanceof WrappedNodeExpr) {
-      return [{kind, symbolName: emittedExpression.node.getText()}];
+    const emitted = emittedRef.expression;
+    if (emitted instanceof WrappedNodeExpr) {
+      // An appropriate identifier is already in scope.
+      return {kind, symbolName: emitted.node.text};
+    } else if (
+        emitted instanceof ExternalExpr && emitted.value.moduleName !== null &&
+        emitted.value.name !== null) {
+      return {
+        kind,
+        moduleSpecifier: emitted.value.moduleName,
+        symbolName: emitted.value.name,
+      };
     }
-    // Otherwise, it must be a genuine external expression.
-    if (!(emittedExpression instanceof ExternalExpr)) {
-      return [];
+    return null;
+  }
+
+  getPotentialImportsFor(
+      toImport: PotentialDirective|PotentialPipe,
+      inContext: ts.ClassDeclaration): ReadonlyArray<PotentialImport> {
+    const imports: PotentialImport[] = [];
+
+    const meta = this.metaReader.getDirectiveMetadata(toImport.ref) ??
+        this.metaReader.getPipeMetadata(toImport.ref);
+    if (meta === null) {
+      return imports;
     }
 
-    if (emittedExpression.value.moduleName === null || emittedExpression.value.name === null)
-      return [];
+    if (meta.isStandalone) {
+      const emitted = this.emit(PotentialImportKind.Standalone, toImport.ref, inContext);
+      if (emitted !== null) {
+        imports.push(emitted);
+      }
+    }
 
-    // Extract and return the TS module and identifier names.
-    const preferredImport: PotentialImport = {
-      kind: ngModuleRef ? PotentialImportKind.NgModule : PotentialImportKind.Standalone,
-      moduleSpecifier: emittedExpression.value.moduleName,
-      symbolName: emittedExpression.value.name,
-    };
-    return [preferredImport];
+    const exportingNgModules = this.ngModuleIndex.getNgModulesExporting(meta.ref.node);
+    if (exportingNgModules !== null) {
+      for (const exporter of exportingNgModules) {
+        const emittedRef = this.emit(PotentialImportKind.Standalone, exporter, inContext);
+        if (emittedRef !== null) {
+          imports.push(emittedRef);
+        }
+      }
+    }
+
+    return imports;
   }
 
   private getScopeData(component: ts.ClassDeclaration): ScopeData|null {
