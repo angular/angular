@@ -1,3 +1,31 @@
+<a name="15.1.0-rc.0"></a>
+# 15.1.0-rc.0 (2023-01-05)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2f4f0638c7](https://github.com/angular/angular/commit/2f4f0638c74dccfc2d0522f67ab226d3227c0566) | fix | Add data attribtue to NgOptimizedImage ([#48497](https://github.com/angular/angular/pull/48497)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a532d71975](https://github.com/angular/angular/commit/a532d71975bef463223fd5d8322e3140760c9134) | feat | allow self-closing tags on custom elements ([#48535](https://github.com/angular/angular/pull/48535)) |
+| [33f35b04ef](https://github.com/angular/angular/commit/33f35b04ef0f32f25624a6be59f8635675e3e131) | fix | type-only symbols incorrectly retained when downlevelling custom decorators ([#48638](https://github.com/angular/angular/pull/48638)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [caedef0f5b](https://github.com/angular/angular/commit/caedef0f5b37ac6530885223b26879c39c36c1bd) | fix | update `@babel/core` dependency and lock version ([#48634](https://github.com/angular/angular/pull/48634)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a1a8e91eca](https://github.com/angular/angular/commit/a1a8e91ecaded6a2e4d700109a26d3117ad77c9c) | fix | add triple slash type reference on `@angular/localize` on `ng  add ([#48502](https://github.com/angular/angular/pull/48502)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cc284afbbc](https://github.com/angular/angular/commit/cc284afbbc33b91884882204c5958a44a5d11392) | fix | combine newly-added imports in import manager ([#48620](https://github.com/angular/angular/pull/48620)) |
+## Special Thanks
+Alan Agius, Alex Castle, Andrew Kushnir, Derek Cormier, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Renan Ferro, Vadim, ced, mgechev, piyush132000 and robertIsaac
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.1.0-next.3"></a>
 # 15.1.0-next.3 (2022-12-14)
 ### animations
