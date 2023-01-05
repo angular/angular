@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, forwardRef, Input, OnChanges, SimpleChanges, StaticProvider, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
+import {Directive, forwardRef, Input, OnChanges, Provider, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model/abstract_model';
@@ -173,7 +173,7 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
  * @description
  * Provider which adds `MaxValidator` to the `NG_VALIDATORS` multi-provider list.
  */
-export const MAX_VALIDATOR: StaticProvider = {
+export const MAX_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MaxValidator),
   multi: true
@@ -224,7 +224,7 @@ export class MaxValidator extends AbstractValidatorDirective {
  * @description
  * Provider which adds `MinValidator` to the `NG_VALIDATORS` multi-provider list.
  */
-export const MIN_VALIDATOR: StaticProvider = {
+export const MIN_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MinValidator),
   multi: true
@@ -317,7 +317,7 @@ export interface AsyncValidator extends Validator {
  * @description
  * Provider which adds `RequiredValidator` to the `NG_VALIDATORS` multi-provider list.
  */
-export const REQUIRED_VALIDATOR: StaticProvider = {
+export const REQUIRED_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => RequiredValidator),
   multi: true
@@ -327,7 +327,7 @@ export const REQUIRED_VALIDATOR: StaticProvider = {
  * @description
  * Provider which adds `CheckboxRequiredValidator` to the `NG_VALIDATORS` multi-provider list.
  */
-export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
+export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => CheckboxRequiredValidator),
   multi: true
