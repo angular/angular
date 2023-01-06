@@ -56,8 +56,8 @@ Superpower boost: 1024
 
 <div class="alert is-helpful">
 
-To examine the behavior of the `exponentialStrength` pipe in the <live-example></live-example>, change the value and optional exponent in the template.
+To examine the behavior of the `exponentialStrength` pipe in the <live-example name="pipes"></live-example>, change the value and optional exponent in the template.
 
 </div>
 
-@reviewed 2022-04-01
+@reviewed 2023-01-06
