@@ -21,6 +21,7 @@ import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlSerializer} from './url_tree';
+import {afterNextNavigation} from './utils/navigations';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -314,45 +315,12 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
         const locationInitialized: Promise<any> =
             injector.get(LOCATION_INITIALIZED, Promise.resolve());
 
-        /**
-         * Performs the given action once the router finishes its next/current navigation.
-         *
-         * If the navigation is canceled or errors without a redirect, the navigation is considered
-         * complete. If the `NavigationEnd` event emits, the navigation is also considered complete.
-         */
-        function afterNextNavigation(action: () => void) {
-          const router = injector.get(Router);
-          router.events
-              .pipe(
-                  filter(
-                      (e): e is NavigationEnd|NavigationCancel|NavigationError =>
-                          e instanceof NavigationEnd || e instanceof NavigationCancel ||
-                          e instanceof NavigationError),
-                  map(e => {
-                    if (e instanceof NavigationEnd) {
-                      // Navigation assumed to succeed if we get `ActivationStart`
-                      return true;
-                    }
-                    const redirecting = e instanceof NavigationCancel ?
-                        (e.code === NavigationCancellationCode.Redirect ||
-                         e.code === NavigationCancellationCode.SupersededByNewNavigation) :
-                        false;
-                    return redirecting ? null : false;
-                  }),
-                  filter((result): result is boolean => result !== null),
-                  take(1),
-                  )
-              .subscribe(() => {
-                action();
-              });
-        }
-
         return () => {
           return locationInitialized.then(() => {
             return new Promise(resolve => {
               const router = injector.get(Router);
               const bootstrapDone = injector.get(BOOTSTRAP_DONE);
-              afterNextNavigation(() => {
+              afterNextNavigation(router, () => {
                 // Unblock APP_INITIALIZER in case the initial navigation was canceled or errored
                 // without a redirect.
                 resolve(true);
