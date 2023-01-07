@@ -8688,10 +8688,10 @@ jsdoc@^3.6.3:
     taffydb "2.6.2"
     underscore "~1.13.2"
 
-jsdom@^20.0.0:
-  version "20.0.3"
-  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-20.0.3.tgz#886a41ba1d4726f67a8858028c99489fed6ad4db"
-  integrity sha512-SYhBvTh89tTfCD/CRdSOm13mOBa42iTaTyfyEWBdKcGdPxPtLFBXuHR8XHb33YNYaP+lLbmSvBTsnoesCNJEsQ==
+jsdom@^21.0.0:
+  version "21.0.0"
+  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-21.0.0.tgz#33e22f2fc44286e50ac853c7b7656c8864a4ea45"
+  integrity sha512-AIw+3ZakSUtDYvhwPwWHiZsUi3zHugpMEKlNPaurviseYoBqo0zBd3zqoUi3LPCNtPFlEP8FiW9MqCZdjb2IYA==
   dependencies:
     abab "^2.0.6"
     acorn "^8.8.1"
