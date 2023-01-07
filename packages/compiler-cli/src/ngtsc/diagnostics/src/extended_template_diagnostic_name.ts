@@ -24,4 +24,5 @@ export enum ExtendedTemplateDiagnosticName {
   MISSING_NGFOROF_LET = 'missingNgForOfLet',
   SUFFIX_NOT_SUPPORTED = 'suffixNotSupported',
   SKIP_HYDRATION_NOT_STATIC = 'skipHydrationNotStatic',
+  COMPONENT_VARIABLE_SHADOWS_TEMPLATE_REFERENCE = 'ComponentVariableShadowsTemplateReference',
 }

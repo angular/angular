@@ -378,6 +378,21 @@ export enum ErrorCode {
   SKIP_HYDRATION_NOT_STATIC = 8108,
 
   /**
+   * A template reference shadows a component class property or method.
+   * For example:
+   *
+   * ```
+   * @Component({
+   *   template: '<div #var1></div>'
+   * })
+   * export class FooComponent {
+   *   var1: string;
+   * }
+   * ```
+   */
+  COMPONENT_VARIABLE_SHADOWS_TEMPLATE_REFERENCE = 8109,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
