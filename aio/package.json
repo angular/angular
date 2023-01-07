@@ -131,7 +131,7 @@
     "jasmine": "~4.5.0",
     "jasmine-core": "~4.5.0",
     "jasmine-spec-reporter": "~7.0.0",
-    "jsdom": "^20.0.0",
+    "jsdom": "^21.0.0",
     "json-schema-traverse": "^1.0.0",
     "json5": "^2.2.0",
     "karma": "~6.4.0",
