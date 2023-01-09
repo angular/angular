@@ -30,9 +30,19 @@ esbuild(
     deps = [":factory_lib"],
 )
 
+esbuild(
+    name = "api_bundle",
+    entry_point = ":api.ts",
+    format = "cjs",
+    deps = [":api"],
+)
+
 extract_types(
-    name = "factory_types",
-    deps = [":factory_lib"],
+    name = "types",
+    deps = [
+        ":api",
+        ":factory_lib",
+    ],
 )
 
 pkg_npm(
@@ -55,8 +65,9 @@ pkg_npm(
         "//integration:__subpackages__",
     ],
     deps = [
+        ":api_bundle",
         ":factory_bundle",
-        ":factory_types",
+        ":types",
         "//packages/language-service/bundles:language-service.js",
     ],
 )
