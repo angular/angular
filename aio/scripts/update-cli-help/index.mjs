@@ -28,7 +28,7 @@ async function main() {
   const changedHelpFiles = affectedFiles.filter((file) => file.startsWith('help/'));
 
   if (changedHelpFiles.length === 0) {
-    console.log`No 'help/**' files changed between ${currentSha} and ${latestSha}.`;
+    console.log(`No 'help/**' files changed between ${currentSha} and ${latestSha}.`);
 
     return;
   }
