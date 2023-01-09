@@ -6,7 +6,6 @@ filegroup(
         ["**"],
         exclude = [
             "BUILD.bazel",
-            "cli/**",
         ],
     ),
 )

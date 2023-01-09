@@ -10,8 +10,8 @@ const GITHUB_API = 'https://api.github.com/repos/';
 const CLI_BUILDS_REPO = 'angular/cli-builds';
 const GITHUB_API_CLI_BUILDS = posix.join(GITHUB_API, CLI_BUILDS_REPO);
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const CLI_HELP_CONTENT_PATH = resolvePath(__dirname, '../../content/cli/help');
+const scriptDir = dirname(fileURLToPath(import.meta.url));
+const CLI_HELP_CONTENT_PATH = resolvePath(scriptDir, '../../content/cli/help');
 const CLI_SHA_PATH = join(CLI_HELP_CONTENT_PATH, 'build-info.json');
 
 async function main() {
@@ -43,7 +43,7 @@ async function main() {
   execSync('git init', execOptions);
   execSync('git remote add origin https://github.com/angular/cli-builds.git', execOptions);
   // fetch a commit
-  execSync(`git fetch origin ${latestSha}`, execOptions);
+  execSync(`git fetch origin ${latestSha} --depth=1`, execOptions);
   // reset this repository's main branch to the commit of interest
   execSync('git reset --hard FETCH_HEAD', execOptions);
 
