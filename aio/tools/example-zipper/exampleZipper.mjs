@@ -57,8 +57,9 @@ export class ExampleZipper {
     return archive;
   }
 
-  _getExampleType(sourceFolder) {
-    const filePath = path.join(sourceFolder, EXAMPLE_CONFIG_NAME);
+  _getExampleType(exampleDirName) {
+    const filePath = path.join(exampleDirName, EXAMPLE_CONFIG_NAME);
+
     try {
       return this._loadJson(filePath).projectType || 'cli';
     } catch (err) { // empty file, so it is cli
@@ -89,7 +90,6 @@ export class ExampleZipper {
     const jsonFileName = configFileName.replace(/^.*[\\\/]/, '');
     let relativeDirName = path.basename(sourceDirName);
     let exampleZipName;
-    const exampleType = this._getExampleType(path.join(sourceDirName, relativeDirName));
     if (relativeDirName.indexOf('/') !== -1) { // Special example
       exampleZipName = relativeDirName.split('/').join('-');
     } else {
@@ -97,6 +97,7 @@ export class ExampleZipper {
     }
 
     const exampleDirName = path.dirname(configFileName);
+    const exampleType = this._getExampleType(exampleDirName);
     const outputFileName = path.join(outputDirName, exampleZipName + '.zip');
     let defaultIncludes = ['**/*.ts', '**/*.js', '**/*.es6', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
     let alwaysIncludes = [
