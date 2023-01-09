@@ -9,6 +9,16 @@
   "engines": {
     "node": "^14.20.0 || ^16.13.0 || >=18.10.0"
   },
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./api": {
+      "types": "./api.d.ts",
+      "default": "./api_bundle.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git",
