@@ -1,18 +1,64 @@
-<a name="15.1.0-rc.0"></a>
-# 15.1.0-rc.0 (2023-01-05)
+<a name="15.1.0"></a>
+# 15.1.0 (2023-01-10)
+## Deprecations
+### router
+- CanLoad guards in the Router are deprecated. Use CanMatch
+  instead.
+- router writable properties
+  
+  The following strategies are meant to be configured by registering the
+  application strategy in DI via the `providers` in the root `NgModule` or
+  `bootstrapApplication`:
+  * `routeReuseStrategy`
+  * `titleStrategy`
+  * `urlHandlingStrategy`
+  
+  The following options are meant to be configured using the options
+  available in `RouterModule.forRoot` or `provideRouter`.
+  * `onSameUrlNavigation`
+  * `paramsInheritanceStrategy`
+  * `urlUpdateStrategy`
+  * `canceledNavigationResolution`
+  
+  The following options are available in `RouterModule.forRoot` but not
+  available in `provideRouter`:
+  * `malformedUriErrorHandler` - This was found to not be used anywhere
+    internally.
+  * `errorHandler` - Developers can instead subscribe to `Router.events`
+    and filter for `NavigationError`.
 ### common
 | Commit | Type | Description |
 | -- | -- | -- |
+| [fe50813664](https://github.com/angular/angular/commit/fe50813664809a1177132a77bd2a316ad0858b9e) | feat | Add BrowserPlatformLocation to the public API ([#48488](https://github.com/angular/angular/pull/48488)) |
 | [2f4f0638c7](https://github.com/angular/angular/commit/2f4f0638c74dccfc2d0522f67ab226d3227c0566) | fix | Add data attribtue to NgOptimizedImage ([#48497](https://github.com/angular/angular/pull/48497)) |
 ### compiler
 | Commit | Type | Description |
 | -- | -- | -- |
 | [a532d71975](https://github.com/angular/angular/commit/a532d71975bef463223fd5d8322e3140760c9134) | feat | allow self-closing tags on custom elements ([#48535](https://github.com/angular/angular/pull/48535)) |
+| [caf7228f8a](https://github.com/angular/angular/commit/caf7228f8ac7e45e3fafeaee0576ae96738a047f) | fix | resolve deprecation warning ([#48652](https://github.com/angular/angular/pull/48652)) |
 | [33f35b04ef](https://github.com/angular/angular/commit/33f35b04ef0f32f25624a6be59f8635675e3e131) | fix | type-only symbols incorrectly retained when downlevelling custom decorators ([#48638](https://github.com/angular/angular/pull/48638)) |
 ### compiler-cli
 | Commit | Type | Description |
 | -- | -- | -- |
 | [caedef0f5b](https://github.com/angular/angular/commit/caedef0f5b37ac6530885223b26879c39c36c1bd) | fix | update `@babel/core` dependency and lock version ([#48634](https://github.com/angular/angular/pull/48634)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6acae1477a](https://github.com/angular/angular/commit/6acae1477a212bbd85d0670913c2925fa3bc0c24) | feat | Add `TestBed.runInInjectionContext` to help test functions which use `inject` ([#47955](https://github.com/angular/angular/pull/47955)) |
+| [38421578a2](https://github.com/angular/angular/commit/38421578a2573bcbc86c927ed4015e20fc39f04a) | feat | Make the `isStandalone()` function available in public API ([#48114](https://github.com/angular/angular/pull/48114)) |
+| [dd42974b07](https://github.com/angular/angular/commit/dd42974b070b068135c1bc34072486ae440e45e0) | feat | support TypeScript 4.9 ([#48005](https://github.com/angular/angular/pull/48005)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8aa8b4b77c](https://github.com/angular/angular/commit/8aa8b4b77cefcdd400ec9767b946b295ef42a066) | fix | Form provider FormsModule.withConfig return a FormsModule ([#48526](https://github.com/angular/angular/pull/48526)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5f0b53c735](https://github.com/angular/angular/commit/5f0b53c7352f19480185c6b5c769e5012a2d2faa) | feat | Allow auto-imports to suggest multiple possible imports. ([#47787](https://github.com/angular/angular/pull/47787)) |
+| [6a8ea29a04](https://github.com/angular/angular/commit/6a8ea29a04c35071d807bd2809e7fcbadd49f048) | fix | expose `package.json` for vscode extension resolution ([#48678](https://github.com/angular/angular/pull/48678)) |
+| [ce8160ecb2](https://github.com/angular/angular/commit/ce8160ecb28d6765d438eb65035835984eb956ec) | fix | Prevent crashes on unemitable references ([#47938](https://github.com/angular/angular/pull/47938)) |
+| [e615b598ba](https://github.com/angular/angular/commit/e615b598bab9c67bc34a44e39ef1d7066f9bf052) | fix | ship `/api` entry-point ([#48670](https://github.com/angular/angular/pull/48670)) |
+| [6ce7d76a0e](https://github.com/angular/angular/commit/6ce7d76a0ea9cfc1591bee408719fa6da069344f) | fix | update packages/language-service/build.sh script to work with vscode-ng-language-service's new Bazel build ([#48663](https://github.com/angular/angular/pull/48663)) |
 ### localize
 | Commit | Type | Description |
 | -- | -- | -- |
@@ -21,32 +67,17 @@
 | Commit | Type | Description |
 | -- | -- | -- |
 | [cc284afbbc](https://github.com/angular/angular/commit/cc284afbbc33b91884882204c5958a44a5d11392) | fix | combine newly-added imports in import manager ([#48620](https://github.com/angular/angular/pull/48620)) |
-## Special Thanks
-Alan Agius, Alex Castle, Andrew Kushnir, Derek Cormier, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Renan Ferro, Vadim, ced, mgechev, piyush132000 and robertIsaac
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.1.0-next.3"></a>
-# 15.1.0-next.3 (2022-12-14)
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c86484507f](https://github.com/angular/angular/commit/c86484507fdc0a44b3d20ea8b988b23f25ad9ac2) | fix | fix incorrect handling of camel-case css properties ([#48436](https://github.com/angular/angular/pull/48436)) |
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [fe50813664](https://github.com/angular/angular/commit/fe50813664809a1177132a77bd2a316ad0858b9e) | feat | Add BrowserPlatformLocation to the public API ([#48488](https://github.com/angular/angular/pull/48488)) |
-| [e362214924](https://github.com/angular/angular/commit/e362214924dbb784e5bd0efd96530134f8c91d32) | fix | Fix TestBed.overrideProvider type to include multi ([#48424](https://github.com/angular/angular/pull/48424)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a6849f27af](https://github.com/angular/angular/commit/a6849f27af129588091f635c6ae7a326241344fc) | fix | evaluate const tuple types statically ([#48091](https://github.com/angular/angular/pull/48091)) |
 ### router
 | Commit | Type | Description |
 | -- | -- | -- |
+| [228e992db7](https://github.com/angular/angular/commit/228e992db75bd7a2213b4596e6e2a8696578aa19) | docs | Deprecate canLoad guards in favor of canMatch ([#48180](https://github.com/angular/angular/pull/48180)) |
+| [0a8b8a66cd](https://github.com/angular/angular/commit/0a8b8a66cdfb86586811c79bec938b3ab7215e8f) | docs | Deprecate public members of Router that are meant to be configured elsewhere ([#48006](https://github.com/angular/angular/pull/48006)) |
+| [332461bd0c](https://github.com/angular/angular/commit/332461bd0c5f5734a9d7f051f0f4c6c173dd87c9) | feat | Add ability to override `onSameUrlNavigation` default per-navigation ([#48050](https://github.com/angular/angular/pull/48050)) |
 | [f58ad86e51](https://github.com/angular/angular/commit/f58ad86e51817f83ff18db790a347528262b850b) | feat | Add feature provider for enabling hash navigation ([#48301](https://github.com/angular/angular/pull/48301)) |
+| [73f03ad2d2](https://github.com/angular/angular/commit/73f03ad2d29811dda2ee03c5f18c79ebc9519c0b) | feat | Add new NavigationSkipped event for ignored navigations ([#48024](https://github.com/angular/angular/pull/48024)) |
+| [3fe75710d9](https://github.com/angular/angular/commit/3fe75710d97a0f3224b2b09c45d9b8a9ad6efe91) | fix | page refresh should not destroy history state ([#48540](https://github.com/angular/angular/pull/48540)) |
 ## Special Thanks
-Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, BrowserPerson, Jens, Jessica Janiuk, Joey Perrott, JoostK, Konstantin Kharitonov, Lukas Matta, Matthieu Riegler, Piotr Kowalski, Virginia Dooley, Yannick Baron, dario-piotrowicz, lsst25, piyush132000 and why520crazy
+Alan Agius, Alex Castle, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bob Watson, Charles Lyding, Derek Cormier, Doug Parker, Dylan Hunn, George Kalpakas, Greg Magolan, Jessica Janiuk, JiaLiPassion, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Renan Ferro, Tim Gates, Vadim, Virginia Dooley, ced, mgechev, piyush132000, robertIsaac and sr5434
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -66,32 +97,6 @@ Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, Brows
 | [b55d2dab5d](https://github.com/angular/angular/commit/b55d2dab5d76ffa809ac1feb78392a75c3081dec) | fix | evaluate const tuple types statically ([#48091](https://github.com/angular/angular/pull/48091)) |
 ## Special Thanks
 Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, BrowserPerson, Jens, Jessica Janiuk, Joey Perrott, JoostK, Konstantin Kharitonov, Lukas Matta, Piotr Kowalski, Virginia Dooley, Yannick Baron, dario-piotrowicz, lsst25, piyush132000 and why520crazy
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.1.0-next.2"></a>
-# 15.1.0-next.2 (2022-12-07)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8e52ca2714](https://github.com/angular/angular/commit/8e52ca271496b0feebf66b2dc7c8f396b73d61a0) | fix | Don't generate srcsets with very large sources ([#47997](https://github.com/angular/angular/pull/47997)) |
-| [f8ecc194e9](https://github.com/angular/angular/commit/f8ecc194e93bf9f80af0cb0e77032341bf2f9886) | fix | Update `Location` to support base href containing `origin` ([#48327](https://github.com/angular/angular/pull/48327)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4c023956d8](https://github.com/angular/angular/commit/4c023956d8dd05d8455612dff185a7e7918c9fed) | fix | make sure selectors inside container queries are correctly scoped ([#48353](https://github.com/angular/angular/pull/48353)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [27eaded62d](https://github.com/angular/angular/commit/27eaded62dbe059fc9ac02cfa7f53ccf8aebccbf) | fix | Produce diagnostic rather than crash when using invalid hostDirective ([#48314](https://github.com/angular/angular/pull/48314)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [38421578a2](https://github.com/angular/angular/commit/38421578a2573bcbc86c927ed4015e20fc39f04a) | feat | Make the `isStandalone()` function available in public API ([#48114](https://github.com/angular/angular/pull/48114)) |
-| [dd42974b07](https://github.com/angular/angular/commit/dd42974b070b068135c1bc34072486ae440e45e0) | feat | support TypeScript 4.9 ([#48005](https://github.com/angular/angular/pull/48005)) |
-| [5f9c7ceb90](https://github.com/angular/angular/commit/5f9c7ceb907be47dff3e203dd837fd6ee9133fcb) | fix | unable to inject ChangeDetectorRef inside host directives ([#48355](https://github.com/angular/angular/pull/48355)) |
-## Special Thanks
-Alan Agius, Alex Castle, Andrew Kushnir, Andrew Scott, Bob Watson, Charles Lyding, Derek Cormier, Joey Perrott, Konstantin Kharitonov, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, dario-piotrowicz, piyush132000 and sr5434
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -116,26 +121,6 @@ Alan Agius, Alex Castle, Andrew Kushnir, Andrew Scott, Bob Watson, Charles Lydin
 | [e4dcaa513e](https://github.com/angular/angular/commit/e4dcaa513e7d5ccd3a63edf6132792873f01f7c1) | fix | unable to inject ChangeDetectorRef inside host directives ([#48355](https://github.com/angular/angular/pull/48355)) |
 ## Special Thanks
 Alan Agius, Alex Castle, Andrew Kushnir, Andrew Scott, Bob Watson, Derek Cormier, Joey Perrott, Konstantin Kharitonov, Kristiyan Kostadinov, Paul Gschwendtner, Pawel Kozlowski, dario-piotrowicz and piyush132000
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.1.0-next.1"></a>
-# 15.1.0-next.1 (2022-11-30)
-## Deprecations
-### router
-- CanLoad guards in the Router are deprecated. Use CanMatch
-  instead.
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7d88700933](https://github.com/angular/angular/commit/7d8870093313575d89c8abe584c43d6fa8105fc8) | fix | accept inheriting the constructor from a class in a library ([#48156](https://github.com/angular/angular/pull/48156)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [228e992db7](https://github.com/angular/angular/commit/228e992db75bd7a2213b4596e6e2a8696578aa19) | docs | Deprecate canLoad guards in favor of canMatch ([#48180](https://github.com/angular/angular/pull/48180)) |
-| [332461bd0c](https://github.com/angular/angular/commit/332461bd0c5f5734a9d7f051f0f4c6c173dd87c9) | feat | Add ability to override `onSameUrlNavigation` default per-navigation ([#48050](https://github.com/angular/angular/pull/48050)) |
-## Special Thanks
-Alan Agius, Andrew Scott, Aristeidis Bampakos, Bob Watson, Derek Cormier, Dylan Hunn, JoostK, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Rokas Brazdžionis and piyush132000
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -174,65 +159,6 @@ Alan Agius, Andrew Scott, Aristeidis Bampakos, Bob Watson, Derek Cormier, JoostK
 | [fa5528fb5f](https://github.com/angular/angular/commit/fa5528fb5f0fe6e4e6ea85d39e43262018520c43) | fix | restore 'history.state' on popstate even if navigationId missing ([#48033](https://github.com/angular/angular/pull/48033)) |
 ## Special Thanks
 Alan Agius, Andrew Scott, Bjarki, Bob Watson, Brooke, Derek Cormier, Dylan Hunn, George Kalpakas, Greg Magolan, Ikko Ashimine, Ivan Rodriguez, Jessica Janiuk, Joe Roxbury, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Mikhail Savchuk, Nebojsa Cvetkovic, Pawel Kozlowski, Volodymyr and Wooshaah
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.1.0-next.0"></a>
-# 15.1.0-next.0 (2022-11-22)
-## Deprecations
-### router
-- router writable properties
-  
-  The following strategies are meant to be configured by registering the
-  application strategy in DI via the `providers` in the root `NgModule` or
-  `bootstrapApplication`:
-  * `routeReuseStrategy`
-  * `titleStrategy`
-  * `urlHandlingStrategy`
-  
-  The following options are meant to be configured using the options
-  available in `RouterModule.forRoot` or `provideRouter`.
-  * `onSameUrlNavigation`
-  * `paramsInheritanceStrategy`
-  * `urlUpdateStrategy`
-  * `canceledNavigationResolution`
-  
-  The following options are available in `RouterModule.forRoot` but not
-  available in `provideRouter`:
-  * `malformedUriErrorHandler` - This was found to not be used anywhere
-    internally.
-  * `errorHandler` - Developers can instead subscribe to `Router.events`
-    and filter for `NavigationError`.
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b0a62bea47](https://github.com/angular/angular/commit/b0a62bea475480768f2cffeb134960dc1165181c) | fix | Fix MockPlatformLocation events and missing onPopState implementation ([#48113](https://github.com/angular/angular/pull/48113)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6acae1477a](https://github.com/angular/angular/commit/6acae1477a212bbd85d0670913c2925fa3bc0c24) | feat | Add `TestBed.runInInjectionContext` to help test functions which use `inject` ([#47955](https://github.com/angular/angular/pull/47955)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0329c13e95](https://github.com/angular/angular/commit/0329c13e95127fd6f0044b6809b9bccb27f3cb91) | fix | don't mutate validators array ([#47830](https://github.com/angular/angular/pull/47830)) |
-| [d321880440](https://github.com/angular/angular/commit/d3218804401fb35d8da1de91960bbdf9ab0aa823) | fix | FormBuilder.group return right type with shorthand parameters. ([#48084](https://github.com/angular/angular/pull/48084)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5f0b53c735](https://github.com/angular/angular/commit/5f0b53c7352f19480185c6b5c769e5012a2d2faa) | feat | Allow auto-imports to suggest multiple possible imports. ([#47787](https://github.com/angular/angular/pull/47787)) |
-| [fd2eea5961](https://github.com/angular/angular/commit/fd2eea59613ab3cdde871046b6086216d77a386e) | fix | correctly handle host directive inputs/outputs ([#48147](https://github.com/angular/angular/pull/48147)) |
-| [ce8160ecb2](https://github.com/angular/angular/commit/ce8160ecb28d6765d438eb65035835984eb956ec) | fix | Prevent crashes on unemitable references ([#47938](https://github.com/angular/angular/pull/47938)) |
-| [764fa3d9c3](https://github.com/angular/angular/commit/764fa3d9c37eb70acd21879296ec039de07173ea) | fix | update packages/language-service/build.sh script to work with vscode-ng-language-service's new Bazel build ([#48120](https://github.com/angular/angular/pull/48120)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0a8b8a66cd](https://github.com/angular/angular/commit/0a8b8a66cdfb86586811c79bec938b3ab7215e8f) | docs | Deprecate public members of Router that are meant to be configured elsewhere ([#48006](https://github.com/angular/angular/pull/48006)) |
-| [73f03ad2d2](https://github.com/angular/angular/commit/73f03ad2d29811dda2ee03c5f18c79ebc9519c0b) | feat | Add new NavigationSkipped event for ignored navigations ([#48024](https://github.com/angular/angular/pull/48024)) |
-| [b51929a394](https://github.com/angular/angular/commit/b51929a394acaa129699bc72e34882b7e577dd7f) | fix | correct type of nextState parameter in canDeactivate ([#48038](https://github.com/angular/angular/pull/48038)) |
-| [1df0ed7d6e](https://github.com/angular/angular/commit/1df0ed7d6e636d921ad617465c3956dc1b6292eb) | fix | Ensure renavigating in component init works with enabledBlocking ([#48063](https://github.com/angular/angular/pull/48063)) |
-| [1976e37475](https://github.com/angular/angular/commit/1976e37475e144d4df27b1558b2acd929bd439be) | fix | restore 'history.state' on popstate even if navigationId missing ([#48033](https://github.com/angular/angular/pull/48033)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, Andrew Scott, Bjarki, Bob Watson, Brooke, Derek Cormier, Dylan Hunn, George Kalpakas, Greg Magolan, Ikko Ashimine, Ivan Rodriguez, Jessica Janiuk, JiaLiPassion, Joe Roxbury, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Mikhail Savchuk, Nebojsa Cvetkovic, Pawel Kozlowski, Volodymyr, Wooshaah and mgechev
 
 <!-- CHANGELOG SPLIT MARKER -->
 
