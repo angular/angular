@@ -113,7 +113,9 @@ async function getAffectedFiles(baseSha, headSha) {
 
 function httpGet(url, options = {}) {
   options.headers ??= {};
-  options.headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+  options.headers[
+    'Authorization'
+  ] = `token ${process.env.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN}`;
   // User agent is required
   // https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#user-agent-required
   options.headers['User-Agent'] = `AIO_Angular_CLI_Sources_Update`;
