@@ -28,7 +28,7 @@ jobs:
       - name: Generate CLI help
         run: node aio/scripts/update-cli-help/index.mjs
       - name: Create a PR (if necessary)
-        uses: angular/dev-infra/github-actions/create-pr-for-changes@96fdaaa056f1cfa7ffbc4c69b7e9007279f76c94
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@ad1374e8222825244b36a91d0f085f8fc3c7126d
         with:
           branch-prefix: update-cli-help
           pr-title: 'docs: update Angular CLI help'
