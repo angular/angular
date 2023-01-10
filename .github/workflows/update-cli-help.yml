@@ -27,6 +27,8 @@ jobs:
           persist-credentials: false
       - name: Generate CLI help
         run: node aio/scripts/update-cli-help/index.mjs
+        env:
+          ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${secrets.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN}
       - name: Create a PR (if necessary)
         uses: angular/dev-infra/github-actions/create-pr-for-changes@ad1374e8222825244b36a91d0f085f8fc3c7126d
         with:
