@@ -43,9 +43,15 @@ async function main() {
   execSync('git init', execOptions);
   execSync('git remote add origin https://github.com/angular/cli-builds.git', execOptions);
   // fetch a commit
-  execSync(`git fetch origin ${latestSha} --depth=1`, execOptions);
+  execSync(`git fetch origin ${latestSha}`, execOptions);
   // reset this repository's main branch to the commit of interest
   execSync('git reset --hard FETCH_HEAD', execOptions);
+  // get sha when files where changed
+  const shaWhenFilesChanged = execSync(`git rev-list -1 ${latestSha} "help/"`, {
+    encoding: 'utf8',
+    cwd: temporaryDir,
+    stdio: ['ignore', 'pipe', 'ignore'],
+  }).trim();
 
   // Delete current contents
   await rm(CLI_HELP_CONTENT_PATH, {recursive: true, force: true});
@@ -53,15 +59,13 @@ async function main() {
   // Move Help contents
   await rename(join(temporaryDir, 'help'), CLI_HELP_CONTENT_PATH);
 
-  const {version} = JSON.parse(await readFile(join(temporaryDir, 'package.json'), 'utf-8'));
-
   // Write SHA to file.
   await writeFile(
     CLI_SHA_PATH,
     JSON.stringify(
       {
-        sha: latestSha,
-        version,
+        branchName: branch,
+        sha: shaWhenFilesChanged,
       },
       undefined,
       2

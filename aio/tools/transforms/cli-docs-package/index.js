@@ -1,5 +1,4 @@
 const {resolve} = require('canonical-path');
-const semver = require('semver');
 const Package = require('dgeni').Package;
 const basePackage = require('../angular-base-package');
 const contentPackage = require('../content-package');
@@ -46,11 +45,10 @@ module.exports =
 
         .config(function(renderDocsProcessor) {
 
-          const cliPackage = require(resolve(CLI_SOURCE_HELP_PATH, 'build-info.json'));
-          const version = semver.clean(cliPackage.version);
+          const {branchName} = require(resolve(CLI_SOURCE_HELP_PATH, 'build-info.json'));
           const repo = 'angular-cli';
           const owner = 'angular';
-          const cliVersionInfo = {gitRepoInfo: {owner, repo}, currentVersion: {raw: version}};
+          const cliVersionInfo = {gitRepoInfo: {owner, repo}, currentVersion: {branchName}};
 
           // Add the cli version data to the renderer, for use in things like github links
           renderDocsProcessor.extraData.cliVersionInfo = cliVersionInfo;
