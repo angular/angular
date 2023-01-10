@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, TmplAstNode, TmplAstReference as Reference} from '@angular/compiler';
+import {AST, TmplAstNode as Node, TmplAstReference as Reference, TmplAstVariable as Variable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
@@ -24,15 +24,21 @@ class ComponentVariableShadowsTemplateReference extends
   override visitNode(
       ctx: TemplateContext<ErrorCode.COMPONENT_VARIABLE_SHADOWS_TEMPLATE_REFERENCE>,
       component: ts.ClassDeclaration,
-      node: TmplAstNode|AST,
+      node: Node|AST,
       ): NgTemplateDiagnostic<ErrorCode.COMPONENT_VARIABLE_SHADOWS_TEMPLATE_REFERENCE>[] {
-    if (!(node instanceof Reference)) return [];
+    if (!(node instanceof Reference || node instanceof Variable)) return [];
 
     const templateReference = node.name;
-    const componentVariables =
-        component.members.map(member => (member.name as ts.Identifier)?.escapedText.toString());
+    const parent = component.parent as unknown as
+        {classifiableNames: Set<string>, identifiers: Map<string, string>};
+    const componentVariables = new Set<string>();
+    for (let id of parent.identifiers.keys()) {
+      if (!parent.classifiableNames.has(id)) {
+        componentVariables.add(id);
+      }
+    }
 
-    if (!componentVariables.includes(templateReference)) {
+    if (!componentVariables.has(templateReference)) {
       return [];
     }
 
