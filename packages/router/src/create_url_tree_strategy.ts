@@ -21,7 +21,20 @@ export class LegacyCreateUrlTree implements CreateUrlTreeStrategy {
       relativeTo: ActivatedRoute|null|undefined, currentState: RouterState, currentUrlTree: UrlTree,
       commands: any[], queryParams: Params|null, fragment: string|null): UrlTree {
     const a = relativeTo || currentState.root;
-    return createUrlTree(a, currentUrlTree, commands, queryParams, fragment);
+    const tree = createUrlTree(a, currentUrlTree, commands, queryParams, fragment);
+    if (NG_DEV_MODE) {
+      const treeFromSnapshotStrategy = new CreateUrlTreeUsingSnapshot().createUrlTree(
+          relativeTo, currentState, currentUrlTree, commands, queryParams, fragment);
+      if (treeFromSnapshotStrategy.toString() !== tree.toString()) {
+        let warningString = `The navigation to ${tree.toString()} will instead go to ${
+            treeFromSnapshotStrategy.toString()} in an upcoming version of Angular.`;
+        if (!!relativeTo) {
+          warningString += ' `relativeTo` might need to be removed from the `UrlCreationOptions`.';
+        }
+        tree._warnIfUsedForNavigation = warningString;
+      }
+    }
+    return tree;
   }
 }
 

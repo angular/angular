@@ -891,6 +891,9 @@
     "name": "createTemplateRef"
   },
   {
+    "name": "createUrlTree"
+  },
+  {
     "name": "deactivateRouteAndItsChildren"
   },
   {
