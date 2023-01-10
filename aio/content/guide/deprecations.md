@@ -379,6 +379,8 @@ The injector no longer requires the Reflect polyfill, reducing application size 
 
 <a id="router-writable-properties"></a>
 
+### Public `Router` properties
+
 None of the public properties of the `Router` are meant to be writeable.
 They should all be configured using other methods, all of which have been
 documented.
@@ -403,6 +405,8 @@ The following options are deprecated in entirely:
 * `errorHandler` - Subscribe to the `Router` events and filter for `NavigationError` instead.
 
 <a id="router-can-load"></a>
+
+### `CanLoad` guards
 
 `CanLoad` guards in the Router are deprecated in favor of `CanMatch`. These guards execute at the same time
 in the lifecycle of a navigation. A `CanMatch` guard which returns false will prevent the `Route` from being
