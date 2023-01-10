@@ -905,7 +905,10 @@ export interface Validator {
 // @public
 export interface ValidatorFn {
     // (undocumented)
-    (control: AbstractControl): ValidationErrors | null;
+    (control: AbstractControl): (ValidationErrors & {
+        then?: never;
+        subscribe?: never;
+    }) | null;
 }
 
 // @public
