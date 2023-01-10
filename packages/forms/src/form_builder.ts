@@ -8,7 +8,7 @@
 
 import {inject, Injectable} from '@angular/core';
 
-import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
+import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
 import {AbstractControl, AbstractControlOptions, FormHooks} from './model/abstract_model';
 import {FormArray, UntypedFormArray} from './model/form_array';
 import {FormControl, FormControlOptions, FormControlState, UntypedFormControl} from './model/form_control';
@@ -22,10 +22,17 @@ function isAbstractControlOptions(options: AbstractControlOptions|{[key: string]
        (options as AbstractControlOptions).updateOn !== undefined);
 }
 
+// Sometimes we might need this base signature for ValidatorFn because of compiler limitations
+// see https://github.com/microsoft/TypeScript/issues/32608
+export interface UnsafeValidatorFn {
+  (control: AbstractControl): ValidationErrors|null;
+}
+
 /**
  * The union of all validator types that can be accepted by a ControlConfig.
  */
-type ValidatorConfig = ValidatorFn|AsyncValidatorFn|ValidatorFn[]|AsyncValidatorFn[];
+
+type ValidatorConfig = UnsafeValidatorFn|AsyncValidatorFn|UnsafeValidatorFn[]|AsyncValidatorFn[];
 
 /**
  * The compiler may not always be able to prove that the elements of the control config are a tuple

@@ -816,7 +816,7 @@ describe('FormGroup', () => {
     let group: FormGroup;
 
     beforeEach(waitForAsync(() => {
-      control = new FormControl('', null, asyncValidatorReturningObservable);
+      control = new FormControl('', [], asyncValidatorReturningObservable);
       group = new FormGroup({'one': control});
     }));
 
