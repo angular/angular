@@ -555,10 +555,14 @@ export class Router {
   navigateByUrl(url: string|UrlTree, extras: NavigationBehaviorOptions = {
     skipLocationChange: false
   }): Promise<boolean> {
-    if (typeof ngDevMode === 'undefined' ||
-        ngDevMode && this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
-      this.console.warn(
-          `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
+    if (NG_DEV_MODE) {
+      if (this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
+        this.console.warn(
+            `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
+      }
+      if (url instanceof UrlTree && url._warnIfUsedForNavigation) {
+        this.console.warn(url._warnIfUsedForNavigation);
+      }
     }
 
     const urlTree = isUrlTree(url) ? url : this.parseUrl(url);

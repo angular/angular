@@ -190,6 +190,8 @@ function matrixParamsMatch(
 export class UrlTree {
   /** @internal */
   _queryParamMap?: ParamMap;
+  /** @internal */
+  _warnIfUsedForNavigation?: string;
 
   constructor(
       /** The root segment group of the URL tree */
