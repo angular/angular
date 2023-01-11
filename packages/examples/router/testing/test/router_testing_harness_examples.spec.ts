@@ -10,7 +10,7 @@ import {AsyncPipe} from '@angular/common';
 import {Component, inject} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ActivatedRoute, CanActivateFn, provideRouter, Router} from '@angular/router';
-import {navigateForTest} from '@angular/router/testing';
+import {RouterTestingHarness} from '@angular/router/testing';
 
 describe('navigate for test examples', () => {
   // #docregion RoutedComponent
@@ -24,9 +24,10 @@ describe('navigate for test examples', () => {
       providers: [provideRouter([{path: '', component: TestCmp}])],
     });
 
-    const {rootFixture, activatedComponent} = await navigateForTest('/', TestCmp);
+    const harness = await RouterTestingHarness.get();
+    const activatedComponent = await harness.navigateByUrl('/', TestCmp);
     expect(activatedComponent).toBeInstanceOf(TestCmp);
-    expect(rootFixture.nativeElement.innerHTML).toContain('hello world');
+    expect(harness.routeNativeElement?.innerHTML).toContain('hello world');
   });
   // #enddocregion
 
@@ -53,10 +54,10 @@ describe('navigate for test examples', () => {
       ],
     });
 
-    await navigateForTest('/admin');
+    const harness = await RouterTestingHarness.get('/admin');
     expect(TestBed.inject(Router).url).toEqual('/login');
     isLoggedIn = true;
-    await navigateForTest('/admin');
+    await harness.navigateByUrl('/admin');
     expect(TestBed.inject(Router).url).toEqual('/admin');
     // #enddocregion
   });
@@ -80,11 +81,12 @@ describe('navigate for test examples', () => {
       providers: [provideRouter([{path: 'search', component: SearchCmp}])],
     });
 
-    const {rootFixture, activatedComponent} = await navigateForTest('/search', SearchCmp);
+    const harness = await RouterTestingHarness.get();
+    const activatedComponent = await harness.navigateByUrl('/search', SearchCmp);
     await activatedComponent.searchFor('books');
-    rootFixture.detectChanges();
+    harness.detectChanges();
     expect(TestBed.inject(Router).url).toEqual('/search?query=books');
-    expect(rootFixture.nativeElement.innerHTML).toContain('books');
+    expect(harness.routeNativeElement?.innerHTML).toContain('books');
     // #enddocregion
   });
 });

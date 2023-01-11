@@ -7,16 +7,18 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ActivatedRoute, provideRouter} from '@angular/router';
-import {navigateForTest} from '@angular/router/testing';
+import {ActivatedRoute, provideRouter, Router} from '@angular/router';
+import {RouterTestingHarness} from '@angular/router/testing';
+import {of} from 'rxjs';
+import {delay} from 'rxjs/operators';
 
 describe('navigateForTest', () => {
   it('gives null for the activatedComponent when no routes are configured', async () => {
     TestBed.configureTestingModule({providers: [provideRouter([])]});
-    const {activatedComponent} = await navigateForTest('/');
-    expect(activatedComponent).toBeNull();
+    const harness = await RouterTestingHarness.get('/');
+    expect(harness.routeDebugElement).toBeNull();
   });
   it('navigates to routed component', async () => {
     @Component({standalone: true, template: 'hello {{name}}'})
@@ -25,9 +27,11 @@ describe('navigateForTest', () => {
     }
 
     TestBed.configureTestingModule({providers: [provideRouter([{path: '', component: TestCmp}])]});
-    const {rootFixture, activatedComponent} = await navigateForTest('/', TestCmp);
+    const harness = await RouterTestingHarness.get();
+    const activatedComponent = await harness.navigateByUrl('/', TestCmp);
+
     expect(activatedComponent).toBeInstanceOf(TestCmp);
-    expect(rootFixture.nativeElement.innerHTML).toContain('hello world');
+    expect(harness.routeNativeElement?.innerHTML).toContain('hello world');
   });
 
   it('executes guards on the path', async () => {
@@ -42,7 +46,7 @@ describe('navigateForTest', () => {
         children: []
       }])]
     });
-    await navigateForTest('/');
+    await RouterTestingHarness.get('/');
     expect(guardCalled).toBeTrue();
   });
 
@@ -56,7 +60,7 @@ describe('navigateForTest', () => {
         children: []
       }])]
     });
-    await expectAsync(navigateForTest('/')).toBeRejected();
+    await expectAsync(RouterTestingHarness.get('/')).toBeRejected();
   });
 
   it('can observe param changes on routed component with second navigation', async () => {
@@ -70,11 +74,12 @@ describe('navigateForTest', () => {
         provideRouter([{path: ':id', component: TestCmp}]),
       ]
     });
-    const {rootFixture, activatedComponent} = await navigateForTest('/123', TestCmp);
+    const harness = await RouterTestingHarness.get();
+    const activatedComponent = await harness.navigateByUrl('/123', TestCmp);
     expect(activatedComponent.route).toBeInstanceOf(ActivatedRoute);
-    expect(rootFixture.nativeElement.innerHTML).toContain('123');
-    await navigateForTest('/456');
-    expect(rootFixture.nativeElement.innerHTML).toContain('456');
+    expect(harness.routeNativeElement?.innerHTML).toContain('123');
+    await harness.navigateByUrl('/456');
+    expect(harness.routeNativeElement?.innerHTML).toContain('456');
   });
 
   it('throws an error if the routed component instance does not match the one required',
@@ -91,6 +96,31 @@ describe('navigateForTest', () => {
            provideRouter([{path: '**', component: TestCmp}]),
          ]
        });
-       await expectAsync(navigateForTest('/123', OtherCmp)).toBeRejected();
+       const harness = await RouterTestingHarness.get();
+       await expectAsync(harness.navigateByUrl('/123', OtherCmp)).toBeRejected();
      });
+
+  it('waits for redirects using router.navigate', async () => {
+    @Component({standalone: true, template: 'test'})
+    class TestCmp {
+    }
+    @Component({standalone: true, template: 'redirect'})
+    class OtherCmp {
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'test',
+            canActivate: [() => inject(Router).navigateByUrl('/redirect')],
+            component: TestCmp
+          },
+          {path: 'redirect', canActivate: [() => of(true).pipe(delay(100))], component: OtherCmp},
+        ]),
+      ]
+    });
+    await RouterTestingHarness.get('test');
+    expect(TestBed.inject(Router).url).toEqual('/redirect');
+  });
 });
