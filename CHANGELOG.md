@@ -1,3 +1,14 @@
+<a name="15.2.0-next.0"></a>
+# 15.2.0-next.0 (2023-01-11)
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [31b94c762f](https://github.com/angular/angular/commit/31b94c762fc91ab6cabe08ea6812780fdcf92a64) | feat | Add a withNavigationErrorHandler feature to provideRouter ([#48551](https://github.com/angular/angular/pull/48551)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Scott, Paul Gschwendtner and angular-robot[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.1.0"></a>
 # 15.1.0 (2023-01-10)
 ## Deprecations
