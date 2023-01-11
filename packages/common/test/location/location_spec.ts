@@ -6,40 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, CommonModule, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
+import {CommonModule, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {MockLocationStrategy, MockPlatformLocation} from '@angular/common/testing';
 import {TestBed} from '@angular/core/testing';
 
 const baseUrl = '/base';
 
 describe('Location Class', () => {
-  describe('stripTrailingSlash', () => {
-    it('should strip single character slash', () => {
-      const input = '/';
-      expect(Location.stripTrailingSlash(input)).toBe('');
-    });
-
-    it('should normalize strip a trailing slash', () => {
-      const input = baseUrl + '/';
-      expect(Location.stripTrailingSlash(input)).toBe(baseUrl);
-    });
-
-    it('should ignore query params when stripping a slash', () => {
-      const input = baseUrl + '/?param=1';
-      expect(Location.stripTrailingSlash(input)).toBe(baseUrl + '?param=1');
-    });
-
-    it('should not remove slashes inside query params', () => {
-      const input = baseUrl + '?test/?=3';
-      expect(Location.stripTrailingSlash(input)).toBe(input);
-    });
-
-    it('should not remove slashes after a pound sign', () => {
-      const input = baseUrl + '#test/?=3';
-      expect(Location.stripTrailingSlash(input)).toBe(input);
-    });
-  });
-
   describe('location.getState()', () => {
     let location: Location;
 
@@ -213,57 +186,6 @@ describe('Location Class', () => {
       locationStrategy.simulatePopState('/test');
 
       expect(notificationCount).toBe(1);
-    });
-  });
-
-  describe('location.normalize(url) should return only route', () => {
-    const basePath = '/en';
-    const route = '/go/to/there';
-    const url = basePath + route;
-    const getBaseHref = (origin: string) => origin + basePath + '/';
-
-    it('in case APP_BASE_HREF starts with http:', () => {
-      const origin = 'http://example.com';
-      const baseHref = getBaseHref(origin);
-
-      TestBed.configureTestingModule({providers: [{provide: APP_BASE_HREF, useValue: baseHref}]});
-
-      const location = TestBed.inject(Location);
-
-      expect(location.normalize(url)).toBe(route);
-    });
-
-    it('in case APP_BASE_HREF starts with https:', () => {
-      const origin = 'https://example.com';
-      const baseHref = getBaseHref(origin);
-
-      TestBed.configureTestingModule({providers: [{provide: APP_BASE_HREF, useValue: baseHref}]});
-
-      const location = TestBed.inject(Location);
-
-      expect(location.normalize(url)).toBe(route);
-    });
-
-    it('in case APP_BASE_HREF starts with no protocol', () => {
-      const origin = '//example.com';
-      const baseHref = getBaseHref(origin);
-
-      TestBed.configureTestingModule({providers: [{provide: APP_BASE_HREF, useValue: baseHref}]});
-
-      const location = TestBed.inject(Location);
-
-      expect(location.normalize(url)).toBe(route);
-    });
-
-    it('in case APP_BASE_HREF starts with no origin', () => {
-      const origin = '';
-      const baseHref = getBaseHref(origin);
-
-      TestBed.configureTestingModule({providers: [{provide: APP_BASE_HREF, useValue: baseHref}]});
-
-      const location = TestBed.inject(Location);
-
-      expect(location.normalize(url)).toBe(route);
     });
   });
 });

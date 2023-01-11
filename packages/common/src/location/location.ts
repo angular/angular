@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Injectable, OnDestroy, ɵɵinject} from '@angular/core';
+import {EventEmitter, inject, Injectable, OnDestroy, ɵɵinject} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
 import {LocationStrategy} from './location_strategy';
-import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';
+import {UrlService} from './url_service';
 
 /** @publicApi */
 export interface PopStateEvent {
@@ -57,7 +57,7 @@ export class Location implements OnDestroy {
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
   /** @internal */
-  _basePath: string;
+  private readonly _urlService: UrlService = inject(UrlService);
   /** @internal */
   _locationStrategy: LocationStrategy;
   /** @internal */
@@ -67,14 +67,6 @@ export class Location implements OnDestroy {
 
   constructor(locationStrategy: LocationStrategy) {
     this._locationStrategy = locationStrategy;
-    const baseHref = this._locationStrategy.getBaseHref();
-    // Note: This class's interaction with base HREF does not fully follow the rules
-    // outlined in the spec https://www.freesoft.org/CIE/RFC/1808/18.htm.
-    // Instead of trying to fix individual bugs with more and more code, we should
-    // investigate using the URL constructor and providing the base as a second
-    // argument.
-    // https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#parameters
-    this._basePath = _stripOrigin(stripTrailingSlash(_stripIndexHtml(baseHref)));
     this._locationStrategy.onPopState((ev) => {
       this._subject.emit({
         'url': this.path(true),
@@ -98,18 +90,8 @@ export class Location implements OnDestroy {
    *
    * @returns The normalized URL path.
    */
-  // TODO: vsavkin. Remove the boolean flag and always include hash once the deprecated router is
-  // removed.
   path(includeHash: boolean = false): string {
-    return this.normalize(this._locationStrategy.path(includeHash));
-  }
-
-  /**
-   * Reports the current state of the location history.
-   * @returns The current value of the `history.state` object.
-   */
-  getState(): unknown {
-    return this._locationStrategy.getState();
+    return this._urlService.path(includeHash);
   }
 
   /**
@@ -122,7 +104,7 @@ export class Location implements OnDestroy {
    * otherwise.
    */
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
-    return this.path() == this.normalize(path + normalizeQueryParams(query));
+    return this._urlService.isCurrentPathEqualTo(path, query);
   }
 
   /**
@@ -133,7 +115,7 @@ export class Location implements OnDestroy {
    * @returns The normalized URL string.
    */
   normalize(url: string): string {
-    return Location.stripTrailingSlash(_stripBasePath(this._basePath, _stripIndexHtml(url)));
+    return this._urlService.normalize(url);
   }
 
   /**
@@ -147,10 +129,15 @@ export class Location implements OnDestroy {
    * @returns  A normalized platform-specific URL.
    */
   prepareExternalUrl(url: string): string {
-    if (url && url[0] !== '/') {
-      url = '/' + url;
-    }
-    return this._locationStrategy.prepareExternalUrl(url);
+    return this._urlService.prepareExternalUrl(url);
+  }
+
+  /**
+   * Reports the current state of the location history.
+   * @returns The current value of the `history.state` object.
+   */
+  getState(): unknown {
+    return this._locationStrategy.getState();
   }
 
   // TODO: rename this method to pushState
@@ -166,7 +153,7 @@ export class Location implements OnDestroy {
   go(path: string, query: string = '', state: any = null): void {
     this._locationStrategy.pushState(state, '', path, query);
     this._notifyUrlChangeListeners(
-        this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
+        this._urlService.prepareExternalUrl(path + UrlService.normalizeQueryParams(query)), state);
   }
 
   /**
@@ -180,7 +167,7 @@ export class Location implements OnDestroy {
   replaceState(path: string, query: string = '', state: any = null): void {
     this._locationStrategy.replaceState(state, '', path, query);
     this._notifyUrlChangeListeners(
-        this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
+        this._urlService.prepareExternalUrl(path + UrlService.normalizeQueryParams(query)), state);
   }
 
   /**
@@ -271,7 +258,7 @@ export class Location implements OnDestroy {
    *
    * @returns The normalized URL parameters string.
    */
-  public static normalizeQueryParams: (params: string) => string = normalizeQueryParams;
+  public static normalizeQueryParams: (params: string) => string = UrlService.normalizeQueryParams;
 
   /**
    * Joins two parts of a URL with a slash if needed.
@@ -282,7 +269,7 @@ export class Location implements OnDestroy {
    *
    * @returns The joined URL string.
    */
-  public static joinWithSlash: (start: string, end: string) => string = joinWithSlash;
+  public static joinWithSlash: (start: string, end: string) => string = UrlService.joinWithSlash;
 
   /**
    * Removes a trailing slash from a URL string if needed.
@@ -293,31 +280,9 @@ export class Location implements OnDestroy {
    *
    * @returns The URL string, modified if needed.
    */
-  public static stripTrailingSlash: (url: string) => string = stripTrailingSlash;
+  public static stripTrailingSlash: (url: string) => string = UrlService.stripTrailingSlash;
 }
 
 export function createLocation() {
   return new Location(ɵɵinject(LocationStrategy as any));
-}
-
-function _stripBasePath(basePath: string, url: string): string {
-  return basePath && url.startsWith(basePath) ? url.substring(basePath.length) : url;
-}
-
-function _stripIndexHtml(url: string): string {
-  return url.replace(/\/index.html$/, '');
-}
-
-function _stripOrigin(baseHref: string): string {
-  // DO NOT REFACTOR! Previously, this check looked like this:
-  // `/^(https?:)?\/\//.test(baseHref)`, but that resulted in
-  // syntactically incorrect code after Closure Compiler minification.
-  // This was likely caused by a bug in Closure Compiler, but
-  // for now, the check is rewritten to use `new RegExp` instead.
-  const isAbsoluteUrl = (new RegExp('^(https?:)?//')).test(baseHref);
-  if (isAbsoluteUrl) {
-    const [, pathname] = baseHref.split(/\/\/[^\/]+/);
-    return pathname;
-  }
-  return baseHref;
 }
