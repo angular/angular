@@ -243,6 +243,9 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
 
   private _applyChanges(changes: IterableChanges<T>) {
     const viewContainer = this._viewContainer;
+    // TODO: dev mode
+    const initialSize = viewContainer.length;
+    let noOfAdd = 0, noOfRemove = 0;
     changes.forEachOperation(
         (item: IterableChangeRecord<T>, adjustedPreviousIndex: number|null,
          currentIndex: number|null) => {
@@ -253,9 +256,11 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
             viewContainer.createEmbeddedView(
                 this._template, new NgForOfContext<T, U>(item.item, this._ngForOf!, -1, -1),
                 currentIndex === null ? undefined : currentIndex);
+            noOfAdd++;
           } else if (currentIndex == null) {
             viewContainer.remove(
                 adjustedPreviousIndex === null ? undefined : adjustedPreviousIndex);
+            noOfRemove++;
           } else if (adjustedPreviousIndex !== null) {
             const view = viewContainer.get(adjustedPreviousIndex)!;
             viewContainer.move(view, currentIndex);
@@ -275,6 +280,13 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
       const viewRef = <EmbeddedViewRef<NgForOfContext<T, U>>>viewContainer.get(record.currentIndex);
       applyViewChange(viewRef, record);
     });
+
+    if (NG_DEV_MODE) {
+      if (this._trackByFn == null && noOfRemove > 0 && initialSize === noOfRemove &&
+          initialSize === noOfAdd) {
+        throw new Error('BAM! the collection got re-created!');
+      }
+    }
   }
 
   /**

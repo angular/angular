@@ -384,6 +384,15 @@ describe('ngFor', () => {
          getComponent().items = ['e', 'f', 'h'];
          detectChangesAndExpectText('efh');
        }));
+
+    it('should warn if the entire collection was re-created without providing trackBy', () => {
+      fixture = createTestComponent(`<div *ngFor="let item of items">{{item}}</div>`);
+      getComponent().items = ['a', 'b', 'c'];
+      detectChangesAndExpectText('abc');
+
+      getComponent().items = ['d', 'e', 'f'];
+      detectChangesAndExpectText('def');
+    });
   });
 
   it('should be available as a standalone directive', () => {
