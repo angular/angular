@@ -199,7 +199,7 @@
     {
       "name": "class",
       "command": "class [name]",
-      "shortDescription": "Creates a new, generic class definition in the given or default project.",
+      "shortDescription": "Creates a new, generic class definition in the given project.",
       "options": [
         {
           "name": "name",
@@ -232,7 +232,7 @@
     {
       "name": "component",
       "command": "component [name]",
-      "shortDescription": "Creates a new, generic component definition in the given or default project.",
+      "shortDescription": "Creates a new, generic component definition in the given project.",
       "options": [
         {
           "name": "change-detection",
@@ -381,9 +381,33 @@
       "deprecated": false
     },
     {
+      "name": "config",
+      "command": "config [type]",
+      "shortDescription": "Generates a configuration file in the given project.",
+      "options": [
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "enum": [
+            "karma",
+            "browserslist"
+          ],
+          "description": "Specifies which type of configuration file to create.",
+          "positional": 0
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
       "name": "directive",
       "command": "directive [name]",
-      "shortDescription": "Creates a new, generic directive definition in the given or default project.",
+      "shortDescription": "Creates a new, generic directive definition in the given project.",
       "options": [
         {
           "name": "export",
@@ -456,7 +480,7 @@
     {
       "name": "enum",
       "command": "enum [name]",
-      "shortDescription": "Generates a new, generic enum definition for the given or default project.",
+      "shortDescription": "Generates a new, generic enum definition in the given project.",
       "options": [
         {
           "name": "name",
@@ -497,7 +521,7 @@
     {
       "name": "guard",
       "command": "guard [name]",
-      "shortDescription": "Generates a new, generic route guard definition in the given or default project.",
+      "shortDescription": "Generates a new, generic route guard definition in the given project.",
       "options": [
         {
           "name": "flat",
@@ -545,7 +569,7 @@
     {
       "name": "interceptor",
       "command": "interceptor [name]",
-      "shortDescription": "Creates a new, generic interceptor definition in the given or default project.",
+      "shortDescription": "Creates a new, generic interceptor definition in the given project.",
       "options": [
         {
           "name": "flat",
@@ -583,7 +607,7 @@
     {
       "name": "interface",
       "command": "interface [name] [type]",
-      "shortDescription": "Creates a new, generic interface definition in the given or default project.",
+      "shortDescription": "Creates a new, generic interface definition in the given project.",
       "options": [
         {
           "name": "name",
@@ -671,7 +695,7 @@
     {
       "name": "module",
       "command": "module [name]",
-      "shortDescription": "Creates a new, generic NgModule definition in the given or default project.",
+      "shortDescription": "Creates a new, generic NgModule definition in the given project.",
       "options": [
         {
           "name": "flat",
@@ -728,7 +752,7 @@
     {
       "name": "pipe",
       "command": "pipe [name]",
-      "shortDescription": "Creates a new, generic pipe definition in the given or default project.",
+      "shortDescription": "Creates a new, generic pipe definition in the given project.",
       "options": [
         {
           "name": "export",
@@ -788,7 +812,7 @@
     {
       "name": "resolver",
       "command": "resolver [name]",
-      "shortDescription": "Generates a new, generic resolver definition in the given or default project.",
+      "shortDescription": "Generates a new, generic resolver definition in the given project.",
       "options": [
         {
           "name": "flat",
@@ -828,7 +852,7 @@
     {
       "name": "service",
       "command": "service [name]",
-      "shortDescription": "Creates a new, generic service definition in the given or default project.",
+      "shortDescription": "Creates a new, generic service definition in the given project.",
       "options": [
         {
           "name": "flat",
@@ -882,7 +906,7 @@
     {
       "name": "web-worker",
       "command": "web-worker [name]",
-      "shortDescription": "Creates a new, generic web worker definition in the given or default project.",
+      "shortDescription": "Creates a new, generic web worker definition in the given project.",
       "options": [
         {
           "name": "name",
