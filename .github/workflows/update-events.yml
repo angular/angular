@@ -30,6 +30,8 @@ jobs:
           # account that is attempted to be used for authentication, instead the remote is set to
           # an authenticated URL.
           persist-credentials: false
+          # This is needed as otherwise the PR creation will fail with `shallow update not allowed` when the forked branch is not in sync.
+          fetch-depth: 0
       - name: Generate `events.json`
         run: node aio/scripts/generate-events/index.mjs --ignore-invalid-dates
       - name: Create a PR (if necessary)
