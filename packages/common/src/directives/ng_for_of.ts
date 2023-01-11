@@ -179,6 +179,16 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     return this._trackByFn;
   }
 
+  /**
+   * Specifies a `TrackByFunction` that returns the value for the given key.
+   *
+   * @see `TrackByFunction`
+   */
+  @Input()
+  set ngForTrackByKey(key: keyof T) {
+    this._trackByFn = (index: number, item: T) => item[key];
+  }
+
   private _ngForOf: U|undefined|null = null;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T>|null = null;

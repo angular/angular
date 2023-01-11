@@ -519,9 +519,10 @@ class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     set ngForTrackBy(fn: TrackByFunction<T>);
     // (undocumented)
     get ngForTrackBy(): TrackByFunction<T>;
+    set ngForTrackByKey(key: keyof T);
     static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForOf<any, any>, "[ngFor][ngForOf]", never, { "ngForOf": "ngForOf"; "ngForTrackBy": "ngForTrackBy"; "ngForTemplate": "ngForTemplate"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForOf<any, any>, "[ngFor][ngForOf]", never, { "ngForOf": "ngForOf"; "ngForTrackBy": "ngForTrackBy"; "ngForTrackByKey": "ngForTrackByKey"; "ngForTemplate": "ngForTemplate"; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgForOf<any, any>, never>;
 }

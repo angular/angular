@@ -326,6 +326,15 @@ let thisArg: any;
            detectChangesAndExpectText('abc');
          }));
 
+      it('should track By Key`', waitForAsync(() => {
+           const template = `<p *ngFor="let item of items; trackByKey: value">{{ item.name }}</p>`;
+           fixture = createTestComponent(template);
+           fixture.componentInstance.items =
+               [{id: 1, name: 'foo'}, {id: 2, name: 'bar'}, {id: 3, name: 'baz'}];
+           fixture.componentInstance.value = 'id';
+           detectChangesAndExpectText('foobarbaz');
+         }));
+
       it('should set the context to the component instance', waitForAsync(() => {
            const template =
                `<p *ngFor="let item of items; trackBy: trackByContext.bind(this)"></p>`;
