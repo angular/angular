@@ -884,7 +884,7 @@ export class KeyValueDiffers {
 export const LOCALE_ID: InjectionToken<string>;
 
 // @public
-export function makeEnvironmentProviders(providers: Provider[]): EnvironmentProviders;
+export function makeEnvironmentProviders(providers: (Provider | EnvironmentProviders)[]): EnvironmentProviders;
 
 // @public
 export enum MissingTranslationStrategy {
