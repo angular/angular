@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HousingLocationComponent } from '../housing-location/housing-location.component';
+// #docregion housing-location-import
 import { HousingLocation } from '../housinglocation';
+// #enddocregion
 
 @Component({
   selector: 'app-home',
@@ -24,6 +26,7 @@ import { HousingLocation } from '../housinglocation';
   styleUrls: ['./home.component.css'],
 })
 
+// #docregion only-house
 export class HomeComponent {
   private img_server = "https://storage.googleapis.com/angular-tutorial-assets/first-app/";
   onlyHouse: HousingLocation;
@@ -40,5 +43,5 @@ export class HomeComponent {
       laundry: false,
     };
   }
-
 }
+// #enddocregion

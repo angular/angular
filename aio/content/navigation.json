@@ -815,6 +815,11 @@
               "url": "tutorial/first-app/first-app-lesson-02",
               "title": "Create home component",
               "tooltip": "Create the app's HomeComponent"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-04",
+              "title": "Angular interfaces",
+              "tooltip": "Add an Angular interface to your app"
             }
           ]
         },
