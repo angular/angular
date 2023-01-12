@@ -614,10 +614,8 @@ withEachNg1Version(() => {
            class Ng2Component implements OnChanges {
              ngOnChangesCount = 0;
              firstChangesCount = 0;
-             // TODO(issue/24571): remove '!'.
-             initialValue!: string;
-             // TODO(issue/24571): remove '!'.
-             @Input() foo!: string;
+             @Input() foo: string = '';
+             initialValue: string = this.foo;
 
              ngOnChanges(changes: SimpleChanges) {
                this.ngOnChangesCount++;
@@ -664,7 +662,7 @@ withEachNg1Version(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
 
-           ng1Module.run(($rootScope: any /** TODO #9100 */) => {
+           ng1Module.run(($rootScope: any) => {
              $rootScope.modelA = 'A';
            });
 
@@ -902,8 +900,7 @@ withEachNg1Version(() => {
       it('should correctly project structural directives', waitForAsync(() => {
            @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
            class Ng2Component {
-             // TODO(issue/24571): remove '!'.
-             @Input() itemId!: string;
+             @Input() itemId: string = '';
            }
 
            @NgModule({imports: [BrowserModule], declarations: [Ng2Component]})
