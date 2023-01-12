@@ -43,6 +43,7 @@ EXAMPLES = {
     "elements": {"stackblitz": True, "zip": True},
     "event-binding": {"stackblitz": True, "zip": True},
     "feature-modules": {"stackblitz": True, "zip": True},
+    "first-app-lesson-00": {"stackblitz": True, "zip": True},
     "first-app-lesson-01": {"stackblitz": True, "zip": True},
     "first-app-lesson-02": {"stackblitz": True, "zip": True},
     "first-app-lesson-03": {"stackblitz": True, "zip": True},

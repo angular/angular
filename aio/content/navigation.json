@@ -798,6 +798,17 @@
       "tooltip": "End-to-end tutorials for learning Angular concepts and patterns.",
       "children": [
         {
+          "title": "Tutorial: Your first Angular app",
+          "tooltip": "Learn how to get started in Angular by building an Angular app",
+          "children": [
+            {
+              "url": "tutorial/first-app",
+              "title": "Introduction",
+              "tooltip": "Introduction to the first Angular app and tutorial"
+            }
+          ]
+        },
+        {
           "title": "Tutorial: Tour of Heroes",
           "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
           "children": [
