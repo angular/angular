@@ -35,7 +35,7 @@ jobs:
         uses: angular/dev-infra/github-actions/create-pr-for-changes@ad1374e8222825244b36a91d0f085f8fc3c7126d
         with:
           branch-prefix: update-cli-help
-          pr-title: 'docs: update Angular CLI help'
+          pr-title: 'docs: update Angular CLI help [${{github.ref_name}}]'
           pr-description: |
             Updated Angular CLI help contents.
           pr-labels: |
