@@ -9225,40 +9225,40 @@ google-auth-library@^8.0.2:
     jws "^4.0.0"
     lru-cache "^6.0.0"
 
-google-closure-compiler-java@^20221102.0.1:
-  version "20221102.0.1"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20221102.0.1.tgz#5c70e98026bd0a38e7dadc585426666597494f9c"
-  integrity sha512-rMKLEma3uSe/6MGHtivDezTv4u5iaDEyxoy9No+1WruPSZ5h1gBZLONcfCA8JaoGojFPdHZI1qbwT0EveEWnAg==
+google-closure-compiler-java@^20230103.0.0:
+  version "20230103.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20230103.0.0.tgz#5ca930f5fca67d9800c682a4e477838d07d43c50"
+  integrity sha512-SUNv5HaAiXNjm6BjYMsGvJhizWisHk4sl9Kxq3LnaCCpZJeiJQX23Z391IPqD8lHcUQmmJkxe8+WMwQP6NV1Cg==
 
-google-closure-compiler-linux@^20221102.0.1:
-  version "20221102.0.1"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-linux/-/google-closure-compiler-linux-20221102.0.1.tgz#31b8088433261007d1ccf19b8074676ef74acfc1"
-  integrity sha512-rj1E1whT4j/giidQ44v4RoO8GcvU81VU9YB5RlRM0hWDvCGWjQasDABGnF/YLWLl5PXAAfJpa/hy8ckv5/r97g==
+google-closure-compiler-linux@^20230103.0.0:
+  version "20230103.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-linux/-/google-closure-compiler-linux-20230103.0.0.tgz#161fff575cca62327c2bdac5a68cc1315fff154b"
+  integrity sha512-83v+8wHitIbD3fraRuaL8OlTfO1tFvepJbrB3yUCK/HU+3SjY6AFgbeCJ06nNPwzTo9zuQUwhrbCrpvNTkAqZg==
 
-google-closure-compiler-osx@^20221102.0.1:
-  version "20221102.0.1"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-osx/-/google-closure-compiler-osx-20221102.0.1.tgz#8fffe3344c40ab293504f7572ab1e2a01377c393"
-  integrity sha512-Cv993yr9a2DLFgYnsv4m6dNUk5jousd6W6la12x2fDbhxTLewYrw7CrCaVEVw1SU3XErVmdHOZQjFsVMhcZjCw==
+google-closure-compiler-osx@^20230103.0.0:
+  version "20230103.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-osx/-/google-closure-compiler-osx-20230103.0.0.tgz#c36884d28c4f1014b3f1369f9e9cd86d0f24fbc3"
+  integrity sha512-TBoOUe6ySIepdiYF3S7/IzCNk0TN7Lwp8VfTBYLX+qOUFLLC+HHqXXrl8kVstgH3J202pTDb6XZl9pQD16rEXQ==
 
-google-closure-compiler-windows@^20221102.0.1:
-  version "20221102.0.1"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-windows/-/google-closure-compiler-windows-20221102.0.1.tgz#332be7852c647e37ddab092bda9a7c083fcb97c9"
-  integrity sha512-jRwHGekG/oDihHdKAEiYN5z0cBF+brL0bYtuEOXx4fAmq5tHe4OxKtSEEprCnVZZL0aG/boGprACPvsDRsXT7Q==
+google-closure-compiler-windows@^20230103.0.0:
+  version "20230103.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-windows/-/google-closure-compiler-windows-20230103.0.0.tgz#01c6fa758ed9c563207c9460d723cbadd6712c83"
+  integrity sha512-hMKtPeoFchaz/c4D6xgjWYmumxJwPTSoyELZ3jRI4xz2Zp9WsP4h44kCykZ9A65ynl60PuPfzsD3/IrK9HisyA==
 
-google-closure-compiler@20221102.0.1:
-  version "20221102.0.1"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20221102.0.1.tgz#6953e94bc9345b70338ae3021002f79775829a05"
-  integrity sha512-edAlsyJEsy2I983xWBlBfdSme16uyY007HM2OwPOoWPEFgmR100ggUabJbIegXZgbSLH51kyeJMQKuWhiHgzcA==
+google-closure-compiler@20230103.0.0:
+  version "20230103.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20230103.0.0.tgz#ec93d3b9a2c7883c3157364b1b3c8887976d3c51"
+  integrity sha512-gejhxkvSocXTL83pVxvlGBfny9TIKg9XVzs/Mqc3jVghLoAQUy1s6Tu4AUNMHIgEdJTSmkfvB5QEYVZsABy1QQ==
   dependencies:
     chalk "4.x"
-    google-closure-compiler-java "^20221102.0.1"
+    google-closure-compiler-java "^20230103.0.0"
     minimist "1.x"
     vinyl "2.x"
     vinyl-sourcemaps-apply "^0.2.0"
   optionalDependencies:
-    google-closure-compiler-linux "^20221102.0.1"
-    google-closure-compiler-osx "^20221102.0.1"
-    google-closure-compiler-windows "^20221102.0.1"
+    google-closure-compiler-linux "^20230103.0.0"
+    google-closure-compiler-osx "^20230103.0.0"
+    google-closure-compiler-windows "^20230103.0.0"
 
 google-gax@^3.0.1:
   version "3.1.3"
