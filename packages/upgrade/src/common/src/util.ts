@@ -16,12 +16,7 @@ const DIRECTIVE_SPECIAL_CHARS_REGEXP = /[:\-_]+(.)/g;
 
 export function onError(e: any) {
   // TODO: (misko): We seem to not have a stack trace here!
-  if (console.error) {
-    console.error(e, e.stack);
-  } else {
-    // tslint:disable-next-line:no-console
-    console.log(e, e.stack);
-  }
+  console.error(e, e.stack);
   throw e;
 }
 
@@ -141,9 +136,7 @@ export function validateInjectionKey(
 
 export class Deferred<R> {
   promise: Promise<R>;
-  // TODO(issue/24571): remove '!'.
   resolve!: (value: R|PromiseLike<R>) => void;
-  // TODO(issue/24571): remove '!'.
   reject!: (error?: any) => void;
 
   constructor() {
