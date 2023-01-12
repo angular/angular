@@ -546,7 +546,7 @@ export class NavigationTransitions {
                            if (!t.guardsResult) {
                              router.restoreHistory(t);
                              this.cancelNavigationTransition(
-                                 t, '', NavigationCancellationCode.GuardRejected, router);
+                                 t, '', NavigationCancellationCode.GuardRejected);
                              return false;
                            }
                            return true;
@@ -579,8 +579,7 @@ export class NavigationTransitions {
                                                  NG_DEV_MODE ?
                                                      `At least one route resolver didn't emit any value.` :
                                                      '',
-                                                 NavigationCancellationCode.NoDataFromResolver,
-                                                 router);
+                                                 NavigationCancellationCode.NoDataFromResolver);
                                            }
                                          }
                                        }),
@@ -686,7 +685,7 @@ export class NavigationTransitions {
                                  '';
                              this.cancelNavigationTransition(
                                  overallTransitionState, cancelationReason,
-                                 NavigationCancellationCode.SupersededByNewNavigation, router);
+                                 NavigationCancellationCode.SupersededByNewNavigation);
                            }
                            // Only clear current navigation if it is still set to the one that
                            // finalized.
@@ -763,8 +762,7 @@ export class NavigationTransitions {
   }
 
   private cancelNavigationTransition(
-      t: NavigationTransition, reason: string, code: NavigationCancellationCode,
-      router: InternalRouterInterface) {
+      t: NavigationTransition, reason: string, code: NavigationCancellationCode) {
     const navCancel =
         new NavigationCancel(t.id, this.urlSerializer.serialize(t.extractedUrl), reason, code);
     this.events.next(navCancel);
