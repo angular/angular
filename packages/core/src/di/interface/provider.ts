@@ -352,7 +352,7 @@ export type EnvironmentProviders = {
 };
 
 export interface InternalEnvironmentProviders extends EnvironmentProviders {
-  ɵproviders: Provider[];
+  ɵproviders: (Provider|EnvironmentProviders)[];
 
   /**
    * If present, indicates that the `EnvironmentProviders` were derived from NgModule providers.
@@ -362,8 +362,9 @@ export interface InternalEnvironmentProviders extends EnvironmentProviders {
   ɵfromNgModule?: true;
 }
 
-export function isEnvironmentProviders(value: Provider|InternalEnvironmentProviders):
-    value is InternalEnvironmentProviders {
+export function isEnvironmentProviders(
+    value: Provider|EnvironmentProviders|
+    InternalEnvironmentProviders): value is InternalEnvironmentProviders {
   return value && !!(value as InternalEnvironmentProviders).ɵproviders;
 }
 
