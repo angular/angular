@@ -582,9 +582,6 @@ export class Scroll {
 
   constructor(
       /** @docsNotRequired */
-      readonly routerEvent: NavigationEnd,
-
-      /** @docsNotRequired */
       readonly position: [number, number]|null,
 
       /** @docsNotRequired */

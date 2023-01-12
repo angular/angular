@@ -12,7 +12,6 @@ import {Unsubscribable} from 'rxjs';
 
 import {NavigationEnd, NavigationStart, Scroll} from './events';
 import {NavigationTransitions} from './navigation_transition';
-import {Router} from './router';
 import {UrlSerializer} from './url_tree';
 
 export const ROUTER_SCROLLER = new InjectionToken<RouterScroller>('');
@@ -60,7 +59,7 @@ export class RouterScroller implements OnDestroy {
         this.restoredId = e.restoredState ? e.restoredState.navigationId : 0;
       } else if (e instanceof NavigationEnd) {
         this.lastId = e.id;
-        this.scheduleScrollEvent(e, this.urlSerializer.parse(e.urlAfterRedirects).fragment);
+        this.scheduleScrollEvent(this.urlSerializer.parse(e.urlAfterRedirects).fragment);
       }
     });
   }
@@ -86,7 +85,7 @@ export class RouterScroller implements OnDestroy {
     });
   }
 
-  private scheduleScrollEvent(routerEvent: NavigationEnd, anchor: string|null): void {
+  private scheduleScrollEvent(anchor: string|null): void {
     this.zone.runOutsideAngular(() => {
       // The scroll event needs to be delayed until after change detection. Otherwise, we may
       // attempt to restore the scroll position before the router outlet has fully rendered the
@@ -94,8 +93,7 @@ export class RouterScroller implements OnDestroy {
       setTimeout(() => {
         this.zone.run(() => {
           this.transitions.events.next(new Scroll(
-              routerEvent, this.lastSource === 'popstate' ? this.store[this.restoredId] : null,
-              anchor));
+              this.lastSource === 'popstate' ? this.store[this.restoredId] : null, anchor));
         });
       }, 0);
     });
