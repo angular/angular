@@ -113,17 +113,12 @@ withEachNg1Version(() => {
         $evalAsync(exp: angular.Ng1Expression, locals?: any) {
           return () => {};
         }
-        // TODO(issue/24571): remove '!'.
         $$childTail!: angular.IScope;
-        // TODO(issue/24571): remove '!'.
         $$childHead!: angular.IScope;
-        // TODO(issue/24571): remove '!'.
         $$nextSibling!: angular.IScope;
         [key: string]: any;
         $id = 'mockScope';
-        // TODO(issue/24571): remove '!'.
         $parent!: angular.IScope;
-        // TODO(issue/24571): remove '!'.
         $root!: angular.IScope;
       }
 
@@ -179,20 +174,19 @@ withEachNg1Version(() => {
 
       it('should add testabilities hook when creating components', () => {
         let registry = TestBed.inject(TestabilityRegistry);
-        adapter.createComponent([]);
+        adapter.createComponentAndSetup([]);
         expect(registry.getAllTestabilities().length).toEqual(1);
 
         adapter = getAdaptor();  // get a new adaptor to creat a new component
-        adapter.createComponent([]);
+        adapter.createComponentAndSetup([]);
         expect(registry.getAllTestabilities().length).toEqual(2);
       });
 
       it('should remove the testability hook when destroy a component', () => {
         const registry = TestBed.inject(TestabilityRegistry);
         expect(registry.getAllTestabilities().length).toEqual(0);
-        adapter.createComponent([]);
+        adapter.createComponentAndSetup([]);
         expect(registry.getAllTestabilities().length).toEqual(1);
-        adapter.registerCleanup();
         element.remove!();
         expect(registry.getAllTestabilities().length).toEqual(0);
       });
