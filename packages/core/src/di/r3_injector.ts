@@ -516,8 +516,7 @@ function couldBeInjectableType(value: any): value is ProviderToken<any> {
 }
 
 function forEachSingleProvider(
-    providers: Array<Provider|InternalEnvironmentProviders>,
-    fn: (provider: SingleProvider) => void): void {
+    providers: Array<Provider|EnvironmentProviders>, fn: (provider: SingleProvider) => void): void {
   for (const provider of providers) {
     if (Array.isArray(provider)) {
       forEachSingleProvider(provider, fn);

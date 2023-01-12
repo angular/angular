@@ -24,7 +24,12 @@ const collectEnvironmentInitializerProviders = (providers: Provider[]) =>
     getProvidersByToken(providers, ENVIRONMENT_INITIALIZER);
 
 function unwrappedImportProvidersFrom(...sources: ImportProvidersSource[]): Provider[] {
-  return (importProvidersFrom(...sources) as unknown as InternalEnvironmentProviders).ɵproviders;
+  const providers =
+      (importProvidersFrom(...sources) as unknown as InternalEnvironmentProviders).ɵproviders;
+  if (providers.some(provider => 'ɵproviders' in provider)) {
+    throw new Error(`Unexpected nested EnvironmentProviders in test`);
+  }
+  return providers as Provider[];
 }
 
 describe('importProvidersFrom', () => {
@@ -340,6 +345,14 @@ describe('EnvironmentProviders', () => {
     TestBed.configureTestingModule({});
     const inj =
         createEnvironmentInjector([environmentProviders], TestBed.inject(EnvironmentInjector));
+    expect(inj.get(TOKEN)).toEqual('token!');
+  });
+
+  it('should be accepted as additional input to makeEnvironmentProviders', () => {
+    const wrappedProviders = makeEnvironmentProviders([environmentProviders]);
+    TestBed.configureTestingModule({});
+
+    const inj = createEnvironmentInjector([wrappedProviders], TestBed.inject(EnvironmentInjector));
     expect(inj.get(TOKEN)).toEqual('token!');
   });
 
