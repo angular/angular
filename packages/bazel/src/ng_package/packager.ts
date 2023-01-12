@@ -114,6 +114,9 @@ function main(args: string[]): void {
       // Path to the package's README.md.
       readmeMd,
 
+      // Path to the package's LICENSE.
+      license,
+
       // List of rolled-up flat ES2020 modules
       fesm2020Arg,
 
@@ -139,6 +142,10 @@ function main(args: string[]): void {
 
   if (readmeMd) {
     copyFile(readmeMd, 'README.md');
+  }
+
+  if (license) {
+    copyFile(license, 'LICENSE');
   }
 
   /**

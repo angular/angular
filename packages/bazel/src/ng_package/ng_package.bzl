@@ -504,6 +504,9 @@ def _ng_package_impl(ctx):
         # placeholder
         packager_args.add("")
 
+    packager_inputs.append(ctx.file._license)
+    packager_args.add(ctx.file._license.path)
+
     packager_args.add(_serialize_files_for_arg(fesm2020))
     packager_args.add(_serialize_files_for_arg(esm2020))
     packager_args.add(_serialize_files_for_arg(fesm2015))
@@ -572,6 +575,7 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         cfg = partial_compilation_transition,
     ),
     "readme_md": attr.label(allow_single_file = [".md"]),
+    "_license": attr.label(allow_single_file = True, default = "//:LICENSE"),
     "primary_bundle_name": attr.string(
         doc = "Name to use when generating bundle files for the primary entry-point.",
     ),
