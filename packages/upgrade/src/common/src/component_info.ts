@@ -13,24 +13,14 @@
  * and attribute have the same identifier.
  */
 export class PropertyBinding {
-  // TODO(issue/24571): remove '!'.
-  bracketAttr!: string;
-  // TODO(issue/24571): remove '!'.
-  bracketParenAttr!: string;
-  // TODO(issue/24571): remove '!'.
-  parenAttr!: string;
-  // TODO(issue/24571): remove '!'.
-  onAttr!: string;
-  // TODO(issue/24571): remove '!'.
-  bindAttr!: string;
-  // TODO(issue/24571): remove '!'.
-  bindonAttr!: string;
+  bracketAttr: string;
+  bracketParenAttr: string;
+  parenAttr: string;
+  onAttr: string;
+  bindAttr: string;
+  bindonAttr: string;
 
   constructor(public prop: string, public attr: string) {
-    this.parseBinding();
-  }
-
-  private parseBinding() {
     this.bracketAttr = `[${this.attr}]`;
     this.parenAttr = `(${this.attr})`;
     this.bracketParenAttr = `[(${this.attr})]`;
