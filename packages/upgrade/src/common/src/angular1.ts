@@ -165,10 +165,6 @@ export interface ICacheObject {
   get(key: string): any;
 }
 export interface ITemplateCacheService extends ICacheObject {}
-export interface ITemplateRequestService {
-  (template: string|any /* TrustedResourceUrl */, ignoreRequestError?: boolean): Promise<string>;
-  totalPendingRequests: number;
-}
 export type IController = string|IInjectable;
 export interface IControllerService {
   (controllerConstructor: IController, locals?: any, later?: any, ident?: any): any;
