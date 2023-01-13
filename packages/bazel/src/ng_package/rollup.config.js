@@ -139,8 +139,8 @@ if (bannerFile) {
   if (stampData) {
     const versionTag = fs.readFileSync(stampData, {encoding: 'utf-8'})
                            .split('\n')
-                           .find(s => s.startsWith('BUILD_SCM_VERSION'));
-    // Don't assume BUILD_SCM_VERSION exists
+                           .find((s) => s.startsWith('STABLE_PROJECT_VERSION'));
+    // Don't assume STABLE_PROJECT_VERSION exists
     if (versionTag) {
       const version = versionTag.split(' ')[1].trim();
       banner = banner.replace(/0.0.0-PLACEHOLDER/, version);
@@ -190,7 +190,7 @@ const stripBannerPlugin = {
         hires: true,
       }),
     };
-  }
+  },
 };
 
 const plugins = [
@@ -201,7 +201,7 @@ const plugins = [
   nodeResolve({
     mainFields: ['es2020', 'es2015', 'module', 'browser'],
     jail: process.cwd(),
-    customResolveOptions: {moduleDirectory: nodeModulesRoot}
+    customResolveOptions: {moduleDirectory: nodeModulesRoot},
   }),
   stripBannerPlugin,
   commonjs({ignoreGlobal: true}),
@@ -218,7 +218,7 @@ const config = {
   external: [TMPL_external],
   output: {
     banner,
-  }
+  },
 };
 
 module.exports = config;

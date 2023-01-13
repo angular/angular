@@ -8,8 +8,8 @@ if (bazel_version_file) {
   const versionTag = require('fs')
                          .readFileSync(bazel_version_file, {encoding: 'utf-8'})
                          .split('\n')
-                         .find((s) => s.startsWith('BUILD_SCM_VERSION'));
-  // Don't assume BUILD_SCM_VERSION exists
+                         .find((s) => s.startsWith('STABLE_PROJECT_VERSION'));
+  // Don't assume STABLE_PROJECT_VERSION exists
   if (versionTag) {
     version = versionTag.split(' ')[1].trim();
   }
