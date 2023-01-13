@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {spawn} from 'child_process';
-import {CodeAction} from 'typescript';
+import ts from 'typescript';
 
 import {FixIdForCodeFixesAll} from '../src/codefixes/utils';
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
@@ -24,7 +24,7 @@ describe('code fixes', () => {
     const files = {
       'app.ts': `
        import {Component, NgModule} from '@angular/core';
- 
+
        @Component({
          templateUrl: './app.html'
        })
@@ -59,7 +59,7 @@ describe('code fixes', () => {
     const files = {
       'app.ts': `
        import {Component, NgModule} from '@angular/core';
- 
+
        @Component({
          templateUrl: './app.html'
        })
@@ -91,7 +91,7 @@ describe('code fixes', () => {
        const files = {
          'app.ts': `
          import {Component, NgModule} from '@angular/core';
-   
+
          @Component({
            templateUrl: './app.html'
          })
@@ -115,7 +115,7 @@ describe('code fixes', () => {
     const files = {
       'app.ts': `
        import {Component, NgModule} from '@angular/core';
- 
+
        @Component({
          template: '{{tite}}{{bannr}}',
        })
@@ -165,7 +165,7 @@ describe('code fixes', () => {
     const files = {
       'app.ts': `
        import {Component, NgModule} from '@angular/core';
- 
+
        @Component({
          templateUrl: './app.html'
        })
@@ -197,7 +197,7 @@ describe('code fixes', () => {
     const files = {
       'app.ts': `
        import {Component, NgModule} from '@angular/core';
- 
+
        @Component({
          template: '<input ([ngModel])="title"><input ([value])="title">',
        })
@@ -493,7 +493,7 @@ function actionChangesMatch(
 // Returns the ActionChanges for all changes in the given code actions, collapsing whitespace into a
 // single space and trimming at the ends.
 function allChangesForCodeActions(
-    fileContents: string, codeActions: readonly CodeAction[]): ActionChanges {
+    fileContents: string, codeActions: readonly ts.CodeAction[]): ActionChanges {
   // Replace all whitespace characters with a single space, then deduplicate spaces and trim.
   const collapse = (s: string) => s.replace(/\s/g, ' ').replace(/\s{2,}/g, ' ').trim();
   let allActionChanges: ActionChanges = {};
