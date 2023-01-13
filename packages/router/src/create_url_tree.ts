@@ -388,6 +388,32 @@ function updateSegmentGroupChildren(
   } else {
     const outlets = getOutlets(commands);
     const children: {[key: string]: UrlSegmentGroup} = {};
+    // If the set of commands does not apply anything to the primary outlet and the child segment is
+    // an empty path primary segment on its own, we want to skip applying the commands at this
+    // level. Imagine the following config:
+    //
+    // {path: '', children: [{path: '**', outlet: 'popup'}]}.
+    //
+    // Navigation to /(popup:a) will activate the child outlet correctly Given a follow-up
+    // navigation with commands
+    // ['/', {outlets: {'popup': 'b'}}], we _would not_ want to apply the outlet commands to the
+    // root segment because that would result in
+    // //(popup:a)(popup:b) since the outlet command got applied one level above where it appears in
+    // the `ActivatedRoute` rather than updating the existing one.
+    //
+    // Because empty paths do not appear in the URL segments and the fact that the segments used in
+    // the output `UrlTree` are squashed to eliminate these empty paths where possible
+    // https://github.com/angular/angular/blob/13f10de40e25c6900ca55bd83b36bd533dacfa9e/packages/router/src/url_tree.ts#L755
+    // it can be hard to determine what is the right thing to do when applying commands to a
+    // `UrlSegmentGroup` that is created from an "unsquashed"/expanded `ActivatedRoute` tree.
+    // This code effectively "squashes" empty path primary routes when they have no siblings on
+    // the same level of the tree.
+    if (!outlets[PRIMARY_OUTLET] && segmentGroup.children[PRIMARY_OUTLET] &&
+        segmentGroup.numberOfChildren === 1 &&
+        segmentGroup.children[PRIMARY_OUTLET].segments.length === 0) {
+      return updateSegmentGroupChildren(
+          segmentGroup.children[PRIMARY_OUTLET], startIndex, commands);
+    }
 
     forEach(outlets, (commands, outlet) => {
       if (typeof commands === 'string') {
