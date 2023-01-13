@@ -17,7 +17,7 @@ import {delay} from 'rxjs/operators';
 describe('navigateForTest', () => {
   it('gives null for the activatedComponent when no routes are configured', async () => {
     TestBed.configureTestingModule({providers: [provideRouter([])]});
-    const harness = await RouterTestingHarness.get('/');
+    const harness = await RouterTestingHarness.create('/');
     expect(harness.routeDebugElement).toBeNull();
   });
   it('navigates to routed component', async () => {
@@ -27,7 +27,7 @@ describe('navigateForTest', () => {
     }
 
     TestBed.configureTestingModule({providers: [provideRouter([{path: '', component: TestCmp}])]});
-    const harness = await RouterTestingHarness.get();
+    const harness = await RouterTestingHarness.create();
     const activatedComponent = await harness.navigateByUrl('/', TestCmp);
 
     expect(activatedComponent).toBeInstanceOf(TestCmp);
@@ -46,7 +46,7 @@ describe('navigateForTest', () => {
         children: []
       }])]
     });
-    await RouterTestingHarness.get('/');
+    await RouterTestingHarness.create('/');
     expect(guardCalled).toBeTrue();
   });
 
@@ -60,7 +60,7 @@ describe('navigateForTest', () => {
         children: []
       }])]
     });
-    await expectAsync(RouterTestingHarness.get('/')).toBeRejected();
+    await expectAsync(RouterTestingHarness.create('/')).toBeRejected();
   });
 
   it('can observe param changes on routed component with second navigation', async () => {
@@ -74,7 +74,7 @@ describe('navigateForTest', () => {
         provideRouter([{path: ':id', component: TestCmp}]),
       ]
     });
-    const harness = await RouterTestingHarness.get();
+    const harness = await RouterTestingHarness.create();
     const activatedComponent = await harness.navigateByUrl('/123', TestCmp);
     expect(activatedComponent.route).toBeInstanceOf(ActivatedRoute);
     expect(harness.routeNativeElement?.innerHTML).toContain('123');
@@ -96,7 +96,7 @@ describe('navigateForTest', () => {
            provideRouter([{path: '**', component: TestCmp}]),
          ]
        });
-       const harness = await RouterTestingHarness.get();
+       const harness = await RouterTestingHarness.create();
        await expectAsync(harness.navigateByUrl('/123', OtherCmp)).toBeRejected();
      });
 
@@ -120,7 +120,7 @@ describe('navigateForTest', () => {
         ]),
       ]
     });
-    await RouterTestingHarness.get('test');
+    await RouterTestingHarness.create('test');
     expect(TestBed.inject(Router).url).toEqual('/redirect');
   });
 });

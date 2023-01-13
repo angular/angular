@@ -24,7 +24,7 @@ describe('navigate for test examples', () => {
       providers: [provideRouter([{path: '', component: TestCmp}])],
     });
 
-    const harness = await RouterTestingHarness.get();
+    const harness = await RouterTestingHarness.create();
     const activatedComponent = await harness.navigateByUrl('/', TestCmp);
     expect(activatedComponent).toBeInstanceOf(TestCmp);
     expect(harness.routeNativeElement?.innerHTML).toContain('hello world');
@@ -54,7 +54,7 @@ describe('navigate for test examples', () => {
       ],
     });
 
-    const harness = await RouterTestingHarness.get('/admin');
+    const harness = await RouterTestingHarness.create('/admin');
     expect(TestBed.inject(Router).url).toEqual('/login');
     isLoggedIn = true;
     await harness.navigateByUrl('/admin');
@@ -81,7 +81,7 @@ describe('navigate for test examples', () => {
       providers: [provideRouter([{path: 'search', component: SearchCmp}])],
     });
 
-    const harness = await RouterTestingHarness.get();
+    const harness = await RouterTestingHarness.create();
     const activatedComponent = await harness.navigateByUrl('/search', SearchCmp);
     await activatedComponent.searchFor('books');
     harness.detectChanges();

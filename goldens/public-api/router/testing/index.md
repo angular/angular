@@ -24,8 +24,8 @@ import { UrlSerializer } from '@angular/router';
 
 // @public
 export class RouterTestingHarness {
+    static create(initialUrl?: string): Promise<RouterTestingHarness>;
     detectChanges(): void;
-    static get(initialUrl?: string): Promise<RouterTestingHarness>;
     navigateByUrl(url: string): Promise<null | {}>;
     navigateByUrl<T>(url: string, requiredRoutedComponentType: Type<T>): Promise<T>;
     get routeDebugElement(): DebugElement | null;
