@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@angular/compiler-cli": "^15.0.0-rc.1",
-    "@rollup/plugin-commonjs": "^23.0.0",
+    "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^13.2.0",
     "@types/angular": "^1.8.4",
     "@types/angular-animate": "^1.5.11",
