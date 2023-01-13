@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
+// #docregion import-housing-location
 import { HousingLocation } from './housinglocation';
-
+// #enddocregion
 @Injectable({
   providedIn: 'root'
 })
@@ -108,7 +109,7 @@ export class HousingService {
       laundry: true
     }
   ];
-
+// #docregion service-functions
   getAllHousingLocations(): HousingLocation[] {
     return this.housingLocationList;
   }
@@ -116,4 +117,5 @@ export class HousingService {
   getHousingLocationById(id: number): HousingLocation | undefined {
     return this.housingLocationList.find(housingLocation => housingLocation.id === id);
   }
+// #enddocregion
 }
