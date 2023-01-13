@@ -8,7 +8,7 @@
 
 import {ASTWithName} from '@angular/compiler';
 import {ErrorCode as NgCompilerErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics/index';
-import {PotentialDirective, PotentialPipe} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {PotentialDirective, PotentialImportMode, PotentialPipe} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as t from '@angular/compiler/src/render3/r3_ast';  // t for template AST
 import ts from 'typescript';
 
@@ -72,7 +72,8 @@ function getCodeActions(
   }
   for (const currMatch of matches.values()) {
     const currMatchSymbol = currMatch.tsSymbol.valueDeclaration!;
-    const potentialImports = checker.getPotentialImportsFor(currMatch, importOn);
+    const potentialImports =
+        checker.getPotentialImportsFor(currMatch.ref, importOn, PotentialImportMode.Normal);
     for (let potentialImport of potentialImports) {
       let [fileImportChanges, importName] = updateImportsForTypescriptFile(
           tsChecker, importOn.getSourceFile(), potentialImport, currMatchSymbol.getSourceFile());
