@@ -20,7 +20,7 @@ import {ClassDeclaration, DeclarationNode, isNamedClassDeclaration, ReflectionHo
 import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PotentialDirective, PotentialImport, PotentialImportKind, PotentialPipe, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
+import {ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PotentialDirective, PotentialImport, PotentialImportKind, PotentialImportMode, PotentialPipe, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
@@ -735,7 +735,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getPotentialImportsFor(
       toImport: Reference<ClassDeclaration>, inContext: ts.ClassDeclaration,
-      forceStandaloneImport = false): ReadonlyArray<PotentialImport> {
+      importMode: PotentialImportMode): ReadonlyArray<PotentialImport> {
     const imports: PotentialImport[] = [];
 
     const meta =
@@ -744,11 +744,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return imports;
     }
 
-    // TODO(crisbeto): in a standalone world this wouldn't be necessary.
-    // `forceStandaloneImport` is used to indicate that we want the import to behave as if it's a
-    // standalone declaration, even though it might not be yet. This is useful for migrations
-    // where we know which declarations are going to become standalone.
-    if (meta.isStandalone || forceStandaloneImport) {
+    if (meta.isStandalone || importMode === PotentialImportMode.ForceDirect) {
       const emitted = this.emit(PotentialImportKind.Standalone, toImport, inContext);
       if (emitted !== null) {
         imports.push(emitted);

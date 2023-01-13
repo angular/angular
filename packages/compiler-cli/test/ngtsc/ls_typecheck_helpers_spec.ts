@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {PotentialImportMode} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {DiagnosticCategoryLabel} from '../../src/ngtsc/core/api';
@@ -263,7 +264,8 @@ runInEachFileSystem(() => {
 
         const TwoCmpDir = checker.getPotentialTemplateDirectives(OneCmpClass)
                               .filter(d => d.selector === 'two-cmp')[0];
-        const imports = checker.getPotentialImportsFor(TwoCmpDir.ref, OneCmpClass);
+        const imports =
+            checker.getPotentialImportsFor(TwoCmpDir.ref, OneCmpClass, PotentialImportMode.Normal);
 
         expect(imports.length).toBe(1);
         expect(imports[0].moduleSpecifier).toBe('./two');
@@ -318,7 +320,8 @@ runInEachFileSystem(() => {
 
         const TwoNgMod = checker.getPotentialTemplateDirectives(OneCmpClass)
                              .filter(d => d.selector === 'two-cmp')[0];
-        const imports = checker.getPotentialImportsFor(TwoNgMod.ref, OneCmpClass);
+        const imports =
+            checker.getPotentialImportsFor(TwoNgMod.ref, OneCmpClass, PotentialImportMode.Normal);
 
         expect(imports.length).toBe(1);
         expect(imports[0].moduleSpecifier).toBe('./twomod');

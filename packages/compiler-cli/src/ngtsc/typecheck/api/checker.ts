@@ -17,7 +17,7 @@ import {ClassDeclaration} from '../../reflection';
 
 import {FullTemplateMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
-import {PotentialDirective, PotentialImport, PotentialPipe} from './scope';
+import {PotentialDirective, PotentialImport, PotentialImportMode, PotentialPipe} from './scope';
 import {ElementSymbol, Symbol, TcbLocation, TemplateSymbol} from './symbols';
 
 /**
@@ -151,15 +151,10 @@ export interface TemplateTypeChecker {
 
   /**
    * In the context of an Angular trait, generate potential imports for a directive.
-   * @param toImport Class that is being imported.
-   * @param inComponent Component into which the import is being inserted.
-   * @param forceStandaloneImport Forces the import to behave as a standalone declaration.
-   *   Used in schematics where we know that a declaration will be converted to standalone, but
-   *   it wasn't standalone when the program was created.
    */
   getPotentialImportsFor(
       toImport: Reference<ClassDeclaration>, inComponent: ts.ClassDeclaration,
-      forceStandaloneImport?: boolean): ReadonlyArray<PotentialImport>;
+      importMode: PotentialImportMode): ReadonlyArray<PotentialImport>;
 
   /**
    * Get the primary decorator for an Angular class (such as @Component). This does not work for
