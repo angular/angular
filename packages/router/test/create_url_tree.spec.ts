@@ -115,31 +115,30 @@ describe('createUrlTree', async () => {
     expect(serializer.serialize(t)).toEqual('/%2Fone/two%2Fthree');
   });
 
-  it('should preserve secondary segments', async () => {
-    const p = serializer.parse('/a/11/b(right:c)');
-    const t = await createRoot(p, ['/a', 11, 'd']);
-    expect(serializer.serialize(t)).toEqual('/a/11/d(right:c)');
-  });
+  describe('named outlets', async () => {
+    it('should preserve secondary segments', async () => {
+      const p = serializer.parse('/a/11/b(right:c)');
+      const t = await createRoot(p, ['/a', 11, 'd']);
+      expect(serializer.serialize(t)).toEqual('/a/11/d(right:c)');
+    });
 
-  it('should support updating secondary segments (absolute)', async () => {
-    const p = serializer.parse('/a(right:b)');
-    const t = await createRoot(p, ['/', {outlets: {right: ['c']}}]);
-    expect(serializer.serialize(t)).toEqual('/a(right:c)');
-  });
+    it('should support updating secondary segments (absolute)', async () => {
+      const p = serializer.parse('/a(right:b)');
+      const t = await createRoot(p, ['/', {outlets: {right: ['c']}}]);
+      expect(serializer.serialize(t)).toEqual('/a(right:c)');
+    });
 
-  it('should support updating secondary segments', async () => {
-    const p = serializer.parse('/a(right:b)');
-    const t = await createRoot(p, [{outlets: {right: ['c', 11, 'd']}}]);
-    expect(serializer.serialize(t)).toEqual('/a(right:c/11/d)');
-  });
+    it('should support updating secondary segments', async () => {
+      const p = serializer.parse('/a(right:b)');
+      const t = await createRoot(p, [{outlets: {right: ['c', 11, 'd']}}]);
+      expect(serializer.serialize(t)).toEqual('/a(right:c/11/d)');
+    });
 
-  it('should support updating secondary segments (nested case)', async () => {
-    const p = serializer.parse('/a/(b//right:c)');
-    const t = await createRoot(p, ['a', {outlets: {right: ['d', 11, 'e']}}]);
-    expect(serializer.serialize(t)).toEqual('/a/(b//right:d/11/e)');
-  });
-
-  describe('', async () => {
+    it('should support updating secondary segments (nested case)', async () => {
+      const p = serializer.parse('/a/(b//right:c)');
+      const t = await createRoot(p, ['a', {outlets: {right: ['d', 11, 'e']}}]);
+      expect(serializer.serialize(t)).toEqual('/a/(b//right:d/11/e)');
+    });
     it('should support removing secondary outlet with prefix', async () => {
       const p = serializer.parse('/parent/(child//secondary:popup)');
       const t = await createRoot(p, ['parent', {outlets: {secondary: null}}]);
@@ -205,6 +204,106 @@ describe('createUrlTree', async () => {
       // defined at the same level.
       const t = await createRoot(p, ['parent', {outlets: {primary: 'child', secondary: null}}]);
       expect(serializer.serialize(t)).toEqual('/parent/child(rootSecondary:rootPopup)');
+    });
+
+    describe('absolute navigations', () => {
+      it('with and pathless root', async () => {
+        router.resetConfig([
+          {
+            path: '',
+            children: [
+              {path: '**', outlet: 'left', component: class {}},
+            ],
+          },
+        ]);
+        await router.navigateByUrl('(left:search)');
+        expect(router.url).toEqual('/(left:search)');
+        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
+            .toEqual('/(left:projects/123)');
+      });
+      it('empty path parent and sibling with a path', async () => {
+        router.resetConfig([
+          {
+            path: '',
+            children: [
+              {path: 'x', component: class {}},
+              {path: '**', outlet: 'left', component: class {}},
+            ],
+          },
+        ]);
+        await router.navigateByUrl('/x(left:search)');
+        expect(router.url).toEqual('/x(left:search)');
+        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
+            .toEqual('/x(left:projects/123)');
+        // TODO(atscott): router.createUrlTree uses the "legacy" strategy based on the current
+        // UrlTree to generate new URLs. Once that changes, this can be `router.createUrlTree`
+        // again.
+        expect(createUrlTreeFromSnapshot(
+                   router.routerState.root.snapshot,
+                   [
+                     '/', {
+                       outlets: {
+                         'primary': [{
+                           outlets: {
+                             'left': ['projects', '123'],
+                           }
+                         }]
+                       }
+                     }
+                   ])
+                   .toString())
+            .toEqual('/x(left:projects/123)');
+      });
+
+      it('empty path parent and sibling', async () => {
+        router.resetConfig([
+          {
+            path: '',
+            children: [
+              {path: '', component: class {}},
+              {path: '**', outlet: 'left', component: class {}},
+              {path: '**', outlet: 'right', component: class {}},
+            ],
+          },
+        ]);
+        await router.navigateByUrl('/(left:search//right:define)');
+        expect(router.url).toEqual('/(left:search//right:define)');
+        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
+            .toEqual('/(left:projects/123//right:define)');
+      });
+      it('two pathless parents', async () => {
+        router.resetConfig([
+          {
+            path: '',
+            children: [{
+              path: '',
+              children: [
+                {path: '**', outlet: 'left', component: class {}},
+              ]
+            }],
+          },
+        ]);
+        await router.navigateByUrl('(left:search)');
+        expect(router.url).toEqual('/(left:search)');
+        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
+            .toEqual('/(left:projects/123)');
+      });
+
+      it('maintains structure when primary outlet is not pathless', async () => {
+        router.resetConfig([
+          {
+            path: 'a',
+            children: [
+              {path: '**', outlet: 'left', component: class {}},
+            ],
+          },
+          {path: '**', outlet: 'left', component: class {}},
+        ]);
+        await router.navigateByUrl('/a/(left:search)');
+        expect(router.url).toEqual('/a/(left:search)');
+        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
+            .toEqual('/a/(left:search)(left:projects/123)');
+      });
     });
   });
 
