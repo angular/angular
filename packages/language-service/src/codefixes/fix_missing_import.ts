@@ -72,7 +72,7 @@ function getCodeActions(
   }
   for (const currMatch of matches.values()) {
     const currMatchSymbol = currMatch.tsSymbol.valueDeclaration!;
-    const potentialImports = checker.getPotentialImportsFor(currMatch, importOn);
+    const potentialImports = checker.getPotentialImportsFor(currMatch.ref, importOn);
     for (let potentialImport of potentialImports) {
       let [fileImportChanges, importName] = updateImportsForTypescriptFile(
           tsChecker, importOn.getSourceFile(), potentialImport, currMatchSymbol.getSourceFile());

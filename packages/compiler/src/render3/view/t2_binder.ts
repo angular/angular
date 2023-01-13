@@ -331,8 +331,6 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   private visitNode: (node: Node) => void;
 
-  private pipesUsed: string[] = [];
-
   private constructor(
       private bindings: Map<AST, Reference|Variable>,
       private symbols: Map<Reference|Variable, Template>, private usedPipes: Set<string>,
