@@ -7,6 +7,7 @@ ts_library(
         "extract_i18n.ts",
         "index.ts",
         "ngc-wrapped-main.ts",
+        "utils.ts",
     ],
     module_name = "@angular/bazel",
     visibility = [
