@@ -14,17 +14,18 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const pkgJsonPath = path.join(__dirname, '..', 'package.json');
 const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
 
-const aioAngularVersion = pkgJson.dependencies['@angular/core'].replace(/^[\^~]/, '') + "+forAIOLocalBuildToAvoidMismatch";
+const aioAngularVersion =
+  pkgJson.dependencies['@angular/core'].replace(/^[\^~]/, '') + '+forAIOLocalBuildToAvoidMismatch';
 
 console.log(`\
-BUILD_SCM_VERSION ${aioAngularVersion}
+STABLE_PROJECT_VERSION ${aioAngularVersion}
 `);
 
 // Fix stable-status.txt values to improve remote cache performance.
 console.log(`\
 BUILD_HOST fake_host
 BUILD_USER fake_user
-`)
+`);
 
 // Fix the timestamp in volatile-status.txt to improve remote cache performance.
 // Unlike the local Bazel cache, the remote cache does not ignore volatile-status.txt
@@ -32,4 +33,4 @@ BUILD_USER fake_user
 // https://github.com/bazelbuild/bazel/issues/10075#issuecomment-546872111
 console.log(`\
 BUILD_TIMESTAMP 0
-`)
+`);
