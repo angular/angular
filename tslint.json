@@ -28,7 +28,6 @@
           "semver",
           "yargs",
           "glob",
-          "cluster",
           "convert-source-map"
         ],
         // The following CommonJS modules appear to have a default export available (due to the `esModuleInterop` flag),
