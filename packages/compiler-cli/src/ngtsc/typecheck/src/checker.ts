@@ -735,7 +735,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getPotentialImportsFor(
       toImport: Reference<ClassDeclaration>, inContext: ts.ClassDeclaration,
-      asDirectImport?: boolean): ReadonlyArray<PotentialImport> {
+      forceStandaloneImport = false): ReadonlyArray<PotentialImport> {
     const imports: PotentialImport[] = [];
 
     const meta =
@@ -744,10 +744,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return imports;
     }
 
-    // `asDirectImport` is used to indicate that we want the import to behave as if it's a
+    // TODO(crisbeto): in a standalone world this wouldn't be necessary.
+    // `forceStandaloneImport` is used to indicate that we want the import to behave as if it's a
     // standalone declaration, even though it might not be yet. This is useful for migrations
     // where we know which declarations are going to become standalone.
-    if (meta.isStandalone || asDirectImport) {
+    if (meta.isStandalone || forceStandaloneImport) {
       const emitted = this.emit(PotentialImportKind.Standalone, toImport, inContext);
       if (emitted !== null) {
         imports.push(emitted);

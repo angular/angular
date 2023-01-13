@@ -151,10 +151,15 @@ export interface TemplateTypeChecker {
 
   /**
    * In the context of an Angular trait, generate potential imports for a directive.
+   * @param toImport Class that is being imported.
+   * @param inComponent Component into which the import is being inserted.
+   * @param forceStandaloneImport Forces the import to behave as a standalone declaration.
+   *   Used in schematics where we know that a declaration will be converted to standalone, but
+   *   it wasn't standalone when the program was created.
    */
   getPotentialImportsFor(
       toImport: Reference<ClassDeclaration>, inComponent: ts.ClassDeclaration,
-      asDirectImport?: boolean): ReadonlyArray<PotentialImport>;
+      forceStandaloneImport?: boolean): ReadonlyArray<PotentialImport>;
 
   /**
    * Get the primary decorator for an Angular class (such as @Component). This does not work for
