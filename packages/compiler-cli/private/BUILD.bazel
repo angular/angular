@@ -14,6 +14,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/perf",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/transformers/downlevel_decorators_transform",
         "@npm//typescript",
     ],

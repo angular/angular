@@ -663,6 +663,7 @@ function getDirectiveMetaFromDeclaration(
     isStandalone: !!decl.isStandalone,
     baseClass: null,
     animationTriggerNames: null,
+    decorator: null,
     hostDirectives: decl.hostDirectives === undefined ? null : decl.hostDirectives.map(hostDecl => {
       return {
         directive: new Reference(resolveDeclaration(hostDecl.directive)),
