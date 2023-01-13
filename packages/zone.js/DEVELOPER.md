@@ -89,7 +89,7 @@ Inspect the `packages/zone.js/CHANGELOG.md` for any issues and than commit it wi
 Create a dry run build to make sure everything is ready.
 
 ```
-yarn bazel --output_base=$(mktemp -d) run //packages/zone.js:npm_package.pack --workspace_status_command="echo BUILD_SCM_VERSION $VERSION"
+yarn bazel --output_base=$(mktemp -d) run //packages/zone.js:npm_package.pack --workspace_status_command="echo STABLE_PROJECT_VERSION $VERSION"
 ```
 
 If everything looks good, commit the changes and push them to your origin to create a PR.

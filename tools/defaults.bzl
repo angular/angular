@@ -200,7 +200,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         "0.0.0-PLACEHOLDER": "0.0.0",
     })
     stamped_substitutions = dict(common_substitutions, **{
-        "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
+        "0.0.0-PLACEHOLDER": "{STABLE_PROJECT_VERSION}",
     })
 
     _ng_package(
@@ -239,7 +239,7 @@ def pkg_npm(name, deps = [], validate = True, **kwargs):
         "0.0.0-PLACEHOLDER": "0.0.0",
     })
     stamped_substitutions = dict(common_substitutions, **{
-        "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
+        "0.0.0-PLACEHOLDER": "{STABLE_PROJECT_VERSION}",
     })
 
     # NOTE: We keep this to avoid the linker mappings from `deps` to be forwarded.
