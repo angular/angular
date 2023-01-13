@@ -1,0 +1,63 @@
+load("//tools:defaults.bzl", "nodejs_binary")
+load("//:yarn.bzl", "YARN_PATH")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "LICENSE",
+    "karma-js.conf.js",
+    "browser-providers.conf.js",
+    YARN_PATH,
+    "scripts/ci/bazel-payload-size.sh",
+    "scripts/ci/payload-size.sh",
+    "scripts/ci/payload-size.js",
+    "package.json",
+])
+
+filegroup(
+    # filegroup is needed so that this package.json file can be a dep
+    # in a js_library target, which doesn't allow source file deps
+    name = "package_json",
+    srcs = ["package.json"],
+)
+
+alias(
+    name = "tsconfig.json",
+    actual = "//packages:tsconfig-build.json",
+)
+
+filegroup(
+    name = "angularjs_scripts",
+    srcs = [
+        # We also declare the unminified AngularJS files since these can be used for
+        # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
+        "@npm//:node_modules/angular-1.5/angular.js",
+        "@npm//:node_modules/angular-1.5/angular.min.js",
+        "@npm//:node_modules/angular-1.6/angular.js",
+        "@npm//:node_modules/angular-1.6/angular.min.js",
+        "@npm//:node_modules/angular-1.7/angular.js",
+        "@npm//:node_modules/angular-1.7/angular.min.js",
+        "@npm//:node_modules/angular-mocks-1.5/angular-mocks.js",
+        "@npm//:node_modules/angular-mocks-1.6/angular-mocks.js",
+        "@npm//:node_modules/angular-mocks-1.7/angular-mocks.js",
+        "@npm//:node_modules/angular-mocks-1.8/angular-mocks.js",
+        "@npm//:node_modules/angular-1.8/angular.js",
+        "@npm//:node_modules/angular-1.8/angular.min.js",
+    ],
+)
+
+# Detect if the build is running under --stamp
+config_setting(
+    name = "stamp",
+    values = {"stamp": "true"},
+)
+
+nodejs_binary(
+    name = "yarn_vendored",
+    data = [".yarn/releases/yarn-1.22.17.cjs"],
+    entry_point = ".yarn/releases/yarn-1.22.17.cjs",
+    visibility = [
+        "//aio/tools/examples/shared:__pkg__",
+        "//integration:__subpackages__",
+    ],
+)

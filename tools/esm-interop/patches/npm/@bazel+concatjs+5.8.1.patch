@@ -1,0 +1,133 @@
+diff --git a/node_modules/@bazel/concatjs/internal/build_defs.bzl b/node_modules/@bazel/concatjs/internal/build_defs.bzl
+index 9e5cda6..cdbcf71 100755
+--- a/node_modules/@bazel/concatjs/internal/build_defs.bzl
++++ b/node_modules/@bazel/concatjs/internal/build_defs.bzl
+@@ -15,7 +15,7 @@
+ "TypeScript compilation"
+
+ load("@rules_nodejs//nodejs:providers.bzl", "LinkablePackageInfo", "js_module_info")
+-load("@build_bazel_rules_nodejs//:providers.bzl", "ExternalNpmPackageInfo", "js_ecma_script_module_info", "js_named_module_info", "node_modules_aspect", "run_node")
++load("@build_bazel_rules_nodejs//:providers.bzl", "ExternalNpmPackageInfo", "js_ecma_script_module_info", "node_modules_aspect", "run_node")
+
+ # pylint: disable=unused-argument
+ # pylint: disable=missing-docstring
+@@ -72,11 +72,10 @@ my_rule(
+ _DEFAULT_COMPILER = "//@bazel/concatjs/bin:tsc_wrapped"
+
+ _TYPESCRIPT_TYPINGS = Label(
+-
+     "//typescript:typescript__typings",
+ )
+
+-_TYPESCRIPT_SCRIPT_TARGETS = ["es3", "es5", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "esnext"]
++_TYPESCRIPT_SCRIPT_TARGETS = ["es3", "es5", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2022", "esnext"]
+ _TYPESCRIPT_MODULE_KINDS = ["none", "commonjs", "amd", "umd", "system", "es2015", "esnext"]
+
+ _DEVMODE_TARGET_DEFAULT = "es2015"
+@@ -331,11 +330,7 @@ def _ts_library_impl(ctx):
+     # and issue https://github.com/bazelbuild/rules_nodejs/issues/57 for more details.
+     ts_providers["providers"].extend([
+         js_module_info(
+-            sources = ts_providers["typescript"]["es5_sources"],
+-            deps = ctx.attr.deps,
+-        ),
+-        js_named_module_info(
+-            sources = ts_providers["typescript"]["es5_sources"],
++            sources = ts_providers["typescript"]["es6_sources"],
+             deps = ctx.attr.deps,
+         ),
+         js_ecma_script_module_info(
+@@ -352,7 +347,7 @@ def _ts_library_impl(ctx):
+             package_name = ctx.attr.package_name,
+             package_path = ctx.attr.package_path,
+             path = link_path,
+-            files = ts_providers["typescript"]["es5_sources"],
++            files = ts_providers["typescript"]["es6_sources"],
+         ))
+
+     return ts_providers_dict_to_struct(ts_providers)
+diff --git a/node_modules/@bazel/concatjs/internal/common/compilation.bzl b/node_modules/@bazel/concatjs/internal/common/compilation.bzl
+index fed787a..2d9d0cc 100755
+--- a/node_modules/@bazel/concatjs/internal/common/compilation.bzl
++++ b/node_modules/@bazel/concatjs/internal/common/compilation.bzl
+@@ -272,10 +272,6 @@ def compile_ts(
+     # Not all existing implementations of outputs() may return transpilation_infos
+     transpilation_infos = getattr(outs, "transpilation_infos", [])
+
+-    if has_sources and _get_runtime(ctx) != "nodejs":
+-        # Note: setting this variable controls whether tsickle is run at all.
+-        tsickle_externs = [ctx.actions.declare_file(ctx.label.name + ".externs.js")]
+-
+     dep_declarations = _collect_dep_declarations(ctx, declaration_infos)
+
+     type_blocklisted_declarations = dep_declarations.type_blocklisted_declarations
+@@ -298,7 +294,6 @@ def compile_ts(
+         perf_trace = str(ctx.label) == ctx.var["TYPESCRIPT_PERF_TRACE_TARGET"]
+
+     compilation_inputs = dep_declarations.transitive_declarations.to_list() + srcs_files
+-    tsickle_externs_path = tsickle_externs[0] if tsickle_externs else None
+
+     # Calculate allowed dependencies for strict deps enforcement.
+     allowed_deps = depset(
+@@ -313,16 +308,12 @@ def compile_ts(
+         compilation_inputs,
+         srcs_files,
+         jsx_factory = jsx_factory,
+-        tsickle_externs = tsickle_externs_path,
++        tsickle_externs = None,
+         type_blocklisted_declarations = type_blocklisted_declarations.to_list(),
+         allowed_deps = allowed_deps,
+     )
+
+-    # Do not produce declarations in ES6 mode, tsickle cannot produce correct
+-    # .d.ts (or even errors) from the altered Closure-style JS emit.
+-    tsconfig_es6["compilerOptions"]["declaration"] = False
+-    tsconfig_es6["compilerOptions"].pop("declarationDir")
+-    outputs = transpiled_closure_js + tsickle_externs
++    outputs = transpiled_closure_js + gen_declarations
+
+     node_profile_args = []
+     if perf_trace and has_sources:
+@@ -364,9 +355,7 @@ def compile_ts(
+
+         devmode_manifest = ctx.actions.declare_file(ctx.label.name + ".es5.MF")
+         tsconfig_json_es5 = ctx.actions.declare_file(ctx.label.name + "_es5_tsconfig.json")
+-        outputs = (
+-            transpiled_devmode_js + gen_declarations + [devmode_manifest]
+-        )
++
+         tsconfig_es5 = tsc_wrapped_tsconfig(
+             ctx,
+             compilation_inputs,
+@@ -375,6 +364,15 @@ def compile_ts(
+             devmode_manifest = devmode_manifest.path,
+             allowed_deps = allowed_deps,
+         )
++
++        # Do not produce declarations in devmode mode, tsickle cannot produce correct
++        # .d.ts (or even errors) from the altered Closure-style JS emit.
++        tsconfig_es5["compilerOptions"]["declaration"] = False
++        tsconfig_es5["compilerOptions"].pop("declarationDir")
++        outputs = (
++            transpiled_devmode_js + [devmode_manifest]
++        )
++
+         node_profile_args = []
+         if perf_trace:
+             perf_trace_file = ctx.actions.declare_file(ctx.label.name + ".es5.trace")
+@@ -412,13 +410,13 @@ def compile_ts(
+     # both ts_library and ts_declarations generate .mjs files:
+     # - for libraries, this is the ES6/production code
+     # - for declarations, these are generated shims
+-    es6_sources = depset(transpiled_closure_js + tsickle_externs)
++    es6_sources = depset(transpiled_closure_js)
+     if is_library:
+         es5_sources = depset(transpiled_devmode_js)
+     else:
+         # In development mode, no code ever references shims as they only
+         # contain types, and the ES5 code does not get type annotated.
+-        es5_sources = depset(tsickle_externs)
++        es5_sources = depset()
+
+         # Similarly, in devmode these sources do not get loaded, so do not need
+         # to be in a manifest.

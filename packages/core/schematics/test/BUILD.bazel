@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/core/schematics/utils",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
+        "@npm//@types/shelljs",
+        "@npm//tslint",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        "//packages/core/schematics:collection.json",
+        "//packages/core/schematics:migrations.json",
+        "//packages/core/schematics/migrations/guard-and-resolve-interfaces",
+        "//packages/core/schematics/migrations/guard-and-resolve-interfaces:bundle",
+        "//packages/core/schematics/migrations/remove-module-id",
+        "//packages/core/schematics/migrations/remove-module-id:bundle",
+        "//packages/core/schematics/ng-generate/standalone-migration",
+        "//packages/core/schematics/ng-generate/standalone-migration:bundle",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
+    ],
+    templated_args = ["--nobazel_run_linker"],
+    deps = [
+        ":test_lib",
+        "@npm//shelljs",
+    ],
+)

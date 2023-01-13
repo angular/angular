@@ -1,0 +1,14 @@
+{%- import "lib/memberHelpers.html" as memberHelpers -%}
+
+{$- memberHelpers.renderProperties(doc.staticProperties, 'static-properties', 'static-property', 'Static properties') $}
+
+{$- memberHelpers.renderMethodDetails(versionInfo, doc.staticMethods, 'static-methods', 'static-method', 'Static methods') $}
+
+{%- if doc.constructorDoc %}
+<h2>Constructor</h2>
+{$ memberHelpers.renderMethodDetail(versionInfo, doc.constructorDoc, 'constructor') $}
+{%- endif %}
+
+{$- memberHelpers.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
+
+{$- memberHelpers.renderMethodDetails(versionInfo, doc.methods, 'instance-methods', 'instance-method', 'Methods') $}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "es2020",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "experimentalDecorators": true,
+    "outDir": "built",
+    "rootDir": ".",
+    "declaration": true,
+    "typeRoots": ["node_modules/@types"]
+  },
+
+  "exclude": [
+    "vendor",
+    "node_modules",
+    "built",
+    "dist",
+    "e2e"
+  ]
+}

@@ -1,0 +1,32 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "app_todo_component_styles",
+    src = "app-todo.component.scss",
+)
+
+ng_module(
+    name = "todo",
+    srcs = [
+        "app.module.ts",
+        "app-todo.component.ts",
+        "dialog.component.ts",
+    ],
+    angular_assets = [
+        "app-todo.component.html",
+        "dialog.component.html",
+        ":app_todo_component_styles",
+    ],
+    deps = [
+        "//devtools/src/app/demo-app/todo/about",
+        "//devtools/src/app/demo-app/todo/home",
+        "//packages/common",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/router",
+        "@npm//@angular/material",
+    ],
+)

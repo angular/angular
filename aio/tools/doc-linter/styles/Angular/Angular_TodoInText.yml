@@ -1,0 +1,9 @@
+# tests for TODO in text when NOT used in a sentence
+extends: existence
+message: 'Remove %s before publishing.'
+link: https://angular.io/guide/docs-style-guide#when-to-use-code-font
+level: error
+ignorecase: true
+scope: sentence
+raw:
+  - (?<!\s)[Tt][Oo][Dd][Oo](?!\s)

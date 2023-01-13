@@ -1,0 +1,52 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library", "zone_compatible_jasmine_node_test")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/router/index.mjs",
+    deps = ["//packages/router"],
+)
+
+circular_dependency_test(
+    name = "testing_circular_deps_test",
+    entry_point = "angular/packages/router/testing/index.mjs",
+    deps = ["//packages/router/testing"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//packages/common",
+        "//packages/common/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+        "//packages/router",
+        "//packages/router/testing",
+        "@npm//rxjs",
+    ],
+)
+
+# Tests rely on `async/await` for change detection.
+# This syntax needs to be downleveled until ZoneJS supports it.
+zone_compatible_jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node"],
+    deps = [
+        ":test_lib",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

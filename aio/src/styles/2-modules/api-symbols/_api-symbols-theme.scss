@@ -1,0 +1,21 @@
+@use 'sass:map';
+@use '../../constants';
+
+@mixin theme($theme) {
+  .symbol {
+    box-shadow: 0 1px 2px rgba(constants.$black, 0.24);
+    color: constants.$white;
+
+    // SYMBOL TYPES
+    // Symbol mapping variables in *constants*
+    @each $name, $symbol in constants.$api-symbols {
+      &.#{$name} {
+        background: map.get($symbol, background);
+
+        &:before {
+          content: map.get($symbol, content);
+        }
+      }
+    }
+  }
+}

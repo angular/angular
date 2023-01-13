@@ -1,0 +1,14 @@
+{
+  "schematics": {
+    "migration-v16-remove-module-id": {
+      "version": "16.0.0",
+      "description": "As of Angular v16, the `moduleId` property of `@Component` is deprecated as it no longer has any effect.",
+      "factory": "./migrations/remove-module-id/bundle"
+    },
+    "migration-v16-guard-and-resolve-interfaces": {
+      "version": "16.0.0",
+      "description": "In Angular version 15.2, the guard and resolver interfaces (CanActivate, Resolve, etc) were deprecated. This migration removes imports and 'implements' clauses that contain them.",
+      "factory": "./migrations/guard-and-resolve-interfaces/bundle"
+    }
+  }
+}

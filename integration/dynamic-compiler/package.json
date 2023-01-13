@@ -1,0 +1,40 @@
+{
+  "name": "dynamic-compiler",
+  "version": "0.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "yarn clean && yarn ngc && yarn rollup",
+    "clean": "rm -rf dist",
+    "ngc": "ngc -p tsconfig.json",
+    "rollup": "rollup -c rollup.config.mjs",
+    "preprotractor": "tsc -p e2e",
+    "protractor": "protractor e2e/protractor.config.js",
+    "serve": "lite-server -c e2e/browser.config.json",
+    "test": "yarn build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@babel/core": "file:../../node_modules/@babel/core",
+    "@rollup/plugin-babel": "file:../../node_modules/@rollup/plugin-babel",
+    "@rollup/plugin-node-resolve": "file:../../node_modules/@rollup/plugin-node-resolve",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
+    "concurrently": "3.4.0",
+    "lite-server": "2.2.2",
+    "protractor": "file:../../node_modules/protractor",
+    "rollup": "file:../../node_modules/rollup",
+    "typescript": "file:../../node_modules/typescript"
+  },
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "rxjs": "file:../../node_modules/rxjs",
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+  }
+}

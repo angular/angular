@@ -1,0 +1,28 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "filter_component_styles",
+    src = "filter.component.scss",
+)
+
+ng_module(
+    name = "filter",
+    srcs = [
+        "filter.component.ts",
+        "filter.module.ts",
+    ],
+    angular_assets = [
+        "filter.component.html",
+        ":filter_component_styles",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)

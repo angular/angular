@@ -1,0 +1,10 @@
+<!--#docregion binding  -->
+<app-hero-detail [hero]="selectedHero"></app-hero-detail>
+<button type="button" (click)="selectHero(hero)">
+  {{hero.name}}
+</button>
+<!--#enddocregion binding -->
+
+<!--#docregion structural  -->
+<li *ngFor="let hero of heroes"></li>
+<app-hero-detail *ngIf="selectedHero"></app-hero-detail>

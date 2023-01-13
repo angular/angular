@@ -1,0 +1,21 @@
+load("//tools:defaults.bzl", "pkg_npm")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "package_assets",
+    srcs = [
+        "collection.json",
+        "package.json",
+    ],
+    visibility = ["//packages/localize:__subpackages__"],
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = [":package_assets"],
+    validate = False,
+    deps = [
+        "//packages/localize/schematics/ng-add:assets",
+    ],
+)

@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "generate-locales-tool",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "@npm//@bazel/runfiles",
+        "@npm//@types/cldrjs",
+        "@npm//@types/glob",
+        "@npm//@types/node",
+        "@npm//cldr",
+        "@npm//cldrjs",
+        "@npm//glob",
+    ],
+)

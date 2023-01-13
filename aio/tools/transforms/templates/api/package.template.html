@@ -1,0 +1,59 @@
+{% extends 'base.template.html' -%}
+
+{% macro listItems(items, title, overridePath) %}
+  {% set filteredItems = items | filterByPropertyValue('internal', undefined) %}
+  {% if filteredItems.length %}
+  <section class="export-list">
+    <h3>{$ title $}</h3>
+    <table class="is-full-width list-table">
+      {% for item in filteredItems %}
+      <tr>
+        <td><code class="code-anchor{% if item.deprecated %} deprecated-api-item{% endif %}"><a href="{$ overridePath or item.path $}"{%- if item.deprecated != undefined %} class="deprecated-api-item"{% endif %}>{$ item.name | escape $}</a></code></td>
+        <td>
+          {% if item.deprecated !== undefined %}{$ ('**Deprecated:** ' + item.deprecated) | marked $}{% endif %}
+          {% if item.shortDescription %}{$ item.shortDescription | marked $}{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </section>
+  {% endif %}
+{% endmacro %}
+
+{% block header %}
+<header class="api-header">
+  <h1>{$ doc.name $}</h1>
+  {% if doc.isPrimaryPackage %}<label class="api-type-label package">package</label>{% else %}<label class="api-type-label {$ entry-point $}">entry-point</label>{% endif %}
+  {% if doc.packageDeprecated or (not doc.isPrimaryPackage and doc.deprecated !== undefined) %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
+  {% if doc.security !== undefined %}<label class="api-status-label security">security</label>{% endif %}
+  {% if doc.pipeOptions.pure === 'false' %}<label class="api-status-label impure-pipe">impure</label>{% endif %}
+</header>
+{% endblock %}
+
+{% block body -%}
+  {$ doc.shortDescription | marked $}
+  {% if doc.description %}{$ doc.description | marked $}{% endif %}
+
+  {% include "includes/see-also.html" %}
+
+  {% if doc.isPrimaryPackage %}
+  <h2>Entry points</h2>
+  {$ listItems([doc.packageInfo.primary], 'Primary', '#primary-entry-point-exports') $}
+  {$ listItems(doc.packageInfo.secondary, 'Secondary') $}
+  {% endif %}
+
+  <h2>{% if doc.isPrimaryPackage %}Primary entry{% else %}Entry{% endif %} point exports</h2>
+  {% if not doc.hasPublicExports %}
+    <p><i>No public exports.</i></p>
+  {% endif %}
+  {% include "includes/deprecation.html" %}
+  {$ listItems(doc.ngmodules, 'NgModules') $}
+  {$ listItems(doc.classes, 'Classes') $}
+  {$ listItems(doc.decorators, 'Decorators') $}
+  {$ listItems(doc.functions, 'Functions') $}
+  {$ listItems(doc.structures, 'Structures') $}
+  {$ listItems(doc.directives, 'Directives') $}
+  {$ listItems(doc.elements, 'Elements') $}
+  {$ listItems(doc.pipes, 'Pipes') $}
+  {$ listItems(doc.types, 'Types') $}
+{%- endblock %}

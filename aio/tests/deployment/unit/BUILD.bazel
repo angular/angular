@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//aio/tests/deployment:__subpackages__"])
+
+ts_library(
+    name = "unit_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//aio/tests/deployment/shared",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        "//aio:dgeni",
+        "//aio:firebase.json",
+        "//aio/src/generated:ngsw-config",
+    ],
+    deps = [":unit_lib"],
+)

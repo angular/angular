@@ -1,0 +1,13 @@
+<!-- #docplaster-->
+<!-- #docregion -->
+<h2>{{title}}</h2>
+
+<p>Basic uppercase pipe (no precedence considerations necessary): {{ 'text' | uppercase }}</p>
+<p>The following shows that a pipe has higher precedence than a ternary operator. If the pipe precedence were lower than the ternary operator precedence, the output would be in uppercase as in 'TRUE'. Instead "true" is lowercase: {{ true ? 'true' : 'false' | uppercase }}</p>
+<p>The following shows how parentheses help Angular evaluate the whole statement:
+<!-- #docregion precedence -->
+<!-- use parentheses in the third operand so the pipe applies to the whole expression -->
+{{ (true ? 'true' : 'false') | uppercase }}
+<!-- #enddocregion precedence -->
+</p>
+

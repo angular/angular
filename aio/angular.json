@@ -1,0 +1,265 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "yarn",
+    "warnings": {
+      "typescriptMismatch": false
+    },
+    "analytics": false,
+    "cache": {
+      // Disable build caching as the cache folder will just be dropped
+      // when run under Bazel sandboxed execution.
+      "enabled": false
+    }
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "site": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        },
+        "@schematics/angular:component": {
+          "inlineStyle": true,
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "aio",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "ngswConfigPath": "src/generated/ngsw-config.json",
+            "tsConfig": "tsconfig.app.json",
+            "webWorkerTsConfig": "tsconfig.worker.json",
+            "optimization": {
+              "fonts": {
+                "inline": false
+              },
+              "scripts": true,
+              "styles": {
+                "inlineCritical": false,
+                "minify": true
+              }
+            },
+            "outputHashing": "all",
+            "sourceMap": true,
+            "namedChunks": true,
+            "assets": [
+              // Architect on Windows has difficulty service assets files within a
+              // Bazel runfiles symlink forest. Using "followSymlinks" seems to
+              // fix this. Note that the assets below don't need this workaround as
+              // symlinked tree artifacts pointing to the output tree don't appear
+              // to have the same issue.
+              {
+                "followSymlinks": true,
+                "input": "src/assets",
+                "glob": "**/*",
+                "output": "/assets/"
+              },
+              {
+                "followSymlinks": true,
+                "input": "src/",
+                "glob": "**/pwa-manifest.json",
+                "output": "/"
+              },
+              {
+                "followSymlinks": true,
+                "input": "src/",
+                "glob": "**/google385281288605d160.html",
+                "output": "/"
+              },
+              {
+                "input": "stackblitz/generated",
+                "output": "generated",
+                "glob": "**"
+              },
+              {
+                "input": "example-zips/generated",
+                "output": "generated",
+                "glob": "**"
+              },
+              {
+                "input": "dgeni/generated",
+                "output": "generated",
+                "glob": "**"
+              },
+              {
+                "input": "dgeni-fast/generated",
+                "output": "generated",
+                "glob": "**"
+              }
+            ],
+            "styles": [
+              "src/styles/main.scss",
+              {
+                "inject": false,
+                "input": "src/styles/custom-themes/dark-theme.scss",
+                "bundleName": "dark-theme"
+              },
+              {
+                "inject": false,
+                "input": "src/styles/custom-themes/light-theme.scss",
+                "bundleName": "light-theme"
+              }
+            ],
+            "scripts": [],
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "850kb",
+                "maximumError": "1mb"
+              },
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "2kb",
+                "maximumError": "4kb"
+              }
+            ]
+          },
+          "configurations": {
+            "next": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.next.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "rc": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.rc.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "stable": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stable.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "archive": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.archive.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "ci": {
+              "progress": false
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "outputHashing": "none",
+              "vendorChunk": true,
+              "extractLicenses": false
+            }
+          },
+          "defaultConfiguration": "stable"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "headers": {
+              // Keep in sync with the `firebase.json` file.
+              // Note: Unlike in `firebase.json` we omit the `report-uri` for development.
+              "Content-Security-Policy": "require-trusted-types-for 'script'; trusted-types angular angular#bundler angular#unsafe-bypass aio#analytics google#safe goog#html"
+            }
+          },
+          "configurations": {
+            "next": {
+              "browserTarget": "site:build:next"
+            },
+            "rc": {
+              "browserTarget": "site:build:rc"
+            },
+            "stable": {
+              "browserTarget": "site:build:stable"
+            },
+            "archive": {
+              "browserTarget": "site:build:archive"
+            },
+            "ci": {
+              "browserTarget": "site:build:ci"
+            },
+            "development": {
+              "browserTarget": "site:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "site:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "webWorkerTsConfig": "tsconfig.worker.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": ["src/assets", "src/pwa-manifest.json", "src/google385281288605d160.html"],
+            "styles": [
+              "src/styles/main.scss",
+              {
+                "inject": false,
+                "input": "src/styles/custom-themes/dark-theme.scss",
+                "bundleName": "dark-theme"
+              },
+              {
+                "inject": false,
+                "input": "src/styles/custom-themes/light-theme.scss",
+                "bundleName": "light-theme"
+              }
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/!(generated)/**/*.ts",
+              "src/!(generated)/**/*.html",
+              "tests/**/*.ts"
+            ]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "tests/e2e/protractor.conf.js",
+            "devServerTarget": "site:serve"
+          },
+          "configurations": {
+            "ci": {
+              "devServerTarget": "site:serve:ci"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,104 @@
+@use 'sass:map';
+@use '../../constants';
+@use '../../mixins';
+@use '@angular/material' as mat;
+
+@mixin theme($theme) {
+  $primary: map.get($theme, primary);
+  $is-dark-theme: map.get($theme, is-dark);
+
+  mat-toolbar.app-toolbar {
+    @if $is-dark-theme {
+      &.mat-primary {
+        background: mat.get-color-from-palette($primary, darker)
+      }
+    }
+
+    // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
+    .page-home & {
+      background: if($is-dark-theme, mat.get-color-from-palette($primary, darker), constants.$blue);
+    }
+
+    mat-icon {
+      color: constants.$white;
+    }
+
+    // HAMBURGER BUTTON
+    .hamburger {
+      &:hover {
+        color: constants.$offwhite;
+      }
+
+      & .mat-icon {
+        color: constants.$white;
+      }
+    }
+
+    // HOME NAV-LINK
+    .nav-link.home {
+      &:focus {
+        // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
+        outline: 1px solid constants.$focus-outline-ondark;
+      }
+    }
+
+    // TOP MENU
+    aio-top-menu {
+      ul {
+        li {
+          a.nav-link {
+            .nav-link-inner {
+              &:hover {
+                background: rgba(constants.$white, 0.15);
+              }
+            }
+
+            &:focus {
+              .nav-link-inner {
+                background: rgba(constants.$white, 0.15);
+                box-shadow: 0 0 1px 2px constants.$focus-outline-ondark;
+              }
+            }
+
+            &:active {
+              .nav-link-inner {
+                background: rgba(constants.$white, 0.15);
+              }
+            }
+          }
+
+          &.selected {
+            a.nav-link {
+              .nav-link-inner {
+                background: rgba(constants.$white, 0.15);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // SEARCH BOX
+    aio-search-box.search-container {
+      input {
+        color: constants.$darkgray;
+        background-color: constants.$white;
+
+        @include mixins.placeholder {
+          color: constants.$mediumgray;
+        }
+      }
+
+      .search-box-shortcut {
+        border-color: constants.$mediumgray;
+        color: constants.$mediumgray;
+      }
+    }
+
+    aio-theme-toggle {
+      @media screen and (min-width: 351px) {
+        border-right: 1px solid constants.$white;
+      }
+    }
+  }
+}

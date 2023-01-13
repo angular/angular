@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.app.json",
+  "angularCompilerOptions": {
+    "i18nInFormat": "xlf"
+  }
+}

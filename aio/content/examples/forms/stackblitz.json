@@ -1,0 +1,8 @@
+{
+  "description": "Forms",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "file": "src/app/hero-form/hero-form.component.html"
+}

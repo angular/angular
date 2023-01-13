@@ -1,0 +1,4 @@
+<ng-property-tab-header [currentSelectedElement]="currentSelectedElement">
+</ng-property-tab-header>
+<ng-property-tab-body (inspect)="inspect.emit($event)" (viewSource)="viewSource.emit($event)" [currentSelectedElement]="currentSelectedElement">
+</ng-property-tab-body>

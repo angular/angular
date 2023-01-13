@@ -1,0 +1,78 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_module", "ts_library")
+
+package(default_visibility = ["//visibility:private"])
+
+SPEC_FILES_WITH_FORWARD_REFS = [
+    "di_forward_ref_spec.ts",
+]
+
+ts_library(
+    name = "acceptance_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = SPEC_FILES_WITH_FORWARD_REFS,
+    ),
+    # Visible to //:saucelabs_unit_tests
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/common/locales",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/src/signals",
+        "//packages/core/src/util",
+        "//packages/core/test/render3:matchers",
+        "//packages/core/testing",
+        "//packages/localize",
+        "//packages/localize/init",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/platform-server",
+        "//packages/private/testing",
+        "//packages/router",
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//rxjs",
+    ],
+)
+
+# Note: The `forward_ref` example tests are built through this `ng_module` sub-target.
+# This is done so that DI decorator/type metadata is processed manually by the compiler
+# ahead of time. We cannot rely on the official TypeScript decorator downlevel emit (for JIT),
+# as the output is not compatible with `forwardRef` and ES2015+. More details here:
+# https://github.com/angular/angular/commit/323651bd38909b0f4226bcb6c8f5abafa91cf9d9.
+# https://github.com/microsoft/TypeScript/issues/27519.
+ng_module(
+    name = "forward_ref_test_lib",
+    testonly = True,
+    srcs = SPEC_FILES_WITH_FORWARD_REFS,
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "acceptance",
+    bootstrap = ["//tools/testing:node"],
+    deps = [
+        ":acceptance_lib",
+        ":forward_ref_test_lib",
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//base64-js",
+        "@npm//source-map",
+    ],
+)
+
+karma_web_test_suite(
+    name = "acceptance_web",
+    deps = [
+        ":acceptance_lib",
+        ":forward_ref_test_lib",
+    ],
+)

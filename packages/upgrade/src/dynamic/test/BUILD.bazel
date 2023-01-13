@@ -1,0 +1,28 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/upgrade",
+        "//packages/upgrade/src/common",
+        "//packages/upgrade/src/common/test/helpers",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    static_files = [
+        "//:angularjs_scripts",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

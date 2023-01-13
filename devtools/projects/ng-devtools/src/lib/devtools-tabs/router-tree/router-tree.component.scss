@@ -1,0 +1,104 @@
+.router-tree-wrapper {
+  font-size: 1em;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+}
+
+.no-routes {
+  padding-top: 1rem;
+  text-align: center;
+  color: #b0b0b0;
+}
+
+.svg-container {
+  max-height: inherit;
+}
+
+::ng-deep {
+  .tooltip {
+    position: absolute;
+    background: #ebf1fb;
+    border: 0px;
+    border-radius: 2px;
+    pointer-events: none;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.25rem;
+  }
+}
+
+:host {
+  ::ng-deep {
+    .link {
+      stroke: #9b9b9b;
+      stroke-width: 1px;
+      fill: none;
+    }
+
+    .node {
+      cursor: pointer;
+    }
+
+    .node-route {
+      stroke: #f05057;
+      fill: #fff0f0;
+      stroke-width: 1px;
+    }
+
+    & .node-route:hover,
+    & .node-route.selected {
+      fill: #f05057;
+    }
+
+    & .node-aux-route {
+      stroke: #2828ab;
+      fill: #ebf2fc;
+      stroke-width: 1px;
+    }
+
+    & .node-aux-route:hover,
+    & .node-aux-route.selected {
+      fill: #2828ab;
+    }
+
+    & text {
+      fill: #000000;
+      font-weight: 300;
+    }
+  }
+}
+
+:host-context(.dark-theme) {
+  ::ng-deep {
+    .link {
+      stroke: #bcc5ce;
+      stroke-width: 1px;
+      fill: none;
+    }
+
+    .node-route {
+      stroke: #54c9bd;
+      fill: #202124;
+    }
+
+    & .node-route:hover,
+    & .node-route.selected {
+      fill: #54c9bd;
+    }
+
+    & .node-aux-route {
+      stroke: #2828ab;
+      fill: #ebf2fc;
+    }
+
+    & .node-aux-route:hover,
+    & .node-aux-route.selected {
+      fill: #2828ab;
+    }
+
+    & text {
+      fill: #bcc5ce;
+    }
+  }
+}

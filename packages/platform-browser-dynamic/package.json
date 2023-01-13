@@ -1,0 +1,28 @@
+{
+  "name": "@angular/platform-browser-dynamic",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - library for using Angular in a web browser with JIT compilation",
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^16.14.0 || >=18.10.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-PLACEHOLDER",
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/platform-browser-dynamic"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false
+}

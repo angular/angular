@@ -1,0 +1,16 @@
+@use '../../mixins';
+
+/* API SYMBOLS */
+
+/* SYMBOL CLASS */
+
+.symbol {
+  border-radius: 2px;
+  display: inline-block;
+  @include mixins.font-size(10);
+  font-weight: 600;
+  @include mixins.line-height(16);
+  margin-right: 8px;
+  text-align: center;
+  width: 16px;
+}

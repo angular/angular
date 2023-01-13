@@ -1,0 +1,49 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/elements/index.mjs",
+    deps = ["//packages/elements"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/elements",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser/testing",
+        "@npm//rxjs",
+    ],
+)
+
+filegroup(
+    name = "elements_test_bootstrap_scripts",
+    testonly = True,
+    # do not sort
+    srcs = [
+        # Required for browsers that do not natively support Custom Elements.
+        "@npm//:node_modules/@webcomponents/custom-elements/custom-elements.min.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    bootstrap = [
+        ":elements_test_bootstrap_scripts",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

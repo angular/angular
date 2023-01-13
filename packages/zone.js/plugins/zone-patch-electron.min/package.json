@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-patch-electron.min",
+  "main": "../../bundles/zone-patch-electron.umd.min.js",
+  "fesm2015": "../../fesm2015/zone-patch-electron.min.js",
+  "es2015": "../../fesm2015/zone-patch-electron.min.js",
+  "module": "../../fesm2015/zone-patch-electron.min.js"
+}

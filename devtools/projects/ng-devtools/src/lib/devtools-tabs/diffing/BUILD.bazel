@@ -1,0 +1,17 @@
+load("//devtools/tools:typescript.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "diffing",
+    srcs = glob(
+        include = [
+            "index.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)

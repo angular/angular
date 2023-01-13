@@ -1,0 +1,65 @@
+load("//tools:defaults.bzl", "nodejs_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sh_binary(
+    name = "sauce_service_setup",
+    srcs = ["sauce-service.sh"],
+    args = ["setup"],
+    data = ["@npm//sauce-connect"],
+)
+
+sh_binary(
+    name = "sauce_service_start",
+    srcs = ["sauce-service.sh"],
+    args = ["start"],
+    data = ["@npm//sauce-connect"],
+)
+
+sh_binary(
+    name = "sauce_service_start_ready_wait",
+    srcs = ["sauce-service.sh"],
+    args = ["start-ready-wait"],
+    data = ["@npm//sauce-connect"],
+)
+
+sh_binary(
+    name = "sauce_service_ready_wait",
+    srcs = ["sauce-service.sh"],
+    args = ["ready-wait"],
+    data = ["@npm//sauce-connect"],
+)
+
+sh_binary(
+    name = "sauce_service_stop",
+    srcs = ["sauce-service.sh"],
+    args = ["stop"],
+    data = ["@npm//sauce-connect"],
+)
+
+sh_binary(
+    name = "sauce_service_tail",
+    srcs = ["sauce-service.sh"],
+    args = ["tail"],
+    data = ["@npm//sauce-connect"],
+)
+
+sh_binary(
+    name = "sauce_service_log",
+    srcs = ["sauce-service.sh"],
+    args = ["log"],
+    data = ["@npm//sauce-connect"],
+)
+
+nodejs_binary(
+    name = "karma-saucelabs",
+    data = [
+        "sauce-service.sh",
+        "@npm//@bazel/runfiles",
+        "@npm//karma",
+        "@npm//sauce-connect",
+        "@npm//shelljs",
+    ],
+    entry_point = "karma-saucelabs.mjs",
+    templated_args = ["$(rootpath sauce-service.sh)"],
+)

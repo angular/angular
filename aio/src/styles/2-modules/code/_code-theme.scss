@@ -1,0 +1,226 @@
+@use 'sass:color';
+@use 'sass:map';
+@use '../../constants';
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  code-example {
+    &:not(.no-box) {
+      background-color: if($is-dark-theme, constants.$deepgray, rgb(constants.$backgroundgray, 0.2));
+      border: 0.5px solid if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+      color: constants.$darkgray;
+    }
+
+    // TERMINAL / SHELL TEXT STYLES
+    &[language="shell"],
+    &[language="sh"],
+    &[language="bash"] {
+      background-color: constants.$darkgray;
+    }
+
+    header {
+      background-color: constants.$accentblue;
+      color: constants.$offwhite;
+    }
+  }
+
+  code-tabs {
+    .code-tab-group {
+      .mat-tab-label {
+        &:hover {
+          background: rgba(black, 0.04);
+        }
+      }
+    }
+  }
+
+  code-example.avoid header,
+  code-example.avoidFile header {
+    border: 2px solid constants.$anti-pattern;
+    background: constants.$anti-pattern;
+  }
+
+  code-example.avoid,
+  code-example.avoidFile,
+  code-tabs.avoid mat-tab-body,
+  code-tabs.avoidFile mat-tab-body {
+    border: 0.5px solid constants.$anti-pattern;
+  }
+
+  aio-code {
+    pre.prettyprint {
+      code {
+        ol.linenums {
+          color: color.adjust(constants.$mediumgray, $lightness: 25%);
+
+          li {
+            &::marker {
+              color: color.adjust(constants.$mediumgray, $lightness: 25%);
+            }
+          }
+        }
+
+        .code-missing {
+          color: constants.$darkred;
+        }
+      }
+
+      &.lang-sh,
+      &.lang-bash {
+        .copy-button {
+          color: if($is-dark-theme, constants.$blue-grey-200, constants.$lightgray);
+
+          &:hover {
+            color: if($is-dark-theme, constants.$blue-grey-300, constants.$superlightgray);
+          }
+        }
+      }
+    }
+
+    .copy-button {
+      color: if($is-dark-theme, constants.$blue-grey-200, constants.$darkblue);
+    }
+  }
+
+  .sidenav-content {
+    code a,
+    a > code {
+      color: if($is-dark-theme, constants.$cyan, constants.$darkblue);
+    }
+
+    :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre) {
+      > code {
+        background-color: if($is-dark-theme, constants.$darkgray, rgba(constants.$lightgray, 0.3));
+      }
+
+      &:not(a) > code {
+        color: if($is-dark-theme, constants.$white, constants.$darkgray);
+      }
+    }
+  }
+
+  // Dark Mode Code Palette
+  $code-lightteal: #17d3ff;
+  $code-lightred: #ffb0b0;
+  $code-lightgreen: #c3e88d;
+  $code-lightpurple: #d1b4ff;
+  $code-lightorange: #ffd779;
+  $code-lightblue: #98caff;
+  $code-grey: rgba(255, 255, 255, 0.7);
+
+  /* PRETTY PRINTING STYLES for prettify.js. */
+
+  /* The following class|color styles are derived from https://github.com/google/code-prettify/blob/master/src/prettify.css*/
+
+  /* SPAN elements with the classes below are added by prettyprint. */
+  .pln {
+    color: if($is-dark-theme, constants.$white, #000);
+  } /* plain text */
+
+  @media screen {
+    .str {
+      color: if($is-dark-theme, $code-lightgreen, #800);
+    } /* string content */
+    .kwd {
+      color: if($is-dark-theme, $code-lightteal, #00f);
+    } /* a keyword */
+    .com {
+      color: if($is-dark-theme, $code-grey, #060);
+    } /* a comment */
+    .typ {
+      color: if($is-dark-theme, $code-lightred, red);
+    } /* a type name */
+    .lit {
+      color: if($is-dark-theme, $code-lightpurple, #08c);
+    } /* a literal value */
+    /* punctuation, lisp open bracket, lisp close bracket */
+    .pun,
+    .opn,
+    .clo {
+      color: if($is-dark-theme, $code-lightorange, #660);
+    }
+    .tag {
+      color: if($is-dark-theme, $code-lightblue, #008);
+    } /* a markup tag name */
+    .atn {
+      color: if($is-dark-theme, $code-lightpurple, #606);
+    } /* a markup attribute name */
+    .atv {
+      color: if($is-dark-theme, $code-lightorange, #800);
+    } /* a markup attribute value */
+    .dec,
+    .var {
+      color: if($is-dark-theme, $code-lightpurple, #606);
+    } /* a declaration; a variable name */
+    .fun {
+      color: if($is-dark-theme, $code-lightred, red);
+    } /* a function name */
+  }
+
+  /* Use higher contrast and text-weight for printable form. */
+  @media print, projection {
+    .str {
+      color: #060;
+    }
+    .kwd {
+      color: #006;
+      font-weight: bold;
+    }
+    .com {
+      color: #600;
+      font-style: italic;
+    }
+    .typ {
+      color: #404;
+      font-weight: bold;
+    }
+    .lit {
+      color: #044;
+    }
+    .pun,
+    .opn,
+    .clo {
+      color: #440;
+    }
+    .tag {
+      color: #006;
+      font-weight: bold;
+    }
+    .atn {
+      color: #404;
+    }
+    .atv {
+      color: #060;
+    }
+  }
+
+  /* SHELL / TERMINAL CODE BLOCKS */
+
+  code-example {
+    &[language="shell"],
+    &[language="sh"],
+    &[language="bash"] {
+      .pnk,
+      .blk,
+      .pln,
+      .otl,
+      .kwd,
+      .typ,
+      .tag,
+      .str,
+      .atv,
+      .atn,
+      .com,
+      .lit,
+      .pun,
+      .dec {
+        color: constants.$codegreen;
+      }
+      .copy-button {
+        color: constants.$blue-grey-200;
+      }
+    }
+
+  }
+}

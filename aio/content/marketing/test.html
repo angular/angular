@@ -1,0 +1,137 @@
+<h1>Test Code Page</h1>
+
+<h2>&lt;code-tabs&gt;</h2>
+
+<p>No linenums at code-tabs level</p>
+<code-tabs>
+  <code-pane header='TS code file' language='ts'>
+  class {
+    foo(param: string) {}
+  }
+  </code-pane>
+  <code-pane header='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane header='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
+</code-tabs>
+<p></p>
+
+<p>linenums=true at code-tabs level</p>
+<code-tabs linenums='true'>
+  <code-pane header='TS code file' language='ts'>
+  class {
+    foo(param: string) {}
+  }
+  </code-pane>
+  <code-pane header='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane header='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
+</code-tabs>
+<p></p>
+
+<p>No linenums at code-tabs level; linenums=true for second HTML pane</p>
+<code-tabs >
+  <code-pane header='TS code file' language='ts'>
+  class {
+    foo(param: string) {}
+  }
+  </code-pane>
+  <code-pane header='HTML content file' language='html' linenums='true'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane header='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
+</code-tabs>
+<p></p>
+
+<h2>&lt;code-example&gt;</h2>
+
+<p>One line.</p>
+<code-example>const foo = 'bar'</code-example>
+
+<p>Multi-line, linenums=true.</p>
+<code-example linenums='true'>
+&lt;hero-details <em>nghost-pmm-5&gt;
+  &lt;h2 </em>ngcontent-pmm-5&gt;Bah Dah Bing&lt;/h2&gt;
+  &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
+    &lt;h3 _ngcontent-pmm-6&gt;Headless Team&lt;/h3&gt;
+  &lt;/hero-team&gt;
+&lt;/hero-details&gt;
+</code-example>
+
+<p>Default linenums (false).</p>
+<code-example>
+&lt;hero-details <em>nghost-pmm-5&gt;
+  &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
+  &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
+    &lt;h3 _ngcontent-pmm-6&gt;Headless Team&lt;/h3&gt;
+  &lt;/hero-team&gt;
+&lt;/hero-details&gt;
+</code-example>
+
+<p>Header on this one.</p>
+<code-example header="hero-details.component.ts (excerpt)">
+  &lt;hero-details <em>nghost-pmm-5&gt;
+    &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
+    &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
+      &lt;h3 _ngcontent-pmm-6&gt;Winning Team&lt;/h3&gt;
+    &lt;/hero-team&gt;
+  &lt;/hero-details&gt;
+</code-example>
+
+<p>An "avoid" header on this one.</p>
+<code-example class="avoid" header="hero-details.component.ts (Avoid)">
+  &lt;hero-details <em>nghost-pmm-5&gt;
+    &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
+    &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
+      &lt;h3 _ngcontent-pmm-6&gt;Losing Team&lt;/h3&gt;
+    &lt;/hero-team&gt;
+  &lt;/hero-details&gt;
+</code-example>
+
+## Backticked code blocks
+
+```html
+  <hero-details>
+    <h2>Mister Fantastic</h2>
+    <hero-team>
+      <h3>Losing Team</h3>
+    </hero-team>
+  </hero-details>
+```
+
+<h2>&lt;live-example&gt;</h2>
+
+<p>Plain live-example</p>
+Try this <live-example></live-example>.
+
+<p>live-example with title atty</p>
+<live-example title="Good Example"></live-example>
+
+<p>live-example with title body</p>
+<live-example title="Good Example">Try this great example</live-example>
+
+<p>live-example with name</p>
+<live-example name="testy" title="Better Example"></live-example>
+
+<p>live-example with spacey name and stackblitz</p>
+<live-example name=" testy " stackblitz="super-stackblitz"></live-example>
+
+<p>live-example with name and stackblitz but no download</p>
+<live-example name="testy" stackblitz="super-stackblitz" noDownload></live-example>
+
+<p>live-example embedded with name and stackblitz</p>
+<live-example embedded name="testy" stackblitz="super-stackblitz"></live-example>
+
+<p>More text follows ...</p>
+
+<p>Getting Started Widgets</p>
+
+<p>Interpolation</p>
+<aio-gs-interpolation></aio-gs-interpolation>
+
+<p>Property Binding</p>
+<aio-gs-property-binding></aio-gs-property-binding>
+
+<p>Event Binding</p>
+<aio-gs-event-binding></aio-gs-event-binding>
+
+<p>NgIf</p>
+<aio-gs-ng-if></aio-gs-ng-if>
+
+<p>NgFor</p>
+<aio-gs-ng-for></aio-gs-ng-for>

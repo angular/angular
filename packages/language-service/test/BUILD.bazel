@@ -1,0 +1,30 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/language-service/src",
+        "//packages/language-service/testing",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

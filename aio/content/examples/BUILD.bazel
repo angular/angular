@@ -1,0 +1,21 @@
+load("//aio/content/examples:examples.bzl", "EXAMPLES")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "examples",
+    srcs = glob(
+        ["**"],
+        exclude = ["BUILD.bazel"],
+    ) + ["//aio/content/examples/%s:files" % example for example in EXAMPLES.keys()],
+)
+
+filegroup(
+    name = "all-stackblitz",
+    srcs = ["//aio/content/examples/%s:stackblitz" % example for example in EXAMPLES.keys() if EXAMPLES[example]["stackblitz"]],
+)
+
+filegroup(
+    name = "all-example-zips",
+    srcs = ["//aio/content/examples/%s:example-zip" % example for example in EXAMPLES.keys() if EXAMPLES[example]["zip"]],
+)

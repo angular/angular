@@ -1,0 +1,19 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate interpolation instruction",
+      "inputFiles": [
+        "interpolation.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect interpolated text binding",
+          "files": [
+            "interpolation.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

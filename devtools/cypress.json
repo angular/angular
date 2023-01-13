@@ -1,0 +1,15 @@
+{
+  "baseUrl": "http://localhost:4200",
+  "video": false,
+  "chromeWebSecurity": false,
+  "downloadsFolder": "devtools/cypress/downloads",
+  "fileServerFolder": "devtools",
+  "fixturesFolder": "devtools/cypress/fixtures",
+  "ignoreTestFiles": "devtools/*.hot-update.js",
+  "integrationFolder": "devtools/cypress/integration",
+  "pluginsFile": "devtools/cypress/plugins/index.js",
+  "screenshotsFolder": "devtools/cypress/screenshots",
+  "supportFile": "devtools/cypress/support/index.js",
+  "testFiles": "**/*.*",
+  "videosFolder": "devtools/cypress/videos"
+}

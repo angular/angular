@@ -1,0 +1,10 @@
+{
+  "description": "Lazy Loading Feature Modules",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "file": "src/app/app-routing.module.ts",
+  "tags": ["lazy loading"]
+}

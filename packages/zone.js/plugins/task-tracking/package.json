@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/task-tracking",
+  "main": "../../bundles/task-tracking.umd.js",
+  "fesm2015": "../../fesm2015/task-tracking.js",
+  "es2015": "../../fesm2015/task-tracking.js",
+  "module": "../../fesm2015/task-tracking.js"
+}

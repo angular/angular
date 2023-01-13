@@ -1,0 +1,71 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("//tools:defaults.bzl", "ng_package", "ts_library", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "compiler",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/compiler/src/template/pipeline/switch",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "compiler",
+    tsconfig = "//packages:tsec_config",
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
+        "//integration:__subpackages__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/language-service/test:__pkg__",
+    ],
+    deps = [
+        ":compiler",
+        "//packages/compiler/testing",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+)
+
+# Pass this flag on the commandline during a build to enable the prototype
+# template pipeline:
+#
+# yarn bazel build //some:target --//packages/compiler:use_template_pipeline
+bool_flag(
+    name = "use_template_pipeline",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "template_pipeline_enabled",
+    flag_values = {
+        ":use_template_pipeline": "true",
+    },
+)

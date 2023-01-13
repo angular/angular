@@ -1,0 +1,27 @@
+<h2>My Heroes</h2>
+
+<!-- #docregion add -->
+<div>
+  <label for="new-hero">Hero name: </label>
+  <input id="new-hero" #heroName />
+
+  <!-- (click) passes input value to add() and then clears the input -->
+  <button type="button" class="add-button" (click)="add(heroName.value); heroName.value=''">
+    Add hero
+  </button>
+</div>
+<!-- #enddocregion add -->
+
+<!-- #docregion list -->
+<ul class="heroes">
+  <li *ngFor="let hero of heroes">
+    <a routerLink="/detail/{{hero.id}}">
+      <span class="badge">{{hero.id}}</span> {{hero.name}}
+    </a>
+    <!-- #docregion delete -->
+    <button type="button" class="delete" title="delete hero"
+      (click)="delete(hero)">x</button>
+    <!-- #enddocregion delete -->
+  </li>
+</ul>
+<!-- #enddocregion list -->

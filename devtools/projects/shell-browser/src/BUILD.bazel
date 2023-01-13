@@ -1,0 +1,145 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library", "pkg_web")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_library")
+load("//tools:defaults.bzl", "esbuild")
+load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "shell_common_styles",
+    src = "styles.scss",
+    include_paths = ["external/npm/node_modules"],
+    sourcemap = False,
+    deps = ["//devtools:global_styles"],
+)
+
+sass_binary(
+    name = "shell_firefox_styles",
+    src = "styles/firefox_styles.scss",
+)
+
+sass_binary(
+    name = "shell_chrome_styles",
+    src = "styles/chrome_styles.scss",
+)
+
+ts_library(
+    name = "devtools_ts",
+    srcs = [
+        "devtools.ts",
+    ],
+    deps = [
+        "@npm//@types/chrome",
+    ],
+)
+
+js_library(
+    name = "devtools",
+    deps = [":devtools_ts"],
+)
+
+ng_module(
+    name = "src",
+    srcs = [
+        "main.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/shell-browser/src/app",
+        "//devtools/projects/shell-browser/src/environments:environment",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_esm_prod",
+    entry_points = [":main.ts"],
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = LINKER_PROCESSED_FW_PACKAGES + [":src"],
+)
+
+esbuild(
+    name = "devtools_bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    entry_point = "devtools.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [":devtools"],
+)
+
+exports_files(["index.html"])
+
+filegroup(
+    name = "prod_app_static_files",
+    srcs = [
+        ":index.html",
+        ":shell_chrome_styles",
+        ":shell_common_styles",
+        ":shell_firefox_styles",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)
+
+string_flag(
+    name = "flag_browser",
+    build_setting_default = "chrome",
+    values = [
+        "chrome",
+        "firefox",
+    ],
+)
+
+config_setting(
+    name = "browser_chrome",
+    flag_values = {":flag_browser": "chrome"},
+)
+
+config_setting(
+    name = "browser_firefox",
+    flag_values = {":flag_browser": "firefox"},
+)
+
+genrule(
+    name = "copy_manifest",
+    srcs = select({
+        ":browser_chrome": ["//devtools/projects/shell-browser/src/manifest:manifest.chrome.json"],
+        ":browser_firefox": ["//devtools/projects/shell-browser/src/manifest:manifest.firefox.json"],
+    }),
+    outs = ["manifest.json"],
+    cmd = "cp $< $@",
+)
+
+pkg_web(
+    name = "prodapp",
+    srcs = [
+        ":bundle",
+        ":copy_manifest",
+        ":devtools_bundle",
+        ":prod_app_static_files",
+        "//devtools/projects/shell-browser/src:devtools.html",
+        "//devtools/projects/shell-browser/src/app:backend_bundle",
+        "//devtools/projects/shell-browser/src/app:background_bundle",
+        "//devtools/projects/shell-browser/src/app:content_script_bundle",
+        "//devtools/projects/shell-browser/src/app:detect_angular_for_extension_icon_bundle",
+        "//devtools/projects/shell-browser/src/app:ng_validate_bundle",
+        "//devtools/projects/shell-browser/src/assets",
+        "//devtools/projects/shell-browser/src/popups",
+    ],
+    additional_root_paths = [
+        "projects/ng-devtools/src/lib",
+    ],
+    substitutions = {"BUILD_SCM_COMMIT_SHA": "{BUILD_SCM_COMMIT_SHA}"},
+)

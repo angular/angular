@@ -1,0 +1,35 @@
+@use '../../mixins';
+
+.api-header label,
+label.api-status-label {
+  border-radius: 4px;
+  padding: 2px 10px;
+  display: inline;
+  @include mixins.font-size(12);
+  margin-right: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+
+  @media screen and (max-width: 600px) {
+    display: block;
+    margin: 4px 0;
+  }
+
+  &.page-label {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+    width: 140px;
+
+    .material-icons {
+      margin-right: 8px;
+    }
+  }
+
+  &.property-type-label {
+    @include mixins.font-size(12);
+    text-transform: none;
+  }
+}

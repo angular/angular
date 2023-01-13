@@ -1,0 +1,125 @@
+load("//tools:defaults.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("//aio/content/examples:examples.bzl", "EXAMPLES")
+load("//:packages.bzl", "AIO_EXAMPLE_PACKAGES", "to_package_label")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "run-example-e2e.mjs",
+])
+
+js_library(
+    name = "example-boilerplate-lib",
+    srcs = [
+        "constants.mjs",
+        "example-boilerplate.mjs",
+        "example-boilerplate-cli.mjs",
+    ],
+    deps = [
+        "//aio/tools/examples/shared",
+        "@aio_npm//canonical-path",
+        "@aio_npm//fs-extra",
+        "@aio_npm//ignore",
+        "@aio_npm//shelljs",
+        "@aio_npm//yargs",
+    ],
+)
+
+nodejs_binary(
+    name = "example-boilerplate",
+    data = [":example-boilerplate-lib"],
+    entry_point = "example-boilerplate-cli.js",
+)
+
+jasmine_node_test(
+    name = "example-boilerplate-test",
+    srcs = ["example-boilerplate.spec.mjs"],
+    deps = [":example-boilerplate-lib"],
+)
+
+js_library(
+    name = "create-example-lib",
+    srcs = [
+        "create-example.mjs",
+        "create-example-cli.mjs",
+        "constants.mjs",
+    ] + glob(["shared/**"]),
+    deps = [
+        "@aio_npm//@bazel/buildozer",
+        "@aio_npm//canonical-path",
+        "@aio_npm//fs-extra",
+        "@aio_npm//ignore",
+        "@aio_npm//shelljs",
+        "@aio_npm//yargs",
+    ],
+)
+
+nodejs_binary(
+    name = "create-example",
+    data = [":create-example-lib"],
+    entry_point = "create-example-cli.mjs",
+)
+
+jasmine_node_test(
+    name = "create-example-test",
+    srcs = ["create-example.spec.mjs"],
+    deps = [":create-example-lib"],
+)
+
+js_library(
+    name = "example-sandbox",
+    srcs = ["example-sandbox.mjs"],
+    deps = [
+        "@aio_npm//cjson",
+        "@aio_npm//fs-extra",
+        "@aio_npm//globby",
+    ],
+)
+
+js_library(
+    name = "run-example-e2e",
+    srcs = [
+        "run-example-e2e.mjs",
+    ],
+    deps = [
+        ":example-sandbox",
+        "@aio_npm//@bazel/runfiles",
+        "@aio_npm//canonical-path",
+        "@aio_npm//cross-spawn",
+        "@aio_npm//fs-extra",
+        "@aio_npm//get-port",
+        "@aio_npm//globby",
+        "@aio_npm//shelljs",
+        "@aio_npm//tree-kill",
+        "@aio_npm//yargs",
+    ],
+)
+
+LOCAL_PACKAGE_DEPS = [to_package_label(dep) for dep in AIO_EXAMPLE_PACKAGES]
+
+LOCAL_PACKAGE_ARGS = ["--localPackage=%s#$(rootpath %s)" % (
+    dep,
+    to_package_label(dep),
+) for dep in AIO_EXAMPLE_PACKAGES]
+
+[nodejs_binary(
+    name = "create-example-playground-%s" % example,
+    args = select({
+        # Hardcode package names/paths in args
+        "//aio:aio_local_deps": LOCAL_PACKAGE_ARGS,
+        "//conditions:default": [],
+    }) + ["--example=%s" % example],
+    data = [
+        ":example-sandbox",
+        "@aio_example_deps//:node_modules_files",
+        "@aio_npm//yargs",
+        "//aio/content/examples/%s" % example,
+    ] + select({
+        "//aio:aio_local_deps": LOCAL_PACKAGE_DEPS,
+        "//conditions:default": [],
+    }),
+    entry_point = "create-example-playground.mjs",
+    tags = ["manual"],
+) for example in EXAMPLES]

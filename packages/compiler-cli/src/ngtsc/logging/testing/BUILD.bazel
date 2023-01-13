@@ -1,0 +1,13 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "testing",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/logging",
+    ],
+)

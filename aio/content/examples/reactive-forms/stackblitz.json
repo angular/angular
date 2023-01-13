@@ -1,0 +1,16 @@
+{
+  "description": "Angular Reactive Forms (Demo runner)",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0-9].*",
+
+    "!src/app/app.component.1.ts",
+    "!src/app/hero-list.component.1.html",
+
+    "!src/app/main-final.ts",
+    "!src/index-final.html"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["reactive", "forms"]
+}

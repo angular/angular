@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_module(
+    name = "testing",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/common",
+        "//packages/common/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)

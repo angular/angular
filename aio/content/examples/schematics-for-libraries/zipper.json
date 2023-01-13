@@ -1,0 +1,10 @@
+{
+  "description": "Schematics For Libraries",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*",
+    "**/*.template"
+  ],
+  "tags": ["Angular", "Libraries", "Schematics"]
+}

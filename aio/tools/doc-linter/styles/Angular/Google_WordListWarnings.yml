@@ -1,0 +1,104 @@
+# copied from Google style library
+# tests for strings that should be replaced before the content is published
+extends: substitution
+message: "Use '%s' instead of '%s'."
+link: 'https://angular.io/guide/docs-lint-errors#wordlist-messages'
+level: warning
+ignorecase: false
+action:
+  name: replace
+swap:
+  '(?:above[\s\.\;\,]+(?!the))': preceding
+  '(?:API Console|dev|developer) key': API key
+  '(?:cell ?phone|smart ?phone)': phone|mobile phone
+  '(?:dev|developer|APIs) console': API console
+  '(?:e-mail|Email|E-mail)': email
+  '(?:file ?path|path ?name)': path
+  '(?:kill|terminate|abort)': stop|exit|cancel|end
+  '(?:OAuth ?2|Oauth)': OAuth 2.0
+  '(?:ok|Okay)': OK|okay
+  '(?:WiFi|wifi)': Wi-Fi
+  '[\.]+apk': APK
+  '3\-D': 3D
+  'Google (?:I\-O|IO)': Google I/O
+  'tap (?:&|and) hold': touch & hold
+  'un(?:check|select)': clear
+  account name: username
+  action bar: app bar
+  ajax: AJAX
+  Ajax: AJAX
+  Android device: Android-powered device
+  android: Android
+  API explorer: APIs Explorer
+  approx\.: approximately
+  authN: authentication
+  authZ: authorization
+  autoupdate: automatically update
+  backoff: back-off
+  bugfix: bug fix
+  byelog: bye log
+  callout: call-out
+  callouts: call-outs
+  camel case: camelCase
+  cellular data: mobile data
+  cellular network: mobile network
+  chapter: documents|pages|sections
+  check box: checkbox
+  ci: CI
+  circleci: CircleCI
+  circularities: circular dependencies
+  click on: click|click in
+  Cloud: Google Cloud Platform|GCP
+  combobox: combo box
+  command-line interface: command line tool
+  command line interface: command line tool
+  Container Engine: Kubernetes Engine
+  content type: media type
+  curated roles: predefined roles
+  datasource: data source
+  Developers Console: Google API Console|API Console
+  entrypoint: entry point
+  ephemeral IP address: ephemeral external IP address
+  execute: run|call
+  fewer data: less data
+  file name: filename
+  firewalls: firewall rules
+  folder: directory
+  functionality: capability|feature
+  Google account: Google Account
+  Google accounts: Google Accounts
+  Googling: search with Google
+  grayed-out: unavailable
+  heros: heroes
+  heterogenous: heterogeneous
+  homogenous: homogeneous
+  HTTPs: HTTPS
+  ingest: import|load
+  invalid: not valid|non-valid
+  javascript: JavaScript
+  k8s: Kubernetes
+  long press: touch & hold
+  network IP address: internal IP address
+  ngcontainer: ng-container
+  omnibox: address bar
+  open-source: open source
+  questionaire: questionnaire
+  readme: README
+  regex: regular expression
+  serviceworker: service worker
+  SHA1: SHA-1|HAS-SHA1
+  shrowded: shrouded
+  sidenav: side nav
+  sign into: sign in to
+  sign-?on: single sign-on
+  sourcemap: source map
+  sourcemaps: source maps
+  static IP address: static external IP address
+  stylesheet: style sheet
+  synch: sync
+  tablename: table name
+  tablet: device
+  thier: their
+  timespan: time span
+  vs\.: versus
+  World Wide Web: web

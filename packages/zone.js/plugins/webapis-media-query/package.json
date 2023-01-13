@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/webapis-media-query",
+  "main": "../../bundles/webapis-media-query.umd.js",
+  "fesm2015": "../../fesm2015/webapis-media-query.js",
+  "es2015": "../../fesm2015/webapis-media-query.js",
+  "module": "../../fesm2015/webapis-media-query.js"
+}

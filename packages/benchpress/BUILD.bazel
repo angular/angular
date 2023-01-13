@@ -1,0 +1,44 @@
+load("//tools:defaults.bzl", "ng_package", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "benchpress",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    # TODO(alanagius) fix benchpress to compile with es2022
+    devmode_target = "es2020",
+    prodmode_target = "es2020",
+    deps = [
+        "//packages:types",
+        "//packages/core",
+        "@npm//@types/node",
+        "@npm//reflect-metadata",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    package_name = "@angular/benchpress",
+    srcs = [
+        "README.md",
+        "package.json",
+    ],
+    externals = [
+        "@angular/core",
+        "reflect-metadata",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//aio:__subpackages__",
+        "//integration:__subpackages__",
+    ],
+    deps = [
+        ":benchpress",
+    ],
+)

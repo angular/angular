@@ -1,0 +1,53 @@
+@use 'sass:map';
+@use '../../constants';
+@use '../../mixins';
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  aio-api-list {
+    .api-filter {
+      .form-search {
+        input {
+          box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
+          border: 1px solid if($is-dark-theme, constants.$darkgray, constants.$white);
+          background-color: if($is-dark-theme, constants.$darkgray, constants.$white);
+          color: if($is-dark-theme, constants.$white, constants.$darkgray);
+
+          @include mixins.placeholder {
+            color: if($is-dark-theme, constants.$offwhite, constants.$mediumgray);
+          }
+
+          &:focus {
+            border: 1px solid constants.$blue-400;
+            box-shadow: 0 2px 2px rgba(constants.$blue-400, 0.24), 0 0 2px rgba(constants.$blue-400, 0.12);
+          }
+        }
+
+        .material-icons {
+          color: if($is-dark-theme, constants.$lightblue, constants.$blue-grey-600);
+        }
+      }
+    }
+
+    .api-list-container {
+
+      a {
+        color: if($is-dark-theme, constants.$warmblue, constants.$blue);
+      }
+
+      .api-list {
+        li {
+          a {
+            color: if($is-dark-theme, constants.$coldblue, constants.$blue-grey-600);
+
+            &:hover {
+              background: if($is-dark-theme, constants.$darkgray, constants.$blue-grey-50);
+              color: if($is-dark-theme, constants.$offwhite, constants.$blue-500);
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+load("//tools:defaults.bzl", "pkg_npm")
+load("//packages/zone.js:bundles.bzl", "BUNDLES_ENTRY_POINTS")
+load("//packages/zone.js:tools.bzl", "generate_rollup_bundle")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig.json",
+    "rollup.config.js",
+])
+
+genrule(
+    name = "LICENSE_copy",
+    srcs = ["//:LICENSE"],
+    outs = ["LICENSE"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "LICENSE_wrapped",
+    srcs = ["//:LICENSE"],
+    outs = ["LICENSE.wrapped"],
+    cmd = "(echo '/**\n @license' && cat $< && echo '*/') > $@",
+)
+
+# copy this file from //lib to //dist
+genrule(
+    name = "zone_externs",
+    srcs = ["//packages/zone.js/lib:closure/zone_externs.js"],
+    outs = ["zone_externs.js"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "zone_js_d_ts",
+    srcs = [
+        "//packages/zone.js/lib:zone_d_ts",
+        "//packages/zone.js/lib:zone.api.extensions.ts",
+        "//packages/zone.js/lib:zone.configurations.api.ts",
+    ],
+    outs = ["zone.d.ts"],
+    cmd = "cat $(SRCS) > $@",
+)
+
+generate_rollup_bundle(
+    bundles = BUNDLES_ENTRY_POINTS,
+)
+
+pkg_npm(
+    name = "npm_package",
+    package_name = "zone.js",
+    srcs = [
+        "CHANGELOG.md",
+        "README.md",
+        "package.json",
+        "//packages/zone.js/mix:package.json",
+        "//packages/zone.js/node:package.json",
+        "//packages/zone.js/testing:package.json",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":LICENSE.wrapped",
+        ":LICENSE_copy",
+        ":zone_externs",
+        "//packages/zone.js/dist:dist_bundle_group",
+        "//packages/zone.js/plugins:plugin_bundle_group",
+    ] + [
+        "//packages/zone.js/bundles:" + b + "-es5.dist"
+        for b in BUNDLES_ENTRY_POINTS.keys()
+    ] + [
+        "//packages/zone.js/bundles:" + b + "-es5.min.dist"
+        for b in BUNDLES_ENTRY_POINTS.keys()
+    ] + [
+        "//packages/zone.js/fesm2015:" + b + "-es2015.dist"
+        for b in BUNDLES_ENTRY_POINTS.keys()
+    ] + [
+        "//packages/zone.js/fesm2015:" + b + "-es2015.min.dist"
+        for b in BUNDLES_ENTRY_POINTS.keys()
+    ] + [":zone_js_d_ts"],
+)

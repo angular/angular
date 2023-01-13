@@ -1,0 +1,51 @@
+@use 'sass:map';
+@use '../../constants';
+
+@mixin theme($theme) {
+  .api-header label {
+    color: constants.$white;
+  }
+
+  label {
+    &.api-status-label {
+      color: constants.$white;
+      background-color: constants.$mediumgray;
+
+      &.deprecated,
+      &.security,
+      &.impure-pipe,
+      &.dev-preview {
+        background-color: constants.$brightred;
+      }
+
+      a {
+        color: inherit;
+        line-height: inherit;
+        font-size: inherit;
+      }
+    }
+
+    &.api-type-label {
+      color: constants.$white;
+      background-color: constants.$accentblue;
+
+      @each $name, $symbol in constants.$api-symbols {
+        &.#{$name} {
+          background: map.get($symbol, background);
+        }
+      }
+    }
+
+    &.page-label {
+      color: constants.$white;
+      background-color: constants.$mist;
+      color: constants.$mediumgray;
+    }
+
+    &.property-type-label {
+      color: constants.$white;
+      background-color: constants.$darkgray;
+      color: constants.$white;
+    }
+  }
+}

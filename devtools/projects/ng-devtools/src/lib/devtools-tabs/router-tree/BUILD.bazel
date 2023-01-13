@@ -1,0 +1,30 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//:__subpackages__"])
+
+sass_binary(
+    name = "router_tree_styles",
+    src = "router-tree.component.scss",
+)
+
+ng_module(
+    name = "router-tree",
+    srcs = [
+        "router-tree.component.ts",
+        "router-tree.module.ts",
+    ],
+    angular_assets = [
+        ":router-tree.component.html",
+        ":router_tree_styles",
+    ],
+    deps = [
+        "//devtools/projects/protocol",
+        "//packages/common",
+        "//packages/core",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//d3",
+        "@npm//rxjs",
+    ],
+)

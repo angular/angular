@@ -1,0 +1,7 @@
+extends: occurrence
+message: 'Try to keep your sentences shorter than 26 words. Shorter sentences tend to be easier to read.'
+link: https://developers.google.com/style/accessibility#ease-of-reading
+level: suggestion
+scope: sentence
+max: 26
+token: '[\w-]+'

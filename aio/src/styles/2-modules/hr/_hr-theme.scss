@@ -1,0 +1,10 @@
+@use 'sass:map';
+@use '../../constants';
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  hr {
+    background: if($is-dark-theme, constants.$mediumgray, constants.$lightgray);
+  }
+}

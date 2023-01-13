@@ -1,0 +1,25 @@
+extends: existence
+message: "'%s' is redundant."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+level: error
+tokens:
+  - ABM missile
+  - ACT test
+  - ABM missiles
+  - ABS braking system
+  - ATM machine
+  - CD disc
+  - CPI Index
+  - GPS system
+  - GUI interface
+  - HIV virus
+  - ISBN number
+  - LCD display
+  - PDF format
+  - PIN number
+  - RAS syndrome
+  - RIP in peace
+  - please RSVP
+  - SALT talks
+  - SAT test
+  - UPC codes

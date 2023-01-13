@@ -1,0 +1,32 @@
+.special {
+  background-color: black;
+  color: #ffffff;
+  margin-bottom: .5rem;
+  padding: 1rem;
+}
+
+.clearance {
+  border: 1rem double #57d1ff;
+}
+
+/* Styles for demo */
+
+comp-with-host-binding {
+  display: block;
+  margin: 1rem 0;
+}
+
+td {
+  padding: 1rem;
+  text-align: center;
+}
+
+h3 {
+  padding: 1rem 0 .75rem 0;
+}
+
+.readability {
+  background-color: black;
+  padding: .5rem;
+  margin: 1rem 0;
+}

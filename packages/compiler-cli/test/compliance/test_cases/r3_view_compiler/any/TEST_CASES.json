@@ -1,0 +1,39 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should strip out $any wrappers",
+      "inputFiles": [
+        "basic_any_cast.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_any_cast_template.js",
+              "generated": "basic_any_cast.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should preserve $any if it is accessed through `this`",
+      "inputFiles": [
+        "this_any_access.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "this_any_access_template.js",
+              "generated": "this_any_access.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

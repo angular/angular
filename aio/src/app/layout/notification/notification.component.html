@@ -1,0 +1,7 @@
+<span class="content" (click)="contentClick()" (keyup.enter)="contentClick()">
+  <ng-content></ng-content>
+</span>
+
+<button mat-icon-button class="close-button" [attr.aria-label]="'Close' + bannerNotficationDescription" (click)="dismiss()">
+  <mat-icon svgIcon="close"></mat-icon>
+</button>

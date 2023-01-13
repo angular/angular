@@ -1,0 +1,69 @@
+load("//tools:defaults.bzl", "app_bundle", "http_server", "jasmine_node_test", "ng_module", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "todo_i18n",
+    srcs = [
+        "index.ts",
+        "translations.ts",
+    ],
+    deps = [
+        "//packages/core",
+        "//packages/core/test/bundling/util:reflect_metadata",
+        "//packages/localize",
+        "//packages/localize/init",
+        "//packages/platform-browser",
+    ],
+)
+
+app_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":todo_i18n",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/test/bundling/util:reflect_metadata",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*_spec.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/localize",
+        "//packages/localize/init",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        ":bundle",
+        ":bundle.debug.min.js",
+        ":bundle.js",
+        ":bundle.min.js",
+    ],
+    deps = [":test_lib"],
+)
+
+http_server(
+    name = "server",
+    srcs = [
+        "base.css",
+        "index.html",
+        "todo.css",
+    ],
+    deps = [
+        ":bundle.debug.min.js",
+        ":bundle.min.js",
+    ],
+)

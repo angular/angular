@@ -1,0 +1,123 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("//tools:defaults.bzl", "esbuild", "http_server")
+load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "demo_styles",
+    src = "styles.scss",
+    include_paths = ["external/npm/node_modules"],
+    sourcemap = False,
+    deps = ["//devtools:global_styles"],
+)
+
+sass_binary(
+    name = "firefox_styles",
+    src = "styles/firefox_styles.scss",
+)
+
+sass_binary(
+    name = "chrome_styles",
+    src = "styles/chrome_styles.scss",
+)
+
+ng_module(
+    name = "demo",
+    srcs = ["main.ts"],
+    deps = [
+        "//devtools/src/app",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/core/src/util",
+        "//packages/platform-browser",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    entry_points = [":main.ts"],
+    platform = "browser",
+    splitting = True,
+    target = "es2016",
+    deps = LINKER_PROCESSED_FW_PACKAGES + [":demo"],
+)
+
+exports_files(["index.html"])
+
+filegroup(
+    name = "dev_app_static_files",
+    srcs = [
+        ":chrome_styles",
+        ":demo_styles",
+        ":firefox_styles",
+        ":index.html",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)
+
+pkg_web(
+    name = "devapp",
+    srcs = [":dev_app_static_files"] + [
+        ":bundle",
+        "@npm//:node_modules/tslib/tslib.js",
+    ],
+    # Currently, ibazel doesn't allow passing in flags to bazel run.
+    # This means we are not able to use --config snapshot-build
+    # to access the current commit SHA.
+    # Since we still want to be able to use ibazel to speed up
+    # local development, we supply an empty string for the SHA substitution.
+    # This does not effect production builds.
+    substitutions = {"BUILD_SCM_COMMIT_SHA": ""},
+)
+
+http_server(
+    name = "devserver",
+    srcs = [":dev_app_static_files"],
+    additional_root_paths = ["angular/devtools/src/devapp"],
+    tags = ["manual"],
+    deps = [
+        ":devapp",
+    ],
+)
+
+ng_module(
+    name = "demo_application_environment",
+    srcs = ["demo-application-environment.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools",
+        "//devtools/src/environments",
+    ],
+)
+
+ng_module(
+    name = "demo_application_operations",
+    srcs = ["demo-application-operations.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ng_module(
+    name = "iframe_message_bus",
+    srcs = ["iframe-message-bus.ts"],
+    deps = [
+        "//devtools/projects/protocol",
+    ],
+)
+
+ng_module(
+    name = "zone-unaware-iframe_message_bus",
+    srcs = ["zone-unaware-iframe-message-bus.ts"],
+    deps = [
+        ":iframe_message_bus",
+        "//devtools/projects/protocol",
+    ],
+)

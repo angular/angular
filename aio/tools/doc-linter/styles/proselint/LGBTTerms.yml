@@ -1,0 +1,14 @@
+extends: substitution
+message: "Consider using '%s' instead of '%s'."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: true
+swap:
+  homosexual man: gay man
+  homosexual men: gay men
+  homosexual woman: lesbian
+  homosexual women: lesbians
+  homosexual people: gay people
+  homosexual couple: gay couple
+  sexual preference: sexual orientation
+  (?:admitted homosexual|avowed homosexual): openly gay
+  special rights: equal rights

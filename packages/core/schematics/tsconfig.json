@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "target": "es2022",
+    "lib": [
+      "es2019"
+    ],
+    "types": [
+      "jasmine"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@angular/core": [
+        "../"
+      ],
+      "@angular/compiler": [
+        "../../compiler"
+      ],
+      "@angular/compiler-cli": [
+        "../../compiler-cli"
+      ],
+      "@angular/compiler-cli/private/*": [
+        "../../compiler-cli/private/*"
+      ]
+    }
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
+}

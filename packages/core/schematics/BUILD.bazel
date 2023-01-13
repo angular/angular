@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "pkg_npm")
+
+exports_files([
+    "tsconfig.json",
+    "migrations.json",
+    "collection.json",
+])
+
+pkg_npm(
+    name = "npm_package",
+    srcs = [
+        "collection.json",
+        "migrations.json",
+        "package.json",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
+    ],
+    validate = False,
+    visibility = ["//packages/core:__pkg__"],
+    deps = [
+        "//packages/core/schematics/migrations/guard-and-resolve-interfaces:bundle",
+        "//packages/core/schematics/migrations/remove-module-id:bundle",
+        "//packages/core/schematics/ng-generate/standalone-migration:bundle",
+    ],
+)

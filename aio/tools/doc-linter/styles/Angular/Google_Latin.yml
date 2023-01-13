@@ -1,0 +1,12 @@
+# adapted from Google style library
+extends: substitution
+message: "Use '%s' instead of '%s'."
+link: 'https://developers.google.com/style/abbreviations'
+ignorecase: false
+level: error
+nonword: true
+action:
+  name: replace
+swap:
+  '\b(?:eg|e\.g\.)[\s,]': for example
+  '\b(?:ie|i\.e\.)[\s,]': that is

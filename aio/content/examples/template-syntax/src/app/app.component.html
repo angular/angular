@@ -1,0 +1,709 @@
+<!-- #docplaster -->
+<h1 id="toc">Template Syntax</h1>
+<a href="#interpolation">Interpolation</a><br>
+<a href="#expression-context">Expression context</a><br>
+<a href="#statement-context">Statement context</a><br>
+<a href="#mental-model">Mental Model</a><br>
+<a href="#buttons">Buttons</a><br>
+<a href="#prop-vs-attrib">Properties vs. Attributes</a><br>
+<br>
+<a href="#property-binding">Property Binding</a><br>
+<div style="margin-left:8px">
+  <a href="#attribute-binding">Attribute Binding</a><br>
+  <a href="#class-binding">Class Binding</a><br>
+  <a href="#style-binding">Style Binding</a><br>
+</div>
+<br>
+<a href="#event-binding">Event Binding</a><br>
+<a href="#two-way">Two-way Binding</a><br>
+<br>
+<div>Directives</div>
+<div style="margin-left:8px">
+  <a href="#ngModel">NgModel (two-way) Binding</a><br>
+  <a href="#ngClass">NgClass Binding</a><br>
+  <a href="#ngStyle">NgStyle Binding</a><br>
+  <a href="#ngIf">NgIf</a><br>
+  <a href="#ngFor">NgFor</a><br>
+  <div style="margin-left:8px">
+    <a href="#ngFor-index">NgFor with index</a><br>
+    <a href="#ngFor-trackBy">NgFor with trackBy</a><br>
+  </div>
+  <a href="#ngSwitch">NgSwitch</a><br>
+</div>
+<br>
+<a href="#ref-vars">Template reference variables</a><br>
+<a href="#inputs-and-outputs">Inputs and outputs</a><br>
+<a href="#pipes">Pipes</a><br>
+<a href="#safe-navigation-operator">Safe navigation operator <i>?.</i></a><br>
+<a href="#non-null-assertion-operator">Non-null assertion operator <i>!.</i></a><br>
+<a href="#enums">Enums</a><br>
+<a href="#svg-templates">SVG Templates</a><br>
+
+<!-- Interpolation and expressions -->
+<hr><h2 id="interpolation">Interpolation</h2>
+
+<p>My current hero is {{currentHero.name}}</p>
+
+<h3>
+  {{title}}
+  <img alt="{{hero.name}}" src="{{heroImageUrl}}" style="height:30px">
+</h3>
+
+<!-- "The sum of 1 + 1 is 2" -->
+<p>The sum of 1 + 1 is {{1 + 1}}</p>
+
+<!-- "The sum of 1 + 1 is not 4" -->
+<p>The sum of 1 + 1 is not {{1 + 1 + getVal()}}</p>
+
+<a class="to-toc" href="#toc">top</a>
+
+<hr><h2 id="expression-context">Expression context</h2>
+
+<p>Component expression context (&#123;&#123;title&#125;&#125;, [hidden]="isUnchanged")</p>
+<div class="context">
+  {{title}}
+  <span [hidden]="isUnchanged">changed</span>
+</div>
+
+
+<p>Template input variable expression context (let hero)</p>
+<!-- template hides the following; plenty of examples later -->
+<ng-template>
+  <div *ngFor="let hero of heroes">{{hero.name}}</div>
+</ng-template>
+
+<p>Template reference variable expression context (#heroInput)</p>
+<div (keyup)="0" class="context">
+  Type something:
+  <input #heroInput> {{heroInput.value}}
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<hr><h2 id="statement-context">Statement context</h2>
+
+<p>Component statement context ( (click)="onSave() )
+<div class="context">
+  <!-- #docregion context-component-statement -->
+  <button type="button" (click)="deleteHero()">Delete hero</button>
+  <!-- #enddocregion context-component-statement -->
+</div>
+
+<p>Template $event statement context</p>
+<div class="context">
+  <!-- #docregion context-var-statement -->
+  <button type="button" (click)="onSave($event)">Save</button>
+  <!-- #enddocregion context-var-statement -->
+</div>
+
+<p>Template input variable statement context (let hero)</p>
+<!-- template hides the following; plenty of examples later -->
+<div class="context">
+  <!-- #docregion context-var-statement -->
+  <button type="button" *ngFor="let hero of heroes" (click)="deleteHero(hero)">{{hero.name}}</button>
+  <!-- #enddocregion context-var-statement -->
+</div>
+
+<p>Template reference variable statement context (#heroForm)</p>
+<div class="context">
+  <!-- #docregion context-var-statement -->
+  <form #heroForm (ngSubmit)="onSubmit(heroForm)"> ... </form>
+  <!-- #enddocregion context-var-statement -->
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- New Mental Model -->
+<hr><h2 id="mental-model">New Mental Model</h2>
+
+<!--<img src="https://wpclipart.com/dl.php?img=/cartoon/people/hero/hero_silhoutte.svg">-->
+<!-- Public Domain terms of use: https://wpclipart.com/terms.html -->
+<div class="special">Mental Model</div>
+<img [alt]="hero.name" src="assets/images/hero.svg">
+<button type="button" disabled>Save</button>
+<br><br>
+
+<div>
+  <!-- Normal HTML -->
+  <div class="special">Mental Model</div>
+  <!-- Wow! A new element! -->
+  <app-hero-detail></app-hero-detail>
+</div>
+<br><br>
+
+<div>
+  <!-- Bind button disabled state to `isUnchanged` property -->
+  <button type="button" [disabled]="isUnchanged">Save</button>
+</div>
+<br><br>
+
+<div>
+  <!-- #docregion property-binding-syntax-1 -->
+  <img [alt]="hero.name" [src]="heroImageUrl">
+  <app-hero-detail [hero]="currentHero"></app-hero-detail>
+  <div [ngClass]="{'special': isSpecial}"></div>
+  <!-- #enddocregion property-binding-syntax-1 -->
+</div>
+<br><br>
+
+<!-- #docregion event-binding-syntax-1 -->
+<button type="button" (click)="onSave()">Save</button>
+<app-hero-detail (deleteRequest)="deleteHero()"></app-hero-detail>
+<div (myClick)="clicked=$event" clickable>click me</div>
+<!-- #enddocregion event-binding-syntax-1 -->
+{{clicked}}
+<br><br>
+
+<div>
+  Hero Name:
+  <!-- #docregion 2-way-binding-syntax-1 -->
+  <input [(ngModel)]="name">
+  <!-- #enddocregion 2-way-binding-syntax-1 -->
+  {{name}}
+</div>
+<br><br>
+
+<!-- #docregion attribute-binding-syntax-1 -->
+<button type="button" [attr.aria-label]="help">help</button>
+<!-- #enddocregion attribute-binding-syntax-1 -->
+<br><br>
+
+<!-- #docregion class-binding-syntax-1 -->
+<div [class.special]="isSpecial">Special</div>
+<!-- #enddocregion class-binding-syntax-1 -->
+<br><br>
+
+<!-- #docregion style-binding-syntax-1 -->
+<button type="button" [style.color]="isSpecial ? 'red' : 'green'">
+<!-- #enddocregion style-binding-syntax-1 -->
+button</button>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- eslint-disable @angular-eslint/template/accessibility-alt-text -->
+<!-- property vs. attribute -->
+<hr><h2 id="prop-vs-attrib">Property vs. Attribute (img examples)</h2>
+<!-- examine the following <img> tag in the browser tools -->
+<img src="images/ng-logo.svg"
+    [src]="heroImageUrl">
+
+<br><br>
+
+<img [src]="iconUrl"/>
+<img [attr.src]="villainImageUrl"/>
+<!-- eslint-enable @angular-eslint/template/accessibility-alt-text -->
+<a class="to-toc" href="#toc">top</a>
+
+<!-- buttons -->
+<hr><h2 id="buttons">Buttons</h2>
+
+<button>Enabled (but does nothing)</button>
+<button type="button" disabled>Disabled</button>
+<button type="button" disabled=false>Still disabled</button>
+<br><br>
+<button type="button" disabled>disabled by attribute</button>
+<button type="button" [disabled]="isUnchanged">disabled by property binding</button>
+<br><br>
+<button type="button" [disabled]="!canSave" (click)="onSave($event)">Enabled Save</button>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- property binding -->
+<hr><h2 id="property-binding">Property Binding</h2>
+
+<img [alt]="hero.name" [src]="heroImageUrl">
+<button type="button" [disabled]="isUnchanged">Cancel is disabled</button>
+<div [ngClass]="classes">[ngClass] binding to the classes property</div>
+<app-hero-detail [hero]="currentHero"></app-hero-detail>
+
+<!-- ERROR: HeroDetailComponent.hero expects a Hero object, not the string "currentHero" -->
+<!-- <app-hero-detail hero="currentHero"></app-hero-detail> -->
+
+<app-hero-detail prefix="You are my" [hero]="currentHero"></app-hero-detail>
+
+<p>
+  <img src="{{heroImageUrl}}" alt="interpolated image of {{currentHero.name}}">
+  is the <i>interpolated</i> image.
+</p>
+<p>
+  <img [src]="heroImageUrl" [alt]="'property bounded image of ' + currentHero.name">
+  is the <i>property bound</i> image.
+</p>
+
+<p><span>"{{title}}" is the <i>interpolated</i> title.</span></p>
+<p>"<span [innerHTML]="title"></span>" is the <i>property bound</i> title.</p>
+
+<!--
+  Angular generates warnings for these two lines as it sanitizes them
+  WARNING: sanitizing HTML stripped some content (see https://g.co/ng/security#xss).
+ -->
+<p><span>"{{evilTitle}}" is the <i>interpolated</i> evil title.</span></p>
+<p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i> evil title.</p>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- attribute binding -->
+<hr><h2 id="attribute-binding">Attribute Binding</h2>
+
+<!--  create and set a colspan attribute -->
+<table border=1>
+  <!--  expression calculates colspan=2 -->
+  <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
+
+  <!-- ERROR: There is no `colspan` property to set!
+    <tr><td colspan="{{1 + 1}}">Three-Four</td></tr>
+  -->
+
+  <tr><td>Five</td><td>Six</td></tr>
+</table>
+
+<br>
+<!-- create and set an aria attribute for assistive technology -->
+<button type="button" [attr.aria-label]="actionName">{{actionName}} with Aria</button>
+<br><br>
+
+<!-- The following effects are not discussed in the chapter -->
+<div>
+  <!-- any use of [attr.disabled] creates the disabled attribute -->
+  <button type="button" [attr.disabled]="isUnchanged">Disabled</button>
+
+  <button type="button" [attr.disabled]="!isUnchanged">Disabled as well</button>
+
+  <!-- we'd have to remove it with property binding -->
+  <button type="button" disabled [disabled]="false">Enabled (but inert)</button>
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- class binding -->
+<hr><h2 id="class-binding">Class Binding</h2>
+
+<!-- standard class attribute setting  -->
+<div class="bad curly special">Bad curly special</div>
+
+<!-- reset/override all class names with a binding  -->
+<div class="bad curly special"
+     [class]="badCurly">Bad curly</div>
+
+<!-- toggle the "special" class on/off with a property -->
+<div [class.special]="isSpecial">The class binding is special</div>
+
+<!-- binding to `class.special` trumps the class attribute -->
+<div class="special"
+     [class.special]="!isSpecial">This one is not so special</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!--style binding -->
+<hr><h2 id="style-binding">Style Binding</h2>
+
+<button type="button" [style.color]="isSpecial ? 'red': 'green'">Red</button>
+<button type="button" [style.background-color]="canSave ? 'cyan': 'grey'" >Save</button>
+
+<button type="button" [style.font-size.em]="isSpecial ? 3 : 1" >Big</button>
+<button type="button" [style.font-size.%]="!isSpecial ? 150 : 50" >Small</button>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- event binding -->
+<hr><h2 id="event-binding">Event Binding</h2>
+
+<button type="button" (click)="onSave()">Save</button>
+
+<div>
+<!-- `myClick` is an event on the custom `ClickDirective` -->
+<div (myClick)="clickMessage=$event" clickable>click with myClick</div>
+{{clickMessage}}
+</div>
+
+
+<!-- binding to a nested component -->
+<app-hero-detail (deleteRequest)="deleteHero($event)" [hero]="currentHero"></app-hero-detail>
+<br>
+
+<app-big-hero-detail
+    (deleteRequest)="deleteHero($event)"
+    [hero]="currentHero">
+</app-big-hero-detail>
+
+<!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
+
+<div class="parent-div" (click)="onClickMe($event)" clickable>Click me
+  <div class="child-div">Click me too!</div>
+</div>
+
+<!-- Will save only once -->
+<div (click)="onSave()" clickable>
+  <button type="button" (click)="onSave($event)">Save, no propagation</button>
+</div>
+
+<!-- Will save twice -->
+<div (click)="onSave()" clickable>
+  <button type="button" (click)="onSave()">Save w/ propagation</button>
+</div>
+
+<!-- eslint-enable @angular-eslint/template/click-events-have-key-events -->
+
+<a class="to-toc" href="#toc">top</a>
+
+<hr><h2 id="two-way">Two-way Binding</h2>
+<div id="two-way-1">
+  <app-sizer [(size)]="fontSizePx"></app-sizer>
+  <div [style.font-size.px]="fontSizePx">Resizable Text</div>
+  <label>FontSize (px): <input [(ngModel)]="fontSizePx"></label>
+</div>
+<br>
+<div id="two-way-2">
+  <h3>De-sugared two-way binding</h3>
+  <app-sizer [size]="fontSizePx" (sizeChange)="fontSizePx=$event"></app-sizer>
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- Two way data binding unwound;
+    passing the changed display value to the event handler via `$event` -->
+<hr><h2 id="ngModel">NgModel (two-way) Binding</h2>
+
+<h3>Result: {{currentHero.name}}</h3>
+
+<input [value]="currentHero.name"
+       (input)="updateCurrentHeroName($event)">
+without NgModel
+<br>
+<input [(ngModel)]="currentHero.name">
+[(ngModel)]
+<br>
+<input
+  [ngModel]="currentHero.name"
+  (ngModelChange)="currentHero.name=$event">
+(ngModelChange)="...name=$event"
+<br>
+<input
+  [ngModel]="currentHero.name"
+  (ngModelChange)="setUppercaseName($event)">
+(ngModelChange)="setUppercaseName($event)"
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- NgClass binding -->
+<hr><h2 id="ngClass">NgClass Binding</h2>
+
+<p>currentClasses is {{currentClasses | json}}</p>
+<div [ngClass]="currentClasses">This div is initially saveable, unchanged, and special</div>
+
+<!-- not used in chapter -->
+<br>
+<label>saveable   <input type="checkbox" [(ngModel)]="canSave"></label> |
+<label>modified:  <input type="checkbox" [value]="!isUnchanged" (change)="isUnchanged=!isUnchanged"></label> |
+<label>special:   <input type="checkbox" [(ngModel)]="isSpecial"></label>
+<button type="button" (click)="setCurrentClasses()">Refresh currentClasses</button>
+<br><br>
+<div [ngClass]="currentClasses">
+  This div should be {{ canSave ? "": "not"}} saveable,
+                  {{ isUnchanged ? "unchanged" : "modified" }} and,
+                  {{ isSpecial ? "": "not"}} special after clicking "Refresh".</div>
+<br><br>
+
+<div [ngClass]="isSpecial ? 'special' : ''">This div is special</div>
+
+<div class="bad curly special">Bad curly special</div>
+<div [ngClass]="{'bad':false, 'curly':true, 'special':true}">Curly special</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- NgStyle binding -->
+<hr><h2 id="ngStyle">NgStyle Binding</h2>
+
+<div [style.font-size]="isSpecial ? 'x-large' : 'smaller'" >
+  This div is x-large or smaller.
+</div>
+
+<h3>[ngStyle] binding to currentStyles - CSS property names</h3>
+<p>currentStyles is {{currentStyles | json}}</p>
+<div [ngStyle]="currentStyles">
+  This div is initially italic, normal weight, and extra large (24px).
+</div>
+
+<!-- not used in chapter -->
+<br>
+<label>italic: <input type="checkbox" [(ngModel)]="canSave"></label> |
+<label>normal: <input type="checkbox" [(ngModel)]="isUnchanged"></label> |
+<label>xlarge: <input type="checkbox" [(ngModel)]="isSpecial"></label>
+<button type="button" (click)="setCurrentStyles()">Refresh currentStyles</button>
+<br><br>
+<div [ngStyle]="currentStyles">
+  This div should be {{ canSave ? "italic": "plain"}},
+                  {{ isUnchanged ? "normal weight" : "bold" }} and,
+                  {{ isSpecial ? "extra large": "normal size"}} after clicking "Refresh".</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- NgIf binding -->
+<hr><h2 id="ngIf">NgIf Binding</h2>
+
+<app-hero-detail *ngIf="isActive"></app-hero-detail>
+
+<div *ngIf="currentHero">Hello, {{currentHero.name}}</div>
+<div *ngIf="nullHero">Hello, {{nullHero.name}}</div>
+
+<!-- NgIf binding with template (no *) -->
+
+<ng-template [ngIf]="currentHero">Add {{currentHero.name}} with template</ng-template>
+
+<!-- Does not show because isActive is false! -->
+<div>Hero Detail removed from DOM (via template) because isActive is false</div>
+<ng-template [ngIf]="isActive">
+  <app-hero-detail></app-hero-detail>
+</ng-template>
+
+<!-- isSpecial is true -->
+<div [class.hidden]="!isSpecial">Show with class</div>
+<div [class.hidden]="isSpecial">Hide with class</div>
+
+<!-- HeroDetail is in the DOM but hidden -->
+<app-hero-detail [class.hidden]="isSpecial"></app-hero-detail>
+
+<div [style.display]="isSpecial ? 'block' : 'none'">Show with style</div>
+<div [style.display]="isSpecial ? 'none'  : 'block'">Hide with style</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- NgFor binding -->
+<hr><h2 id="ngFor">NgFor Binding</h2>
+
+<div class="box">
+  <div *ngFor="let hero of heroes">{{hero.name}}</div>
+</div>
+<br>
+
+<div class="box">
+  <!-- *ngFor w/ hero-detail Component -->
+  <app-hero-detail *ngFor="let hero of heroes" [hero]="hero"></app-hero-detail>
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<h4 id="ngFor-index">*ngFor with index</h4>
+<p>with <i>semi-colon</i> separator</p>
+<div class="box">
+  <div *ngFor="let hero of heroes; let i=index">{{i + 1}} - {{hero.name}}</div>
+</div>
+
+<p>with <i>comma</i> separator</p>
+<div class="box">
+  <!-- Ex: "1 - Hercules" -->
+  <div *ngFor="let hero of heroes, let i=index">{{i + 1}} - {{hero.name}}</div>
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<h4 id="ngFor-trackBy">*ngFor trackBy</h4>
+<button type="button" (click)="resetHeroes()">Reset heroes</button>
+<button type="button" (click)="changeIds()">Change ids</button>
+<button type="button" (click)="clearTrackByCounts()">Clear counts</button>
+
+<p><i>without</i> trackBy</p>
+<div class="box">
+  <div #noTrackBy *ngFor="let hero of heroes">({{hero.id}}) {{hero.name}}</div>
+
+  <div id="noTrackByCnt" *ngIf="heroesNoTrackByCount" >
+    Hero DOM elements change #{{heroesNoTrackByCount}} without trackBy
+  </div>
+</div>
+
+<p>with trackBy</p>
+<div class="box">
+  <div #withTrackBy *ngFor="let hero of heroes; trackBy: trackByHeroes">({{hero.id}}) {{hero.name}}</div>
+
+  <div id="withTrackByCnt" *ngIf="heroesWithTrackByCount">
+    Hero DOM elements change #{{heroesWithTrackByCount}} with trackBy
+  </div>
+</div>
+
+<br><br><br>
+
+<p>with trackBy and <i>semi-colon</i> separator</p>
+<div class="box">
+  <div *ngFor="let hero of heroes; trackBy: trackByHeroes">
+    ({{hero.id}}) {{hero.name}}
+  </div>
+</div>
+
+<p>with trackBy and <i>comma</i> separator</p>
+<div class="box">
+  <div *ngFor="let hero of heroes, trackBy: trackByHeroes">({{hero.id}}) {{hero.name}}</div>
+</div>
+
+<p>with trackBy and <i>space</i> separator</p>
+<div class="box">
+  <div *ngFor="let hero of heroes trackBy: trackByHeroes">({{hero.id}}) {{hero.name}}</div>
+</div>
+
+<p>with <i>generic</i> trackById function</p>
+<div class="box">
+  <div *ngFor="let hero of heroes, trackBy: trackById">({{hero.id}}) {{hero.name}}</div>
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- NgSwitch binding -->
+<hr><h2 id="ngSwitch">NgSwitch Binding</h2>
+
+<p>Pick your favorite hero</p>
+<div>
+  <label *ngFor="let h of heroes">
+    <input type="radio" name="heroes" [(ngModel)]="currentHero" [value]="h">{{h.name}}
+  </label>
+</div>
+
+<div [ngSwitch]="currentHero.emotion">
+  <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="currentHero"></app-happy-hero>
+  <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="currentHero"></app-sad-hero>
+  <app-confused-hero *ngSwitchCase="'confused'" [hero]="currentHero"></app-confused-hero>
+  <div *ngSwitchCase="'confused'">Are you as confused as {{currentHero.name}}?</div>
+  <app-unknown-hero  *ngSwitchDefault           [hero]="currentHero"></app-unknown-hero>
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- template reference variable -->
+<hr><h2 id="ref-vars">Template reference variables</h2>
+
+<input #phone placeholder="phone number">
+
+<!-- lots of other elements -->
+
+<!-- phone refers to the input element; pass its `value` to an event handler -->
+<button type="button" (click)="callPhone(phone.value)">Call</button>
+
+<!-- btn refers to the button element; show its disabled state -->
+<button type="button" #btn disabled [innerHTML]="'disabled by attribute: '+btn.disabled"></button>
+
+<h4>Example Form</h4>
+<app-hero-form [hero]="currentHero"></app-hero-form>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- inputs and output -->
+<hr><h2 id="inputs-and-outputs">Inputs and Outputs</h2>
+
+<img alt="icon" [src]="iconUrl"/>
+<button type="button" (click)="onSave()">Save</button>
+
+<app-hero-detail [hero]="currentHero" (deleteRequest)="deleteHero($event)">
+</app-hero-detail>
+
+<div (myClick)="clickMessage2=$event" clickable>myClick2</div>
+{{clickMessage2}}
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- Pipes -->
+<hr><h2 id="pipes">Pipes</h2>
+
+<div>Title through uppercase pipe: {{title | uppercase}}</div>
+
+<!-- Pipe chaining: convert title to uppercase, then to lowercase -->
+<div>
+  Title through a pipe chain:
+  {{title | uppercase | lowercase}}
+</div>
+
+<!-- pipe with configuration argument => "February 25, 1970" -->
+<div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
+
+<div>{{currentHero | json}}</div>
+
+<div>Birthdate: {{(currentHero?.birthdate | date:'longDate') | uppercase}}</div>
+
+<div>
+  <!-- pipe price to USD and display the $ symbol -->
+  <span>Price: </span>{{product.price | currency:'USD':'symbol'}}
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- Null values and the safe navigation operator -->
+<hr><h2 id="safe-navigation-operator">Safe navigation operator <i>?.</i></h2>
+
+<div>
+  The title is {{title}}
+</div>
+
+<div>
+  The current hero's name is {{currentHero?.name}}
+</div>
+
+<div>
+  The current hero's name is {{currentHero.name}}
+</div>
+
+
+<!--
+The null hero's name is {{nullHero.name}}
+
+See console log:
+  TypeError: Cannot read property 'name' of null in [null]
+-->
+
+<!--No hero, div not displayed, no error -->
+<div *ngIf="nullHero">The null hero's name is {{nullHero.name}}</div>
+
+<div>
+The null hero's name is {{nullHero && nullHero.name}}
+</div>
+
+<div>
+  <!-- No hero, no problem! -->
+  The null hero's name is {{nullHero?.name}}
+</div>
+
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- non-null assertion operator -->
+<hr><h2 id="non-null-assertion-operator">Non-null assertion operator <i>!.</i></h2>
+
+<div>
+  <!--No hero, no text -->
+  <div *ngIf="hero">
+    The hero's name is {{hero!.name}}
+  </div>
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- non-null assertion operator -->
+<hr><h2 id="any-type-cast-function">$any type cast function <i>$any( )</i>.</h2>
+
+<div>
+  <!-- Accessing an undeclared member -->
+  <div>
+    The hero's marker is {{$any(hero).marker}}
+  </div>
+</div>
+
+<div>
+  <!-- Accessing an undeclared member -->
+  <div>
+    Undeclared members is {{$any(this).member}}
+  </div>
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- TODO: discuss this in the Style binding section -->
+<!-- enums in bindings -->
+<hr><h2 id="enums">Enums in binding</h2>
+
+<p>
+  The name of the Color.Red enum is {{Color[Color.Red]}}.<br>
+  The current color is {{Color[color]}} and its number is {{color}}.<br>
+  <button type="button" [style.color]="Color[color]" (click)="colorToggle()">Enum Toggle</button>
+</p>
+
+<a class="to-toc" href="#toc">top</a>
+
+<hr><h2 id="svg-templates">SVG Templates</h2>
+<app-svg></app-svg>
+<a class="to-toc" href="#toc">top</a>

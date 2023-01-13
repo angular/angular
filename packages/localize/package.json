@@ -1,0 +1,45 @@
+{
+  "name": "@angular/localize",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - library for localizing messages",
+  "bin": {
+    "localize-translate": "./tools/bundles/src/translate/cli.js",
+    "localize-extract": "./tools/bundles/src/extract/cli.js",
+    "localize-migrate": "./tools/bundles/src/migrate/cli.js"
+  },
+  "exports": {
+    "./tools": {
+      "types": "./tools/index.d.ts",
+      "default": "./tools/bundles/index.js"
+    }
+  },
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^16.14.0 || >=18.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  },
+  "schematics": "./schematics/collection.json",
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "ng-add": {
+    "save": "devDependencies"
+  },
+  "sideEffects": [
+    "./esm2022/init/**",
+    "./fesm2022/init.mjs"
+  ],
+  "dependencies": {
+    "@babel/core": "7.19.3",
+    "glob": "8.1.0",
+    "yargs": "^17.2.1"
+  },
+  "peerDependencies": {
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "@angular/compiler-cli": "0.0.0-PLACEHOLDER"
+  }
+}

@@ -1,0 +1,11 @@
+<h2>{{title}}</h2>
+<label for="power-input">Power: </label>
+<input type="text" id="power-input" [(ngModel)]="power">
+<label for="hero-name"> Hero.name: </label>
+<input type="text" id="hero-name" [(ngModel)]="hero.name">
+
+<button type="button" (click)="reset()">Reset Log</button>
+
+<!-- #docregion on-changes -->
+<on-changes [hero]="hero" [power]="power"></on-changes>
+<!-- #enddocregion on-changes -->

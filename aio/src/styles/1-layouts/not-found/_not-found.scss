@@ -1,0 +1,23 @@
+@use '../../mixins';
+
+.nf-container {
+  align-items: center;
+  padding: 32px;
+}
+
+.nf-response {
+  margin: 32px;
+  height: 100%;
+  flex-direction: column;
+
+  h1 {
+    @include mixins.font-size(48);
+    text-transform: uppercase;
+    margin: 8px 0;
+  }
+}
+
+.nf-icon.material-icons {
+  @include mixins.font-size(100);
+  position: static;
+}

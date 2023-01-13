@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Angular</title>
+  <meta name="Description" content="Angular is a platform for building mobile and desktop web applications.
+    Join the community of millions of developers who build compelling user interfaces with Angular.">
+  <base href="/">
+
+  <link rel="preconnect" href="https://www.google-analytics.com">
+  <link rel="dns-prefetch" href="https://www.google-analytics.com">
+  <link rel="preconnect" href="https://stats.g.doubleclick.net">
+  <link rel="dns-prefetch" href="https://stats.g.doubleclick.net">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="search" type="application/opensearchdescription+xml" href="assets/opensearch.xml">
+  <link rel="icon" type="image/x-icon" href="assets/images/favicons/favicon.ico">
+  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-194x194.png" sizes="194x194">
+  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="apple-touch-icon" sizes="144x144" href="assets/images/favicons/favicon-144x144.png">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/images/favicons/favicon-144x144.png">
+
+  <!-- NOTE: These need to be kept in sync with `ngsw-config.template.json`. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
+  <!-- -->
+
+  <style id="aio-initial-theme">
+    @import url("light-theme.css") (prefers-color-scheme: light);
+    @import url("dark-theme.css") (prefers-color-scheme: dark);
+  </style>
+
+  <link rel="manifest" href="pwa-manifest.json">
+  <meta name="theme-color" content="#1976d2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="translucent">
+
+  <script>
+    // Dynamically, pre-emptively, add `noindex`, which will be removed when the doc is ready and valid
+    tag = document.createElement('meta'); tag.name = 'robots'; tag.content = 'noindex';
+    document.head.appendChild(tag);
+  </script>
+
+  <!-- Legacy Google Analytics -->
+  <script>
+    // Note this is a customised version of the GA tracking snippet
+    // See the comments below for more info
+    (function (i, s, o, g, r, a, m) {
+      if (i.trustedTypes) {
+        // Specify path as a TrustedScriptURL when Trusted Types are available
+        g = i.trustedTypes.createPolicy('aio#analytics', {
+          createScriptURL: function (s) { return s; }
+        }).createScriptURL(g);
+      }
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g;
+      ~i.name.indexOf('NG_DEFER_BOOTSTRAP') || // only load library if not running e2e tests
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  </script>
+  <!-- End Legacy Google Analytics -->
+</head>
+
+<body>
+
+  <aio-shell></aio-shell>
+
+  <noscript>
+    <div class="background-sky hero"></div>
+    <section id="intro" style="text-shadow: 1px 1px #1976d2;">
+      <div class="hero-logo"></div>
+      <div class="homepage-container">
+        <div class="hero-headline">The modern web<br>developer's platform</div>
+      </div>
+    </section>
+    <h2 style="color: red; margin-top: 40px; position: relative; text-align: center; text-shadow: 1px 1px #fafafa; border-top: none;">
+      <b><i>This website requires JavaScript.</i></b>
+    </h2>
+  </noscript>
+
+</body>
+
+</html>

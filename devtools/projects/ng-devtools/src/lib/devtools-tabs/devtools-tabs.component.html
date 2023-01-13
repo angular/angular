@@ -1,0 +1,67 @@
+<nav #navBar mat-tab-nav-bar [color]="'accent'">
+  <div id="nav-buttons">
+    <button mat-icon-button color="primary" (click)="toggleInspector()" matTooltip="Inspect element">
+      <mat-icon [class.inspector-active]="inspectorRunning">pin_end</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" [matMenuTriggerFor]="menu" matTooltip="Open settings">
+      <mat-icon> settings </mat-icon>
+    </button>
+    <button mat-icon-button color="primary" [matMenuTriggerFor]="info" matTooltip="Info">
+      <mat-icon> info </mat-icon>
+    </button>
+  </div>
+  <a class="mat-tab-link" mat-tab-link *ngFor="let tab of tabs" (click)="changeTab(tab)" [active]="activeTab === tab">
+    {{ tab }}
+  </a>
+  <section *ngIf="angularVersion" id="app-angular-version">
+    Angular version:
+    <span id="version-number">
+      {{ angularVersion }}
+    </span>
+    <ng-container *ngIf="latestSHA; let sha"> | DevTools SHA: {{ sha }} </ng-container>
+  </section>
+</nav>
+
+<div class="tab-content">
+  <ng-directive-explorer
+    [showCommentNodes]="showCommentNodes"
+    [class.hidden]="activeTab !== 'Components'"
+    (toggleInspector)="toggleInspector()"
+  ></ng-directive-explorer>
+  <ng-profiler [class.hidden]="activeTab !== 'Profiler'"></ng-profiler>
+  <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'"></ng-router-tree>
+</div>
+
+<mat-menu #menu="matMenu">
+  <div mat-menu-item disableRipple>
+    <mat-slide-toggle
+      (change)="toggleTimingAPI($event)"
+      (click)="$event.stopPropagation()">Enable timing API</mat-slide-toggle>
+  </div>
+  <div mat-menu-item disableRipple>
+    <mat-slide-toggle
+      [checked]="currentTheme === 'dark-theme'"
+      (change)="themeService.toggleDarkMode($event.checked)"
+      (click)="$event.stopPropagation()">Dark Mode</mat-slide-toggle>
+  </div>
+  <div mat-menu-item disableRipple>
+    <mat-slide-toggle
+      (change)="showCommentNodes = $event.checked"
+      (click)="$event.stopPropagation()">Show comment nodes</mat-slide-toggle>
+  </div>
+</mat-menu>
+
+<mat-menu #info="matMenu">
+  <a mat-menu-item href="https://angular.io/devtools" target="_blank">
+    <mat-icon>library_books</mat-icon>
+    Guide
+  </a>
+  <a mat-menu-item href="https://github.com/angular/angular" target="_blank">
+    <mat-icon>launch</mat-icon>
+    GitHub
+  </a>
+  <a mat-menu-item href="https://github.com/angular/angular/issues" target="_blank">
+    <mat-icon>bug_report</mat-icon>
+    Issues
+  </a>
+</mat-menu>

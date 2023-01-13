@@ -1,0 +1,32 @@
+@use '../../mixins';
+
+.alert {
+    padding: 16px;
+    margin: 24px 0px;
+    @include mixins.font-size(14);
+    width: 100%;
+    box-sizing: border-box;
+    clear: both;
+
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 500;
+    }
+
+    &.archive-warning {
+      border-radius: 4px;
+      margin-bottom: 1rem;
+
+      a {
+        font-weight: bold;
+        text-decoration: underline;
+
+        &:hover {
+          opacity: 0.9;
+        }
+      }
+    }
+
+    > p {
+        margin: 8px 16px;
+    }
+}

@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "extended",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/invalid_banana_in_box",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_control_flow_directive",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_ngforof_let",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/optional_chain_not_nullable",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/skip_hydration_not_static",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/text_attribute_not_binding",
+        "@npm//typescript",
+    ],
+)

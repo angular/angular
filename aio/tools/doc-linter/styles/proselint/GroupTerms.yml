@@ -1,0 +1,38 @@
+extends: substitution
+message: Consider using '%s' instead of '%s'.
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: true
+swap:
+  (?:bunch|group|pack|flock) of chickens: brood of chickens
+  (?:bunch|group|pack|flock) of crows: murder of crows
+  (?:bunch|group|pack|flock) of hawks: cast of hawks
+  (?:bunch|group|pack|flock) of parrots: pandemonium of parrots
+  (?:bunch|group|pack|flock) of peacocks: muster of peacocks
+  (?:bunch|group|pack|flock) of penguins: muster of penguins
+  (?:bunch|group|pack|flock) of sparrows: host of sparrows
+  (?:bunch|group|pack|flock) of turkeys: rafter of turkeys
+  (?:bunch|group|pack|flock) of woodpeckers: descent of woodpeckers
+  (?:bunch|group|pack|herd) of apes: shrewdness of apes
+  (?:bunch|group|pack|herd) of baboons: troop of baboons
+  (?:bunch|group|pack|herd) of badgers: cete of badgers
+  (?:bunch|group|pack|herd) of bears: sloth of bears
+  (?:bunch|group|pack|herd) of bullfinches: bellowing of bullfinches
+  (?:bunch|group|pack|herd) of bullocks: drove of bullocks
+  (?:bunch|group|pack|herd) of caterpillars: army of caterpillars
+  (?:bunch|group|pack|herd) of cats: clowder of cats
+  (?:bunch|group|pack|herd) of colts: rag of colts
+  (?:bunch|group|pack|herd) of crocodiles: bask of crocodiles
+  (?:bunch|group|pack|herd) of dolphins: school of dolphins
+  (?:bunch|group|pack|herd) of foxes: skulk of foxes
+  (?:bunch|group|pack|herd) of gorillas: band of gorillas
+  (?:bunch|group|pack|herd) of hippopotami: bloat of hippopotami
+  (?:bunch|group|pack|herd) of horses: drove of horses
+  (?:bunch|group|pack|herd) of jellyfish: fluther of jellyfish
+  (?:bunch|group|pack|herd) of kangeroos: mob of kangeroos
+  (?:bunch|group|pack|herd) of monkeys: troop of monkeys
+  (?:bunch|group|pack|herd) of oxen: yoke of oxen
+  (?:bunch|group|pack|herd) of rhinoceros: crash of rhinoceros
+  (?:bunch|group|pack|herd) of wild boar: sounder of wild boar
+  (?:bunch|group|pack|herd) of wild pigs: drift of wild pigs
+  (?:bunch|group|pack|herd) of zebras: zeal of wild pigs
+  (?:bunch|group|pack|school) of trout: hover of trout

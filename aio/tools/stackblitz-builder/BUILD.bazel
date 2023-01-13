@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "nodejs_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+nodejs_binary(
+    name = "generate-stackblitz",
+    data = [
+        "builder.mjs",
+        "//aio/tools/transforms/examples-package:files",
+        "//aio/tools/transforms/helpers:files",
+        "@aio_npm//canonical-path",
+        "@aio_npm//fs-extra",
+        "@aio_npm//globby",
+        "@aio_npm//jsdom",
+    ],
+    entry_point = "generateStackblitz.mjs",
+)

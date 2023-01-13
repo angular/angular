@@ -1,0 +1,37 @@
+<div class="l-flex-wrap api-filter">
+
+  <aio-select (change)="setType($event.option)"
+              [options]="types"
+              [selected]="type"
+              [showSymbol]="true"
+              label="Type:">
+  </aio-select>
+
+  <aio-select (change)="setStatus($event.option)"
+              [options]="statuses"
+              [selected]="status"
+              [disabled]="type.value === 'package'"
+              label="Status:">
+  </aio-select>
+
+  <div class="form-search">
+    <input #filter placeholder="Filter" (input)="setQuery($any($event.target).value)" aria-label="Filter Search">
+    <i class="material-icons">search</i>
+  </div>
+</div>
+
+<article class="api-list-container">
+  <div *ngFor="let section of filteredSections | async" >
+    <h2 *ngIf="section.items"><a [href]="section.path" [class.deprecated-api-item]="section.deprecated">{{section.title}}</a></h2>
+    <ul class="api-list" *ngIf="section.items && section.items.length">
+      <ng-container *ngFor="let item of section.items">
+        <li class="api-item">
+          <a [href]="item.path" [class.deprecated-api-item]="item.stability === 'deprecated'">
+            <span class="symbol {{item.docType}}"></span>
+            {{item.title}}
+          </a>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+</article>

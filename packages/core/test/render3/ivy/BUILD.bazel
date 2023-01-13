@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "ivy_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/core",
+        "//packages/core/src/di/interface",
+    ],
+)
+
+jasmine_node_test(
+    name = "ivy",
+    bootstrap = [
+        "//packages/core/test/render3:domino",
+        "//tools/testing:node",
+    ],
+    deps = [
+        ":ivy_lib",
+        "//packages/zone.js/lib",
+    ],
+)

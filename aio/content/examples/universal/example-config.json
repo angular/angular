@@ -1,0 +1,7 @@
+{
+  "projectType": "universal",
+  "e2e": [
+    {"cmd": "yarn", "args": ["e2e", "--configuration=production", "--protractor-config=e2e/protractor-bazel.conf.js", "--no-webdriver-update", "--port=0"]},
+    {"cmd": "yarn", "args": ["run", "build:ssr"]}
+  ]
+}

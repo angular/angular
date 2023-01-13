@@ -1,0 +1,303 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should create listener instruction on element",
+      "inputFiles": [
+        "element_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "element_listener_template.js",
+              "generated": "element_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create listener instruction on other components",
+      "inputFiles": [
+        "component_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "component_listener_template.js",
+              "generated": "component_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create multiple listener instructions that share a view snapshot",
+      "inputFiles": [
+        "shared_snapshot_listeners.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "shared_snapshot_listeners_template.js",
+              "generated": "shared_snapshot_listeners.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "local refs in listeners defined before the local refs",
+      "inputFiles": [
+        "local_ref_before_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "local_ref_before_listener_template.js",
+              "generated": "local_ref_before_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        },
+        {
+          "files": [
+            {
+              "expected": "local_ref_before_listener_factory.js",
+              "generated": "local_ref_before_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect factory"
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple listeners on the same element",
+      "inputFiles": [
+        "same_element_chained_listeners.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "same_element_chained_listeners_template.js",
+              "generated": "same_element_chained_listeners.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple listeners across elements",
+      "inputFiles": [
+        "cross_element_chained_listeners.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "cross_element_chained_listeners_template.js",
+              "generated": "cross_element_chained_listeners.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple listeners on the same template",
+      "inputFiles": [
+        "template_chained_listeners.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "template_chained_listeners_template.js",
+              "generated": "template_chained_listeners.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should not generate the $event argument if it is not being used in a template",
+      "inputFiles": [
+        "no_event_arg_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "no_event_arg_listener_template.js",
+              "generated": "no_event_arg_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect event listener"
+        }
+      ]
+    },
+    {
+      "description": "should not generate the $event argument if it is not being used in a host listener",
+      "inputFiles": [
+        "no_event_arg_host_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "no_event_arg_host_listener_host_bindings.js",
+              "generated": "no_event_arg_host_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect event listener"
+        }
+      ]
+    },
+    {
+      "description": "should generate the $event argument if it is being used in a host listener",
+      "inputFiles": [
+        "has_event_arg_host_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "has_event_arg_host_listener_host_bindings.js",
+              "generated": "has_event_arg_host_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect event listener"
+        }
+      ]
+    },
+    {
+      "description": "should assume $event is referring to the event variable in a listener by default",
+      "inputFiles": [
+        "event_arg_listener_implicit_meaning.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "event_arg_listener_implicit_meaning_template.js",
+              "generated": "event_arg_listener_implicit_meaning.js"
+            }
+          ],
+          "failureMessage": "Incorrect event listener"
+        }
+      ]
+    },
+    {
+      "description": "should preserve accesses to $event if it is done through `this` in a listener",
+      "inputFiles": [
+        "event_explicit_access.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "event_explicit_access_template.js",
+              "generated": "event_explicit_access.js"
+            }
+          ],
+          "failureMessage": "Incorrect event listener"
+        }
+      ]
+    },
+    {
+      "description": "should not assume that $event is referring to an event object inside a property",
+      "inputFiles": [
+        "event_in_property_binding.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "event_in_property_binding_template.js",
+              "generated": "event_in_property_binding.js"
+            }
+          ],
+          "failureMessage": "Incorrect property binding"
+        }
+      ]
+    },
+    {
+      "description": "should assume $event is referring to the event variable in a listener by default inside a host binding",
+      "inputFiles": [
+        "event_arg_host_listener_implicit_meaning.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "event_arg_host_listener_implicit_meaning_host_bindings.js",
+              "generated": "event_arg_host_listener_implicit_meaning.js"
+            }
+          ],
+          "failureMessage": "Incorrect event listener"
+        }
+      ]
+    },
+    {
+      "description": "should preserve accesses to $event if it is done through `this` in a listener inside a host binding",
+      "inputFiles": [
+        "event_host_explicit_access.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "event_host_explicit_access_host_bindings.js",
+              "generated": "event_host_explicit_access.js"
+            }
+          ],
+          "failureMessage": "Incorrect event listener"
+        }
+      ]
+    },
+    {
+      "description": "should generate the view restoration statements if a keyed write is used in an event listener from within an ng-template",
+      "inputFiles": [
+        "implicit_receiver_keyed_write_inside_template.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "implicit_receiver_keyed_write_inside_template_template.js",
+              "generated": "implicit_receiver_keyed_write_inside_template.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should reference correct context in listener inside embedded view",
+      "inputFiles": [
+        "embedded_view_listener_context.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "embedded_view_listener_context_template.js",
+              "generated": "embedded_view_listener_context.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

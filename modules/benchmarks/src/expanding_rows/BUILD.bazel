@@ -1,0 +1,65 @@
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module", "ts_library")
+load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ng_module(
+    name = "application_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.perf-spec.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+        "//packages/localize/init",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "perf_lib",
+    testonly = 1,
+    srcs = ["expanding_rows.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    deps = [
+        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
+        "@npm//protractor",
+    ],
+)
+
+app_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    deps = [
+        ":application_lib",
+        "@npm//rxjs",
+    ],
+)
+
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
+    name = "app_bundle",
+    srcs = [":bundle.debug.min.js"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $< $@",
+)
+
+http_server(
+    name = "prodserver",
+    srcs = ["index.html"],
+    deps = [
+        ":app_bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":prodserver",
+    deps = [
+        ":perf_lib",
+    ],
+)
