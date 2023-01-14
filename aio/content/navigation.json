@@ -825,6 +825,11 @@
               "url": "tutorial/first-app/first-app-lesson-09",
               "title": "Angular services",
               "tooltip": "Add an Angular service to your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-12",
+              "title": "Angular forms",
+              "tooltip": "Add an Angular form to your app"
             }
           ]
         },
