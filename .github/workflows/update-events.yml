@@ -35,7 +35,7 @@ jobs:
       - name: Generate `events.json`
         run: node aio/scripts/generate-events/index.mjs --ignore-invalid-dates
       - name: Create a PR (if necessary)
-        uses: angular/dev-infra/github-actions/create-pr-for-changes@96fdaaa056f1cfa7ffbc4c69b7e9007279f76c94
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@b6c5b7527a6ca1990b9cb03346710098af8f128c
         with:
           branch-prefix: docs-update-events
           pr-title: 'docs: update events'
