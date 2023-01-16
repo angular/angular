@@ -25,7 +25,7 @@ describe('Relative link resolution config migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematicAsync('migration-v15-relative-link-resolution', {}, tree).toPromise();
+    return runner.runSchematic('migration-v15-relative-link-resolution', {}, tree);
   }
 
   beforeEach(() => {
