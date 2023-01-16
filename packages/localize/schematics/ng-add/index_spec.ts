@@ -77,7 +77,7 @@ describe('ng-add schematic', () => {
   });
 
   it(`should add '@angular/localize' type reference in 'main.ts'`, async () => {
-    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+    host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
     expect(host.readText('main.ts')).toContain(localizeTripleSlashType);
   });
 
@@ -88,7 +88,7 @@ describe('ng-add schematic', () => {
       import { enableProdMode } from '@angular/core';
     `;
        host.overwrite('main.ts', mainContentInput);
-       host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+       host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
        expect(host.readText('main.ts')).toBe(mainContentInput);
      });
 
@@ -102,7 +102,7 @@ describe('ng-add schematic', () => {
 
        host.create('tsconfig.unknown.json', tsConfig);
 
-       host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+       host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
        const {compilerOptions} = host.readJson('tsconfig.unknown.json') as TsConfig;
        const types = compilerOptions?.types;
        expect(types).not.toContain('@angular/localize');
@@ -119,7 +119,7 @@ describe('ng-add schematic', () => {
 
        host.create('tsconfig.app.json', tsConfig);
 
-       host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+       host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
        const {compilerOptions} = host.readJson('tsconfig.app.json') as TsConfig;
        const types = compilerOptions?.types;
        expect(types).toContain('@angular/localize');
@@ -137,7 +137,7 @@ describe('ng-add schematic', () => {
 
        host.create('tsconfig.spec.json', tsConfig);
 
-       host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+       host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
        const {compilerOptions} = host.readJson('tsconfig.spec.json') as TsConfig;
        const types = compilerOptions?.types;
        expect(types).toContain('@angular/localize');
@@ -152,7 +152,7 @@ describe('ng-add schematic', () => {
 
        host.create('tsconfig.server.json', tsConfig);
 
-       host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
+       host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
        const {compilerOptions} = host.readJson('tsconfig.server.json') as TsConfig;
        const types = compilerOptions?.types;
        expect(types).toContain('@angular/localize');
@@ -160,9 +160,8 @@ describe('ng-add schematic', () => {
      });
 
   it('should add package to `dependencies` if `useAtRuntime` is `true`', async () => {
-    host = await schematicRunner
-               .runSchematicAsync('ng-add', {...defaultOptions, useAtRuntime: true}, host)
-               .toPromise();
+    host =
+        await schematicRunner.runSchematic('ng-add', {...defaultOptions, useAtRuntime: true}, host);
 
     const {devDependencies, dependencies} = host.readJson('/package.json') as {
       devDependencies: {[key: string]: string};
