@@ -56,7 +56,7 @@ describe('all migrations', () => {
   }
 
   async function runMigration(migrationName: string) {
-    await runner.runSchematicAsync(migrationName, undefined, tree).toPromise();
+    await runner.runSchematic(migrationName, undefined, tree);
   }
 
   if (!allMigrationSchematics.length) {

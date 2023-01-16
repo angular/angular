@@ -25,7 +25,7 @@ describe('RouterLinkWithHref migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematicAsync('migration-v15-router-link-with-href', {}, tree).toPromise();
+    return runner.runSchematic('migration-v15-router-link-with-href', {}, tree);
   }
 
   beforeEach(() => {
