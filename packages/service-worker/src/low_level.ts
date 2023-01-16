@@ -69,7 +69,7 @@ export interface NoNewVersionDetectedEvent {
  */
 export interface VersionDetectedEvent {
   type: 'VERSION_DETECTED';
-  version: {hash: string; appData?: object;};
+  version: {hash: string; appData?: Object;};
 }
 
 /**
@@ -82,7 +82,7 @@ export interface VersionDetectedEvent {
  */
 export interface VersionInstallationFailedEvent {
   type: 'VERSION_INSTALLATION_FAILED';
-  version: {hash: string; appData?: object;};
+  version: {hash: string; appData?: Object;};
   error: string;
 }
 
@@ -95,8 +95,8 @@ export interface VersionInstallationFailedEvent {
  */
 export interface VersionReadyEvent {
   type: 'VERSION_READY';
-  currentVersion: {hash: string; appData?: object;};
-  latestVersion: {hash: string; appData?: object;};
+  currentVersion: {hash: string; appData?: Object;};
+  latestVersion: {hash: string; appData?: Object;};
 }
 
 
