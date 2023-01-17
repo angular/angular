@@ -156,9 +156,9 @@ In v15, the `title` property is required on [`ActivatedRouteSnapshot`](api/route
 Before v15, during navigation, `RouterOutlet` instantiated the component being activated immediately. [PR #46554](https://github.com/angular/angular/pull/46554)
 
 In v15, the component is not instantiated until after change detection runs.
-This change could affect tests that do not trigger change detection after a router navigation,
+This change could affect tests that do not trigger change detection after a router navigation.
+This can also affect production code that relies on the exact timing of component availability,
 for example, if your component's constructor calls `router.getCurrentNavigation()`.
-Less common, this could affect production code that relies on the exact timing of component availability.
 
 <a id="v15-bc-10"></a>
 
