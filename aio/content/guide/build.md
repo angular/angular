@@ -6,15 +6,23 @@ This page discusses build-specific configuration options for Angular projects.
 
 ## Configuring application environments
 
-You can define different named build configurations for your project, such as *staging* and *production*, with different defaults.
+You can define different named build configurations for your project, such as `development` and `staging`, with different defaults.
 
 Each named configuration can have defaults for any of the options that apply to the various [builder targets](guide/glossary#target), such as `build`, `serve`, and `test`.
 The [Angular CLI](cli) `build`, `serve`, and `test` commands can then replace files with appropriate versions for your intended target environment.
 
 ### Configure environment-specific defaults
 
-A project's `src/environments/` folder contains the base configuration file, `environment.ts`, which provides a default environment.
-You can add override defaults for additional environments, such as production and staging, in target-specific configuration files.
+Using the Angular CLI, start by running the [generate environments command](cli/generate#environments-command) shown here to create the `src/environments/` directory and configure the project to use these files.
+
+<code-example format="shell" language="shell">
+
+ng generate environments
+
+</code-example>
+
+The project's `src/environments/` directory contains the base configuration file, `environment.ts`, which provides configuration for `production`, the default environment.
+You can override default values for additional environments, such as `development` and `staging`, in target-specific configuration files.
 
 For example:
 
@@ -27,7 +35,7 @@ For example:
           environment.ts
         </div>
         <div class="file">
-          environment.prod.ts
+          environment.development.ts
         </div>
         <div class="file">
           environment.staging.ts
@@ -41,7 +49,7 @@ For example:
 <code-example format="typescript" language="typescript">
 
 export const environment = {
-  production: false
+  production: true
 };
 
 </code-example>
@@ -53,27 +61,27 @@ For example, the following adds a default for a variable to the default environm
 <code-example format="typescript" language="typescript">
 
 export const environment = {
-  production: false,
-  apiUrl: 'http://my-api-url'
-};
-
-</code-example>
-
-You can add target-specific configuration files, such as `environment.prod.ts`.
-The following content sets default values for the production build target:
-
-<code-example format="typescript" language="typescript">
-
-export const environment = {
   production: true,
   apiUrl: 'http://my-prod-url'
 };
 
 </code-example>
 
+You can add target-specific configuration files, such as `environment.development.ts`.
+The following content sets default values for the development build target:
+
+<code-example format="typescript" language="typescript">
+
+export const environment = {
+  production: false,
+  apiUrl: 'http://my-api-url'
+};
+
+</code-example>
+
 ### Using environment-specific variables in your app
 
-The following application structure configures build targets for production and staging environments:
+The following application structure configures build targets for `development` and `staging` environments:
 
 <div class="filetree">
     <div class="file">
@@ -99,7 +107,7 @@ The following application structure configures build targets for production and 
               environment.ts
             </div>
             <div class="file">
-              environment.prod.ts
+              environment.development.ts
             </div>
             <div class="file">
               environment.staging.ts
@@ -122,20 +130,21 @@ The following code in the component file \(`app.component.ts`\) uses an environm
 
 <code-example format="typescript" language="typescript">
 
-import { Component } from '&commat;angular/core';
-import { environment } from './../environments/environment';
+  import { Component } from '&commat;angular/core';
+  import { environment } from './../environments/environment';
 
-&commat;Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
-export class AppComponent {
-  constructor() {
-    console.log(environment.production); // Logs false for default environment
+  &commat;Component({
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
+  })
+  export class AppComponent {
+    constructor() {
+      console.log(environment.production); // Logs false for development environment
+    }
+
+    title = 'app works!';
   }
-  title = 'app works!';
-}
 
 </code-example>
 
@@ -152,36 +161,37 @@ For example:
 
 <code-example format="json" language="json">
 
-"configurations": {
-  "production": {
-    "fileReplacements": [
-      {
-        "replace": "src/environments/environment.ts",
-        "with": "src/environments/environment.prod.ts"
-      }
-    ],
-    &hellip;
+  "configurations": {
+    "development": {
+      "fileReplacements": [
+          {
+            "replace": "src/environments/environment.ts",
+            "with": "src/environments/environment.development.ts"
+          }
+        ],
+        &hellip;
 
 </code-example>
 
-This means that when you build your production configuration with `ng build --configuration production`, the `src/environments/environment.ts` file is replaced with the target-specific version of the file, `src/environments/environment.prod.ts`.
+This means that when you build your development configuration with `ng build --configuration development`, the `src/environments/environment.ts` file is replaced with the target-specific version of the file, `src/environments/environment.development.ts`.
 
 You can add additional configurations as required.
 To add a staging environment, create a copy of `src/environments/environment.ts` called `src/environments/environment.staging.ts`, then add a `staging` configuration to `angular.json`:
 
 <code-example format="json" language="json">
 
-"configurations": {
-  "production": { &hellip; },
-  "staging": {
-    "fileReplacements": [
-      {
-        "replace": "src/environments/environment.ts",
-        "with": "src/environments/environment.staging.ts"
-      }
-    ]
+  "configurations": {
+    "development": { &hellip; },
+    "production": { &hellip; },
+    "staging": {
+      "fileReplacements": [
+        {
+          "replace": "src/environments/environment.ts",
+          "with": "src/environments/environment.staging.ts"
+        }
+      ]
+    }
   }
-}
 
 </code-example>
 
@@ -200,20 +210,23 @@ You can also configure the `serve` command to use the targeted build configurati
 
 <code-example format="json" language="json">
 
-"serve": {
-  "builder": "&commat;angular-devkit/build-angular:dev-server",
-  "options": {
-    "browserTarget": "your-project-name:build"
-  },
-  "configurations": {
-    "production": {
-      "browserTarget": "your-project-name:build:production"
+  "serve": {
+    "builder": "&commat;angular-devkit/build-angular:dev-server",
+    "options": {
+      "browserTarget": "your-project-name:build"
     },
-    "staging": {
-      "browserTarget": "your-project-name:build:staging"
+    "configurations": {
+      "development": {
+        "browserTarget": "your-project-name:build:development"
+      },
+      "production": {
+        "browserTarget": "your-project-name:build:production"
+      },
+      "staging": {
+        "browserTarget": "your-project-name:build:staging"
+      }
     }
-  }
-},
+  },
 
 </code-example>
 
@@ -245,8 +258,8 @@ You can specify size budgets for the entire app, and for particular parts.
 Each budget entry configures a budget of a given type.
 Specify size values in the following formats:
 
-| Size value      | Details |
-|:---             |:---     |
+| Size value      | Details                                                                     |
+| :-------------- | :-------------------------------------------------------------------------- |
 | `123` or `123b` | Size in bytes.                                                              |
 | `123kb`         | Size in kilobytes.                                                          |
 | `123mb`         | Size in megabytes.                                                          |
@@ -257,7 +270,7 @@ When you configure a budget, the build system warns or reports an error when a g
 Each budget entry is a JSON object with the following properties:
 
 | Property       | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-|:---            |:---                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | type           | The type of budget. One of: <table> <thead> <tr> <th> Value </th> <th> Details </th> </tr> </thead> <tbody> <tr> <td> <code>bundle</code> </td> <td> The size of a specific bundle. </td> </tr> <tr> <td> <code>initial</code> </td> <td> The size of JavaScript needed for bootstrapping the application. Defaults to warning at 500kb and erroring at 1mb. </td> </tr> <tr> <td> <code>allScript</code> </td> <td> The size of all scripts. </td> </tr> <tr> <td> <code>all</code> </td> <td> The size of the entire application. </td> </tr> <tr> <td> <code>anyComponentStyle</code> </td> <td> This size of any one component stylesheet. Defaults to warning at 2kb and erroring at 4kb. </td> </tr> <tr> <td> <code>anyScript</code> </td> <td> The size of any one script. </td> </tr> <tr> <td> <code>any</code> </td> <td> The size of any file. </td> </tr> </tbody> </table> |
 | name           | The name of the bundle \(for `type=bundle`\).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | baseline       | The baseline size for comparison.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -316,13 +329,7 @@ Internally, the Angular CLI uses the below `browserslist` configuration which ma
   Firefox ESR
   </code-example>
 
-
-To override the internal configuration, add a new file named `.browserslistrc`, to the project directory, that specifies the browsers you want to support:
-
-  <code-example format="none" language="text">
-  last 1 Chrome version
-  last 1 Firefox version
-  </code-example>
+To override the internal configuration, run [`ng generate browserslist`](cli/generate#config-command), which generates a `.browserslistrc` configuration file in the the project directory.
 
 See the [browserslist repository](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
 
@@ -357,9 +364,9 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
 
     <code-example format="json" language="json">
 
-    &hellip;
-    "architect": {
-      "serve": {
+      &hellip;
+      "architect": {
+        "serve": {
         "builder": "&commat;angular-devkit/build-angular:dev-server",
         "options": {
           "browserTarget": "your-application-name:build",
@@ -442,27 +449,25 @@ Proxy log levels are `info` \(the default\), `debug`, `warn`, `error`, and `sile
 
 You can proxy multiple entries to the same target by defining the configuration in JavaScript.
 
-Set the proxy configuration file to `proxy.conf.js` \(instead of `proxy.conf.json`\), and specify configuration files as in the following example.
+Set the proxy configuration file to `proxy.conf.mjs` \(instead of `proxy.conf.json`\), and specify configuration files as in the following example.
 
 <code-example format="javascript" language="javascript">
 
-const PROXY_CONFIG = [
-    {
-        context: [
-            "/my",
-            "/many",
-            "/endpoints",
-            "/i",
-            "/need",
-            "/to",
-            "/proxy"
-        ],
-        target: "http://localhost:3000",
-        secure: false
-    }
-]
-
-module.exports = PROXY_CONFIG;
+export default [
+  {
+    context: [
+        '/my',
+        '/many',
+        '/endpoints',
+        '/i',
+        '/need',
+        '/to',
+        '/proxy'
+    ],
+    target: 'http://localhost:3000',
+    secure: false
+  }
+];
 
 </code-example>
 
@@ -476,7 +481,7 @@ In the CLI configuration file, `angular.json`, point to the JavaScript proxy con
     "builder": "&commat;angular-devkit/build-angular:dev-server",
     "options": {
       "browserTarget": "your-application-name:build",
-      "proxyConfig": "src/proxy.conf.js"
+      "proxyConfig": "src/proxy.conf.mjs"
     },
 &hellip;
 
@@ -488,21 +493,19 @@ If you need to optionally bypass the proxy, or dynamically change the request be
 
 <code-example format="javascript" language="javascript">
 
-const PROXY_CONFIG = {
-    "/api/proxy": {
-        "target": "http://localhost:3000",
-        "secure": false,
-        "bypass": function (req, res, proxyOptions) {
-            if (req.headers.accept.indexOf("html") !== -1) {
-                console.log("Skipping proxy for browser request.");
-                return "/index.html";
-            }
-            req.headers["X-Custom-Header"] = "yes";
+export default {
+  '/api/proxy': {
+    "target": 'http://localhost:3000',
+    "secure": false,
+    "bypass": function (req, res, proxyOptions) {
+        if (req.headers.accept.includes('html')) {
+            console.log('Skipping proxy for browser request.');
+            return '/index.html';
         }
+        req.headers['X-Custom-Header'] = 'yes';
     }
-}
-
-module.exports = PROXY_CONFIG;
+  }
+};
 
 </code-example>
 
@@ -523,26 +526,27 @@ Use the following content in the JavaScript configuration file.
 
 <code-example format="javascript" language="javascript">
 
-var HttpsProxyAgent = require('https-proxy-agent');
-var proxyConfig = [{
+import HttpsProxyAgent from 'https-proxy-agent';
+
+const proxyConfig = [{
   context: '/api',
   target: 'http://your-remote-server.com:3000',
   secure: false
 }];
 
-function setupForCorporateProxy(proxyConfig) {
-  var proxyServer = process.env.http_proxy &verbar;&verbar; process.env.HTTP_PROXY;
+export default (proxyConfig) => {
+  const proxyServer = process.env.http_proxy &verbar;&verbar; process.env.HTTP_PROXY;
   if (proxyServer) {
-    var agent = new HttpsProxyAgent(proxyServer);
+    const agent = new HttpsProxyAgent(proxyServer);
     console.log('Using corporate proxy server: ' + proxyServer);
-    proxyConfig.forEach(function(entry) {
-      entry.agent = agent;
-    });
-  }
-  return proxyConfig;
-}
 
-module.exports = setupForCorporateProxy(proxyConfig);
+    for (const entry of proxyConfig) {
+      entry.agent = agent;
+    }
+  }
+
+  return proxyConfig;
+};
 
 </code-example>
 
@@ -552,4 +556,4 @@ module.exports = setupForCorporateProxy(proxyConfig);
 
 <!-- end links -->
 
-@reviewed 2022-10-24
+@reviewed 2023-01-17
