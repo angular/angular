@@ -881,6 +881,11 @@
           "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
         },
         {
+          "url": "guide/versions",
+          "title": "Version compatibility",
+          "tooltip": "Angular, Node.js, TypeScript, and RxJS version compatibility."
+        },
+        {
           "url": "guide/browser-support",
           "title": "Browser support",
           "tooltip": "Browser support and polyfills guide."
