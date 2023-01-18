@@ -9,7 +9,7 @@
 import createConfig from './esbuild-base.config.mjs';
 
 export default {
-  ...createConfig({enableLinker: true, optimize: false}),
+  ...(await createConfig({enableLinker: true, optimize: false})),
   // Use the `iife` format for the test entry-point as tests should run immediately.
   // For browser tests which are wrapped in an AMD header and footer, this works as well.
   format: 'iife',
