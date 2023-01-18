@@ -92,9 +92,10 @@ export abstract class DomSanitizer implements Sanitizer {
    * Sanitizes a value for use in the given SecurityContext.
    *
    * If value is trusted for the context, this method will unwrap the contained safe value and use
-   * it directly. Otherwise, value will be sanitized to be safe in the given context, for example
-   * by replacing URLs that have an unsafe protocol part (such as `javascript:`). The implementation
-   * is responsible to make sure that the value can definitely be safely used in the given context.
+   * it directly. Otherwise, an error will be thrown into console, drawing attention at unsafe value
+   * usage. Value must be sanitized to be safe in the given context, for example by replacing URLs that
+   * have an unsafe protocol part (such as `javascript:`). The developer is responsible to make sure
+   * that the value can definitely be safely used in the given context.
    */
   abstract sanitize(context: SecurityContext, value: SafeValue|string|null): string|null;
 
