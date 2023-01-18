@@ -1,5 +1,8 @@
 # Version compatibility
-Angular CLI, Angular, Node.js, TypeScript, and RxJS version compatibility.
+
+The following table describes the versions of Node.js, TypeScript, and RxJS that each version of Angular requires.
+
+This information is collected from Angular's [package.json](https://unpkg.com/browse/@angular/core/package.json) file and is only guaranteed for the [Angular versions under long-term support (LTS)](guide/releases#actively-supported-versions). Information about earlier Angular versions was correct when that version went out of LTS.
 
 | Angular                     | Angular CLI      | Node.js                              | TypeScript     | RxJS               |
 | --------------------------- | ---------------- | ------------------------------------ | -------------- | ------------------ |
