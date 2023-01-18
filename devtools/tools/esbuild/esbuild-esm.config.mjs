@@ -9,6 +9,6 @@
 import createConfig from './esbuild-base.config.mjs';
 
 export default {
-  ...createConfig({enableLinker: true, optimize: false}),
+  ...(await createConfig({enableLinker: true, optimize: false})),
   format: 'esm',
 };
