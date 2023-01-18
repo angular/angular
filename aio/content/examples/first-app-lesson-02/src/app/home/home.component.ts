@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
   ],
+  // #docregion home-template
   template: `
     <section>
       <form>
@@ -15,6 +16,7 @@ import { CommonModule } from '@angular/common';
       </form>
     </section>
   `,
+  // #enddocregion
   styleUrls: ['./home.component.css'],
 })
 

@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+// #docregion import-home
 import { HomeComponent } from './home/home.component';
+// #enddocregion
 
 @Component({
   selector: 'app-root',
   standalone: true,
+  // #docregion app-directives
   imports: [
     HomeComponent,
   ],
@@ -17,6 +20,7 @@ import { HomeComponent } from './home/home.component';
       </section>
     </main>
   `,
+  // #enddocregion
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {

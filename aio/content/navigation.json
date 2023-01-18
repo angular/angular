@@ -810,6 +810,11 @@
               "url": "tutorial/first-app/first-app-lesson-01",
               "title": "Hello world",
               "tooltip": "Start coding in Angular with Hello World"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-02",
+              "title": "Create home component",
+              "tooltip": "Create the app's HomeComponent"
             }
           ]
         },
