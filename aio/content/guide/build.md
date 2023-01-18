@@ -6,7 +6,7 @@ This page discusses build-specific configuration options for Angular projects.
 
 ## Configuring application environments
 
-You can define different named build configurations for your project, such as _development_ and _staging_, with different defaults.
+You can define different named build configurations for your project, such as `development` and `staging`, with different defaults.
 
 Each named configuration can have defaults for any of the options that apply to the various [builder targets](guide/glossary#target), such as `build`, `serve`, and `test`.
 The [Angular CLI](cli) `build`, `serve`, and `test` commands can then replace files with appropriate versions for your intended target environment.
@@ -21,8 +21,8 @@ ng generate environments
 
 </code-example>
 
-The project's `src/environments/` directory contains the base configuration file, `environment.ts`, which provides configuration for the default environment which is production.
-You can add override defaults for additional environments, such as development and staging, in target-specific configuration files.
+The project's `src/environments/` directory contains the base configuration file, `environment.ts`, which provides configuration for `production`, the default environment.
+You can override default values for additional environments, such as `development` and `staging`, in target-specific configuration files.
 
 For example:
 
@@ -79,7 +79,7 @@ export const environment = {
 
 </code-example>
 
-### Using environment-specific variables in your application
+### Using environment-specific variables in your app
 
 The following application structure configures build targets for development and staging environments:
 
@@ -329,7 +329,7 @@ Internally, the Angular CLI uses the below `browserslist` configuration which ma
   Firefox ESR
   </code-example>
 
-To override the internal configuration use the [`ng generate browserslist`](cli/generate#config-command) command to generate a `.browserslistrc` configuration file in the the project directory.
+To override the internal configuration, run [`ng generate browserslist`](cli/generate#config-command), which generates a `.browserslistrc` configuration file in the the project directory.
 
 See the [browserslist repository](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
 
