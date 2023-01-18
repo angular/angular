@@ -56,6 +56,14 @@ describe('url serializer', () => {
     expect(tree.root.children.primary.segments[2].path).toEqual('=');
   });
 
+  it('should parse segments with matrix parameter values containing an =', () => {
+    const tree = url.parse('/path/to/something;query=file=test;query2=test2');
+    expect(tree.root.children.primary.segments[2].path).toEqual('something');
+    expect(tree.root.children.primary.segments[2].parameterMap.keys).toHaveSize(2);
+    expect(tree.root.children.primary.segments[2].parameterMap.get('query')).toEqual('file=test');
+    expect(tree.root.children.primary.segments[2].parameterMap.get('query2')).toEqual('test2');
+  });
+
   it('should parse top-level nodes with only secondary segment', () => {
     const tree = url.parse('/(left:one)');
 
@@ -266,9 +274,9 @@ describe('url serializer', () => {
     });
 
     it('should encode query params leaving sub-delimiters intact', () => {
-      const percentChars = '/?#&+[] ';
-      const percentCharsEncoded = '%2F%3F%23%26%2B%5B%5D%20';
-      const intactChars = '!$\'()*,;:=';
+      const percentChars = '/?#&+=[] ';
+      const percentCharsEncoded = '%2F%3F%23%26%2B%3D%5B%5D%20';
+      const intactChars = '!$\'()*,;:';
       const params = percentChars + intactChars;
       const paramsEncoded = percentCharsEncoded + intactChars;
       const mixedCaseString = 'sTrInG';
@@ -339,9 +347,9 @@ describe('url serializer', () => {
     const unreserved = `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~`;
 
     it('should encode a minimal set of special characters in queryParams', () => {
-      const notEncoded = unreserved + `:@!$'*,();=`;
-      const encode = ` +%&#[]/?`;
-      const encoded = `%20%2B%25%26%23%5B%5D%2F%3F`;
+      const notEncoded = unreserved + `:@!$'*,();`;
+      const encode = ` +%&=#[]/?`;
+      const encoded = `%20%2B%25%26%3D%23%5B%5D%2F%3F`;
 
       const parsed = url.parse('/foo');
 
@@ -364,34 +372,27 @@ describe('url serializer', () => {
 
     it('should encode minimal special characters plus parens and semi-colon in matrix params',
        () => {
-         const notEncoded = unreserved + `:@!$'*,&=`;
-         const encode = ` /%#()[];?+`;
-         const encoded = `%20%2F%25%23%28%29%5B%5D%3B%3F%2B`;
+         const notEncoded = unreserved + `:@!$'*,&`;
+         const encode = ` /%=#()[];?+`;
+         const encoded = `%20%2F%25%3D%23%28%29%5B%5D%3B%3F%2B`;
 
          const parsed = url.parse('/foo');
 
          parsed.root.children[PRIMARY_OUTLET].segments[0].parameters = {notEncoded, encode};
+
          expect(url.serialize(parsed)).toBe(`/foo;notEncoded=${notEncoded};encode=${encoded}`);
        });
 
     it('should encode special characters in the path the same as matrix params', () => {
-      const notEncoded = unreserved + `:@!$'*,&=`;
-      const encode = ` /%#()[];?+`;
-      const encoded = `%20%2F%25%23%28%29%5B%5D%3B%3F%2B`;
+      const notEncoded = unreserved + `:@!$'*,&`;
+      const encode = ` /%=#()[];?+`;
+      const encoded = `%20%2F%25%3D%23%28%29%5B%5D%3B%3F%2B`;
 
       const parsed = url.parse('/foo');
 
       parsed.root.children[PRIMARY_OUTLET].segments[0].path = notEncoded + encode;
 
       expect(url.serialize(parsed)).toBe(`/${notEncoded}${encoded}`);
-    });
-
-    it('should preserve = when encoding segments', () => {
-      const testUrl = '/foo===bar';
-
-      const parsed = url.parse(testUrl);
-
-      expect(url.serialize(parsed)).toBe(testUrl);
     });
 
     it('should correctly encode ampersand in segments', () => {

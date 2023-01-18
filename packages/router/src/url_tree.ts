@@ -445,8 +445,7 @@ function encodeUriString(s: string): string {
       .replace(/%40/g, '@')
       .replace(/%3A/gi, ':')
       .replace(/%24/g, '$')
-      .replace(/%2C/gi, ',')
-      .replace(/%3D/gi, '=');
+      .replace(/%2C/gi, ',');
 }
 
 /**
@@ -521,7 +520,7 @@ function matchSegments(str: string): string {
 }
 
 const MATRIX_PARAM_SEGMENT_RE = /^[^\/()?;=#]+/;
-function matchMatrixParamSegments(str: string): string {
+function matchMatrixKeySegments(str: string): string {
   const match = str.match(MATRIX_PARAM_SEGMENT_RE);
   return match ? match[0] : '';
 }
@@ -631,14 +630,14 @@ class UrlParser {
   }
 
   private parseParam(params: {[key: string]: string}): void {
-    const key = matchMatrixParamSegments(this.remaining);
+    const key = matchMatrixKeySegments(this.remaining);
     if (!key) {
       return;
     }
     this.capture(key);
     let value: any = '';
     if (this.consumeOptional('=')) {
-      const valueMatch = matchMatrixParamSegments(this.remaining);
+      const valueMatch = matchSegments(this.remaining);
       if (valueMatch) {
         value = valueMatch;
         this.capture(value);
