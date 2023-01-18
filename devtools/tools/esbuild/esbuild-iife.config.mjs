@@ -9,6 +9,6 @@
 import createConfig from './esbuild-base.config.mjs';
 
 export default {
-  ...createConfig({enableLinker: false, optimize: false}),
+  ...(await createConfig({enableLinker: false, optimize: false})),
   format: 'iife',
 };
