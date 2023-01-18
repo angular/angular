@@ -184,6 +184,11 @@
                   "tooltip": "Introductory guide to binding."
                 },
                 {
+                  "url": "guide/property-binding",
+                  "title": "Property binding",
+                  "tooltip": "Learn how to use property binding."
+                },
+                {
                   "url": "guide/attribute-binding",
                   "title": "Attribute binding",
                   "tooltip": "Learn how to use attribute binding."
@@ -197,11 +202,6 @@
                   "url": "guide/event-binding",
                   "title": "Event binding",
                   "tooltip": "Learn how to use to event binding."
-                },
-                {
-                  "url": "guide/property-binding",
-                  "title": "Property binding",
-                  "tooltip": "Learn how to use property binding."
                 },
                 {
                   "url": "guide/two-way-binding",
