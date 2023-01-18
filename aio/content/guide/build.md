@@ -13,7 +13,7 @@ The [Angular CLI](cli) `build`, `serve`, and `test` commands can then replace fi
 
 ### Configure environment-specific defaults
 
-Using the Angular CLI, start by running the below [generate environments command](cli/generate#environments-command) to create the `src/environments/` directory and configuring the application project to use these files.
+Using the Angular CLI, start by running the [generate environments command](cli/generate#environments-command) shown here to create the `src/environments/` directory and configure the project to use these files.
 
 <code-example format="shell" language="shell">
 
@@ -81,7 +81,7 @@ export const environment = {
 
 ### Using environment-specific variables in your app
 
-The following application structure configures build targets for development and staging environments:
+The following application structure configures build targets for `development` and `staging` environments:
 
 <div class="filetree">
     <div class="file">
