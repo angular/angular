@@ -14,10 +14,10 @@ export class AppComponent {
   // #enddocregion customer
 
   title = 'Featured product:';
-  itemImageUrl = '../assets/potted-plant.png';
+  itemImageUrl = '../assets/potted-plant.svg';
 
   recommended = 'You might also like:';
-  itemImageUrl2 = '../assets/lamp.png';
+  itemImageUrl2 = '../assets/lamp.svg';
 
 
 
