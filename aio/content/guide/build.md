@@ -321,7 +321,7 @@ The Angular CLI uses [Browserslist](https://github.com/browserslist/browserslist
 Internally, the Angular CLI uses the below `browserslist` configuration which matches the [browsers that are supported](guide/browser-support) by Angular.
 
   <code-example format="none" language="text">
-  last 1 Chrome version
+  last 2 Chrome versions
   last 1 Firefox version
   last 2 Edge major versions
   last 2 Safari major versions

@@ -5,7 +5,7 @@ This includes the following specific versions:
 
 | Browser | Supported versions |
 |:---     |:---                |
-| Chrome  | latest and previous stable version          |
+| Chrome  | 2 most recent versions                      |
 | Firefox | latest and extended support release \(ESR\) |
 | Edge    | 2 most recent major versions                |
 | Safari  | 2 most recent major versions                |
