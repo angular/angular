@@ -1,7 +1,7 @@
 // Canonical path provides a consistent path (i.e. always forward slashes) across different OSes
 import path from 'canonical-path';
 import fs from 'fs-extra';
-import {globbySync} from 'globby';
+import { globbySync } from 'globby';
 import jsdom from 'jsdom';
 
 import regionExtractor from '../transforms/examples-package/services/region-parser.js';
@@ -182,12 +182,7 @@ export class StackblitzBuilder {
     config.fileNames.forEach((fileName) => {
       let content;
       const extn = path.extname(fileName);
-      if (extn === '.png') {
-        content = this._encodeBase64(fileName);
-        fileName = `${fileName.slice(0, -extn.length)}.base64${extn}`;
-      } else {
-        content = fs.readFileSync(fileName, 'utf-8');
-      }
+      content = fs.readFileSync(fileName, 'utf-8');
 
       if (extn === '.js' || extn === '.ts' || extn === '.css') {
         content = content + this.copyrights.jsCss;

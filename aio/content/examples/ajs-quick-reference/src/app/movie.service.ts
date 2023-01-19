@@ -8,7 +8,7 @@ export class MovieService {
     return [
       {
         hero: 'Celeritas',
-        imageurl: 'assets/images/hero.png',
+        imageurl: 'assets/images/hero.svg',
         movieId: 1,
         mpaa: 'pg-13',
         releaseDate: '2015-12-19T00:00:00',
@@ -19,7 +19,7 @@ export class MovieService {
       },
       {
         hero: 'Dr Nice',
-        imageurl: 'assets/images/villain.png',
+        imageurl: 'assets/images/villain.svg',
         movieId: 2,
         mpaa: 'pg-13',
         releaseDate: '2015-12-18T00:00:00',
@@ -30,7 +30,7 @@ export class MovieService {
       },
       {
         hero: 'Angular',
-        imageurl: 'assets/images/ng-logo.png',
+        imageurl: 'assets/images/ng-logo.svg',
         movieId: 3,
         mpaa: 'pg-13',
         releaseDate: '2015-12-17T00:00:00',
