@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   // #docregion item-image
-  itemImageUrl = '../assets/phone.png';
+  itemImageUrl = '../assets/phone.svg';
   // #enddocregion item-image
   // #docregion boolean
   isUnchanged = true;
