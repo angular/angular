@@ -27,7 +27,7 @@
     "uncompressed": {
       "runtime": 926,
       "main": 124195,
-      "polyfills": 35252
+      "polyfills": 34628
     }
   },
   "cli-hello-world-lazy": {
