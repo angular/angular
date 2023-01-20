@@ -16,12 +16,14 @@ import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createProgramOptions} from '../../utils/typescript/compiler_host';
 
 import {pruneNgModules} from './prune-modules';
+import {toStandaloneBootstrap} from './standalone-bootstrap';
 import {toStandalone} from './to-standalone';
 import {ChangesByFile} from './util';
 
 enum MigrationMode {
   toStandalone = 'convert-to-standalone',
   pruneModules = 'prune-ng-modules',
+  standaloneBootstrap = 'standalone-bootstrap',
 }
 
 interface Options {
@@ -89,6 +91,9 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
     const result = pruneNgModules(program, host, basePath, rootNames, sourceFiles, printer);
     pendingChanges = result.pendingChanges;
     filesToRemove = result.filesToRemove;
+  } else if (options.mode === MigrationMode.standaloneBootstrap) {
+    pendingChanges =
+        toStandaloneBootstrap(program, host, basePath, rootNames, sourceFiles, printer);
   } else {
     /** MigrationMode.toStandalone */
     pendingChanges = toStandalone(sourceFiles, program, printer);

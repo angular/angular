@@ -1689,4 +1689,637 @@ describe('standalone migration', () => {
       export class AppModule {}
     `));
   });
+
+  it('should switch a platformBrowser().bootstrapModule call to bootstrapApplication', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({declarations: [AppComponent], bootstrap: [AppComponent]})
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+
+      bootstrapApplication(AppComponent).catch(e => console.error(e));
+    `));
+  });
+
+  it('should switch a platformBrowserDynamic().bootstrapModule call to bootstrapApplication',
+     async () => {
+       writeFile('main.ts', `
+          import {AppModule} from './app/app.module';
+          import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+
+          platformBrowserDynamic().bootstrapModule(AppModule).catch(e => console.error(e));
+        `);
+
+       writeFile('./app/app.module.ts', `
+          import {NgModule, Component} from '@angular/core';
+
+          @Component({template: 'hello'})
+          export class AppComponent {}
+
+          @NgModule({declarations: [AppComponent], bootstrap: [AppComponent]})
+          export class AppModule {}
+        `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+          import {AppModule, AppComponent} from './app/app.module';
+          import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+          import {bootstrapApplication} from "@angular/platform-browser";
+
+          bootstrapApplication(AppComponent).catch(e => console.error(e));
+        `));
+     });
+
+  it('should switch a PlatformRef.bootstrapModule call to bootstrapApplication', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {PlatformRef} from '@angular/core';
+
+      const foo: PlatformRef = null!;
+
+      foo.bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({declarations: [AppComponent], bootstrap: [AppComponent]})
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {PlatformRef} from '@angular/core';
+      import {bootstrapApplication} from "@angular/platform-browser";
+
+      const foo: PlatformRef = null!;
+
+      bootstrapApplication(AppComponent).catch(e => console.error(e));
+    `));
+  });
+
+  it('should convert the root module declarations to standalone', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.component.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({template: '<div *ngIf="show" dir>hello</div>'})
+      export class AppComponent {
+        show = true;
+      }
+    `);
+
+    writeFile('./app/dir.ts', `
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[dir]'})
+      export class Dir {}
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {CommonModule} from '@angular/common';
+      import {AppComponent} from './app.component';
+      import {Dir} from './dir';
+
+      @NgModule({
+        imports: [CommonModule],
+        declarations: [AppComponent, Dir],
+        bootstrap: [AppComponent]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {importProvidersFrom} from "@angular/core";
+      import {AppComponent} from "./app/app.component";
+      import {CommonModule} from "@angular/common";
+
+      bootstrapApplication(AppComponent, {
+        providers: [importProvidersFrom(CommonModule)]
+      }).catch(e => console.error(e));
+    `));
+
+    expect(stripWhitespace(tree.readContent('./app/app.module.ts'))).toBe(stripWhitespace(`
+      import {NgModule} from '@angular/core';
+      import {CommonModule} from '@angular/common';
+      import {AppComponent} from './app.component';
+      import {Dir} from './dir';
+
+      @NgModule(/*
+        TODO(standalone-migration): clean up removed NgModule class manually or run the "Remove unnecessary NgModule classes" step of the migration again.
+        {
+          imports: [CommonModule],
+          declarations: [AppComponent, Dir],
+          bootstrap: [AppComponent]
+        } */)
+        export class AppModule {}
+    `));
+
+    expect(stripWhitespace(tree.readContent('./app/app.component.ts'))).toBe(stripWhitespace(`
+      import {Component} from '@angular/core';
+      import {Dir} from "./dir";
+      import {NgIf} from "@angular/common";
+
+      @Component({
+        template: '<div *ngIf="show" dir>hello</div>',
+        standalone: true,
+        imports: [NgIf, Dir]
+      })
+      export class AppComponent {
+        show = true;
+      }
+    `));
+
+    expect(stripWhitespace(tree.readContent('./app/dir.ts'))).toBe(stripWhitespace(`
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[dir]', standalone: true})
+      export class Dir {}
+    `));
+  });
+
+  it('should copy providers and the symbols they depend on to the main file', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component, InjectionToken} from '@angular/core';
+      import {externalToken} from './externals/token';
+      import {externalToken as aliasedExternalToken} from './externals/other-token';
+      import {ExternalInterface} from '@external/interfaces';
+      import {InternalInterface} from './interfaces/internal-interface';
+
+      const internalToken = new InjectionToken<string>('internalToken');
+      export const exportedToken = new InjectionToken<InternalInterface>('exportedToken');
+
+      export class ExportedClass {}
+
+      export function exportedFactory(value: InternalInterface) {
+        return value.foo;
+      }
+
+      const unexportedExtraProviders = [
+        {provide: aliasedExternalToken, useFactory: (value: ExternalInterface) => value.foo}
+      ];
+
+      export const exportedExtraProviders = [
+        {provide: exportedToken, useClass: ExportedClass}
+      ];
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        providers: [
+          {provide: internalToken, useValue: 'hello'},
+          {provide: externalToken, useValue: 123, multi: true},
+          {provide: externalToken, useFactory: exportedFactory, multi: true},
+          ...unexportedExtraProviders,
+          ...exportedExtraProviders
+        ]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    // Note that this leaves a couple of unused imports from `app.module`.
+    // The schematic optimizes for safety, rather than avoiding unused imports.
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import { AppModule, exportedToken, exportedExtraProviders, ExportedClass, exportedFactory, AppComponent } from './app/app.module';
+      import { platformBrowser, bootstrapApplication } from '@angular/platform-browser';
+      import { ExternalInterface } from "@external/interfaces";
+      import { externalToken as aliasedExternalToken } from "./app/externals/other-token";
+      import { externalToken } from "./app/externals/token";
+      import { InternalInterface } from "./app/interfaces/internal-interface";
+      import { InjectionToken } from "@angular/core";
+
+      const internalToken = new InjectionToken<string>('internalToken');
+      const unexportedExtraProviders = [
+        {provide: aliasedExternalToken, useFactory: (value: ExternalInterface) => value.foo}
+      ];
+
+      bootstrapApplication(AppComponent, {
+        providers: [
+            { provide: internalToken, useValue: 'hello' },
+            { provide: externalToken, useValue: 123, multi: true },
+            { provide: externalToken, useFactory: exportedFactory, multi: true },
+            ...unexportedExtraProviders,
+            ...exportedExtraProviders
+        ]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should not copy over non-declaration references to the main file', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component, InjectionToken} from '@angular/core';
+
+      export const token = new InjectionToken<string>('token');
+
+      console.log(token);
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        providers: [{provide: token, useValue: 'hello'}]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, token, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {InjectionToken} from "@angular/core";
+
+      bootstrapApplication(AppComponent, {
+        providers: [{ provide: token, useValue: 'hello' }]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should update dynamic imports from the `providers` that are copied to the main file',
+     async () => {
+       writeFile('main.ts', `
+          import {AppModule} from './app/app.module';
+          import {platformBrowser} from '@angular/platform-browser';
+
+          platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+        `);
+
+       writeFile('./app/app.module.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {ROUTES} from '@angular/router';
+
+          @Component({template: 'hello'})
+          export class AppComponent {}
+
+          @NgModule({
+            declarations: [AppComponent],
+            bootstrap: [AppComponent],
+            providers: [{
+              provide: ROUTES,
+              useValue: [
+                {path: 'internal-comp', loadComponent: () => import('../routes/internal-comp').then(c => c.InternalComp)},
+                {path: 'external-comp', loadComponent: () => import('@external/external-comp').then(c => c.ExternalComp)}
+              ]
+            }]
+          })
+          export class AppModule {}
+        `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+          import {AppModule, AppComponent} from './app/app.module';
+          import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+          import {ROUTES} from "@angular/router";
+
+          bootstrapApplication(AppComponent, {
+            providers: [{
+              provide: ROUTES,
+              useValue: [
+                {path: 'internal-comp', loadComponent: () => import("./routes/internal-comp").then(c => c.InternalComp)},
+                {path: 'external-comp', loadComponent: () => import('@external/external-comp').then(c => c.ExternalComp)}
+              ]
+            }]
+          }).catch(e => console.error(e));
+        `));
+     });
+
+  it('should copy modules from the `imports` array to the `providers` and wrap them in `imporProvidersFrom`',
+     async () => {
+       writeFile('main.ts', `
+        import {AppModule} from './app/app.module';
+        import {platformBrowser} from '@angular/platform-browser';
+
+        platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+      `);
+
+       writeFile('./modules/internal.module.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule()
+        export class InternalModule {}
+      `);
+
+       writeFile('./app/app.module.ts', `
+        import {NgModule, Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        import {InternalModule} from '../modules/internal.module';
+
+        @Component({template: 'hello'})
+        export class AppComponent {}
+
+        @NgModule()
+        export class SameFileModule {}
+
+        @NgModule({
+          imports: [CommonModule, InternalModule, SameFileModule],
+          declarations: [AppComponent],
+          bootstrap: [AppComponent]
+        })
+        export class AppModule {}
+      `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+        import {AppModule, SameFileModule, AppComponent} from './app/app.module';
+        import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+        import {NgModule, importProvidersFrom} from "@angular/core";
+        import {InternalModule} from "./modules/internal.module";
+        import {CommonModule} from "@angular/common";
+
+        bootstrapApplication(AppComponent, {
+          providers: [importProvidersFrom(CommonModule, InternalModule, SameFileModule)]
+        }).catch(e => console.error(e));
+      `));
+     });
+
+  it('should switch RouterModule.forRoot calls with one argument to provideRouter', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [
+          RouterModule.forRoot([
+            {path: 'internal-comp', loadComponent: () => import("./routes/internal-comp").then(c => c.InternalComp) },
+            {path: 'external-comp', loadComponent: () => import('@external/external-comp').then(c => c.ExternalComp) }
+          ])
+        ]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {provideRouter} from "@angular/router";
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideRouter([
+          {path: 'internal-comp', loadComponent: () => import("./app/routes/internal-comp").then(c => c.InternalComp)},
+          {path: 'external-comp', loadComponent: () => import('@external/external-comp').then(c => c.ExternalComp)}
+        ])]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should preserve RouterModule.forRoot calls with multiple arguments', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+      import {APP_ROUTES} from './routes';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [RouterModule.forRoot(APP_ROUTES, {})]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {importProvidersFrom} from "@angular/core";
+      import {APP_ROUTES} from "./app/routes";
+      import {RouterModule} from "@angular/router";
+
+      bootstrapApplication(AppComponent, {
+        providers: [importProvidersFrom(RouterModule.forRoot(APP_ROUTES, {}))]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should convert BrowserAnimationsModule references to provideAnimations', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [BrowserAnimationsModule]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {provideAnimations} from "@angular/platform-browser/animations";
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideAnimations()]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should preserve BrowserAnimationsModule.withConfig calls', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [BrowserAnimationsModule.withConfig({disableAnimations: true})]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {importProvidersFrom} from "@angular/core";
+      import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+
+      bootstrapApplication(AppComponent, {
+        providers: [importProvidersFrom(BrowserAnimationsModule.withConfig({disableAnimations: true}))]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should convert NoopAnimationsModule references to provideNoopAnimations', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [NoopAnimationsModule]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {provideNoopAnimations} from "@angular/platform-browser/animations";
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideNoopAnimations()]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should omit standalone directives from the imports array from the importProvidersFrom call',
+     async () => {
+       writeFile('main.ts', `
+        import {AppModule} from './app/app.module';
+        import {platformBrowser} from '@angular/platform-browser';
+
+        platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+      `);
+
+       writeFile('./app/app.module.ts', `
+        import {NgModule, Component, Directive} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class Dir {}
+
+        @Component({template: '<span dir></span>'})
+        export class AppComponent {}
+
+        @NgModule({imports: [Dir, CommonModule], declarations: [AppComponent], bootstrap: [AppComponent]})
+        export class AppModule {}
+      `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+        import {AppModule, AppComponent} from './app/app.module';
+        import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+        import {importProvidersFrom} from "@angular/core";
+        import {CommonModule} from "@angular/common";
+
+        bootstrapApplication(AppComponent, {
+          providers: [importProvidersFrom(CommonModule)]
+        }).catch(e => console.error(e));
+      `));
+
+       expect(stripWhitespace(tree.readContent('./app/app.module.ts'))).toContain(stripWhitespace(`
+        @Component({template: '<span dir></span>', standalone: true, imports: [Dir]})
+        export class AppComponent {}
+      `));
+     });
 });
