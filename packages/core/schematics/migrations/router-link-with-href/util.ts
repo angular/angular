@@ -39,9 +39,8 @@ export function migrateFile(
 
   if (routerLinkSpec) {
     // The `RouterLink` symbol is already imported, just drop the `RouterLinkWithHref` one.
-    const routerLinkNamedImports = routerLinkWithHrefSpec ?
-        closestNode<ts.NamedImports>(routerLinkWithHrefSpec, ts.SyntaxKind.NamedImports) :
-        null;
+    const routerLinkNamedImports =
+        routerLinkWithHrefSpec ? closestNode(routerLinkWithHrefSpec, ts.isNamedImports) : null;
     if (routerLinkNamedImports !== null) {
       // Given an original import like this one:
       // ```
