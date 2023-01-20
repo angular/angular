@@ -9,7 +9,7 @@
 // These tests mainly check the types of strongly typed form controls, which is generally enforced
 // at compile time.
 
-import {FormBuilder, NonNullableFormBuilder, UntypedFormBuilder} from '../src/form_builder';
+import {ControlConfig, FormBuilder, NonNullableFormBuilder, UntypedFormBuilder} from '../src/form_builder';
 import {AbstractControl, FormArray, FormControl, FormGroup, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators} from '../src/forms';
 import {FormRecord} from '../src/model/form_group';
 
@@ -1068,6 +1068,17 @@ describe('Typed Class', () => {
           let t1 = c.controls;
           t1 = null as unknown as ControlsType;
         }
+      });
+
+      it('from a non nullable formBuilder', () => {
+        const cc: ControlConfig<string> = ['me@mail.com', Validators.required];
+        let nnfb: NonNullableFormBuilder = new FormBuilder().nonNullable;
+
+        type ControlsType = { email: FormControl<string>; };
+        const c = nnfb.group({email: cc});
+        let t: ControlsType = c.controls;
+        let t1 = c.controls;
+        t1 = null as unknown as ControlsType;
       });
 
       it('from objects with FormControlStates nested inside ControlConfigs', () => {

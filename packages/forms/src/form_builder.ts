@@ -89,7 +89,7 @@ export type ɵElement<T, N extends null> =
   // FormControlState object container, which produces a nullable control.
   [T] extends [FormControlState<infer U>] ? FormControl<U|N> :
   // A ControlConfig tuple, which produces a nullable control.
-  [T] extends [PermissiveControlConfig<infer U>] ? FormControl<Exclude<U, ValidatorConfig| PermissiveAbstractControlOptions>|N> :
+  [T] extends [PermissiveControlConfig<infer U>] ? FormControl<Exclude<NonNullable<U>, ValidatorConfig| PermissiveAbstractControlOptions>|N> :
   FormControl<T|N>;
 
 // clang-format on
