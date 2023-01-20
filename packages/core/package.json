@@ -28,5 +28,6 @@
     "migrations": "./schematics/migrations.json",
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
+  "schematics": "./schematics/collection.json",
   "sideEffects": false
 }
