@@ -3,11 +3,13 @@ load("//tools:defaults.bzl", "pkg_npm")
 exports_files([
     "tsconfig.json",
     "migrations.json",
+    "collection.json",
 ])
 
 pkg_npm(
     name = "npm_package",
     srcs = [
+        "collection.json",
         "migrations.json",
         "package.json",
     ],
