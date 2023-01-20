@@ -12,11 +12,13 @@ pkg_npm(
         "collection.json",
         "migrations.json",
         "package.json",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
     ],
     validate = False,
     visibility = ["//packages/core:__pkg__"],
     deps = [
         "//packages/core/schematics/migrations/relative-link-resolution:bundle",
         "//packages/core/schematics/migrations/router-link-with-href:bundle",
+        "//packages/core/schematics/ng-generate/standalone-migration:bundle",
     ],
 )

@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularStandaloneMigration",
+  "title": "Angular Standalone Migration Schema",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "description": "Operation that should be performed by the migrator",
+      "type": "string",
+      "default": "convert-to-standalone",
+      "x-prompt": {
+        "message": "Choose the type of migration:",
+        "type": "list",
+        "items": [
+          {
+            "value": "convert-to-standalone",
+            "label": "Convert all components, directives and pipes to standalone"
+          }
+        ]
+      }
+    },
+    "path": {
+      "type": "string",
+      "$default": {
+        "$source": "workingDirectory"
+      },
+      "description": "Path relative to the project root in which to look for declarations to migrate to standalone",
+      "x-prompt": "Which path in your project should be migrated to standalone?",
+      "default": "./"
+    }
+  },
+  "required": ["mode", "path"]
+}

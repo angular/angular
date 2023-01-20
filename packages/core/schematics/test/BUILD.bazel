@@ -23,6 +23,9 @@ jasmine_node_test(
         "//packages/core/schematics/migrations/relative-link-resolution:bundle",
         "//packages/core/schematics/migrations/router-link-with-href",
         "//packages/core/schematics/migrations/router-link-with-href:bundle",
+        "//packages/core/schematics/ng-generate/standalone-migration",
+        "//packages/core/schematics/ng-generate/standalone-migration:bundle",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
     ],
     templated_args = ["--nobazel_run_linker"],
     deps = [
