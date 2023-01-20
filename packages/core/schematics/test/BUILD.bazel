@@ -17,6 +17,7 @@ ts_library(
 jasmine_node_test(
     name = "test",
     data = [
+        "//packages/core/schematics:collection.json",
         "//packages/core/schematics:migrations.json",
         "//packages/core/schematics/migrations/relative-link-resolution",
         "//packages/core/schematics/migrations/relative-link-resolution:bundle",
