@@ -14,12 +14,13 @@ export function hasModifier(node: ts.Node, modifierKind: ts.SyntaxKind) {
 }
 
 /** Find the closest parent node of a particular kind. */
-export function closestNode<T extends ts.Node>(node: ts.Node, kind: ts.SyntaxKind): T|null {
-  let current: ts.Node = node;
+export function closestNode<T extends ts.Node>(node: ts.Node, predicate: (n: ts.Node) => n is T): T|
+    null {
+  let current = node.parent;
 
   while (current && !ts.isSourceFile(current)) {
-    if (current.kind === kind) {
-      return current as T;
+    if (predicate(current)) {
+      return current;
     }
     current = current.parent;
   }

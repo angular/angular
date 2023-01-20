@@ -27,9 +27,8 @@ export class Rule extends Rules.TypedRule {
     const failures: RuleFailure[] = [];
     const asyncImportSpecifier =
         getImportSpecifier(sourceFile, '@angular/core/testing', deprecatedFunction);
-    const asyncImport = asyncImportSpecifier ?
-        closestNode<ts.NamedImports>(asyncImportSpecifier, ts.SyntaxKind.NamedImports) :
-        null;
+    const asyncImport =
+        asyncImportSpecifier ? closestNode(asyncImportSpecifier, ts.isNamedImports) : null;
 
     // If there are no imports of `async`, we can exit early.
     if (asyncImportSpecifier && asyncImport) {

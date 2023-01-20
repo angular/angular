@@ -62,12 +62,14 @@ export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Iden
  *    their original name.
  */
 export function getImportSpecifier(
-    sourceFile: ts.SourceFile, moduleName: string, specifierName: string): ts.ImportSpecifier|null {
+    sourceFile: ts.SourceFile, moduleName: string|RegExp,
+    specifierName: string): ts.ImportSpecifier|null {
   for (const node of sourceFile.statements) {
-    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier) &&
-        node.moduleSpecifier.text === moduleName) {
-      const namedBindings = node.importClause && node.importClause.namedBindings;
-      if (namedBindings && ts.isNamedImports(namedBindings)) {
+    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+      const isMatch = typeof moduleName === 'string' ? node.moduleSpecifier.text === moduleName :
+                                                       moduleName.test(node.moduleSpecifier.text);
+      const namedBindings = node.importClause?.namedBindings;
+      if (isMatch && namedBindings && ts.isNamedImports(namedBindings)) {
         const match = findImportSpecifier(namedBindings.elements, specifierName);
         if (match) {
           return match;
