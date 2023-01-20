@@ -7,7 +7,7 @@
     "mode": {
       "description": "Operation that should be performed by the migrator",
       "type": "string",
-      "enum": ["convert-to-standalone", "prune-ng-modules"],
+      "enum": ["convert-to-standalone", "prune-ng-modules", "standalone-bootstrap"],
       "default": "convert-to-standalone",
       "x-prompt": {
         "message": "Choose the type of migration:",
@@ -20,6 +20,10 @@
           {
             "value": "prune-ng-modules",
             "label": "Remove unnecessary NgModule classes"
+          },
+          {
+            "value": "standalone-bootstrap",
+            "label": "Bootstrap the application using standalone APIs"
           }
         ]
       }
