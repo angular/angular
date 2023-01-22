@@ -19,6 +19,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NG_FOR_MISSING_DIFFER = -2200,
     // (undocumented)
+    NGSRCSET_WITHOUT_LOADER = 2963,
+    // (undocumented)
     OVERSIZED_IMAGE = 2960,
     // (undocumented)
     PARENT_NG_SWITCH_NOT_FOUND = 2000,
