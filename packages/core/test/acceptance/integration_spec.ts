@@ -2332,6 +2332,27 @@ describe('acceptance integration tests', () => {
     expect(strong.textContent).toBe('Hello Frodo');
   });
 
+  it('should not throw for a non-null assertion after a safe access', () => {
+    @Component({
+      template: `
+        {{ val?.foo!.bar }}
+        {{ val?.[0].foo!.bar }}
+        {{ foo(val)?.foo!.bar }}
+        {{ $any(val)?.foo!.bar }}
+      `,
+    })
+    class Comp {
+      val: any = null;
+
+      foo(val: unknown) {
+        return val;
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    expect(() => TestBed.createComponent(Comp).detectChanges()).not.toThrow();
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();
