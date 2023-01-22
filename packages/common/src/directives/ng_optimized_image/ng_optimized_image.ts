@@ -385,6 +385,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         assertNoComplexSizes(this);
       }
       assertNotMissingBuiltInLoader(this.ngSrc, this.imageLoader);
+      assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
@@ -951,5 +952,19 @@ function assertNotMissingBuiltInLoader(ngSrc: string, imageLoader: ImageLoader) 
               `If you don't want to use the built-in loader, define a custom ` +
               `loader function using IMAGE_LOADER to silence this warning.`));
     }
+  }
+}
+
+/**
+ * Warns if ngSrcset is present and no loader is configured (i.e. the default one is being used).
+ */
+function assertNoNgSrcsetWithoutLoader(dir: NgOptimizedImage, imageLoader: ImageLoader) {
+  if (dir.ngSrcset && imageLoader === noopImageLoader) {
+    console.warn(formatRuntimeError(
+        RuntimeErrorCode.NGSRCSET_WITHOUT_LOADER,
+        `${imgDirectiveDetails(dir.ngSrc)} the \`ngSrcset\` attribute is present but ` +
+            `no image loader is configured (i.e. the default one is being used), ` +
+            `which would result in the same image being used for all configured sizes. ` +
+            `To fix this, provide a loader or remove the \`ngSrcset\` attribute from the image.`));
   }
 }
