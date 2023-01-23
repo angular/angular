@@ -390,6 +390,8 @@ export class KeyValuePipe implements PipeTransform {
     // (undocumented)
     transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V> | null | undefined, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>> | null;
     // (undocumented)
+    transform<T, K extends keyof T>(input: T, compareFn?: (a: T[K], b: T[K]) => number): T extends null ? null : Array<T[K]>;
+    // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<KeyValuePipe, never>;
     // (undocumented)
     static ɵpipe: i0.ɵɵPipeDeclaration<KeyValuePipe, "keyvalue", true>;
