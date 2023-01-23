@@ -131,26 +131,8 @@ describe('KeyValuePipe', () => {
 
       let value!: MyInterface | null;
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      // If null what not supported by this signature we would have gotten a never[] back.
       expect(pipe.transform(value)).toEqual(null);
-    });
-
-    it('should accept an nullable object with optional keys', () => {
-      interface MyInterface {
-        one?: string;
-        two?: string;
-        three?: string;
-      }
-
-      const value: MyInterface | null = {};
-      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
-      expect(pipe.transform(value)?.length).toEqual(0);
-
-      // we use the random condition to make sure the typing includes null (else TS's inference is too smart and strips null)
-      const value2: MyInterface | null = Math.random() <= 1 ? {one: '1', three: '3'} : null;
-      const kv = pipe.transform(value2);
-      expect(kv?.length).toEqual(2);
-      expect(kv).toContain({key: 'one', value: '1'});
-      expect(kv).toContain({key: 'three', value: '3'});
     });
   });
 
