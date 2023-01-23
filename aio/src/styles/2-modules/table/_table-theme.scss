@@ -7,6 +7,7 @@
   $is-dark-theme: map.get($theme, is-dark);
 
   table {
+    min-width: 100%;
     box-shadow: 0 2px 2px rgba(constants.$mediumgray, 0.24), 0 0 2px rgba(if($is-dark-theme, constants.$white, constants.$black), 0.12);
     background-color: if($is-dark-theme, mat.get-color-from-palette($background, background), constants.$white);
 
