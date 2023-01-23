@@ -1316,10 +1316,9 @@ export class SimpleChange {
 }
 
 // @public
-export interface SimpleChanges {
-    // (undocumented)
-    [propName: string]: SimpleChange;
-}
+export type SimpleChanges<KEYS extends string = string> = {
+    [KEY in KEYS]: SimpleChange;
+};
 
 // @public
 export interface SkipSelf {

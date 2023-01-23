@@ -34,6 +34,6 @@ export class SimpleChange {
  *
  * @publicApi
  */
-export interface SimpleChanges {
-  [propName: string]: SimpleChange;
-}
+export type SimpleChanges<KEYS extends string = string> = {
+  [KEY in KEYS]: SimpleChange
+};
