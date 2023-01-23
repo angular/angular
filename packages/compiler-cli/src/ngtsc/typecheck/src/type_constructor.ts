@@ -111,7 +111,6 @@ export function generateInlineTypeCtor(
 
   // Create the type constructor method declaration.
   return ts.factory.createMethodDeclaration(
-      /* decorators */ undefined,
       /* modifiers */[ts.factory.createModifier(ts.SyntaxKind.StaticKeyword)],
       /* asteriskToken */ undefined,
       /* name */ meta.fnName,
