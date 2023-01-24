@@ -82,7 +82,7 @@ When the application loads the component and its template, the user sees the fol
 
 <code-example format="shell" language="html">
 
-&lt;p&gt;Hello, World!&lt;/p&gt;
+Hello, World!
 
 </code-example>
 
