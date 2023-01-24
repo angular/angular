@@ -59,6 +59,8 @@ The `$any()` cast function also works with `this` to allow access to undeclared 
 
 The `$any()` cast function works anywhere in a binding expression where a method call is valid.
 
+Also note that `$any()` only affects the typing. There is no method call in the generated code; the `$any()` function is entirely compiled away.
+
 <!-- links -->
 
 <!-- external links -->
