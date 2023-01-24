@@ -485,8 +485,9 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
       value: ɵTypedOrUntyped<TControl, ɵFormGroupValue<TControl>, any> = {} as unknown as
           ɵFormGroupValue<TControl>,
       options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    this._forEachChild((control, name) => {
-      control.reset((value as any)[name], {onlySelf: true, emitEvent: options.emitEvent});
+    this._forEachChild((control: AbstractControl, name) => {
+      control.reset(
+          value ? (value as any)[name] : null, {onlySelf: true, emitEvent: options.emitEvent});
     });
     this._updatePristine(options);
     this._updateTouched(options);
