@@ -694,6 +694,19 @@ describe('FormGroup', () => {
       expect(g.disabled).toBe(false);
     });
 
+    it('should be able to reset a nested control with null', () => {
+      const g = new FormGroup({
+        id: new FormControl(2),
+        nested: new FormGroup<any>({
+          id: new FormControl(3),
+        }),
+      });
+
+      g.reset({id: 1, nested: null});
+      expect(g.get('nested')?.value).toEqual({id: null});
+      expect(g.get('nested.id')?.value).toBe(null);
+    });
+
     describe('reset() events', () => {
       let form: FormGroup, c3: FormControl, logger: any[];
 
