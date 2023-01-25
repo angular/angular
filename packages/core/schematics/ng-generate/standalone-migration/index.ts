@@ -15,11 +15,13 @@ import ts from 'typescript';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createProgramOptions} from '../../utils/typescript/compiler_host';
 
+import {pruneNgModules} from './prune-modules';
 import {toStandalone} from './to-standalone';
 import {ChangesByFile} from './util';
 
 enum MigrationMode {
   toStandalone = 'convert-to-standalone',
+  pruneModules = 'prune-ng-modules',
 }
 
 interface Options {
@@ -75,15 +77,25 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
   }
 
   let pendingChanges: ChangesByFile;
+  let filesToRemove: Set<ts.SourceFile>|null = null;
 
   if (options.mode === MigrationMode.toStandalone) {
     pendingChanges = toStandalone(sourceFiles, program, printer);
+  } else if (options.mode === MigrationMode.pruneModules) {
+    const result = pruneNgModules(program, host, basePath, rootNames, sourceFiles, printer);
+    pendingChanges = result.pendingChanges;
+    filesToRemove = result.filesToRemove;
   } else {
     throw new SchematicsException(
         `Unknown schematic mode ${options.mode}. Cannot run the standalone migration.`);
   }
 
   for (const [file, changes] of pendingChanges.entries()) {
+    // Don't attempt to edit a file if it's going to be deleted.
+    if (filesToRemove?.has(file)) {
+      continue;
+    }
+
     const update = tree.beginUpdate(relative(basePath, file.fileName));
 
     changes.forEach(change => {
@@ -94,5 +106,11 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
     });
 
     tree.commitUpdate(update);
+  }
+
+  if (filesToRemove) {
+    for (const file of filesToRemove) {
+      tree.delete(relative(basePath, file.fileName));
+    }
   }
 }
