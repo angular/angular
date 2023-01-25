@@ -1172,4 +1172,536 @@ describe('standalone migration', () => {
       export class Mod {}
     `));
   });
+
+  it('should remove a module that only has imports and exports', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {ButtonModule} from './button.module';
+
+      @NgModule({imports: [ButtonModule], declarations: [MyComp], exports: [ButtonModule, MyComp]})
+      export class AppModule {}
+    `);
+
+    writeFile('button.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyButton} from './button';
+
+      @NgModule({imports: [MyButton], exports: [MyButton]})
+      export class ButtonModule {}
+    `);
+
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-comp', template: '<my-button>Hello</my-button>'})
+      export class MyComp {}
+    `);
+
+    writeFile('button.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-button', template: '<ng-content></ng-content>', standalone: true})
+      export class MyButton {}
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    const appModule = tree.readContent('app.module.ts');
+
+    expect(tree.exists('button.module.ts')).toBe(false);
+    expect(appModule).not.toContain('ButtonModule');
+    expect(stripWhitespace(appModule)).toContain(stripWhitespace(`
+      @NgModule({imports: [], declarations: [MyComp], exports: [MyComp]})
+      export class AppModule {}
+    `));
+  });
+
+  it('should not remove a module that has declarations', async () => {
+    const initialAppModule = `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {ButtonModule} from './button.module';
+
+      @NgModule({declarations: [MyComp]})
+      export class AppModule {}
+    `;
+
+    writeFile('app.module.ts', initialAppModule);
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-comp', template: 'Hello'})
+      export class MyComp {}
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.readContent('app.module.ts')).toBe(initialAppModule);
+  });
+
+  it('should not remove a module that bootstraps a component', async () => {
+    const initialAppModule = `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {ButtonModule} from './button.module';
+
+      @NgModule({bootstrap: [MyComp]})
+      export class AppModule {}
+    `;
+
+    writeFile('app.module.ts', initialAppModule);
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-comp', template: 'Hello'})
+      export class MyComp {}
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.readContent('app.module.ts')).toBe(initialAppModule);
+  });
+
+  it('should not remove a module that has providers', async () => {
+    const initialAppModule = `
+      import {NgModule, InjectionToken} from '@angular/core';
+
+      const token = new InjectionToken('token');
+
+      @NgModule({providers: [{provide: token, useValue: 123}]})
+      export class AppModule {}
+    `;
+
+    writeFile('app.module.ts', initialAppModule);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.readContent('app.module.ts')).toBe(initialAppModule);
+  });
+
+  it('should not remove a module that imports a ModuleWithProviders', async () => {
+    const initialAppModule = `
+      import {NgModule} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+
+      @NgModule({imports: [RouterModule.forRoot([])]})
+      export class RoutingModule {}
+    `;
+
+    writeFile('app.module.ts', initialAppModule);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.readContent('app.module.ts')).toBe(initialAppModule);
+  });
+
+  it('should not remove a module that has class members', async () => {
+    const initialAppModule = `
+      import {NgModule} from '@angular/core';
+      import {ButtonModule} from './button.module';
+
+      @NgModule()
+      export class AppModule {
+        sum(a: number, b: number) {
+          return a + b;
+        }
+      }
+    `;
+
+    writeFile('app.module.ts', initialAppModule);
+    await runMigration('prune-ng-modules');
+
+    expect(tree.readContent('app.module.ts')).toBe(initialAppModule);
+  });
+
+  it('should remove a module that only has an empty constructor', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {ButtonModule} from './button.module';
+
+      @NgModule()
+      export class AppModule {
+        constructor() {
+        }
+      }
+    `);
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('app.module.ts')).toBe(false);
+  });
+
+  it('should remove a module with no arguments passed into NgModule', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+
+      @NgModule()
+      export class AppModule {}
+    `);
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('app.module.ts')).toBe(false);
+  });
+
+  it('should remove a module file where there is unexported code', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+
+      const ONE = 1;
+      const TWO = 2;
+
+      console.log(ONE + TWO);
+
+      @NgModule()
+      export class AppModule {}
+    `);
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('app.module.ts')).toBe(false);
+  });
+
+  it('should remove a module that passes empty arrays into `declarations`, `providers` and `bootstrap`',
+     async () => {
+       writeFile('app.module.ts', `
+          import {NgModule} from '@angular/core';
+          import {ButtonModule} from './button.module';
+
+          @NgModule({declarations: [], providers: [], bootstrap: []})
+          export class AppModule {}
+        `);
+       await runMigration('prune-ng-modules');
+
+       expect(tree.exists('app.module.ts')).toBe(false);
+     });
+
+  it('should remove a chain of modules that all depend on each other', async () => {
+    writeFile('a.module.ts', `
+      import {NgModule} from '@angular/core';
+
+      @NgModule({})
+      export class ModuleA {}
+    `);
+
+    writeFile('b.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {ModuleA} from './a.module';
+
+      @NgModule({imports: [ModuleA]})
+      export class ModuleB {}
+    `);
+
+    writeFile('c.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {ModuleB} from './b.module';
+
+      @NgModule({imports: [ModuleB]})
+      export class ModuleC {}
+    `);
+
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyDir} from './dir';
+      import {ModuleC} from './c.module';
+
+      @NgModule({imports: [ModuleC], declarations: [MyDir]})
+      export class AppModule {}
+    `);
+
+    writeFile('dir.ts', `
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[myDir]'})
+      export class MyDir {}
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    const appModule = tree.readContent('app.module.ts');
+
+    expect(tree.exists('a.module.ts')).toBe(false);
+    expect(tree.exists('b.module.ts')).toBe(false);
+    expect(tree.exists('c.module.ts')).toBe(false);
+    expect(appModule).not.toContain('ModuleC');
+    expect(stripWhitespace(appModule)).toContain(stripWhitespace(`
+      @NgModule({imports: [], declarations: [MyDir]})
+      export class AppModule {}
+    `));
+  });
+
+  it('should not remove the module file if it contains other exported code', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {sum, ButtonModule, multiply} from './button.module';
+
+      @NgModule({imports: [ButtonModule], declarations: [MyComp], exports: [ButtonModule, MyComp]})
+      export class AppModule {}
+
+      console.log(sum(1, 2), multiply(3, 4));
+    `);
+
+    writeFile('button.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyButton} from './button';
+
+      export function sum(a: number, b: number) {
+        return a + b;
+      }
+
+      @NgModule({imports: [MyButton], exports: [MyButton]})
+      export class ButtonModule {}
+
+      export function multiply(a: number, b: number) {
+        return a * b;
+      }
+    `);
+
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-comp', template: '<my-button>Hello</my-button>'})
+      export class MyComp {}
+    `);
+
+    writeFile('button.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-button', template: '<ng-content></ng-content>', standalone: true})
+      export class MyButton {}
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    expect(stripWhitespace(tree.readContent('button.module.ts'))).toBe(stripWhitespace(`
+      import {NgModule} from '@angular/core';
+      import {MyButton} from './button';
+
+      export function sum(a: number, b: number) {
+        return a + b;
+      }
+
+      export function multiply(a: number, b: number) {
+        return a * b;
+      }
+    `));
+    expect(stripWhitespace(tree.readContent('app.module.ts'))).toBe(stripWhitespace(`
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {sum, multiply} from './button.module';
+
+      @NgModule({imports: [], declarations: [MyComp], exports: [MyComp]})
+      export class AppModule {}
+
+      console.log(sum(1, 2), multiply(3, 4));
+    `));
+  });
+
+  it('should delete a file that contains multiple modules that are being deleted', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {ButtonModule, TooltipModule} from './shared-modules';
+
+      @NgModule({
+        imports: [ButtonModule, TooltipModule],
+        declarations: [MyComp],
+        exports: [ButtonModule, MyComp, TooltipModule]
+      })
+      export class AppModule {}
+    `);
+
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-comp', template: ''})
+      export class MyComp {}
+    `);
+
+    writeFile('shared-modules.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyButton} from './button';
+      import {MyTooltip} from './tooltip';
+
+      @NgModule({imports: [MyButton], exports: [MyButton]})
+      export class ButtonModule {}
+
+      @NgModule({imports: [MyTooltip], exports: [MyTooltip]})
+      export class TooltipModule {}
+    `);
+
+    writeFile('button.ts', `
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[my-button]' standalone: true})
+      export class MyButton {}
+    `);
+
+    writeFile('tooltip.ts', `
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[my-tooltip]' standalone: true})
+      export class MyTooltip {}
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    const appModule = tree.readContent('app.module.ts');
+
+    expect(tree.exists('shared-modules.ts')).toBe(false);
+    expect(appModule).not.toContain('ButtonModule');
+    expect(appModule).not.toContain('TooltipModule');
+    expect(stripWhitespace(appModule)).toContain(stripWhitespace(`
+      @NgModule({
+        imports: [],
+        declarations: [MyComp],
+        exports: [MyComp]
+      })
+      export class AppModule {}
+    `));
+  });
+
+  it('should preserve an import that has one NgModule that is being deleted, in addition to a named import',
+     async () => {
+       writeFile('app.module.ts', `
+          import {NgModule} from '@angular/core';
+          import {MyComp} from './comp';
+          import Foo, {ButtonModule} from './button.module';
+
+          @NgModule({imports: [ButtonModule], declarations: [MyComp], exports: [ButtonModule, MyComp]})
+          export class AppModule {}
+        `);
+
+       writeFile('button.module.ts', `
+          import {NgModule} from '@angular/core';
+          import {MyButton} from './button';
+
+          @NgModule({imports: [MyButton], exports: [MyButton]})
+          export class ButtonModule {}
+        `);
+
+       writeFile('comp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'my-comp', template: '<my-button>Hello</my-button>'})
+          export class MyComp {}
+        `);
+
+       writeFile('button.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'my-button', template: '<ng-content></ng-content>', standalone: true})
+          export class MyButton {}
+        `);
+
+       await runMigration('prune-ng-modules');
+
+       expect(tree.exists('button.module.ts')).toBe(false);
+       expect(tree.readContent('app.module.ts')).toContain(`import Foo from './button.module';`);
+     });
+
+  it('should remove module references from export expressions', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+
+      @NgModule({imports: [MyComp]})
+      export class AppModule {}
+    `);
+
+    writeFile('button.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyButton} from './button';
+
+      @NgModule({imports: [MyButton], exports: [MyButton]})
+      export class ButtonModule {}
+    `);
+
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+      import {MyButton} from './button';
+
+      @Component({
+        selector: 'my-comp',
+        template: '<my-button>Hello</my-button>',
+        standalone: true,
+        imports: [MyButton]
+      })
+      export class MyComp {}
+    `);
+
+    writeFile('button.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-button', template: '<ng-content></ng-content>', standalone: true})
+      export class MyButton {}
+    `);
+
+    writeFile('index.ts', `
+      export {AppModule} from './app.module';
+      export {MyComp} from './comp';
+      export {ButtonModule} from './button.module';
+      export {MyButton} from './button';
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('app.module.ts')).toBe(false);
+    expect(tree.exists('button.module.ts')).toBe(false);
+    expect(stripWhitespace(tree.readContent('index.ts'))).toBe(stripWhitespace(`
+      export {MyComp} from './comp';
+      export {MyButton} from './button';
+    `));
+  });
+
+  it('should add a comment to locations that cannot be removed automatically', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {ButtonModule} from './button.module';
+
+      console.log(ButtonModule);
+
+      if (typeof ButtonModule !== 'undefined') {
+        console.log('Exists!');
+      }
+
+      export const FOO = ButtonModule;
+
+      @NgModule({imports: [ButtonModule], declarations: [MyComp], exports: [ButtonModule, MyComp]})
+      export class AppModule {}
+    `);
+
+    writeFile('button.module.ts', `
+      import {NgModule} from '@angular/core';
+
+      @NgModule()
+      export class ButtonModule {}
+    `);
+
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-comp', template: 'Hello'})
+      export class MyComp {}
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('button.module.ts')).toBe(false);
+    expect(stripWhitespace(tree.readContent('app.module.ts'))).toBe(stripWhitespace(`
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+
+      console.log( /* TODO(standalone-migration): clean up removed NgModule reference manually. */ ButtonModule);
+
+      if (typeof  /* TODO(standalone-migration): clean up removed NgModule reference manually. */ ButtonModule !== 'undefined') {
+        console.log('Exists!');
+      }
+
+      export const FOO =  /* TODO(standalone-migration): clean up removed NgModule reference manually. */ ButtonModule;
+
+      @NgModule({imports: [], declarations: [MyComp], exports: [MyComp]})
+      export class AppModule {}
+    `));
+  });
 });
