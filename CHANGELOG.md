@@ -1,3 +1,22 @@
+<a name="15.1.2"></a>
+# 15.1.2 (2023-01-25)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [98ccb57117](https://github.com/angular/angular/commit/98ccb571176632cf4d434e9e54b086bb63601148) | fix | handle css selectors with space after an escaped character. ([#48558](https://github.com/angular/angular/pull/48558)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [145f848a10](https://github.com/angular/angular/commit/145f848a10b4dc791cbf42b803983357735d5f86) | fix | resolve deprecation warning ([#48812](https://github.com/angular/angular/pull/48812)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a6b10f6e59](https://github.com/angular/angular/commit/a6b10f6e597e666a55ef1cd2aecdf3a309cebad8) | fix | 'createUrlTreeFromSnapshot' with empty paths and named outlets ([#48734](https://github.com/angular/angular/pull/48734)) |
+## Special Thanks
+Alan Agius, AleksanderBodurri, Andrew Kushnir, Andrew Scott, Charles Lyding, Dylan Hunn, JoostK, Matthieu Riegler, Paul Gschwendtner, Payam Valadkhan, Virginia Dooley, Yann Thomas LE MOIGNE and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.0-next.1"></a>
 # 15.2.0-next.1 (2023-01-18)
 ## Deprecations
