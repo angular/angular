@@ -367,9 +367,11 @@ export interface BootstrapOptions {
    * Optionally specify coalescing event change detections or not.
    * Consider the following case.
    *
+   * ```
    * <div (click)="doSomething()">
    *   <button (click)="doSomethingElse()"></button>
    * </div>
+   * ```
    *
    * When button is clicked, because of the event bubbling, both
    * event handlers will be called and 2 change detections will be
@@ -389,12 +391,13 @@ export interface BootstrapOptions {
    * into a single change detection.
    *
    * Consider the following case.
-   *
+   * ```
    * for (let i = 0; i < 10; i ++) {
    *   ngZone.run(() => {
    *     // do something
    *   });
    * }
+   * ```
    *
    * This case triggers the change detection multiple times.
    * With ngZoneRunCoalescing options, all change detections in an event loop trigger only once.
