@@ -15,6 +15,10 @@
           {
             "value": "convert-to-standalone",
             "label": "Convert all components, directives and pipes to standalone"
+          },
+          {
+            "value": "prune-ng-modules",
+            "label": "Remove unnecessary NgModule classes"
           }
         ]
       }
@@ -24,8 +28,8 @@
       "$default": {
         "$source": "workingDirectory"
       },
-      "description": "Path relative to the project root in which to look for declarations to migrate to standalone",
-      "x-prompt": "Which path in your project should be migrated to standalone?",
+      "description": "Path relative to the project root which should be migrated",
+      "x-prompt": "Which path in your project should be migrated?",
       "default": "./"
     }
   },
