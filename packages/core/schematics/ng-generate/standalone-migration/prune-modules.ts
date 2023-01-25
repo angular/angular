@@ -147,7 +147,8 @@ function removeImportReferences(
       if (importClause && importClause.name) {
         tracker.replaceNode(
             importClause,
-            ts.factory.createImportClause(importClause.isTypeOnly, importClause.name, undefined));
+            ts.factory.updateImportClause(
+                importClause, importClause.isTypeOnly, importClause.name, undefined));
       } else {
         // Otherwise we can drop the entire declaration.
         const declaration = closestNode(namedImports, ts.isImportDeclaration);
