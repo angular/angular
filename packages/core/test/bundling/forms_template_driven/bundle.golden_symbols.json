@@ -969,6 +969,9 @@
     "name": "includeViewProviders"
   },
   {
+    "name": "includesValidator"
+  },
+  {
     "name": "incrementInitPhaseFlags"
   },
   {
@@ -1039,6 +1042,9 @@
   },
   {
     "name": "isComponentHost"
+  },
+  {
+    "name": "isCompositeValidator"
   },
   {
     "name": "isContentQueryHost"

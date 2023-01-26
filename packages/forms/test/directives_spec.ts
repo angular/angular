@@ -10,7 +10,7 @@ import {SimpleChange} from '@angular/core';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {selectValueAccessor} from '@angular/forms/src/directives/shared';
-import {composeValidators} from '@angular/forms/src/validators';
+import {composeValidators, hasValidator} from '@angular/forms/src/validators';
 
 import {asyncValidator} from './util';
 
@@ -122,6 +122,18 @@ class CustomValidatorDirective implements Validator {
           const dummy1 = () => ({'dummy1': true});
           const v = composeValidators([dummy1, new CustomValidatorDirective()])!;
           expect(v(new FormControl(''))).toEqual({'dummy1': true, 'custom': true});
+        });
+
+        it('should be compatible with hasValidators', () => {
+          const dummy1 = () => ({'dummy1': true});
+          const v = composeValidators([dummy1, new CustomValidatorDirective()])!;
+          expect(hasValidator(v, dummy1, true)).toBeTrue();
+
+          const dummy2 = () => ({'dummy2': true});
+          const v2 = composeValidators([v, dummy2]);
+          expect(hasValidator(v2, dummy1, true)).toBeTrue();
+
+          expect(hasValidator([dummy1, ...(v2 ? [v2] : [])], dummy2, true)).toBeTrue();
         });
       });
     });
