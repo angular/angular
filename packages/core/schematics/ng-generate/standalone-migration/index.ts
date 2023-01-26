@@ -61,6 +61,10 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
                     options: {_enableTemplateTypeChecker: true, compileNonExportedClasses: true}
                   }) as NgtscProgram;
   const printer = ts.createPrinter();
+
+  // TS and Schematic use paths in POSIX format even on Windows.
+  // This is needed as otherwise string matching such as
+  // `sourceFile.fileName.startsWith(pathToMigrate)` will not work correctly.
   const pathToMigrate = normalizePath(join(basePath, options.path));
 
   if (existsSync(pathToMigrate) && !statSync(pathToMigrate).isDirectory()) {
