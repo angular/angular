@@ -372,23 +372,29 @@ export type LoadChildren = LoadChildrenCallback;
 export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Routes | Observable<Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>> | Promise<NgModuleFactory<any> | Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>>;
 
 // @public
-export const mapToGuards: {
-    canMatch(providers: Array<Type<{
-        canMatch: CanMatchFn;
-    }>>): CanMatchFn[];
-    canActivate(providers: Array<Type<{
-        canActivate: CanActivateFn;
-    }>>): CanActivateFn[];
-    canActivateChild(providers: Array<Type<{
-        canActivateChild: CanActivateChildFn;
-    }>>): CanActivateChildFn[];
-    canDeactivate(providers: Array<Type<{
-        canDeactivate: CanDeactivateFn<unknown>;
-    }>>): CanDeactivateFn<unknown>[];
-    resolve(providers: Array<Type<{
-        resolve: ResolveFn<unknown>;
-    }>>): ResolveFn<unknown>[];
-};
+export function mapToCanActivate(providers: Array<Type<{
+    canActivate: CanActivateFn;
+}>>): CanActivateFn[];
+
+// @public
+export function mapToCanActivateChild(providers: Array<Type<{
+    canActivateChild: CanActivateChildFn;
+}>>): CanActivateChildFn[];
+
+// @public
+export function mapToCanDeactivate(providers: Array<Type<{
+    canDeactivate: CanDeactivateFn<unknown>;
+}>>): CanDeactivateFn<unknown>[];
+
+// @public
+export function mapToCanMatch(providers: Array<Type<{
+    canMatch: CanMatchFn;
+}>>): CanMatchFn[];
+
+// @public
+export function mapToResolve(providers: Array<Type<{
+    resolve: ResolveFn<unknown>;
+}>>): ResolveFn<unknown>[];
 
 // @public
 export interface Navigation {
