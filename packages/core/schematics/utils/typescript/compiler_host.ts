@@ -66,7 +66,7 @@ function createMigrationCompilerHost(
     const treeRelativePath = relative(basePath, fileName);
     let result: string|undefined = fakeRead?.(treeRelativePath);
 
-    if (result === undefined) {
+    if (typeof result !== 'string') {
       // If the relative path resolved to somewhere outside of the tree, fall back to
       // TypeScript's default file reading function since the `tree` will throw an error.
       result = treeRelativePath.startsWith('..') ? defaultReadFile.call(host, fileName) :
@@ -76,7 +76,7 @@ function createMigrationCompilerHost(
     // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset,
     // which breaks the CLI UpdateRecorder.
     // See: https://github.com/angular/angular/pull/30719
-    return result ? result.replace(/^\uFEFF/, '') : undefined;
+    return typeof result === 'string' ? result.replace(/^\uFEFF/, '') : undefined;
   };
 
   return host;
