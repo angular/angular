@@ -79,15 +79,13 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
   let pendingChanges: ChangesByFile;
   let filesToRemove: Set<ts.SourceFile>|null = null;
 
-  if (options.mode === MigrationMode.toStandalone) {
-    pendingChanges = toStandalone(sourceFiles, program, printer);
-  } else if (options.mode === MigrationMode.pruneModules) {
+  if (options.mode === MigrationMode.pruneModules) {
     const result = pruneNgModules(program, host, basePath, rootNames, sourceFiles, printer);
     pendingChanges = result.pendingChanges;
     filesToRemove = result.filesToRemove;
   } else {
-    throw new SchematicsException(
-        `Unknown schematic mode ${options.mode}. Cannot run the standalone migration.`);
+    /** MigrationMode.toStandalone */
+    pendingChanges = toStandalone(sourceFiles, program, printer);
   }
 
   for (const [file, changes] of pendingChanges.entries()) {

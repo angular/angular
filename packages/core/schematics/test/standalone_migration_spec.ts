@@ -178,13 +178,6 @@ describe('standalone migration', () => {
     expect(error).toBe('Cannot run standalone migration outside of the current project.');
   });
 
-  it('should throw an error if an unknown mode is passed in', async () => {
-    writeFile('dir.ts', 'console.log(123)');
-
-    await expectAsync(runMigration('does-not-exist', './'))
-        .toBeRejectedWithError(/Data path \"\/mode\" must be equal to one of the allowed values/);
-  });
-
   it('should throw an error if the passed in path is a file', async () => {
     let error: string|null = null;
 
