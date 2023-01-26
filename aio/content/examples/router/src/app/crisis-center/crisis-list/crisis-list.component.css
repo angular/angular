@@ -11,15 +11,15 @@
 }
 
 .crises li:hover {
-  left: .1em;
+  left: 0.1em;
 }
 
 .crises a {
   color: black;
   text-decoration: none;
   display: block;
-  background-color: #EEE;
-  margin: .5em 0;
+  background-color: #eee;
+  margin: 0.5em 0;
   border-radius: 4px;
   line-height: 2rem;
 }
@@ -27,7 +27,7 @@
 @media (min-width: 600px) {
   .crises a {
     font-size: 1.2rem;
-    padding: .5em 0;
+    padding: 0.5em 0;
     line-height: 1.4rem;
   }
 }
@@ -35,7 +35,15 @@
 .crises a:hover {
   color: #2c3a41;
   background-color: #e6e6e6;
-  left: .1em;
+  left: 0.1em;
+}
+
+.crises .selected a {
+  background: #d6e6f7;
+}
+
+.crises .selected a:hover {
+  background-color: #bdd7f5;
 }
 
 .heroes .selected a {
@@ -47,10 +55,10 @@
 }
 
 .crises .badge {
-  padding: .5em .6em;
+  padding: 0.5em 0.6em;
   color: white;
-  background-color: #435B60;
+  background-color: #435b60;
   min-width: 16px;
-  margin-right: .8em;
+  margin-right: 0.8em;
   border-radius: 4px 0 0 4px;
 }
