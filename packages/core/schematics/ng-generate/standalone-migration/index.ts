@@ -29,6 +29,8 @@ interface Options {
   mode: MigrationMode;
 }
 
+const normalizePath = (path: string): string => path.replace(/\\/g, '/');
+
 export default function(options: Options): Rule {
   return async (tree) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
@@ -59,7 +61,11 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
                     options: {_enableTemplateTypeChecker: true, compileNonExportedClasses: true}
                   }) as NgtscProgram;
   const printer = ts.createPrinter();
-  const pathToMigrate = join(basePath, options.path);
+
+  // TS and Schematic use paths in POSIX format even on Windows.
+  // This is needed as otherwise string matching such as
+  // `sourceFile.fileName.startsWith(pathToMigrate)` will not work correctly.
+  const pathToMigrate = normalizePath(join(basePath, options.path));
 
   if (existsSync(pathToMigrate) && !statSync(pathToMigrate).isDirectory()) {
     throw new SchematicsException(`Migration path ${
