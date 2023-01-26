@@ -16,18 +16,22 @@ import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createProgramOptions} from '../../utils/typescript/compiler_host';
 
 import {pruneNgModules} from './prune-modules';
+import {toStandaloneBootstrap} from './standalone-bootstrap';
 import {toStandalone} from './to-standalone';
 import {ChangesByFile} from './util';
 
 enum MigrationMode {
   toStandalone = 'convert-to-standalone',
   pruneModules = 'prune-ng-modules',
+  standaloneBootstrap = 'standalone-bootstrap',
 }
 
 interface Options {
   path: string;
   mode: MigrationMode;
 }
+
+const normalizePath = (path: string): string => path.replace(/\\/g, '/');
 
 export default function(options: Options): Rule {
   return async (tree) => {
@@ -59,7 +63,11 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
                     options: {_enableTemplateTypeChecker: true, compileNonExportedClasses: true}
                   }) as NgtscProgram;
   const printer = ts.createPrinter();
-  const pathToMigrate = join(basePath, options.path);
+
+  // TS and Schematic use paths in POSIX format even on Windows.
+  // This is needed as otherwise string matching such as
+  // `sourceFile.fileName.startsWith(pathToMigrate)` will not work correctly.
+  const pathToMigrate = normalizePath(join(basePath, options.path));
 
   if (existsSync(pathToMigrate) && !statSync(pathToMigrate).isDirectory()) {
     throw new SchematicsException(`Migration path ${
@@ -79,15 +87,16 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
   let pendingChanges: ChangesByFile;
   let filesToRemove: Set<ts.SourceFile>|null = null;
 
-  if (options.mode === MigrationMode.toStandalone) {
-    pendingChanges = toStandalone(sourceFiles, program, printer);
-  } else if (options.mode === MigrationMode.pruneModules) {
+  if (options.mode === MigrationMode.pruneModules) {
     const result = pruneNgModules(program, host, basePath, rootNames, sourceFiles, printer);
     pendingChanges = result.pendingChanges;
     filesToRemove = result.filesToRemove;
+  } else if (options.mode === MigrationMode.standaloneBootstrap) {
+    pendingChanges =
+        toStandaloneBootstrap(program, host, basePath, rootNames, sourceFiles, printer);
   } else {
-    throw new SchematicsException(
-        `Unknown schematic mode ${options.mode}. Cannot run the standalone migration.`);
+    /** MigrationMode.toStandalone */
+    pendingChanges = toStandalone(sourceFiles, program, printer);
   }
 
   for (const [file, changes] of pendingChanges.entries()) {
