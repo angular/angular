@@ -127,6 +127,21 @@ const EMAIL_REGEXP =
     /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 /**
+ * TODO
+ */
+interface CompositeValidatorFn extends ValidatorFn {
+  compositeList: ValidatorFn[];
+}
+
+/**
+ * TODO
+ */
+interface CompositeAsyncValidatorFn extends AsyncValidatorFn {
+  compositeList: AsyncValidatorFn[];
+}
+
+
+/**
  * @description
  * Provides a set of built-in validators that can be used by form controls.
  *
@@ -566,7 +581,7 @@ export function nullValidator(control: AbstractControl): ValidationErrors|null {
   return null;
 }
 
-function isPresent(o: any): boolean {
+function isPresent<T>(o: T|undefined|null): o is T {
   return o != null;
 }
 
@@ -627,14 +642,16 @@ export function normalizeValidators<V>(validators: (V|Validator|AsyncValidator)[
  * Merges synchronous validators into a single validator function.
  * See `Validators.compose` for additional information.
  */
-function compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|null {
+function compose(validators: (ValidatorFn|null|undefined)[]|null): CompositeValidatorFn|null {
   if (!validators) return null;
-  const presentValidators: ValidatorFn[] = validators.filter(isPresent) as any;
+  const presentValidators = validators.filter(isPresent);
   if (presentValidators.length == 0) return null;
 
-  return function(control: AbstractControl) {
+  const fn = function(control: AbstractControl) {
     return mergeErrors(executeValidators<ValidatorFn>(control, presentValidators));
   };
+
+  return Object.assign(fn, {compositeList: presentValidators});
 }
 
 /**
@@ -650,16 +667,18 @@ export function composeValidators(validators: Array<Validator|ValidatorFn>): Val
  * Merges asynchronous validators into a single validator function.
  * See `Validators.composeAsync` for additional information.
  */
-function composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
+function composeAsync(validators: (AsyncValidatorFn|null)[]): CompositeAsyncValidatorFn|null {
   if (!validators) return null;
-  const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
+  const presentValidators = validators.filter(isPresent);
   if (presentValidators.length == 0) return null;
 
-  return function(control: AbstractControl) {
+  const fn = function(control: AbstractControl) {
     const observables =
         executeValidators<AsyncValidatorFn>(control, presentValidators).map(toObservable);
     return forkJoin(observables).pipe(map(mergeErrors));
   };
+
+  return Object.assign(fn, {compositeList: presentValidators});
 }
 
 /**
@@ -712,6 +731,14 @@ export function makeValidatorsArray<T extends ValidatorFn|AsyncValidatorFn>(vali
 }
 
 /**
+ * Composite validator predicate
+ */
+function isCompositeValidator(validator: ValidatorFn|AsyncValidatorFn):
+    validator is CompositeValidatorFn|CompositeAsyncValidatorFn {
+  return 'validators' in validator;
+}
+
+/**
  * Determines whether a validator or validators array has a given validator.
  *
  * @param validators The validator or validators to compare against.
@@ -719,8 +746,23 @@ export function makeValidatorsArray<T extends ValidatorFn|AsyncValidatorFn>(vali
  * @returns Whether the validator is present.
  */
 export function hasValidator<T extends ValidatorFn|AsyncValidatorFn>(
-    validators: T|T[]|null, validator: T): boolean {
-  return Array.isArray(validators) ? validators.includes(validator) : validators === validator;
+    validators: T|T[]|null, validator: T, includeComposite: boolean = false): boolean {
+  if (validators === null) {
+    return false;
+  } else if (Array.isArray(validators)) {
+    return includesValidator(validators, validator);
+  } else if (isCompositeValidator(validators) && includeComposite) {
+    return includesValidator(validators.compositeList, validator);
+  }
+
+  return validators === validator;
+}
+
+function includesValidator<T extends AsyncValidatorFn|ValidatorFn|CompositeValidatorFn>(
+    validators: T[], validator: T): boolean {
+  return validators.some(
+      (v) => isCompositeValidator(v) ? includesValidator(v.compositeList, validator) :
+                                       validators.includes(validator));
 }
 
 /**
