@@ -7,6 +7,7 @@
     "mode": {
       "description": "Operation that should be performed by the migrator",
       "type": "string",
+      "enum": ["convert-to-standalone", "prune-ng-modules"],
       "default": "convert-to-standalone",
       "x-prompt": {
         "message": "Choose the type of migration:",
