@@ -179,18 +179,10 @@ describe('standalone migration', () => {
   });
 
   it('should throw an error if an unknown mode is passed in', async () => {
-    let error: string|null = null;
-
     writeFile('dir.ts', 'console.log(123)');
 
-    try {
-      await runMigration('does-not-exist', './');
-    } catch (e: any) {
-      error = e.message;
-    }
-
-    expect(error).toBe(
-        'Unknown schematic mode does-not-exist. Cannot run the standalone migration.');
+    await expectAsync(runMigration('does-not-exist', './'))
+        .toBeRejectedWithError(/Data path \"\/mode\" must be equal to one of the allowed values/);
   });
 
   it('should throw an error if the passed in path is a file', async () => {
