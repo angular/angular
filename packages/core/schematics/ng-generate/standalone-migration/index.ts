@@ -29,6 +29,8 @@ interface Options {
   mode: MigrationMode;
 }
 
+const normalizePath = (path: string): string => path.replace(/\\/g, '/');
+
 export default function(options: Options): Rule {
   return async (tree) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
@@ -59,7 +61,7 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
                     options: {_enableTemplateTypeChecker: true, compileNonExportedClasses: true}
                   }) as NgtscProgram;
   const printer = ts.createPrinter();
-  const pathToMigrate = join(basePath, options.path);
+  const pathToMigrate = normalizePath(join(basePath, options.path));
 
   if (existsSync(pathToMigrate) && !statSync(pathToMigrate).isDirectory()) {
     throw new SchematicsException(`Migration path ${
