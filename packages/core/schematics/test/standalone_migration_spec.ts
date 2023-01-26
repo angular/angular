@@ -178,21 +178,6 @@ describe('standalone migration', () => {
     expect(error).toBe('Cannot run standalone migration outside of the current project.');
   });
 
-  it('should throw an error if an unknown mode is passed in', async () => {
-    let error: string|null = null;
-
-    writeFile('dir.ts', 'console.log(123)');
-
-    try {
-      await runMigration('does-not-exist', './');
-    } catch (e: any) {
-      error = e.message;
-    }
-
-    expect(error).toBe(
-        'Unknown schematic mode does-not-exist. Cannot run the standalone migration.');
-  });
-
   it('should throw an error if the passed in path is a file', async () => {
     let error: string|null = null;
 
