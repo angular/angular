@@ -28,3 +28,7 @@ guidelines for [contributing][contributing] and then check out one of our issues
 [contributing]: http://github.com/angular/angular/blob/master/CONTRIBUTING.md
 [quickstart]: https://angular.io/docs/ts/latest/quickstart.html
 [ng]: http://angular.io
+1
+1
+1
+1
