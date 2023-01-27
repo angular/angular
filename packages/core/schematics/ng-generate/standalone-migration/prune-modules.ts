@@ -9,10 +9,10 @@
 import {NgtscProgram} from '@angular/compiler-cli';
 import ts from 'typescript';
 
-import {getAngularDecorators} from '../../utils/ng_decorators';
+import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
-import {ChangeTracker, createLanguageService, findLiteralProperty, getNodeLookup, offsetsToNodes, UniqueItemTracker} from './util';
+import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, offsetsToNodes, UniqueItemTracker} from './util';
 
 /** Mapping between a file name and spans for node references inside of it. */
 type ReferencesByFile = Map<string, [start: number, end: number][]>;
@@ -199,9 +199,8 @@ function removeExportReferences(
  * @param typeChecker
  */
 function canRemoveClass(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker): boolean {
-  const decorator = getAngularDecorators(typeChecker, ts.getDecorators(node) || [])
-                        .find(decorator => decorator.name === 'NgModule')
-                        ?.node;
+  const decorator = findNgModuleDecorator(node, typeChecker)?.node;
+
   // We can't remove a declaration if it's not a valid `NgModule`.
   if (!decorator || !ts.isCallExpression(decorator.expression)) {
     return false;
@@ -227,11 +226,25 @@ function canRemoveClass(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker):
   const literal = decorator.expression.arguments[0] as ts.ObjectLiteralExpression;
   const imports = findLiteralProperty(literal, 'imports');
 
-  // We can't remove classes where the `imports` contain something different
-  // from an identifier, because it may be a `ModuleWithProviders`.
-  if (imports && isNonEmptyNgModuleProperty(imports) &&
-      imports.initializer.elements.some(el => !ts.isIdentifier(el))) {
-    return false;
+  if (imports && isNonEmptyNgModuleProperty(imports)) {
+    // We can't remove the class if at least one import isn't identifier, because it may be a
+    // `ModuleWithProviders` which is the equivalent of having something in the `providers` array.
+    for (const dep of imports.initializer.elements) {
+      if (!ts.isIdentifier(dep)) {
+        return false;
+      }
+
+      const depDeclaration = findClassDeclaration(dep, typeChecker);
+      const depNgModule =
+          depDeclaration ? findNgModuleDecorator(depDeclaration, typeChecker) : null;
+
+      // If any of the dependencies of the class is an `NgModule` that can't be removed, the class
+      // itself can't be removed either, because it may be part of a transitive dependency chain.
+      if (depDeclaration !== null && depNgModule !== null &&
+          !canRemoveClass(depDeclaration, typeChecker)) {
+        return false;
+      }
+    }
   }
 
   // We can't remove classes that have any `declarations`, `providers` or `bootstrap` elements.
@@ -363,4 +376,11 @@ function addRemovalTodos(nodes: Set<ts.Node>, tracker: ChangeTracker) {
         node.getSourceFile(), node.getFullStart(),
         ` /* TODO(standalone-migration): clean up removed NgModule reference manually. */ `);
   }
+}
+
+/** Finds the `NgModule` decorator in a class, if it exists. */
+function findNgModuleDecorator(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker): NgDecorator|
+    null {
+  const decorators = getAngularDecorators(typeChecker, ts.getDecorators(node) || []);
+  return decorators.find(decorator => decorator.name === 'NgModule') || null;
 }
