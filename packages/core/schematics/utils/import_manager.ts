@@ -18,6 +18,12 @@ export interface ImportManagerUpdateRecorder {
   updateExistingImport(namedBindings: ts.NamedImports, newNamedBindings: string): void;
 }
 
+/** Possible types of quotes for imports. */
+const enum QuoteStyle {
+  Single,
+  Double,
+}
+
 /**
  * Import manager that can be used to add TypeScript imports to given source
  * files. The manager ensures that multiple transformations are applied properly
@@ -35,6 +41,8 @@ export class ImportManager {
     defaultImports: Map<string, ts.Identifier>,
     namedImports: Map<string, ts.ImportSpecifier[]>,
   }> = new Map();
+  /** Map between a file and the implied quote style for imports. */
+  private quoteStyles: Record<string, QuoteStyle> = {};
 
   /**
    * Array of previously resolved symbol imports. Cache can be re-used to return
@@ -205,11 +213,12 @@ export class ImportManager {
 
     this.newImports.forEach(({importStartIndex, defaultImports, namedImports}, sourceFile) => {
       const recorder = this.getUpdateRecorder(sourceFile);
+      const useSingleQuotes = this._getQuoteStyle(sourceFile) === QuoteStyle.Single;
 
       defaultImports.forEach((identifier, moduleName) => {
         const newImport = createImportDeclaration(
             undefined, ts.factory.createImportClause(false, identifier, undefined),
-            ts.factory.createStringLiteral(moduleName));
+            ts.factory.createStringLiteral(moduleName, useSingleQuotes));
 
         recorder.addNewImport(
             importStartIndex, this._getNewImportText(importStartIndex, newImport, sourceFile));
@@ -220,7 +229,7 @@ export class ImportManager {
             undefined,
             ts.factory.createImportClause(
                 false, undefined, ts.factory.createNamedImports(specifiers)),
-            ts.factory.createStringLiteral(moduleName));
+            ts.factory.createStringLiteral(moduleName, useSingleQuotes));
 
         recorder.addNewImport(
             importStartIndex, this._getNewImportText(importStartIndex, newImport, sourceFile));
@@ -331,6 +340,30 @@ export class ImportManager {
     }
 
     return {propertyName, name};
+  }
+
+  /** Gets the quote style that is used for a file's imports. */
+  private _getQuoteStyle(sourceFile: ts.SourceFile): QuoteStyle {
+    if (!this.quoteStyles.hasOwnProperty(sourceFile.fileName)) {
+      let quoteStyle: QuoteStyle|undefined;
+
+      // Walk through the top-level imports and try to infer the quotes.
+      for (const statement of sourceFile.statements) {
+        if (ts.isImportDeclaration(statement) &&
+            ts.isStringLiteralLike(statement.moduleSpecifier)) {
+          // Use `getText` instead of the actual text since it includes the quotes.
+          quoteStyle = statement.moduleSpecifier.getText().trim().startsWith('"') ?
+              QuoteStyle.Double :
+              QuoteStyle.Single;
+          break;
+        }
+      }
+
+      // Otherwise fall back to single quotes.
+      this.quoteStyles[sourceFile.fileName] = quoteStyle ?? QuoteStyle.Single;
+    }
+
+    return this.quoteStyles[sourceFile.fileName];
   }
 }
 
