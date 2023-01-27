@@ -781,6 +781,8 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
     ngOnInit(): void;
     onChange: () => void;
     registerOnChange(fn: (_: any) => {}): void;
+    // (undocumented)
+    setDisabledState(isDisabled: boolean): void;
     value: any;
     writeValue(value: any): void;
     // (undocumented)
