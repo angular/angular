@@ -41,7 +41,8 @@ export type OnSameUrlNavigation = 'reload'|'ignore';
 /**
  * The `InjectionToken` and `@Injectable` classes for guards and resolvers are deprecated in favor
  * of plain JavaScript functions instead.. Dependency injection can still be achieved using the
- * `inject` function from `@angular/core`.
+ * `inject` function from `@angular/core` and an injectable class can be used as a functional guard
+ * using `inject`: `canActivate: [() => inject(myGuard).canActivate()]`.
  *
  * @deprecated
  * @see CanMatchFn
@@ -695,23 +696,6 @@ export interface LoadedRouterConfig {
  * class AppModule {}
  * ```
  *
- * You can alternatively provide an in-line function with the `CanActivateFn` signature:
- *
- * ```
- * @NgModule({
- *   imports: [
- *     RouterModule.forRoot([
- *       {
- *         path: 'team/:id',
- *         component: TeamComponent,
- *         canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => true]
- *       }
- *     ])
- *   ],
- * })
- * class AppModule {}
- * ```
- *
  * @publicApi
  * @deprecated Use plain JavaScript functions instead.
  * @see CanActivateFn
@@ -724,8 +708,21 @@ export interface CanActivate {
 /**
  * The signature of a function used as a `canActivate` guard on a `Route`.
  *
+ * If all guards return `true`, navigation continues. If any guard returns `false`,
+ * navigation is cancelled. If any guard returns a `UrlTree`, the current navigation
+ * is cancelled and a new navigation begins to the `UrlTree` returned from the guard.
+ *
+ * The following example implements and uses a `CanActivateChildFn` that checks whether the
+ * current user has permission to activate the requested route.
+ *
+ * {@example router/route_functional_guards.ts region="CanActivateFn"}
+
+ * Here, the defined guard function is provided as part of the `Route` object
+ * in the router configuration:
+
+ * {@example router/route_functional_guards.ts region="CanActivateFnInRoute"}
+ *
  * @publicApi
- * @see `CanActivate`
  * @see `Route`
  */
 export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
@@ -787,30 +784,10 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  * class AppModule {}
  * ```
  *
- * You can alternatively provide an in-line function with the `CanActivateChildFn` signature:
- *
- * ```
- * @NgModule({
- *   imports: [
- *     RouterModule.forRoot([
- *       {
- *         path: 'root',
- *         canActivateChild: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => true],
- *         children: [
- *           {
- *             path: 'team/:id',
- *             component: TeamComponent
- *           }
- *         ]
- *       }
- *     ])
- *   ],
- * })
- * class AppModule {}
- * ```
- *
  * @publicApi
- * @deprecated Use plain JavaScript functions instead.
+ * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
+ *     injectable class can be used as a functional guard using the `inject` function:
+ *     `canActivateChild: [() => inject(myGuard).canActivateChild()]`.
  * @see CanActivateChildFn
  */
 export interface CanActivateChild {
@@ -821,8 +798,16 @@ export interface CanActivateChild {
 /**
  * The signature of a function used as a `canActivateChild` guard on a `Route`.
  *
+ * If all guards return `true`, navigation continues. If any guard returns `false`,
+ * navigation is cancelled. If any guard returns a `UrlTree`, the current navigation
+ * is cancelled and a new navigation begins to the `UrlTree` returned from the guard.
+ *
+ * The following example implements a `canActivate` function that checks whether the
+ * current user has permission to activate the requested route.
+ *
+ * {@example router/route_functional_guards.ts region="CanActivateChildFn"}
+ *
  * @publicApi
- * @see `CanActivateChild`
  * @see `Route`
  */
 export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
@@ -882,26 +867,10 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  * class AppModule {}
  * ```
  *
- * You can alternatively provide an in-line function with the `CanDeactivateFn` signature:
- *
- * ```
- * @NgModule({
- *   imports: [
- *     RouterModule.forRoot([
- *       {
- *         path: 'team/:id',
- *         component: TeamComponent,
- *         canDeactivate: [(component: TeamComponent, currentRoute: ActivatedRouteSnapshot,
- * currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => true]
- *       }
- *     ])
- *   ],
- * })
- * class AppModule {}
- * ```
- *
  * @publicApi
- * @deprecated Use plain JavaScript functions instead.
+ * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
+ *     injectable class can be used as a functional guard using the `inject` function:
+ *     `canDeactivate: [() => inject(myGuard).canDeactivate()]`.
  * @see CanDeactivateFn
  */
 export interface CanDeactivate<T> {
@@ -914,8 +883,16 @@ export interface CanDeactivate<T> {
 /**
  * The signature of a function used as a `canDeactivate` guard on a `Route`.
  *
+ * If all guards return `true`, navigation continues. If any guard returns `false`,
+ * navigation is cancelled. If any guard returns a `UrlTree`, the current navigation
+ * is cancelled and a new navigation begins to the `UrlTree` returned from the guard.
+ *
+ * The following example implements and uses a `CanDeactivateFn` that checks whether the
+ * user component has unsaved changes before navigating away from the route.
+ *
+ * {@example router/route_functional_guards.ts region="CanDeactivateFn"}
+ *
  * @publicApi
- * @see `CanDeactivate`
  * @see `Route`
  */
 export type CanDeactivateFn<T> =
@@ -982,30 +959,10 @@ export type CanDeactivateFn<T> =
  * `team/:id` URL, but would load the `NotFoundComponent` because the `Route` for `'team/:id'`
  * could not be used for a URL match but the catch-all `**` `Route` did instead.
  *
- * You can alternatively provide an in-line function with the `CanMatchFn` signature:
- *
- * ```
- * @NgModule({
- *   imports: [
- *     RouterModule.forRoot([
- *       {
- *         path: 'team/:id',
- *         component: TeamComponent,
- *         loadChildren: () => import('./team').then(mod => mod.TeamModule),
- *         canMatch: [(route: Route, segments: UrlSegment[]) => true]
- *       },
- *       {
- *         path: '**',
- *         component: NotFoundComponent
- *       }
- *     ])
- *   ],
- * })
- * class AppModule {}
- * ```
- *
  * @publicApi
- * @deprecated Use plain JavaScript functions instead.
+ * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
+ *     injectable class can be used as a functional guard using the `inject` function:
+ *     `canMatch: [() => inject(myGuard).canMatch()]`.
  * @see CanMatchFn
  */
 export interface CanMatch {
@@ -1014,10 +971,18 @@ export interface CanMatch {
 }
 
 /**
- * The signature of a function used as a `CanMatch` guard on a `Route`.
+ * The signature of a function used as a `canMatch` guard on a `Route`.
+ *
+ * If all guards return `true`, navigation continues and the `Router` will use the `Route` during
+ * activation. If any guard returns `false`, the `Route` is skipped for matching and other `Route`
+ * configurations are processed instead.
+ *
+ * The following example implements and uses a `CanMatchFn` that checks whether the
+ * current user has permission to access the team page.
+ *
+ * {@example router/route_functional_guards.ts region="CanMatchFn"}
  *
  * @publicApi
- * @see `CanMatch`
  * @see `Route`
  */
 export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
@@ -1070,29 +1035,6 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
  * export class AppRoutingModule {}
  * ```
  *
- * You can alternatively provide an in-line function with the `ResolveFn` signature:
- *
- * ```
- * export const myHero: Hero = {
- *   // ...
- * }
- *
- * @NgModule({
- *   imports: [
- *     RouterModule.forRoot([
- *       {
- *         path: 'detail/:id',
- *         component: HeroComponent,
- *         resolve: {
- *           hero: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => myHero
- *         }
- *       }
- *     ])
- *   ],
- * })
- * export class AppModule {}
- * ```
- *
  * And you can access to your resolved data from `HeroComponent`:
  *
  * ```
@@ -1137,7 +1079,9 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
  * The order of execution is: BaseGuard, ChildGuard, BaseDataResolver, ChildDataResolver.
  *
  * @publicApi
- * @deprecated Use plain JavaScript functions instead.
+ * @deprecated Class-based `Route` resolvers are deprecated in favor of functional resolvers. An
+ * injectable class can be used as a functional guard using the `inject` function: `resolve:
+ * {'user': () => inject(UserResolver).resolve()}`.
  * @see ResolveFn
  */
 export interface Resolve<T> {
@@ -1146,9 +1090,44 @@ export interface Resolve<T> {
 
 /**
  * Function type definition for a data provider.
+
+ * A data provider can be used with the router to resolve data during navigation.
+ * The router waits for the data to be resolved before the route is finally activated.
  *
- * @see `Route#resolve`.
+ * The following example implements a function that retrieves the data
+ * needed to activate the requested route.
+ *
+ * {@example router/route_functional_guards.ts region="ResolveFn"}
+ *
+ * And you can access to your resolved data from `HeroComponent`:
+ *
+ * {@example router/route_functional_guards.ts region="ResolveDataUse"}
+ *
+ * @usageNotes
+ *
+ * When both guard and resolvers are specified, the resolvers are not executed until
+ * all guards have run and succeeded.
+ * For example, consider the following route configuration:
+ *
+ * ```
+ * {
+ *  path: 'base'
+ *  canActivate: [baseGuard],
+ *  resolve: {data: baseDataResolver}
+ *  children: [
+ *   {
+ *     path: 'child',
+ *     canActivate: [childGuard],
+ *     component: ChildComponent,
+ *     resolve: {childData: childDataResolver}
+ *    }
+ *  ]
+ * }
+ * ```
+ * The order of execution is: baseGuard, childGuard, baseDataResolver, childDataResolver.
+ *
  * @publicApi
+ * @see Route
  */
 export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
     Observable<T>|Promise<T>|T;
@@ -1200,24 +1179,6 @@ export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSna
  *     ])
  *   ],
  *   providers: [CanLoadTeamSection, UserToken, Permissions]
- * })
- * class AppModule {}
- * ```
- *
- * You can alternatively provide an in-line function with the `CanLoadFn` signature:
- *
- * ```
- * @NgModule({
- *   imports: [
- *     RouterModule.forRoot([
- *       {
- *         path: 'team/:id',
- *         component: TeamComponent,
- *         loadChildren: () => import('./team').then(mod => mod.TeamModule),
- *         canLoad: [(route: Route, segments: UrlSegment[]) => true]
- *       }
- *     ])
- *   ],
  * })
  * class AppModule {}
  * ```

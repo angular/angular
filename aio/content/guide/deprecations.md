@@ -116,7 +116,7 @@ v15 - v18
 | `@angular/router`                   | [`RouterLinkWithHref` directive](#router)                                                                  | v15           | v17         |
 | `@angular/router`                   | [Router writeable properties](#router-writable-properties)                                                 | v15.1         | v17         |
 | `@angular/router`                   | [Router CanLoad guards](#router-can-load)                                                 | v15.1         | v17         |
-| `@angular/router`                   | [class and `InjectionToken` guards and resolvers](#router)                                                 | v15.2         | v17         |
+| `@angular/router`                   | [class and `InjectionToken` guards and resolvers](#router-class-and-injection-token-guards)                | v15.2         | v17         |
 
 ### Deprecated features with no planned removal version
 
@@ -377,6 +377,60 @@ The injector no longer requires the Reflect polyfill, reducing application size 
 **After**:
 
 <code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="static-injector-example"></code-example>
+
+<a id="router-class-and-injection-token-guards"></a>
+
+### Router class and InjectionToken guards and resolvers
+
+Class and injection token guards and resolvers are deprecated. Instead, `Route`
+objects should use functional-style guards and resolvers. Class-based guards can 
+be converted to functions by instead using `inject` to get dependencies.
+
+For testing a function `canActivate` guard, using `TestBed` and `TestBed.runInInjectionContext` is recommended.
+Test mocks and stubs can be provided through DI with `{provide: X, useValue: StubX}`.
+Functional guards can also be written in a way that's either testable with
+`runInContext` or by passing mock implementations of dependencies.
+For example:
+
+```
+export function myGuardWithMockableDeps(
+  dep1 = inject(MyService),
+  dep2 = inject(MyService2),
+  dep3 = inject(MyService3),
+) { }
+
+const route = {
+  path: 'admin',
+  canActivate: [myGuardWithMockableDeps]
+}
+```
+
+This deprecation only affects the support for class and
+`InjectionToken` guards at the `Route` definition. `Injectable` classes
+and `InjectionToken` providers are _not_ deprecated in the general
+sense. That said, the interfaces like `CanActivate`, 
+`CanDeactivate`, etc.  will be deleted in a future release of Angular. Simply removing the 
+`implements CanActivate` from the injectable class and updating the route definition
+to be a function like `canActivate: [() => inject(MyGuard).canActivate()]` is sufficient
+to get rid of the deprecation warning.
+
+Functional guards are robust enough to even support the existing
+class-based guards through a transform:
+
+```
+import {CanMatchFn} from '@angular/router';
+
+function mapToCanMatch(providers: Array<Type<{canMatch: CanMatchFn}>>): CanMatchFn[] {
+  return providers.map(provider => (...params) => inject(provider).canMatch(...params));
+}
+const route = {
+  path: 'admin',
+  canMatch: mapToCanMatch([AdminGuard]),
+};
+```
+
+That is to say that guards can continue to be implemented as classes and then converted
+to functions at the route definition.
 
 <a id="router-writable-properties"></a>
 
