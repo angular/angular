@@ -51,6 +51,9 @@
     "name": "BROWSER_MODULE_PROVIDERS_MARKER"
   },
   {
+    "name": "BaseConsumer"
+  },
+  {
     "name": "BaseControlValueAccessor"
   },
   {
@@ -462,6 +465,9 @@
     "name": "RadioControlRegistryModule"
   },
   {
+    "name": "ReactiveLViewConsumer"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -600,6 +606,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "WeakRefImpl"
+  },
+  {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
   },
   {
@@ -654,6 +663,9 @@
     "name": "_locateOrCreateTextNode"
   },
   {
+    "name": "_nextReactiveId"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -670,6 +682,9 @@
   },
   {
     "name": "_wrapInTimeout"
+  },
+  {
+    "name": "activeConsumer"
   },
   {
     "name": "addPropertyAlias"
@@ -706,6 +721,9 @@
   },
   {
     "name": "applyViewChange"
+  },
+  {
+    "name": "assertDefined"
   },
   {
     "name": "attachInjectFlag"
@@ -748,6 +766,9 @@
   },
   {
     "name": "collectStylingFromTAttrs"
+  },
+  {
+    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "composeAsyncValidators"
@@ -808,6 +829,9 @@
   },
   {
     "name": "createTView"
+  },
+  {
+    "name": "currentConsumer"
   },
   {
     "name": "decoratePreventDefault"
@@ -996,6 +1020,9 @@
     "name": "getOrCreateComponentTView"
   },
   {
+    "name": "getOrCreateCurrentLViewConsumer"
+  },
+  {
     "name": "getOrCreateInjectable"
   },
   {
@@ -1036,6 +1063,9 @@
   },
   {
     "name": "getPromiseCtor"
+  },
+  {
+    "name": "getReactiveLViewConsumer"
   },
   {
     "name": "getSelectedIndex"
@@ -1513,6 +1543,9 @@
   },
   {
     "name": "selectIndexInternal"
+  },
+  {
+    "name": "setActiveConsumer"
   },
   {
     "name": "setBindingRootForHostBindings"

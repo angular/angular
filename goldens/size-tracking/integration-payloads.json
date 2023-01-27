@@ -34,7 +34,7 @@
   "forms": {
     "uncompressed": {
       "runtime": 888,
-      "main": 160778,
+      "main": 161512,
       "polyfills": 33772
     }
   },

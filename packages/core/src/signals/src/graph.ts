@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WeakRef} from './weak_ref';
+import {newWeakRef, WeakRef} from './weak_ref';
 
 /**
  * Identifier for a `Producer`, which is a branded `number`.
@@ -273,6 +273,19 @@ export interface Consumer {
    * and determine if any of them have actually updated.
    */
   notify(): void;
+}
+
+/**
+ * A abstract implementation of `Consumer` that allows implementations to share much of the
+ * necessary boilerplate.
+ */
+export abstract class BaseConsumer implements Consumer {
+  readonly id = nextReactiveId();
+  readonly ref = newWeakRef(this);
+  readonly producers = new Map<ProducerId, Edge>();
+  trackingVersion = 0;
+
+  abstract notify(): void;
 }
 
 /**

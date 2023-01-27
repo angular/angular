@@ -23,6 +23,7 @@ ts_library(
         "//packages/common/locales",
         "//packages/compiler",
         "//packages/core",
+        "//packages/core/src/signals",
         "//packages/core/src/util",
         "//packages/core/test/render3:matchers",
         "//packages/core/testing",

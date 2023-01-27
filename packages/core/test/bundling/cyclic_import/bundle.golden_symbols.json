@@ -36,6 +36,9 @@
     "name": "BROWSER_MODULE_PROVIDERS_MARKER"
   },
   {
+    "name": "BaseConsumer"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -348,6 +351,9 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
+    "name": "ReactiveLViewConsumer"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -450,6 +456,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "WeakRefImpl"
+  },
+  {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
   },
   {
@@ -489,6 +498,9 @@
     "name": "_locateOrCreateElementNode"
   },
   {
+    "name": "_nextReactiveId"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -505,6 +517,9 @@
   },
   {
     "name": "_wrapInTimeout"
+  },
+  {
+    "name": "activeConsumer"
   },
   {
     "name": "addPropertyAlias"
@@ -534,6 +549,9 @@
     "name": "applyView"
   },
   {
+    "name": "assertDefined"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -559,6 +577,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "computeStaticStyling"
@@ -604,6 +625,9 @@
   },
   {
     "name": "createTView"
+  },
+  {
+    "name": "currentConsumer"
   },
   {
     "name": "decoratePreventDefault"
@@ -744,6 +768,9 @@
     "name": "getOrCreateComponentTView"
   },
   {
+    "name": "getOrCreateCurrentLViewConsumer"
+  },
+  {
     "name": "getOrCreateInjectable"
   },
   {
@@ -778,6 +805,9 @@
   },
   {
     "name": "getPromiseCtor"
+  },
+  {
+    "name": "getReactiveLViewConsumer"
   },
   {
     "name": "getSimpleChangesStore"
@@ -945,6 +975,9 @@
     "name": "markAsComponentHost"
   },
   {
+    "name": "markViewDirty"
+  },
+  {
     "name": "maybeWrapInNotSelector"
   },
   {
@@ -1069,6 +1102,9 @@
   },
   {
     "name": "searchTokensOnInjector"
+  },
+  {
+    "name": "setActiveConsumer"
   },
   {
     "name": "setBindingRootForHostBindings"
