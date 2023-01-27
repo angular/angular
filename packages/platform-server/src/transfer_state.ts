@@ -35,7 +35,14 @@ function serializeTransferStateFactory(doc: Document, appId: string, transferSto
     script.id = appId + '-state';
     script.setAttribute('type', 'application/json');
     script.textContent = escapeHtml(content);
-    doc.body.appendChild(script);
+    const existingScript = doc.body.querySelector('script');
+    if (existingScript) {
+      // Insert the state script before any script so that the the script is available
+      // before Angular is bootstrapped as otherwise this can causes the state not to be present.
+      existingScript.before(script);
+    } else {
+      doc.body.appendChild(script);
+    }
   };
 }
 
