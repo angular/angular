@@ -17,9 +17,9 @@ import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {profiler, ProfilerEvent} from '../profiler';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
-import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNode, markViewDirty, unwrapRNode} from '../util/view_utils';
 
-import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer} from './shared';
 
 
 

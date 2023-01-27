@@ -36,11 +36,12 @@ import {Renderer, RendererFactory} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler, ProfilerEvent} from '../profiler';
+import {commitLViewConsumerIfHasProducers, getReactiveLViewConsumer} from '../reactive_lview_consumer';
 import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
@@ -65,6 +66,7 @@ import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './el
 export function processHostBindingOpCodes(tView: TView, lView: LView): void {
   const hostBindingOpCodes = tView.hostBindingOpCodes;
   if (hostBindingOpCodes === null) return;
+  const consumer = getReactiveLViewConsumer(lView, REACTIVE_HOST_BINDING_CONSUMER);
   try {
     for (let i = 0; i < hostBindingOpCodes.length; i++) {
       const opCode = hostBindingOpCodes[i] as number;
@@ -78,10 +80,12 @@ export function processHostBindingOpCodes(tView: TView, lView: LView): void {
         const hostBindingFn = hostBindingOpCodes[++i] as HostBindingsFunction<any>;
         setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
         const context = lView[directiveIdx];
-        hostBindingFn(RenderFlags.Update, context);
+        consumer.runInContext(hostBindingFn, RenderFlags.Update, context);
       }
     }
   } finally {
+    lView[REACTIVE_HOST_BINDING_CONSUMER] === null &&
+        commitLViewConsumerIfHasProducers(lView, REACTIVE_HOST_BINDING_CONSUMER);
     setSelectedIndex(-1);
   }
 }
@@ -146,6 +150,8 @@ export function createLView<T>(
   lView[ID] = getUniqueLViewId();
   lView[HYDRATION] = hydrationInfo;
   lView[EMBEDDED_VIEW_INJECTOR as any] = embeddedViewInjector;
+  lView[REACTIVE_TEMPLATE_CONSUMER] = null;
+
   ngDevMode &&
       assertEqual(
           tView.type == TViewType.Embedded ? parentLView !== null : true, true,
@@ -484,6 +490,7 @@ export function refreshView<T>(
 
 function executeTemplate<T>(
     tView: TView, lView: LView<T>, templateFn: ComponentTemplate<T>, rf: RenderFlags, context: T) {
+  const consumer = getReactiveLViewConsumer(lView, REACTIVE_TEMPLATE_CONSUMER);
   const prevSelectedIndex = getSelectedIndex();
   const isUpdatePhase = rf & RenderFlags.Update;
   try {
@@ -497,8 +504,11 @@ function executeTemplate<T>(
     const preHookType =
         isUpdatePhase ? ProfilerEvent.TemplateUpdateStart : ProfilerEvent.TemplateCreateStart;
     profiler(preHookType, context as unknown as {});
-    templateFn(rf, context);
+    consumer.runInContext(templateFn, rf, context);
   } finally {
+    if (lView[REACTIVE_TEMPLATE_CONSUMER] === null) {
+      commitLViewConsumerIfHasProducers(lView, REACTIVE_TEMPLATE_CONSUMER);
+    }
     setSelectedIndex(prevSelectedIndex);
 
     const postHookType =
@@ -1792,33 +1802,6 @@ export function addToViewTree<T extends LView|LContainer>(lView: LView, lViewOrL
 ///////////////////////////////
 //// Change detection
 ///////////////////////////////
-
-
-/**
- * Marks current view and all ancestors dirty.
- *
- * Returns the root view because it is found as a byproduct of marking the view tree
- * dirty, and can be used by methods that consume markViewDirty() to easily schedule
- * change detection. Otherwise, such methods would need to traverse up the view tree
- * an additional time to get the root view and schedule a tick on it.
- *
- * @param lView The starting LView to mark dirty
- * @returns the root LView
- */
-export function markViewDirty(lView: LView): LView|null {
-  while (lView) {
-    lView[FLAGS] |= LViewFlags.Dirty;
-    const parent = getLViewParent(lView);
-    // Stop traversing up as soon as you find a root view that wasn't attached to any container
-    if (isRootView(lView) && !parent) {
-      return lView;
-    }
-    // continue otherwise
-    lView = parent!;
-  }
-  return null;
-}
-
 export function detectChangesInternal<T>(
     tView: TView, lView: LView, context: T, notifyErrorHandler = true) {
   const rendererFactory = lView[RENDERER_FACTORY];

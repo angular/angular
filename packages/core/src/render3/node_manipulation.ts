@@ -23,7 +23,7 @@ import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjecti
 import {Renderer} from './interfaces/renderer';
 import {RComment, RElement, RNode, RTemplate, RText} from './interfaces/renderer_dom';
 import {isLContainer, isLView} from './interfaces/type_checks';
-import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, QUERIES, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TVIEW, TView, TViewType} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {profiler, ProfilerEvent} from './profiler';
 import {setUpAttributes} from './util/attrs_utils';
@@ -378,6 +378,10 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
 export function destroyLView(tView: TView, lView: LView) {
   if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
     const renderer = lView[RENDERER];
+
+    lView[REACTIVE_TEMPLATE_CONSUMER]?.destroy();
+    lView[REACTIVE_HOST_BINDING_CONSUMER]?.destroy();
+
     if (renderer.destroyNode) {
       applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
     }

@@ -564,6 +564,9 @@
     "name": "ROUTES"
   },
   {
+    "name": "ReactiveLViewConsumer"
+  },
+  {
     "name": "Recognizer"
   },
   {
@@ -801,6 +804,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "WeakRefImpl"
+  },
+  {
     "name": "XSS_SECURITY_URL"
   },
   {
@@ -852,6 +858,9 @@
     "name": "_locateOrCreateTextNode"
   },
   {
+    "name": "_nextReactiveId"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -871,6 +880,9 @@
   },
   {
     "name": "absoluteRedirect"
+  },
+  {
+    "name": "activeConsumer"
   },
   {
     "name": "addEmptyPathsToChildrenIfNeeded"
@@ -910,6 +922,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "assertDefined"
   },
   {
     "name": "attachPatchData"
@@ -952,6 +967,9 @@
   },
   {
     "name": "combineLatest"
+  },
+  {
+    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "compare"
@@ -1045,6 +1063,9 @@
   },
   {
     "name": "createTemplateRef"
+  },
+  {
+    "name": "currentConsumer"
   },
   {
     "name": "deactivateRouteAndItsChildren"
@@ -1357,6 +1378,9 @@
   },
   {
     "name": "getPromiseCtor"
+  },
+  {
+    "name": "getReactiveLViewConsumer"
   },
   {
     "name": "getResolve"
@@ -1852,6 +1876,9 @@
   },
   {
     "name": "serializeSegment"
+  },
+  {
+    "name": "setActiveConsumer"
   },
   {
     "name": "setBindingRootForHostBindings"

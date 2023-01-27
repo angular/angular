@@ -468,6 +468,9 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
+    "name": "ReactiveLViewConsumer"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -597,6 +600,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "WeakRefImpl"
+  },
+  {
     "name": "WebAnimationsPlayer"
   },
   {
@@ -660,6 +666,9 @@
     "name": "_locateOrCreateElementNode"
   },
   {
+    "name": "_nextReactiveId"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -679,6 +688,9 @@
   },
   {
     "name": "_wrapInTimeout"
+  },
+  {
+    "name": "activeConsumer"
   },
   {
     "name": "addClass"
@@ -715,6 +727,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "assertDefined"
   },
   {
     "name": "attachPatchData"
@@ -760,6 +775,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "computeStaticStyling"
@@ -829,6 +847,9 @@
   },
   {
     "name": "createTransitionInstruction"
+  },
+  {
+    "name": "currentConsumer"
   },
   {
     "name": "dashCaseToCamelCase"
@@ -1021,6 +1042,9 @@
   },
   {
     "name": "getPromiseCtor"
+  },
+  {
+    "name": "getReactiveLViewConsumer"
   },
   {
     "name": "getSimpleChangesStore"
@@ -1230,6 +1254,9 @@
     "name": "markDirtyIfOnPush"
   },
   {
+    "name": "markViewDirty"
+  },
+  {
     "name": "maybeWrapInNotSelector"
   },
   {
@@ -1396,6 +1423,9 @@
   },
   {
     "name": "sequence"
+  },
+  {
+    "name": "setActiveConsumer"
   },
   {
     "name": "setBindingRootForHostBindings"

@@ -9,9 +9,9 @@
 import {assertDefined} from '../../util/assert';
 import {getComponentViewByInstance} from '../context_discovery';
 import {detectChanges} from '../instructions/change_detection';
-import {markViewDirty} from '../instructions/shared';
 
 import {getRootComponents} from './discovery_utils';
+import {markViewDirty} from './view_utils';
 
 /**
  * Marks a component for check (in case of OnPush components) and synchronously

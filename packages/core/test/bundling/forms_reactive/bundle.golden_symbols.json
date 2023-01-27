@@ -477,6 +477,9 @@
     "name": "ReactiveFormsModule"
   },
   {
+    "name": "ReactiveLViewConsumer"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -609,6 +612,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "WeakRefImpl"
+  },
+  {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
   },
   {
@@ -666,6 +672,9 @@
     "name": "_locateOrCreateTextNode"
   },
   {
+    "name": "_nextReactiveId"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -682,6 +691,9 @@
   },
   {
     "name": "_wrapInTimeout"
+  },
+  {
+    "name": "activeConsumer"
   },
   {
     "name": "addPropertyAlias"
@@ -724,6 +736,9 @@
   },
   {
     "name": "assertControlPresent"
+  },
+  {
+    "name": "assertDefined"
   },
   {
     "name": "attachInjectFlag"
@@ -769,6 +784,9 @@
   },
   {
     "name": "collectStylingFromTAttrs"
+  },
+  {
+    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "compose"
@@ -838,6 +856,9 @@
   },
   {
     "name": "createTView"
+  },
+  {
+    "name": "currentConsumer"
   },
   {
     "name": "decoratePreventDefault"
@@ -1075,6 +1096,9 @@
   },
   {
     "name": "getPromiseCtor"
+  },
+  {
+    "name": "getReactiveLViewConsumer"
   },
   {
     "name": "getSelectedIndex"
@@ -1537,6 +1561,9 @@
   },
   {
     "name": "selectIndexInternal"
+  },
+  {
+    "name": "setActiveConsumer"
   },
   {
     "name": "setBindingRootForHostBindings"

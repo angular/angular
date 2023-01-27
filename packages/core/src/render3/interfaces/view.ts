@@ -11,6 +11,7 @@ import {ProviderToken} from '../../di/provider_token';
 import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
+import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
@@ -51,7 +52,8 @@ export const ID = 20;
 export const EMBEDDED_VIEW_INJECTOR = 21;
 export const ON_DESTROY_HOOKS = 22;
 export const HYDRATION = 23;
-
+export const REACTIVE_TEMPLATE_CONSUMER = 24;
+export const REACTIVE_HOST_BINDING_CONSUMER = 25;
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -59,7 +61,7 @@ export const HYDRATION = 23;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 24;
+export const HEADER_OFFSET = 26;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -343,6 +345,19 @@ export interface LView<T = unknown> extends Array<any> {
    * entries.
    */
   [ON_DESTROY_HOOKS]: Array<() => void>|null;
+
+  /**
+   * The `Consumer` for this `LView`'s template so that signal reads can be tracked.
+   *
+   * This is initially `null` and gets assigned a consumer after template execution
+   * if any signals were read.
+   */
+  [REACTIVE_TEMPLATE_CONSUMER]: ReactiveLViewConsumer|null;
+
+  /**
+   * Same as REACTIVE_TEMPLATE_CONSUMER, but for the host bindings of the LView.
+   */
+  [REACTIVE_HOST_BINDING_CONSUMER]: ReactiveLViewConsumer|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

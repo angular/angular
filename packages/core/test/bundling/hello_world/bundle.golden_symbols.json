@@ -264,6 +264,9 @@
     "name": "R3Injector"
   },
   {
+    "name": "ReactiveLViewConsumer"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -342,6 +345,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "WeakRefImpl"
+  },
+  {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
   },
   {
@@ -372,6 +378,9 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "_nextReactiveId"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -379,6 +388,9 @@
   },
   {
     "name": "_wrapInTimeout"
+  },
+  {
+    "name": "activeConsumer"
   },
   {
     "name": "addPropertyAlias"
@@ -400,6 +412,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "assertDefined"
   },
   {
     "name": "attachPatchData"
@@ -424,6 +439,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "concatStringsWithSpace"
@@ -463,6 +481,9 @@
   },
   {
     "name": "createTView"
+  },
+  {
+    "name": "currentConsumer"
   },
   {
     "name": "deepForEach"
@@ -606,6 +627,9 @@
     "name": "getPromiseCtor"
   },
   {
+    "name": "getReactiveLViewConsumer"
+  },
+  {
     "name": "getSimpleChangesStore"
   },
   {
@@ -729,6 +753,9 @@
     "name": "makeRecord"
   },
   {
+    "name": "markViewDirty"
+  },
+  {
     "name": "maybeWrapInNotSelector"
   },
   {
@@ -835,6 +862,9 @@
   },
   {
     "name": "searchTokensOnInjector"
+  },
+  {
+    "name": "setActiveConsumer"
   },
   {
     "name": "setBindingRootForHostBindings"
