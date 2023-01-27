@@ -3634,6 +3634,42 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       });
     });
 
+    describe('radio groups', () => {
+      it('should respect the attr.disabled state as an initial value', () => {
+        const fixture = initTest(RadioForm);
+        const choice = new FormControl('one');
+        const form = new FormGroup({'choice': choice});
+        fixture.componentInstance.form = form;
+        fixture.detectChanges();
+
+        const oneInput = fixture.debugElement.query(By.css('input'));
+
+        // The 'one' input is initially disabled in the view with [attr.disabled].
+        // The model thinks it is enabled. This inconsistent state was retained for backwards
+        // compatibility. (See `RadioControlValueAccessor` for details.)
+        expect(oneInput.attributes.disabled).toBe('true');
+        expect(choice.disabled).toBe(false);
+
+        // Flipping the attribute back and forth does not change the model
+        // as expected. Once the initial `disabled` value is setup, the model
+        // becomes the source of truth.
+        oneInput.nativeElement.setAttribute('disabled', 'false');
+        fixture.detectChanges();
+        expect(oneInput.attributes.disabled).toBe('false');
+        expect(choice.disabled).toBe(false);
+
+        oneInput.nativeElement.setAttribute('disabled', 'true');
+        fixture.detectChanges();
+        expect(oneInput.attributes.disabled).toBe('true');
+        expect(choice.disabled).toBe(false);
+
+        oneInput.nativeElement.setAttribute('disabled', 'false');
+        fixture.detectChanges();
+        expect(oneInput.attributes.disabled).toBe('false');
+        expect(choice.disabled).toBe(false);
+      });
+    });
+
     describe('IME events', () => {
       it('should determine IME event handling depending on platform by default', () => {
         const fixture = initTest(FormControlComp);
@@ -5578,4 +5614,19 @@ class MinMaxFormControlComp {
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;
   formGroup = new FormGroup({});
+}
+
+@Component({
+  selector: 'radio-form',
+  template: `
+  <form [formGroup]="form">
+    <input type="radio" formControlName="choice" value="one" [attr.disabled]="true"> One
+    <input type="radio" formControlName="choice" value="two"> Two
+  </form>
+  `,
+})
+export class RadioForm {
+  form = new FormGroup({
+    choice: new FormControl('one'),
+  });
 }
