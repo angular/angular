@@ -1413,6 +1413,114 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should not remove a chain of modules if a module in the chain cannot be removed because it has providers',
+     async () => {
+       const moduleAContent = `
+          import {NgModule, InjectionToken} from '@angular/core';
+
+          export const token = new InjectionToken<any>('token');
+
+          @NgModule({providers: [{provide: token, useValue: 123}]})
+          export class ModuleA {}
+        `;
+
+       const moduleBContent = `
+          import {NgModule} from '@angular/core';
+          import {ModuleA} from './a.module';
+
+          @NgModule({imports: [ModuleA]})
+          export class ModuleB {}
+        `;
+
+       const moduleCContent = `
+          import {NgModule} from '@angular/core';
+          import {ModuleB} from './b.module';
+
+          @NgModule({imports: [ModuleB]})
+          export class ModuleC {}
+        `;
+
+       const appModuleContent = `
+          import {NgModule} from '@angular/core';
+          import {MyDir} from './dir';
+          import {ModuleC} from './c.module';
+
+          @NgModule({imports: [ModuleC], declarations: [MyDir]})
+          export class AppModule {}
+        `;
+
+       writeFile('a.module.ts', moduleAContent);
+       writeFile('b.module.ts', moduleBContent);
+       writeFile('c.module.ts', moduleCContent);
+       writeFile('app.module.ts', appModuleContent);
+       writeFile('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({selector: '[myDir]'})
+          export class MyDir {}
+        `);
+
+       await runMigration('prune-ng-modules');
+
+       expect(tree.readContent('a.module.ts')).toBe(moduleAContent);
+       expect(tree.readContent('b.module.ts')).toBe(moduleBContent);
+       expect(tree.readContent('c.module.ts')).toBe(moduleCContent);
+       expect(tree.readContent('app.module.ts')).toBe(appModuleContent);
+     });
+
+  it('should not remove a chain of modules if a module in the chain cannot be removed because it is importing a ModuleWithProviders',
+     async () => {
+       const moduleAContent = `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({imports: [RouterModule.forRoot([{path: '/foo'}])]})
+          export class ModuleA {}
+        `;
+
+       const moduleBContent = `
+          import {NgModule} from '@angular/core';
+          import {ModuleA} from './a.module';
+
+          @NgModule({imports: [ModuleA]})
+          export class ModuleB {}
+        `;
+
+       const moduleCContent = `
+          import {NgModule} from '@angular/core';
+          import {ModuleB} from './b.module';
+
+          @NgModule({imports: [ModuleB]})
+          export class ModuleC {}
+        `;
+
+       const appModuleContent = `
+          import {NgModule} from '@angular/core';
+          import {MyDir} from './dir';
+          import {ModuleC} from './c.module';
+
+          @NgModule({imports: [ModuleC], declarations: [MyDir]})
+          export class AppModule {}
+        `;
+
+       writeFile('a.module.ts', moduleAContent);
+       writeFile('b.module.ts', moduleBContent);
+       writeFile('c.module.ts', moduleCContent);
+       writeFile('app.module.ts', appModuleContent);
+       writeFile('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({selector: '[myDir]'})
+          export class MyDir {}
+        `);
+
+       await runMigration('prune-ng-modules');
+
+       expect(tree.readContent('a.module.ts')).toBe(moduleAContent);
+       expect(tree.readContent('b.module.ts')).toBe(moduleBContent);
+       expect(tree.readContent('c.module.ts')).toBe(moduleCContent);
+       expect(tree.readContent('app.module.ts')).toBe(appModuleContent);
+     });
+
   it('should not remove the module file if it contains other exported code', async () => {
     writeFile('app.module.ts', `
       import {NgModule} from '@angular/core';
