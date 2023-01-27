@@ -493,8 +493,8 @@ describe('standalone migration', () => {
 
     const myCompContent = tree.readContent('comp.ts');
 
-    expect(myCompContent).toContain(`import { MyButton } from "./button";`);
-    expect(myCompContent).toContain(`import { MyTooltip } from "./tooltip";`);
+    expect(myCompContent).toContain(`import { MyButton } from './button';`);
+    expect(myCompContent).toContain(`import { MyTooltip } from './tooltip';`);
     expect(stripWhitespace(myCompContent)).toContain(stripWhitespace(`
       @Component({
         selector: 'my-comp',
@@ -586,7 +586,7 @@ describe('standalone migration', () => {
        await runMigration('convert-to-standalone');
        const myCompContent = tree.readContent('comp.ts');
 
-       expect(myCompContent).toContain(`import { MyButton } from "./button";`);
+       expect(myCompContent).toContain(`import { MyButton } from './button';`);
        expect(stripWhitespace(myCompContent)).toContain(stripWhitespace(`
          @Component({
            selector: 'my-comp',
@@ -636,7 +636,7 @@ describe('standalone migration', () => {
 
     const myCompContent = tree.readContent('comp.ts');
 
-    expect(myCompContent).toContain(`import { MyButton } from "./button";`);
+    expect(myCompContent).toContain(`import { MyButton } from './button';`);
     expect(stripWhitespace(myCompContent)).toContain(stripWhitespace(`
       @Component({
         selector: 'my-comp',
@@ -698,7 +698,7 @@ describe('standalone migration', () => {
        const myCompContent = tree.readContent('./should-migrate/comp.ts');
 
        expect(myCompContent)
-           .toContain(`import { ButtonModule } from "../do-not-migrate/button.module";`);
+           .toContain(`import { ButtonModule } from '../do-not-migrate/button.module';`);
        expect(stripWhitespace(myCompContent)).toContain(stripWhitespace(`
         @Component({
           selector: 'my-comp',
@@ -752,8 +752,8 @@ describe('standalone migration', () => {
 
     const myCompContent = tree.readContent('comp.ts');
 
-    expect(myCompContent).toContain(`import { MyButton } from "./button";`);
-    expect(myCompContent).toContain(`import { MyTooltip } from "./tooltip";`);
+    expect(myCompContent).toContain(`import { MyButton } from './button';`);
+    expect(myCompContent).toContain(`import { MyTooltip } from './tooltip';`);
     expect(stripWhitespace(myCompContent)).toContain(stripWhitespace(`
         @Component({
           selector: 'my-comp',
@@ -810,7 +810,7 @@ describe('standalone migration', () => {
 
     const myCompContent = tree.readContent('comp.ts');
 
-    expect(myCompContent).toContain(`import { NgForOf, NgIf } from "@angular/common";`);
+    expect(myCompContent).toContain(`import { NgForOf, NgIf } from '@angular/common';`);
     expect(stripWhitespace(myCompContent)).toContain(stripWhitespace(`
       @Component({
         selector: 'my-comp',
@@ -866,7 +866,7 @@ describe('standalone migration', () => {
 
     const myCompContent = tree.readContent('comp.ts');
 
-    expect(myCompContent).toContain(`import { MyPipe } from "./pipe";`);
+    expect(myCompContent).toContain(`import { MyPipe } from './pipe';`);
     expect(stripWhitespace(myCompContent)).toContain(stripWhitespace(`
       @Component({
         selector: 'my-comp',
@@ -966,7 +966,7 @@ describe('standalone migration', () => {
 
     const myCompContent = tree.readContent('./should-migrate/comp.ts');
     expect(myCompContent)
-        .toContain(`import { ButtonModule } from "../do-not-migrate/button.module";`);
+        .toContain(`import { ButtonModule } from '../do-not-migrate/button.module';`);
     expect(myCompContent).toContain('imports: [ButtonModule]');
   });
 
@@ -1850,7 +1850,7 @@ describe('standalone migration', () => {
        expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
           import {AppModule, AppComponent} from './app/app.module';
           import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-          import {bootstrapApplication} from "@angular/platform-browser";
+          import {bootstrapApplication} from '@angular/platform-browser';
 
           bootstrapApplication(AppComponent).catch(e => console.error(e));
         `));
@@ -1881,7 +1881,7 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import {AppModule, AppComponent} from './app/app.module';
       import {PlatformRef} from '@angular/core';
-      import {bootstrapApplication} from "@angular/platform-browser";
+      import {bootstrapApplication} from '@angular/platform-browser';
 
       const foo: PlatformRef = null!;
 
@@ -1932,9 +1932,9 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import {AppModule} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {importProvidersFrom} from "@angular/core";
-      import {AppComponent} from "./app/app.component";
-      import {CommonModule} from "@angular/common";
+      import {importProvidersFrom} from '@angular/core';
+      import {AppComponent} from './app/app.component';
+      import {CommonModule} from '@angular/common';
 
       bootstrapApplication(AppComponent, {
         providers: [importProvidersFrom(CommonModule)]
@@ -1959,8 +1959,8 @@ describe('standalone migration', () => {
 
     expect(stripWhitespace(tree.readContent('./app/app.component.ts'))).toBe(stripWhitespace(`
       import {Component} from '@angular/core';
-      import {Dir} from "./dir";
-      import {NgIf} from "@angular/common";
+      import {Dir} from './dir';
+      import {NgIf} from '@angular/common';
 
       @Component({
         template: '<div *ngIf="show" dir>hello</div>',
@@ -2036,11 +2036,11 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import { AppModule, exportedToken, exportedExtraProviders, ExportedClass, exportedFactory, AppComponent } from './app/app.module';
       import { platformBrowser, bootstrapApplication } from '@angular/platform-browser';
-      import { ExternalInterface } from "@external/interfaces";
-      import { externalToken as aliasedExternalToken } from "./app/externals/other-token";
-      import { externalToken } from "./app/externals/token";
-      import { InternalInterface } from "./app/interfaces/internal-interface";
-      import { InjectionToken } from "@angular/core";
+      import { ExternalInterface } from '@external/interfaces';
+      import { externalToken as aliasedExternalToken } from './app/externals/other-token';
+      import { externalToken } from './app/externals/token';
+      import { InternalInterface } from './app/interfaces/internal-interface';
+      import { InjectionToken } from '@angular/core';
 
       const internalToken = new InjectionToken<string>('internalToken');
       const unexportedExtraProviders = [
@@ -2090,7 +2090,7 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import {AppModule, token, AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {InjectionToken} from "@angular/core";
+      import {InjectionToken} from '@angular/core';
 
       bootstrapApplication(AppComponent, {
         providers: [{ provide: token, useValue: 'hello' }]
@@ -2133,7 +2133,7 @@ describe('standalone migration', () => {
        expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
           import {AppModule, AppComponent} from './app/app.module';
           import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-          import {ROUTES} from "@angular/router";
+          import {ROUTES} from '@angular/router';
 
           bootstrapApplication(AppComponent, {
             providers: [{
@@ -2187,9 +2187,9 @@ describe('standalone migration', () => {
        expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
         import {AppModule, SameFileModule, AppComponent} from './app/app.module';
         import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-        import {NgModule, importProvidersFrom} from "@angular/core";
-        import {InternalModule} from "./modules/internal.module";
-        import {CommonModule} from "@angular/common";
+        import {NgModule, importProvidersFrom} from '@angular/core';
+        import {InternalModule} from './modules/internal.module';
+        import {CommonModule} from '@angular/common';
 
         bootstrapApplication(AppComponent, {
           providers: [importProvidersFrom(CommonModule, InternalModule, SameFileModule)]
@@ -2230,7 +2230,7 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import {AppModule, AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {provideRouter} from "@angular/router";
+      import {provideRouter} from '@angular/router';
 
       bootstrapApplication(AppComponent, {
         providers: [provideRouter([
@@ -2270,9 +2270,9 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import {AppModule, AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {importProvidersFrom} from "@angular/core";
-      import {APP_ROUTES} from "./app/routes";
-      import {RouterModule} from "@angular/router";
+      import {importProvidersFrom} from '@angular/core';
+      import {APP_ROUTES} from './app/routes';
+      import {RouterModule} from '@angular/router';
 
       bootstrapApplication(AppComponent, {
         providers: [importProvidersFrom(RouterModule.forRoot(APP_ROUTES, {}))]
@@ -2308,7 +2308,7 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import {AppModule, AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {provideAnimations} from "@angular/platform-browser/animations";
+      import {provideAnimations} from '@angular/platform-browser/animations';
 
       bootstrapApplication(AppComponent, {
         providers: [provideAnimations()]
@@ -2344,8 +2344,8 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import {AppModule, AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {importProvidersFrom} from "@angular/core";
-      import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+      import {importProvidersFrom} from '@angular/core';
+      import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
       bootstrapApplication(AppComponent, {
         providers: [importProvidersFrom(BrowserAnimationsModule.withConfig({disableAnimations: true}))]
@@ -2381,7 +2381,7 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import {AppModule, AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {provideNoopAnimations} from "@angular/platform-browser/animations";
+      import {provideNoopAnimations} from '@angular/platform-browser/animations';
 
       bootstrapApplication(AppComponent, {
         providers: [provideNoopAnimations()]
@@ -2417,8 +2417,8 @@ describe('standalone migration', () => {
        expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
         import {AppModule, AppComponent} from './app/app.module';
         import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-        import {importProvidersFrom} from "@angular/core";
-        import {CommonModule} from "@angular/common";
+        import {importProvidersFrom} from '@angular/core';
+        import {CommonModule} from '@angular/common';
 
         bootstrapApplication(AppComponent, {
           providers: [importProvidersFrom(CommonModule)]
