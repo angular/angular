@@ -121,29 +121,29 @@ A module is considered "safe to remove" if it:
 * Has no `declarations`.
 * Has no `providers`.
 * Has no `bootstrap` components.
-* Has no `imports` that reference a `ModuleWithProviders` symbol.
+* Has no `imports` that reference a `ModuleWithProviders` symbol or a module that can't be removed.
 * Has no class members. Empty construstors are ignored.
 
 **Before:**
 ```typescript
-// declarer.module.ts
+// importer.module.ts
 
 @NgModule({
-  declarations: [FooComp, BarPipe],
+  imports: [FooComp, BarPipe],
   exports: [FooComp, BarPipe]
 })
-export class DeclarerModule {}
+export class ImporterModule {}
 ```
 
 ```typescript
 // configurer.module.ts
-import {DeclarerModule} from './declarer.module';
+import {ImporterModule} from './importer.module';
 
-console.log(DeclarerModule);
+console.log(ImporterModule);
 
 @NgModule({
-  imports: [DeclarerModule],
-  exports: [DeclarerModule],
+  imports: [ImporterModule],
+  exports: [ImporterModule],
   providers: [{provide: FOO, useValue: 123}]
 })
 export class ConfigurerModule {}
@@ -151,18 +151,18 @@ export class ConfigurerModule {}
 
 ```typescript
 // index.ts
-export {DeclarerModule, ConfigurerModule} from './modules/index';
+export {ImporterModule, ConfigurerModule} from './modules/index';
 ```
 
 **After:**
 ```typescript
-// declarer.module.ts
+// importer.module.ts
 // Deleted!
 ```
 
 ```typescript
 // configurer.module.ts
-console.log(/* TODO(standalone-migration): clean up removed NgModule reference manually */ DeclarerModule);
+console.log(/* TODO(standalone-migration): clean up removed NgModule reference manually */ ImporterModule);
 
 @NgModule({
   imports: [],
@@ -174,7 +174,7 @@ export class ConfigurerModule {}
 
 ```typescript
 // index.ts
-export {DeclarerModule} from './modules/index';
+export {ConfigurerModule} from './modules/index';
 ```
 
 ### Switch to standalone bootstrapping API
