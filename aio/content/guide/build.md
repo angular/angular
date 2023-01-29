@@ -329,7 +329,7 @@ Internally, the Angular CLI uses the below `browserslist` configuration which ma
   Firefox ESR
   </code-example>
 
-To override the internal configuration, run [`ng generate browserslist`](cli/generate#config-command), which generates a `.browserslistrc` configuration file in the the project directory.
+To override the internal configuration, run [`ng generate config browserslist`](cli/generate#config-command), which generates a `.browserslistrc` configuration file in the the project directory.
 
 See the [browserslist repository](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
 
