@@ -282,9 +282,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#9b87f88cb8633bb35a9c1979ed7a6f339205f69b":
-  version "0.0.0-17bf435a8cdd48bf218464b2722bc4f2bdd2728c"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#9b87f88cb8633bb35a9c1979ed7a6f339205f69b"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#57ce1b4bb7ab323c5c7610081a93148796b4ae81":
+  version "0.0.0-fa428ee0accc999f051008f0daa5651ba2728c2b"
+  uid "57ce1b4bb7ab323c5c7610081a93148796b4ae81"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#57ce1b4bb7ab323c5c7610081a93148796b4ae81"
   dependencies:
     "@angular-devkit/build-angular" "15.2.0-next.1"
     "@angular/benchpress" "0.3.0"
