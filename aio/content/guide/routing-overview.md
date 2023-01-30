@@ -1,4 +1,4 @@
-# Angular Routing
+# Angular routing
 
 In a single-page app, you change what the user sees by showing or hiding portions of the display that correspond to particular components, rather than going out to the server to get a new page.
 As users perform application tasks, they need to move between the different [views](guide/glossary#view "Definition of view") that you have defined.

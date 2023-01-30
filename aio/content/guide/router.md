@@ -1,4 +1,4 @@
-# Common Routing Tasks
+# Common touting tasks
 
 This topic describes how to implement many of the common tasks associated with adding the Angular router to your application.
 
@@ -64,15 +64,15 @@ import { SecondComponent } from './second/second.component';
 
 ## Defining a basic route
 
-There are three fundamental building blocks to creating a route.
+Creating a route has four fundamental building blocks.
 
-Import the `AppRoutingModule` into `AppModule` and add it to the `imports` array.
+1. Import the `AppRoutingModule` into `AppModule` and add it to the `imports` array.
 
-The Angular CLI performs this step for you.
-However, if you are creating an application manually or working with an existing, non-CLI application, verify that the imports and configuration are correct.
-The following is the default `AppModule` using the CLI with the `--routing` flag.
+    The Angular CLI performs this step for you.
+    However, if you are creating an application manually or working with an existing, non-CLI application, verify that the imports and configuration are correct.
+    The following is the default `AppModule` created with the CLI using the `--routing` flag.
 
-<code-example header="Default CLI AppModule with routing" path="router/src/app/app.module.8.ts"></code-example>
+    <code-example header="Default CLI AppModule with routing" path="router/src/app/app.module.8.ts"></code-example>
 
 1.  Import `RouterModule` and `Routes` into your routing module.
 
@@ -370,12 +370,14 @@ To use route guards, consider using [component-less routes](api/router/Route#com
 
 Create a service for your guard:
 
-<!-- TODO: update CLI 
+<!-- TODO: update CLI
+
 <code-example format="shell" language="shell">
 
 ng generate guard your-guard
 
 </code-example>
+
 -->
 
 In your guard function, implement the guard you want to use.
@@ -435,8 +437,8 @@ The following minimal `RouterLink` example builds upon a specified [default chil
 Review the following:
 
 *   The first item in the array identifies the parent route \(`/crisis-center`\)
-*   There are no parameters for this parent route
-*   There is no default for the child route so you need to pick one
+*   The parent route has no parameters
+*   The child route has no default so you need to pick one
 *   You're navigating to the `CrisisListComponent`, whose route path is `/`, but you don't need to explicitly add the slash
 
 Consider the following router link that navigates from the root of the application down to the Dragon Crisis:
@@ -444,7 +446,7 @@ Consider the following router link that navigates from the root of the applicati
 <code-example header="src/app/app.component.ts (Dragon-anchor)" path="router/src/app/app.component.3.ts" region="Dragon-anchor"></code-example>
 
 *   The first item in the array identifies the parent route \(`/crisis-center`\)
-*   There are no parameters for this parent route
+*   The parent route has no parameters
 *   The second item identifies the child route details about a particular crisis \(`/:id`\)
 *   The details child route requires an `id` route parameter
 *   You added the `id` of the Dragon Crisis as the second item in the array \(`1`\)
@@ -454,7 +456,7 @@ You could also redefine the `AppComponent` template with Crisis Center routes ex
 
 <code-example header="src/app/app.component.ts (template)" path="router/src/app/app.component.3.ts" region="template"></code-example>
 
-In summary, you can write applications with one, two or more levels of routing.
+In summary, you can write applications with one, two, or more levels of routing.
 The link parameters array affords the flexibility to represent any routing depth and any legal sequence of route paths, \(required\) router parameters, and \(optional\) route parameter objects.
 
 <a id="browser-url-styles"></a>
@@ -565,7 +567,7 @@ Those developers can still use HTML5 URLs by taking the following two steps:
 1.  Provide the router with an appropriate `APP_BASE_HREF` value.
 1.  Use root URLs \(URLs with an `authority`\) for all web resources: CSS, images, scripts, and template HTML files.
 
-    *   The `<base href>` `path` should end with a "/", as browsers ignore characters in the `path` that follow the right-most "`/`"
+    *   The `<base href>` path should end with a `/`, as browsers ignore characters in the `path` that follow the right-most `/`
     *   If the `<base href>` includes a `query` part, the `query` is only used if the `path` of a link in the page is empty and has no `query`.
         This means that a `query` in the `<base href>` is only included when using `HashLocationStrategy`.
 
@@ -574,7 +576,7 @@ Those developers can still use HTML5 URLs by taking the following two steps:
 
     *   A fragment in the `<base href>` is *never* persisted
 
-For more complete information on how `<base href>` is used to construct target URIs, see the [RFC](https://tools.ietf.org/html/rfc3986#section-5.2.2) section on transforming references.
+For more detailed information on how `<base href>` is used to construct target URIs, see the [RFC](https://tools.ietf.org/html/rfc3986#section-5.2.2) section on transforming references.
 
 <a id="hashlocationstrategy"></a>
 
