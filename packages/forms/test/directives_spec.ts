@@ -360,7 +360,7 @@ class CustomValidatorDirective implements Validator {
 
              flushMicrotasks();
 
-             expect(formModel.get(['person', 'login'])).not.toBeNull;
+             expect(formModel.get(['person', 'login'])).not.toBeNull();
            }));
 
         // should update the form's value and validity
