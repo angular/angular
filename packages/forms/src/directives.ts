@@ -18,6 +18,7 @@ import {NgNoValidate} from './directives/ng_no_validate_directive';
 import {NumberValueAccessor} from './directives/number_value_accessor';
 import {RadioControlRegistryModule, RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 import {RangeValueAccessor} from './directives/range_value_accessor';
+import {FormArrayDirective} from './directives/reactive_directives/form_array_directive';
 import {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 import {FormControlName} from './directives/reactive_directives/form_control_name';
 import {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
@@ -37,6 +38,7 @@ export {NgModelGroup} from './directives/ng_model_group';
 export {NumberValueAccessor} from './directives/number_value_accessor';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 export {RangeValueAccessor} from './directives/range_value_accessor';
+export {FormArrayDirective} from './directives/reactive_directives/form_array_directive';
 export {FormControlDirective, NG_MODEL_WITH_FORM_CONTROL_WARNING} from './directives/reactive_directives/form_control_directive';
 export {FormControlName} from './directives/reactive_directives/form_control_name';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
@@ -70,8 +72,10 @@ export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
 
 export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] = [NgModel, NgModelGroup, NgForm];
 
-export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
-    [FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName];
+export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] = [
+  FormControlDirective, FormGroupDirective, FormArrayDirective, FormControlName, FormGroupName,
+  FormArrayName
+];
 
 /**
  * Internal module used for sharing directives between FormsModule and ReactiveFormsModule

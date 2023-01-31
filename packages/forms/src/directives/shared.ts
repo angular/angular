@@ -350,7 +350,8 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
   return Object.getPrototypeOf(valueAccessor.constructor) === BuiltInControlValueAccessor;
 }
 
-export function syncPendingControls(form: FormGroup, directives: Set<NgControl>|NgControl[]): void {
+export function syncPendingControls(
+    form: FormGroup|FormArray, directives: Set<NgControl>|NgControl[]): void {
   form._syncPendingControls();
   directives.forEach((dir: NgControl) => {
     const control = dir.control as FormControl;

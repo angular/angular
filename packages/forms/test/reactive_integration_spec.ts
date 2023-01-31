@@ -9,7 +9,7 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, ElementRef, forwardRef, Input, NgModule, OnDestroy, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormBuilder, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinLengthValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayDirective, FormBuilder, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinLengthValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge, NEVER, of, Subscription, timer} from 'rxjs';
@@ -3315,8 +3315,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
-            .toThrowError(
-                new RegExp(`formControlName must be used with a parent formGroup directive`));
+            .toThrowError(new RegExp(
+                `formControlName must be used with a parent formGroup or formArray directive`));
       });
 
       it('should throw if formControlName is used with NgForm', () => {
@@ -3332,8 +3332,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
-            .toThrowError(
-                new RegExp(`formControlName must be used with a parent formGroup directive.`));
+            .toThrowError(new RegExp(
+                `formControlName must be used with a parent formGroup or formArray directive.`));
       });
 
       it('should throw if formControlName is used with NgModelGroup', () => {
@@ -5104,6 +5104,107 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         }).not.toThrow();
       });
     });
+
+    describe('formArray support', () => {
+      @Component({
+        selector: 'form-array-comp',
+        template: `
+          <form #formElement [formArray]="form" (ngSubmit)="event=$event">
+            <input *ngFor="let _ of controls; let i = index;" type="text" [formControlName]="i">
+          </form>`
+      })
+      class FormArrayComp {
+        controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
+        form = new FormArray(this.controls);
+        event!: Event;
+
+        @ViewChild('formElement') formElement!: ElementRef<HTMLFormElement>;
+      }
+
+      it('basic functionality ', () => {
+        const fixture = initTest(FormArrayComp);
+        fixture.detectChanges();
+        const controls = fixture.componentInstance.controls;
+
+        // model -> view
+        const inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs[1].nativeElement.value).toBe('cat');
+
+        inputs[1].nativeElement.value = 'updated value';
+        dispatchEvent(inputs[1].nativeElement, 'input');
+
+        // view -> model
+        expect(controls[1].value).toEqual('updated value');
+      });
+
+      it('should add novalidate by default to form', () => {
+        const fixture = initTest(FormArrayComp);
+        fixture.detectChanges();
+
+        const form = fixture.debugElement.query(By.css('form'));
+        expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
+      });
+
+      it('should mark formArray as submitted on submit event', () => {
+        const fixture = initTest(FormArrayComp);
+        const controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
+        fixture.detectChanges();
+
+        const formGroupDir = fixture.debugElement.children[0].injector.get(FormArrayDirective);
+        expect(formGroupDir.submitted).toBe(false);
+
+        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        dispatchEvent(formEl, 'submit');
+
+        fixture.detectChanges();
+        expect(formGroupDir.submitted).toEqual(true);
+      });
+
+      it('should reset properly', () => {
+        const fixture = initTest(FormArrayComp);
+        fixture.detectChanges();
+
+        const control = fixture.componentInstance.controls[0];
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        input.value = 'aa';
+        dispatchEvent(input, 'input');
+        fixture.detectChanges();
+
+        dispatchEvent(input, 'blur');
+        fixture.detectChanges();
+        expect(control.dirty).withContext('Expected control to be dirty on blur.').toBe(true);
+
+        control.reset();
+
+        dispatchEvent(input, 'blur');
+        fixture.detectChanges();
+
+        expect(input.value).withContext('Expected view value to reset').toEqual('');
+        expect(control.value).withContext('Expected pending value to reset.').toBe(null);
+        expect(control.dirty).withContext('Expected pending dirty value to reset.').toBe(false);
+      });
+
+      it('should support add/removing controls', () => {
+        const fixture = initTest(FormArrayComp);
+        const controls = fixture.componentInstance.controls;
+        fixture.detectChanges();
+
+        let inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs.length).toBe(3);
+
+        controls.push(new FormControl('pineapple'));
+        fixture.detectChanges();
+        inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs.length).toBe(4);
+
+        controls.pop();
+        controls.pop();
+        fixture.detectChanges();
+        inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs.length).toBe(2);
+      });
+    });
   });
 }
 
@@ -5170,7 +5271,6 @@ class UniqLoginValidator implements AsyncValidator {
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 class FormControlComp {
-  // TODO(issue/24571): remove '!'.
   control!: FormControl;
 }
 
@@ -5182,11 +5282,8 @@ class FormControlComp {
     </form>`
 })
 class FormGroupComp {
-  // TODO(issue/24571): remove '!'.
   control!: FormControl;
-  // TODO(issue/24571): remove '!'.
   form!: FormGroup;
-  // TODO(issue/24571): remove '!'.
   event!: Event;
 }
 
@@ -5202,7 +5299,6 @@ class FormGroupComp {
     </form>`
 })
 class NestedFormGroupNameComp {
-  // TODO(issue/24571): remove '!'.
   form!: FormGroup;
 }
 
@@ -5218,9 +5314,7 @@ class NestedFormGroupNameComp {
      </form>`
 })
 class FormArrayComp {
-  // TODO(issue/24571): remove '!'.
   form!: FormGroup;
-  // TODO(issue/24571): remove '!'.
   cityArray!: FormArray;
 }
 
@@ -5251,9 +5345,7 @@ class NestedFormArrayNameComp {
      </div>`
 })
 class FormArrayNestedGroup {
-  // TODO(issue/24571): remove '!'.
   form!: FormGroup;
-  // TODO(issue/24571): remove '!'.
   cityArray!: FormArray;
 }
 
@@ -5266,11 +5358,8 @@ class FormArrayNestedGroup {
    </form>`
 })
 class FormGroupNgModel {
-  // TODO(issue/24571): remove '!'.
   form!: FormGroup;
-  // TODO(issue/24571): remove '!'.
   login!: string;
-  // TODO(issue/24571): remove '!'.
   password!: string;
 }
 
@@ -5282,13 +5371,9 @@ class FormGroupNgModel {
   `
 })
 class FormControlNgModel {
-  // TODO(issue/24571): remove '!'.
   control!: FormControl;
-  // TODO(issue/24571): remove '!'.
   login!: string;
-  // TODO(issue/24571): remove '!'.
   passwordControl!: FormControl;
-  // TODO(issue/24571): remove '!'.
   password!: string;
 }
 
@@ -5303,7 +5388,6 @@ class FormControlNgModel {
    </div>`
 })
 class LoginIsEmptyWrapper {
-  // TODO(issue/24571): remove '!'.
   form!: FormGroup;
 }
 
@@ -5318,15 +5402,10 @@ class LoginIsEmptyWrapper {
    </div>`
 })
 class ValidationBindingsForm {
-  // TODO(issue/24571): remove '!'.
   form!: FormGroup;
-  // TODO(issue/24571): remove '!'.
   required!: boolean;
-  // TODO(issue/24571): remove '!'.
   minLen!: number;
-  // TODO(issue/24571): remove '!'.
   maxLen!: number;
-  // TODO(issue/24571): remove '!'.
   pattern!: string;
 }
 
@@ -5335,7 +5414,6 @@ class ValidationBindingsForm {
   template: `<input type="checkbox" [formControl]="control">`
 })
 class FormControlCheckboxRequiredValidator {
-  // TODO(issue/24571): remove '!'.
   control!: FormControl;
 }
 
@@ -5347,7 +5425,6 @@ class FormControlCheckboxRequiredValidator {
   </div>`
 })
 class UniqLoginWrapper {
-  // TODO(issue/24571): remove '!'.
   form!: FormGroup;
 }
 

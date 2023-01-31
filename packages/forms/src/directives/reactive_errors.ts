@@ -16,8 +16,8 @@ import {formArrayNameExample, formControlNameExample, formGroupNameExample, ngMo
 export function controlParentException(): Error {
   return new RuntimeError(
       RuntimeErrorCode.FORM_CONTROL_NAME_MISSING_PARENT,
-      `formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
-      directive and pass it an existing FormGroup instance (you can create one in your class).
+      `formControlName must be used with a parent formGroup or formArray directive.  You'll want to add a formGroup/formArray
+      directive and pass it an existing FormGroup/FormArray instance (you can create one in your class).
 
     Example:
 

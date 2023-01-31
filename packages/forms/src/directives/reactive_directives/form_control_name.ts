@@ -18,6 +18,7 @@ import {controlParentException, disabledAttrWarning, ngModelGroupException} from
 import {_ngModelWarning, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
+import {FormArrayDirective} from './form_array_directive';
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
 import {FormGroupDirective} from './form_group_directive';
 import {FormArrayName, FormGroupName} from './form_group_name';
@@ -196,6 +197,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
       } else if (
           !(this._parent instanceof FormGroupName) &&
           !(this._parent instanceof FormGroupDirective) &&
+          !(this._parent instanceof FormArrayDirective) &&
           !(this._parent instanceof FormArrayName)) {
         throw controlParentException();
       }
