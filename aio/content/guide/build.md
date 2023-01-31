@@ -367,11 +367,11 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
       &hellip;
       "architect": {
         "serve": {
-        "builder": "&commat;angular-devkit/build-angular:dev-server",
-        "options": {
-          "browserTarget": "your-application-name:build",
-          "proxyConfig": "src/proxy.conf.json"
-        },
+          "builder": "&commat;angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "your-application-name:build",
+            "proxyConfig": "src/proxy.conf.json"
+          },
     &hellip;
 
     </code-example>
