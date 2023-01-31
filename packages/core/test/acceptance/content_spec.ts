@@ -1321,6 +1321,51 @@ describe('projection', () => {
         expect(fixture.nativeElement).toHaveText('Hello world!');
         expect(xDirectives).toEqual(1);
       });
+
+      it('should work without exception when subelement has both ngIf and class as interpolation',
+         () => {
+           @Component(
+               {selector: 'child-comp', template: '<ng-content select=".nomatch"></ng-content>'})
+           class ChildComp {
+           }
+
+           @Component({
+             selector: 'parent-comp',
+             template: `<child-comp><span *ngIf="true" class="{{'a'}}"></span></child-comp>`
+           })
+           class ParentComp {
+           }
+
+           TestBed.configureTestingModule({declarations: [ParentComp, ChildComp]});
+           const fixture = TestBed.createComponent<ParentComp>(ParentComp);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement.innerHTML).toBe('<child-comp></child-comp>');
+         });
+    });
+
+    it('selection of child element should properly work even with confusing attribute names', () => {
+      @Component({selector: 'child-comp', template: '<ng-content select=".title"></ng-content>'})
+      class ChildComp {
+      }
+
+      @Component({
+        selector: 'parent-comp',
+        template:
+            `<child-comp><span *ngIf="true" id="5" jjj="class" class="{{'a'}}" [title]="'abc'"></span></child-comp>`
+      })
+      class ParentComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [ParentComp, ChildComp]});
+      const fixture = TestBed.createComponent<ParentComp>(ParentComp);
+
+      fixture.detectChanges();
+      // tNode.attrs will be ['id', '5', 'jjj', 'class', 3 /* AttributeMarker.Bindings */, 'class',
+      // 'title', 4 /* AttributeMarker.Template */, 'ngIf'] isNodeMatchingSelector() must not
+      // confuse it as 'class=title' attribute. <ng-content select=".title"> should not match the
+      // child.
+      expect(fixture.nativeElement.innerHTML).toBe('<child-comp></child-comp>');
     });
   });
 });
