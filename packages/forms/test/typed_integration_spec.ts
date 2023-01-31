@@ -1468,7 +1468,7 @@ describe('Typed Class', () => {
           t1 = null as unknown as RawValueType;
         }
         c.reset();
-        expect(c.value).not.toBeNull;
+        expect(c.value).not.toBeNull();
       });
     });
 
