@@ -23,6 +23,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NAMED_OUTLET_REDIRECT = 4000,
     // (undocumented)
+    NAVIGATION_ERROR = 4016,
+    // (undocumented)
     NO_MATCH = 4002,
     // (undocumented)
     NULLISH_COMMAND = 4008,

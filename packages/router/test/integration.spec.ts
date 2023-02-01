@@ -2332,8 +2332,7 @@ describe('Integration', () => {
       try {
         await router.navigateByUrl('/throwing');
         fail('navigation should throw');
-      } catch (e: unknown) {
-        expect((e as Error).message).toEqual(errorMessage);
+      } catch {
       }
 
       expect(caughtError).toBeDefined();

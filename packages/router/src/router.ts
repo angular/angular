@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {Observable, of, SubscriptionLike} from 'rxjs';
+import {Observable, SubscriptionLike} from 'rxjs';
 
 import {CreateUrlTreeStrategy} from './create_url_tree_strategy';
 import {RuntimeErrorCode} from './errors';
@@ -30,7 +30,10 @@ import {standardizeConfig, validateConfig} from './utils/config';
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 function defaultErrorHandler(error: any): any {
-  throw error;
+  throw new RuntimeError(
+      RuntimeErrorCode.NAVIGATION_ERROR,
+      NG_DEV_MODE &&
+          `Error during router navigation.${error instanceof Error ? ' ' + error.message : ''}`);
 }
 
 function defaultMalformedUriErrorHandler(
