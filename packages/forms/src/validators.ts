@@ -586,9 +586,6 @@ export function toObservable(value: any): Observable<any> {
 
 function mergeErrors(arrayOfErrors: (ValidationErrors|null)[]): ValidationErrors|null {
   let res: {[key: string]: any} = {};
-
-  // Not using Array.reduce here due to a Chrome 80 bug
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
   arrayOfErrors.forEach((errors: ValidationErrors|null) => {
     res = errors != null ? {...res!, ...errors} : res!;
   });
