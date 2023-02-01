@@ -1144,6 +1144,74 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should not move declarations that are not being migrated out of the declarations array',
+     async () => {
+       const appComponentContent = `
+        import {Component} from '@angular/core';
+
+        @Component({selector: 'app', template: ''})
+        export class AppComponent {}
+      `;
+
+       const appModuleContent = `
+        import {NgModule} from '@angular/core';
+        import {AppComponent} from './app.component';
+
+        @NgModule({declarations: [AppComponent], bootstrap: [AppComponent]})
+        export class AppModule {}
+      `;
+
+       writeFile('app.component.ts', appComponentContent);
+       writeFile('app.module.ts', appModuleContent);
+
+       writeFile('app.spec.ts', `
+        import {Component} from '@angular/core';
+        import {TestBed} from '@angular/core/testing';
+        import {ButtonModule} from './button.module';
+        import {MatCardModule} from '@angular/material/card';
+        import {AppComponent} from './app.component';
+
+        describe('bootrstrapping an app', () => {
+          it('should work', () => {
+            TestBed.configureTestingModule({
+              declarations: [AppComponent, TestComp],
+              imports: [ButtonModule, MatCardModule]
+            });
+            const fixture = TestBed.createComponent(App);
+            expect(fixture.nativeElement.innerHTML).toBe('');
+          });
+        });
+
+        @Component({template: ''})
+        class TestComp {}
+      `);
+
+       await runMigration('convert-to-standalone');
+
+       const testContent = stripWhitespace(tree.readContent('app.spec.ts'));
+
+       expect(tree.readContent('app.module.ts')).toBe(appModuleContent);
+       expect(tree.readContent('app.component.ts')).toBe(appComponentContent);
+       expect(testContent).toContain(stripWhitespace(`
+        it('should work', () => {
+          TestBed.configureTestingModule({
+            declarations: [AppComponent],
+            imports: [ButtonModule, MatCardModule, TestComp]
+          });
+          const fixture = TestBed.createComponent(App);
+          expect(fixture.nativeElement.innerHTML).toBe('');
+        });
+      `));
+       expect(testContent).toContain(stripWhitespace(`
+        @Component({
+          template: '',
+          standalone: true,
+          imports: [ButtonModule, MatCardModule]
+        })
+        class TestComp {}
+      `));
+     });
+
   it('should not migrate modules with a `bootstrap` array', async () => {
     const initialModule = `
       import {NgModule, Component} from '@angular/core';

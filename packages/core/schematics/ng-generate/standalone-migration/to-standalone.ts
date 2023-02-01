@@ -12,6 +12,7 @@ import ts from 'typescript';
 
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {getImportSpecifier} from '../../utils/typescript/imports';
+import {closestNode} from '../../utils/typescript/nodes';
 import {isReferenceToImport} from '../../utils/typescript/symbol';
 
 import {ChangesByFile, ChangeTracker, findClassDeclaration, findLiteralProperty, NamedClassDeclaration} from './util';
@@ -44,10 +45,10 @@ export function toStandalone(
   }
 
   for (const node of modulesToMigrate) {
-    migrateNgModuleClass(node, tracker, templateTypeChecker);
+    migrateNgModuleClass(node, declarations, tracker, typeChecker, templateTypeChecker);
   }
 
-  migrateTestDeclarations(testObjectsToMigrate, tracker, typeChecker);
+  migrateTestDeclarations(testObjectsToMigrate, declarations, tracker, typeChecker);
   return tracker.recordChanges();
 }
 
@@ -131,17 +132,22 @@ function getComponentImportExpressions(
 /**
  * Moves all of the declarations of a class decorated with `@NgModule` to its imports.
  * @param node Class being migrated.
+ * @param allDeclarations All the declarations that are being converted as a part of this migration.
  * @param tracker
  * @param typeChecker
+ * @param templateTypeChecker
  */
 function migrateNgModuleClass(
-    node: ts.ClassDeclaration, tracker: ChangeTracker, typeChecker: TemplateTypeChecker) {
-  const decorator = typeChecker.getNgModuleMetadata(node)?.decorator;
+    node: ts.ClassDeclaration, allDeclarations: Reference<ts.ClassDeclaration>[],
+    tracker: ChangeTracker, typeChecker: ts.TypeChecker, templateTypeChecker: TemplateTypeChecker) {
+  const decorator = templateTypeChecker.getNgModuleMetadata(node)?.decorator;
 
   if (decorator && ts.isCallExpression(decorator.expression) &&
       decorator.expression.arguments.length === 1 &&
       ts.isObjectLiteralExpression(decorator.expression.arguments[0])) {
-    moveDeclarationsToImports(decorator.expression.arguments[0], tracker);
+    moveDeclarationsToImports(
+        decorator.expression.arguments[0], allDeclarations.map(decl => decl.node), typeChecker,
+        tracker);
   }
 }
 
@@ -149,76 +155,93 @@ function migrateNgModuleClass(
  * Moves all the symbol references from the `declarations` array to the `imports`
  * array of an `NgModule` class and removes the `declarations`.
  * @param literal Object literal used to configure the module that should be migrated.
+ * @param allDeclarations All the declarations that are being converted as a part of this migration.
+ * @param typeChecker
  * @param tracker
  */
 function moveDeclarationsToImports(
-    literal: ts.ObjectLiteralExpression, tracker: ChangeTracker): void {
-  const properties =
-      literal.properties
-          .map(prop => {
-            if (!isNamedPropertyAssignment(prop)) {
-              return prop;
-            }
+    literal: ts.ObjectLiteralExpression, allDeclarations: ts.ClassDeclaration[],
+    typeChecker: ts.TypeChecker, tracker: ChangeTracker): void {
+  const declarationsProp = findLiteralProperty(literal, 'declarations');
 
-            // If there's no `imports`, copy the initializer from the `declarations`.
-            if (prop.name.text === 'declarations' && !findLiteralProperty(literal, 'imports')) {
-              return ts.factory.createPropertyAssignment('imports', prop.initializer);
-            }
-
-            // Migrate the `imports`.
-            if (prop.name.text === 'imports') {
-              const declarations = findLiteralProperty(literal, 'declarations');
-              return declarations && ts.isPropertyAssignment(declarations) ?
-                  mergeDeclarationsIntoImports(declarations, prop) :
-                  prop;
-            }
-
-            // Retain any remaining properties.
-            return prop;
-          })
-          // Drop the `declarations` property.
-          .filter(prop => isNamedPropertyAssignment(prop) && prop.name.text !== 'declarations');
-
-  tracker.replaceNode(
-      literal, ts.factory.createObjectLiteralExpression(properties, true), ts.EmitHint.Expression);
-}
-
-/**
- * Merges the `declarations` and `imports` arrays of an NgModule.
- * @param declarations Node that declares the `declarations` property.
- * @param imports Node that declares the `imports` property.
- */
-function mergeDeclarationsIntoImports(
-    declarations: ts.PropertyAssignment, imports: ts.PropertyAssignment) {
-  const importsIsArray = ts.isArrayLiteralExpression(imports.initializer);
-  const declarationsIsArray = ts.isArrayLiteralExpression(declarations.initializer);
-  let arrayElements: ts.Expression[];
-
-  if (importsIsArray && declarationsIsArray) {
-    // Both values are arrays so they can be merged statically.
-    // E.g. `imports: [Import1, Import2, Declaration1]`.
-    arrayElements = [...imports.initializer.elements, ...declarations.initializer.elements];
-  } else if (importsIsArray) {
-    // Only the imports is an array so we need to use a spread to merge the
-    // declarations. E.g. `imports: [Import1, Import2, ...DECLARATIONS]`.
-    arrayElements =
-        [...imports.initializer.elements, ts.factory.createSpreadElement(declarations.initializer)];
-  } else if (declarationsIsArray) {
-    // Declarations are an array, but imports aren't so we have to generate a spread.
-    // E.g. `imports: [...IMPORTS, Declaration1, Declaration2]`.
-    arrayElements =
-        [ts.factory.createSpreadElement(imports.initializer), ...declarations.initializer.elements];
-  } else {
-    // Neither the declarations nor the imports are arrays so we have to use spread for
-    // both. E.g. `imports: [...IMPORTS, ...DECLARATIONS]`.
-    arrayElements = [
-      ts.factory.createSpreadElement(imports.initializer),
-      ts.factory.createSpreadElement(declarations.initializer)
-    ];
+  if (!declarationsProp) {
+    return;
   }
 
-  return ts.factory.createPropertyAssignment(
-      imports.name, ts.factory.createArrayLiteralExpression(arrayElements));
+  const declarationsToPreserve: ts.Expression[] = [];
+  const declarationsToCopy: ts.Expression[] = [];
+  const properties: ts.ObjectLiteralElementLike[] = [];
+  const importsProp = findLiteralProperty(literal, 'imports');
+
+  // Separate the declarations that we want to keep and ones we need to copy into the `imports`.
+  if (ts.isPropertyAssignment(declarationsProp)) {
+    // If the declarations are an array, we can analyze it to
+    // find any classes from the current migration.
+    if (ts.isArrayLiteralExpression(declarationsProp.initializer)) {
+      for (const el of declarationsProp.initializer.elements) {
+        if (ts.isIdentifier(el)) {
+          const correspondingClass = findClassDeclaration(el, typeChecker);
+
+          if (!correspondingClass || allDeclarations.includes(correspondingClass)) {
+            declarationsToCopy.push(el);
+          } else {
+            declarationsToPreserve.push(el);
+          }
+        } else {
+          declarationsToCopy.push(el);
+        }
+      }
+    } else {
+      // Otherwise create a spread that will be copied into the `imports`.
+      declarationsToCopy.push(ts.factory.createSpreadElement(declarationsProp.initializer));
+    }
+  }
+
+  // If there are no `imports`, create them with the declarations we want to copy.
+  if (!importsProp && declarationsToCopy.length > 0) {
+    properties.push(ts.factory.createPropertyAssignment(
+        'imports', ts.factory.createArrayLiteralExpression(declarationsToCopy)));
+  }
+
+  for (const prop of literal.properties) {
+    if (!isNamedPropertyAssignment(prop)) {
+      properties.push(prop);
+      continue;
+    }
+
+    // If we have declarations to preserve, update the existing property, otherwise drop it.
+    if (prop === declarationsProp) {
+      if (declarationsToPreserve.length > 0) {
+        properties.push(ts.factory.updatePropertyAssignment(
+            prop, prop.name, ts.factory.createArrayLiteralExpression(declarationsToPreserve)));
+      }
+      continue;
+    }
+
+    // If we have an `imports` array and declarations
+    // that should be copied, we merge the two arrays.
+    if (prop === importsProp && declarationsToCopy.length > 0) {
+      let initializer: ts.Expression;
+
+      if (ts.isArrayLiteralExpression(prop.initializer)) {
+        initializer = ts.factory.updateArrayLiteralExpression(
+            prop.initializer, [...prop.initializer.elements, ...declarationsToCopy]);
+      } else {
+        initializer = ts.factory.createArrayLiteralExpression(
+            [ts.factory.createSpreadElement(prop.initializer), ...declarationsToCopy]);
+      }
+
+      properties.push(ts.factory.updatePropertyAssignment(prop, prop.name, initializer));
+      continue;
+    }
+
+    // Retain any remaining properties.
+    properties.push(prop);
+  }
+
+  tracker.replaceNode(
+      literal, ts.factory.updateObjectLiteralExpression(literal, properties),
+      ts.EmitHint.Expression);
 }
 
 /** Adds `standalone: true` to a decorator node. */
@@ -397,16 +420,29 @@ function extractDeclarationsFromModule(
  * @param typeChecker
  */
 function migrateTestDeclarations(
-    testObjects: ts.ObjectLiteralExpression[], tracker: ChangeTracker,
+    testObjects: ts.ObjectLiteralExpression[],
+    declarationsOutsideOfTestFiles: Reference<ts.ClassDeclaration>[], tracker: ChangeTracker,
     typeChecker: ts.TypeChecker) {
-  const {decorators, componentImports} = analyzeTestingModules(testObjects, tracker, typeChecker);
+  const {decorators, componentImports} = analyzeTestingModules(testObjects, typeChecker);
+  const allDeclarations: ts.ClassDeclaration[] =
+      declarationsOutsideOfTestFiles.map(ref => ref.node);
 
   for (const decorator of decorators) {
+    const closestClass = closestNode(decorator.node, ts.isClassDeclaration);
+
     if (decorator.name === 'Pipe' || decorator.name === 'Directive') {
       tracker.replaceNode(decorator.node, addStandaloneToDecorator(decorator.node));
+
+      if (closestClass) {
+        allDeclarations.push(closestClass);
+      }
     } else if (decorator.name === 'Component') {
       const newDecorator = addStandaloneToDecorator(decorator.node);
       const importsToAdd = componentImports.get(decorator.node);
+
+      if (closestClass) {
+        allDeclarations.push(closestClass);
+      }
 
       if (importsToAdd && importsToAdd.size > 0) {
         tracker.replaceNode(
@@ -420,6 +456,10 @@ function migrateTestDeclarations(
       }
     }
   }
+
+  for (const obj of testObjects) {
+    moveDeclarationsToImports(obj, allDeclarations, typeChecker, tracker);
+  }
 }
 
 /**
@@ -429,8 +469,7 @@ function migrateTestDeclarations(
  * @param testObjects Object literals that should be analyzed.
  */
 function analyzeTestingModules(
-    testObjects: ts.ObjectLiteralExpression[], tracker: ChangeTracker,
-    typeChecker: ts.TypeChecker) {
+    testObjects: ts.ObjectLiteralExpression[], typeChecker: ts.TypeChecker) {
   const seenDeclarations = new Set<ts.Declaration>();
   const decorators: NgDecorator[] = [];
   const componentImports = new Map<ts.Decorator, Set<ts.Expression>>();
@@ -446,8 +485,6 @@ function analyzeTestingModules(
     const importElements = importsProp && hasNgModuleMetadataElements(importsProp) ?
         importsProp.initializer.elements :
         null;
-
-    moveDeclarationsToImports(obj, tracker);
 
     for (const decl of declarations) {
       if (seenDeclarations.has(decl)) {
