@@ -720,7 +720,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const emitted = emittedRef.expression;
     if (emitted instanceof WrappedNodeExpr) {
       // An appropriate identifier is already in scope.
-      return {kind, symbolName: emitted.node.text};
+      return {
+        kind,
+        symbolName: emitted.node.text,
+        isForwardReference: emitted.node.getStart() > inContext.getStart()
+      };
     } else if (
         emitted instanceof ExternalExpr && emitted.value.moduleName !== null &&
         emitted.value.name !== null) {
@@ -728,6 +732,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         kind,
         moduleSpecifier: emitted.value.moduleName,
         symbolName: emitted.value.name,
+        isForwardReference: false,
       };
     }
     return null;

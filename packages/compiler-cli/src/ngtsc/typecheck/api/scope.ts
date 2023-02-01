@@ -21,6 +21,7 @@ export interface PotentialImport {
   // If no moduleSpecifier is present, the given symbol name is already in scope.
   moduleSpecifier?: string;
   symbolName: string;
+  isForwardReference: boolean;
 }
 
 /**
