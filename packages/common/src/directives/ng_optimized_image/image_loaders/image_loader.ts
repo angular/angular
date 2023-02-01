@@ -27,6 +27,10 @@ export interface ImageLoaderConfig {
    * Width of the requested image (to be used when generating srcset).
    */
   width?: number;
+  /**
+   * Additional user-provided parameters for use by the ImageLoader.
+   */
+  loaderParams?: {[key: string]: any;};
 }
 
 /**

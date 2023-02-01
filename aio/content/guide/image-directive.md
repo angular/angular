@@ -276,9 +276,41 @@ providers: [
 ],
 </code-example>
 
-A loader function for the `NgOptimizedImage` directive takes an object with the `ImageLoaderConfig` type (from `@angular/common`) as its argument and returns the absolute URL of the image asset. The `ImageLoaderConfig` object contains the `src` and `width` properties.
+A loader function for the `NgOptimizedImage` directive takes an object with the `ImageLoaderConfig` type (from `@angular/common`) as its argument and returns the absolute URL of the image asset. The `ImageLoaderConfig` object contains the `src` property, and optional `width` and `loaderParams` properties.
 
-Note: a custom loader must support requesting images at various widths in order for `ngSrcset` to work properly.
+Note: even though the `width` property may not always be present, a custom loader must use it to support requesting images at various widths in order for `ngSrcset` to work properly.
+
+### The `loaderParams` Property
+
+There is an additional attribute supported by the `NgOptimizedImage` directive, called `loaderParams`, which is specifically designed to support the use of custom loaders. The `loaderParams` attribute take an object with any properties as a value, and does not do anything on its own. The data in `loaderParams` is added to the `ImageLoaderConfig` object passed to your custom loader, and can be used to control the behavior of the loader.
+
+A common use for `loaderParams` is controlling advanced image CDN features.
+
+### Example custom loader
+
+The following shows an example of a custom loader function. This example function concatenates `src` and `width`, and uses `loaderParams` to control a custom CDN feature for rounded corners:
+
+<code-example format="typescript" language="typescript">
+const myCustomLoader = (config: ImageLoaderConfig) => {
+  let url = `https://example.com/images/${config.src}?`;
+  let queryParams = [];
+  if (config.width) {
+    queryParams.push(`w=${config.width}`);
+  }
+  if (config.loaderParams?.roundedCorners) {
+    queryParams.push('mask=corners&corner-radius=5');
+  }
+  return url + queryParams.join('&');
+};
+</code-example>
+
+Note that in the above example, we've invented the 'roundedCorners' property name to control a feature of our custom loader. We could then use this feature when creating an image, as follows:
+
+<code-example format="html" language="html">
+
+&lt;img ngSrc="profile.jpg" width="300" height="300" [loaderParams]="{roundedCorners: true}"&gt;
+
+</code-example>
 
 <!-- links -->
 
