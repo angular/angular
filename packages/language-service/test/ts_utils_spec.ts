@@ -163,17 +163,17 @@ describe('TS util', () => {
     });
 
     it('addElementToArrayLiteral', () => {
-      let arr = ensureArrayWithIdentifier(ts.factory.createIdentifier('foo'));
+      let arr = ensureArrayWithIdentifier('foo', ts.factory.createIdentifier('foo'));
       arr = addElementToArrayLiteral(arr!, ts.factory.createIdentifier('bar'));
       expect(print(arr)).toEqual('[foo, bar]');
     });
 
     it('ensureArrayWithIdentifier', () => {
-      let arr = ensureArrayWithIdentifier(ts.factory.createIdentifier('foo'));
+      let arr = ensureArrayWithIdentifier('foo', ts.factory.createIdentifier('foo'));
       expect(print(arr!)).toEqual('[foo]');
-      arr = ensureArrayWithIdentifier(ts.factory.createIdentifier('bar'), arr!);
+      arr = ensureArrayWithIdentifier('bar', ts.factory.createIdentifier('bar'), arr!);
       expect(print(arr!)).toEqual('[foo, bar]');
-      arr = ensureArrayWithIdentifier(ts.factory.createIdentifier('bar'), arr!);
+      arr = ensureArrayWithIdentifier('bar', ts.factory.createIdentifier('bar'), arr!);
       expect(arr).toEqual(null);
     });
 

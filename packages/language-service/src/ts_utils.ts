@@ -178,14 +178,15 @@ export function updateObjectValueForKey(
  * If no update is needed, returns `null`.
  */
 export function ensureArrayWithIdentifier(
-    identifier: ts.Identifier, arr?: ts.ArrayLiteralExpression): ts.ArrayLiteralExpression|null {
+    identifierText: string, expression: ts.Expression,
+    arr?: ts.ArrayLiteralExpression): ts.ArrayLiteralExpression|null {
   if (arr === undefined) {
-    return ts.factory.createArrayLiteralExpression([identifier]);
+    return ts.factory.createArrayLiteralExpression([expression]);
   }
-  if (arr.elements.find(v => ts.isIdentifier(v) && v.text === identifier.text)) {
+  if (arr.elements.find(v => ts.isIdentifier(v) && v.text === identifierText)) {
     return null;
   }
-  return ts.factory.updateArrayLiteralExpression(arr, [...arr.elements, identifier]);
+  return ts.factory.updateArrayLiteralExpression(arr, [...arr.elements, expression]);
 }
 
 export function moduleSpecifierPointsToFile(
@@ -316,18 +317,13 @@ export function standaloneTraitOrNgModule(
  * Returns the text changes, as well as the name with which the imported symbol can be referred to.
  */
 export function updateImportsForTypescriptFile(
-    tsChecker: ts.TypeChecker, file: ts.SourceFile, newImport: PotentialImport,
+    tsChecker: ts.TypeChecker, file: ts.SourceFile, symbolName: string, moduleSpecifier: string,
     tsFileToImport: ts.SourceFile): [ts.TextChange[], string] {
-  // If the expression is already imported, we can just return its name.
-  if (newImport.moduleSpecifier === undefined) {
-    return [[], newImport.symbolName];
-  }
-
   // The trait might already be imported, possibly under a different name. If so, determine the
   // local name of the imported trait.
   const allImports = findAllMatchingNodes(file, {filter: ts.isImportDeclaration});
   const existingImportName: string|null =
-      hasImport(tsChecker, allImports, newImport.symbolName, tsFileToImport);
+      hasImport(tsChecker, allImports, symbolName, tsFileToImport);
   if (existingImportName !== null) {
     return [[], existingImportName];
   }
@@ -335,7 +331,7 @@ export function updateImportsForTypescriptFile(
   // If the trait has not already been imported, we need to insert the new import.
   const existingImportDeclaration = allImports.find(
       decl => moduleSpecifierPointsToFile(tsChecker, decl.moduleSpecifier, tsFileToImport));
-  const importName = nonCollidingImportName(allImports, newImport.symbolName);
+  const importName = nonCollidingImportName(allImports, symbolName);
 
   if (existingImportDeclaration !== undefined) {
     // Update an existing import declaration.
@@ -347,7 +343,7 @@ export function updateImportsForTypescriptFile(
       return [[], ''];
     }
     let span = {start: bindings.getStart(), length: bindings.getWidth()};
-    const updatedBindings = updateImport(bindings, newImport.symbolName, importName);
+    const updatedBindings = updateImport(bindings, symbolName, importName);
     const importString = printNode(updatedBindings, file);
     return [[{span, newText: importString}], importName];
   }
@@ -364,8 +360,7 @@ export function updateImportsForTypescriptFile(
   if (lastImport as any !== null) {  // TODO: Why does the compiler insist this is null?
     span.start = lastImport!.getStart() + lastImport!.getWidth();
   }
-  const newImportDeclaration =
-      generateImport(newImport.symbolName, importName, newImport.moduleSpecifier);
+  const newImportDeclaration = generateImport(symbolName, importName, moduleSpecifier);
   const importString = '\n' + printNode(newImportDeclaration, file);
   return [[{span, newText: importString}], importName];
 }
@@ -375,7 +370,8 @@ export function updateImportsForTypescriptFile(
  * `importName` to the list of imports on the decorator arguments.
  */
 export function updateImportsForAngularTrait(
-    checker: TemplateTypeChecker, trait: ts.ClassDeclaration, importName: string): ts.TextChange[] {
+    checker: TemplateTypeChecker, trait: ts.ClassDeclaration, importName: string,
+    forwardRefName: string|null): ts.TextChange[] {
   // Get the object with arguments passed into the primary Angular decorator for this trait.
   const decorator = checker.getPrimaryAngularDecorator(trait);
   if (decorator === null) {
@@ -393,7 +389,14 @@ export function updateImportsForAngularTrait(
         if (oldValue && !ts.isArrayLiteralExpression(oldValue)) {
           return oldValue;
         }
-        const newArr = ensureArrayWithIdentifier(ts.factory.createIdentifier(importName), oldValue);
+        const identifier = ts.factory.createIdentifier(importName);
+        const expression = forwardRefName ?
+            ts.factory.createCallExpression(
+                ts.factory.createIdentifier(forwardRefName), undefined,
+                [ts.factory.createArrowFunction(
+                    undefined, undefined, [], undefined, undefined, identifier)]) :
+            identifier;
+        const newArr = ensureArrayWithIdentifier(importName, expression, oldValue);
         updateRequired = newArr !== null;
         return newArr!;
       });

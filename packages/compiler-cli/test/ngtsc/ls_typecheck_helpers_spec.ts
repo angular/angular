@@ -270,6 +270,7 @@ runInEachFileSystem(() => {
         expect(imports.length).toBe(1);
         expect(imports[0].moduleSpecifier).toBe('./two');
         expect(imports[0].symbolName).toBe('TwoCmp');
+        expect(imports[0].isForwardReference).toBe(false);
       });
 
       it('for out of scope ngModules', () => {
@@ -326,6 +327,41 @@ runInEachFileSystem(() => {
         expect(imports.length).toBe(1);
         expect(imports[0].moduleSpecifier).toBe('./twomod');
         expect(imports[0].symbolName).toBe('TwoModule');
+        expect(imports[0].isForwardReference).toBe(false);
+      });
+
+      it('for forward references in the same file', () => {
+        env.write('decls.ts', `
+					import {Component} from '@angular/core';
+
+					@Component({
+						standalone: true,
+						selector: 'one-cmp',
+						template: '<div></div>',
+					})
+					export class OneCmp {}
+
+					@Component({
+						standalone: true,
+						selector: 'two-cmp',
+						template: '<div></div>',
+					})
+					export class TwoCmp {}
+			 `);
+        const {program, checker} = env.driveTemplateTypeChecker();
+        const sfOne = program.getSourceFile(_('/decls.ts'));
+        expect(sfOne).not.toBeNull();
+        const OneCmpClass = getClass(sfOne!, 'OneCmp');
+
+        const TwoCmpDir = checker.getPotentialTemplateDirectives(OneCmpClass)
+                              .filter(d => d.selector === 'two-cmp')[0];
+        const imports =
+            checker.getPotentialImportsFor(TwoCmpDir.ref, OneCmpClass, PotentialImportMode.Normal);
+
+        expect(imports.length).toBe(1);
+        expect(imports[0].moduleSpecifier).toBeUndefined();
+        expect(imports[0].symbolName).toBe('TwoCmp');
+        expect(imports[0].isForwardReference).toBe(true);
       });
     });
   });
