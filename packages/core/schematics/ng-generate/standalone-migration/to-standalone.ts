@@ -119,7 +119,18 @@ function getComponentImportExpressions(
             ref.node.getSourceFile(), importLocation.symbolName, importLocation.moduleSpecifier);
         imports.push(identifier);
       } else {
-        imports.push(ts.factory.createIdentifier(importLocation.symbolName));
+        const identifier = ts.factory.createIdentifier(importLocation.symbolName);
+
+        if (importLocation.isForwardReference) {
+          const forwardRefExpression =
+              tracker.addImport(ref.node.getSourceFile(), 'forwardRef', '@angular/core');
+          const arrowFunction = ts.factory.createArrowFunction(
+              undefined, undefined, [], undefined, undefined, identifier);
+          imports.push(
+              ts.factory.createCallExpression(forwardRefExpression, undefined, [arrowFunction]));
+        } else {
+          imports.push(identifier);
+        }
       }
 
       seenImports.add(importLocation.symbolName);

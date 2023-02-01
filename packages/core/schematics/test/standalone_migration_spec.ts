@@ -1254,6 +1254,46 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should generate a forwardRef for forward reference within the same file', async () => {
+    writeFile('decls.ts', `
+      import {Component, Directive} from '@angular/core';
+
+      @Component({
+        selector: 'comp',
+        template: '<div my-dir></div>'
+      })
+      export class MyComp {}
+
+      @Directive({selector: '[my-dir]'})
+      export class MyDir {}
+    `);
+
+    writeFile('module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp, MyDir} from './decls';
+
+      @NgModule({declarations: [MyComp, MyDir]})
+      export class Mod {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('decls.ts'))).toEqual(stripWhitespace(`
+      import {Component, Directive, forwardRef} from '@angular/core';
+
+      @Component({
+        selector: 'comp',
+        template: '<div my-dir></div>',
+        standalone: true,
+        imports: [forwardRef(() => MyDir)]
+      })
+      export class MyComp {}
+
+      @Directive({selector: '[my-dir]', standalone: true})
+      export class MyDir {}
+    `));
+  });
+
   it('should remove a module that only has imports and exports', async () => {
     writeFile('app.module.ts', `
       import {NgModule} from '@angular/core';
