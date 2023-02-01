@@ -327,6 +327,9 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 
 // @public
 export interface ImageLoaderConfig {
+    loaderParams?: {
+        [key: string]: any;
+    };
     src: string;
     width?: number;
 }
@@ -605,6 +608,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     set height(value: string | number | undefined);
     // (undocumented)
     get height(): number | undefined;
+    loaderParams?: {
+        [key: string]: any;
+    };
     loading?: 'lazy' | 'eager' | 'auto';
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
@@ -622,7 +628,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // (undocumented)
     get width(): number | undefined;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": "ngSrc"; "ngSrcset": "ngSrcset"; "sizes": "sizes"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "disableOptimizedSrcset": "disableOptimizedSrcset"; "fill": "fill"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": "ngSrc"; "ngSrcset": "ngSrcset"; "sizes": "sizes"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "loaderParams": "loaderParams"; "disableOptimizedSrcset": "disableOptimizedSrcset"; "fill": "fill"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
 }

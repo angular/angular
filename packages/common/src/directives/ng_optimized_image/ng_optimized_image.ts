@@ -13,7 +13,7 @@ import {isPlatformServer} from '../../platform_id';
 
 import {imgDirectiveDetails} from './error_helper';
 import {cloudinaryLoaderInfo} from './image_loaders/cloudinary_loader';
-import {IMAGE_LOADER, ImageLoader, noopImageLoader} from './image_loaders/image_loader';
+import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig, noopImageLoader} from './image_loaders/image_loader';
 import {imageKitLoaderInfo} from './image_loaders/imagekit_loader';
 import {imgixLoaderInfo} from './image_loaders/imgix_loader';
 import {LCPImageObserver} from './lcp_image_observer';
@@ -318,6 +318,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private _priority = false;
 
   /**
+   * Data to pass through to custom loaders.
+   */
+  @Input() loaderParams?: {[key: string]: any};
+
+  /**
    * Disables automatic srcset generation for this image.
    */
   @Input()
@@ -386,6 +391,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       }
       assertNotMissingBuiltInLoader(this.ngSrc, this.imageLoader);
       assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
+      assertNoLoaderParamsWithoutLoader(this, this.imageLoader);
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
@@ -462,9 +468,19 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         'fill',
         'loading',
         'sizes',
+        'loaderParams',
         'disableOptimizedSrcset',
       ]);
     }
+  }
+
+  private callImageLoader(configWithoutCustomParams: Omit<ImageLoaderConfig, 'loaderParams'>):
+      string {
+    let augmentedConfig: ImageLoaderConfig = configWithoutCustomParams;
+    if (this.loaderParams) {
+      augmentedConfig.loaderParams = this.loaderParams;
+    }
+    return this.imageLoader(augmentedConfig);
   }
 
   private getLoadingBehavior(): string {
@@ -485,7 +501,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     if (!this._renderedSrc) {
       const imgConfig = {src: this.ngSrc};
       // Cache calculated image src to reuse it later in the code.
-      this._renderedSrc = this.imageLoader(imgConfig);
+      this._renderedSrc = this.callImageLoader(imgConfig);
     }
     return this._renderedSrc;
   }
@@ -495,7 +511,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     const finalSrcs = this.ngSrcset.split(',').filter(src => src !== '').map(srcStr => {
       srcStr = srcStr.trim();
       const width = widthSrcSet ? parseFloat(srcStr) : parseFloat(srcStr) * this.width!;
-      return `${this.imageLoader({src: this.ngSrc, width})} ${srcStr}`;
+      return `${this.callImageLoader({src: this.ngSrc, width})} ${srcStr}`;
     });
     return finalSrcs.join(', ');
   }
@@ -518,15 +534,16 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       filteredBreakpoints = breakpoints!.filter(bp => bp >= VIEWPORT_BREAKPOINT_CUTOFF);
     }
 
-    const finalSrcs =
-        filteredBreakpoints.map(bp => `${this.imageLoader({src: this.ngSrc, width: bp})} ${bp}w`);
+    const finalSrcs = filteredBreakpoints.map(
+        bp => `${this.callImageLoader({src: this.ngSrc, width: bp})} ${bp}w`);
     return finalSrcs.join(', ');
   }
 
   private getFixedSrcset(): string {
-    const finalSrcs = DENSITY_SRCSET_MULTIPLIERS.map(
-        multiplier => `${this.imageLoader({src: this.ngSrc, width: this.width! * multiplier})} ${
-            multiplier}x`);
+    const finalSrcs = DENSITY_SRCSET_MULTIPLIERS.map(multiplier => `${this.callImageLoader({
+                                                       src: this.ngSrc,
+                                                       width: this.width! * multiplier
+                                                     })} ${multiplier}x`);
     return finalSrcs.join(', ');
   }
 
@@ -961,10 +978,25 @@ function assertNotMissingBuiltInLoader(ngSrc: string, imageLoader: ImageLoader) 
 function assertNoNgSrcsetWithoutLoader(dir: NgOptimizedImage, imageLoader: ImageLoader) {
   if (dir.ngSrcset && imageLoader === noopImageLoader) {
     console.warn(formatRuntimeError(
-        RuntimeErrorCode.NGSRCSET_WITHOUT_LOADER,
+        RuntimeErrorCode.MISSING_NECESSARY_LOADER,
         `${imgDirectiveDetails(dir.ngSrc)} the \`ngSrcset\` attribute is present but ` +
             `no image loader is configured (i.e. the default one is being used), ` +
             `which would result in the same image being used for all configured sizes. ` +
             `To fix this, provide a loader or remove the \`ngSrcset\` attribute from the image.`));
+  }
+}
+
+/**
+ * Warns if loaderParams is present and no loader is configured (i.e. the default one is being
+ * used).
+ */
+function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: ImageLoader) {
+  if (dir.loaderParams && imageLoader === noopImageLoader) {
+    console.warn(formatRuntimeError(
+        RuntimeErrorCode.MISSING_NECESSARY_LOADER,
+        `${imgDirectiveDetails(dir.ngSrc)} the \`loaderParams\` attribute is present but ` +
+            `no image loader is configured (i.e. the default one is being used), ` +
+            `which means that the loaderParams data will not be consumed and will not affect the URL. ` +
+            `To fix this, provide a custom loader or remove the \`loaderParams\` attribute from the image.`));
   }
 }
