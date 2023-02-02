@@ -437,6 +437,11 @@ function analyzeTestingModules(
 
   for (const obj of testObjects) {
     const declarations = extractDeclarationsFromTestObject(obj, typeChecker);
+
+    if (declarations.length === 0) {
+      continue;
+    }
+
     const importsProp = findLiteralProperty(obj, 'imports');
     const importElements = importsProp && hasNgModuleMetadataElements(importsProp) ?
         importsProp.initializer.elements :

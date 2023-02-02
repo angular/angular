@@ -1043,6 +1043,34 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should not change testing objects with no declarations', async () => {
+    const initialContent = `
+      import {NgModule, Component} from '@angular/core';
+      import {TestBed} from '@angular/core/testing';
+      import {ButtonModule} from './button.module';
+      import {MatCardModule} from '@angular/material/card';
+
+      describe('bootrstrapping an app', () => {
+        it('should work', () => {
+          TestBed.configureTestingModule({
+            imports: [ButtonModule, MatCardModule]
+          });
+          const fixture = TestBed.createComponent(App);
+          expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
+        });
+      });
+
+      @Component({template: 'hello'})
+      class App {}
+    `;
+
+    writeFile('app.spec.ts', initialContent);
+
+    await runMigration('convert-to-standalone');
+
+    expect(tree.readContent('app.spec.ts')).toBe(initialContent);
+  });
+
   it('should migrate tests with a component declared through Catalyst', async () => {
     writeFile('app.spec.ts', `
       import {NgModule, Component} from '@angular/core';
