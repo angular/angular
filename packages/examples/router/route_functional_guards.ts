@@ -25,7 +25,7 @@ class UserToken {
 
 @Injectable()
 class PermissionsService {
-  canActivate(currentUser: UserToken, id: string): boolean {
+  canActivate(currentUser: UserToken, userId: string): boolean {
     return true;
   }
   canMatch(currentUser: UserToken): boolean {

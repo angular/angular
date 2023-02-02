@@ -41,7 +41,8 @@ export type OnSameUrlNavigation = 'reload'|'ignore';
 /**
  * The `InjectionToken` and `@Injectable` classes for guards and resolvers are deprecated in favor
  * of plain JavaScript functions instead.. Dependency injection can still be achieved using the
- * `inject` function from `@angular/core`.
+ * `inject` function from `@angular/core` and an injectable class can be used as a functional guard
+ * using `inject`: `canActivate: [() => inject(myGuard).canActivate()]`.
  *
  * @deprecated
  * @see CanMatchFn
@@ -784,7 +785,9 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  * ```
  *
  * @publicApi
- * @deprecated Use plain JavaScript functions instead.
+ * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
+ *     injectable class can be used as a functional guard using the `inject` function:
+ *     `canActivateChild: [() => inject(myGuard).canActivateChild()]`.
  * @see CanActivateChildFn
  */
 export interface CanActivateChild {
@@ -865,7 +868,9 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  * ```
  *
  * @publicApi
- * @deprecated Use plain JavaScript functions instead.
+ * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
+ *     injectable class can be used as a functional guard using the `inject` function:
+ *     `canDeactivate: [() => inject(myGuard).canDeactivate()]`.
  * @see CanDeactivateFn
  */
 export interface CanDeactivate<T> {
@@ -955,7 +960,9 @@ export type CanDeactivateFn<T> =
  * could not be used for a URL match but the catch-all `**` `Route` did instead.
  *
  * @publicApi
- * @deprecated Use plain JavaScript functions instead.
+ * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
+ *     injectable class can be used as a functional guard using the `inject` function:
+ *     `canMatch: [() => inject(myGuard).canMatch()]`.
  * @see CanMatchFn
  */
 export interface CanMatch {
@@ -1072,7 +1079,9 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
  * The order of execution is: BaseGuard, ChildGuard, BaseDataResolver, ChildDataResolver.
  *
  * @publicApi
- * @deprecated Use plain JavaScript functions instead.
+ * @deprecated Class-based `Route` resolvers are deprecated in favor of functional resolvers. An
+ * injectable class can be used as a functional guard using the `inject` function: `resolve:
+ * {'user': () => inject(UserResolver).resolve()}`.
  * @see ResolveFn
  */
 export interface Resolve<T> {
