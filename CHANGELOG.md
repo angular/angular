@@ -1,3 +1,46 @@
+<a name="15.2.0-next.3"></a>
+# 15.2.0-next.3 (2023-02-02)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b4187548ca](https://github.com/angular/angular/commit/b4187548cae42f25624bf7ab7ad0cca121242de7) | fix | fix non-animatable warnings for easing ([#48583](https://github.com/angular/angular/pull/48583)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a055196c55](https://github.com/angular/angular/commit/a055196c55c57de281ff7167cd4dfb3df783c337) | fix | warn if using ngSrcset without a configured image loader ([#48804](https://github.com/angular/angular/pull/48804)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [06e161f2dd](https://github.com/angular/angular/commit/06e161f2dd78b42ad1938578f4d730a41404a24f) | fix | incorrect code when non-null assertion is used after a safe access ([#48801](https://github.com/angular/angular/pull/48801)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [345e737daa](https://github.com/angular/angular/commit/345e737daa7b9f635a4c2923358e5e765f716434) | feat | add ng generate schematic to convert to standalone bootstrapping APIs ([#48848](https://github.com/angular/angular/pull/48848)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2796230e95](https://github.com/angular/angular/commit/2796230e953eb8c29d6227a1a3858f5f08a8f200) | fix | add `enum` in `mode` option in `standalone` schema ([#48851](https://github.com/angular/angular/pull/48851)) |
+| [a40cd47aa7](https://github.com/angular/angular/commit/a40cd47aa7ebccfbeeb26e397e03f1372aa10a55) | fix | avoid modifying testing modules without declarations ([#48921](https://github.com/angular/angular/pull/48921)) |
+| [8389557848](https://github.com/angular/angular/commit/83895578488bd35c7e47609f092907eb0f53f435) | fix | don't copy unmigrated declarations into imports array ([#48882](https://github.com/angular/angular/pull/48882)) |
+| [f82bdc4b01](https://github.com/angular/angular/commit/f82bdc4b01f93a7103870449d37da61cc4c4f179) | fix | don't delete classes that may provide dependencies transitively ([#48866](https://github.com/angular/angular/pull/48866)) |
+| [04e0ac3d7c](https://github.com/angular/angular/commit/04e0ac3d7ca89bf38d4d2a38b7ca120d9b7b96ae) | fix | migration host incorrectly reading empty files ([#48849](https://github.com/angular/angular/pull/48849)) |
+| [65c74ed93e](https://github.com/angular/angular/commit/65c74ed93e04cb560c27838d440c6aa7a9859a4e) | fix | normalize paths to posix ([#48850](https://github.com/angular/angular/pull/48850)) |
+| [584976e6c8](https://github.com/angular/angular/commit/584976e6c8a783d40578ab191132673300394a52) | fix | support --defaults in standalone migration ([#48921](https://github.com/angular/angular/pull/48921)) |
+| [03f47ac901](https://github.com/angular/angular/commit/03f47ac9019eddbcb373b50c41bc6f523293ece1) | fix | use consistent quotes in generated imports ([#48876](https://github.com/angular/angular/pull/48876)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2fc5b70fce](https://github.com/angular/angular/commit/2fc5b70fcedb8ac35b825b245c0ae394dc125244) | fix | insert transfer state `script` before other `script` tags ([#48868](https://github.com/angular/angular/pull/48868)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dedac8d3f7](https://github.com/angular/angular/commit/dedac8d3f73ebf4f05b773454e2a22ab5fa4bf7c) | feat | Add test helper for trigger navigations in tests ([#48552](https://github.com/angular/angular/pull/48552)) |
+| [16ef770db8](https://github.com/angular/angular/commit/16ef770db803ce4037a90c72477da412642dfb33) | fix | Handle routerLink directive on svg anchors. ([#48857](https://github.com/angular/angular/pull/48857)) |
+## Special Thanks
+Alan Agius, Andrew Scott, Besim Gürbüz, Brecht Billiet, Dario Piotrowicz, Dylan Hunn, Iván Navarro, Kristiyan Kostadinov, Matthieu Riegler, Onkar Ruikar, Payam Valadkhan, Santosh Yadav, Virginia Dooley and Walid Bouguima
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.0-next.2"></a>
 # 15.2.0-next.2 (2023-01-25)
 ### compiler
