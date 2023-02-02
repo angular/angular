@@ -30,13 +30,9 @@
     },
     "path": {
       "type": "string",
-      "$default": {
-        "$source": "workingDirectory"
-      },
       "description": "Path relative to the project root which should be migrated",
       "x-prompt": "Which path in your project should be migrated?",
       "default": "./"
     }
-  },
-  "required": ["mode", "path"]
+  }
 }
