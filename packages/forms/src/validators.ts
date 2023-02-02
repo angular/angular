@@ -159,7 +159,7 @@ export class Validators {
    *
    */
   static min(min: number): ValidatorFn {
-    return minValidator(min);
+    return createLimitValidator("max", min);
   }
 
   /**
@@ -183,7 +183,7 @@ export class Validators {
    *
    */
   static max(max: number): ValidatorFn {
-    return maxValidator(max);
+    return createLimitValidator("max", max);
   }
 
   /**
@@ -306,7 +306,7 @@ export class Validators {
    *
    */
   static minLength(minLength: number): ValidatorFn {
-    return minLengthValidator(minLength);
+    return createLengthValidator("minLength", minLength);
   }
 
   /**
@@ -337,7 +337,7 @@ export class Validators {
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return maxLengthValidator(maxLength);
+    return createLengthValidator("maxLength", maxLength);
   }
 
   /**
@@ -438,38 +438,6 @@ export class Validators {
 }
 
 /**
- * Validator that requires the control's value to be greater than or equal to the provided number.
- * See `Validators.min` for additional information.
- */
-export function minValidator(min: number): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors|null => {
-    if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
-      return null;  // don't validate empty values to allow optional controls
-    }
-    const value = parseFloat(control.value);
-    // Controls with NaN values after parsing should be treated as not having a
-    // minimum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-min
-    return !isNaN(value) && value < min ? {'min': {'min': min, 'actual': control.value}} : null;
-  };
-}
-
-/**
- * Validator that requires the control's value to be less than or equal to the provided number.
- * See `Validators.max` for additional information.
- */
-export function maxValidator(max: number): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors|null => {
-    if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
-      return null;  // don't validate empty values to allow optional controls
-    }
-    const value = parseFloat(control.value);
-    // Controls with NaN values after parsing should be treated as not having a
-    // maximum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-max
-    return !isNaN(value) && value > max ? {'max': {'max': max, 'actual': control.value}} : null;
-  };
-}
-
-/**
  * Validator that requires the control have a non-empty value.
  * See `Validators.required` for additional information.
  */
@@ -495,36 +463,6 @@ export function emailValidator(control: AbstractControl): ValidationErrors|null 
     return null;  // don't validate empty values to allow optional controls
   }
   return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
-}
-
-/**
- * Validator that requires the length of the control's value to be greater than or equal
- * to the provided minimum length. See `Validators.minLength` for additional information.
- */
-export function minLengthValidator(minLength: number): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors|null => {
-    if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
-      // don't validate empty values to allow optional controls
-      // don't validate values without `length` property
-      return null;
-    }
-
-    return control.value.length < minLength ?
-        {'minlength': {'requiredLength': minLength, 'actualLength': control.value.length}} :
-        null;
-  };
-}
-
-/**
- * Validator that requires the length of the control's value to be less than or equal
- * to the provided maximum length. See `Validators.maxLength` for additional information.
- */
-export function maxLengthValidator(maxLength: number): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors|null => {
-    return hasValidLength(control.value) && control.value.length > maxLength ?
-        {'maxlength': {'requiredLength': maxLength, 'actualLength': control.value.length}} :
-        null;
-  };
 }
 
 /**
@@ -749,4 +687,54 @@ export function addValidators<T extends ValidatorFn|AsyncValidatorFn>(
 export function removeValidators<T extends ValidatorFn|AsyncValidatorFn>(
     validators: T|T[], currentValidators: T|T[]|null): T[] {
   return makeValidatorsArray(currentValidators).filter(v => !hasValidator(validators, v));
+}
+
+/**
+ * Factory function to generate minLength and maxLength validator function
+ * that requires the limit of the control's value to be greater than or equal
+ * to the provided minimum or maximum length.
+ * 
+ * @param check Shows the validator type
+ * @param limit Shows the control value
+ * @returns ValidatorFn
+ */
+export function createLengthValidator(check: 'minLength'|'maxLength', limit: number): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors|null => {
+    if(check === "minLength") {
+      if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
+        // don't validate empty values to allow optional controls
+        // don't validate values without `length` property
+        return null;
+      }
+      return control.value.length < limit ?
+      {'minlength': {'requiredLength': limit, 'actualLength': control.value.length}} :
+      null;
+    }
+
+    return hasValidLength(control.value) && control.value.length > limit ?
+      {'maxlength': {'requiredLength': limit, 'actualLength': control.value.length}} :
+      null;
+  };
+}
+
+/**
+ * Factory function to generate min and max validator function
+ * that requires the limit of the control's value to be greater than or equal
+ * to the provided minimum or maximum length.
+ * 
+ * @param check Shows the validator type
+ * @param limit Shows the control value
+ * @returns ValidatorFn
+ */
+export function createLimitValidator(check: 'min'|'max', limit: number): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors|null => {
+    if (isEmptyInputValue(control.value) || isEmptyInputValue(limit)) {
+      return null;  // don't validate empty values to allow optional controls
+    }
+    const value = parseFloat(control.value);
+    // Controls with NaN values after parsing should be treated as not having a
+    // maximum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-max
+    return check === "max" ? (!isNaN(value) && value > limit ? {'max': {'max': limit, 'actual': control.value}} : null) 
+      : (!isNaN(value) && value < limit ? {'min': {'min': limit, 'actual': control.value}} : null);
+  };
 }

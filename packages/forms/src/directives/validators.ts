@@ -10,7 +10,7 @@ import {Directive, forwardRef, Input, OnChanges, Provider, SimpleChanges, ɵcoer
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model/abstract_model';
-import {emailValidator, maxLengthValidator, maxValidator, minLengthValidator, minValidator, NG_VALIDATORS, nullValidator, patternValidator, requiredTrueValidator, requiredValidator} from '../validators';
+import {emailValidator, createLengthValidator, createLimitValidator, NG_VALIDATORS, nullValidator, patternValidator, requiredTrueValidator, requiredValidator} from '../validators';
 
 /**
  * Method that updates string to integer if not already a number
@@ -217,7 +217,7 @@ export class MaxValidator extends AbstractValidatorDirective {
   /** @internal */
   override normalizeInput = (input: string|number): number => toFloat(input);
   /** @internal */
-  override createValidator = (max: number): ValidatorFn => maxValidator(max);
+  override createValidator = (max: number): ValidatorFn => createLimitValidator('max', max);
 }
 
 /**
@@ -268,7 +268,7 @@ export class MinValidator extends AbstractValidatorDirective {
   /** @internal */
   override normalizeInput = (input: string|number): number => toFloat(input);
   /** @internal */
-  override createValidator = (min: number): ValidatorFn => minValidator(min);
+  override createValidator = (min: number): ValidatorFn => createLimitValidator('min', min);
 }
 
 /**
@@ -549,7 +549,7 @@ export class MinLengthValidator extends AbstractValidatorDirective {
   override normalizeInput = (input: string|number): number => toInteger(input);
 
   /** @internal */
-  override createValidator = (minlength: number): ValidatorFn => minLengthValidator(minlength);
+  override createValidator = (minlength: number): ValidatorFn => createLengthValidator('minLength', minlength);
 }
 
 /**
@@ -602,7 +602,7 @@ export class MaxLengthValidator extends AbstractValidatorDirective {
   override normalizeInput = (input: string|number): number => toInteger(input);
 
   /** @internal */
-  override createValidator = (maxlength: number): ValidatorFn => maxLengthValidator(maxlength);
+  override createValidator = (maxlength: number): ValidatorFn => createLengthValidator('maxLength', maxlength);
 }
 
 /**
