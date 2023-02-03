@@ -7,7 +7,7 @@
  */
 
 import {HashLocationStrategy, LOCATION_INITIALIZED, LocationStrategy, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 
@@ -21,6 +21,7 @@ import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlSerializer} from './url_tree';
+import {afterNextNavigation} from './utils/navigations';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -314,51 +315,18 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
         const locationInitialized: Promise<any> =
             injector.get(LOCATION_INITIALIZED, Promise.resolve());
 
-        /**
-         * Performs the given action once the router finishes its next/current navigation.
-         *
-         * If the navigation is canceled or errors without a redirect, the navigation is considered
-         * complete. If the `NavigationEnd` event emits, the navigation is also considered complete.
-         */
-        function afterNextNavigation(action: () => void) {
-          const router = injector.get(Router);
-          router.events
-              .pipe(
-                  filter(
-                      (e): e is NavigationEnd|NavigationCancel|NavigationError =>
-                          e instanceof NavigationEnd || e instanceof NavigationCancel ||
-                          e instanceof NavigationError),
-                  map(e => {
-                    if (e instanceof NavigationEnd) {
-                      // Navigation assumed to succeed if we get `ActivationStart`
-                      return true;
-                    }
-                    const redirecting = e instanceof NavigationCancel ?
-                        (e.code === NavigationCancellationCode.Redirect ||
-                         e.code === NavigationCancellationCode.SupersededByNewNavigation) :
-                        false;
-                    return redirecting ? null : false;
-                  }),
-                  filter((result): result is boolean => result !== null),
-                  take(1),
-                  )
-              .subscribe(() => {
-                action();
-              });
-        }
-
         return () => {
           return locationInitialized.then(() => {
             return new Promise(resolve => {
               const router = injector.get(Router);
               const bootstrapDone = injector.get(BOOTSTRAP_DONE);
-              afterNextNavigation(() => {
+              afterNextNavigation(router, () => {
                 // Unblock APP_INITIALIZER in case the initial navigation was canceled or errored
                 // without a redirect.
                 resolve(true);
               });
 
-              router.afterPreactivation = () => {
+              injector.get(NavigationTransitions).afterPreactivation = () => {
                 // Unblock APP_INITIALIZER once we get to `afterPreactivation`. At this point, we
                 // assume activation will complete successfully (even though this is not
                 // guaranteed).
@@ -601,7 +569,7 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  * bootstrapApplication(AppComponent,
  *   {
  *     providers: [
- *       provideRouter(appRoutes, withHashLocation()
+ *       provideRouter(appRoutes, withHashLocation())
  *     ]
  *   }
  * );
@@ -622,6 +590,63 @@ export function withHashLocation(): RouterConfigurationFeature {
 }
 
 /**
+ * A type alias for providers returned by `withNavigationErrorHandler` for use with `provideRouter`.
+ *
+ * @see `withNavigationErrorHandler`
+ * @see `provideRouter`
+ *
+ * @publicApi
+ */
+export type NavigationErrorHandlerFeature =
+    RouterFeature<RouterFeatureKind.NavigationErrorHandlerFeature>;
+
+/**
+ * Subscribes to the Router's navigation events and calls the given function when a
+ * `NavigationError` happens.
+ *
+ * This function is run inside application's injection context so you can use the `inject` function.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can use the error handler option:
+ * ```
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withNavigationErrorHandler((e: NavigationError) =>
+ * inject(MyErrorTracker).trackError(e))
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * @see `NavigationError`
+ * @see `inject`
+ * @see `EnvironmentInjector#runInContext`
+ *
+ * @returns A set of providers for use with `provideRouter`.
+ *
+ * @publicApi
+ */
+export function withNavigationErrorHandler(fn: (error: NavigationError) => void):
+    NavigationErrorHandlerFeature {
+  const providers = [{
+    provide: ENVIRONMENT_INITIALIZER,
+    multi: true,
+    useValue: () => {
+      const injector = inject(EnvironmentInjector);
+      inject(Router).events.subscribe((e) => {
+        if (e instanceof NavigationError) {
+          injector.runInContext(() => fn(e));
+        }
+      });
+    }
+  }];
+  return routerFeature(RouterFeatureKind.NavigationErrorHandlerFeature, providers);
+}
+
+/**
  * A type alias that represents all Router features available for use with `provideRouter`.
  * Features can be enabled by adding special functions to the `provideRouter` call.
  * See documentation for each symbol to find corresponding function name. See also `provideRouter`
@@ -632,7 +657,7 @@ export function withHashLocation(): RouterConfigurationFeature {
  * @publicApi
  */
 export type RouterFeatures = PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|
-    InMemoryScrollingFeature|RouterConfigurationFeature;
+    InMemoryScrollingFeature|RouterConfigurationFeature|NavigationErrorHandlerFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -644,5 +669,6 @@ export const enum RouterFeatureKind {
   DisabledInitialNavigationFeature,
   InMemoryScrollingFeature,
   RouterConfigurationFeature,
-  RouterHashLocationFeature
+  RouterHashLocationFeature,
+  NavigationErrorHandlerFeature,
 }

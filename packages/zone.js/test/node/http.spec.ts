@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const http = require('http');
+import http from 'http';
+
 describe('http test', () => {
   it('http.request should be patched as eventTask', (done) => {
     const server = http.createServer((req: any, res: any) => {

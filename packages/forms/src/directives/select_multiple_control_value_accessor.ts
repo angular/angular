@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Provider, Renderer2, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
 import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const SELECT_MULTIPLE_VALUE_ACCESSOR: StaticProvider = {
+const SELECT_MULTIPLE_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectMultipleControlValueAccessor),
   multi: true

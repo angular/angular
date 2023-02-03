@@ -9,7 +9,6 @@
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-import {getDecorators, getModifiers} from '../../ts_compatibility';
 import {PerFileShimGenerator} from '../api';
 
 import {generatedModuleName} from './util';
@@ -28,7 +27,7 @@ export class SummaryGenerator implements PerFileShimGenerator {
     for (const stmt of sf.statements) {
       if (ts.isClassDeclaration(stmt)) {
         // If the class isn't exported, or if it's not decorated, then skip it.
-        if (!isExported(stmt) || stmt.name === undefined || getDecorators(stmt) === undefined) {
+        if (!isExported(stmt) || stmt.name === undefined || ts.getDecorators(stmt) === undefined) {
           continue;
         }
         symbolNames.push(stmt.name.text);
@@ -69,7 +68,7 @@ export class SummaryGenerator implements PerFileShimGenerator {
 }
 
 function isExported(decl: ts.Declaration): boolean {
-  const modifiers = getModifiers(decl);
+  const modifiers = ts.canHaveModifiers(decl) ? ts.getModifiers(decl) : undefined;
   return modifiers !== undefined &&
       modifiers.some(mod => mod.kind == ts.SyntaxKind.ExportKeyword) ||
       false;

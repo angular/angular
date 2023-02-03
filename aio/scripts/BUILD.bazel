@@ -22,7 +22,7 @@ nodejs_binary(
 js_library(
     name = "fast-serve-and-watch",
     srcs = [
-        "fast-serve-and-watch.js",
+        "fast-serve-and-watch.mjs",
     ],
     deps = [
         "//aio/tools/transforms/authors-package:watchdocs",

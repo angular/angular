@@ -7,6 +7,7 @@
  */
 
 /// <reference types="node" />
+import {runfiles} from '@bazel/runfiles';
 import realFs from 'fs';
 import os from 'os';
 
@@ -14,7 +15,7 @@ import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../
 import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {getLockFilePath} from '../../src/locking/lock_file';
+import {LockFilePathResolver} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
 import {clearTsConfigCache} from '../../src/ngcc_options';
 import {hasBeenProcessed, markAsProcessed} from '../../src/packages/build_marker';
@@ -22,7 +23,7 @@ import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTI
 import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
-import {mockRequireResolveForLockfile} from '../helpers/utils';
+import {mockRequireResolveForLockfile, mockRequireResolveForLockFileUnlockerScript, mockRequireResolveForWorkerScript} from '../helpers/utils';
 
 import {loadNgccIntegrationTestFiles} from './util';
 
@@ -47,7 +48,11 @@ runInEachFileSystem(() => {
       _ = absoluteFrom;
       fs = getFileSystem();
       pkgJsonUpdater = new DirectPackageJsonUpdater(fs);
+
       mockRequireResolveForLockfile();
+      mockRequireResolveForWorkerScript();
+      mockRequireResolveForLockFileUnlockerScript();
+
       initMockFileSystem(fs, testFiles);
 
       // Force single-process execution in unit tests by mocking available CPUs to 1.
@@ -71,7 +76,7 @@ runInEachFileSystem(() => {
       fs.ensureDir(fs.join(pkgPath, 'fesm5'));
       fs.writeFile(
           fs.join(pkgPath, 'fesm5/core.js'),
-          realFs.readFileSync(require.resolve('../fesm5_angular_core.js'), 'utf8'));
+          realFs.readFileSync(runfiles.resolvePackageRelative('./fesm5_angular_core.js'), 'utf8'));
 
       pkgJson.esm5 = './fesm5/core.js';
       pkgJson.fesm5 = './fesm5/core.js';
@@ -3940,7 +3945,7 @@ runInEachFileSystem(() => {
     function initMockFileSystem(fs: FileSystem, testFiles: Folder) {
       if (fs instanceof MockFileSystem) {
         fs.init(testFiles);
-        fs.ensureDir(fs.dirname(getLockFilePath(fs)));
+        fs.ensureDir(fs.dirname(LockFilePathResolver.resolve(fs)));
       }
 
       // a random test package that no metadata.json file so not compiled by Angular.

@@ -22,10 +22,10 @@ jobs:
       (github.event.action == 'labeled' && github.event.label.name == 'aio: preview') ||
       (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'aio: preview'))
     steps:
-      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - uses: ./.github/actions/yarn-install
 
-      - uses: angular/dev-infra/github-actions/setup-bazel-remote-exec@96fdaaa056f1cfa7ffbc4c69b7e9007279f76c94
+      - uses: angular/dev-infra/github-actions/setup-bazel-remote-exec@fa428ee0accc999f051008f0daa5651ba2728c2b
         with:
           bazelrc: ./.bazelrc.user
 
@@ -34,7 +34,7 @@ jobs:
       # the number of concurrent actions is determined based on the host resources.
       - run: bazel build //aio:build --jobs=32 --announce_rc --verbose_failures
 
-      - uses: angular/dev-infra/github-actions/deploy-previews/pack-and-upload-artifact@96fdaaa056f1cfa7ffbc4c69b7e9007279f76c94
+      - uses: angular/dev-infra/github-actions/deploy-previews/pack-and-upload-artifact@fa428ee0accc999f051008f0daa5651ba2728c2b
         with:
           workflow-artifact-name: 'aio'
           pull-number: '${{github.event.pull_request.number}}'

@@ -12,12 +12,13 @@ def partial_compliance_golden(filePath):
         "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
         "//packages/compiler-cli/test/compliance/test_cases",
         "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
+        filePath,
     ]
 
     nodejs_binary(
         name = generate_partial_name,
         testonly = True,
-        data = data + [filePath],
+        data = data,
         visibility = [":__pkg__"],
         entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
         templated_args = ["$(execpath %s)" % filePath],

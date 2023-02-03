@@ -28,6 +28,7 @@ http_archive(
     patches = [
         # TODO(devversion): remove when https://github.com/bazelbuild/rules_nodejs/pull/3605 is available.
         "//tools:bazel-repo-patches/rules_nodejs__#3605.patch",
+        "//tools/esm-interop:patches/bazel/nodejs_binary_esm_support.patch",
     ],
     sha256 = "c29944ba9b0b430aadcaf3bf2570fece6fc5ebfb76df145c6cdad40d65c20811",
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.7.0/rules_nodejs-5.7.0.tar.gz"],
@@ -51,35 +52,9 @@ http_archive(
 # Fetch Aspect lib for utilities like write_source_files
 http_archive(
     name = "aspect_bazel_lib",
-    sha256 = "be236556c7b9c7b91cb370e837fdcec62b6e8893408cd4465ae883c9d7c67024",
-    strip_prefix = "bazel-lib-1.18.0",
-    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.18.0.tar.gz",
-)
-
-# Download cli source from angular/cli-builds for doc generation at a specific tag or commit.
-# If the ref is a commit sha, use the full sha instead of the abbreviated form. Tags, which
-# hold an abbreviated sha by convention in cli-builds, can continue to use the short form.
-CLI_SRC_REF = "f0163d17d581f7ea59ada47420599264060db77a"
-
-http_archive(
-    name = "angular_cli_src",
-    build_file_content = """
-# Include files used in doc generation
-filegroup(
-    name = "files_for_docgen",
-    srcs = glob([
-        "help/**/*.json",
-        "package.json",
-    ]),
-    visibility = ["//visibility:public"],
-)
-""",
-    # Run the following command to calculate the sha256, substituting the CLI_SRC_REF
-    # wget -O- -q https://github.com/angular/cli-builds/archive/{CLI_SRC_REF}.tar.gz | sha256sum
-    # Alternatively, just remove the parameter and bazel debug will output the sha as a suggestion.
-    sha256 = "952a62ce2b040af74fe3ae4d0bef5eaca505b7986df3bcf776e4ce84628cd3ed",
-    strip_prefix = "cli-builds-%s" % CLI_SRC_REF,
-    url = "https://github.com/angular/cli-builds/archive/%s.tar.gz" % CLI_SRC_REF,
+    sha256 = "4b2e774387bae6242879820086b7b738d49bf3d0659522ea5d9363be01a27582",
+    strip_prefix = "bazel-lib-1.23.2",
+    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.23.2.tar.gz",
 )
 
 # Setup the Node.js toolchain.
@@ -104,6 +79,11 @@ yarn_install(
         "//:scripts/puppeteer-chromedriver-versions.js",
         "//:scripts/webdriver-manager-update.js",
         "//tools:postinstall-patches.js",
+        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-246cebbf2a78566ff1fe9b88fdde2459606568dc.patch",
+        "//tools/esm-interop:patches/npm/@bazel+concatjs+5.7.1.patch",
+        "//tools/esm-interop:patches/npm/@bazel+esbuild+5.7.1.patch",
+        "//tools/esm-interop:patches/npm/@bazel+protractor+5.7.1.patch",
+        "//tools/esm-interop:patches/npm/rxjs+6.6.7.patch",
     ],
     # Currently disabled due to:
     #  1. Missing Windows support currently.
@@ -214,10 +194,10 @@ cldr_xml_data_repository(
 # sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "618f0b7aae019c149ac2ff4142a66c110de116fb5c173dbeccedbaee06fc5f6d",
-    strip_prefix = "rules_sass-a2fce75bcf103750f7accbf7f966ad48bcbca2d4",
+    sha256 = "425d93db6667060db581aaaace7b77b3d7e114b41f36a0c5b86e5e9497832174",
+    strip_prefix = "rules_sass-901d22c63864aa781b902b14c55c423117469286",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/a2fce75bcf103750f7accbf7f966ad48bcbca2d4.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/901d22c63864aa781b902b14c55c423117469286.zip",
     ],
 )
 

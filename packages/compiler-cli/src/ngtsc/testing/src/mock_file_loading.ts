@@ -13,7 +13,7 @@ import {resolve} from 'path';
 import {AbsoluteFsPath, FileSystem, getFileSystem} from '../../file_system';
 import {Folder, MockFileSystemPosix, TestFile} from '../../file_system/testing';
 
-import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from './runfile_helpers';
+import {getAngularPackagesFromRunfiles, resolveFromRunfiles} from './runfile_helpers';
 
 export function loadTestFiles(files: TestFile[]) {
   const fs = getFileSystem();
@@ -39,9 +39,10 @@ class CachedFolder {
   }
 }
 
-const typescriptFolder = new CachedFolder(() => loadFolder(resolveNpmTreeArtifact('typescript')));
+const typescriptFolder =
+    new CachedFolder(() => loadFolder(resolveFromRunfiles('npm/node_modules/typescript')));
 const angularFolder = new CachedFolder(loadAngularFolder);
-const rxjsFolder = new CachedFolder(() => loadFolder(resolveNpmTreeArtifact('rxjs')));
+const rxjsFolder = new CachedFolder(() => loadFolder(resolveFromRunfiles('npm/node_modules/rxjs')));
 
 export function loadStandardTestFiles(
     {fakeCore = true, fakeCommon = false, rxjs = false}:
@@ -72,21 +73,21 @@ export function loadStandardTestFiles(
 
 export function loadTsLib(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
-      fs, resolveNpmTreeArtifact('tslib'), fs.resolve(basePath, 'node_modules/tslib'));
+      fs, resolveFromRunfiles('npm/node_modules/tslib'),
+      fs.resolve(basePath, 'node_modules/tslib'));
 }
 
 export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
       fs,
-      resolveNpmTreeArtifact(
-          'angular/packages/compiler-cli/src/ngtsc/testing/fake_core/npm_package'),
+      resolveFromRunfiles('angular/packages/compiler-cli/src/ngtsc/testing/fake_core/npm_package'),
       fs.resolve(basePath, 'node_modules/@angular/core'));
 }
 
 export function loadFakeCommon(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
       fs,
-      resolveNpmTreeArtifact(
+      resolveFromRunfiles(
           'angular/packages/compiler-cli/src/ngtsc/testing/fake_common/npm_package'),
       fs.resolve(basePath, 'node_modules/@angular/common'));
 }

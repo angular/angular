@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "../dist/legacy-test-out",
     "target": "ES2015",
-    "module": "ES2020",
+    "module": "esnext",
     "importHelpers": true,
     // The project uses Bazel for TypeScript compilation. Unlike with Bazel, we build all
     // sources as part of a single TypeScript compilation. This results in `@internal`
@@ -32,6 +32,6 @@
 
     // Additional exclusion since tests for the language-service never run within the
     // Saucelabs job and the package is not compatible with ESM TS compilation anyway.
-    "language-service/**",
+    "language-service/**"
   ]
 }

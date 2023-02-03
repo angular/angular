@@ -21,13 +21,13 @@ def local_server_test(name, entry_point, serve_target, data = [], args = [], **k
             "$(rootpath %s)" % entry_point,
         ] + args,
         data = [
-            entry_point,
-            serve_target,
             "//aio/scripts:run-with-local-server.mjs",
             "@aio_npm//get-port",
-            "@aio_npm//light-server/bin:light-server",
             "@aio_npm//shelljs",
             "@aio_npm//tree-kill",
+            "@aio_npm//light-server/bin:light-server",
+            serve_target,
+            entry_point,
         ] + data,
         entry_point = "//aio/scripts:run-with-local-server.mjs",
         **kwargs

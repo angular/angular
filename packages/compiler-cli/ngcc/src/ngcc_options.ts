@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as os from 'os';
+import os from 'os';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathManipulation} from '../../src/ngtsc/file_system';
 import {ConsoleLogger, Logger, LogLevel} from '../../src/ngtsc/logging';

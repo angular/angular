@@ -21,13 +21,13 @@
         // the ESM interop only exposes statically-discoverable named exports). Instead
         // default imports should be used to ensure compatibility with both ESM or CommonJS.
         "noNamedExports": [
+          "typescript/lib/tsserverlibrary",
           "typescript",
           "minimist",
           "magic-string",
           "semver",
           "yargs",
           "glob",
-          "cluster",
           "convert-source-map"
         ],
         // The following CommonJS modules appear to have a default export available (due to the `esModuleInterop` flag),
@@ -36,13 +36,7 @@
         // `module.exports` as `export default`. Instead, named exports should be used for compat with CJS/ESM.
         "noDefaultExport": [],
         // List of modules which are incompatible and should never be imported at all.
-        "incompatibleModules": {
-          // `@babel/core` and `@babel/types` suggest named exports which do not exist at runtime within ESM
-          // (as these named exports are not statically discoverable by NodeJS). At the same time, these modules
-          // set `__esModule` and the default import does not exist for CJS at runtime (e.g. breaking tests).
-          "@babel/core": "This module is incompatible with the ESM/CJS interop. Use the custom interop file.",
-          "@babel/types": "This module is incompatible with the ESM/CJS interop. Use the custom interop file and import the `types` namespace."
-        }
+        "incompatibleModules": {}
       }
     ],
     "eofline": true,
@@ -79,7 +73,10 @@
       true,
       {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
       {"name": "fit", "message": "Don't keep jasmine focus methods."},
-      {"name": ["*", "getMutableClone"], "message": "Use a ts.factory.update* or ts.factory.create* method instead."}
+      {
+        "name": ["*", "getMutableClone"],
+        "message": "Use a ts.factory.update* or ts.factory.create* method instead."
+      }
     ]
   },
   "jsRules": {

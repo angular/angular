@@ -21,7 +21,7 @@ ts_library(
 
 jasmine_node_test(
     name = "integration",
-    bootstrap = ["//tools/testing:node_no_angular_es2015"],
+    bootstrap = ["//tools/testing:node_no_angular"],
     data = [
         "//packages/localize/tools/test/extract/integration/test_files",
         "//packages/localize/tools/test/extract/integration/test_files:compile_es2015",

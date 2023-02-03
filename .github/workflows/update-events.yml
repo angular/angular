@@ -24,18 +24,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
           # Setting `persist-credentials: false` prevents the github-action account from being the
           # account that is attempted to be used for authentication, instead the remote is set to
           # an authenticated URL.
           persist-credentials: false
-      - name: Install AIO dependencies
-        run: yarn --cwd=aio install
+          # This is needed as otherwise the PR creation will fail with `shallow update not allowed` when the forked branch is not in sync.
+          fetch-depth: 0
       - name: Generate `events.json`
         run: node aio/scripts/generate-events/index.mjs --ignore-invalid-dates
       - name: Create a PR (if necessary)
-        uses: angular/dev-infra/github-actions/create-pr-for-changes@96fdaaa056f1cfa7ffbc4c69b7e9007279f76c94
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@fa428ee0accc999f051008f0daa5651ba2728c2b
         with:
           branch-prefix: docs-update-events
           pr-title: 'docs: update events'

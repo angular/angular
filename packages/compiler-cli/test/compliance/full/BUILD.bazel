@@ -12,7 +12,7 @@ ts_library(
 
 jasmine_node_test(
     name = "full",
-    bootstrap = ["//tools/testing:node_no_angular_es2015"],
+    bootstrap = ["//tools/testing:node_no_angular"],
     data = [
         "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
         "//packages/compiler-cli/test/compliance/test_cases",

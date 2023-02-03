@@ -19,6 +19,7 @@ import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, HostDirectivesResolver, LocalMetadataRegistry, MetadataReader, MetadataReaderWithIndex, PipeMeta, ResourceRegistry} from '../../metadata';
+import {NgModuleIndexImpl} from '../../metadata/src/ng_module_index';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf';
 import {FileUpdate, ProgramDriver, UpdateMode} from '../../program_driver';
@@ -28,7 +29,6 @@ import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegi
 import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
 import {generatedFactoryTransform} from '../../shims';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
-import {getModifiers} from '../../ts_compatibility';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
 import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
@@ -972,6 +972,7 @@ export class NgCompiler {
     const localMetaReader: MetadataReaderWithIndex = localMetaRegistry;
     const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasingHost);
     const metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
+    const ngModuleIndex = new NgModuleIndexImpl(metaReader, localMetaReader);
     const ngModuleScopeRegistry = new LocalModuleScopeRegistry(
         localMetaReader, metaReader, depScopeReader, refEmitter, aliasingHost);
     const standaloneScopeReader =
@@ -1073,7 +1074,7 @@ export class NgCompiler {
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.inputProgram, notifyingDriver, traitCompiler, this.getTypeCheckingConfig(), refEmitter,
         reflector, this.adapter, this.incrementalCompilation, metaReader, localMetaReader,
-        scopeReader, typeCheckScopeRegistry, this.delegatingPerfRecorder);
+        ngModuleIndex, scopeReader, typeCheckScopeRegistry, this.delegatingPerfRecorder);
 
     // Only construct the extended template checker if the configuration is valid and usable.
     const extendedTemplateChecker = this.constructionDiagnostics.length === 0 ?
@@ -1116,7 +1117,7 @@ export function isAngularCorePackage(program: ts.Program): boolean {
       return false;
     }
     // It must be exported.
-    const modifiers = getModifiers(stmt);
+    const modifiers = ts.getModifiers(stmt);
     if (modifiers === undefined ||
         !modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)) {
       return false;

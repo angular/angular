@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ts_library")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
@@ -14,13 +14,29 @@ ts_library(
     ],
 )
 
-ts_devserver(
-    name = "devserver",
-    bootstrap = ["@npm//:node_modules/angular-1.8/angular.js"],
-    entry_module = "angular/modules/benchmarks/src/tree/ng1/index",
-    port = 4200,
-    static_files = ["index.html"],
+app_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
     deps = [":ng1"],
+)
+
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
+    name = "app_bundle",
+    srcs = [":bundle.debug.min.js"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $< $@",
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "index.html",
+        "@npm//:node_modules/angular-1.8/angular.js",
+    ],
+    deps = [
+        ":app_bundle",
+    ],
 )
 
 benchmark_test(

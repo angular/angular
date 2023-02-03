@@ -7,10 +7,10 @@
  */
 
 import {runfiles} from '@bazel/runfiles';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import {createPatch} from 'diff';
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 
 type TestPackage = {
   displayName: string; packagePath: string; goldenFilePath: string;
@@ -147,14 +147,10 @@ function hashFileContents(filePath: string): string {
   return crypto.createHash('md5').update(fs.readFileSync(filePath)).digest('hex');
 }
 
-if (require.main === module) {
-  const args = process.argv.slice(2);
-  const acceptingNewGold = (args[0] === '--accept');
-
-  if (acceptingNewGold) {
-    for (let p of packagesToTest) {
-      acceptNewPackageGold(p);
-    }
+// This spec file can be invoked as a `nodejs_binary` to update the golden files.
+if (process.argv.slice(2).includes('--accept')) {
+  for (let p of packagesToTest) {
+    acceptNewPackageGold(p);
   }
 } else {
   describe('Comparing test packages to golds', () => {

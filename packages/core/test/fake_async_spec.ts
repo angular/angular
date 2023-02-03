@@ -26,7 +26,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
     });
 
     it('should pass arguments to the wrapped function', () => {
-      fakeAsync((foo: any /** TODO #9100 */, bar: any /** TODO #9100 */) => {
+      fakeAsync((foo: string, bar: string) => {
         expect(foo).toEqual('foo');
         expect(bar).toEqual('bar');
       })('foo', 'bar');
@@ -40,7 +40,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
     it('should throw on nested calls', () => {
       expect(() => {
         fakeAsync(() => {
-          fakeAsync((): any /** TODO #9100 */ => null)();
+          fakeAsync((): null => null)();
         })();
       }).toThrowError('fakeAsync() calls can not be nested');
     });
@@ -76,7 +76,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
          }));
 
       it('should run chained thens', fakeAsync(() => {
-           const log = new Log();
+           const log = new Log<number>();
 
            resolvedPromise.then((_) => log.add(1)).then((_) => log.add(2));
 
@@ -87,7 +87,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
          }));
 
       it('should run Promise created in Promise', fakeAsync(() => {
-           const log = new Log();
+           const log = new Log<number>();
 
            resolvedPromise.then((_) => {
              log.add(1);
@@ -245,9 +245,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
 
       it('should be able to cancel periodic timers from a callback', fakeAsync(() => {
            let cycles = 0;
-           let id: any /** TODO #9100 */;
-
-           id = setInterval(() => {
+           const id = setInterval(() => {
              cycles++;
              clearInterval(id);
            }, 10);
@@ -261,7 +259,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
 
       it('should clear periodic timers', fakeAsync(() => {
            let cycles = 0;
-           const id = setInterval(() => {
+           setInterval(() => {
              cycles++;
            }, 10);
 

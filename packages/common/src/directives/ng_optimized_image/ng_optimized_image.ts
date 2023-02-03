@@ -385,6 +385,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         assertNoComplexSizes(this);
       }
       assertNotMissingBuiltInLoader(this.ngSrc, this.imageLoader);
+      assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
@@ -417,6 +418,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
+
+    // The `data-ng-img` attribute flags an image as using the directive, to allow
+    // for analysis of the directive's performance.
+    this.setHostAttribute('ng-img', 'true');
+
     // The `src` and `srcset` attributes should be set last since other attributes
     // could affect the image's loading behavior.
     const rewrittenSrc = this.getRewrittenSrc();
@@ -770,16 +776,13 @@ function assertNoImageDistortion(
     dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
   const removeListenerFn = renderer.listen(img, 'load', () => {
     removeListenerFn();
-    // TODO: `clientWidth`, `clientHeight`, `naturalWidth` and `naturalHeight`
-    // are typed as number, but we run `parseFloat` (which accepts strings only).
-    // Verify whether `parseFloat` is needed in the cases below.
-    const renderedWidth = parseFloat(img.clientWidth as any);
-    const renderedHeight = parseFloat(img.clientHeight as any);
+    const renderedWidth = img.clientWidth;
+    const renderedHeight = img.clientHeight;
     const renderedAspectRatio = renderedWidth / renderedHeight;
     const nonZeroRenderedDimensions = renderedWidth !== 0 && renderedHeight !== 0;
 
-    const intrinsicWidth = parseFloat(img.naturalWidth as any);
-    const intrinsicHeight = parseFloat(img.naturalHeight as any);
+    const intrinsicWidth = img.naturalWidth;
+    const intrinsicHeight = img.naturalHeight;
     const intrinsicAspectRatio = intrinsicWidth / intrinsicHeight;
 
     const suppliedWidth = dir.width!;
@@ -883,7 +886,7 @@ function assertNonZeroRenderedHeight(
     dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
   const removeListenerFn = renderer.listen(img, 'load', () => {
     removeListenerFn();
-    const renderedHeight = parseFloat(img.clientHeight as any);
+    const renderedHeight = img.clientHeight;
     if (dir.fill && renderedHeight === 0) {
       console.warn(formatRuntimeError(
           RuntimeErrorCode.INVALID_INPUT,
@@ -949,5 +952,19 @@ function assertNotMissingBuiltInLoader(ngSrc: string, imageLoader: ImageLoader) 
               `If you don't want to use the built-in loader, define a custom ` +
               `loader function using IMAGE_LOADER to silence this warning.`));
     }
+  }
+}
+
+/**
+ * Warns if ngSrcset is present and no loader is configured (i.e. the default one is being used).
+ */
+function assertNoNgSrcsetWithoutLoader(dir: NgOptimizedImage, imageLoader: ImageLoader) {
+  if (dir.ngSrcset && imageLoader === noopImageLoader) {
+    console.warn(formatRuntimeError(
+        RuntimeErrorCode.NGSRCSET_WITHOUT_LOADER,
+        `${imgDirectiveDetails(dir.ngSrc)} the \`ngSrcset\` attribute is present but ` +
+            `no image loader is configured (i.e. the default one is being used), ` +
+            `which would result in the same image being used for all configured sizes. ` +
+            `To fix this, provide a loader or remove the \`ngSrcset\` attribute from the image.`));
   }
 }

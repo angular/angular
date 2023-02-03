@@ -1,65 +1,26 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-
 # BEGIN-DEV-ONLY
-load("@npm//@bazel/concatjs:index.bzl", "ts_library")
-# END-DEV-ONLY
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
-
-nodejs_binary(
-    name = "rollup_for_ng_package",
-    data = [
-        # BEGIN-DEV-ONLY
-        "@npm" +
-        # END-DEV-ONLY
-        "//rollup",
-        # BEGIN-DEV-ONLY
-        "@npm" +
-        # END-DEV-ONLY
-        "//@rollup/plugin-commonjs",
-        # BEGIN-DEV-ONLY
-        "@npm" +
-        # END-DEV-ONLY
-        "//@rollup/plugin-node-resolve",
-        # BEGIN-DEV-ONLY
-        "@npm" +
-        # END-DEV-ONLY
-        "//rollup-plugin-sourcemaps",
-        # BEGIN-DEV-ONLY
-        "@npm" +
-        # END-DEV-ONLY
-        "//typescript",
-    ],
-    entry_point = (
-        # BEGIN-DEV-ONLY
-        "@npm" +
-        # END-DEV-ONLY
-        "//:node_modules/rollup/dist/bin/rollup"
-    ),
-    # Disable the linker and rely on patched resolution which works better on Windows
-    # and is less prone to race conditions when targets build concurrently.
-    templated_args = ["--nobazel_run_linker"],
-)
 
 exports_files([
     "ng_package.bzl",
     "rollup.config.js",
 ])
 
-# BEGIN-DEV-ONLY
 ts_library(
     name = "lib",
     srcs = glob(["*.ts"]),
     tsconfig = ":tsconfig.json",
     deps = [
         "@npm//@types/node",
-        "@npm//@types/shelljs",
     ],
 )
 
 filegroup(
     name = "package_assets",
     srcs = glob(["*.bzl"]) + [
+        "//packages/bazel/src/ng_package/rollup:package_assets",
         "BUILD.bazel",
         "rollup.config.js",
     ],
@@ -69,7 +30,6 @@ nodejs_binary(
     name = "packager",
     data = [
         "lib",
-        "@npm//shelljs",
     ],
     entry_point = ":packager.ts",
     # Disable the linker and rely on patched resolution which works better on Windows

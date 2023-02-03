@@ -13,7 +13,7 @@ ts_library(
 
 jasmine_node_test(
     name = "selector",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     deps = [
         ":selector_lib",
     ],

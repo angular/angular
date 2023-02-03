@@ -7,19 +7,18 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, inject, Injectable, Injector, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {BehaviorSubject, Observable, of, SubscriptionLike} from 'rxjs';
+import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Observable, of, SubscriptionLike} from 'rxjs';
 
 import {CreateUrlTreeStrategy} from './create_url_tree_strategy';
 import {RuntimeErrorCode} from './errors';
-import {Event, NavigationTrigger} from './events';
+import {Event, IMPERATIVE_NAVIGATION, NavigationTrigger} from './events';
 import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
 import {Navigation, NavigationExtras, NavigationTransition, NavigationTransitions, RestoredState, UrlCreationOptions} from './navigation_transition';
 import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
-import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
+import {ROUTER_CONFIGURATION} from './router_config';
 import {ROUTES} from './router_config_loader';
-import {ChildrenOutletContexts} from './router_outlet_context';
 import {createEmptyState, RouterState} from './router_state';
 import {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
@@ -180,6 +179,8 @@ export class Router {
    * A handler for navigation errors in this NgModule.
    *
    * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
+   *   `provideRouter` has the `withErrorHandler` feature to make this easier.
+   * @see `withErrorHandler`
    */
   errorHandler = this.options.errorHandler || defaultErrorHandler;
 
@@ -189,8 +190,8 @@ export class Router {
    * The most common case is a `%` sign
    * that's not encoded and is not part of a percent encoded sequence.
    *
-   * @deprecated Configure this through `RouterModule.forRoot` instead:
-   *   `RouterModule.forRoot(routes, {malformedUriErrorHandler: myHandler})`
+   * @deprecated URI parsing errors should be handled in the `UrlSerializer`.
+   *
    * @see `RouterModule`
    */
   malformedUriErrorHandler =
@@ -202,14 +203,6 @@ export class Router {
    */
   navigated: boolean = false;
   private lastSuccessfulId: number = -1;
-
-  /**
-   * Hook that enables you to pause navigation after the preactivation phase.
-   * Used by `RouterModule`.
-   *
-   * @internal
-   */
-  afterPreactivation: () => Observable<void> = () => of(void 0);
 
   /**
    * A strategy for extracting and merging URLs.
@@ -316,9 +309,6 @@ export class Router {
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly location = inject(Location);
 
-  /** @internal */
-  rootComponentType: Type<any>|null = null;
-
   constructor() {
     this.isNgZoneEnabled = inject(NgZone) instanceof NgZone && NgZone.isInAngularZone();
 
@@ -327,7 +317,7 @@ export class Router {
     this.rawUrlTree = this.currentUrlTree;
     this.browserUrlTree = this.currentUrlTree;
 
-    this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
+    this.routerState = createEmptyState(this.currentUrlTree, null);
 
     this.navigationTransitions.setupNavigations(this).subscribe(
         t => {
@@ -341,10 +331,10 @@ export class Router {
 
   /** @internal */
   resetRootComponentType(rootComponentType: Type<any>): void {
-    this.rootComponentType = rootComponentType;
     // TODO: vsavkin router 4.0 should make the root component set to null
     // this will simplify the lifecycle of the router.
-    this.routerState.root.component = this.rootComponentType;
+    this.routerState.root.component = rootComponentType;
+    this.navigationTransitions.rootComponentType = rootComponentType;
   }
 
   /**
@@ -353,7 +343,8 @@ export class Router {
   initialNavigation(): void {
     this.setUpLocationChangeListener();
     if (!this.navigationTransitions.hasRequestedNavigation) {
-      this.navigateByUrl(this.location.path(true), {replaceUrl: true});
+      const state = this.location.getState() as RestoredState;
+      this.navigateToSyncWithBrowser(this.location.path(true), IMPERATIVE_NAVIGATION, state);
     }
   }
 
@@ -373,35 +364,47 @@ export class Router {
           // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
           // hybrid apps.
           setTimeout(() => {
-            const extras: NavigationExtras = {replaceUrl: true};
-
-            // TODO: restoredState should always include the entire state, regardless
-            // of navigationId. This requires a breaking change to update the type on
-            // NavigationStart’s restoredState, which currently requires navigationId
-            // to always be present. The Router used to only restore history state if
-            // a navigationId was present.
-
-            // The stored navigationId is used by the RouterScroller to retrieve the scroll
-            // position for the page.
-            const restoredState = event.state?.navigationId ? event.state : null;
-
-            // Separate to NavigationStart.restoredState, we must also restore the state to
-            // history.state and generate a new navigationId, since it will be overwritten
-            if (event.state) {
-              const stateCopy = {...event.state} as Partial<RestoredState>;
-              delete stateCopy.navigationId;
-              delete stateCopy.ɵrouterPageId;
-              if (Object.keys(stateCopy).length !== 0) {
-                extras.state = stateCopy;
-              }
-            }
-
-            const urlTree = this.parseUrl(event['url']!);
-            this.scheduleNavigation(urlTree, source, restoredState, extras);
+            this.navigateToSyncWithBrowser(event['url']!, source, event.state);
           }, 0);
         }
       });
     }
+  }
+
+  /**
+   * Schedules a router navigation to synchronize Router state with the browser state.
+   *
+   * This is done as a response to a popstate event and the initial navigation. These
+   * two scenarios represent times when the browser URL/state has been updated and
+   * the Router needs to respond to ensure its internal state matches.
+   */
+  private navigateToSyncWithBrowser(
+      url: string, source: NavigationTrigger, state: RestoredState|undefined) {
+    const extras: NavigationExtras = {replaceUrl: true};
+
+    // TODO: restoredState should always include the entire state, regardless
+    // of navigationId. This requires a breaking change to update the type on
+    // NavigationStart’s restoredState, which currently requires navigationId
+    // to always be present. The Router used to only restore history state if
+    // a navigationId was present.
+
+    // The stored navigationId is used by the RouterScroller to retrieve the scroll
+    // position for the page.
+    const restoredState = state?.navigationId ? state : null;
+
+    // Separate to NavigationStart.restoredState, we must also restore the state to
+    // history.state and generate a new navigationId, since it will be overwritten
+    if (state) {
+      const stateCopy = {...state} as Partial<RestoredState>;
+      delete stateCopy.navigationId;
+      delete stateCopy.ɵrouterPageId;
+      if (Object.keys(stateCopy).length !== 0) {
+        extras.state = stateCopy;
+      }
+    }
+
+    const urlTree = this.parseUrl(url);
+    this.scheduleNavigation(urlTree, source, restoredState, extras);
   }
 
   /** The current URL. */
@@ -561,7 +564,7 @@ export class Router {
     const urlTree = isUrlTree(url) ? url : this.parseUrl(url);
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
-    return this.scheduleNavigation(mergedTree, 'imperative', null, extras);
+    return this.scheduleNavigation(mergedTree, IMPERATIVE_NAVIGATION, null, extras);
   }
 
   /**
@@ -686,10 +689,6 @@ export class Router {
 
     let targetPageId: number;
     if (this.canceledNavigationResolution === 'computed') {
-      const isInitialPage = this.currentPageId === 0;
-      if (isInitialPage) {
-        restoredState = this.location.getState() as RestoredState | null;
-      }
       // If the `ɵrouterPageId` exist in the state then `targetpageId` should have the value of
       // `ɵrouterPageId`. This is the case for something like a page refresh where we assign the
       // target id to the previously set value for that page.

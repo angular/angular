@@ -21,6 +21,7 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
  * the exception.
  *
  * @publicApi
+ * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
  */
 export type ErrorHandler = (error: any) => any;
 
@@ -202,8 +203,9 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * If the handler returns a value, the navigation Promise is resolved with this value.
    * If the handler throws an exception, the navigation Promise is rejected with the exception.
    *
+   * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
    */
-  errorHandler?: ErrorHandler;
+  errorHandler?: (error: any) => any;
 
   /**
    * Configures a preloading strategy.
@@ -230,6 +232,8 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * - `'URIError'` - Error thrown when parsing a bad URL.
    * - `'UrlSerializer'` - UrlSerializer that’s configured with the router.
    * - `'url'` -  The malformed URL that caused the URIError
+   *
+   * @deprecated URI parsing errors should be handled in the `UrlSerializer` instead.
    * */
   malformedUriErrorHandler?:
       (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;

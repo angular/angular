@@ -5,9 +5,29 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer2, ɵisListLikeIterable as isListLikeIterable, ɵstringify as stringify} from '@angular/core';
+import {Directive, DoCheck, ElementRef, Input, IterableDiffers, KeyValueDiffers, Renderer2, ɵstringify as stringify} from '@angular/core';
 
 type NgClassSupportedTypes = string[]|Set<string>|{[klass: string]: any}|null|undefined;
+
+const WS_REGEXP = /\s+/;
+
+const EMPTY_ARRAY: string[] = [];
+
+/**
+ * Represents internal object used to track state of each CSS class. There are 3 different (boolean)
+ * flags that, combined together, indicate state of a given CSS class:
+ * - enabled: indicates if a class should be present in the DOM (true) or not (false);
+ * - changed: tracks if a class was toggled (added or removed) during the custom dirty-checking
+ * process; changed classes must be synchronized with the DOM;
+ * - touched: tracks if a class is present in the current object bound to the class / ngClass input;
+ * classes that are not present any more can be removed from the internal data structures;
+ */
+interface CssClassState {
+  // PERF: could use a bit mask to represent state as all fields are boolean flags
+  enabled: boolean;
+  changed: boolean;
+  touched: boolean;
+}
 
 /**
  * @ngModule CommonModule
@@ -42,116 +62,116 @@ type NgClassSupportedTypes = string[]|Set<string>|{[klass: string]: any}|null|un
   standalone: true,
 })
 export class NgClass implements DoCheck {
-  private _iterableDiffer: IterableDiffer<string>|null = null;
-  private _keyValueDiffer: KeyValueDiffer<string, any>|null = null;
-  private _initialClasses: string[] = [];
-  private _rawClass: NgClassSupportedTypes = null;
+  private initialClasses = EMPTY_ARRAY;
+  private rawClass: NgClassSupportedTypes;
+
+  private stateMap = new Map<string, CssClassState>();
 
   constructor(
+      // leaving references to differs in place since flex layout is extending NgClass...
       private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
       private _ngEl: ElementRef, private _renderer: Renderer2) {}
 
-
   @Input('class')
   set klass(value: string) {
-    this._removeClasses(this._initialClasses);
-    this._initialClasses = typeof value === 'string' ? value.split(/\s+/) : [];
-    this._applyClasses(this._initialClasses);
-    this._applyClasses(this._rawClass);
+    this.initialClasses = value != null ? value.trim().split(WS_REGEXP) : EMPTY_ARRAY;
   }
 
   @Input('ngClass')
   set ngClass(value: string|string[]|Set<string>|{[klass: string]: any}|null|undefined) {
-    this._removeClasses(this._rawClass);
-    this._applyClasses(this._initialClasses);
-
-    this._iterableDiffer = null;
-    this._keyValueDiffer = null;
-
-    this._rawClass = typeof value === 'string' ? value.split(/\s+/) : value;
-
-    if (this._rawClass) {
-      if (isListLikeIterable(this._rawClass)) {
-        this._iterableDiffer = this._iterableDiffers.find(this._rawClass).create();
-      } else {
-        this._keyValueDiffer = this._keyValueDiffers.find(this._rawClass).create();
-      }
-    }
+    this.rawClass = typeof value === 'string' ? value.trim().split(WS_REGEXP) : value;
   }
 
-  ngDoCheck() {
-    if (this._iterableDiffer) {
-      const iterableChanges = this._iterableDiffer.diff(this._rawClass as string[]);
-      if (iterableChanges) {
-        this._applyIterableChanges(iterableChanges);
-      }
-    } else if (this._keyValueDiffer) {
-      const keyValueChanges = this._keyValueDiffer.diff(this._rawClass as {[k: string]: any});
-      if (keyValueChanges) {
-        this._applyKeyValueChanges(keyValueChanges);
-      }
-    }
-  }
+  /*
+  The NgClass directive uses the custom change detection algorithm for its inputs. The custom
+  algorithm is necessary since inputs are represented as complex object or arrays that need to be
+  deeply-compared.
 
-  private _applyKeyValueChanges(changes: KeyValueChanges<string, any>): void {
-    changes.forEachAddedItem((record) => this._toggleClass(record.key, record.currentValue));
-    changes.forEachChangedItem((record) => this._toggleClass(record.key, record.currentValue));
-    changes.forEachRemovedItem((record) => {
-      if (record.previousValue) {
-        this._toggleClass(record.key, false);
-      }
-    });
-  }
+  This algorithm is perf-sensitive since NgClass is used very frequently and its poor performance
+  might negatively impact runtime performance of the entire change detection cycle. The design of
+  this algorithm is making sure that:
+  - there is no unnecessary DOM manipulation (CSS classes are added / removed from the DOM only when
+  needed), even if references to bound objects change;
+  - there is no memory allocation if nothing changes (even relatively modest memory allocation
+  during the change detection cycle can result in GC pauses for some of the CD cycles).
 
-  private _applyIterableChanges(changes: IterableChanges<string>): void {
-    changes.forEachAddedItem((record) => {
-      if (typeof record.item === 'string') {
-        this._toggleClass(record.item, true);
-      } else {
-        throw new Error(`NgClass can only toggle CSS classes expressed as strings, got ${
-            stringify(record.item)}`);
-      }
-    });
+  The algorithm works by iterating over the set of bound classes, staring with [class] binding and
+  then going over [ngClass] binding. For each CSS class name:
+  - check if it was seen before (this information is tracked in the state map) and if its value
+  changed;
+  - mark it as "touched" - names that are not marked are not present in the latest set of binding
+  and we can remove such class name from the internal data structures;
 
-    changes.forEachRemovedItem((record) => this._toggleClass(record.item, false));
-  }
-
-  /**
-   * Applies a collection of CSS classes to the DOM element.
-   *
-   * For argument of type Set and Array CSS class names contained in those collections are always
-   * added.
-   * For argument of type Map CSS class name in the map's key is toggled based on the value (added
-   * for truthy and removed for falsy).
+  After iteration over all the CSS class names we've got data structure with all the information
+  necessary to synchronize changes to the DOM - it is enough to iterate over the state map, flush
+  changes to the DOM and reset internal data structures so those are ready for the next change
+  detection cycle.
    */
-  private _applyClasses(rawClassVal: NgClassSupportedTypes) {
-    if (rawClassVal) {
-      if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
-        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, true));
-      } else {
-        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, !!rawClassVal[klass]));
+  ngDoCheck(): void {
+    // classes from the [class] binding
+    for (const klass of this.initialClasses) {
+      this._updateState(klass, true);
+    }
+
+    // classes from the [ngClass] binding
+    const rawClass = this.rawClass;
+    if (Array.isArray(rawClass) || rawClass instanceof Set) {
+      for (const klass of rawClass) {
+        this._updateState(klass, true);
       }
+    } else if (rawClass != null) {
+      for (const klass of Object.keys(rawClass)) {
+        this._updateState(klass, Boolean(rawClass[klass]));
+      }
+    }
+
+    this._applyStateDiff();
+  }
+
+  private _updateState(klass: string, nextEnabled: boolean) {
+    const state = this.stateMap.get(klass);
+    if (state !== undefined) {
+      if (state.enabled !== nextEnabled) {
+        state.changed = true;
+        state.enabled = nextEnabled;
+      }
+      state.touched = true;
+    } else {
+      this.stateMap.set(klass, {enabled: nextEnabled, changed: true, touched: true});
     }
   }
 
-  /**
-   * Removes a collection of CSS classes from the DOM element. This is mostly useful for cleanup
-   * purposes.
-   */
-  private _removeClasses(rawClassVal: NgClassSupportedTypes) {
-    if (rawClassVal) {
-      if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
-        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, false));
-      } else {
-        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, false));
+  private _applyStateDiff() {
+    for (const stateEntry of this.stateMap) {
+      const klass = stateEntry[0];
+      const state = stateEntry[1];
+
+      if (state.changed) {
+        this._toggleClass(klass, state.enabled);
+        state.changed = false;
+      } else if (!state.touched) {
+        // A class that was previously active got removed from the new collection of classes -
+        // remove from the DOM as well.
+        if (state.enabled) {
+          this._toggleClass(klass, false);
+        }
+        this.stateMap.delete(klass);
       }
+
+      state.touched = false;
     }
   }
 
   private _toggleClass(klass: string, enabled: boolean): void {
+    if (ngDevMode) {
+      if (typeof klass !== 'string') {
+        throw new Error(
+            `NgClass can only toggle CSS classes expressed as strings, got ${stringify(klass)}`);
+      }
+    }
     klass = klass.trim();
-    if (klass) {
-      klass.split(/\s+/g).forEach(klass => {
+    if (klass.length > 0) {
+      klass.split(WS_REGEXP).forEach(klass => {
         if (enabled) {
           this._renderer.addClass(this._ngEl.nativeElement, klass);
         } else {

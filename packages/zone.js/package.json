@@ -20,16 +20,15 @@
     "jest-environment-node": "^29.0.3",
     "mocha": "^10.0.0",
     "mock-require": "3.0.3",
-    "promises-aplus-tests": "^2.1.2",
-    "typescript": "~4.9.3"
+    "promises-aplus-tests": "^2.1.2"
   },
   "scripts": {
     "closuretest": "./scripts/closure/closure_compiler.sh",
     "electrontest": "cd test/extra && node electron.js",
     "jest:test": "jest --config ./test/jest/jest.config.js ./test/jest/jest.spec.js",
     "jest:nodetest": "jest --config ./test/jest/jest.node.config.js ./test/jest/jest.spec.js",
-    "promisetest": "tsc -p . && node ./test/promise/promise-test.js",
-    "promisefinallytest": "tsc -p . && mocha ./test/promise/promise.finally.spec.js"
+    "promisetest": "node ./test/promise/promise-test.mjs",
+    "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs"
   },
   "repository": {
     "type": "git",

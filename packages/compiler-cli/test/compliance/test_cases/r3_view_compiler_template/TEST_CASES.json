@@ -286,6 +286,40 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should allow self-closing custom elements in templates",
+      "inputFiles": [
+        "self_closing_tags.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "self_closing_tags_template.js",
+              "generated": "self_closing_tags.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should not confuse self-closing tag for an end tag",
+      "inputFiles": [
+        "self_closing_tags_nested.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "self_closing_tags_nested_template.js",
+              "generated": "self_closing_tags_nested.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

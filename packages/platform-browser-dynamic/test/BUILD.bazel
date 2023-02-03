@@ -3,7 +3,7 @@ load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 circular_dependency_test(
     name = "circular_deps_test",
-    entry_point = "angular/packages/platform-browser-dynamic/index.js",
+    entry_point = "angular/packages/platform-browser-dynamic/index.mjs",
     deps = ["//packages/platform-browser-dynamic"],
 )
 
@@ -25,7 +25,7 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     deps = [
         ":test_lib",
     ],

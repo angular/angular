@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, NgModule, OnDestroy, OnInit, Renderer2, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, NgModule, OnDestroy, OnInit, Provider, Renderer2, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
 import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 
-export const RADIO_VALUE_ACCESSOR: any = {
+const RADIO_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => RadioControlValueAccessor),
   multi: true

@@ -9,7 +9,10 @@ import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {TestFile} from '../../../src/ngtsc/file_system/testing';
+import {ClusterWorkerScriptResolver} from '../../src/execution/cluster/master';
 import {DtsProcessing} from '../../src/execution/tasks/api';
+import {LockFilePathResolver} from '../../src/locking/lock_file';
+import {LockFileUnlockerScriptResolver} from '../../src/locking/lock_file_with_child_process';
 import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
 import {NgccEntryPointConfig} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointFormat} from '../../src/packages/entry_point';
@@ -125,13 +128,24 @@ export function getRootFiles(testFiles: TestFile[]): AbsoluteFsPath[] {
  * Mock out the lockfile path resolution, which uses `require.resolve()`.
  */
 export function mockRequireResolveForLockfile() {
-  const moduleConstructor: any = module.constructor;
-  const originalResolveFileName = moduleConstructor._resolveFilename;
-  spyOn<any>(moduleConstructor, '_resolveFilename').and.callFake(function(request: string) {
-    if (request === '@angular/compiler-cli/package.json') {
-      return '/node_modules/' + request;
-    } else {
-      return originalResolveFileName.apply(null, arguments as any);
-    }
-  });
+  spyOn(LockFilePathResolver, 'resolve')
+      .and.returnValue(absoluteFrom('/node_modules/@angular/compiler-cli/package.json'));
+}
+
+/**
+ * Mock out the worker script resolution, which uses `require.resolve()`.
+ */
+export function mockRequireResolveForWorkerScript() {
+  spyOn(ClusterWorkerScriptResolver, 'resolve')
+      .and.returnValue(absoluteFrom(
+          '/node_modules/@angular/compiler-cli/ngcc/src/execution/cluster/ngcc_cluster_worker'));
+}
+
+/**
+ * Mock out the lock file unlocker script resolution, which uses `require.resolve()`.
+ */
+export function mockRequireResolveForLockFileUnlockerScript() {
+  spyOn(LockFileUnlockerScriptResolver, 'resolve')
+      .and.returnValue(absoluteFrom(
+          '/node_modules/@angular/compiler-cli/ngcc/src/locking/lock_file_with_child_process/ngcc_lock_unlocker'));
 }

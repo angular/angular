@@ -850,7 +850,7 @@ describe('FormArray', () => {
 
   describe('valueChanges', () => {
     let a: FormArray;
-    let c1: any /** TODO #9100 */, c2: any /** TODO #9100 */;
+    let c1: FormControl, c2: FormControl;
 
     beforeEach(() => {
       c1 = new FormControl('old1');

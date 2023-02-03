@@ -24,6 +24,7 @@ import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Provider } from '@angular/core';
+import { ProviderToken } from '@angular/core';
 import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
@@ -111,13 +112,13 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
     store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void;
 }
 
-// @public
+// @public @deprecated
 export interface CanActivate {
     // (undocumented)
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
-// @public
+// @public @deprecated
 export interface CanActivateChild {
     // (undocumented)
     canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
@@ -129,7 +130,7 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
 // @public
 export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 
-// @public
+// @public @deprecated
 export interface CanDeactivate<T> {
     // (undocumented)
     canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
@@ -147,7 +148,7 @@ export interface CanLoad {
 // @public @deprecated
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 
-// @public
+// @public @deprecated
 export interface CanMatch {
     // (undocumented)
     canMatch(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
@@ -237,6 +238,9 @@ export class DefaultUrlSerializer implements UrlSerializer {
     serialize(tree: UrlTree): string;
 }
 
+// @public @deprecated
+export type DeprecatedGuard = ProviderToken<any> | any;
+
 // @public
 export type DetachedRouteHandle = {};
 
@@ -291,8 +295,10 @@ export const enum EventType {
 // @public
 export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
     enableTracing?: boolean;
-    errorHandler?: ErrorHandler;
+    // @deprecated
+    errorHandler?: (error: any) => any;
     initialNavigation?: InitialNavigation;
+    // @deprecated
     malformedUriErrorHandler?: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
     preloadingStrategy?: any;
     scrollOffset?: [number, number] | (() => [number, number]);
@@ -440,6 +446,9 @@ export class NavigationError extends RouterEvent {
 }
 
 // @public
+export type NavigationErrorHandlerFeature = RouterFeature<RouterFeatureKind.NavigationErrorHandlerFeature>;
+
+// @public
 export interface NavigationExtras extends UrlCreationOptions, NavigationBehaviorOptions {
 }
 
@@ -556,7 +565,7 @@ export function provideRoutes(routes: Routes): Provider[];
 // @public
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
-// @public
+// @public @deprecated
 export interface Resolve<T> {
     // (undocumented)
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T> | Promise<T> | T;
@@ -564,7 +573,7 @@ export interface Resolve<T> {
 
 // @public
 export type ResolveData = {
-    [key: string | symbol]: any | ResolveFn<unknown>;
+    [key: string | symbol]: ResolveFn<unknown> | DeprecatedGuard;
 };
 
 // @public
@@ -606,12 +615,12 @@ export class ResolveStart extends RouterEvent {
 
 // @public
 export interface Route {
-    canActivate?: Array<CanActivateFn | any>;
-    canActivateChild?: Array<CanActivateChildFn | any>;
-    canDeactivate?: Array<CanDeactivateFn<any> | any>;
+    canActivate?: Array<CanActivateFn | DeprecatedGuard>;
+    canActivateChild?: Array<CanActivateChildFn | DeprecatedGuard>;
+    canDeactivate?: Array<CanDeactivateFn<any> | DeprecatedGuard>;
     // @deprecated
-    canLoad?: Array<CanLoadFn | any>;
-    canMatch?: Array<Type<CanMatch> | InjectionToken<CanMatchFn> | CanMatchFn>;
+    canLoad?: Array<CanLoadFn | DeprecatedGuard>;
+    canMatch?: Array<CanMatchFn | DeprecatedGuard>;
     children?: Routes;
     component?: Type<any>;
     data?: Data;
@@ -662,7 +671,7 @@ export class Router {
     createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
     dispose(): void;
     // @deprecated
-    errorHandler: ErrorHandler;
+    errorHandler: (error: any) => any;
     get events(): Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
@@ -748,7 +757,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1076,6 +1085,9 @@ export function withHashLocation(): RouterConfigurationFeature;
 
 // @public
 export function withInMemoryScrolling(options?: InMemoryScrollingOptions): InMemoryScrollingFeature;
+
+// @public
+export function withNavigationErrorHandler(fn: (error: NavigationError) => void): NavigationErrorHandlerFeature;
 
 // @public
 export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): PreloadingFeature;

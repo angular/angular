@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html>
   <head>
@@ -9,6 +9,7 @@
 
     <app-root></app-root>
 
+    <script src="/angular/packages/zone.js/bundles/zone.umd.js"></script>
     <!--
       Script tag which bootstraps the application. Use `?debug` in URL to select
       the debug version of the script.
@@ -24,9 +25,12 @@
         file is formatted using prettier (to ease debugging).
     -->
     <script>
-        document.write('<script src="' +
+      document.write(
+        '<script src="' +
           (document.location.search.endsWith('debug') ? '/bundle.debug.min.js' : '/bundle.min.js') +
-          '"></' + 'script>');
+          '"></' +
+          'script>'
+      );
     </script>
   </body>
 </html>

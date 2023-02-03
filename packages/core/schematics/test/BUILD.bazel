@@ -4,15 +4,11 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    data = [
-        "//packages/core/schematics:migrations.json",
-    ],
     deps = [
-        "//packages/core/schematics/migrations/relative-link-resolution",
-        "//packages/core/schematics/migrations/router-link-with-href",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",
         "@npm//tslint",
     ],
@@ -20,6 +16,18 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
+    data = [
+        "//packages/core/schematics:collection.json",
+        "//packages/core/schematics:migrations.json",
+        "//packages/core/schematics/migrations/relative-link-resolution",
+        "//packages/core/schematics/migrations/relative-link-resolution:bundle",
+        "//packages/core/schematics/migrations/router-link-with-href",
+        "//packages/core/schematics/migrations/router-link-with-href:bundle",
+        "//packages/core/schematics/ng-generate/standalone-migration",
+        "//packages/core/schematics/ng-generate/standalone-migration:bundle",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
+    ],
+    templated_args = ["--nobazel_run_linker"],
     deps = [
         ":test_lib",
         "@npm//shelljs",

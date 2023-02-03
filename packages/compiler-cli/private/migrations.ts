@@ -15,3 +15,4 @@ export {forwardRefResolver} from '../src/ngtsc/annotations';
 export {Reference} from '../src/ngtsc/imports';
 export {DynamicValue, PartialEvaluator, ResolvedValue, ResolvedValueMap, StaticInterpreter} from '../src/ngtsc/partial_evaluator';
 export {reflectObjectLiteral, TypeScriptReflectionHost} from '../src/ngtsc/reflection';
+export {PotentialImport, PotentialImportKind, PotentialImportMode, TemplateTypeChecker} from '../src/ngtsc/typecheck/api';

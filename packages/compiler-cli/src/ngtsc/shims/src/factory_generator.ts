@@ -9,7 +9,6 @@ import ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
-import {getDecorators, getModifiers, updateImportDeclaration} from '../../ts_compatibility';
 import {FactoryInfo, FactoryTracker, ModuleInfo, PerFileShimGenerator} from '../api';
 
 import {generatedModuleName} from './util';
@@ -42,7 +41,7 @@ export class FactoryGenerator implements PerFileShimGenerator, FactoryTracker {
                             .filter(ts.isClassDeclaration)
                             // which are named, exported, and have decorators.
                             .filter(
-                                decl => isExported(decl) && getDecorators(decl) !== undefined &&
+                                decl => isExported(decl) && ts.getDecorators(decl) !== undefined &&
                                     decl.name !== undefined)
                             // Grab the symbol name.
                             .map(decl => decl.name!.text);
@@ -104,7 +103,7 @@ export class FactoryGenerator implements PerFileShimGenerator, FactoryTracker {
 }
 
 function isExported(decl: ts.Declaration): boolean {
-  const modifiers = getModifiers(decl);
+  const modifiers = ts.canHaveModifiers(decl) ? ts.getModifiers(decl) : undefined;
   return modifiers !== undefined && modifiers.some(mod => mod.kind == ts.SyntaxKind.ExportKeyword);
 }
 
@@ -160,8 +159,8 @@ function transformFactorySourceFile(
       const rewrittenModuleSpecifier =
           importRewriter.rewriteSpecifier('@angular/core', sourceFilePath);
       if (rewrittenModuleSpecifier !== stmt.moduleSpecifier.text) {
-        transformedStatements.push(updateImportDeclaration(
-            stmt, getModifiers(stmt), stmt.importClause,
+        transformedStatements.push(ts.factory.updateImportDeclaration(
+            stmt, ts.getModifiers(stmt), stmt.importClause,
             ts.factory.createStringLiteral(rewrittenModuleSpecifier), undefined));
 
         // Record the identifier by which this imported module goes, so references to its symbols
@@ -317,7 +316,7 @@ function updateInitializers(
     ): ts.VariableStatement {
   return ts.factory.updateVariableStatement(
       stmt,
-      getModifiers(stmt),
+      ts.getModifiers(stmt),
       ts.factory.updateVariableDeclarationList(
           stmt.declarationList,
           stmt.declarationList.declarations.map(

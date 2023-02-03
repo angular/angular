@@ -127,8 +127,10 @@ groups:
           'packages/animations/**/{*,.*}',
           'packages/platform-browser/animations/**/{*,.*}',
           'aio/content/guide/animations.md',
+          'aio/content/guide/add-an-animation.md',
           'aio/content/guide/animate-state-style.md',
           'aio/content/guide/animation-api-summary.md',
+          'aio/content/guide/understanding-angular-animation.md',
           'aio/content/examples/animations/**/{*,.*}',
           'aio/content/images/guide/animations/**/{*,.*}',
           'aio/content/guide/complex-animation-sequences.md',
@@ -144,6 +146,7 @@ groups:
         - crisbeto
         - ~jelbourn
         - jessicajaniuk
+        - treladyone
 
   # =========================================================
   #  Framework: Compiler
@@ -408,6 +411,20 @@ groups:
           'packages/common/http/**/{*,.*}',
           'packages/examples/http/**/{*,.*}',
           'aio/content/guide/http.md',
+          'aio/content/guide/understanding-communicating-with-http.md',
+          'aio/content/guide/http-configure-http-url-parameters.md',
+          'aio/content/guide/http-handle-request-errors.md',
+          'aio/content/guide/http-intercept-requests-and-responses.md',
+          'aio/content/guide/http-interceptor-use-cases.md',
+          'aio/content/guide/http-make-jsonp-request.md',
+          'aio/content/guide/http-optimize-server-interaction.md',
+          'aio/content/guide/http-pass-metadata-to-interceptors.md',
+          'aio/content/guide/http-request-data-from-server.md',
+          'aio/content/guide/http-security-xsrf-protection.md',
+          'aio/content/guide/http-send-data-to-server.md',
+          'aio/content/guide/http-setup-server-communication.md',
+          'aio/content/guide/http-test-requests.md',
+          'aio/content/guide/http-track-show-request-progress.md',
           'aio/content/examples/http/**/{*,.*}',
           'aio/content/images/guide/http/**/{*,.*}'
           ])
@@ -848,6 +865,7 @@ groups:
           'aio/content/tutorial/**/{*,.*}',
           'aio/content/images/guide/toh/**/{*,.*}',
           'aio/content/demos/first-app/**/{*,.*}',
+          'aio/content/examples/first-app-*/**/{*,.*}',
           'aio/content/examples/toh-pt0/**/{*,.*}',
           'aio/content/examples/toh-pt1/**/{*,.*}',
           'aio/content/examples/toh-pt2/**/{*,.*}',
@@ -1170,7 +1188,7 @@ groups:
           'tools/bazel-repo-patches/**/{*,.*}',
           'tools/circular_dependency_test/**/{*,.*}',
           'tools/contributing-stats/**/{*,.*}',
-          'tools/esm-loader/**/{*,.*}',
+          'tools/esm-interop/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
           'tools/legacy-saucelabs/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',

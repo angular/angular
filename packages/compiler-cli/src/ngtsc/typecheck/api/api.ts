@@ -26,6 +26,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   outputs: ClassPropertyMapping;
   isStandalone: boolean;
   hostDirectives: HostDirectiveMeta[]|null;
+  decorator: ts.Decorator|null;
 }
 
 export type TemplateId = string&{__brand: 'TemplateId'};

@@ -58,7 +58,7 @@ ng_module(
 
 jasmine_node_test(
     name = "acceptance",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     deps = [
         ":acceptance_lib",
         ":forward_ref_test_lib",

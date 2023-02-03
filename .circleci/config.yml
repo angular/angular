@@ -23,50 +23,47 @@ version: 2.1
 #              (See https://support.circleci.com/hc/en-us/articles/360012618473-Creating-a-daily-cache.)
 # **NOTE 2 **: If you change the cache key prefix, also sync the cache_key_fallback to match.
 # **NOTE 3 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
+# **NOTE 4 **: To make sure modified patches can be applied without needing to manually update the cache key,
+#              the fallback cache key will not match if patches have been modified.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
-var_3: &cache_key v8-angular-node-16-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "aio/yarn.lock" }}
+var_3: &cache_key v8-angular-node-16-{{ checksum "month.txt" }}-{{ checksum "patches.hash"}}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "aio/yarn.lock" }}
 # We invalidate the cache if the Bazel version changes because otherwise the `bazelisk` cache
 # folder will contain all previously used versions and ultimately cause the cache restoring to
 # be slower due to its growing size.
-var_4: &cache_key_fallback v8-angular-node-16-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
+var_4: &cache_key_fallback v8-angular-node-16-{{ checksum "month.txt" }}-{{ checksum "patches.hash"}}-{{ checksum ".bazelversion" }}
 
 # Windows needs its own cache key because binaries in node_modules are different.
-var_3_win: &cache_key_win v10-angular-win-node-16-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}
-var_4_win: &cache_key_win_fallback v10-angular-win-node-16-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
-
-# Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
-# cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v2-angular-components-{{ checksum "month.txt" }}-87eb708d162e89897e66809c371e3a1e079de962
-var_6: &components_repo_unit_tests_cache_key_fallback v2-angular-components-{{ checksum "month.txt" }}
+var_3_win: &cache_key_win v10-angular-win-node-16-{{ checksum "month.txt" }}-{{ checksum "patches.hash"}}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}
+var_4_win: &cache_key_win_fallback v10-angular-win-node-16-{{ checksum "month.txt" }}-{{ checksum "patches.hash"}}-{{ checksum ".bazelversion" }}
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages`.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
 # https://circleci.com/blog/deep-diving-into-circleci-workspaces/
-var_7: &workspace_location ~/
+var_5: &workspace_location ~/
 
 # Filter to run a job on builds for pull requests only.
-var_8: &only_on_pull_requests
+var_6: &only_on_pull_requests
   filters:
     branches:
       only:
         - /pull\/\d+/
 
 # Filter to skip a job on builds for pull requests.
-var_9: &skip_on_pull_requests
+var_7: &skip_on_pull_requests
   filters:
     branches:
       ignore:
         - /pull\/\d+/
 
 # Filter to run a job on builds for the main branch only.
-var_10: &only_on_main_branch
+var_8: &only_on_main_branch
   filters:
     branches:
       only:
         - main
 
 # Filter to run a job on all releasable branches.
-var_11: &only_release_branches
+var_9: &only_release_branches
   filters:
     branches:
       only:
@@ -187,6 +184,12 @@ commands:
           # snapshot stamping would have the `-with-local-changes` suffix.
           command: date +%Y-%m > month.txt
 
+  capture_patches_for_cache_key:
+    description: Hashes all patches so that the cache can be reset upon changes.
+    steps:
+      - run: |
+          md5sum tools/esm-interop/patches/npm/* > patches.hash
+
   yarn_install:
     description: Install dependencies
     steps:
@@ -219,6 +222,7 @@ jobs:
     steps:
       - checkout
       - save_month_to_file
+      - capture_patches_for_cache_key
       - init_environment
       - devinfra/rebase-pr-on-target-branch:
           base_revision: << pipeline.git.base_revision >>
@@ -447,11 +451,8 @@ jobs:
       # Clear the global setting
       - run: git config --global --unset "url.ssh://git@github.com.insteadof"
       - run:
-          name: Decrypt github credentials
-          # We need ensure that the same default digest is used for encoding and decoding with
-          # OpenSSL. OpenSSL versions might have different default digests which can cause
-          # decryption failures based on the installed OpenSSL version. https://stackoverflow.com/a/39641378/4317734
-          command: 'openssl aes-256-cbc -d -in .circleci/github_token -md md5 -k "${KEY}" -out ~/.git_credentials'
+          name: Prepare GitHub credentials
+          command: echo "https://${SNAPSHOT_BUILDS_GITHUB_TOKEN}:@github.com" > ${HOME}/.git_credentials
       - run: ./scripts/ci/publish-build-artifacts.sh
 
   aio_misc:
@@ -535,8 +536,6 @@ jobs:
             mkdir -p packages/common/locales/extra
             cp dist/bin/packages/common/locales/*.ts packages/common/locales
             cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
-      # Build ZoneJS so that it can be loaded globally in the Karma tests.
-      - run: yarn bazel build //packages/zone.js:npm_package
       # Build the bundle for all tests to run within Saucelabs
       - run: node tools/legacy-saucelabs/build-saucelabs-test-bundle.mjs
       - run:
@@ -551,59 +550,6 @@ jobs:
           name: Stop Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh stop
 
-  # Job that runs all unit tests of the `angular/components` repository.
-  components-repo-unit-tests:
-    executor:
-      name: default-executor
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      # Restore the cache before cloning the repository because the clone script re-uses
-      # the restored repository if present. This reduces the amount of times the components
-      # repository needs to be cloned (this is slow and increases based on commits in the repo).
-      - restore_cache:
-          keys:
-            - *components_repo_unit_tests_cache_key
-            # Whenever the `angular/components` SHA is updated, the cache key will no longer
-            # match. The fallback cache will still match, and CircleCI will restore the most
-            # recently cached repository folder. Without the fallback cache, we'd need to download
-            # the repository from scratch and it would slow down the job. This is because we can't
-            # clone the repository with reduced `--depth`, but rather need to clone the whole
-            # repository to be able to support arbitrary SHAs.
-            - *components_repo_unit_tests_cache_key_fallback
-      - run:
-          name: 'Fetching angular/components repository'
-          command: ./scripts/ci/clone_angular_components_repo.sh
-      - run:
-          # Run yarn install to fetch the Bazel binaries as used in the components repo.
-          name: Installing dependencies.
-          command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      - save_cache:
-          key: *components_repo_unit_tests_cache_key
-          paths:
-            # Temporary directory must be kept in sync with the `$COMPONENTS_REPO_TMP_DIR` env
-            # variable. It needs to be hardcoded here, because env variables interpolation is
-            # not supported.
-            - '/tmp/angular-components-repo'
-      - run:
-          # Copy zone.js package to dist/packages-dist, so `angular/components` can also use the local zone.js build.
-          name: Setting up zone.js release packages.
-          command: cp -r dist/zone.js-dist/zone.js dist/packages-dist/
-      - run:
-          # Updates the `angular/components` `package.json` file to refer to the release output
-          # inside the `packages-dist` directory.
-          name: Setting up framework release packages.
-          command: node scripts/ci/update-framework-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
-      - run:
-          # Run `yarn install` again to install the Angular packages from `packages-dist/` and update the lockfile.
-          # NOTE: We cannot rely on Bazel to run `yarn install`, because it uses the `--frozen-lockfile` flag and fails.
-          name: Installing local Angular packages.
-          command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --non-interactive --cache-folder ~/.cache/yarn
-      - run:
-          name: 'Running `angular/components` unit tests'
-          command: ./scripts/ci/run_angular_components_unit_tests.sh
-
   test_zonejs:
     executor:
       name: default-executor
@@ -612,15 +558,30 @@ jobs:
       - custom_attach_workspace
       - init_environment
       - install_java
+
+      - run: |
+          yarn bazel build -- \
+            //packages/zone.js/bundles:zone.umd.js \
+            //packages/zone.js:npm_package \
+            //packages/zone.js/test/closure:closure_js \
+            //packages/zone.js:zone_externs
+
+      - run: |
+          mkdir -p packages/zone.js/build/
+          mkdir -p packages/zone.js/build/test/
+          mkdir -p packages/zone.js/test/
+
+          cp dist/bin/packages/zone.js/bundles/zone.umd.js packages/zone.js/build/zone.umd.js
+          cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/
+          cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/
+          cp dist/bin/packages/zone.js/test/closure/zone.closure.mjs ./packages/zone.js/build/test/zone.closure.mjs
+          cp dist/bin/packages/zone.js/zone_externs.js ./packages/zone.js/build/zone_externs.js
+
         # Install
       - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
         # Run zone.js tools tests
       - run: yarn --cwd packages/zone.js promisetest
       - run: yarn --cwd packages/zone.js promisefinallytest
-      - run: yarn bazel build //packages/zone.js:npm_package &&
-          cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/ &&
-          cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/ &&
-          cp dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js ./packages/zone.js/build/test/closure/zone.js
       - run: yarn --cwd packages/zone.js jest:test
       - run: yarn --cwd packages/zone.js jest:nodetest
       - run: yarn --cwd packages/zone.js electrontest
@@ -635,6 +596,7 @@ jobs:
     steps:
       - checkout
       - save_month_to_file
+      - capture_patches_for_cache_key
       - init_environment
 
       # Setup the proper NodeJS version. The image comes pre-installed with `nvm-windows`.
@@ -737,9 +699,6 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
-          requires:
-            - build-npm-packages
       - test_zonejs:
           requires:
             - setup

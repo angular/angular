@@ -308,7 +308,7 @@ describe('ZoneAwareError', () => {
         hasZoneStack = zoneAwareFrames.filter(f => frames[i].indexOf(f) !== -1).length > 0;
       }
       if (!hasZoneStack) {
-        console.log('stack', err.originalStack);
+        console.log('stack', hasZoneStack, frames, err.originalStack);
       }
       expect(hasZoneStack).toBe(true);
     } else {

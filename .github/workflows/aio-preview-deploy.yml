@@ -17,25 +17,24 @@ permissions:
   pull-requests: write
 
 env:
-  # TODO(pgschwendtner): use a different project for framework previews here.
-  PREVIEW_PROJECT: ng-comp-dev
+  PREVIEW_PROJECT: ng-dev-previews
+  PREVIEW_SITE: ng-dev-previews-fw
 
 jobs:
   aio-deploy:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # tag=v3
 
       - name: Configure Firebase deploy target
         working-directory: aio/
         run: |
           # We can use `npx` as the Firebase deploy actions uses it too.
-          # The default site is used as we don't use multi-sites in the project.
           npx -y firebase-tools@latest target:clear --project ${{env.PREVIEW_PROJECT}} hosting aio
-          npx -y firebase-tools@latest target:apply --project ${{env.PREVIEW_PROJECT}} hosting aio ${{env.PREVIEW_PROJECT}}
+          npx -y firebase-tools@latest target:apply --project ${{env.PREVIEW_PROJECT}} hosting aio ${{env.PREVIEW_SITE}}
 
-      - uses: angular/dev-infra/github-actions/deploy-previews/upload-artifacts-to-firebase@96fdaaa056f1cfa7ffbc4c69b7e9007279f76c94
+      - uses: angular/dev-infra/github-actions/deploy-previews/upload-artifacts-to-firebase@fa428ee0accc999f051008f0daa5651ba2728c2b
         with:
           github-token: '${{secrets.GITHUB_TOKEN}}'
           workflow-artifact-name: 'aio'

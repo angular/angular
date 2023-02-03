@@ -19,7 +19,11 @@ import {MyCmp} from './app/my_cmp';
 export class RelativeApp {
 }
 
-@NgModule({declarations: [RelativeApp, MyCmp], bootstrap: [RelativeApp], imports: [BrowserModule]})
+@NgModule({
+  declarations: [RelativeApp, MyCmp],
+  bootstrap: [RelativeApp],
+  imports: [BrowserModule],
+})
 export class ExampleModule {
 }
 

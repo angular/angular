@@ -33,7 +33,7 @@ export default function(): Rule {
 }
 
 function runRelativeLinkResolutionMigration(tree: Tree, tsconfigPath: string, basePath: string) {
-  const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
+  const program = createMigrationProgram(tree, tsconfigPath, basePath);
   const sourceFiles =
       program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 

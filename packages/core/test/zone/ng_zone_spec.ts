@@ -976,7 +976,7 @@ function commonTests() {
       let logs: string[] = [];
 
       beforeEach(() => {
-        patchedImmediate = setImmediate;
+        patchedImmediate = global.setImmediate;
         global.setImmediate = global[Zone.__symbol__('setImmediate')];
         coalesceZone = new NgZone({shouldCoalesceEventChangeDetection: true});
         logs = [];
@@ -1115,7 +1115,7 @@ function commonTests() {
       let logs: string[] = [];
 
       beforeEach(() => {
-        patchedImmediate = setImmediate;
+        patchedImmediate = global.setImmediate;
         global.setImmediate = global[Zone.__symbol__('setImmediate')];
         coalesceZone = new NgZone({shouldCoalesceRunChangeDetection: true});
         logs = [];

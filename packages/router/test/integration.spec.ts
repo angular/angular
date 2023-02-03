@@ -17,7 +17,7 @@ import {concat, EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
 import {CanActivateChildFn, CanActivateFn, CanMatch, CanMatchFn, Data, ResolveFn} from '../src/models';
-import {provideRouter, withRouterConfig} from '../src/provide_router';
+import {provideRouter, withNavigationErrorHandler, withRouterConfig} from '../src/provide_router';
 import {forEach, wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
 
@@ -1667,6 +1667,29 @@ describe('Integration', () => {
          [NavigationEnd, '/user/fedor']
        ]);
      })));
+
+  it('should be able to provide an error handler with DI dependencies', async () => {
+    @Injectable({providedIn: 'root'})
+    class Handler {
+      handlerCalled = false;
+    }
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+            [{
+              path: 'throw',
+              canMatch: [() => {
+                throw new Error('');
+              }],
+              component: BlankCmp
+            }],
+            withNavigationErrorHandler(() => coreInject(Handler).handlerCalled = true)),
+      ]
+    });
+    const router = TestBed.inject(Router);
+    await expectAsync(router.navigateByUrl('/throw')).toBeRejected();
+    expect(TestBed.inject(Handler).handlerCalled).toBeTrue();
+  });
 
   // Errors should behave the same for both deferred and eager URL update strategies
   ['deferred', 'eager'].forEach((strat: any) => {

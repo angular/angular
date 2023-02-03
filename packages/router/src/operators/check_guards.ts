@@ -11,7 +11,7 @@ import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorF
 import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
-import {CanActivateChild, CanActivateChildFn, CanActivateFn, Route} from '../models';
+import {CanActivateChild, CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchFn, Route} from '../models';
 import {redirectingNavigationError} from '../navigation_canceling_error';
 import {NavigationTransition} from '../navigation_transition';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
@@ -142,7 +142,8 @@ function runCanActivateChild(
                 getTokenOrFunctionIdentity<CanActivateChild>(canActivateChild, closestInjector);
             const guardVal = isCanActivateChild(guard) ?
                 guard.canActivateChild(futureARS, futureRSS) :
-                closestInjector.runInContext(() => guard(futureARS, futureRSS));
+                closestInjector.runInContext(
+                    () => (guard as CanActivateChildFn)(futureARS, futureRSS));
             return wrapIntoObservable(guardVal).pipe(first());
           });
       return of(guardsMapped).pipe(prioritizedGuardValue());
@@ -161,8 +162,8 @@ function runCanDeactivate(
     const guard = getTokenOrFunctionIdentity<any>(c, closestInjector);
     const guardVal = isCanDeactivate(guard) ?
         guard.canDeactivate(component, currARS, currRSS, futureRSS) :
-        closestInjector.runInContext<boolean|UrlTree>(
-            () => guard(component, currARS, currRSS, futureRSS));
+        closestInjector.runInContext(
+            () => (guard as CanDeactivateFn<any>)(component, currARS, currRSS, futureRSS));
     return wrapIntoObservable(guardVal).pipe(first());
   });
   return of(canDeactivateObservables).pipe(prioritizedGuardValue());
@@ -180,7 +181,7 @@ export function runCanLoadGuards(
     const guard = getTokenOrFunctionIdentity<any>(injectionToken, injector);
     const guardVal = isCanLoad(guard) ?
         guard.canLoad(route, segments) :
-        injector.runInContext<boolean|UrlTree>(() => guard(route, segments));
+        injector.runInContext(() => (guard as CanLoadFn)(route, segments));
     return wrapIntoObservable(guardVal);
   });
 
@@ -213,7 +214,7 @@ export function runCanMatchGuards(
     const guard = getTokenOrFunctionIdentity(injectionToken, injector);
     const guardVal = isCanMatch(guard) ?
         guard.canMatch(route, segments) :
-        injector.runInContext<boolean|UrlTree>(() => guard(route, segments));
+        injector.runInContext(() => (guard as CanMatchFn)(route, segments));
     return wrapIntoObservable(guardVal);
   });
 

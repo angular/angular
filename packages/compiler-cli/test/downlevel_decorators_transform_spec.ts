@@ -702,6 +702,33 @@ describe('downlevel decorator transform', () => {
     expect(output).not.toContain('tslib');
   });
 
+  it('should allow for type-only references to be removed with `emitDecoratorMetadata` from custom decorators',
+     () => {
+       context.writeFile('/external-interface.ts', `
+        export interface ExternalInterface {
+          id?: string;
+        }
+      `);
+
+       const {output} = transform(
+           `
+            import { ExternalInterface } from './external-interface';
+
+            export function CustomDecorator() {
+              return <T>(target, propertyKey, descriptor: TypedPropertyDescriptor<T>) => {}
+            }
+
+            export class Foo {
+              @CustomDecorator() static test(): ExternalInterface { return {}; }
+            }
+          `,
+           {emitDecoratorMetadata: true});
+
+       expect(diagnostics.length).toBe(0);
+       expect(output).not.toContain('ExternalInterface');
+       expect(output).toContain('metadata("design:returntype", Object)');
+     });
+
   describe('class decorators skipped', () => {
     beforeEach(() => skipClassDecorators = true);
 

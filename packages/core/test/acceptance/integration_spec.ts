@@ -1530,6 +1530,39 @@ describe('acceptance integration tests', () => {
        });
   });
 
+  describe('self-closing tags', () => {
+    it('should allow a self-closing tag for a custom tag name', () => {
+      @Component({selector: 'my-comp', template: 'hello'})
+      class MyComp {
+      }
+
+      @Component({template: '<my-comp/>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyComp]});
+      const fixture = TestBed.createComponent(App);
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<my-comp>hello</my-comp>');
+    });
+
+    it('should not confuse self-closing tag for an end tag', () => {
+      @Component({selector: 'my-comp', template: '<ng-content/>'})
+      class MyComp {
+      }
+
+      @Component({template: '<my-comp title="a">Before<my-comp title="b"/>After</my-comp>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyComp]});
+      const fixture = TestBed.createComponent(App);
+
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual('<my-comp title="a">Before<my-comp title="b"></my-comp>After</my-comp>');
+    });
+  });
+
   it('should only call inherited host listeners once', () => {
     let clicks = 0;
 
@@ -2297,6 +2330,27 @@ describe('acceptance integration tests', () => {
     fixture.detectChanges();
 
     expect(strong.textContent).toBe('Hello Frodo');
+  });
+
+  it('should not throw for a non-null assertion after a safe access', () => {
+    @Component({
+      template: `
+        {{ val?.foo!.bar }}
+        {{ val?.[0].foo!.bar }}
+        {{ foo(val)?.foo!.bar }}
+        {{ $any(val)?.foo!.bar }}
+      `,
+    })
+    class Comp {
+      val: any = null;
+
+      foo(val: unknown) {
+        return val;
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    expect(() => TestBed.createComponent(Comp).detectChanges()).not.toThrow();
   });
 
   describe('tView.firstUpdatePass', () => {

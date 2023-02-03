@@ -35,7 +35,7 @@
     "@angular/router": "^15.0.0-rc.1",
     "@angular/upgrade": "^15.0.0-rc.1",
     "core-js": "^2.5.4",
-    "rxjs": "~7.6.0",
+    "rxjs": "~7.8.0",
     "systemjs": "~0.19.39",
     "systemjs-plugin-babel": "~0.0.25",
     "tslib": "^2.3.0",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@angular/compiler-cli": "^15.0.0-rc.1",
-    "@rollup/plugin-commonjs": "^23.0.0",
+    "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^13.2.0",
     "@types/angular": "^1.8.4",
     "@types/angular-animate": "^1.5.11",

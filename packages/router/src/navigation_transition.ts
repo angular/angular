@@ -11,7 +11,7 @@ import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rx
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
-import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {Event, GuardsCheckEnd, GuardsCheckStart, IMPERATIVE_NAVIGATION, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
 import {isNavigationCancelingError, isRedirectingNavigationCancelingError, redirectingNavigationError} from './navigation_canceling_error';
 import {activateRoutes} from './operators/activate_routes';
@@ -270,7 +270,6 @@ interface InternalRouterInterface {
   errorHandler: ErrorHandler;
   titleStrategy?: TitleStrategy;
   navigated: boolean;
-  afterPreactivation: () => Observable<void>;
   urlHandlingStrategy: UrlHandlingStrategy;
   routeReuseStrategy: RouteReuseStrategy;
   onSameUrlNavigation: 'reload'|'ignore';
@@ -278,7 +277,6 @@ interface InternalRouterInterface {
   urlUpdateStrategy: 'deferred'|'eager';
   serializeUrl(url: UrlTree): string;
   config: Routes;
-  rootComponentType: Type<any>|null;
   setBrowserUrl(url: UrlTree, t: NavigationTransition): void;
   restoreHistory(t: NavigationTransition, restoringFromCaughtError?: boolean): void;
   scheduleNavigation(
@@ -301,6 +299,15 @@ export class NavigationTransitions {
     return this.navigationId !== 0;
   }
   private transitions?: BehaviorSubject<NavigationTransition>;
+  /**
+   * Hook that enables you to pause navigation after the preactivation phase.
+   * Used by `RouterModule`.
+   *
+   * @internal
+   */
+  afterPreactivation: () => Observable<void> = () => of(void 0);
+  /** @internal */
+  rootComponentType: Type<any>|null = null;
 
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
@@ -335,7 +342,7 @@ export class NavigationTransitions {
       resolve: null,
       reject: null,
       promise: Promise.resolve(true),
-      source: 'imperative',
+      source: IMPERATIVE_NAVIGATION,
       restoredState: null,
       currentSnapshot: router.routerState.snapshot,
       targetSnapshot: null,
@@ -437,7 +444,7 @@ export class NavigationTransitions {
 
                                  // Recognize
                                  recognize(
-                                     this.environmentInjector, router.rootComponentType,
+                                     this.environmentInjector, this.rootComponentType,
                                      router.config, this.urlSerializer,
                                      router.paramsInheritanceStrategy),
 
@@ -472,7 +479,7 @@ export class NavigationTransitions {
                                  restoredState);
                              this.events.next(navStart);
                              const targetSnapshot =
-                                 createEmptyState(extractedUrl, router.rootComponentType).snapshot;
+                                 createEmptyState(extractedUrl, this.rootComponentType).snapshot;
 
                              overallTransitionState = {
                                ...t,
@@ -539,7 +546,7 @@ export class NavigationTransitions {
                            if (!t.guardsResult) {
                              router.restoreHistory(t);
                              this.cancelNavigationTransition(
-                                 t, '', NavigationCancellationCode.GuardRejected, router);
+                                 t, '', NavigationCancellationCode.GuardRejected);
                              return false;
                            }
                            return true;
@@ -572,8 +579,7 @@ export class NavigationTransitions {
                                                  NG_DEV_MODE ?
                                                      `At least one route resolver didn't emit any value.` :
                                                      '',
-                                                 NavigationCancellationCode.NoDataFromResolver,
-                                                 router);
+                                                 NavigationCancellationCode.NoDataFromResolver);
                                            }
                                          }
                                        }),
@@ -614,7 +620,7 @@ export class NavigationTransitions {
                                .pipe(defaultIfEmpty(), take(1));
                          }),
 
-                         switchTap(() => router.afterPreactivation()),
+                         switchTap(() => this.afterPreactivation()),
 
                          map((t: NavigationTransition) => {
                            const targetRouterState = createRouterState(
@@ -679,7 +685,7 @@ export class NavigationTransitions {
                                  '';
                              this.cancelNavigationTransition(
                                  overallTransitionState, cancelationReason,
-                                 NavigationCancellationCode.SupersededByNewNavigation, router);
+                                 NavigationCancellationCode.SupersededByNewNavigation);
                            }
                            // Only clear current navigation if it is still set to the one that
                            // finalized.
@@ -726,11 +732,12 @@ export class NavigationTransitions {
                                      isBrowserTriggeredNavigation(overallTransitionState.source)
                                };
 
-                               router.scheduleNavigation(mergedTree, 'imperative', null, extras, {
-                                 resolve: overallTransitionState.resolve,
-                                 reject: overallTransitionState.reject,
-                                 promise: overallTransitionState.promise
-                               });
+                               router.scheduleNavigation(
+                                   mergedTree, IMPERATIVE_NAVIGATION, null, extras, {
+                                     resolve: overallTransitionState.resolve,
+                                     reject: overallTransitionState.reject,
+                                     promise: overallTransitionState.promise
+                                   });
                              }
 
                              /* All other errors should reset to the router's internal URL reference
@@ -755,8 +762,7 @@ export class NavigationTransitions {
   }
 
   private cancelNavigationTransition(
-      t: NavigationTransition, reason: string, code: NavigationCancellationCode,
-      router: InternalRouterInterface) {
+      t: NavigationTransition, reason: string, code: NavigationCancellationCode) {
     const navCancel =
         new NavigationCancel(t.id, this.urlSerializer.serialize(t.extractedUrl), reason, code);
     this.events.next(navCancel);
@@ -764,6 +770,6 @@ export class NavigationTransitions {
   }
 }
 
-export function isBrowserTriggeredNavigation(source: 'imperative'|'popstate'|'hashchange') {
-  return source !== 'imperative';
+export function isBrowserTriggeredNavigation(source: NavigationTrigger) {
+  return source !== IMPERATIVE_NAVIGATION;
 }

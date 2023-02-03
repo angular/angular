@@ -38,7 +38,7 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_no_angular_es2015"],
+    bootstrap = ["//tools/testing:node_no_angular"],
     data = [
         "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
     ],
@@ -60,6 +60,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/src/ngtsc/testing",
+        "@npm//@bazel/runfiles",
         "@npm//rxjs",
         "@npm//typescript",
     ],
@@ -90,7 +91,7 @@ babel(
 jasmine_node_test(
     name = "integration",
     timeout = "long",
-    bootstrap = ["//tools/testing:node_no_angular_es2015"],
+    bootstrap = ["//tools/testing:node_no_angular"],
     data = [
         ":fesm5_angular_core",
         "@npm//@angular/common-12",

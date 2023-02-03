@@ -11,6 +11,7 @@ js_library(
     visibility = ["//aio/tools/transforms:__subpackages__"],
     deps = [
         "//aio/content",
+        "//aio/content/cli",
         "//aio/content/examples",
         "//aio/src/assets",
         "//aio/tools/transforms",

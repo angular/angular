@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import baseEsbuildConfig from './esbuild-base.config.mjs';
+import createConfig from './esbuild-base.config.mjs';
 
 export default {
-  ...baseEsbuildConfig,
-  format: 'iife'
+  ...(await createConfig({enableLinker: false, optimize: false})),
+  format: 'iife',
 };

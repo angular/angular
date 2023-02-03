@@ -807,6 +807,29 @@ describe('Image directive', () => {
     });
   });
 
+  describe('meta data', () => {
+    it('should add a data attribute to the element for identification', () => {
+      setupTestingModule();
+      const template = '<img ngSrc="a.png" width="100" height="50">';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('ng-img')).not.toBeNull();
+    });
+    it('should add a data attribute to the element for identification, when ngSrc bound', () => {
+      setupTestingModule();
+      const template = `<img [ngSrc]="'a.png'" width="100" height="50">`;
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('ng-img')).not.toBeNull();
+    });
+  });
+
   describe('fill mode', () => {
     it('should allow unsized images in fill mode', () => {
       setupTestingModule();
@@ -1158,6 +1181,24 @@ describe('Image directive', () => {
       fixture.detectChanges();
 
       expect(consoleWarnSpy.calls.count()).toBe(0);
+    });
+
+    it('should warn if there is no image loader but `ngSrcset` is present', () => {
+      setUpModuleNoLoader();
+
+      const template = `<img ngSrc="img.png" ngSrcset="100w, 200w" width="150" height="50">`;
+      const fixture = createTestComponent(template);
+      const consoleWarnSpy = spyOn(console, 'warn');
+      fixture.detectChanges();
+
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0])
+          .toBe(
+              'NG02963: The NgOptimizedImage directive (activated on an <img> element ' +
+              'with the `ngSrc="img.png"`) has detected that the `ngSrcset` attribute is ' +
+              'present but no image loader is configured (i.e. the default one is being used), ' +
+              `which would result in the same image being used for all configured sizes. ` +
+              'To fix this, provide a loader or remove the `ngSrcset` attribute from the image.');
     });
 
     it('should set `src` using the image loader provided via the `IMAGE_LOADER` token to compose src URL',

@@ -41,11 +41,6 @@ ts_library(
 
 pkg_npm(
     name = "package",
-    # We also ship the locales in ESM format so that the output matches with other code of
-    # the `@angular/common` package. Note: This does not affect the output for the global
-    # locale scripts (that can be loaded using basic `<script>` tags). The global locale
-    # scripts do not use any ESM/CJS specific syntax so they continue to have the `.js` extension.
-    use_prodmode_output = True,
     # TODO(devversion): Remove glob for checked-in legacy locale files that haven't been
     # removed in the past (when CLDR has been updated). These can be removed in a major.
     deps = ["global/%s.js" % l for l in LOCALES] + [":locales"] + glob(["global/*.js"]),

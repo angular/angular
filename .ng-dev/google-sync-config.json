@@ -1,5 +1,5 @@
 {
-  "syncedFilePatterns": ["LICENSE", "modules/benchmarks/**", "modules/system.d.ts", "packages/**"],
+  "syncedFilePatterns": ["LICENSE", "modules/benchmarks/**", "packages/**"],
   "alwaysExternalFilePatterns": [
     "packages/*",
     "packages/bazel/*",
@@ -15,6 +15,7 @@
     "packages/compiler-cli/linker/**",
     "packages/compiler-cli/ngcc/**",
     "packages/compiler-cli/src/ngtsc/sourcemaps/**",
+    "packages/compiler-cli/src/ngtsc/testing/**",
     "packages/compiler-cli/private/bazel.ts",
     "packages/compiler-cli/private/localize.ts",
     "packages/compiler-cli/private/tooling.ts",
