@@ -1,18 +1,21 @@
-// #docregion
 import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Validators, FormRecord, FormControl } from '@angular/forms';
 
 import { QuestionBase } from './question-base';
 
 @Injectable()
 export class QuestionControlService {
   toFormGroup(questions: QuestionBase<string>[] ) {
-    const group: any = {};
+    const form = new FormRecord<FormControl>({});
 
     questions.forEach(question => {
-      group[question.key] = question.required ? new FormControl(question.value || '', Validators.required)
-                                              : new FormControl(question.value || '');
+      form.addControl(
+        question.key,
+        question.required 
+        ? new FormControl(question.value || '', Validators.required)
+        : new FormControl(question.value || '')
+      );
     });
-    return new FormGroup(group);
+    return form;
   }
 }
