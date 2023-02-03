@@ -1,5 +1,5 @@
 // #docregion
-import { Component, OnInit, Self, SkipSelf } from '@angular/core';
+import { Component, Self, SkipSelf } from '@angular/core';
 import { BROWSER_STORAGE, BrowserStorageService } from './storage.service';
 
 @Component({
@@ -18,15 +18,12 @@ import { BROWSER_STORAGE, BrowserStorageService } from './storage.service';
     { provide: BROWSER_STORAGE, useFactory: () => sessionStorage }
   ]
 })
-export class StorageComponent implements OnInit {
+export class StorageComponent {
 
   constructor(
     @Self() private sessionStorageService: BrowserStorageService,
     @SkipSelf() private localStorageService: BrowserStorageService,
   ) { }
-
-  ngOnInit() {
-  }
 
   setSession() {
     this.sessionStorageService.set('hero', 'Dr Nice - Session');

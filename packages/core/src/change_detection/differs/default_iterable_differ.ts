@@ -14,7 +14,6 @@ import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFac
 
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
-  constructor() {}
   supports(obj: Object|null|undefined): boolean {
     return isListLikeIterable(obj);
   }

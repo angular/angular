@@ -702,7 +702,6 @@ describe('Query API', () => {
 class TextDirective {
   // TODO(issue/24571): remove '!'.
   text!: string;
-  constructor() {}
 }
 
 @Component({selector: 'needs-content-children', template: ''})

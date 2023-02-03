@@ -164,7 +164,6 @@ class PushComponentNeedsChangeDetectorRef {
 
 @Pipe({name: 'purePipe', pure: true})
 class PurePipe implements PipeTransform {
-  constructor() {}
   transform(value: any): any {
     return this;
   }
@@ -172,7 +171,6 @@ class PurePipe implements PipeTransform {
 
 @Pipe({name: 'impurePipe', pure: false})
 class ImpurePipe implements PipeTransform {
-  constructor() {}
   transform(value: any): any {
     return this;
   }

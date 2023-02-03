@@ -17,7 +17,6 @@ export class NoCtor {
 
 @Injectable()
 export class EmptyCtor {
-  constructor() {}
 }
 
 @Injectable()

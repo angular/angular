@@ -13,8 +13,6 @@ import { HEROES } from './mock-heroes';
 })
 export class HeroService {
 
-  constructor() { }
-
   // #enddocregion new
   // #docregion getHeroes
   getHeroes(): Hero[] {

@@ -14,8 +14,6 @@ import {Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from '
 export class HasStyle {
   cellWidth: number;
 
-  constructor() {}
-
   set width(w: number) {
     this.cellWidth = w;
   }

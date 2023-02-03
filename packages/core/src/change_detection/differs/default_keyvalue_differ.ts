@@ -14,7 +14,6 @@ import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFac
 
 
 export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory {
-  constructor() {}
   supports(obj: any): boolean {
     return obj instanceof Map || isJsObject(obj);
   }

@@ -17,7 +17,6 @@ import {wrapReference} from './util';
  * A `PartialLinker` that is designed to process `ɵɵngDeclarePipe()` call expressions.
  */
 export class PartialPipeLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
-  constructor() {}
 
   linkPartialDeclaration(
       constantPool: ConstantPool,

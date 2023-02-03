@@ -102,7 +102,6 @@ describe('slots', () => {
   encapsulation: ViewEncapsulation.ShadowDom
 })
 class DefaultSlotComponent {
-  constructor() {}
 }
 
 @Component({
@@ -111,7 +110,6 @@ class DefaultSlotComponent {
   encapsulation: ViewEncapsulation.ShadowDom
 })
 class NamedSlotComponent {
-  constructor() {}
 }
 
 @Component({
@@ -120,7 +118,6 @@ class NamedSlotComponent {
   encapsulation: ViewEncapsulation.ShadowDom
 })
 class NamedSlotsComponent {
-  constructor() {}
 }
 
 @Component({
@@ -131,7 +128,7 @@ class NamedSlotsComponent {
 class SlotEventsComponent {
   @Input() slotEvents: Event[] = [];
   @Output() slotEventsChange = new EventEmitter();
-  constructor() {}
+
   onSlotChange(event: Event) {
     this.slotEvents.push(event);
     this.slotEventsChange.emit(event);

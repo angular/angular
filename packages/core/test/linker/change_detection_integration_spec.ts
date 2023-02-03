@@ -1493,8 +1493,6 @@ describe(`ChangeDetection`, () => {
           @Input() inp!: boolean;
           @Output() outp = new EventEmitter<any>();
 
-          constructor() {}
-
           ngDoCheck() {
             this.check(LifetimeMethods.ngDoCheck);
           }

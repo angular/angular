@@ -77,8 +77,6 @@ class Scheduler {
   // track requeuePeriodicTimer
   private _currentTickRequeuePeriodicEntries: any[] = [];
 
-  constructor() {}
-
   getCurrentTickTime() {
     return this._currentTickTime;
   }
