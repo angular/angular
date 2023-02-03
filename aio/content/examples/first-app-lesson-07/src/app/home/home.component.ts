@@ -25,7 +25,7 @@ import { HousingLocation } from '../housinglocation';
 })
 
 export class HomeComponent {
-  private img_server = "https://storage.googleapis.com/angular-tutorial-assets/first-app/";
+  private img_server = 'https://storage.googleapis.com/angular-tutorial-assets/first-app/';
   onlyHouse: HousingLocation;
 
   constructor() {
