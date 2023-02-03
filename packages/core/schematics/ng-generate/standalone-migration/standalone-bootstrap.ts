@@ -16,7 +16,7 @@ import {getAngularDecorators} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
 import {convertNgModuleDeclarationToStandalone} from './to-standalone';
-import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, NamedClassDeclaration, NodeLookup, offsetsToNodes} from './util';
+import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, NamedClassDeclaration, NodeLookup, offsetsToNodes, UniqueItemTracker} from './util';
 
 /** Information extracted from a `bootstrapModule` call necessary to migrate it. */
 interface BootstrapCallAnalysis {
@@ -281,19 +281,27 @@ function migrateImportsForBootstrapCall(
   }
 
   for (const element of imports.initializer.elements) {
-    // If the reference is to a `RouterModule.forRoot` call with
-    // one argument, we can migrate to the new `provideRouter` API.
-    if (ts.isCallExpression(element) && element.arguments.length === 1 &&
-        ts.isPropertyAccessExpression(element.expression) &&
-        element.expression.name.text === 'forRoot' &&
+    // If the reference is to a `RouterModule.forRoot` call, we can try to migrate it.
+    if (ts.isCallExpression(element) && ts.isPropertyAccessExpression(element.expression) &&
+        element.arguments.length > 0 && element.expression.name.text === 'forRoot' &&
         isClassReferenceInModule(
             element.expression.expression, 'RouterModule', '@angular/router', typeChecker)) {
-      providersInNewCall.push(ts.factory.createCallExpression(
-          tracker.addImport(sourceFile, 'provideRouter', '@angular/router'), [],
-          element.arguments));
-      addNodesToCopy(
-          sourceFile, element.arguments[0], nodeLookup, tracker, nodesToCopy, languageService);
-      continue;
+      const options = element.arguments[1] as ts.Expression | undefined;
+      const features = options ? getRouterModuleForRootFeatures(sourceFile, options, tracker) : [];
+
+      // If the features come back as null, it means that the router
+      // has a configuration that can't be migrated automatically.
+      if (features !== null) {
+        providersInNewCall.push(ts.factory.createCallExpression(
+            tracker.addImport(sourceFile, 'provideRouter', '@angular/router'), [],
+            [element.arguments[0], ...features]));
+        addNodesToCopy(
+            sourceFile, element.arguments[0], nodeLookup, tracker, nodesToCopy, languageService);
+        if (options) {
+          addNodesToCopy(sourceFile, options, nodeLookup, tracker, nodesToCopy, languageService);
+        }
+        continue;
+      }
     }
 
     if (ts.isIdentifier(element)) {
@@ -333,6 +341,111 @@ function migrateImportsForBootstrapCall(
       addNodesToCopy(sourceFile, element, nodeLookup, tracker, nodesToCopy, languageService);
     }
   }
+}
+
+/**
+ * Generates the call expressions that can be used to replace the options
+ * object that is passed into a `RouterModule.forRoot` call.
+ * @param sourceFile File that the `forRoot` call is coming from.
+ * @param options Node that is passed as the second argument to the `forRoot` call.
+ * @param tracker Tracker in which to track imports that need to be inserted.
+ * @returns Null if the options can't be migrated, otherwise an array of call expressions.
+ */
+function getRouterModuleForRootFeatures(
+    sourceFile: ts.SourceFile, options: ts.Expression, tracker: ChangeTracker): ts.CallExpression[]|
+    null {
+  // Options that aren't a static object literal can't be migrated.
+  if (!ts.isObjectLiteralExpression(options)) {
+    return null;
+  }
+
+  const featureExpressions: ts.CallExpression[] = [];
+  const configOptions: ts.PropertyAssignment[] = [];
+  const inMemoryScrollingOptions: ts.PropertyAssignment[] = [];
+  const features = new UniqueItemTracker<string, ts.Expression|null>();
+
+  for (const prop of options.properties) {
+    // We can't migrate options that we can't easily analyze.
+    if (!ts.isPropertyAssignment(prop) ||
+        (!ts.isIdentifier(prop.name) && !ts.isStringLiteralLike(prop.name))) {
+      return null;
+    }
+
+    switch (prop.name.text) {
+      // `preloadingStrategy` maps to the `withPreloading` function.
+      case 'preloadingStrategy':
+        features.track('withPreloading', prop.initializer);
+        break;
+
+      // `enableTracing: true` maps to the `withDebugTracing` feature.
+      case 'enableTracing':
+        if (prop.initializer.kind === ts.SyntaxKind.TrueKeyword) {
+          features.track('withDebugTracing', null);
+        }
+        break;
+
+      // `initialNavigation: 'enabled'` and `initialNavigation: 'enabledBlocking'` map to the
+      // `withEnabledBlockingInitialNavigation` feature, while `initialNavigation: 'disabled'` maps
+      // to the `withDisabledInitialNavigation` feature.
+      case 'initialNavigation':
+        if (!ts.isStringLiteralLike(prop.initializer)) {
+          return null;
+        }
+        if (prop.initializer.text === 'enabledBlocking' || prop.initializer.text === 'enabled') {
+          features.track('withEnabledBlockingInitialNavigation', null);
+        } else if (prop.initializer.text === 'disabled') {
+          features.track('withDisabledInitialNavigation', null);
+        }
+        break;
+
+      // `useHash: true` maps to the `withHashLocation` feature.
+      case 'useHash':
+        if (prop.initializer.kind === ts.SyntaxKind.TrueKeyword) {
+          features.track('withHashLocation', null);
+        }
+        break;
+
+      // `errorHandler` maps to the `withNavigationErrorHandler` feature.
+      case 'errorHandler':
+        features.track('withNavigationErrorHandler', prop.initializer);
+        break;
+
+      // `anchorScrolling` and `scrollPositionRestoration` arguments have to be combined into an
+      // object literal that is passed into the `withInMemoryScrolling` feature.
+      case 'anchorScrolling':
+      case 'scrollPositionRestoration':
+        inMemoryScrollingOptions.push(prop);
+        break;
+
+      // All remaining properties can be passed through the `withRouterConfig` feature.
+      default:
+        configOptions.push(prop);
+        break;
+    }
+  }
+
+  if (inMemoryScrollingOptions.length > 0) {
+    features.track(
+        'withInMemoryScrolling',
+        ts.factory.createObjectLiteralExpression(inMemoryScrollingOptions));
+  }
+
+  if (configOptions.length > 0) {
+    features.track('withRouterConfig', ts.factory.createObjectLiteralExpression(configOptions));
+  }
+
+  for (const [feature, featureArgs] of features.getEntries()) {
+    const callArgs: ts.Expression[] = [];
+    featureArgs.forEach(arg => {
+      if (arg !== null) {
+        callArgs.push(arg);
+      }
+    });
+    featureExpressions.push(ts.factory.createCallExpression(
+        tracker.addImport(sourceFile, feature, '@angular/router'), [], callArgs));
+  }
+
+  return featureExpressions;
 }
 
 /**
