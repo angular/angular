@@ -124,6 +124,16 @@ describe('standalone migration', () => {
       }
     `);
 
+    writeFile('/node_modules/@angular/common/http/index.d.ts', `
+      import {ModuleWithProviders} from '@angular/core';
+
+      export declare class HttpClientModule {
+          static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientModule, never>;
+          static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientModule, never, never, never>;
+          static ɵinj: i0.ɵɵInjectorDeclaration<HttpClientModule>;
+      }
+    `);
+
     writeFile('/node_modules/@angular/core/testing/index.d.ts', `
       export declare class TestBed {
         static configureTestingModule(config: any): any;
@@ -3392,6 +3402,43 @@ describe('standalone migration', () => {
       }).catch(e => console.error(e));
     `));
   });
+
+  it('should convert HttpClientModule references to provideHttpClient(withInterceptorsFromDi())',
+     async () => {
+       writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+       writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {HttpClientModule} from '@angular/common/http';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [HttpClientModule]
+      })
+      export class AppModule {}
+    `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {withInterceptorsFromDi, provideHttpClient} from '@angular/common/http';
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideHttpClient(withInterceptorsFromDi())]
+      }).catch(e => console.error(e));
+    `));
+     });
 
   it('should omit standalone directives from the imports array from the importProvidersFrom call',
      async () => {

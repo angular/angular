@@ -308,6 +308,22 @@ function migrateImportsForBootstrapCall(
             tracker.addImport(sourceFile, 'provideNoopAnimations', animationsImport), [], []));
         continue;
       }
+
+      // `HttpClientModule` can be replaced with `provideHttpClient()`.
+      const httpClientModule = 'common/http';
+      const httpClientImport = `@angular/${httpClientModule}`;
+      if (isClassReferenceInAngularModule(
+              element, 'HttpClientModule', httpClientModule, typeChecker)) {
+        const callArgs = [
+          // we add `withInterceptorsFromDi()` to the call to ensure that class-based interceptors
+          // still work
+          ts.factory.createCallExpression(
+              tracker.addImport(sourceFile, 'withInterceptorsFromDi', httpClientImport), [], [])
+        ];
+        providersInNewCall.push(ts.factory.createCallExpression(
+            tracker.addImport(sourceFile, 'provideHttpClient', httpClientImport), [], callArgs));
+        continue;
+      }
     }
 
     const target =
