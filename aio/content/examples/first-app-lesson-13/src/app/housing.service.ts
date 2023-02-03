@@ -5,7 +5,7 @@ import { HousingLocation } from './housinglocation';
   providedIn: 'root'
 })
 export class HousingService {
-  private img_server = "https://storage.googleapis.com/angular-tutorial-assets/first-app/";
+  private img_server = 'https://storage.googleapis.com/angular-tutorial-assets/first-app/';
   protected housingLocationList: HousingLocation[] = [
     {
       id: 0,
