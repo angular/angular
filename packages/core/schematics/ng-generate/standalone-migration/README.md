@@ -225,7 +225,9 @@ export class ExportedConfigClass {}
     RouterModule.forRoot([{
       path: 'shop',
       loadComponent: () => import('./shop/shop.component').then(m => m.ShopComponent)
-    }])
+    }], {
+      initialNavigation: 'enabledBlocking'
+    })
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
@@ -302,7 +304,7 @@ export class AppComponent {}
 // ./main.ts
 import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
 import {InjectionToken, importProvidersFrom} from '@angular/core';
-import {provideRouter} from '@angular/router';
+import {withEnabledBlockingInitialNavigation, provideRouter} from '@angular/router';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {AppModule, ExportedConfigClass} from './app/app.module';
 import {AppComponent} from './app/app.component';
@@ -326,7 +328,7 @@ bootstrapApplication(AppComponent, {
     provideRouter([{
       path: 'shop',
       loadComponent: () => import('./app/shop/shop.component').then(m => m.ShopComponent)
-    }])
+    }], withEnabledBlockingInitialNavigation())
   ]
 }).catch(e => console.error(e));
 ```

@@ -112,7 +112,7 @@ describe('standalone migration', () => {
       import {ModuleWithProviders} from '@angular/core';
 
       export declare class RouterModule {
-        static forRoot(routes: any[]): ModuleWithProviders<RouterModule>;
+        static forRoot(routes: any[], config?: any): ModuleWithProviders<RouterModule>;
       }
     `);
 
@@ -2377,7 +2377,7 @@ describe('standalone migration', () => {
     `));
   });
 
-  it('should preserve RouterModule.forRoot calls with multiple arguments', async () => {
+  it('should migrate a RouterModule.forRoot call with an empty config', async () => {
     writeFile('main.ts', `
       import {AppModule} from './app/app.module';
       import {platformBrowser} from '@angular/platform-browser';
@@ -2406,15 +2406,419 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
       import {AppModule, AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {importProvidersFrom} from '@angular/core';
       import {APP_ROUTES} from './app/routes';
-      import {RouterModule} from '@angular/router';
+      import {provideRouter} from '@angular/router';
 
       bootstrapApplication(AppComponent, {
-        providers: [importProvidersFrom(RouterModule.forRoot(APP_ROUTES, {}))]
+        providers: [provideRouter(APP_ROUTES)]
       }).catch(e => console.error(e));
     `));
   });
+
+  it('should migrate a router config with a preloadingStrategy to withPreloading', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+      import {of} from 'rxjs';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [RouterModule.forRoot([], {
+          preloadingStrategy: () => of(true)
+        })]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {of} from 'rxjs';
+      import {withPreloading, provideRouter} from '@angular/router';
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideRouter([], withPreloading(() => of(true)))]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should migrate a router config with enableTracing to withDebugTracing', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [RouterModule.forRoot([], {
+          enableTracing: true
+        })]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {withDebugTracing, provideRouter} from '@angular/router';
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideRouter([], withDebugTracing())]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should migrate a router config with `initialNavigation: "enabledBlocking"` to withEnabledBlockingInitialNavigation',
+     async () => {
+       writeFile('main.ts', `
+          import {AppModule} from './app/app.module';
+          import {platformBrowser} from '@angular/platform-browser';
+
+          platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+        `);
+
+       writeFile('./app/app.module.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @Component({template: 'hello'})
+          export class AppComponent {}
+
+          @NgModule({
+            declarations: [AppComponent],
+            bootstrap: [AppComponent],
+            imports: [RouterModule.forRoot([], {
+              initialNavigation: 'enabledBlocking'
+            })]
+          })
+          export class AppModule {}
+        `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+          import {AppModule, AppComponent} from './app/app.module';
+          import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+          import {withEnabledBlockingInitialNavigation, provideRouter} from '@angular/router';
+
+          bootstrapApplication(AppComponent, {
+            providers: [provideRouter([], withEnabledBlockingInitialNavigation())]
+          }).catch(e => console.error(e));
+        `));
+     });
+
+  it('should migrate a router config with `initialNavigation: "enabled"` to withEnabledBlockingInitialNavigation',
+     async () => {
+       writeFile('main.ts', `
+          import {AppModule} from './app/app.module';
+          import {platformBrowser} from '@angular/platform-browser';
+
+          platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+        `);
+
+       writeFile('./app/app.module.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @Component({template: 'hello'})
+          export class AppComponent {}
+
+          @NgModule({
+            declarations: [AppComponent],
+            bootstrap: [AppComponent],
+            imports: [RouterModule.forRoot([], {
+              initialNavigation: 'enabled'
+            })]
+          })
+          export class AppModule {}
+        `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+          import {AppModule, AppComponent} from './app/app.module';
+          import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+          import {withEnabledBlockingInitialNavigation, provideRouter} from '@angular/router';
+
+          bootstrapApplication(AppComponent, {
+            providers: [provideRouter([], withEnabledBlockingInitialNavigation())]
+          }).catch(e => console.error(e));
+        `));
+     });
+
+  it('should migrate a router config with `initialNavigation: "disabled"` to withDisabledInitialNavigation',
+     async () => {
+       writeFile('main.ts', `
+          import {AppModule} from './app/app.module';
+          import {platformBrowser} from '@angular/platform-browser';
+
+          platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+        `);
+
+       writeFile('./app/app.module.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @Component({template: 'hello'})
+          export class AppComponent {}
+
+          @NgModule({
+            declarations: [AppComponent],
+            bootstrap: [AppComponent],
+            imports: [RouterModule.forRoot([], {
+              initialNavigation: 'disabled'
+            })]
+          })
+          export class AppModule {}
+        `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+          import {AppModule, AppComponent} from './app/app.module';
+          import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+          import {withDisabledInitialNavigation, provideRouter} from '@angular/router';
+
+          bootstrapApplication(AppComponent, {
+            providers: [provideRouter([], withDisabledInitialNavigation())]
+          }).catch(e => console.error(e));
+        `));
+     });
+
+  it('should migrate a router config with useHash to withHashLocation', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [RouterModule.forRoot([], {
+          useHash: true
+        })]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {withHashLocation, provideRouter} from '@angular/router';
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideRouter([], withHashLocation())]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should migrate a router config with errorHandler to withNavigationErrorHandler', async () => {
+    writeFile('main.ts', `
+          import {AppModule} from './app/app.module';
+          import {platformBrowser} from '@angular/platform-browser';
+
+          platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+        `);
+
+    writeFile('./app/app.module.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @Component({template: 'hello'})
+          export class AppComponent {}
+
+          @NgModule({
+            declarations: [AppComponent],
+            bootstrap: [AppComponent],
+            imports: [RouterModule.forRoot([], {
+              errorHandler: () => {}
+            })]
+          })
+          export class AppModule {}
+        `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+          import {AppModule, AppComponent} from './app/app.module';
+          import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+          import {withNavigationErrorHandler, provideRouter} from '@angular/router';
+
+          bootstrapApplication(AppComponent, {
+            providers: [provideRouter([], withNavigationErrorHandler(() => {}))]
+          }).catch(e => console.error(e));
+        `));
+  });
+
+  it('should combine the anchorScrolling and scrollPositionRestoration of a router config into withInMemoryScrolling',
+     async () => {
+       writeFile('main.ts', `
+          import {AppModule} from './app/app.module';
+          import {platformBrowser} from '@angular/platform-browser';
+
+          platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+        `);
+
+       writeFile('./app/app.module.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @Component({template: 'hello'})
+          export class AppComponent {}
+
+          @NgModule({
+            declarations: [AppComponent],
+            bootstrap: [AppComponent],
+            imports: [RouterModule.forRoot([], {
+              anchorScrolling: 'enabled',
+              scrollPositionRestoration: 'top'
+            })]
+          })
+          export class AppModule {}
+        `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+          import {AppModule, AppComponent} from './app/app.module';
+          import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+          import {withInMemoryScrolling, provideRouter} from '@angular/router';
+
+          bootstrapApplication(AppComponent, {
+            providers: [provideRouter([], withInMemoryScrolling({
+              anchorScrolling: 'enabled',
+              scrollPositionRestoration: 'top'
+            }))]
+          }).catch(e => console.error(e));
+        `));
+     });
+
+  it('should copy properties that do not map to a feature into withRouterConfig', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [RouterModule.forRoot([], {
+          canceledNavigationResolution: 'replace',
+          useHash: true,
+          paramsInheritanceStrategy: 'always'
+        })]
+      })
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppModule, AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {withHashLocation, withRouterConfig, provideRouter} from '@angular/router';
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideRouter([], withHashLocation(), withRouterConfig({
+          canceledNavigationResolution: 'replace',
+          paramsInheritanceStrategy: 'always'
+        }))]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should preserve a RouterModule.forRoot where the config cannot be statically analyzed',
+     async () => {
+       writeFile('main.ts', `
+        import {AppModule} from './app/app.module';
+        import {platformBrowser} from '@angular/platform-browser';
+
+        platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+      `);
+
+       writeFile('./app/app.module.ts', `
+        import {NgModule, Component} from '@angular/core';
+        import {RouterModule} from '@angular/router';
+
+        @Component({template: 'hello'})
+        export class AppComponent {}
+
+        const extraOptions = {useHash: true};
+
+        @NgModule({
+          declarations: [AppComponent],
+          bootstrap: [AppComponent],
+          imports: [RouterModule.forRoot([], {
+            enableTracing: true,
+            ...extraOptions
+          })]
+        })
+        export class AppModule {}
+      `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+        import {AppModule, AppComponent} from './app/app.module';
+        import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+        import {importProvidersFrom} from '@angular/core';
+        import {RouterModule} from '@angular/router';
+
+        const extraOptions = {useHash: true};
+
+        bootstrapApplication(AppComponent, {
+          providers: [importProvidersFrom(RouterModule.forRoot([], {
+            enableTracing: true,
+            ...extraOptions
+          }))]
+        }).catch(e => console.error(e));
+      `));
+     });
 
   it('should convert BrowserAnimationsModule references to provideAnimations', async () => {
     writeFile('main.ts', `
