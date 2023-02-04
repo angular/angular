@@ -39,7 +39,7 @@ export {HttpFeature, HttpFeatureKind, provideHttpClient, withJsonpSupport, withN
 export {HttpRequest} from './src/request';
 export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpStatusCode, HttpUploadProgressEvent, HttpUserEvent} from './src/response';
 export {HttpXhrBackend} from './src/xhr';
-export {HttpXsrfTokenExtractor} from './src/xsrf';
+export {HttpXsrfTokenExtractor, XSRF_DEFAULT_COOKIE_NAME, XSRF_DEFAULT_HEADER_NAME} from './src/xsrf';
 
 // This re-export exists because g3 depends on this old private name.
 export {HttpInterceptorHandler as ɵHttpInterceptingHandler} from './src/interceptor';

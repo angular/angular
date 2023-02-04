@@ -2192,6 +2192,12 @@ export type XhrFactory = XhrFactory_2;
 // @public @deprecated
 export const XhrFactory: typeof XhrFactory_2;
 
+// @public (undocumented)
+export const XSRF_DEFAULT_COOKIE_NAME = "XSRF-TOKEN";
+
+// @public (undocumented)
+export const XSRF_DEFAULT_HEADER_NAME = "X-XSRF-TOKEN";
+
 // (No @packageDocumentation comment for this package)
 
 ```
