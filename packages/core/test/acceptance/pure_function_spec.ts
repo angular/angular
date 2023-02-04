@@ -37,7 +37,7 @@ describe('components using pure function instructions internally', () => {
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
+      const myComp = fixture.debugElement.query(By.directive(MyComp))!.componentInstance;
 
       const firstArray = myComp.names;
       expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess']);
@@ -79,7 +79,7 @@ describe('components using pure function instructions internally', () => {
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
+      const myComp = fixture.debugElement.query(By.directive(MyComp))!.componentInstance;
       expect(myComp.names).toEqual(['Nancy', 'Carson', 'Bess']);
     });
 
@@ -111,7 +111,8 @@ describe('components using pure function instructions internally', () => {
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const manyPropComp = fixture.debugElement.query(By.directive(ManyPropComp)).componentInstance;
+      const manyPropComp =
+          fixture.debugElement.query(By.directive(ManyPropComp))!.componentInstance;
 
       expect(manyPropComp!.names1).toEqual(['Nancy', 'Carson']);
       expect(manyPropComp!.names2).toEqual(['George']);
@@ -190,7 +191,7 @@ describe('components using pure function instructions internally', () => {
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
+      const myComp = fixture.debugElement.query(By.directive(MyComp))!.componentInstance;
 
       const firstArray = myComp.names;
       expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess', 'Hannah']);
@@ -312,7 +313,7 @@ describe('components using pure function instructions internally', () => {
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
+      const myComp = fixture.debugElement.query(By.directive(MyComp))!.componentInstance;
       const app = fixture.componentInstance;
 
       expect(myComp.names).toEqual([
@@ -358,7 +359,7 @@ describe('components using pure function instructions internally', () => {
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const objectComp = fixture.debugElement.query(By.directive(ObjectComp)).componentInstance;
+      const objectComp = fixture.debugElement.query(By.directive(ObjectComp))!.componentInstance;
 
       const firstObj = objectComp.config;
       expect(objectComp.config).toEqual({duration: 500, animation: 'slide'});
@@ -395,7 +396,7 @@ describe('components using pure function instructions internally', () => {
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const objectComp = fixture.debugElement.query(By.directive(ObjectComp)).componentInstance;
+      const objectComp = fixture.debugElement.query(By.directive(ObjectComp))!.componentInstance;
 
       expect(objectComp.config).toEqual({
         animation: 'slide',

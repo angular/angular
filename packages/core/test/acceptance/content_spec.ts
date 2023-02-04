@@ -247,7 +247,7 @@ describe('projection', () => {
     TestBed.configureTestingModule({declarations: [Parent, Child], imports: [CommonModule]});
 
     const fixture = TestBed.createComponent(Parent);
-    const childDebugEl = fixture.debugElement.query(By.directive(Child));
+    const childDebugEl = fixture.debugElement.query(By.directive(Child))!;
     const childInstance = childDebugEl.injector.get(Child);
     const childElement = childDebugEl.nativeElement as HTMLElement;
 
@@ -296,7 +296,7 @@ describe('projection', () => {
     TestBed.configureTestingModule({declarations: [Parent, Child], imports: [CommonModule]});
 
     const fixture = TestBed.createComponent(Parent);
-    const childDebugEl = fixture.debugElement.query(By.directive(Child));
+    const childDebugEl = fixture.debugElement.query(By.directive(Child))!;
     const childInstance = childDebugEl.injector.get(Child);
 
     childInstance.showing = true;
@@ -348,7 +348,7 @@ describe('projection', () => {
        TestBed.configureTestingModule({declarations: [Parent, Trigger, Comp]});
 
        const fixture = TestBed.createComponent(Parent);
-       const trigger = fixture.debugElement.query(By.directive(Trigger)).injector.get(Trigger);
+       const trigger = fixture.debugElement.query(By.directive(Trigger))!.injector.get(Trigger);
        fixture.detectChanges();
 
        expect(getElementHtml(fixture.nativeElement)).toBe(`<button></button><comp></comp>`);
@@ -1090,7 +1090,7 @@ describe('projection', () => {
     const fixture = TestBed.createComponent(Root);
     fixture.detectChanges();
 
-    const projectedElement = fixture.debugElement.query(By.css('div'));
+    const projectedElement = fixture.debugElement.query(By.css('div'))!;
     const {ngProjectAs, title} = projectedElement.attributes;
     expect(ngProjectAs).toBe('projectMe');
     expect(title).toBe('some title');

@@ -1581,7 +1581,7 @@ describe('styling', () => {
       fixture.componentInstance.showing = true;
       fixture.detectChanges();
 
-      const childDir = fixture.debugElement.query(By.directive(ChildDir)).injector.get(ChildDir);
+      const childDir = fixture.debugElement.query(By.directive(ChildDir))!.injector.get(ChildDir);
       expect(childDir.parent).toBeInstanceOf(TestDir);
       expect(testDirDiv.classList).not.toContain('with-button');
       expect(fixture.debugElement.nativeElement.textContent).toContain('Hello');

@@ -1574,7 +1574,7 @@ describe('onInit', () => {
     fixture.componentInstance.createDynamicView();
     fixture.detectChanges();
 
-    const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
+    const myComp = fixture.debugElement.query(By.directive(MyComp))!.componentInstance;
     expect(myComp.onInitCalled).toBe(true);
   });
 

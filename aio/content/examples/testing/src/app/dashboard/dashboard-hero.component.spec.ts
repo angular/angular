@@ -48,7 +48,7 @@ describe('DashboardHeroComponent when tested directly', () => {
     comp = fixture.componentInstance;
 
     // find the hero's DebugElement and element
-    heroDe = fixture.debugElement.query(By.css('.hero'));
+    heroDe = fixture.debugElement.query(By.css('.hero'))!;
     heroEl = heroDe.nativeElement;
 
     // mock the hero supplied by the parent component

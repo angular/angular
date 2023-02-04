@@ -173,7 +173,7 @@ describe('view insertion', () => {
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const comp = fixture.debugElement.query(By.directive(Comp)).injector.get(Comp);
+      const comp = fixture.debugElement.query(By.directive(Comp))!.injector.get(Comp);
 
       expect(comp.container.indexOf(comp.view0)).toBe(0);
       expect(comp.container.indexOf(comp.view1)).toBe(1);

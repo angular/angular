@@ -21,7 +21,7 @@ describe('RouterLink', () => {
         {imports: [RouterModule.forRoot([])], declarations: [LinkComponent]});
     const fixture = TestBed.createComponent(LinkComponent);
     fixture.detectChanges();
-    const link = fixture.debugElement.query(By.css('div')).nativeElement;
+    const link = fixture.debugElement.query(By.css('div'))!.nativeElement;
     expect(link.tabIndex).toEqual(1);
 
     fixture.nativeElement.link = null;
@@ -56,7 +56,7 @@ describe('RouterLink', () => {
       });
       fixture = TestBed.createComponent(LinkComponent);
       fixture.detectChanges();
-      link = fixture.debugElement.query(By.css('div')).nativeElement;
+      link = fixture.debugElement.query(By.css('div'))!.nativeElement;
       router = TestBed.inject(Router);
 
       spyOn(router, 'navigateByUrl');
@@ -84,7 +84,7 @@ describe('RouterLink', () => {
     });
 
     it('should coerce boolean input values', () => {
-      const dir = fixture.debugElement.query(By.directive(RouterLink)).injector.get(RouterLink);
+      const dir = fixture.debugElement.query(By.directive(RouterLink))!.injector.get(RouterLink);
 
       for (const truthy of [true, '', 'true', 'anything']) {
         fixture.componentInstance.preserveFragment = truthy;
@@ -135,7 +135,7 @@ describe('RouterLink', () => {
         });
         fixture = TestBed.createComponent(LinkComponent);
         fixture.detectChanges();
-        link = fixture.debugElement.query(By.css('a')).nativeElement;
+        link = fixture.debugElement.query(By.css('a'))!.nativeElement;
       });
 
       it('null, removes href', () => {
@@ -153,7 +153,7 @@ describe('RouterLink', () => {
       });
 
       it('should coerce boolean input values', () => {
-        const dir = fixture.debugElement.query(By.directive(RouterLink)).injector.get(RouterLink);
+        const dir = fixture.debugElement.query(By.directive(RouterLink))!.injector.get(RouterLink);
 
         for (const truthy of [true, '', 'true', 'anything']) {
           fixture.componentInstance.preserveFragment = truthy;
@@ -188,7 +188,7 @@ describe('RouterLink', () => {
       });
       const fixture = TestBed.createComponent(LinkComponent);
       fixture.detectChanges();
-      const link = fixture.debugElement.query(By.css('a')).nativeElement;
+      const link = fixture.debugElement.query(By.css('a'))!.nativeElement;
 
       expect(link.outerHTML).toContain('href');
     });

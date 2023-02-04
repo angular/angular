@@ -41,7 +41,7 @@ describe('property bindings', () => {
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
-    let a = fixture.debugElement.query(By.css('a')).nativeElement;
+    let a = fixture.debugElement.query(By.css('a'))!.nativeElement;
     expect(a.title).toBe('Hello');
 
     fixture.componentInstance.title = 'World';
@@ -60,7 +60,7 @@ describe('property bindings', () => {
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
-    let a = fixture.debugElement.query(By.css('a')).nativeElement;
+    let a = fixture.debugElement.query(By.css('a'))!.nativeElement;
     expect(a.title).toBe('Hello');
 
     fixture.detectChanges();
@@ -75,7 +75,7 @@ describe('property bindings', () => {
 
     TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
-    const labelNode = fixture.debugElement.query(By.css('label'));
+    const labelNode = fixture.debugElement.query(By.css('label'))!;
 
     fixture.componentInstance.forValue = 'some-input';
     fixture.detectChanges();
@@ -103,7 +103,7 @@ describe('property bindings', () => {
 
        TestBed.configureTestingModule({declarations: [App, MyComp]});
        const fixture = TestBed.createComponent(App);
-       const myCompNode = fixture.debugElement.query(By.directive(MyComp));
+       const myCompNode = fixture.debugElement.query(By.directive(MyComp))!;
        fixture.componentInstance.forValue = 'hello';
        fixture.detectChanges();
        expect(myCompNode.nativeElement.getAttribute('for')).toBeFalsy();
@@ -152,7 +152,7 @@ describe('property bindings', () => {
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
-    expect(fixture.debugElement.query(By.css('input')).nativeElement.required).toBe(false);
+    expect(fixture.debugElement.query(By.css('input'))!.nativeElement.required).toBe(false);
   });
 
   it('should support interpolation for properties', () => {
@@ -215,8 +215,8 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, MyButton, OtherDir]});
       const fixture = TestBed.createComponent(App);
-      const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
-      const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
+      const button = fixture.debugElement.query(By.directive(MyButton))!.injector.get(MyButton);
+      const otherDir = fixture.debugElement.query(By.directive(OtherDir))!.injector.get(OtherDir);
       const buttonEl = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -248,7 +248,7 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, MyButton]});
       const fixture = TestBed.createComponent(App);
-      const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
+      const button = fixture.debugElement.query(By.directive(MyButton))!.injector.get(MyButton);
       const buttonEl = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -281,7 +281,7 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, Comp]});
       const fixture = TestBed.createComponent(App);
-      const compDebugEl = fixture.debugElement.query(By.directive(Comp));
+      const compDebugEl = fixture.debugElement.query(By.directive(Comp))!;
       fixture.detectChanges();
 
       expect(compDebugEl.nativeElement.hasAttribute('id')).toBe(false);
@@ -303,9 +303,9 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, MyButton, OtherDisabledDir]});
       const fixture = TestBed.createComponent(App);
-      const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
-      const otherDisabledDir =
-          fixture.debugElement.query(By.directive(OtherDisabledDir)).injector.get(OtherDisabledDir);
+      const button = fixture.debugElement.query(By.directive(MyButton))!.injector.get(MyButton);
+      const otherDisabledDir = fixture.debugElement.query(By.directive(
+          OtherDisabledDir))!.injector.get(OtherDisabledDir);
       const buttonEl = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -333,7 +333,7 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, OtherDir]});
       const fixture = TestBed.createComponent(App);
-      const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
+      const otherDir = fixture.debugElement.query(By.directive(OtherDir))!.injector.get(OtherDir);
       const buttonEl = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -368,7 +368,7 @@ describe('property bindings', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       let buttonElements = fixture.nativeElement.querySelectorAll('button');
-      const idDir = fixture.debugElement.query(By.directive(IdDir)).injector.get(IdDir);
+      const idDir = fixture.debugElement.query(By.directive(IdDir))!.injector.get(IdDir);
 
       expect(buttonElements.length).toBe(2);
       expect(buttonElements[0].hasAttribute('id')).toBe(false);
@@ -380,7 +380,7 @@ describe('property bindings', () => {
       fixture.componentInstance.id1 = 'four';
       fixture.detectChanges();
 
-      const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
+      const otherDir = fixture.debugElement.query(By.directive(OtherDir))!.injector.get(OtherDir);
       buttonElements = fixture.nativeElement.querySelectorAll('button');
       expect(buttonElements.length).toBe(2);
       expect(buttonElements[0].hasAttribute('id')).toBe(false);
@@ -411,7 +411,7 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
-      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const myDir = fixture.debugElement.query(By.directive(MyDir))!.injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -428,7 +428,7 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
-      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const myDir = fixture.debugElement.query(By.directive(MyDir))!.injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -447,8 +447,8 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
       const fixture = TestBed.createComponent(App);
-      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
-      const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
+      const myDir = fixture.debugElement.query(By.directive(MyDir))!.injector.get(MyDir);
+      const myDirB = fixture.debugElement.query(By.directive(MyDirB))!.injector.get(MyDirB);
       const divElement = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -466,7 +466,7 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
-      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const myDir = fixture.debugElement.query(By.directive(MyDir))!.injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -485,7 +485,7 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
-      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const myDir = fixture.debugElement.query(By.directive(MyDir))!.injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -508,8 +508,8 @@ describe('property bindings', () => {
 
       TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
       const fixture = TestBed.createComponent(App);
-      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
-      const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
+      const myDir = fixture.debugElement.query(By.directive(MyDir))!.injector.get(MyDir);
+      const myDirB = fixture.debugElement.query(By.directive(MyDirB))!.injector.get(MyDirB);
       const fixtureElements = fixture.nativeElement.children;
 
       // TODO: Use destructuring once Domino supports native ES2015, or when jsdom is used.
@@ -542,8 +542,8 @@ describe('property bindings', () => {
       TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB], imports: [CommonModule]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
-      const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
+      const myDir = fixture.debugElement.query(By.directive(MyDir))!.injector.get(MyDir);
+      const myDirB = fixture.debugElement.query(By.directive(MyDirB))!.injector.get(MyDirB);
       let divElements = fixture.nativeElement.querySelectorAll('div');
 
       expect(divElements.length).toBe(2);

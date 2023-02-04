@@ -25,7 +25,11 @@ describe('SelectComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HostComponent);
     host = fixture.componentInstance;
-    element = fixture.debugElement.query(By.directive(SelectComponent));
+    const _element = fixture.debugElement.query(By.directive(SelectComponent));
+    if(_element === null) {
+      throw new Error('No SelectComponent found');
+    }
+    element = _element;
     component = element.componentInstance;
   });
 
@@ -38,10 +42,10 @@ describe('SelectComponent', () => {
 
   describe('button', () => {
     it('should display the label if provided', () => {
-      expect(getButton().textContent?.trim()).toEqual('');
+      expect(getButton()?.textContent?.trim()).toEqual('');
       host.label = 'Label:';
       fixture.detectChanges();
-      expect(getButton().textContent?.trim()).toEqual('Label:');
+      expect(getButton()?.textContent?.trim()).toEqual('Label:');
     });
 
     it('should contain a symbol if hasSymbol is true', () => {
@@ -55,16 +59,16 @@ describe('SelectComponent', () => {
       host.showSymbol = true;
       host.selected = options[0];
       fixture.detectChanges();
-      expect(getButton().textContent).toContain(options[0].title);
+      expect(getButton()?.textContent).toContain(options[0].title);
       expect(getButtonSymbol()?.className).toContain(options[0].value);
     });
 
     it('should toggle the visibility of the options list when clicked', () => {
       host.options = options;
-      getButton().click();
+      getButton()?.click();
       fixture.detectChanges();
       expect(getOptionContainer()).not.toEqual(null);
-      getButton().click();
+      getButton()?.click();
       fixture.detectChanges();
       expect(getOptionContainer()).toEqual(null);
     });
@@ -73,12 +77,12 @@ describe('SelectComponent', () => {
       host.options = options;
       fixture.detectChanges();
       expect(component.disabled).toBeFalsy();
-      expect(getButton().classList).not.toContain('disabled');
+      expect(getButton()?.classList).not.toContain('disabled');
 
       host.disabled = true;
       fixture.detectChanges();
       expect(component.disabled).toBeTruthy();
-      expect(getButton().classList).toContain('disabled');
+      expect(getButton()?.classList).toContain('disabled');
     });
 
     it('should not toggle the visibility of the options list if disabled', () => {
@@ -86,7 +90,7 @@ describe('SelectComponent', () => {
       host.disabled = true;
 
       fixture.detectChanges();
-      getButton().click();
+      getButton()?.click();
       fixture.detectChanges();
       expect(getOptionContainer()).toEqual(null);
     });
@@ -96,7 +100,7 @@ describe('SelectComponent', () => {
     beforeEach(() => {
       host.options = options;
       host.showSymbol = true;
-      getButton().click(); // ensure the options are visible
+      getButton()?.click(); // ensure the options are visible
       fixture.detectChanges();
     });
 
@@ -110,7 +114,7 @@ describe('SelectComponent', () => {
       getOptions()[0].click();
       fixture.detectChanges();
       expect(host.onChange).toHaveBeenCalledWith({ option: options[0], index: 0 });
-      expect(getButton().textContent).toContain(options[0].title);
+      expect(getButton()?.textContent).toContain(options[0].title);
       expect(getButtonSymbol()?.className).toContain(options[0].value);
     });
 
@@ -135,7 +139,7 @@ describe('SelectComponent', () => {
 
     const pressKey = (key: string) => {
       const debugBtnElement = fixture.debugElement.query(By.css('.form-select-button'));
-      debugBtnElement.triggerEventHandler('keydown', { bubbles: true, cancelable: true, key, preventDefault(){} });
+      debugBtnElement?.triggerEventHandler('keydown', { bubbles: true, cancelable: true, key, preventDefault(){} });
       fixture.detectChanges();
     };
 
@@ -165,11 +169,11 @@ describe('SelectComponent', () => {
         host.showSymbol = true;
         host.options = options;
         openOptions();
-        expect(getButton().textContent).not.toContain(options[0].title);
+        expect(getButton()?.textContent).not.toContain(options[0].title);
         expect(getButtonSymbol()?.className).not.toContain(options[0].value);
         pressKey(key);
         expect(host.onChange).toHaveBeenCalledWith({ option: options[0], index: 0 });
-        expect(getButton().textContent).toContain(options[0].title);
+        expect(getButton()?.textContent).toContain(options[0].title);
         expect(getButtonSymbol()?.className).toContain(options[0].value);
       })
     );
@@ -180,7 +184,7 @@ describe('SelectComponent', () => {
       openOptions();
       pressKey('ArrowDown');
       expect(component.currentOptionIdx).toEqual(2);
-      expect(getCurrentOption().textContent).toEqual('Option C');
+      expect(getCurrentOption()?.textContent).toEqual('Option C');
     });
 
     it('should move to the previous option when the ArrowUp key is pressed', () => {
@@ -189,7 +193,7 @@ describe('SelectComponent', () => {
       openOptions();
       pressKey('ArrowUp');
       expect(component.currentOptionIdx).toEqual(0);
-      expect(getCurrentOption().textContent).toEqual('Option A');
+      expect(getCurrentOption()?.textContent).toEqual('Option A');
     });
 
     it('should do nothing when the ArrowDown key is pressed and the current option is the last', () => {
@@ -198,7 +202,7 @@ describe('SelectComponent', () => {
       openOptions();
       pressKey('ArrowDown');
       expect(component.currentOptionIdx).toEqual(2);
-      expect(getCurrentOption().textContent).toEqual('Option C');
+      expect(getCurrentOption()?.textContent).toEqual('Option C');
       expect(getOptionContainer()).toBeTruthy();
     });
 
@@ -208,7 +212,7 @@ describe('SelectComponent', () => {
       openOptions();
       pressKey('ArrowUp');
       expect(component.currentOptionIdx).toEqual(0);
-      expect(getCurrentOption().textContent).toEqual('Option A');
+      expect(getCurrentOption()?.textContent).toEqual('Option A');
       expect(getOptionContainer()).toBeTruthy();
     });
   });
@@ -235,12 +239,12 @@ class HostComponent {
   disabled = false;
 }
 
-function getButton(): HTMLButtonElement {
-  return element.query(By.css('.form-select-button')).nativeElement;
+function getButton(): HTMLButtonElement|undefined {
+  return element.query(By.css('.form-select-button'))?.nativeElement;
 }
 
 function getButtonSymbol(): HTMLElement | null {
-  return getButton().querySelector('.symbol');
+  return getButton()?.querySelector('.symbol') ?? null;
 }
 
 function getOptionContainer(): HTMLUListElement|null {
@@ -252,6 +256,6 @@ function getOptions(): HTMLLIElement[] {
   return element.queryAll(By.css('li')).map(de => de.nativeElement);
 }
 
-function getCurrentOption(): HTMLElement {
-  return element.query(By.css('[role=option].current')).nativeElement;
+function getCurrentOption(): HTMLElement|undefined {
+  return element.query(By.css('[role=option].current'))?.nativeElement;
 }

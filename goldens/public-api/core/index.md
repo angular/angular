@@ -421,7 +421,7 @@ export class DebugElement extends DebugNode {
         [key: string]: any;
     };
     // (undocumented)
-    query(predicate: Predicate<DebugElement>): DebugElement;
+    query(predicate: Predicate<DebugElement>): DebugElement | null;
     // (undocumented)
     queryAll(predicate: Predicate<DebugElement>): DebugElement[];
     // (undocumented)

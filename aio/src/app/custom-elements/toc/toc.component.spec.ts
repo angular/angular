@@ -14,10 +14,10 @@ describe('TocComponent', () => {
 
   let page: {
     listItems: DebugElement[];
-    tocHeading: DebugElement;
-    tocHeadingButtonEmbedded: DebugElement;
-    tocH1Heading: DebugElement;
-    tocMoreButton: DebugElement;
+    tocHeading: DebugElement|null;
+    tocHeadingButtonEmbedded: DebugElement|null;
+    tocH1Heading: DebugElement|null;
+    tocMoreButton: DebugElement|null;
   };
 
   function setPage(): typeof page {
@@ -176,7 +176,7 @@ describe('TocComponent', () => {
         describe('after click tocHeading button', () => {
 
           beforeEach(() => {
-            page.tocHeadingButtonEmbedded.nativeElement.click();
+            page.tocHeadingButtonEmbedded?.nativeElement.click();
             fixture.detectChanges();
           });
 
@@ -193,13 +193,13 @@ describe('TocComponent', () => {
           });
 
           it('should be "collapsed" after clicking again', () => {
-            page.tocHeadingButtonEmbedded.nativeElement.click();
+            page.tocHeadingButtonEmbedded?.nativeElement.click();
             fixture.detectChanges();
             expect(tocComponent.isCollapsed).toEqual(true);
           });
 
           it('should not scroll after clicking again', () => {
-            page.tocHeadingButtonEmbedded.nativeElement.click();
+            page.tocHeadingButtonEmbedded?.nativeElement.click();
             fixture.detectChanges();
             expect(scrollToTopSpy).not.toHaveBeenCalled();
           });
@@ -208,7 +208,7 @@ describe('TocComponent', () => {
         describe('after click tocMore button', () => {
 
           beforeEach(() => {
-            page.tocMoreButton.nativeElement.click();
+            page.tocMoreButton?.nativeElement.click();
             fixture.detectChanges();
           });
 
@@ -225,19 +225,19 @@ describe('TocComponent', () => {
           });
 
           it('should be "collapsed" after clicking again', () => {
-            page.tocMoreButton.nativeElement.click();
+            page.tocMoreButton?.nativeElement.click();
             fixture.detectChanges();
             expect(tocComponent.isCollapsed).toEqual(true);
           });
 
           it('should be "collapsed" after clicking tocHeadingButton', () => {
-            page.tocMoreButton.nativeElement.click();
+            page.tocMoreButton?.nativeElement.click();
             fixture.detectChanges();
             expect(tocComponent.isCollapsed).toEqual(true);
           });
 
           it('should scroll after clicking again', () => {
-            page.tocMoreButton.nativeElement.click();
+            page.tocMoreButton?.nativeElement.click();
             fixture.detectChanges();
             expect(scrollToTopSpy).toHaveBeenCalled();
           });

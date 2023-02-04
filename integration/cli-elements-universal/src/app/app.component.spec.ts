@@ -29,6 +29,10 @@ describe('AppComponent', () => {
   it('should pass the app title to the `TitleComponent`', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const titleDebugElement = fixture.debugElement.query(By.directive(TestTitleComponent));
+    if(!titleDebugElement) {
+      throw new Error('No TestTitleComponent found')
+    }
+
     const titleComp: TestTitleComponent = titleDebugElement.componentInstance;
 
     fixture.detectChanges();

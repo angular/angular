@@ -32,7 +32,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
            const template = `<div [dot.name]="'foo'"></div>`;
            fixture = createTestComponent(template);
            fixture.detectChanges();
-           const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+           const myDir = fixture.debugElement.query(By.directive(MyDir))!.injector.get(MyDir);
            expect(myDir.value).toEqual('foo');
          }));
     });

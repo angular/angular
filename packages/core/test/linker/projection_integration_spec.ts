@@ -426,14 +426,14 @@ describe('projection', () => {
 
     expect(main.nativeElement).toHaveText('TREE(0:)');
 
-    const tree = main.debugElement.query(By.directive(Tree));
+    const tree = main.debugElement.query(By.directive(Tree))!;
     let manualDirective: ManualViewportDirective = tree.queryAllNodes(By.directive(
         ManualViewportDirective))[0].injector.get(ManualViewportDirective);
     manualDirective.show();
     main.detectChanges();
     expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:))');
 
-    const tree2 = main.debugElement.query(By.directive(Tree2));
+    const tree2 = main.debugElement.query(By.directive(Tree2))!;
     manualDirective = tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
         ManualViewportDirective);
     manualDirective.show();
@@ -639,7 +639,7 @@ describe('projection', () => {
     });
     const main = TestBed.createComponent(MainComp);
 
-    const conditionalComp = main.debugElement.query(By.directive(ConditionalContentComponent));
+    const conditionalComp = main.debugElement.query(By.directive(ConditionalContentComponent))!;
 
     const viewViewportDir =
         conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(

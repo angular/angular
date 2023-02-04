@@ -2236,7 +2236,7 @@ describe('host directives', () => {
          TestBed.configureTestingModule({declarations: [App, Comp]});
          const fixture = TestBed.createComponent(App);
          fixture.detectChanges();
-         const node = fixture.debugElement.query(By.css('comp'));
+         const node = fixture.debugElement.query(By.css('comp'))!;
 
          expect(compInstance instanceof Comp).toBe(true);
          expect(node.componentInstance).toBe(compInstance);
@@ -2265,7 +2265,7 @@ describe('host directives', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const expected = fixture.componentInstance.compInstance.elementRef.nativeElement;
-      const result = fixture.debugElement.query(By.directive(HostDir)).nativeElement;
+      const result = fixture.debugElement.query(By.directive(HostDir))!.nativeElement;
 
       expect(result).toBe(expected);
     });

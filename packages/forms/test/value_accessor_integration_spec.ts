@@ -29,7 +29,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       fixture.detectChanges();
 
       // model -> view
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       expect(input.nativeElement.value).toEqual('old');
 
       input.nativeElement.value = 'new';
@@ -46,7 +46,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       fixture.detectChanges();
 
       // model -> view
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       expect(input.nativeElement.value).toEqual('old');
 
       input.nativeElement.value = 'new';
@@ -62,7 +62,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       fixture.componentInstance.form = form;
       fixture.detectChanges();
 
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       form.valueChanges.subscribe({
         next: (value) => {
           throw 'Should not happen';
@@ -82,7 +82,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       fixture.detectChanges();
 
       // model -> view
-      const textarea = fixture.debugElement.query(By.css('textarea'));
+      const textarea = fixture.debugElement.query(By.css('textarea'))!;
       expect(textarea.nativeElement.value).toEqual('old');
 
       textarea.nativeElement.value = 'new';
@@ -101,7 +101,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       fixture.detectChanges();
 
       // model -> view
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       expect(input.nativeElement.checked).toBe(true);
 
       input.nativeElement.checked = false;
@@ -119,7 +119,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
         fixture.detectChanges();
 
         // model -> view
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         expect(input.nativeElement.value).toEqual('10');
 
         input.nativeElement.value = '20';
@@ -135,7 +135,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         input.nativeElement.value = '';
         dispatchEvent(input.nativeElement, 'input');
 
@@ -160,7 +160,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
             throw 'Input[number] should not react to change event';
           }
         });
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
 
         input.nativeElement.value = '5';
         dispatchEvent(input.nativeElement, 'change');
@@ -174,7 +174,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
         control.setValue(null);
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         expect(input.nativeElement.value).toEqual('');
       });
     });
@@ -187,8 +187,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.detectChanges();
 
           // model -> view
-          const select = fixture.debugElement.query(By.css('select'));
-          const sfOption = fixture.debugElement.query(By.css('option'));
+          const select = fixture.debugElement.query(By.css('select'))!;
+          const sfOption = fixture.debugElement.query(By.css('option'))!;
           expect(select.nativeElement.value).toEqual('SF');
           expect(sfOption.nativeElement.selected).toBe(true);
 
@@ -207,8 +207,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.detectChanges();
 
           // model -> view
-          const select = fixture.debugElement.query(By.css('select'));
-          const sfOption = fixture.debugElement.query(By.css('option'));
+          const select = fixture.debugElement.query(By.css('select'))!;
+          const sfOption = fixture.debugElement.query(By.css('option'))!;
           expect(select.nativeElement.value).toEqual('0: Object');
           expect(sfOption.nativeElement.selected).toBe(true);
         });
@@ -225,8 +225,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           const fixture = initTest(FormControlSelectWithCompareFn);
           fixture.detectChanges();
 
-          const select = fixture.debugElement.query(By.css('select'));
-          const sfOption = fixture.debugElement.query(By.css('option'));
+          const select = fixture.debugElement.query(By.css('select'))!;
+          const sfOption = fixture.debugElement.query(By.css('option'))!;
           expect(select.nativeElement.value).toEqual('0: Object');
           expect(sfOption.nativeElement.selected).toBe(true);
         });
@@ -238,7 +238,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
           // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
           // will select the second option (NY).
-          const select = fixture.debugElement.query(By.css('select'));
+          const select = fixture.debugElement.query(By.css('select'))!;
           select.nativeElement.value = '1: Object';
           dispatchEvent(select.nativeElement, 'change');
           fixture.detectChanges();
@@ -268,7 +268,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              tick();
 
-             const select = fixture.debugElement.query(By.css('select'));
+             const select = fixture.debugElement.query(By.css('select'))!;
              const nycOption = fixture.debugElement.queryAll(By.css('option'))[1];
 
              // model -> view
@@ -298,7 +298,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              tick();
 
-             const select = fixture.debugElement.query(By.css('select'));
+             const select = fixture.debugElement.query(By.css('select'))!;
              const buffalo = fixture.debugElement.queryAll(By.css('option'))[2];
              expect(select.nativeElement.value).toEqual('2: Object');
              expect(buffalo.nativeElement.selected).toBe(true);
@@ -312,7 +312,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              tick();
 
-             const select = fixture.debugElement.query(By.css('select'));
+             const select = fixture.debugElement.query(By.css('select'))!;
              expect(select.nativeElement.value).toEqual('1: Object');
 
              comp.cities.pop();
@@ -334,7 +334,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              tick();
 
-             const select = fixture.debugElement.query(By.css('select'));
+             const select = fixture.debugElement.query(By.css('select'))!;
              const secondNYC = fixture.debugElement.queryAll(By.css('option'))[2];
              expect(select.nativeElement.value).toEqual('2: Object');
              expect(secondNYC.nativeElement.selected).toBe(true);
@@ -347,7 +347,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              comp.selectedCity = null;
              fixture.detectChanges();
 
-             const select = fixture.debugElement.query(By.css('select'));
+             const select = fixture.debugElement.query(By.css('select'))!;
 
              select.nativeElement.value = '2: Object';
              dispatchEvent(select.nativeElement, 'change');
@@ -379,8 +379,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              tick();
 
-             const select = fixture.debugElement.query(By.css('select'));
-             const sfOption = fixture.debugElement.query(By.css('option'));
+             const select = fixture.debugElement.query(By.css('select'))!;
+             const sfOption = fixture.debugElement.query(By.css('option'))!;
              expect(select.nativeElement.value).toEqual('0: Object');
              expect(sfOption.nativeElement.selected).toBe(true);
            }));
@@ -395,7 +395,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
              // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
              // will select the second option (NY).
-             const select = fixture.debugElement.query(By.css('select'));
+             const select = fixture.debugElement.query(By.css('select'))!;
              select.nativeElement.value = '1: Object';
              dispatchEvent(select.nativeElement, 'change');
              fixture.detectChanges();
@@ -425,8 +425,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           const fixture = initTest(FormControlSelectMultiple);
           fixture.detectChanges();
 
-          const select = fixture.debugElement.query(By.css('select'));
-          const sfOption = fixture.debugElement.query(By.css('option'));
+          const select = fixture.debugElement.query(By.css('select'))!;
+          const sfOption = fixture.debugElement.query(By.css('option'))!;
           expect(select.nativeElement.value).toEqual(`0: 'SF'`);
           expect(sfOption.nativeElement.selected).toBe(true);
         });
@@ -436,8 +436,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           const fixture = initTest(FormControlSelectMultipleNgValue);
           fixture.detectChanges();
 
-          const select = fixture.debugElement.query(By.css('select'));
-          const sfOption = fixture.debugElement.query(By.css('option'));
+          const select = fixture.debugElement.query(By.css('select'))!;
+          const sfOption = fixture.debugElement.query(By.css('option'))!;
           expect(select.nativeElement.value).toEqual('0: Object');
           expect(sfOption.nativeElement.selected).toBe(true);
         });
@@ -455,8 +455,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              tick();
 
-             const select = fixture.debugElement.query(By.css('select'));
-             const sfOption = fixture.debugElement.query(By.css('option'));
+             const select = fixture.debugElement.query(By.css('select'))!;
+             const sfOption = fixture.debugElement.query(By.css('option'))!;
              expect(select.nativeElement.value).toEqual('0: Object');
              expect(sfOption.nativeElement.selected).toBe(true);
            }));
@@ -483,7 +483,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
         };
 
         const selectOptionViaUI = (valueString: string): void => {
-          const select = fixture.debugElement.query(By.css('select'));
+          const select = fixture.debugElement.query(By.css('select'))!;
           select.nativeElement.value = valueString;
           dispatchEvent(select.nativeElement, 'change');
           detectChangesAndTick();
@@ -557,8 +557,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
            fixture.detectChanges();
            tick();
 
-           const select = fixture.debugElement.query(By.css('select'));
-           const sfOption = fixture.debugElement.query(By.css('option'));
+           const select = fixture.debugElement.query(By.css('select'))!;
+           const sfOption = fixture.debugElement.query(By.css('option'))!;
            expect(select.nativeElement.value).toEqual('0: Object');
            expect(sfOption.nativeElement.selected).toBe(true);
          }));
@@ -685,7 +685,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           });
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('[value="no"]'));
+          const input = fixture.debugElement.query(By.css('[value="no"]'))!;
           dispatchEvent(input.nativeElement, 'change');
 
           fixture.detectChanges();
@@ -862,7 +862,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              tick();
 
-             const form = fixture.debugElement.query(By.css('form'));
+             const form = fixture.debugElement.query(By.css('form'))!;
              dispatchEvent(form.nativeElement, 'reset');
              fixture.detectChanges();
              tick();
@@ -941,7 +941,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.detectChanges();
 
           // model -> view
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input'))!;
           expect(input.nativeElement.value).toEqual('10');
 
           input.nativeElement.value = '20';
@@ -957,7 +957,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input'))!;
           input.nativeElement.value = '';
           dispatchEvent(input.nativeElement, 'input');
 
@@ -979,7 +979,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
           control.setValue(null);
 
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input'))!;
           expect(input.nativeElement.value).toEqual('');
         });
       });
@@ -991,7 +991,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.componentInstance.val = 4;
              fixture.detectChanges();
              tick();
-             const input = fixture.debugElement.query(By.css('input'));
+             const input = fixture.debugElement.query(By.css('input'))!;
              expect(input.nativeElement.value).toBe('4');
              fixture.detectChanges();
              tick();
@@ -1014,7 +1014,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.detectChanges();
 
           // model -> view
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input'))!;
           expect(input.nativeElement.value).toEqual('!aa!');
 
           input.nativeElement.value = '!bb!';
@@ -1035,7 +1035,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.componentInstance.form = new FormGroup({'login': new FormControl('aa')});
              fixture.detectChanges();
 
-             const input = fixture.debugElement.query(By.css('my-input'));
+             const input = fixture.debugElement.query(By.css('my-input'))!;
              expect(input.componentInstance.value).toEqual('!aa!');
 
              input.componentInstance.value = '!bb!';
@@ -1081,8 +1081,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
             expect(fixture.componentInstance.form.status).toEqual('DISABLED');
             expect(fixture.componentInstance.form.get('login')!.status).toEqual('DISABLED');
-            expect(fixture.debugElement.query(By.directive(CvaWithDisabledState))
-                       .nativeElement.textContent)
+            expect(fixture.debugElement.query(By.directive(
+                       CvaWithDisabledState))!.nativeElement.textContent)
                 .toContain('DISABLED');
           });
 
@@ -1094,8 +1094,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
             expect(fixture.componentInstance.form.status).toEqual('VALID');
             expect(fixture.componentInstance.form.get('login')!.status).toEqual('VALID');
-            expect(fixture.debugElement.query(By.directive(CvaWithDisabledState))
-                       .nativeElement.textContent)
+            expect(fixture.debugElement.query(By.directive(
+                       CvaWithDisabledState))!.nativeElement.textContent)
                 .toContain('ENABLED');
           });
         });
@@ -1120,7 +1120,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
                fixture.detectChanges();
                fixture.whenStable().then(() => {
                  // model -> view
-                 const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
+                 const customInput = fixture.debugElement.query(By.css('[name="custom"]'))!;
                  expect(customInput.nativeElement.value).toEqual('Nancy');
 
                  customInput.nativeElement.value = 'Carson';
@@ -1179,7 +1179,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              fixture.detectChanges();
              await fixture.whenStable();
 
-             const child = fixture.debugElement.query(By.css('child'));
+             const child = fixture.debugElement.query(By.css('child'))!;
              // Let's ensure that the initial value has been set, because previously
              // it wasn't set inside an `OnPush` component.
              expect(child.nativeElement.innerHTML).toEqual('Value: Nancy');
@@ -1223,7 +1223,7 @@ describe('value accessors in reactive forms with custom options', () => {
       expect(fixture.componentInstance.form.status).toEqual('VALID');
       expect(fixture.componentInstance.form.get('login')!.status).toEqual('VALID');
       expect(
-          fixture.debugElement.query(By.directive(CvaWithDisabledState)).nativeElement.textContent)
+          fixture.debugElement.query(By.directive(CvaWithDisabledState))!.nativeElement.textContent)
           .toContain('UNSET');
     });
   });

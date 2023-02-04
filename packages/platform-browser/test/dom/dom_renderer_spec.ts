@@ -111,7 +111,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          const fixture = TestBed.createComponent(SomeApp);
          fixture.detectChanges();
 
-         const cmp = fixture.debugElement.query(By.css('cmp-shadow')).nativeElement;
+         const cmp = fixture.debugElement.query(By.css('cmp-shadow'))!.nativeElement;
          const shadow = cmp.shadowRoot.querySelector('.shadow');
 
          expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');

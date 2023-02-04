@@ -80,8 +80,8 @@ describe('HeroListComponent', () => {
   it('should find `HighlightDirective` with `By.directive', () => {
     // #docregion by
     // Can find DebugElement either by css selector or by directive
-    const h2 = fixture.debugElement.query(By.css('h2'));
-    const directive = fixture.debugElement.query(By.directive(HighlightDirective));
+    const h2 = fixture.debugElement.query(By.css('h2'))!;
+    const directive = fixture.debugElement.query(By.directive(HighlightDirective))!;
     // #enddocregion by
     expect(h2).toBe(directive);
   });
@@ -135,7 +135,7 @@ class Page {
     this.heroRows = Array.from(heroRowNodes);
 
     // Find the first element with an attached HighlightDirective
-    this.highlightDe = fixture.debugElement.query(By.directive(HighlightDirective));
+    this.highlightDe = fixture.debugElement.query(By.directive(HighlightDirective))!;
 
     // Get the component's injected router navigation spy
     const routerSpy = fixture.debugElement.injector.get(Router);

@@ -50,8 +50,8 @@ describe('Integration', () => {
 
          const router: Router = TestBed.inject(Router);
          const fixture = createRoot(router, LinkComponent);
-         const firstLink = fixture.debugElement.query(p => p.nativeElement.id === 'first-link');
-         const secondLink = fixture.debugElement.query(p => p.nativeElement.id === 'second-link');
+         const firstLink = fixture.debugElement.query(p => p.nativeElement.id === 'first-link')!;
+         const secondLink = fixture.debugElement.query(p => p.nativeElement.id === 'second-link')!;
          router.navigateByUrl('/link-a');
          advance(fixture);
 

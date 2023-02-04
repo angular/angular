@@ -60,14 +60,28 @@ describe('AppComponent', () => {
     component.onResize(showTopMenuWidth + 1); // wide by default
 
     const de = fixture.debugElement;
+
     const docViewerDe = de.query(By.css('aio-doc-viewer'));
+    const _hamburger = de.query(By.css('.hamburger'))?.nativeElement;
+    const _sidenav = de.query(By.directive(MatSidenav))?.componentInstance;
+
+    if(docViewerDe === null) {
+      throw new Error('Could not find aio-doc-viewer');
+    } else if (_hamburger === null) {
+      throw new Error('Could not find .hamburger');
+    }  else if (_sidenav === null) {
+      throw new Error('Could not find MatSidenav');
+    }
+
+    sidenav = _sidenav;
+    hamburger = _hamburger;
 
     documentService = de.injector.get<DocumentService>(DocumentService);
+    locationService = de.injector.get<any>(LocationService);
     docViewer = docViewerDe.nativeElement;
     docViewerComponent = docViewerDe.componentInstance;
-    hamburger = de.query(By.css('.hamburger')).nativeElement;
-    locationService = de.injector.get<any>(LocationService);
-    sidenav = de.query(By.directive(MatSidenav)).componentInstance;
+
+
     tocService = de.injector.get<TocService>(TocService);
 
     return waitForDoc && awaitDocRendered();
@@ -273,8 +287,8 @@ describe('AppComponent', () => {
           });
 
           it('should close when clicking in gray content area overlay', () => {
-            const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement;
-            sidenavBackdrop.click();
+            const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop'))?.nativeElement;
+            sidenavBackdrop?.click();
             fixture.detectChanges();
             expect(sidenav.opened).toBe(false);
           });
@@ -692,15 +706,15 @@ describe('AppComponent', () => {
 
     describe('footer', () => {
       it('should have version number', () => {
-        const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
-        expect(versionEl.textContent).toContain(TestHttpClient.versionInfo.full);
+        const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer'))?.nativeElement;
+        expect(versionEl?.textContent).toContain(TestHttpClient.versionInfo.full);
       });
     });
 
     describe('aio-cookies-popup', () => {
       it('should have a cookies popup', () => {
         const cookiesPopupDe = fixture.debugElement.query(By.directive(CookiesPopupComponent));
-        expect(cookiesPopupDe.componentInstance).toBeInstanceOf(CookiesPopupComponent);
+        expect(cookiesPopupDe?.componentInstance).toBeInstanceOf(CookiesPopupComponent);
       });
     });
 
@@ -708,14 +722,14 @@ describe('AppComponent', () => {
       it('should show a message if the deployment mode is "archive"', async () => {
         createTestingModule('a/b', 'archive');
         await initializeTest();
-        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
-        expect(banner.textContent).toContain('archived documentation for Angular v4');
+        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner'))?.nativeElement;
+        expect(banner?.textContent).toContain('archived documentation for Angular v4');
       });
 
       it('should show no message if the deployment mode is not "archive"', async () => {
         createTestingModule('a/b', 'stable');
         await initializeTest();
-        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
+        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner'))?.nativeElement;
         expect(banner.textContent?.trim()).toEqual('');
       });
     });
@@ -752,7 +766,7 @@ describe('AppComponent', () => {
           fixture.detectChanges();
 
           const searchResults = fixture.debugElement.query(By.directive(SearchResultsComponent));
-          searchResults.nativeElement.click();
+          searchResults?.nativeElement.click();
           fixture.detectChanges();
 
           expect(component.showSearchResults).toBe(true);
@@ -763,7 +777,7 @@ describe('AppComponent', () => {
           fixture.detectChanges();
 
           const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
-          searchBox.nativeElement.click();
+          searchBox?.nativeElement.click();
           fixture.detectChanges();
 
           expect(component.showSearchResults).toBe(true);
@@ -779,23 +793,23 @@ describe('AppComponent', () => {
         it('should grab focus when the / key is pressed', () => {
           const searchBox: SearchBoxComponent = fixture.debugElement.query(
             By.directive(SearchBoxComponent)
-          ).componentInstance;
+          )?.componentInstance;
           spyOn(searchBox, 'focus');
           window.document.dispatchEvent(new KeyboardEvent('keyup', { key: '/' }));
           fixture.detectChanges();
-          expect(searchBox.focus).toHaveBeenCalled();
+          expect(searchBox?.focus).toHaveBeenCalled();
         });
 
         // eslint-disable-next-line max-len
         it('should set focus back to the search box when the search results are displayed and the escape key is pressed', () => {
           const searchBox: SearchBoxComponent = fixture.debugElement.query(
             By.directive(SearchBoxComponent)
-          ).componentInstance;
+          )?.componentInstance;
           spyOn(searchBox, 'focus');
           component.showSearchResults = true;
           window.document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
           fixture.detectChanges();
-          expect(searchBox.focus).toHaveBeenCalled();
+          expect(searchBox?.focus).toHaveBeenCalled();
         });
       });
 
@@ -827,7 +841,7 @@ describe('AppComponent', () => {
           fixture.detectChanges();
 
           const searchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent));
-          searchResultsComponent.triggerEventHandler('resultSelected', {});
+          searchResultsComponent?.triggerEventHandler('resultSelected', {});
           fixture.detectChanges();
           expect(component.showSearchResults).toBe(false);
         });
@@ -836,7 +850,7 @@ describe('AppComponent', () => {
           const searchService = TestBed.inject(SearchService) as Partial<SearchService> as MockSearchService;
           component.showSearchResults = false;
           const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
-          searchBox.triggerEventHandler('onFocus', 'some query');
+          searchBox?.triggerEventHandler('onFocus', 'some query');
           expect(searchService.search).toHaveBeenCalledWith('some query');
         });
 
@@ -844,7 +858,7 @@ describe('AppComponent', () => {
           const searchService = TestBed.inject(SearchService) as Partial<SearchService> as MockSearchService;
           component.showSearchResults = true;
           const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
-          searchBox.triggerEventHandler('onFocus', 'some query');
+          searchBox?.triggerEventHandler('onFocus', 'some query');
           expect(searchService.search).not.toHaveBeenCalled();
         });
       });
@@ -910,7 +924,7 @@ describe('AppComponent', () => {
     const getDocViewer = () => fixture.debugElement.query(By.css('aio-doc-viewer'));
     const triggerDocViewerEvent =
         (evt: 'docReady' | 'docRemoved' | 'docInserted' | 'docRendered') =>
-          getDocViewer().triggerEventHandler(evt, undefined);
+          getDocViewer()?.triggerEventHandler(evt, undefined);
 
     beforeEach(() => {
       createTestingModule('a/b');
@@ -957,25 +971,25 @@ describe('AppComponent', () => {
       it('should initially add the `no-animations` class until a document is rendered', () => {
         initializeTest(false);
         jasmine.clock().tick(1);  // triggers the HTTP response for the document
-        const sidenavContainer = fixture.debugElement.query(By.css('mat-sidenav-container')).nativeElement;
+        const sidenavContainer = fixture.debugElement.query(By.css('mat-sidenav-container'))?.nativeElement;
 
         expect(component.disableAnimations).toBe(true);
         expect(hamburger.classList.contains('no-animations')).toBe(true);
-        expect(sidenavContainer.classList.contains('no-animations')).toBe(true);
+        expect(sidenavContainer?.classList.contains('no-animations')).toBe(true);
 
         triggerDocViewerEvent('docInserted');
         jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
         expect(component.disableAnimations).toBe(true);
         expect(hamburger.classList.contains('no-animations')).toBe(true);
-        expect(sidenavContainer.classList.contains('no-animations')).toBe(true);
+        expect(sidenavContainer?.classList.contains('no-animations')).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
         expect(component.disableAnimations).toBe(false);
         expect(hamburger.classList.contains('no-animations')).toBe(false);
-        expect(sidenavContainer.classList.contains('no-animations')).toBe(false);
+        expect(sidenavContainer?.classList.contains('no-animations')).toBe(false);
       });
 
       it('should initially disable animations on the DocViewer for the first rendering', () => {
@@ -1010,23 +1024,23 @@ describe('AppComponent', () => {
 
         // Initially, `isTransitioning` is true.
         expect(component.isTransitioning).toBe(true);
-        expect(toolbar.classes.transitioning).toBe(true);
+        expect(toolbar?.classes.transitioning).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes.transitioning).toBeFalsy();
+        expect(toolbar?.classes.transitioning).toBeFalsy();
 
         // While a document is being rendered, `isTransitioning` is set to true.
         triggerDocViewerEvent('docReady');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(true);
-        expect(toolbar.classes.transitioning).toBe(true);
+        expect(toolbar?.classes.transitioning).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes.transitioning).toBeFalsy();
+        expect(toolbar?.classes.transitioning).toBeFalsy();
       });
 
       it('should update the sidenav state as soon as a new document is inserted (but not before)', () => {
@@ -1111,15 +1125,15 @@ describe('AppComponent', () => {
 
         navigateTo('guide/pipes');
         expect(component.pageId).toEqual('guide-pipes');
-        expect(container.properties.id).toEqual('guide-pipes');
+        expect(container?.properties.id).toEqual('guide-pipes');
 
         navigateTo('news');
         expect(component.pageId).toEqual('news');
-        expect(container.properties.id).toEqual('news');
+        expect(container?.properties.id).toEqual('news');
 
         navigateTo('');
         expect(component.pageId).toEqual('home');
-        expect(container.properties.id).toEqual('home');
+        expect(container?.properties.id).toEqual('home');
       });
 
       it('should not be affected by changes to the query', () => {
@@ -1130,7 +1144,7 @@ describe('AppComponent', () => {
         navigateTo('guide/other?search=http');
 
         expect(component.pageId).toEqual('guide-other');
-        expect(container.properties.id).toEqual('guide-other');
+        expect(container?.properties.id).toEqual('guide-other');
       });
     });
 

@@ -610,7 +610,7 @@ describe('createUrlTreeFromSnapshot', async () => {
 
        router.initialNavigation();
        advance(fixture);
-       fixture.debugElement.query(By.directive(MainPageComponent)).componentInstance.navigate();
+       fixture.debugElement.query(By.directive(MainPageComponent))!!.componentInstance.navigate();
        advance(fixture);
        expect(fixture.nativeElement.innerHTML).toContain('child works!');
      }));

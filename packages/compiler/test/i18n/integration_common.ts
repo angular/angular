@@ -58,35 +58,35 @@ export function validateHtml(
 
   cmp.count = 0;
   tb.detectChanges();
-  expect(el.query(By.css('#i18n-7')).nativeElement).toHaveText('zero');
-  expect(el.query(By.css('#i18n-14')).nativeElement).toHaveText('zero');
+  expect(el.query(By.css('#i18n-7'))!.nativeElement).toHaveText('zero');
+  expect(el.query(By.css('#i18n-14'))!.nativeElement).toHaveText('zero');
   cmp.count = 1;
   tb.detectChanges();
-  expect(el.query(By.css('#i18n-7')).nativeElement).toHaveText('un');
-  expect(el.query(By.css('#i18n-14')).nativeElement).toHaveText('un');
-  expect(el.query(By.css('#i18n-17')).nativeElement).toHaveText('un');
+  expect(el.query(By.css('#i18n-7'))!.nativeElement).toHaveText('un');
+  expect(el.query(By.css('#i18n-14'))!.nativeElement).toHaveText('un');
+  expect(el.query(By.css('#i18n-17'))!.nativeElement).toHaveText('un');
   cmp.count = 2;
   tb.detectChanges();
-  expect(el.query(By.css('#i18n-7')).nativeElement).toHaveText('deux');
-  expect(el.query(By.css('#i18n-14')).nativeElement).toHaveText('deux');
-  expect(el.query(By.css('#i18n-17')).nativeElement).toHaveText('deux');
+  expect(el.query(By.css('#i18n-7'))!.nativeElement).toHaveText('deux');
+  expect(el.query(By.css('#i18n-14'))!.nativeElement).toHaveText('deux');
+  expect(el.query(By.css('#i18n-17'))!.nativeElement).toHaveText('deux');
   cmp.count = 3;
   tb.detectChanges();
-  expect(el.query(By.css('#i18n-7')).nativeElement).toHaveText('beaucoup');
-  expect(el.query(By.css('#i18n-14')).nativeElement).toHaveText('beaucoup');
-  expect(el.query(By.css('#i18n-17')).nativeElement).toHaveText('beaucoup');
+  expect(el.query(By.css('#i18n-7'))!.nativeElement).toHaveText('beaucoup');
+  expect(el.query(By.css('#i18n-14'))!.nativeElement).toHaveText('beaucoup');
+  expect(el.query(By.css('#i18n-17'))!.nativeElement).toHaveText('beaucoup');
 
   cmp.sex = 'male';
   cmp.sexB = 'female';
   tb.detectChanges();
-  expect(el.query(By.css('#i18n-8')).nativeElement).toHaveText('homme');
-  expect(el.query(By.css('#i18n-8b')).nativeElement).toHaveText('femme');
+  expect(el.query(By.css('#i18n-8'))!.nativeElement).toHaveText('homme');
+  expect(el.query(By.css('#i18n-8b'))!.nativeElement).toHaveText('femme');
   cmp.sex = 'female';
   tb.detectChanges();
-  expect(el.query(By.css('#i18n-8')).nativeElement).toHaveText('femme');
+  expect(el.query(By.css('#i18n-8'))!.nativeElement).toHaveText('femme');
   cmp.sex = '0';
   tb.detectChanges();
-  expect(el.query(By.css('#i18n-8')).nativeElement).toHaveText('autre');
+  expect(el.query(By.css('#i18n-8'))!.nativeElement).toHaveText('autre');
 
   cmp.count = 123;
   tb.detectChanges();
@@ -115,7 +115,7 @@ export function validateHtml(
 }
 
 function expectHtml(el: DebugElement, cssSelector: string): any {
-  return expect(stringifyElement(el.query(By.css(cssSelector)).nativeElement));
+  return expect(stringifyElement(el.query(By.css(cssSelector))!.nativeElement));
 }
 
 export const HTML = `

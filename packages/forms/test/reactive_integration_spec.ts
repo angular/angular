@@ -113,7 +113,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.detectChanges();
 
         // model -> view
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         expect(input.nativeElement.value).toEqual('old value');
 
         input.nativeElement.value = 'updated value';
@@ -128,7 +128,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         expect(input.nativeElement.value).toEqual('loginValue');
       });
 
@@ -137,7 +137,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
         fixture.detectChanges();
 
-        const form = fixture.debugElement.query(By.css('form'));
+        const form = fixture.debugElement.query(By.css('form'))!;
         expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
       });
 
@@ -147,7 +147,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         input.nativeElement.value = 'updatedValue';
         dispatchEvent(input.nativeElement, 'input');
 
@@ -164,7 +164,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('newValue')});
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         expect(input.nativeElement.value).toEqual('newValue');
       });
 
@@ -177,7 +177,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         input.nativeElement.value = 'Nancy';
         dispatchEvent(input.nativeElement, 'input');
         fixture.detectChanges();
@@ -271,7 +271,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.detectChanges();
 
         let emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
-        expect(emailInput.nativeElement.value).toEqual('email');
+        expect(emailInput!.nativeElement.value).toEqual('email');
 
         const newForm = new FormGroup({
           'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
@@ -279,8 +279,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
-        expect(emailInput as any).toBe(null);  // TODO: remove `any` after #22449 is closed.
+        emailInput = fixture.debugElement!.query(By.css('[formControlName="email"]'));
+        expect(emailInput).toBe(null);
       });
 
       it('should strip array controls that are not found', () => {
@@ -356,7 +356,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           form.addControl('login', new FormControl('newValue'));
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input'))!;
           expect(input.nativeElement.value).toEqual('newValue');
 
           input.nativeElement.value = 'user input';
@@ -414,7 +414,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           form.addControl('cities', new FormArray([new FormControl('LA')]));
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input'))!;
           expect(input.nativeElement.value).toEqual('LA');
 
           input.nativeElement.value = 'MTV';
@@ -460,7 +460,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           newArr.removeAt(0);
           fixture.detectChanges();
 
-          firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
+          firstInput = fixture.debugElement.query(By.css('input'))!.nativeElement;
           firstInput.value = 'last one';
           dispatchEvent(firstInput, 'input');
           fixture.detectChanges();
@@ -470,7 +470,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           newArr.get([0])!.setValue('set value');
           fixture.detectChanges();
 
-          firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
+          firstInput = fixture.debugElement.query(By.css('input'))!.nativeElement;
           expect(firstInput.value).toEqual('set value');
         });
 
@@ -492,7 +492,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           newArr.removeAt(0);
           fixture.detectChanges();
 
-          const formEl = fixture.debugElement.query(By.css('form'));
+          const formEl = fixture.debugElement.query(By.css('form'))!;
           expect(() => dispatchEvent(formEl.nativeElement, 'submit')).not.toThrowError();
         });
 
@@ -613,7 +613,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         login.setValue('newValue');
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         expect(input.nativeElement.value).toEqual('newValue');
       });
 
@@ -625,7 +625,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
              fixture.componentInstance.control = control;
              fixture.detectChanges();
 
-             const input = fixture.debugElement.query(By.css('input'));
+             const input = fixture.debugElement.query(By.css('input'))!;
              expect(input.nativeElement.disabled).toBe(true);
 
              control.enable();
@@ -640,7 +640,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input'))!;
           expect(input.nativeElement.disabled).toBe(true);
 
           control.enable();
@@ -658,7 +658,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
              control.disable();
              fixture.detectChanges();
 
-             const input = fixture.debugElement.query(By.css('input'));
+             const input = fixture.debugElement.query(By.css('input'))!;
              expect(input.nativeElement.disabled).toBe(true);
 
              control.enable();
@@ -694,7 +694,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           control.disable();
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('my-input'));
+          const input = fixture.debugElement.query(By.css('my-input'))!;
           expect(input.nativeElement.getAttribute('disabled')).toBe(null);
         });
       });
@@ -891,7 +891,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const loginEl = fixture.debugElement.query(By.css('input'));
+        const loginEl = fixture.debugElement.query(By.css('input'))!;
         expect(login.touched).toBe(false);
 
         dispatchEvent(loginEl.nativeElement, 'blur');
@@ -907,7 +907,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.event = null!;
         fixture.detectChanges();
 
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form'))!.nativeElement;
         dispatchEvent(formEl, 'submit');
 
         fixture.detectChanges();
@@ -922,7 +922,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
         expect(formGroupDir.submitted).toBe(false);
 
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form'))!.nativeElement;
         dispatchEvent(formEl, 'submit');
 
         fixture.detectChanges();
@@ -936,7 +936,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        const loginEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
         expect(loginEl.value).toBe('some value');
 
         form.reset({'login': 'reset value'});
@@ -950,7 +950,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        const loginEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
         expect(loginEl.value).toBe('some value');
 
         form.reset();
@@ -969,7 +969,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           expect(login.dirty).toBe(true);
         });
 
-        const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        const loginEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
         loginEl.value = 'newValue';
 
         dispatchEvent(loginEl, 'input');
@@ -983,7 +983,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
            fixture.componentInstance.form = form;
            fixture.detectChanges();
 
-           const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+           const loginEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
            loginEl.value = 'newValue';
            dispatchEvent(loginEl, 'input');
 
@@ -1011,7 +1011,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const fixture = initReactiveFormsTest(FormComp);
         fixture.detectChanges();
 
-        const form = fixture.debugElement.query(By.css('form')).nativeElement;
+        const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
         // Expect no classes added to the <form> element since it has no
         // reactive directives attached and only ReactiveForms module is used.
         expect(sortedClassList(form)).toEqual([]);
@@ -1032,12 +1032,12 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const fixture = initReactiveFormsTest(FormComp);
         fixture.detectChanges();
 
-        const form = fixture.debugElement.query(By.css('form')).nativeElement;
+        const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
         // Expect no classes added to the <form> element since it has no
         // reactive directives attached and only ReactiveForms module is used.
         expect(sortedClassList(form)).toEqual([]);
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
         expect(sortedClassList(input)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
       });
 
@@ -1047,7 +1047,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
         expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
         dispatchEvent(input, 'blur');
@@ -1068,7 +1068,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
            expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
            dispatchEvent(input, 'blur');
@@ -1090,7 +1090,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
            dispatchEvent(input, 'blur');
@@ -1122,8 +1122,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form'))!.nativeElement;
 
         expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
@@ -1158,8 +1158,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form'))!.nativeElement;
 
         expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
@@ -1199,8 +1199,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         const [loginInput, passwordInput] =
             fixture.debugElement.queryAll(By.css('input')).map(el => el.nativeElement);
-        const arrEl = fixture.debugElement.query(By.css('div')).nativeElement;
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const arrEl = fixture.debugElement.query(By.css('div'))!.nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form'))!.nativeElement;
 
         expect(passwordInput).toBeDefined();
         expect(sortedClassList(loginInput)).not.toContain('ng-submitted');
@@ -1230,9 +1230,9 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        const arrEl = fixture.debugElement.query(By.css('div')).nativeElement;
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
+        const arrEl = fixture.debugElement.query(By.css('div'))!.nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form'))!.nativeElement;
 
         expect(sortedClassList(input)).not.toContain('ng-submitted');
         expect(sortedClassList(arrEl)).not.toContain('ng-submitted');
@@ -1267,8 +1267,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const [loginInput, passwordInput] =
             fixture.debugElement.queryAll(By.css('input')).map(el => el.nativeElement);
 
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
-        const groupEl = fixture.debugElement.query(By.css('div')).nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form'))!.nativeElement;
+        const groupEl = fixture.debugElement.query(By.css('div'))!.nativeElement;
         loginInput.value = 'Nancy';
         // Input and blur events, as in a real interaction, cause the form to be touched and
         // dirtied.
@@ -1304,7 +1304,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1334,7 +1334,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1366,7 +1366,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           control.setValue('Nancy');
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           expect(input.value)
               .withContext('Expected value to propagate to view immediately.')
               .toEqual('Nancy');
@@ -1384,7 +1384,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
           expect(control.dirty).withContext('Expected control to start out pristine.').toBe(false);
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1411,7 +1411,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               .withContext('Expected control to start out untouched.')
               .toBe(false);
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
@@ -1427,7 +1427,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
@@ -1460,7 +1460,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'aa';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1483,7 +1483,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
           expect(input.value).withContext('Expected value to be set in the view.').toEqual('Nancy');
           expect(control.value)
@@ -1500,7 +1500,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'aa';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1572,7 +1572,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           const sub =
               merge(control.valueChanges, control.statusChanges).subscribe(val => values.push(val));
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1602,7 +1602,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           const sub =
               merge(control.valueChanges, control.statusChanges).subscribe(val => values.push(val));
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
           expect(values)
@@ -1650,7 +1650,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'aa';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1674,7 +1674,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1706,7 +1706,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.cityArray = cityArray;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1783,7 +1783,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           expect(input.value)
               .withContext('Expected initial value to propagate to view.')
               .toEqual('Nancy');
@@ -1802,7 +1802,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1824,7 +1824,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               .withContext('Expected form validation not to run on blur.')
               .toBe(false);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1843,12 +1843,12 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1884,7 +1884,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           formGroup.setValue({login: 'Nancy'});
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           expect(input.value)
               .withContext('Expected view value to update immediately.')
               .toEqual('Nancy');
@@ -1902,7 +1902,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           dispatchEvent(input, 'input');
           fixture.detectChanges();
 
@@ -1913,7 +1913,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
           expect(formGroup.dirty).withContext('Expected dirty not to change on blur.').toBe(false);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1926,7 +1926,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
@@ -1934,7 +1934,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               .withContext('Expected touched not to change until submit.')
               .toBe(false);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1948,7 +1948,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1968,7 +1968,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               .withContext('Expected touched to stay false on reset.')
               .toBe(false);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1997,7 +1997,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               formGroup.statusChanges);
           const sub = streams.subscribe(val => values.push(val));
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -2013,7 +2013,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               .withContext('Expected no valueChanges or statusChanges on blur')
               .toEqual([]);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -2038,14 +2038,14 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               formGroup.statusChanges);
           const sub = streams.subscribe(val => values.push(val));
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
           expect(values)
               .withContext('Expected no valueChanges or statusChanges if value unchanged.')
               .toEqual([]);
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -2101,7 +2101,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           formGroup.get('signin.login')!.setValidators(validatorSpy);
           formGroup.get('signin')!.setValidators(groupValidatorSpy);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -2115,7 +2115,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
@@ -2124,7 +2124,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
           expect(formGroup.touched).withContext('Expected group to become untouched.').toBe(false);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -2140,7 +2140,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -2162,7 +2162,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               .withContext('Expected no validation to occur until submit.')
               .toBe(false);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -2179,7 +2179,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.cityArray = cityArray;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -2192,7 +2192,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               .toBe(false);
 
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -2234,7 +2234,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
               .withContext('Expected no validation to occur until submit.')
               .toBe(false);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -2356,7 +2356,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
            expect(input.value).toEqual('oldValue');
 
            input.value = 'updatedValue';
@@ -2374,7 +2374,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
            expect(input.value).toEqual('oldValue');
 
            input.value = 'updatedValue';
@@ -2392,7 +2392,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
            input.value = 'aa';
            input.setSelectionRange(1, 2);
            dispatchEvent(input, 'input');
@@ -2413,7 +2413,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
            input.value = 'Nancy';
            dispatchEvent(input, 'input');
            fixture.detectChanges();
@@ -2423,7 +2423,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
                .withContext('Expected ngModel value to remain unchanged on input.')
                .toEqual('initial');
 
-           const form = fixture.debugElement.query(By.css('form')).nativeElement;
+           const form = fixture.debugElement.query(By.css('form'))!.nativeElement;
            dispatchEvent(form, 'submit');
            fixture.detectChanges();
            tick();
@@ -2441,7 +2441,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
-        const checkbox = fixture.debugElement.query(By.css('input'));
+        const checkbox = fixture.debugElement.query(By.css('input'))!;
         expect(checkbox.nativeElement.checked).toBe(false);
         expect(control.hasError('required')).toEqual(true);
 
@@ -2496,10 +2496,10 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const required = fixture.debugElement.query(By.css('[required]'));
-        const minLength = fixture.debugElement.query(By.css('[minlength]'));
-        const maxLength = fixture.debugElement.query(By.css('[maxlength]'));
-        const pattern = fixture.debugElement.query(By.css('[pattern]'));
+        const required = fixture.debugElement.query(By.css('[required]'))!;
+        const minLength = fixture.debugElement.query(By.css('[minlength]'))!;
+        const maxLength = fixture.debugElement.query(By.css('[maxlength]'))!;
+        const pattern = fixture.debugElement.query(By.css('[pattern]'))!;
 
         required.nativeElement.value = '';
         minLength.nativeElement.value = '1';
@@ -2545,10 +2545,10 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.pattern = '.{3,}';
         fixture.detectChanges();
 
-        const required = fixture.debugElement.query(By.css('[name=required]'));
-        const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
-        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
-        const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+        const required = fixture.debugElement.query(By.css('[name=required]'))!;
+        const minLength = fixture.debugElement.query(By.css('[name=minlength]'))!;
+        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'))!;
+        const pattern = fixture.debugElement.query(By.css('[name=pattern]'))!;
 
         required.nativeElement.value = '';
         minLength.nativeElement.value = '1';
@@ -2589,10 +2589,10 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const required = fixture.debugElement.query(By.css('[name=required]'));
-        const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
-        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
-        const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+        const required = fixture.debugElement.query(By.css('[name=required]'))!;
+        const minLength = fixture.debugElement.query(By.css('[name=minlength]'))!;
+        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'))!;
+        const pattern = fixture.debugElement.query(By.css('[name=pattern]'))!;
 
         required.nativeElement.value = '';
         minLength.nativeElement.value = '1';
@@ -2702,7 +2702,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
            expect(form.hasError('uniqLogin', ['login'])).toEqual(true);
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input'))!;
            input.nativeElement.value = 'expected';
            dispatchEvent(input.nativeElement, 'input');
            tick(100);
@@ -2717,7 +2717,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.detectChanges();
         expect(form.valid).toEqual(true);
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input'))!;
         input.nativeElement.value = '';
         dispatchEvent(input.nativeElement, 'input');
 
@@ -2735,7 +2735,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
            expect(form.hasError('required', ['login'])).toEqual(true);
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input'))!;
            input.nativeElement.value = 'wrong value';
            dispatchEvent(input.nativeElement, 'input');
 
@@ -2761,7 +2761,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
            expect(control.hasError('required')).toEqual(true);
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input'))!;
            input.nativeElement.value = 'expected';
            dispatchEvent(input.nativeElement, 'input');
 
@@ -2792,7 +2792,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
            // Setting a value in the form control that will trigger the registered asynchronous
            // validation
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input'))!;
            input.nativeElement.value = 'angul';
            dispatchEvent(input.nativeElement, 'input');
 
@@ -2852,7 +2852,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
                .withContext(`Expected source observable to emit once on init.`)
                .toEqual(1);
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input'))!;
            input.nativeElement.value = 'a';
            dispatchEvent(input.nativeElement, 'input');
            fixture.detectChanges();
@@ -2888,7 +2888,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.detectChanges();
 
           const form = fixture.componentInstance.form;
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
           interface minmax {
             minlength: number|null;
@@ -2977,7 +2977,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.detectChanges();
 
           const form = fixture.componentInstance.form;
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
           interface minmax {
             min: number|null;
@@ -3060,7 +3060,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.form = new FormGroup({'pin': control});
             fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
             const form = fixture.componentInstance.form;
 
             expect(input.value).toEqual('5');
@@ -3103,7 +3103,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.max = 10.35;
             fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
             const form = fixture.componentInstance.form;
 
             expect(input.getAttribute('max')).toEqual('10.35');
@@ -3138,7 +3138,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.form = new FormGroup({'pin': control});
             fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
             const form = fixture.componentInstance.form;
 
             expect(input.value).toEqual('5');
@@ -3165,7 +3165,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.form = new FormGroup({'pin': control});
             fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
             const form = fixture.componentInstance.form;
 
             expect(input.value).toEqual('5');
@@ -3208,7 +3208,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.min = 10.25;
             fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
             const form = fixture.componentInstance.form;
 
             expect(input.getAttribute('min')).toEqual('10.25');
@@ -3243,7 +3243,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.form = new FormGroup({'pin': control});
             fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
             const form = fixture.componentInstance.form;
 
             expect(input.value).toEqual('5');
@@ -3273,7 +3273,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.form = new FormGroup({'pin': control});
             fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
             const form = fixture.componentInstance.form;
 
             expect(input.value).toEqual('');
@@ -3295,7 +3295,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.form = new FormGroup({'pin': control});
             fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
             const form = fixture.componentInstance.form;
 
             expect(input.value).toEqual('5');
@@ -3329,7 +3329,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.max = -10;
             fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
             const form = fixture.componentInstance.form;
 
             expect(input.value).toEqual('-30');
@@ -3676,7 +3676,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.control = new FormControl('oldValue');
         fixture.detectChanges();
 
-        const inputEl = fixture.debugElement.query(By.css('input'));
+        const inputEl = fixture.debugElement.query(By.css('input'))!;
         const inputNativeEl = inputEl.nativeElement;
         expect(inputNativeEl.value).toEqual('oldValue');
 
@@ -3707,7 +3707,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.control = new FormControl('oldValue');
         fixture.detectChanges();
 
-        const inputEl = fixture.debugElement.query(By.css('input'));
+        const inputEl = fixture.debugElement.query(By.css('input'))!;
         const inputNativeEl = inputEl.nativeElement;
         expect(inputNativeEl.value).toEqual('oldValue');
 
@@ -3735,7 +3735,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.control = new FormControl('oldValue');
         fixture.detectChanges();
 
-        const inputEl = fixture.debugElement.query(By.css('input'));
+        const inputEl = fixture.debugElement.query(By.css('input'))!;
         const inputNativeEl = inputEl.nativeElement;
         expect(inputNativeEl.value).toEqual('oldValue');
 

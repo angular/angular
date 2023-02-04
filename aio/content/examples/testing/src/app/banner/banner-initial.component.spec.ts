@@ -103,7 +103,7 @@ describe('BannerComponent (with beforeEach)', () => {
   // #docregion v4-test-5
   it('should find the <p> with fixture.debugElement.query(By.css)', () => {
     const bannerDe: DebugElement = fixture.debugElement;
-    const paragraphDe = bannerDe.query(By.css('p'));
+    const paragraphDe = bannerDe.query(By.css('p'))!;
     const p: HTMLElement = paragraphDe.nativeElement;
     expect(p.textContent).toEqual('banner works!');
   });

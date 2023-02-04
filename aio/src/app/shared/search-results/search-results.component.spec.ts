@@ -301,7 +301,7 @@ describe('SearchResultsComponent', () => {
   describe('when a search result anchor is clicked', () => {
     let searchResult: SearchResult;
     let selected: SearchResult|null;
-    let anchor: DebugElement;
+    let anchor: DebugElement|null;
 
     beforeEach(() => {
       component.resultSelected.subscribe((result: SearchResult) => selected = result);
@@ -325,25 +325,25 @@ describe('SearchResultsComponent', () => {
     });
 
     it('should emit a "resultSelected" event', () => {
-      anchor.triggerEventHandler('click', {button: 0, ctrlKey: false, metaKey: false});
+      anchor?.triggerEventHandler('click', {button: 0, ctrlKey: false, metaKey: false});
       fixture.detectChanges();
       expect(selected).toBe(searchResult);
     });
 
     it('should not emit an event if mouse button is not zero (middle or right)', () => {
-      anchor.triggerEventHandler('click', {button: 1, ctrlKey: false, metaKey: false});
+      anchor?.triggerEventHandler('click', {button: 1, ctrlKey: false, metaKey: false});
       fixture.detectChanges();
       expect(selected).toBeNull();
     });
 
     it('should not emit an event if the `ctrl` key is pressed', () => {
-      anchor.triggerEventHandler('click', {button: 0, ctrlKey: true, metaKey: false});
+      anchor?.triggerEventHandler('click', {button: 0, ctrlKey: true, metaKey: false});
       fixture.detectChanges();
       expect(selected).toBeNull();
     });
 
     it('should not emit an event if the `meta` key is pressed', () => {
-      anchor.triggerEventHandler('click', {button: 0, ctrlKey: false, metaKey: true});
+      anchor?.triggerEventHandler('click', {button: 0, ctrlKey: false, metaKey: true});
       fixture.detectChanges();
       expect(selected).toBeNull();
     });

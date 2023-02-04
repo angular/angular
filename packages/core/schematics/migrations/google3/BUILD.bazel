@@ -5,6 +5,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
+        "//packages/core/schematics/migrations/debug-element-query",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
@@ -21,9 +22,19 @@ esbuild(
     deps = [":google3"],
 )
 
+esbuild(
+    name = "debug_element_query_cjs",
+    entry_point = ":debugElementQuery.ts",
+    format = "cjs",
+    output = "debugElementQueryCjsRule.js",
+    platform = "node",
+    deps = [":google3"],
+)
+
 filegroup(
     name = "google3_cjs",
     srcs = [
+        ":debug_element_query_cjs",
         ":wait_for_async_rule_cjs",
     ],
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],

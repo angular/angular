@@ -215,7 +215,7 @@ describe('LiveExampleComponent', () => {
       testPath = '/tutorial/tour-of-heroes/toh-pt1';
       setHostTemplate('<live-example embedded></live-example>');
       testComponent(() => {
-        expect(getDownloadAnchor().href).toContain('/toh-pt1/toh-pt1.zip');
+        expect(getDownloadAnchor()?.href).toContain('/toh-pt1/toh-pt1.zip');
       });
     });
 

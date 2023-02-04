@@ -612,7 +612,7 @@ describe('ViewContainerRef', () => {
       TestBed.configureTestingModule({declarations: [EmbeddedViewInsertionComp, VCRefDirective]});
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       expect(vcRefDir.vcref.length).toEqual(0);
@@ -641,7 +641,7 @@ describe('ViewContainerRef', () => {
     it('should retrieve a ViewRef from its index, and vice versa', () => {
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       vcRefDir.createView('A');
@@ -662,7 +662,7 @@ describe('ViewContainerRef', () => {
     it('should handle out of bounds cases', () => {
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       vcRefDir.createView('A');
@@ -700,7 +700,7 @@ describe('ViewContainerRef', () => {
       TestBed.configureTestingModule({declarations: [EmbeddedViewInsertionComp, VCRefDirective]});
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       vcRefDir.createView('A');
@@ -818,7 +818,7 @@ describe('ViewContainerRef', () => {
     it('should detach the right embedded view when an index is specified', () => {
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       const viewA = vcRefDir.createView('A');
@@ -847,7 +847,7 @@ describe('ViewContainerRef', () => {
     it('should detach the last embedded view when no index is specified', () => {
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       vcRefDir.createView('A');
@@ -911,7 +911,7 @@ describe('ViewContainerRef', () => {
     it('should remove the right embedded view when an index is specified', () => {
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       const viewA = vcRefDir.createView('A');
@@ -940,7 +940,7 @@ describe('ViewContainerRef', () => {
     it('should remove the last embedded view when no index is specified', () => {
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       vcRefDir.createView('A');
@@ -961,7 +961,7 @@ describe('ViewContainerRef', () => {
     it('should throw when trying to insert a removed or destroyed view', () => {
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       const viewA = vcRefDir.createView('A');
@@ -1050,7 +1050,7 @@ describe('ViewContainerRef', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const vcRef =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
 
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement))
@@ -1095,7 +1095,7 @@ describe('ViewContainerRef', () => {
           {declarations: [TestComponent, HeaderComponent, VCRefDirective]});
       const fixture = TestBed.createComponent(TestComponent);
       const vcRef =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement))
@@ -1211,7 +1211,7 @@ describe('ViewContainerRef', () => {
           {declarations: [Child, StarPipe, SomeComponent, VCRefDirective]});
       const fixture = TestBed.createComponent(SomeComponent);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       vcRefDir.vcref.createEmbeddedView(vcRefDir.tplRef!);
@@ -1245,7 +1245,7 @@ describe('ViewContainerRef', () => {
           {declarations: [EmbeddedViewInsertionComp, VCRefDirective, EmbeddedComponent]});
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
@@ -1316,7 +1316,7 @@ describe('ViewContainerRef', () => {
 
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
@@ -1347,7 +1347,7 @@ describe('ViewContainerRef', () => {
       });
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
@@ -1384,7 +1384,7 @@ describe('ViewContainerRef', () => {
       });
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
@@ -1409,7 +1409,7 @@ describe('ViewContainerRef', () => {
       });
       const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
@@ -1708,7 +1708,7 @@ describe('ViewContainerRef', () => {
 
       TestBed.configureTestingModule({declarations: [Child, Parent, InsertionDir]});
       const fixture = TestBed.createComponent(Parent);
-      const child = fixture.debugElement.query(By.directive(Child)).componentInstance;
+      const child = fixture.debugElement.query(By.directive(Child))!.componentInstance;
       fixture.detectChanges();
 
       // Context should be inherited from the declaration point, not the
@@ -2013,7 +2013,7 @@ describe('ViewContainerRef', () => {
       });
       const fixture = TestBed.createComponent(SomeComponent);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
 
       fixture.detectChanges();
       expect(log).toEqual([
@@ -2094,7 +2094,7 @@ describe('ViewContainerRef', () => {
           {declarations: [SomeComponent, VCRefDirective, ComponentWithHooks]});
       const fixture = TestBed.createComponent(SomeComponent);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
 
       fixture.detectChanges();
       expect(log).toEqual([
@@ -2222,7 +2222,7 @@ describe('ViewContainerRef', () => {
       TestBed.configureTestingModule({declarations: [Child, Parent, VCRefDirective]});
       const fixture = TestBed.createComponent(Parent);
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement))
@@ -2263,7 +2263,7 @@ describe('ViewContainerRef', () => {
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
       const vcRefDir =
-          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+          fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(VCRefDirective);
 
       expect(getElementHtml(fixture.nativeElement))
           .toEqual(
@@ -2334,8 +2334,8 @@ describe('ViewContainerRef', () => {
            TestBed.configureTestingModule(
                {declarations: [Parent, ChildWithSelector, VCRefDirective]});
            const fixture = TestBed.createComponent(Parent);
-           const vcRefDir = fixture.debugElement.query(By.directive(VCRefDirective))
-                                .injector.get(VCRefDirective);
+           const vcRefDir = fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(
+               VCRefDirective);
            fixture.detectChanges();
 
            expect(getElementHtml(fixture.nativeElement))
@@ -2404,8 +2404,8 @@ describe('ViewContainerRef', () => {
            TestBed.configureTestingModule(
                {declarations: [Parent, ChildWithSelector, VCRefDirective]});
            const fixture = TestBed.createComponent(Parent);
-           const vcRefDir = fixture.debugElement.query(By.directive(VCRefDirective))
-                                .injector.get(VCRefDirective);
+           const vcRefDir = fixture.debugElement.query(By.directive(VCRefDirective))!.injector.get(
+               VCRefDirective);
            fixture.detectChanges();
 
            expect(getElementHtml(fixture.nativeElement))

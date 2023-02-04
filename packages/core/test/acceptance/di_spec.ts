@@ -1196,7 +1196,7 @@ describe('di', () => {
             fixture.detectChanges();
 
             const childComponent =
-                fixture.debugElement.query(By.directive(ChildComponent)).componentInstance;
+                fixture.debugElement.query(By.directive(ChildComponent))!.componentInstance;
             expect(childComponent.injector.get('token')).toBe('CHILD');
             expect(childComponent.parentInjector.get('token')).toBe('PARENT');
           });
@@ -2345,7 +2345,7 @@ describe('di', () => {
           fixture.detectChanges();
 
           const childComponent =
-              fixture.debugElement.query(By.directive(ChildComponent)).componentInstance;
+              fixture.debugElement.query(By.directive(ChildComponent))!.componentInstance;
           expect(childComponent.tokenViaInjector).toBe('PARENT');
           expect(childComponent.tokenViaConstructor).toBe(childComponent.tokenViaInjector);
         });

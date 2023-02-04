@@ -302,7 +302,7 @@ export class DebugElement extends DebugNode {
   /**
    * @returns the first `DebugElement` that matches the predicate at any depth in the subtree.
    */
-  query(predicate: Predicate<DebugElement>): DebugElement {
+  query(predicate: Predicate<DebugElement>): DebugElement|null {
     const results = this.queryAll(predicate);
     return results[0] || null;
   }

@@ -273,15 +273,15 @@ describe('standalone in Router API', () => {
          router.navigateByUrl('/home');
          advance(root);
          expect(canActivateLog).toEqual(['service1', 'service2']);
-         expect(root.debugElement.query(By.directive(ParentCmp)).componentInstance.service.name)
+         expect(root.debugElement.query(By.directive(ParentCmp))!.componentInstance.service.name)
              .toEqual('service1');
-         expect(root.debugElement.query(By.directive(ChildCmp)).componentInstance.service.name)
+         expect(root.debugElement.query(By.directive(ChildCmp))!.componentInstance.service.name)
              .toEqual('service2');
 
          router.navigateByUrl('/home/child2');
          advance(root);
          expect(canActivateLog).toEqual(['service1', 'service2', 'service3']);
-         expect(root.debugElement.query(By.directive(ChildCmp2)).componentInstance.service.name)
+         expect(root.debugElement.query(By.directive(ChildCmp2))!.componentInstance.service.name)
              .toEqual('service3');
        }));
   });

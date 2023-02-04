@@ -385,7 +385,7 @@ describe('query logic', () => {
     it('should support selecting InjectionToken', () => {
       const fixture = TestBed.createComponent(TestInjectionTokenContentQueries);
       const instance =
-          fixture.debugElement.query(By.directive(TestInjectionTokenQueries)).componentInstance;
+          fixture.debugElement.query(By.directive(TestInjectionTokenQueries))!.componentInstance;
       fixture.detectChanges();
       expect(instance.contentFirstOption).toBeDefined();
       expect(instance.contentFirstOption instanceof TestComponentWithToken).toBe(true);
@@ -738,7 +738,7 @@ describe('query logic', () => {
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
 
-      const shallowComp = fixture.debugElement.query(By.directive(ShallowComp)).componentInstance;
+      const shallowComp = fixture.debugElement.query(By.directive(ShallowComp))!.componentInstance;
       const queryList = shallowComp!.foos;
       expect(queryList.length).toBe(0);
 
@@ -2161,10 +2161,10 @@ describe('query logic', () => {
         const fixture = TestBed.createComponent(TestComponent);
         fixture.detectChanges();
 
-        const lotsOfContentEl = fixture.debugElement.query(By.directive(QueryForLotsOfContent));
+        const lotsOfContentEl = fixture.debugElement.query(By.directive(QueryForLotsOfContent))!;
         const lotsOfContentInstance = lotsOfContentEl.injector.get(QueryForLotsOfContent);
 
-        const contentEl = fixture.debugElement.query(By.directive(QueryForContent));
+        const contentEl = fixture.debugElement.query(By.directive(QueryForContent))!;
         const contentInstance = contentEl.injector.get(QueryForContent);
 
         expect(lotsOfContentInstance.foos1.length).toBe(2);

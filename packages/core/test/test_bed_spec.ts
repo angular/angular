@@ -580,7 +580,7 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
 
-    const greetingByCss = hello.debugElement.query(By.css('greeting-cmp'));
+    const greetingByCss = hello.debugElement.query(By.css('greeting-cmp'))!;
     expect(greetingByCss.nativeElement).toHaveText('Hello World!');
     expect(greetingByCss.componentInstance).toBeInstanceOf(GreetingCmp);
   });
@@ -589,7 +589,7 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
 
     hello.detectChanges();
-    const greetingByCss = hello.debugElement.query(By.css('greeting-cmp'));
+    const greetingByCss = hello.debugElement.query(By.css('greeting-cmp'))!;
     expect(greetingByCss.nativeElement).toHaveText('Hello World!');
 
     greetingByCss.componentInstance.name = 'TestBed!';
@@ -601,7 +601,7 @@ describe('TestBed', () => {
     const fixture = TestBed.createComponent(ComponentWithPropBindings);
     fixture.detectChanges();
 
-    const divElement = fixture.debugElement.query(By.css('div'));
+    const divElement = fixture.debugElement.query(By.css('div'))!;
     expect(divElement.properties['id']).toEqual('one');
     expect(divElement.properties['title']).toEqual('some title');
   });
@@ -610,7 +610,7 @@ describe('TestBed', () => {
     const fixture = TestBed.createComponent(ComponentWithPropBindings);
     fixture.detectChanges();
 
-    const paragraphEl = fixture.debugElement.query(By.css('p'));
+    const paragraphEl = fixture.debugElement.query(By.css('p'))!;
     expect(paragraphEl.properties['title']).toEqual('( some label - some title )');
     expect(paragraphEl.properties['id']).toEqual('[ some label ] [ some title ]');
   });
@@ -618,7 +618,7 @@ describe('TestBed', () => {
   it('should give access to the node injector', () => {
     const fixture = TestBed.createComponent(HelloWorld);
     fixture.detectChanges();
-    const injector = fixture.debugElement.query(By.css('greeting-cmp')).injector;
+    const injector = fixture.debugElement.query(By.css('greeting-cmp'))!.injector;
 
     // from the node injector
     const greetingCmp = injector.get(GreetingCmp);
@@ -648,7 +648,7 @@ describe('TestBed', () => {
 
   it('should give access to local refs on a node', () => {
     const withRefsCmp = TestBed.createComponent(WithRefsCmp);
-    const firstDivDebugEl = withRefsCmp.debugElement.query(By.css('div'));
+    const firstDivDebugEl = withRefsCmp.debugElement.query(By.css('div'))!;
     // assert that a native element is referenced by a local ref
     expect(firstDivDebugEl.references['firstDiv'].tagName.toLowerCase()).toBe('div');
   });
@@ -657,7 +657,7 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
 
-    const greetingByDirective = hello.debugElement.query(By.directive(GreetingCmp));
+    const greetingByDirective = hello.debugElement.query(By.directive(GreetingCmp))!;
     expect(greetingByDirective.componentInstance).toBeInstanceOf(GreetingCmp);
   });
 
@@ -1849,7 +1849,7 @@ describe('TestBed', () => {
          let fixture = TestBed.createComponent(RootCmp);
          fixture.detectChanges();
 
-         let childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+         let childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp))!;
          expect(childCmpInstance.componentInstance).toBeInstanceOf(ChildCmp);
          expect(fixture.nativeElement.textContent).toBe('Child comp');
 
@@ -1866,7 +1866,7 @@ describe('TestBed', () => {
          expect(spy).toHaveBeenCalledTimes(1);
          fixture.detectChanges();
 
-         childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+         childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp))!;
          expect(childCmpInstance).toBeNull();
          expect(fixture.nativeElement.textContent).toBe('');
 
@@ -1881,7 +1881,7 @@ describe('TestBed', () => {
          fixture = TestBed.createComponent(RootCmp);
          fixture.detectChanges();
 
-         childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+         childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp))!;
          expect(childCmpInstance).toBeNull();
          expect(fixture.nativeElement.textContent).toBe('');
        });

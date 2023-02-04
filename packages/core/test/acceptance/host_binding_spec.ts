@@ -189,7 +189,7 @@ describe('host bindings', () => {
       });
       const fixture = TestBed.createComponent(Comp);
       fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir));
+      const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir))!;
       expect(queryResult.nativeElement.style.color).toBe('red');
     });
 
@@ -228,7 +228,7 @@ describe('host bindings', () => {
          });
          const fixture = TestBed.createComponent(App);
          fixture.detectChanges();
-         const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir));
+         const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir))!;
          expect(queryResult.nativeElement.style.color).toBe('green');
        });
 
@@ -277,7 +277,7 @@ describe('host bindings', () => {
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(Comp));
+      const queryResult = fixture.debugElement.query(By.directive(Comp))!;
       expect(queryResult.nativeElement.style.color).toBe('red');
     });
 
@@ -345,7 +345,7 @@ describe('host bindings', () => {
       const fixture = TestBed.createComponent(Comp);
       fixture.detectChanges();
       await fixture.whenStable();  // wait for animations to complete
-      const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir));
+      const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir))!;
       expect(queryResult.nativeElement.style.color).toBe('yellow');
       expect(events).toEqual(['@myAnimation.start', '@myAnimation.done']);
     });
@@ -422,7 +422,7 @@ describe('host bindings', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       await fixture.whenStable();  // wait for animations to complete
-      const queryResult = fixture.debugElement.query(By.directive(Comp));
+      const queryResult = fixture.debugElement.query(By.directive(Comp))!;
       expect(queryResult.nativeElement.style.color).toBe('yellow');
       expect(events).toEqual(['@myAnimation.start', '@myAnimation.done']);
     });

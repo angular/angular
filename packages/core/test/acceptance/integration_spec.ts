@@ -1583,7 +1583,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [MyApp, ButtonSuperClass, ButtonSubClass]});
     const fixture = TestBed.createComponent(MyApp);
-    const button = fixture.debugElement.query(By.directive(ButtonSubClass));
+    const button = fixture.debugElement.query(By.directive(ButtonSubClass))!;
     fixture.detectChanges();
 
     button.nativeElement.click();
@@ -1612,7 +1612,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [MyApp, SuperComp, SubComp, SomeDir]});
     const fixture = TestBed.createComponent(MyApp);
-    const subInstance = fixture.debugElement.query(By.directive(SubComp)).componentInstance;
+    const subInstance = fixture.debugElement.query(By.directive(SubComp))!.componentInstance;
     fixture.detectChanges();
 
     expect(subInstance.dirs.length).toBe(1);
@@ -1690,7 +1690,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [MyApp, ButtonSubClass]});
     const fixture = TestBed.createComponent(MyApp);
-    const button = fixture.debugElement.query(By.directive(ButtonSubClass)).componentInstance;
+    const button = fixture.debugElement.query(By.directive(ButtonSubClass))!.componentInstance;
     fixture.detectChanges();
 
     expect(button.isDisabled).toBe(false);
@@ -1724,7 +1724,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [MyApp, ButtonSubClass]});
     const fixture = TestBed.createComponent(MyApp);
-    const button = fixture.debugElement.query(By.directive(ButtonSubClass)).componentInstance;
+    const button = fixture.debugElement.query(By.directive(ButtonSubClass))!.componentInstance;
 
     button.emitClick();
     fixture.detectChanges();
@@ -1747,7 +1747,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [SubButton, App]});
     const fixture = TestBed.createComponent(App);
-    const button = fixture.debugElement.query(By.directive(SubButton));
+    const button = fixture.debugElement.query(By.directive(SubButton))!;
     fixture.detectChanges();
 
     expect(button.nativeElement.getAttribute('tabindex')).toBe('-1');
@@ -1775,7 +1775,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [SubButton, App]});
     const fixture = TestBed.createComponent(App);
-    const button = fixture.debugElement.query(By.directive(SubButton));
+    const button = fixture.debugElement.query(By.directive(SubButton))!;
     fixture.detectChanges();
 
     expect(button.nativeElement.getAttribute('tabindex')).toBe('-1');
@@ -1806,7 +1806,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [SubButton, App]});
     const fixture = TestBed.createComponent(App);
-    const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
+    const button = fixture.debugElement.query(By.directive(SubButton))!.nativeElement;
 
     button.click();
     fixture.detectChanges();
@@ -1835,7 +1835,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [SubButton, BaseButton, App]});
     const fixture = TestBed.createComponent(App);
-    const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
+    const button = fixture.debugElement.query(By.directive(SubButton))!.nativeElement;
 
     button.click();
     fixture.detectChanges();
@@ -1868,7 +1868,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [SubButton, SuperBaseButton, BaseButton, App]});
     const fixture = TestBed.createComponent(App);
-    const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
+    const button = fixture.debugElement.query(By.directive(SubButton))!.nativeElement;
 
     button.click();
     fixture.detectChanges();
@@ -1906,7 +1906,7 @@ describe('acceptance integration tests', () => {
     TestBed.configureTestingModule(
         {declarations: [SubButton, SuperBaseButton, SuperSuperBaseButton, BaseButton, App]});
     const fixture = TestBed.createComponent(App);
-    const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
+    const button = fixture.debugElement.query(By.directive(SubButton))!.nativeElement;
 
     button.click();
     fixture.detectChanges();
@@ -2242,7 +2242,7 @@ describe('acceptance integration tests', () => {
 
     TestBed.configureTestingModule({declarations: [App, Child, GrandChild]});
     const fixture = TestBed.createComponent(App);
-    const grandChild = fixture.debugElement.query(By.directive(GrandChild)).componentInstance;
+    const grandChild = fixture.debugElement.query(By.directive(GrandChild))!.componentInstance;
     fixture.detectChanges();
     const leafLView = readPatchedLView(grandChild)!;
     const lViewIds: number[] = [];

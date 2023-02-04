@@ -33,7 +33,7 @@ describe('HighlightDirective', () => {
     des = fixture.debugElement.queryAll(By.directive(HighlightDirective));
 
     // the h2 without the HighlightDirective
-    bareH2 = fixture.debugElement.query(By.css('h2:not([highlight])'));
+    bareH2 = fixture.debugElement.query(By.css('h2:not([highlight])'))!;
   });
 
   // color tests

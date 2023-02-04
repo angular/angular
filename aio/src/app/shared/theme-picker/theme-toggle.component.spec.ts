@@ -31,7 +31,7 @@ describe('ThemeToggleComponent', () => {
 
   it('should toggle between light and dark mode', () => {
     expect(component.getThemeName()).toBe('light');
-    getToggleButton().click();
+    getToggleButton()?.click();
     expect(component.getThemeName()).toBe('dark');
   });
 
@@ -73,7 +73,7 @@ describe('ThemeToggleComponent', () => {
   });
 
   // Helpers
-  function getToggleButton(): HTMLButtonElement {
-    return fixture.debugElement.query(By.css('button')).nativeElement;
+  function getToggleButton(): HTMLButtonElement|undefined {
+    return fixture.debugElement.query(By.css('button'))?.nativeElement;
   }
 });

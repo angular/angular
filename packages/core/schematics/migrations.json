@@ -4,6 +4,11 @@
       "version": "17.0.0",
       "description": "Angular v17 introduces a new control flow syntax that uses the @ and } characters. This migration replaces the existing usages with their corresponding HTML entities.",
       "factory": "./migrations/block-template-entities/bundle"
+    },
+    "migration-debugElement-query": {
+      "description": "As of Angular v18, the type of `DebugElement.query` can return null. This migration automatically identifies usages and adds non-null assertions.",
+      "factory": "./migrations/debug-element-query/bundle",
+      "version": "18.0.0"
     }
   }
 }

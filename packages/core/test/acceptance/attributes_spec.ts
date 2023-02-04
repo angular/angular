@@ -21,7 +21,7 @@ describe('attribute creation', () => {
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
-    const div = fixture.debugElement.query(By.css('div')).nativeElement;
+    const div = fixture.debugElement.query(By.css('div'))!.nativeElement;
     expect(div.id).toEqual('test');
     expect(div.title).toEqual('Hello');
   });
@@ -38,7 +38,7 @@ describe('attribute creation', () => {
     fixture.detectChanges();
 
 
-    const div = fixture.debugElement.query(By.css('div')).nativeElement;
+    const div = fixture.debugElement.query(By.css('div'))!.nativeElement;
     const attrs = div.attributes;
 
     expect(attrs['id'].name).toEqual('id');
@@ -68,7 +68,7 @@ describe('attribute binding', () => {
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
-    const a = fixture.debugElement.query(By.css('a')).nativeElement;
+    const a = fixture.debugElement.query(By.css('a'))!.nativeElement;
     // NOTE: different browsers will add `//` into the URI.
     expect(a.href).toEqual('https://angular.io/robots.txt');
   });
@@ -86,7 +86,7 @@ describe('attribute binding', () => {
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
-    const a = fixture.debugElement.query(By.css('a')).nativeElement;
+    const a = fixture.debugElement.query(By.css('a'))!.nativeElement;
     // NOTE: different browsers will add `//` into the URI.
     expect(a.getAttribute('href')).toBe('https://angular.io/robots.txt');
     expect(a.getAttribute('id')).toBe('my-link');
@@ -106,7 +106,7 @@ describe('attribute binding', () => {
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
-    const a = fixture.debugElement.query(By.css('a')).nativeElement;
+    const a = fixture.debugElement.query(By.css('a'))!.nativeElement;
     // NOTE: different browsers will add `//` into the URI.
     expect(a.getAttribute('href')).toBe('https://angular.io/robots.txt');
     expect(a.id).toBe('my-link');
@@ -130,7 +130,7 @@ describe('attribute binding', () => {
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
+    const button = fixture.debugElement.query(By.css('button'))!.nativeElement;
 
     expect(button.getAttribute('id')).toBe('my-custom-button');
     expect(button.getAttribute('tabindex')).toBe('11');
@@ -159,8 +159,8 @@ describe('attribute binding', () => {
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
-    const span = fixture.debugElement.query(By.css('span')).nativeElement;
+    const button = fixture.debugElement.query(By.css('button'))!.nativeElement;
+    const span = fixture.debugElement.query(By.css('span'))!.nativeElement;
 
     expect(button.getAttribute('id')).toBe('my-custom-button');
     expect(button.getAttribute('tabindex')).toBe('11');
@@ -183,7 +183,7 @@ describe('attribute binding', () => {
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
-    const a = fixture.debugElement.query(By.css('a')).nativeElement;
+    const a = fixture.debugElement.query(By.css('a'))!.nativeElement;
     // NOTE: different browsers will add `//` into the URI.
     expect(a.href.indexOf('unsafe:')).toBe(0);
 
