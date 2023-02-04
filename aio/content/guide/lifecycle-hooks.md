@@ -80,6 +80,12 @@ Use the `ngOnInit()` method to perform the following initialization tasks.
 | Perform complex initializations outside of the constructor   | Components should be cheap and safe to construct. You should not, for example, fetch data in a component constructor. You shouldn't worry that a new component will try to contact a remote server when created under test or before you decide to display it. <br /> An `ngOnInit()` is a good place for a component to fetch its initial data. For an example, see the [Tour of Heroes tutorial](tutorial/tour-of-heroes/toh-pt4#oninit).                                                                                                                    |
 | Set up the component after Angular sets the input properties | Constructors should do no more than set the initial local variables to simple values. <br /> Keep in mind that a directive's data-bound input properties are not set until *after construction*. If you need to initialize the directive based on those properties, set them when `ngOnInit()` runs. <div class="alert is-helpful"> The `ngOnChanges()` method is your first opportunity to access those properties. Angular calls `ngOnChanges()` before `ngOnInit()`, but also many times after that. It only calls `ngOnInit()` once. </div> |
 
+<div class="alert is-helpful">
+
+**NOTE**: <br />
+There shouldn't be expectations built on top of what's available in the DOM before ngOnInit. Because this isn't considered part of the public API, it could change with internal refactoring like what happened with the View Engine -> Ivy migration. This could break your application's assumptions.
+
+</div>
 <a id="ondestroy"></a>
 
 ## Cleaning up on instance destruction
