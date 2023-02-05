@@ -310,6 +310,7 @@ function findImportLocation(
     target: Reference<NamedClassDeclaration>, inComponent: Reference<ts.ClassDeclaration>,
     importMode: PotentialImportMode, typeChecker: TemplateTypeChecker): PotentialImport|null {
   const importLocations = typeChecker.getPotentialImportsFor(target, inComponent.node, importMode);
+  let firstSameFileImport: PotentialImport|null = null;
   let firstModuleImport: PotentialImport|null = null;
 
   for (const location of importLocations) {
@@ -318,12 +319,17 @@ function findImportLocation(
     if (location.kind === PotentialImportKind.Standalone) {
       return location;
     }
-    if (location.kind === PotentialImportKind.NgModule && !firstModuleImport) {
+    if (!location.moduleSpecifier && !firstSameFileImport) {
+      firstSameFileImport = location;
+    }
+    if (location.kind === PotentialImportKind.NgModule && !firstModuleImport &&
+        // ɵ is used for some internal Angular modules that we want to skip over.
+        !location.symbolName.startsWith('ɵ')) {
       firstModuleImport = location;
     }
   }
 
-  return firstModuleImport;
+  return firstSameFileImport || firstModuleImport || importLocations[0] || null;
 }
 
 /**
