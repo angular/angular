@@ -6,12 +6,12 @@ has the following options:
 * `mode` - Configures the mode that migration should run in. The different modes are clarified
 further down in this document.
 * `path` - Relative path within the project that the migration should apply to. Can be used to
-migrate specific subdirectories individually. Defaults to the project root.
+migrate specific sub-directories individually. Defaults to the project root.
 
 ## Migration flow
 The standalone migration involves multiple distinct operations, and as such has to be run multiple
 times. Authors should verify that the app still works between each of the steps. If the application
-is large, it can be easier to use the `path` option to migrate specific subsections of the app
+is large, it can be easier to use the `path` option to migrate specific sub-sections of the app
 individually.
 
 **Note:** The schematic often needs to generate new code or copy existing code to different places.
@@ -63,7 +63,9 @@ export class AppModule {}
   selector: 'my-comp',
   template: '<div my-dir *ngIf="showGreeting">{{ "Hello" | myPipe }}</div>',
 })
-export class MyComp {}
+export class MyComp {
+  public showGreeting = true;
+}
 ```
 
 ```typescript
@@ -95,7 +97,9 @@ export class AppModule {}
   standalone: true,
   imports: [NgIf, MyDir, MyPipe]
 })
-export class MyComp {}
+export class MyComp {
+  public showGreeting = true;
+}
 ```
 
 ```typescript
@@ -122,7 +126,7 @@ A module is considered "safe to remove" if it:
 * Has no `providers`.
 * Has no `bootstrap` components.
 * Has no `imports` that reference a `ModuleWithProviders` symbol or a module that can't be removed.
-* Has no class members. Empty construstors are ignored.
+* Has no class members. Empty constructors are ignored.
 
 **Before:**
 ```typescript
