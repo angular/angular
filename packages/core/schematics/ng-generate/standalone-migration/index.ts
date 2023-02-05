@@ -38,6 +38,10 @@ export default function(options: Options): Rule {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
+    // TS and Schematic use paths in POSIX format even on Windows. This is needed as otherwise
+    // string matching such as `sourceFile.fileName.startsWith(pathToMigrate)` might not work.
+    const pathToMigrate = normalizePath(join(basePath, options.path));
+    let migratedFiles = 0;
 
     if (!allPaths.length) {
       throw new SchematicsException(
@@ -45,12 +49,19 @@ export default function(options: Options): Rule {
     }
 
     for (const tsconfigPath of allPaths) {
-      standaloneMigration(tree, tsconfigPath, basePath, options);
+      migratedFiles += standaloneMigration(tree, tsconfigPath, basePath, pathToMigrate, options);
+    }
+
+    if (migratedFiles === 0) {
+      throw new SchematicsException(`Could not find any files to migrate under the path ${
+          pathToMigrate}. Cannot run the standalone migration.`);
     }
   };
 }
 
-function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string, options: Options) {
+function standaloneMigration(
+    tree: Tree, tsconfigPath: string, basePath: string, pathToMigrate: string,
+    options: Options): number {
   if (options.path.startsWith('..')) {
     throw new SchematicsException(
         'Cannot run standalone migration outside of the current project.');
@@ -64,11 +75,6 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
                   }) as NgtscProgram;
   const printer = ts.createPrinter();
 
-  // TS and Schematic use paths in POSIX format even on Windows.
-  // This is needed as otherwise string matching such as
-  // `sourceFile.fileName.startsWith(pathToMigrate)` will not work correctly.
-  const pathToMigrate = normalizePath(join(basePath, options.path));
-
   if (existsSync(pathToMigrate) && !statSync(pathToMigrate).isDirectory()) {
     throw new SchematicsException(`Migration path ${
         pathToMigrate} has to be a directory. Cannot run the standalone migration.`);
@@ -80,8 +86,7 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
   });
 
   if (sourceFiles.length === 0) {
-    throw new SchematicsException(`Could not find any files to migrate under the path ${
-        pathToMigrate}. Cannot run the standalone migration.`);
+    return 0;
   }
 
   let pendingChanges: ChangesByFile;
@@ -122,4 +127,6 @@ function standaloneMigration(tree: Tree, tsconfigPath: string, basePath: string,
       tree.delete(relative(basePath, file.fileName));
     }
   }
+
+  return sourceFiles.length;
 }
