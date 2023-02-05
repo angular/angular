@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {VERSION} from '@angular/compiler';
+
+// tslint:disable-next-line: no-toplevel-property-access
+const versionSubDomain = VERSION.major !== '0' ? `v${VERSION.major}.` : '';
+
 /**
  * Base URL for the error details page.
  *
@@ -13,4 +18,4 @@
  *  - packages/compiler-cli/src/ngtsc/diagnostics/src/error_details_base_url.ts
  *  - packages/core/src/error_details_base_url.ts
  */
-export const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.io/errors';
+export const ERROR_DETAILS_PAGE_BASE_URL = `https://${versionSubDomain}angular.io/errors`;
