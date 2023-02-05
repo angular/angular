@@ -970,6 +970,52 @@ describe('standalone migration', () => {
     expect(myCompContent).toContain('imports: [ButtonModule]');
   });
 
+  it('should not reference internal modules', async () => {
+    writeFile('./should-migrate/module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {ɵButtonModule} from '../do-not-migrate/button.module';
+
+      @NgModule({imports: [ɵButtonModule], declarations: [MyComp]})
+      export class Mod {}
+    `);
+
+    writeFile('./should-migrate/comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-comp', template: '<my-button>Hello</my-button>'})
+      export class MyComp {}
+    `);
+
+    writeFile('./do-not-migrate/button.module.ts', `
+      import {NgModule, forwardRef} from '@angular/core';
+      import {MyButton} from './button';
+
+      @NgModule({
+        imports: [forwardRef(() => ɵButtonModule)],
+        exports: [forwardRef(() => ɵButtonModule)]
+      })
+      export class ExporterModule {}
+
+      @NgModule({declarations: [MyButton], exports: [MyButton]})
+      export class ɵButtonModule {}
+    `);
+
+    writeFile('./do-not-migrate/button.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-button', template: '<ng-content></ng-content>'})
+      export class MyButton {}
+    `);
+
+    await runMigration('convert-to-standalone', './should-migrate');
+
+    const myCompContent = tree.readContent('./should-migrate/comp.ts');
+    expect(myCompContent)
+        .toContain(`import { ExporterModule } from '../do-not-migrate/button.module';`);
+    expect(myCompContent).toContain('imports: [ExporterModule]');
+  });
+
   it('should migrate tests with a component declared through TestBed', async () => {
     writeFile('app.spec.ts', `
       import {NgModule, Component} from '@angular/core';
