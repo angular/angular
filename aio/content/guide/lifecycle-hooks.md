@@ -83,7 +83,7 @@ Use the `ngOnInit()` method to perform the following initialization tasks.
 <div class="alert is-helpful">
 
 **NOTE**: <br />
-There shouldn't be expectations built on top of what's available in the DOM before ngOnInit. Because this isn't considered part of the public API, it could change with internal refactoring like what happened with the View Engine -> Ivy migration. This could break your application's assumptions.
+There shouldn't be expectations built on top of what's available in the DOM before `ngOnInit`. Because this isn't considered part of the public API, it could change with internal refactoring like what happened with the migration from `View Engine` to `Ivy`. This could break your application's assumptions.
 
 </div>
 <a id="ondestroy"></a>
