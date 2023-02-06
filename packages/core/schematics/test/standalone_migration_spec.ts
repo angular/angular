@@ -1294,6 +1294,34 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should not duplicate doc strings', async () => {
+    writeFile('module.ts', `
+      import {NgModule, Directive} from '@angular/core';
+
+      /** Directive used for testing. */
+      @Directive({selector: '[dir]'})
+      export class MyDir {}
+
+      /** Module used for testing. */
+      @NgModule({declarations: [MyDir]})
+      export class Mod {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('module.ts'))).toBe(stripWhitespace(`
+      import {NgModule, Directive} from '@angular/core';
+
+      /** Directive used for testing. */
+      @Directive({selector: '[dir]', standalone: true})
+      export class MyDir {}
+
+      /** Module used for testing. */
+      @NgModule({imports: [MyDir]})
+      export class Mod {}
+    `));
+  });
+
   it('should remove a module that only has imports and exports', async () => {
     writeFile('app.module.ts', `
       import {NgModule} from '@angular/core';

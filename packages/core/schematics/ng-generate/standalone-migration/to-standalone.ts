@@ -286,11 +286,11 @@ function addPropertyToAngularDecorator(
     return node;
   }
 
-  return ts.factory.updateDecorator(
-      node,
-      ts.factory.createCallExpression(node.expression.expression, node.expression.typeArguments, [
-        ts.factory.createObjectLiteralExpression(literalProperties, literalProperties.length > 1)
-      ]));
+  // Use `createDecorator` instead of `updateDecorator`, because
+  // the latter ends up duplicating the node's leading comment.
+  return ts.factory.createDecorator(ts.factory.createCallExpression(
+      node.expression.expression, node.expression.typeArguments,
+      [ts.factory.createObjectLiteralExpression(literalProperties, literalProperties.length > 1)]));
 }
 
 /** Checks if a node is a `PropertyAssignment` with a name. */
