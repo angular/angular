@@ -7,13 +7,12 @@
  */
 import 'reflect-metadata';
 
-import {Component, ContentChild, ContentChildren, Directive, ElementRef, forwardRef, getNgModuleById, HostBinding, HostListener, Input, NgModule, Pipe, QueryList, ViewChild, ViewChildren, ɵNgModuleDef as NgModuleDef, ɵɵngDeclareComponent as ngDeclareComponent} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, ElementRef, forwardRef, getNgModuleById, HostBinding, HostListener, Injector, Input, NgModule, Pipe, QueryList, ViewChild, ViewChildren, ɵNgModuleDef as NgModuleDef, ɵɵngDeclareComponent as ngDeclareComponent} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
 import {FactoryFn} from '@angular/core/src/render3/definition_factory';
 import {ComponentDef, PipeDef,} from '@angular/core/src/render3/interfaces/definition';
-
 
 
 describe('render3 jit', () => {
@@ -441,6 +440,48 @@ describe('render3 jit', () => {
   });
 
   describe('invalid parameters', () => {
+    interface Dep {
+      test: boolean;
+    }
+    const dep: Dep = {test: true};
+
+    it('should fail to construct a type with a required parameter in the constructor', () => {
+      @Injectable()
+      class Service {
+        constructor(param: Dep, param2: Dep = dep) {}
+      }
+
+      const injector = Injector.create({providers: [{provide: Service, useClass: Service}]});
+      expect(() => injector.get(Service)).toThrowError();
+    });
+
+    it('should construct a type with a required parameter in the constructor', () => {
+      @Injectable()
+      class Service {
+        constructor(readonly injected: Dep = dep) {}
+      }
+
+      const injector = Injector.create({providers: [{provide: Service, useClass: Service}]});
+      const instance = injector.get(Service);
+      expect(instance.injected).toBe(dep);
+    });
+
+
+    it('should construct a type with a destructured parameter in the constructor', () => {
+      @Injectable()
+      class Service {
+        readonly test: boolean;
+
+        constructor({test} = dep) {
+          this.test = test;
+        }
+      }
+
+      const injector = Injector.create({providers: [{provide: Service, useClass: Service}]});
+      const instance = injector.get(Service);
+      expect(instance.test).toBe(true);
+    });
+
     it('should error when creating an @Injectable that extends a class with a faulty parameter', () => {
       @Injectable({providedIn: 'root'})
       class Legit {

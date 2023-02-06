@@ -420,6 +420,11 @@ export interface CtorParameter {
    * Any `Decorator`s which are present on the parameter, or `null` if none are present.
    */
   decorators: Decorator[]|null;
+
+  /**
+   * Whether the parameter has an initialization expression.
+   */
+  hasInitializer: boolean;
 }
 
 /**

@@ -14,12 +14,28 @@ import {ClassDeclaration, CtorParameter, Decorator, ReflectionHost, TypeValueRef
 
 import {isAngularCore, valueReferenceToExpression} from './util';
 
-export type ConstructorDeps = {
+export enum ConstructorDepsKind {
+  TypeBasedInjection,
+  Invalid,
+  FullyOptional,
+}
+
+export interface TypeBasedInjectionConstructorDeps {
+  kind: ConstructorDepsKind.TypeBasedInjection;
   deps: R3DependencyMetadata[];
-}|{
-  deps: null;
+}
+
+export interface InvalidConstructorDeps {
+  kind: ConstructorDepsKind.Invalid;
   errors: ConstructorDepError[];
-};
+}
+
+export interface FullyOptionalConstructorDeps {
+  kind: ConstructorDepsKind.FullyOptional;
+}
+
+export type ConstructorDeps =
+    TypeBasedInjectionConstructorDeps|InvalidConstructorDeps|FullyOptionalConstructorDeps;
 
 export interface ConstructorDepError {
   index: number;
@@ -39,6 +55,10 @@ export function getConstructorDependencies(
       ctorParams = [];
     }
   }
+  if (ctorParams.every(p => p.hasInitializer)) {
+    return {kind: ConstructorDepsKind.FullyOptional};
+  }
+
   ctorParams.forEach((param, idx) => {
     let token = valueReferenceToExpression(param.typeValueReference);
     let attributeNameType: Expression|null = null;
@@ -97,9 +117,12 @@ export function getConstructorDependencies(
     }
   });
   if (errors.length === 0) {
-    return {deps};
+    return {
+      kind: ConstructorDepsKind.TypeBasedInjection,
+      deps,
+    };
   } else {
-    return {deps: null, errors};
+    return {kind: ConstructorDepsKind.Invalid, errors};
   }
 }
 
@@ -114,7 +137,9 @@ export function unwrapConstructorDependencies(deps: ConstructorDeps|null): R3Dep
     'invalid'|null {
   if (deps === null) {
     return null;
-  } else if (deps.deps !== null) {
+  } else if (deps.kind === ConstructorDepsKind.FullyOptional) {
+    return [];
+  } else if (deps.kind === ConstructorDepsKind.TypeBasedInjection) {
     // These constructor dependencies are valid.
     return deps.deps;
   } else {
@@ -141,7 +166,9 @@ export function validateConstructorDependencies(
     clazz: ClassDeclaration, deps: ConstructorDeps|null): R3DependencyMetadata[]|null {
   if (deps === null) {
     return null;
-  } else if (deps.deps !== null) {
+  } else if (deps.kind === ConstructorDepsKind.FullyOptional) {
+    return [];
+  } else if (deps.kind === ConstructorDepsKind.TypeBasedInjection) {
     return deps.deps;
   } else {
     // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
@@ -205,6 +232,10 @@ function createUnsuitableInjectionTokenError(
     case ValueUnavailableKind.MISSING_TYPE:
       chainMessage =
           'Consider adding a type to the parameter or use the @Inject decorator to specify an injection token.';
+      if (param.hasInitializer) {
+        chainMessage +=
+            ' Or, give all parameters a default value to construct the class using default values.';
+      }
       break;
   }
 

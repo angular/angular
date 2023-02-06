@@ -2425,6 +2425,47 @@ function allTests(os: string) {
       });
     });
 
+    describe('inject() based DI', () => {
+      it('should generate a DI factory for a class with all optional parameters', () => {
+        env.write('test.ts', `
+          import {Component, inject, Injectable} from '@angular/core';
+
+          @Injectable() class DepA {}
+          @Injectable() class DepB {}
+
+          @Component({template: ''})
+          export class TestCmp {
+            constructor(depA = inject(DepA), depB = inject(DepB), third = 'test') {}
+          }
+        `);
+
+        env.driveMain();
+        expect(env.getContents('test.js'))
+            .toContain('function TestCmp_Factory(t) { return new (t || TestCmp)(); }');
+      });
+
+
+      it('should produce a specific message when optional and non-optional parameters are mixed', () => {
+        env.write('test.ts', `
+          import {Component, inject, Injectable} from '@angular/core';
+
+          @Injectable() class DepA {}
+          @Injectable() class DepB {}
+
+          @Component({template: 'test'})
+          export class TestCmp {
+            constructor(depA: DepA, depB = inject(DepB)) {}
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+            .toContain(
+                'Or, give all parameters a default value to construct the class using default values.');
+      });
+    });
+
     describe('compiling invalid @Injectables', () => {
       describe('with strictInjectionParameters = true', () => {
         it('should give a compile-time error if an invalid @Injectable is used with no arguments',

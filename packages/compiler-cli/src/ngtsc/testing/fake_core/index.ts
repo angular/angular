@@ -70,6 +70,8 @@ export interface SimpleChanges {
   [propName: string]: any;
 }
 
+export declare function inject(type: any, options?: any): void;
+
 export type ɵɵNgModuleDeclaration<ModuleT, DeclarationsT, ImportsT, ExportsT> = unknown;
 export type ɵɵDirectiveDeclaration<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> =
     unknown;

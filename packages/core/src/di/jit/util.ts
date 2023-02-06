@@ -13,6 +13,8 @@ import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Host, Inject, Optional, Self, SkipSelf} from '../metadata';
 import {Attribute} from '../metadata_attr';
 
+import {isProbablyFullyOptionalConstructor} from './constructor';
+
 let _reflect: ReflectionCapabilities|null = null;
 
 export function getReflect(): ReflectionCapabilities {
@@ -20,6 +22,10 @@ export function getReflect(): ReflectionCapabilities {
 }
 
 export function reflectDependencies(type: Type<any>): R3DependencyMetadataFacade[] {
+  if (isProbablyFullyOptionalConstructor(type)) {
+    // Types with fully optional constructors are reflected as having no-arg constructors.
+    return [];
+  }
   return convertDependencies(getReflect().parameters(type));
 }
 

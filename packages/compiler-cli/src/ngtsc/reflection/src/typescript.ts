@@ -85,6 +85,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         typeValueReference,
         typeNode: originalTypeNode,
         decorators,
+        hasInitializer: node.initializer !== undefined,
       };
     });
   }
