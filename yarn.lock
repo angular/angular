@@ -236,7 +236,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#57ce1b4bb7ab323c5c7610081a93148796b4ae81":
   version "0.0.0-fa428ee0accc999f051008f0daa5651ba2728c2b"
-  uid "57ce1b4bb7ab323c5c7610081a93148796b4ae81"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#57ce1b4bb7ab323c5c7610081a93148796b4ae81"
   dependencies:
     "@angular-devkit/build-angular" "15.2.0-next.1"
@@ -391,7 +390,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#ecad30aeac0b82fc1d2a8b9833b3f9c04311cedc":
   version "0.0.0-fa428ee0accc999f051008f0daa5651ba2728c2b"
-  uid ecad30aeac0b82fc1d2a8b9833b3f9c04311cedc
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#ecad30aeac0b82fc1d2a8b9833b3f9c04311cedc"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -14590,10 +14588,10 @@ rollup@~1.11.3:
     "@types/node" "^11.13.9"
     acorn "^6.1.1"
 
-rollup@~2.79.0:
-  version "2.79.0"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.79.0.tgz#9177992c9f09eb58c5e56cbfa641607a12b57ce2"
-  integrity sha512-x4KsrCgwQ7ZJPcFA/SUu6QVcYlO7uRLfLAy0DSA4NS2eG8japdbpM50ToH7z4iObodRYOJ0soneF0iaQRJ6zhA==
+rollup@~3.14.0:
+  version "3.14.0"
+  resolved "https://registry.npmmirror.com/rollup/-/rollup-3.14.0.tgz#f5925255f3b6e8de1dba3916d7619c7da5708d95"
+  integrity sha512-o23sdgCLcLSe3zIplT9nQ1+r97okuaiR+vmAPZPTDYB7/f3tgWIYNyiQveMsZwshBT0is4eGax/HH83Q7CG+/Q==
   optionalDependencies:
     fsevents "~2.3.2"
 
