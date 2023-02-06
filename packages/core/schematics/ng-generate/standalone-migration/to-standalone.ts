@@ -15,7 +15,7 @@ import {getImportSpecifier} from '../../utils/typescript/imports';
 import {closestNode} from '../../utils/typescript/nodes';
 import {isReferenceToImport} from '../../utils/typescript/symbol';
 
-import {ChangesByFile, ChangeTracker, findClassDeclaration, findLiteralProperty, NamedClassDeclaration} from './util';
+import {ChangesByFile, ChangeTracker, findClassDeclaration, findLiteralProperty, ImportRemapper, NamedClassDeclaration} from './util';
 
 /**
  * Converts all declarations in the specified files to standalone.
@@ -24,13 +24,14 @@ import {ChangesByFile, ChangeTracker, findClassDeclaration, findLiteralProperty,
  * @param printer
  */
 export function toStandalone(
-    sourceFiles: ts.SourceFile[], program: NgtscProgram, printer: ts.Printer): ChangesByFile {
+    sourceFiles: ts.SourceFile[], program: NgtscProgram, printer: ts.Printer,
+    importRemapper?: ImportRemapper): ChangesByFile {
   const templateTypeChecker = program.compiler.getTemplateTypeChecker();
   const typeChecker = program.getTsProgram().getTypeChecker();
   const modulesToMigrate: ts.ClassDeclaration[] = [];
   const testObjectsToMigrate: ts.ObjectLiteralExpression[] = [];
   const declarations: Reference<ts.ClassDeclaration>[] = [];
-  const tracker = new ChangeTracker(printer);
+  const tracker = new ChangeTracker(printer, importRemapper);
 
   for (const sourceFile of sourceFiles) {
     const {modules, testObjects} = findModulesToMigrate(sourceFile, typeChecker);

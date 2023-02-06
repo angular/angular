@@ -16,7 +16,7 @@ import {getAngularDecorators} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
 import {convertNgModuleDeclarationToStandalone} from './to-standalone';
-import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, NamedClassDeclaration, NodeLookup, offsetsToNodes, UniqueItemTracker} from './util';
+import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, ImportRemapper, NamedClassDeclaration, NodeLookup, offsetsToNodes, UniqueItemTracker} from './util';
 
 /** Information extracted from a `bootstrapModule` call necessary to migrate it. */
 interface BootstrapCallAnalysis {
@@ -32,8 +32,8 @@ interface BootstrapCallAnalysis {
 
 export function toStandaloneBootstrap(
     program: NgtscProgram, host: ts.CompilerHost, basePath: string, rootFileNames: string[],
-    sourceFiles: ts.SourceFile[], printer: ts.Printer) {
-  const tracker = new ChangeTracker(printer);
+    sourceFiles: ts.SourceFile[], printer: ts.Printer, importRemapper?: ImportRemapper) {
+  const tracker = new ChangeTracker(printer, importRemapper);
   const typeChecker = program.getTsProgram().getTypeChecker();
   const templateTypeChecker = program.compiler.getTemplateTypeChecker();
   const languageService = createLanguageService(program, host, rootFileNames, basePath);

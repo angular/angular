@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
-import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, offsetsToNodes, UniqueItemTracker} from './util';
+import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, ImportRemapper, offsetsToNodes, UniqueItemTracker} from './util';
 
 /** Mapping between a file name and spans for node references inside of it. */
 type ReferencesByFile = Map<string, [start: number, end: number][]>;
@@ -28,9 +28,9 @@ interface RemovalLocations {
 
 export function pruneNgModules(
     program: NgtscProgram, host: ts.CompilerHost, basePath: string, rootFileNames: string[],
-    sourceFiles: ts.SourceFile[], printer: ts.Printer) {
+    sourceFiles: ts.SourceFile[], printer: ts.Printer, importRemapper?: ImportRemapper) {
   const filesToRemove = new Set<ts.SourceFile>();
-  const tracker = new ChangeTracker(printer);
+  const tracker = new ChangeTracker(printer, importRemapper);
   const typeChecker = program.getTsProgram().getTypeChecker();
   const languageService = createLanguageService(program, host, rootFileNames, basePath);
   const removalLocations: RemovalLocations = {
