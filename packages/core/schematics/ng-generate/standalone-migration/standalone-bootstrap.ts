@@ -42,7 +42,7 @@ export function toStandaloneBootstrap(
   sourceFiles.forEach(function walk(node: ts.Node) {
     if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) &&
         node.expression.name.text === 'bootstrapModule' &&
-        isClassReferenceInModule(node.expression, 'PlatformRef', '@angular/core', typeChecker)) {
+        isClassReferenceInAngularModule(node.expression, 'PlatformRef', 'core', typeChecker)) {
       const call = analyzeBootstrapCall(node, typeChecker);
 
       if (call) {
@@ -284,8 +284,8 @@ function migrateImportsForBootstrapCall(
     // If the reference is to a `RouterModule.forRoot` call, we can try to migrate it.
     if (ts.isCallExpression(element) && ts.isPropertyAccessExpression(element.expression) &&
         element.arguments.length > 0 && element.expression.name.text === 'forRoot' &&
-        isClassReferenceInModule(
-            element.expression.expression, 'RouterModule', '@angular/router', typeChecker)) {
+        isClassReferenceInAngularModule(
+            element.expression.expression, 'RouterModule', 'router', typeChecker)) {
       const options = element.arguments[1] as ts.Expression | undefined;
       const features = options ? getRouterModuleForRootFeatures(sourceFile, options, tracker) : [];
 
@@ -306,19 +306,21 @@ function migrateImportsForBootstrapCall(
 
     if (ts.isIdentifier(element)) {
       // `BrowserAnimationsModule` can be replaced with `provideAnimations`.
-      const animationsModule = '@angular/platform-browser/animations';
-      if (isClassReferenceInModule(
+      const animationsModule = 'platform-browser/animations';
+      const animationsImport = `@angular/${animationsModule}`;
+
+      if (isClassReferenceInAngularModule(
               element, 'BrowserAnimationsModule', animationsModule, typeChecker)) {
         providersInNewCall.push(ts.factory.createCallExpression(
-            tracker.addImport(sourceFile, 'provideAnimations', animationsModule), [], []));
+            tracker.addImport(sourceFile, 'provideAnimations', animationsImport), [], []));
         continue;
       }
 
       // `NoopAnimationsModule` can be replaced with `provideNoopAnimations`.
-      if (isClassReferenceInModule(
+      if (isClassReferenceInAngularModule(
               element, 'NoopAnimationsModule', animationsModule, typeChecker)) {
         providersInNewCall.push(ts.factory.createCallExpression(
-            tracker.addImport(sourceFile, 'provideNoopAnimations', animationsModule), [], []));
+            tracker.addImport(sourceFile, 'provideNoopAnimations', animationsImport), [], []));
         continue;
       }
     }
@@ -707,18 +709,22 @@ function isExportableDeclaration(node: ts.Node): node is ts.EnumDeclaration|ts.C
  * Checks whether a node is referring to a specific class declaration.
  * @param node Node that is being checked.
  * @param className Name of the class that the node might be referring to.
- * @param moduleName Name of the node module that should contain the class.
+ * @param moduleName Name of the Angular module that should contain the class.
  * @param typeChecker
  */
-function isClassReferenceInModule(
+function isClassReferenceInAngularModule(
     node: ts.Node, className: string, moduleName: string, typeChecker: ts.TypeChecker): boolean {
   const symbol = typeChecker.getTypeAtLocation(node).getSymbol();
+  const externalName = `@angular/${moduleName}`;
+  const internalName = `angular2/rc/packages/${moduleName}`;
 
   return !!symbol?.declarations?.some(decl => {
     const closestClass = closestOrSelf(decl, ts.isClassDeclaration);
-    return closestClass && closestClass.name && ts.isIdentifier(closestClass.name) &&
-        closestClass.name.text === className &&
-        closestClass.getSourceFile().fileName.includes(moduleName);
+    const closestClassFileName = closestClass?.getSourceFile().fileName;
+    return closestClass && closestClassFileName && closestClass.name &&
+        ts.isIdentifier(closestClass.name) && closestClass.name.text === className &&
+        (closestClassFileName.includes(externalName) ||
+         closestClassFileName.includes(internalName));
   });
 }
 
