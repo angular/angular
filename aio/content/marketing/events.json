@@ -1132,5 +1132,19 @@
       "start": "2022-12-06"
     },
     "name": "Angular Contributor Days"
+  },
+  {
+    "date": {
+      "start": "2023-11-07"
+    },
+    "linkUrl": "http://ng-poland.pl/",
+    "name": "NG Poland"
+  },
+  {
+    "date": {
+      "start": "2023-11-08"
+    },
+    "linkUrl": "http://js-poland.pl/",
+    "name": "JS Poland"
   }
 ]
