@@ -21,6 +21,9 @@ export type NodeLookup = Map<number, ts.Node[]>;
 /** Utility to type a class declaration with a name. */
 export type NamedClassDeclaration = ts.ClassDeclaration&{name: ts.Identifier};
 
+/** Function that can be used to remap a generated import. */
+export type ImportRemapper = (moduleName: string) => string;
+
 /** Change that needs to be applied to a file. */
 interface PendingChange {
   /** Index at which to start changing the file. */
@@ -45,7 +48,7 @@ export class ChangeTracker {
       }),
       this._printer);
 
-  constructor(private _printer: ts.Printer) {}
+  constructor(private _printer: ts.Printer, private _importRemapper?: ImportRemapper) {}
 
   /**
    * Tracks the insertion of some text.
@@ -104,7 +107,9 @@ export class ChangeTracker {
   addImport(
       sourceFile: ts.SourceFile, symbolName: string, moduleName: string,
       alias: string|null = null): ts.Expression {
-    return this._importManager.addImportToSourceFile(sourceFile, symbolName, moduleName, alias);
+    return this._importManager.addImportToSourceFile(
+        sourceFile, symbolName,
+        this._importRemapper ? this._importRemapper(moduleName) : moduleName, alias);
   }
 
   /**
