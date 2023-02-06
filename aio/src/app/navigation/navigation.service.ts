@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 
-import { combineLatest, ConnectableObservable, Observable } from 'rxjs';
-import { map, publishLast, publishReplay } from 'rxjs/operators';
+import {AsyncSubject, combineLatest, connectable, Observable, ReplaySubject} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import { LocationService } from 'app/shared/location.service';
-import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
+import {LocationService} from 'app/shared/location.service';
+import {CONTENT_URL_PREFIX} from 'app/documents/document.service';
 
 // Import and re-export the Navigation model types
 import { CurrentNodes, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
@@ -52,41 +52,52 @@ export class NavigationService {
    * Get an observable that fetches the `NavigationResponse` from the server.
    * We create an observable by calling `http.get` but then publish it to share the result
    * among multiple subscribers, without triggering new requests.
-   * We use `publishLast` because once the http request is complete the request observable completes.
-   * If you use `publish` here then the completed request observable will cause the subscribed
+   * We use a `Connectable`+ AsyncSubject because once the http request is complete the request observable completes.
+   * If you use a `Subject` here then the completed request observable will cause the subscribed
    * observables to complete too. We `connect` to the published observable to trigger the request immediately.
    * We could use `.refCount` here but then if the subscribers went from 1 -> 0 -> 1 then you would get
    * another request to the server.
    * We are not storing the subscription from connecting as we do not expect this service to be destroyed.
    */
   private fetchNavigationInfo(): Observable<NavigationResponse> {
-    const navigationInfo = this.http.get<NavigationResponse>(navigationPath)
-      .pipe(publishLast());
-    (navigationInfo as ConnectableObservable<NavigationResponse>).connect();
+    const navigationInfoSource = this.http.get<NavigationResponse>(navigationPath);
+    const navigationInfo = connectable(navigationInfoSource, {
+      connector: () => new AsyncSubject(),
+      resetOnDisconnect: false,
+    });
+    navigationInfo.connect();
     return navigationInfo;
   }
 
   private getVersionInfo(navigationInfo: Observable<NavigationResponse>) {
-    const versionInfo = navigationInfo.pipe(
-      map(response => response.__versionInfo),
-      publishLast(),
-    );
-    (versionInfo as ConnectableObservable<VersionInfo>).connect();
+    const versionInfoSource = navigationInfo.pipe(map((response) => response.__versionInfo));
+    const versionInfo = connectable(versionInfoSource, {
+      connector: () => new AsyncSubject(),
+      resetOnDisconnect: false,
+    });
+    versionInfo.connect();
     return versionInfo;
   }
 
-  private getNavigationViews(navigationInfo: Observable<NavigationResponse>): Observable<NavigationViews> {
-    const navigationViews = navigationInfo.pipe(
-      map(response => {
+  private getNavigationViews(
+    navigationInfo: Observable<NavigationResponse>
+  ): Observable<NavigationViews> {
+    const navigationViewsSource = navigationInfo.pipe(
+      map((response) => {
         const views = Object.assign({}, response);
-        Object.keys(views).forEach(key => {
-          if (key[0] === '_') { delete views[key]; }
+        Object.keys(views).forEach((key) => {
+          if (key[0] === '_') {
+            delete views[key];
+          }
         });
         return views as NavigationViews;
-      }),
-      publishLast(),
+      })
     );
-    (navigationViews as ConnectableObservable<NavigationViews>).connect();
+    const navigationViews = connectable(navigationViewsSource, {
+      connector: () => new AsyncSubject(),
+      resetOnDisconnect: false,
+    });
+    navigationViews.connect();
     return navigationViews;
   }
 
@@ -97,22 +108,22 @@ export class NavigationService {
    * See above for discussion of using `connect`.
    */
   private getCurrentNodes(navigationViews: Observable<NavigationViews>): Observable<CurrentNodes> {
-    const currentNodes = combineLatest([
-      navigationViews.pipe(
-          map(views => this.computeUrlToNavNodesMap(views))),
-      this.location.currentPath,
-    ])
-      .pipe(
-        map((result) => ({navMap: result[0] , url: result[1]})),
-        map((result) => {
-        const matchSpecialUrls = /^api/.exec(result.url);
+    const currentNodesSource = combineLatest({
+      navMap: navigationViews.pipe(map((views) => this.computeUrlToNavNodesMap(views))),
+      url: this.location.currentPath,
+    }).pipe(
+      map(({url, navMap}) => {
+        const matchSpecialUrls = /^api/.exec(url);
         if (matchSpecialUrls) {
-            result.url = matchSpecialUrls[0];
+          url = matchSpecialUrls[0];
         }
-        return result.navMap.get(result.url) || { '' : { view: '', url: result.url, nodes: [] }};
-        }),
-        publishReplay(1));
-    (currentNodes as ConnectableObservable<CurrentNodes>).connect();
+        return navMap.get(url) || {'': {view: '', url, nodes: []}};
+      })
+    );
+    const currentNodes = connectable(currentNodesSource, {
+      connector: () => new ReplaySubject(1),
+    });
+    currentNodes.connect();
     return currentNodes;
   }
 
@@ -137,7 +148,7 @@ export class NavigationService {
   private ensureHasTooltip(node: NavigationNode) {
     const title = node.title;
     const tooltip = node.tooltip;
-    if (tooltip == null && title ) {
+    if (tooltip == null && title) {
       // add period if no trailing punctuation
       node.tooltip = title + (/[a-zA-Z0-9]$/.test(title) ? '.' : '');
     }
@@ -149,23 +160,23 @@ export class NavigationService {
   private walkNodes(
     view: string, navMap: Map<string, CurrentNodes>,
     node: NavigationNode, ancestors: NavigationNode[] = []) {
-      const nodes = [node, ...ancestors];
-      const url = node.url;
-      this.ensureHasTooltip(node);
+    const nodes = [node, ...ancestors];
+    const url = node.url;
+    this.ensureHasTooltip(node);
 
-      // only map to this node if it has a url
-      if (url) {
-        // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
-        const cleanedUrl = url.replace(/\/$/, '');
-        if (!navMap.has(cleanedUrl)) {
-          navMap.set(cleanedUrl, {});
-        }
-        const navMapItem = navMap.get(cleanedUrl) as CurrentNodes;
-        navMapItem[view] = { url, view, nodes };
+    // only map to this node if it has a url
+    if (url) {
+      // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
+      const cleanedUrl = url.replace(/\/$/, '');
+      if (!navMap.has(cleanedUrl)) {
+        navMap.set(cleanedUrl, {});
       }
-
-      if (node.children) {
-        node.children.forEach(child => this.walkNodes(view, navMap, child, nodes));
-      }
+      const navMapItem = navMap.get(cleanedUrl) as CurrentNodes;
+      navMapItem[view] = {url, view, nodes};
     }
+
+    if (node.children) {
+      node.children.forEach((child) => this.walkNodes(view, navMap, child, nodes));
+    }
+  }
 }
