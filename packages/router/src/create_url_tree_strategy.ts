@@ -27,7 +27,7 @@ export class LegacyCreateUrlTree implements CreateUrlTreeStrategy {
           relativeTo, currentState, currentUrlTree, commands, queryParams, fragment);
       if (treeFromSnapshotStrategy.toString() !== tree.toString()) {
         let warningString = `The navigation to ${tree.toString()} will instead go to ${
-            treeFromSnapshotStrategy.toString()} in v16.`;
+            treeFromSnapshotStrategy.toString()} in an upcoming version of Angular.`;
         if (!!relativeTo) {
           warningString += ' `relativeTo` might need to be removed from the `UrlCreationOptions`.';
         }
