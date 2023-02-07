@@ -61,18 +61,19 @@ export default function(options: Options): Rule {
 
 function standaloneMigration(
     tree: Tree, tsconfigPath: string, basePath: string, pathToMigrate: string,
-    options: Options): number {
-  if (options.path.startsWith('..')) {
+    schematicOptions: Options): number {
+  if (schematicOptions.path.startsWith('..')) {
     throw new SchematicsException(
         'Cannot run standalone migration outside of the current project.');
   }
 
-  const {host, rootNames} = createProgramOptions(tree, tsconfigPath, basePath);
-  const program = createProgram({
-                    rootNames,
-                    host,
-                    options: {_enableTemplateTypeChecker: true, compileNonExportedClasses: true}
-                  }) as NgtscProgram;
+  const {host, options, rootNames} = createProgramOptions(
+      tree, tsconfigPath, basePath, undefined, undefined,
+      {
+        _enableTemplateTypeChecker: true,  // Required for the template type checker to work.
+        compileNonExportedClasses: true,   // We want to migrate non-exported classes too.
+      });
+  const program = createProgram({rootNames, host, options}) as NgtscProgram;
   const printer = ts.createPrinter();
 
   if (existsSync(pathToMigrate) && !statSync(pathToMigrate).isDirectory()) {
@@ -92,11 +93,11 @@ function standaloneMigration(
   let pendingChanges: ChangesByFile;
   let filesToRemove: Set<ts.SourceFile>|null = null;
 
-  if (options.mode === MigrationMode.pruneModules) {
+  if (schematicOptions.mode === MigrationMode.pruneModules) {
     const result = pruneNgModules(program, host, basePath, rootNames, sourceFiles, printer);
     pendingChanges = result.pendingChanges;
     filesToRemove = result.filesToRemove;
-  } else if (options.mode === MigrationMode.standaloneBootstrap) {
+  } else if (schematicOptions.mode === MigrationMode.standaloneBootstrap) {
     pendingChanges =
         toStandaloneBootstrap(program, host, basePath, rootNames, sourceFiles, printer);
   } else {
