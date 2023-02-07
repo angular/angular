@@ -569,7 +569,8 @@ function analyzeTestingModules(
 
     const importsProp = findLiteralProperty(obj, 'imports');
     const importElements = importsProp && hasNgModuleMetadataElements(importsProp) ?
-        importsProp.initializer.elements :
+        // Filter out calls since they may be a `ModuleWithProviders`.
+        importsProp.initializer.elements.filter(el => !ts.isCallExpression(el)) :
         null;
 
     for (const decl of declarations) {
