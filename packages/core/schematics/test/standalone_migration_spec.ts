@@ -1095,6 +1095,47 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should not add ModuleWithProviders imports to the `imports` in a test', async () => {
+    writeFile('app.spec.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {TestBed} from '@angular/core/testing';
+      import {MatCardModule} from '@angular/material/card';
+
+      describe('bootrstrapping an app', () => {
+        it('should work', () => {
+          TestBed.configureTestingModule({
+            declarations: [App],
+            imports: [MatCardModule.forRoot({})]
+          });
+          const fixture = TestBed.createComponent(App);
+          expect(fixture.nativeElement.innerHTML).toBe('hello');
+        });
+      });
+
+      @Component({template: 'hello'})
+      class App {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    const content = stripWhitespace(tree.readContent('app.spec.ts'));
+
+    expect(content).toContain(stripWhitespace(`
+      @Component({template: 'hello', standalone: true})
+      class App {}
+    `));
+
+    expect(content).toContain(stripWhitespace(`
+      it('should work', () => {
+        TestBed.configureTestingModule({
+          imports: [MatCardModule.forRoot({}), App]
+        });
+        const fixture = TestBed.createComponent(App);
+        expect(fixture.nativeElement.innerHTML).toBe('hello');
+      });
+    `));
+  });
+
   it('should not change testing objects with no declarations', async () => {
     const initialContent = `
       import {NgModule, Component} from '@angular/core';
