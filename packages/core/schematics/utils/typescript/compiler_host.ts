@@ -39,17 +39,19 @@ export function createMigrationProgram(
  * @param fakeFileRead Optional file reader function. Can be used to overwrite files in
  *   the TypeScript program, or to add in-memory files (e.g. to add global types).
  * @param additionalFiles Additional file paths that should be added to the program.
+ * @param optionOverrides Overrides of the parsed compiler options.
  */
 export function createProgramOptions(
     tree: Tree, tsconfigPath: string, basePath: string, fakeFileRead?: FakeReadFileFn,
-    additionalFiles?: string[]) {
+    additionalFiles?: string[], optionOverrides?: ts.CompilerOptions) {
   // Resolve the tsconfig path to an absolute path. This is needed as TypeScript otherwise
   // is not able to resolve root directories in the given tsconfig. More details can be found
   // in the following issue: https://github.com/microsoft/TypeScript/issues/37731.
   tsconfigPath = resolve(basePath, tsconfigPath);
   const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = createMigrationCompilerHost(tree, parsed.options, basePath, fakeFileRead);
-  return {rootNames: parsed.fileNames.concat(additionalFiles || []), options: parsed.options, host};
+  const options = optionOverrides ? {...parsed.options, ...optionOverrides} : parsed.options;
+  const host = createMigrationCompilerHost(tree, options, basePath, fakeFileRead);
+  return {rootNames: parsed.fileNames.concat(additionalFiles || []), options, host};
 }
 
 function createMigrationCompilerHost(
