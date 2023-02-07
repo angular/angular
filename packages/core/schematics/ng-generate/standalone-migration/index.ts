@@ -72,6 +72,9 @@ function standaloneMigration(
       {
         _enableTemplateTypeChecker: true,  // Required for the template type checker to work.
         compileNonExportedClasses: true,   // We want to migrate non-exported classes too.
+        // Avoid checking libraries to speed up the migration.
+        skipLibCheck: true,
+        skipDefaultLibCheck: true,
       });
   const program = createProgram({rootNames, host, options}) as NgtscProgram;
   const printer = ts.createPrinter();

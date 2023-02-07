@@ -92,8 +92,9 @@ function createMigrationCompilerHost(
  */
 export function canMigrateFile(
     basePath: string, sourceFile: ts.SourceFile, program: ts.Program): boolean {
-  // We shouldn't migrate .d.ts files or files from an external library.
-  if (sourceFile.isDeclarationFile || program.isSourceFileFromExternalLibrary(sourceFile)) {
+  // We shouldn't migrate .d.ts files, files from an external library or type checking files.
+  if (sourceFile.fileName.endsWith('.ngtypecheck.ts') || sourceFile.isDeclarationFile ||
+      program.isSourceFileFromExternalLibrary(sourceFile)) {
     return false;
   }
 
