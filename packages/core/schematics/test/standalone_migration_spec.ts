@@ -109,10 +109,16 @@ describe('standalone migration', () => {
     `);
 
     writeFile('/node_modules/@angular/router/index.d.ts', `
-      import {ModuleWithProviders} from '@angular/core';
+      import {ModuleWithProviders, ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration} from '@angular/core';
+
+      export declare class RouterLink {
+        // Router link is intentionally not standalone.
+        static ɵdir: ɵɵDirectiveDeclaration<RouterLink, '[routerLink]', never, {}, {}, never, never, false>;
+      }
 
       export declare class RouterModule {
         static forRoot(routes: any[], config?: any): ModuleWithProviders<RouterModule>;
+        static ɵmod: ɵɵNgModuleDeclaration<CommonModule, [typeof RouterLink], [], [typeof RouterLink]>;
       }
     `);
 
@@ -1337,6 +1343,40 @@ describe('standalone migration', () => {
 
       @Directive({selector: '[my-dir]', standalone: true})
       export class MyDir {}
+    `));
+  });
+
+  it('should not generate a forwardRef when adding an imported module dependency', async () => {
+    writeFile('./comp.ts', `
+      import {Component, NgModule} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+
+      @Component({
+        selector: 'comp',
+        template: '<div routerLink="/"></div>'
+      })
+      export class MyComp {}
+
+      @NgModule({imports: [RouterModule], declarations: [MyComp]})
+      export class Mod {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('comp.ts'))).toEqual(stripWhitespace(`
+      import {Component, NgModule} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+
+      @Component({
+        selector: 'comp',
+        template: '<div routerLink="/"></div>',
+        standalone: true,
+        imports: [RouterModule]
+      })
+      export class MyComp {}
+
+      @NgModule({imports: [RouterModule, MyComp]})
+      export class Mod {}
     `));
   });
 
