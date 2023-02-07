@@ -2270,6 +2270,65 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should migrate the root component tests when converting to standalone', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.component.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+    `);
+
+    writeFile('./app/app.component.spec.ts', `
+      import {TestBed} from '@angular/core/testing';
+      import {AppComponent} from './app.component';
+
+      describe('bootrstrapping an app', () => {
+        it('should work', () => {
+          TestBed.configureTestingModule({declarations: [AppComponent]});
+          const fixture = TestBed.createComponent(AppComponent);
+          expect(fixture.nativeElement.innerHTML).toBe('hello');
+        });
+      });
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {AppComponent} from './app.component';
+
+      @NgModule({declarations: [AppComponent], bootstrap: [AppComponent]})
+      export class AppModule {}
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('./app/app.component.ts'))).toBe(stripWhitespace(`
+      import {Component} from '@angular/core';
+
+      @Component({template: 'hello', standalone: true})
+      export class AppComponent {}
+    `));
+
+    expect(stripWhitespace(tree.readContent('./app/app.component.spec.ts'))).toBe(stripWhitespace(`
+      import {TestBed} from '@angular/core/testing';
+      import {AppComponent} from './app.component';
+
+      describe('bootrstrapping an app', () => {
+        it('should work', () => {
+          TestBed.configureTestingModule({imports: [AppComponent]});
+          const fixture = TestBed.createComponent(AppComponent);
+          expect(fixture.nativeElement.innerHTML).toBe('hello');
+        });
+      });
+    `));
+  });
+
   it('should copy providers and the symbols they depend on to the main file', async () => {
     writeFile('main.ts', `
       import {AppModule} from './app/app.module';
