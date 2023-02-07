@@ -15,7 +15,7 @@ import ts from 'typescript';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
-import {convertNgModuleDeclarationToStandalone} from './to-standalone';
+import {convertNgModuleDeclarationToStandalone, extractDeclarationsFromModule, findTestObjectsToMigrate, migrateTestDeclarations} from './to-standalone';
 import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, ImportRemapper, NamedClassDeclaration, NodeLookup, offsetsToNodes, UniqueItemTracker} from './util';
 
 /** Information extracted from a `bootstrapModule` call necessary to migrate it. */
@@ -28,6 +28,8 @@ interface BootstrapCallAnalysis {
   metadata: ts.ObjectLiteralExpression;
   /** Component that the module is bootstrapping. */
   component: NamedClassDeclaration;
+  /** Classes declared by the bootstrapped module. */
+  declarations: Reference<ts.ClassDeclaration>[];
 }
 
 export function toStandaloneBootstrap(
@@ -38,22 +40,41 @@ export function toStandaloneBootstrap(
   const templateTypeChecker = program.compiler.getTemplateTypeChecker();
   const languageService = createLanguageService(program, host, rootFileNames, basePath);
   const bootstrapCalls: BootstrapCallAnalysis[] = [];
+  const testObjects: ts.ObjectLiteralExpression[] = [];
 
-  sourceFiles.forEach(function walk(node: ts.Node) {
-    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) &&
-        node.expression.name.text === 'bootstrapModule' &&
-        isClassReferenceInAngularModule(node.expression, 'PlatformRef', 'core', typeChecker)) {
-      const call = analyzeBootstrapCall(node, typeChecker);
+  for (const sourceFile of sourceFiles) {
+    sourceFile.forEachChild(function walk(node) {
+      if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) &&
+          node.expression.name.text === 'bootstrapModule' &&
+          isClassReferenceInAngularModule(node.expression, 'PlatformRef', 'core', typeChecker)) {
+        const call = analyzeBootstrapCall(node, typeChecker, templateTypeChecker);
 
-      if (call) {
-        bootstrapCalls.push(call);
+        if (call) {
+          bootstrapCalls.push(call);
+        }
       }
-    }
-    node.forEachChild(walk);
-  });
+      node.forEachChild(walk);
+    });
 
-  for (const call of bootstrapCalls) {
-    migrateBootstrapCall(call, tracker, languageService, typeChecker, templateTypeChecker, printer);
+    testObjects.push(...findTestObjectsToMigrate(sourceFile, typeChecker));
+  }
+
+  if (bootstrapCalls.length > 0) {
+    const allDeclarations: Reference<ts.ClassDeclaration>[] = [];
+
+    for (const call of bootstrapCalls) {
+      allDeclarations.push(...call.declarations);
+      migrateBootstrapCall(call, tracker, languageService, typeChecker, printer);
+    }
+
+    if (allDeclarations.length > 0) {
+      // The previous migrations explicitly skip over bootstrapped
+      // declarations so we have to migrate them now.
+      allDeclarations.forEach(
+          decl => convertNgModuleDeclarationToStandalone(
+              decl, allDeclarations, tracker, templateTypeChecker));
+      migrateTestDeclarations(testObjects, allDeclarations, tracker, typeChecker);
+    }
   }
 
   return tracker.recordChanges();
@@ -64,9 +85,11 @@ export function toStandaloneBootstrap(
  * necessary to convert it to `bootstrapApplication`.
  * @param call Call to be analyzed.
  * @param typeChecker
+ * @param templateTypeChecker
  */
 function analyzeBootstrapCall(
-    call: ts.CallExpression, typeChecker: ts.TypeChecker): BootstrapCallAnalysis|null {
+    call: ts.CallExpression, typeChecker: ts.TypeChecker,
+    templateTypeChecker: TemplateTypeChecker): BootstrapCallAnalysis|null {
   if (call.arguments.length === 0 || !ts.isIdentifier(call.arguments[0])) {
     return null;
   }
@@ -98,7 +121,13 @@ function analyzeBootstrapCall(
   const component = findClassDeclaration(bootstrapProp.initializer.elements[0], typeChecker);
 
   if (component && component.name && ts.isIdentifier(component.name)) {
-    return {module: declaration, metadata, component: component as NamedClassDeclaration, call};
+    return {
+      module: declaration,
+      metadata,
+      component: component as NamedClassDeclaration,
+      call,
+      declarations: extractDeclarationsFromModule(declaration, templateTypeChecker)
+    };
   }
 
   return null;
@@ -110,12 +139,11 @@ function analyzeBootstrapCall(
  * @param tracker Tracker in which to register the changes.
  * @param languageService
  * @param typeChecker
- * @param templateTypeChecker
  * @param printer
  */
 function migrateBootstrapCall(
     analysis: BootstrapCallAnalysis, tracker: ChangeTracker, languageService: ts.LanguageService,
-    typeChecker: ts.TypeChecker, templateTypeChecker: TemplateTypeChecker, printer: ts.Printer) {
+    typeChecker: ts.TypeChecker, printer: ts.Printer) {
   const sourceFile = analysis.call.getSourceFile();
   const moduleSourceFile = analysis.metadata.getSourceFile();
   const providers = findLiteralProperty(analysis.metadata, 'providers');
@@ -124,10 +152,6 @@ function migrateBootstrapCall(
   const providersInNewCall: ts.Expression[] = [];
   const moduleImportsInNewCall: ts.Expression[] = [];
   let nodeLookup: NodeLookup|null = null;
-
-  // The previous migrations explicitly skip over modules that bootstrap a
-  // component so we have to convert it as a part of this migration instead.
-  convertBootstrappedModuleToStandalone(analysis, tracker, templateTypeChecker);
 
   // We can't reuse the module pruning logic, because we would have to recreate the entire program.
   // Instead we comment out the module's metadata so that the user doesn't get compilation errors
@@ -221,40 +245,6 @@ function replaceBootstrapCallExpression(
       // Otherwise TS won't print out literals inside of the providers that we're copying
       // over from the module file.
       undefined, analysis.metadata.getSourceFile());
-}
-
-/**
- * Converts the declarations of a bootstrapped module to standalone. These declarations are
- * skipped in the `convert-to-standalone` phase so they need to be migrated when converting
- * to `bootstrapApplication`.
- * @param analysis Result of the analysis of the NgModule.
- * @param tracker
- * @param templateTypeChecker
- */
-function convertBootstrappedModuleToStandalone(
-    analysis: BootstrapCallAnalysis, tracker: ChangeTracker,
-    templateTypeChecker: TemplateTypeChecker) {
-  const metadata = templateTypeChecker.getNgModuleMetadata(analysis.module);
-
-  if (!metadata) {
-    throw new Error(`Cannot resolve NgModule metadata for class ${
-        analysis.module.name?.getText()}. Cannot switch to standalone bootstrap API.`);
-  }
-
-  const classDeclarations =
-      metadata.declarations.filter(decl => ts.isClassDeclaration(decl.node)) as
-      Reference<ts.ClassDeclaration>[];
-
-  if (!classDeclarations.some(decl => decl.node === analysis.component)) {
-    throw new Error(`Bootstrapped component is not in the declarations array of NgModule ${
-        analysis.module.name?.getText()}. Cannot switch to standalone bootstrap API.`);
-  }
-
-  for (const decl of classDeclarations) {
-    if (ts.isClassDeclaration(decl.node)) {
-      convertNgModuleDeclarationToStandalone(decl, classDeclarations, tracker, templateTypeChecker);
-    }
-  }
 }
 
 /**
