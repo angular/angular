@@ -1306,6 +1306,46 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should migrate declarations that are not being bootstrapped in a root module', async () => {
+    writeFile('dir.ts', `
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[foo]'})
+      export class MyDir {}
+    `);
+
+    writeFile('module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {MyDir} from './dir';
+
+      @Component({selector: 'root-comp', template: 'hello'})
+      export class RootComp {}
+
+      @NgModule({declarations: [RootComp, MyDir], bootstrap: [RootComp]})
+      export class Mod {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('dir.ts'))).toBe(stripWhitespace(`
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[foo]', standalone: true})
+      export class MyDir {}
+    `));
+
+    expect(stripWhitespace(tree.readContent('module.ts'))).toBe(stripWhitespace(`
+      import {NgModule, Component} from '@angular/core';
+      import {MyDir} from './dir';
+
+      @Component({selector: 'root-comp', template: 'hello'})
+      export class RootComp {}
+
+      @NgModule({imports: [MyDir], declarations: [RootComp], bootstrap: [RootComp]})
+      export class Mod {}
+    `));
+  });
+
   it('should generate a forwardRef for forward reference within the same file', async () => {
     writeFile('decls.ts', `
       import {Component, Directive} from '@angular/core';
