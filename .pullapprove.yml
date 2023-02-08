@@ -53,11 +53,6 @@
 # @angular/framework-global-approvers-for-docs-only-changes
 # =========================================================
 #  Used for approving minor documentation-only changes that don't require engineering review.
-#
-# josmar-crwdstffng
-# ileil
-# TeriGlover
-# bob-watson
 
 version: 3
 
@@ -1400,7 +1395,6 @@ groups:
         - devversion # Paul Gschwendtner
         - dgp1130 # Doug Parker
         - dylhunn # Dylan Hunn
-        - filipesilva # Filipe Silva
         - jelbourn # Jeremy Elbourn
         - jessicajaniuk # Jessica Janiuk
         - JiaLiPassion # Jia Li
@@ -1410,6 +1404,5 @@ groups:
         - mgechev # Minko Gechev
         - mmalerba # Miles Malerba
         - pkozlowski-opensource # Pawel Kozlowski
-        - Splaktar # Michael Prentice
         - twerske # Emma Twersky
         - zarend # Zach Arend
