@@ -169,15 +169,6 @@
     "bio": "Brian is a software engineer and GDE in Angular with a passion for learning, writing, speaking, teaching and mentoring. Brian has been building web applications for over 20 years and has long been a fanboy of JavaScript. When not in front of his Macbook Pro Brian is in the Rocky Mountains skiing or hiking.",
     "groups": ["GDE"]
   },
-  "bobwatson": {
-    "name": "Bob Watson",
-    "lead": "mgechev",
-    "picture": "bob-watson.jpg",
-    "twitter": "bobwatsonphd",
-    "website": "https://docsbydesign.com",
-    "bio": "Bob is the documentation lead for angular.io. When he's not obsessing over the i-dotting and t-crossing of documentation, he enjoys seeing the world from up in the air and below the sea.",
-    "groups": ["Angular"]
-  },
   "bravery08": {
     "name": "Brooke Avery",
     "picture": "bravery_pic.png",
@@ -383,15 +374,6 @@
     "website": "https://fatimaamzil.com",
     "bio": "Frontend software engineer and Google Developer Expert for Angular",
     "groups": ["GDE"]
-  },
-  "filipesilva": {
-    "name": "Filipe Silva",
-    "picture": "filipe-silva.jpg",
-    "twitter": "filipematossilv",
-    "website": "https://github.com/filipesilva",
-    "bio": "Filipe is a passion-driven developer that always strives for the most elegant solution for each problem. He is currently an author for Angular.io, a core contributor for Angular-CLI and senior front end engineer at KonnectAgain. When not busy going through PRs, you can find him scouring reddit for new dinner recipes to cook or enjoying a craft beer in Dublin.",
-    "groups": ["Angular"],
-    "lead": "dgp1130"
   },
   "fmalcher": {
     "name": "Ferdinand Malcher",
