@@ -1,3 +1,10 @@
+<a name="15.1.4"></a>
+# 15.1.4 (2023-02-08)
+## Special Thanks
+Jessica Janiuk, Kian Yang Lee, Matthieu Riegler, Redouane Bekkouche and Simona Cotin
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.1.3"></a>
 # 15.1.3 (2023-02-02)
 ### animations
