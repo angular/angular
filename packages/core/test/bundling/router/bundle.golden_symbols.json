@@ -21,6 +21,9 @@
     "name": "ActivatedRouteSnapshot"
   },
   {
+    "name": "ActivationStart"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
@@ -30,13 +33,25 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "ApplyRedirects"
+  },
+  {
     "name": "ArgumentOutOfRangeError"
+  },
+  {
+    "name": "BLOOM_BUCKET_BITS"
+  },
+  {
+    "name": "BLOOM_MASK"
   },
   {
     "name": "BOOTSTRAP_DONE"
   },
   {
     "name": "BROWSER_MODULE_PROVIDERS"
+  },
+  {
+    "name": "BaseRouteReuseStrategy"
   },
   {
     "name": "BehaviorSubject"
@@ -57,6 +72,9 @@
     "name": "COMPONENT_REGEX"
   },
   {
+    "name": "CONTAINER_HEADER_OFFSET"
+  },
+  {
     "name": "CanActivate"
   },
   {
@@ -73,6 +91,9 @@
   },
   {
     "name": "ChangeDetectorRef"
+  },
+  {
+    "name": "ChildActivationStart"
   },
   {
     "name": "ChildrenOutletContexts"
@@ -99,6 +120,9 @@
     "name": "ComponentFactoryResolver2"
   },
   {
+    "name": "ComponentRef"
+  },
+  {
     "name": "ComponentRef2"
   },
   {
@@ -114,7 +138,13 @@
     "name": "CreateUrlTreeStrategy"
   },
   {
+    "name": "DEFAULT_LOCALE_ID"
+  },
+  {
     "name": "DEFAULT_SERIALIZER"
+  },
+  {
+    "name": "DI_DECORATOR_FLAG"
   },
   {
     "name": "DOCUMENT2"
@@ -144,6 +174,9 @@
     "name": "DoOperator"
   },
   {
+    "name": "DomAdapter"
+  },
+  {
     "name": "DomRendererFactory2"
   },
   {
@@ -163,6 +196,9 @@
   },
   {
     "name": "ENVIRONMENT_INITIALIZER"
+  },
+  {
+    "name": "ERROR_ORIGINAL_ERROR"
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
@@ -207,10 +243,19 @@
     "name": "FinallySubscriber"
   },
   {
+    "name": "GenericBrowserDomAdapter"
+  },
+  {
     "name": "GuardsCheckEnd"
   },
   {
     "name": "GuardsCheckStart"
+  },
+  {
+    "name": "HAS_TRANSPLANTED_VIEWS"
+  },
+  {
+    "name": "IMPERATIVE_NAVIGATION"
   },
   {
     "name": "INITIAL_NAVIGATION"
@@ -276,10 +321,19 @@
     "name": "MODIFIER_KEY_GETTERS"
   },
   {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
+    "name": "MOVED_VIEWS"
+  },
+  {
     "name": "MapOperator"
   },
   {
     "name": "MapSubscriber"
+  },
+  {
+    "name": "MapToOperator"
   },
   {
     "name": "MapToSubscriber"
@@ -294,10 +348,22 @@
     "name": "NAMESPACE_URIS"
   },
   {
+    "name": "NATIVE"
+  },
+  {
+    "name": "NAVIGATION_CANCELING_ERROR"
+  },
+  {
     "name": "NEW_LINE"
   },
   {
     "name": "NG_COMP_DEF"
+  },
+  {
+    "name": "NG_DEV_MODE"
+  },
+  {
+    "name": "NG_DEV_MODE5"
   },
   {
     "name": "NG_DIR_DEF"
@@ -327,6 +393,15 @@
     "name": "NG_PROV_DEF"
   },
   {
+    "name": "NG_TEMPLATE_SELECTOR"
+  },
+  {
+    "name": "NG_TEMP_TOKEN_PATH"
+  },
+  {
+    "name": "NG_TOKEN_PATH"
+  },
+  {
     "name": "NONE"
   },
   {
@@ -340,6 +415,12 @@
   },
   {
     "name": "NO_CHANGE"
+  },
+  {
+    "name": "NO_NEW_LINE"
+  },
+  {
+    "name": "NO_PARENT_INJECTOR"
   },
   {
     "name": "NULL_INJECTOR"
@@ -387,6 +468,9 @@
     "name": "NoMatch"
   },
   {
+    "name": "NoMatch2"
+  },
+  {
     "name": "NodeInjector"
   },
   {
@@ -415,6 +499,12 @@
   },
   {
     "name": "PLATFORM_INITIALIZER"
+  },
+  {
+    "name": "PRIMARY_OUTLET"
+  },
+  {
+    "name": "ParamsAsMap"
   },
   {
     "name": "PathLocationStrategy"
@@ -525,6 +615,12 @@
     "name": "SEGMENT_RE"
   },
   {
+    "name": "SIMPLE_CHANGES_STORE"
+  },
+  {
+    "name": "SOURCE"
+  },
+  {
     "name": "SafeSubscriber"
   },
   {
@@ -547,6 +643,9 @@
   },
   {
     "name": "SharedStylesHost"
+  },
+  {
+    "name": "SimpleChange"
   },
   {
     "name": "SimpleInnerSubscriber"
@@ -588,10 +687,16 @@
     "name": "TQueries_"
   },
   {
+    "name": "TQueryMetadata_"
+  },
+  {
     "name": "TQuery_"
   },
   {
     "name": "TRACKED_LVIEWS"
+  },
+  {
+    "name": "TYPE"
   },
   {
     "name": "TakeLastOperator"
@@ -663,6 +768,9 @@
     "name": "VE_ViewContainerRef"
   },
   {
+    "name": "VIEW_REFS"
+  },
+  {
     "name": "ViewContainerRef"
   },
   {
@@ -673,6 +781,9 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "XSS_SECURITY_URL"
   },
   {
     "name": "_DOM"
@@ -690,7 +801,13 @@
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
+    "name": "_getInsertInFrontOfRNodeWithI18n"
+  },
+  {
     "name": "_global"
+  },
+  {
+    "name": "_icuContainerIterate"
   },
   {
     "name": "_injectImplementation"
@@ -700,6 +817,9 @@
   },
   {
     "name": "_platformInjector"
+  },
+  {
+    "name": "_processI18nInsertBefore"
   },
   {
     "name": "_randomChar"
@@ -745,9 +865,6 @@
   },
   {
     "name": "applyProjectionRecursive"
-  },
-  {
-    "name": "applyRedirects2"
   },
   {
     "name": "applyToElementOrContainer"
@@ -1039,6 +1156,9 @@
   },
   {
     "name": "forEachSingleProvider"
+  },
+  {
+    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -1605,6 +1725,9 @@
     "name": "processInjectorTypesWithProviders"
   },
   {
+    "name": "profiler"
+  },
+  {
     "name": "promise"
   },
   {
@@ -1657,9 +1780,6 @@
   },
   {
     "name": "resetPreOrderHookFlags"
-  },
-  {
-    "name": "resolveData"
   },
   {
     "name": "resolveForwardRef"
@@ -1771,6 +1891,9 @@
   },
   {
     "name": "stringifyCSSSelector"
+  },
+  {
+    "name": "stringifyForError"
   },
   {
     "name": "stripTrailingSlash"
