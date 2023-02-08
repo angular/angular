@@ -11,7 +11,7 @@ sass_binary(
     src = "styles.scss",
     include_paths = ["external/npm/node_modules"],
     sourcemap = False,
-    deps = ["//devtools:material_sass_deps"],
+    deps = ["//devtools:global_styles"],
 )
 
 sass_binary(
