@@ -18,7 +18,7 @@ import {canMigrateFile, createProgramOptions} from '../../utils/typescript/compi
 import {pruneNgModules} from './prune-modules';
 import {toStandaloneBootstrap} from './standalone-bootstrap';
 import {toStandalone} from './to-standalone';
-import {ChangesByFile} from './util';
+import {ChangesByFile, normalizePath} from './util';
 
 enum MigrationMode {
   toStandalone = 'convert-to-standalone',
@@ -30,8 +30,6 @@ interface Options {
   path: string;
   mode: MigrationMode;
 }
-
-const normalizePath = (path: string): string => path.replace(/\\/g, '/');
 
 export default function(options: Options): Rule {
   return async (tree) => {
