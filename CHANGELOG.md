@@ -1,3 +1,37 @@
+<a name="15.2.0-next.4"></a>
+# 15.2.0-next.4 (2023-02-08)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [54b24eb40f](https://github.com/angular/angular/commit/54b24eb40fed13c926305ad475202a5608d41c6b) | feat | Add loaderParams attribute to NgOptimizedImage ([#48907](https://github.com/angular/angular/pull/48907)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0cf11167f1](https://github.com/angular/angular/commit/0cf11167f13108992ec781e88ab2a7d1fc7f5a0d) | fix | incorrectly detecting forward refs when symbol already exists in file ([#48988](https://github.com/angular/angular/pull/48988)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d0145033bd](https://github.com/angular/angular/commit/d0145033bd11eccd16fa8b61ba9170037d0c62b3) | fix | generate forwardRef for same file imports ([#48898](https://github.com/angular/angular/pull/48898)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bdbf21d04b](https://github.com/angular/angular/commit/bdbf21d04ba74a6f73469242076d6ce697c57edf) | fix | avoid generating imports with forward slashes ([#48993](https://github.com/angular/angular/pull/48993)) |
+| [32cf4e5cb9](https://github.com/angular/angular/commit/32cf4e5cb989f365296d519dddf72fb38ca47c40) | fix | avoid internal modules when generating imports ([#48958](https://github.com/angular/angular/pull/48958)) |
+| [1afa6ed322](https://github.com/angular/angular/commit/1afa6ed3227e784e3fe2b4b31443961589cb6332) | fix | don't add ModuleWithProviders to standalone test components ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [759db12e0b](https://github.com/angular/angular/commit/759db12e0b618fcb51f4cb141adeb49bfa495a60) | fix | duplicated comments on migrated classes ([#48966](https://github.com/angular/angular/pull/48966)) |
+| [ba38178d19](https://github.com/angular/angular/commit/ba38178d1918d413f9c2260c40eb6542eadfddba) | fix | generate forwardRef for same file imports ([#48898](https://github.com/angular/angular/pull/48898)) |
+| [2de6dae16d](https://github.com/angular/angular/commit/2de6dae16d4b0b83f0517a3033cda44ba44154ed) | fix | migrate RouterModule.forRoot with a config object to use features ([#48935](https://github.com/angular/angular/pull/48935)) |
+| [770191cf1f](https://github.com/angular/angular/commit/770191cf1f1254546625dfa7a882b716c3f0aab3) | fix | migrate tests when switching to standalone bootstrap API ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [c7926b5773](https://github.com/angular/angular/commit/c7926b57730c23f765a00d3dd9f92079c95e87e0) | fix | move standalone migrations into imports ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [6377487b1a](https://github.com/angular/angular/commit/6377487b1ab7679cef9a44f88440fe5e8eb97480) | fix | only exclude bootstrapped declarations from initial standalone migration ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [e9e4449a43](https://github.com/angular/angular/commit/e9e4449a43430e026e61b0f05ebd32dd830fa916) | fix | preserve tsconfig in standalone migration ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [ffad1b49d9](https://github.com/angular/angular/commit/ffad1b49d95ab90637e7184f92cb5136d490d865) | fix | reduce number of files that need to be checked ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [49a7c9f94a](https://github.com/angular/angular/commit/49a7c9f94ae8f89907da8b3620242e62f87ec5a4) | fix | standalone migration incorrectly throwing path error for multi app projects ([#48958](https://github.com/angular/angular/pull/48958)) |
+## Special Thanks
+Alex Castle, Andrew Scott, Dylan Hunn, Jessica Janiuk, Kian Yang Lee, Kristiyan Kostadinov, Matthieu Riegler, Pawel Kozlowski, Redouane Bekkouche, Simona Cotin and Walid Bouguima
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.1.4"></a>
 # 15.1.4 (2023-02-08)
 ## Special Thanks
