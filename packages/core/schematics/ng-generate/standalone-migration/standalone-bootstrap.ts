@@ -41,6 +41,7 @@ export function toStandaloneBootstrap(
   const languageService = createLanguageService(program, host, rootFileNames, basePath);
   const bootstrapCalls: BootstrapCallAnalysis[] = [];
   const testObjects: ts.ObjectLiteralExpression[] = [];
+  const allDeclarations: Reference<ts.ClassDeclaration>[] = [];
 
   for (const sourceFile of sourceFiles) {
     sourceFile.forEachChild(function walk(node) {
@@ -59,24 +60,19 @@ export function toStandaloneBootstrap(
     testObjects.push(...findTestObjectsToMigrate(sourceFile, typeChecker));
   }
 
-  if (bootstrapCalls.length > 0) {
-    const allDeclarations: Reference<ts.ClassDeclaration>[] = [];
-
-    for (const call of bootstrapCalls) {
-      allDeclarations.push(...call.declarations);
-      migrateBootstrapCall(call, tracker, languageService, typeChecker, printer);
-    }
-
-    if (allDeclarations.length > 0) {
-      // The previous migrations explicitly skip over bootstrapped
-      // declarations so we have to migrate them now.
-      allDeclarations.forEach(
-          decl => convertNgModuleDeclarationToStandalone(
-              decl, allDeclarations, tracker, templateTypeChecker));
-      migrateTestDeclarations(testObjects, allDeclarations, tracker, typeChecker);
-    }
+  for (const call of bootstrapCalls) {
+    allDeclarations.push(...call.declarations);
+    migrateBootstrapCall(call, tracker, languageService, typeChecker, printer);
   }
 
+  // The previous migrations explicitly skip over bootstrapped
+  // declarations so we have to migrate them now.
+  for (const declaration of allDeclarations) {
+    convertNgModuleDeclarationToStandalone(
+        declaration, allDeclarations, tracker, templateTypeChecker);
+  }
+
+  migrateTestDeclarations(testObjects, allDeclarations, tracker, templateTypeChecker, typeChecker);
   return tracker.recordChanges();
 }
 

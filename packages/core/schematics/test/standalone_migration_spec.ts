@@ -930,6 +930,41 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should migrate tests where the declaration is already standalone', async () => {
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'comp', template: '', standalone: true})
+      export class MyComp {}
+    `);
+
+    writeFile('app.spec.ts', `
+      import {TestBed} from '@angular/core/testing';
+      import {MyComp} from './comp';
+
+      describe('bootrstrapping an app', () => {
+        it('should work', () => {
+          TestBed.configureTestingModule({declarations: [MyComp]});
+          expect(() => TestBed.createComponent(MyComp)).not.toThrow();
+        });
+      });
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('app.spec.ts'))).toContain(stripWhitespace(`
+      import {TestBed} from '@angular/core/testing';
+      import {MyComp} from './comp';
+
+      describe('bootrstrapping an app', () => {
+        it('should work', () => {
+          TestBed.configureTestingModule({imports: [MyComp]});
+          expect(() => TestBed.createComponent(MyComp)).not.toThrow();
+        });
+      });
+    `));
+  });
+
   it('should import the module that declares a template dependency', async () => {
     writeFile('./should-migrate/module.ts', `
       import {NgModule} from '@angular/core';
