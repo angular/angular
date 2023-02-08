@@ -107,9 +107,16 @@ export class ChangeTracker {
   addImport(
       sourceFile: ts.SourceFile, symbolName: string, moduleName: string,
       alias: string|null = null): ts.Expression {
-    return this._importManager.addImportToSourceFile(
-        sourceFile, symbolName,
-        this._importRemapper ? this._importRemapper(moduleName) : moduleName, alias);
+    if (this._importRemapper) {
+      moduleName = this._importRemapper(moduleName);
+    }
+
+    // It's common for paths to be manipulated with Node's `path` utilties which
+    // can yield a path with back slashes. Normalize them since outputting such
+    // paths will also cause TS to escape the forward slashes.
+    moduleName = normalizePath(moduleName);
+
+    return this._importManager.addImportToSourceFile(sourceFile, symbolName, moduleName, alias);
   }
 
   /**
@@ -257,5 +264,11 @@ export function getRelativeImportPath(fromFile: string, toFile: string): string 
     path = './' + path;
   }
 
-  return path;
+  // Using the Node utilities can yield paths with forward slashes on Windows.
+  return normalizePath(path);
+}
+
+/** Normalizes a path to use posix separators. */
+export function normalizePath(path: string): string {
+  return path.replace(/\\/g, '/');
 }
