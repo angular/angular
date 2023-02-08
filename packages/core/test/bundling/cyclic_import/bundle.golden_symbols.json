@@ -24,6 +24,12 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "BLOOM_BUCKET_BITS"
+  },
+  {
+    "name": "BLOOM_MASK"
+  },
+  {
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
@@ -45,6 +51,9 @@
     "name": "COMPONENT_REGEX"
   },
   {
+    "name": "CONTAINER_HEADER_OFFSET"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -63,6 +72,9 @@
     "name": "ComponentFactoryResolver2"
   },
   {
+    "name": "ComponentRef"
+  },
+  {
     "name": "ComponentRef2"
   },
   {
@@ -72,6 +84,9 @@
     "name": "ConnectableSubscriber"
   },
   {
+    "name": "DI_DECORATOR_FLAG"
+  },
+  {
     "name": "DOCUMENT2"
   },
   {
@@ -79,6 +94,9 @@
   },
   {
     "name": "DepComponent"
+  },
+  {
+    "name": "DomAdapter"
   },
   {
     "name": "DomEventsPlugin"
@@ -100,6 +118,9 @@
   },
   {
     "name": "ENVIRONMENT_INITIALIZER"
+  },
+  {
+    "name": "ERROR_ORIGINAL_ERROR"
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
@@ -124,6 +145,12 @@
   },
   {
     "name": "EventManagerPlugin"
+  },
+  {
+    "name": "GenericBrowserDomAdapter"
+  },
+  {
+    "name": "HAS_TRANSPLANTED_VIEWS"
   },
   {
     "name": "INJECTOR2"
@@ -159,6 +186,15 @@
     "name": "MODIFIER_KEY_GETTERS"
   },
   {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
+    "name": "MOVED_VIEWS"
+  },
+  {
+    "name": "MapOperator"
+  },
+  {
     "name": "MapSubscriber"
   },
   {
@@ -172,6 +208,9 @@
   },
   {
     "name": "NAMESPACE_URIS"
+  },
+  {
+    "name": "NATIVE"
   },
   {
     "name": "NEW_LINE"
@@ -207,6 +246,15 @@
     "name": "NG_PROV_DEF"
   },
   {
+    "name": "NG_TEMPLATE_SELECTOR"
+  },
+  {
+    "name": "NG_TEMP_TOKEN_PATH"
+  },
+  {
+    "name": "NG_TOKEN_PATH"
+  },
+  {
     "name": "NOT_FOUND"
   },
   {
@@ -219,7 +267,19 @@
     "name": "NO_CHANGE"
   },
   {
+    "name": "NO_NEW_LINE"
+  },
+  {
+    "name": "NO_PARENT_INJECTOR"
+  },
+  {
     "name": "NULL_INJECTOR"
+  },
+  {
+    "name": "NgModuleFactory"
+  },
+  {
+    "name": "NgModuleFactory2"
   },
   {
     "name": "NgModuleRef"
@@ -273,10 +333,19 @@
     "name": "RendererStyleFlags2"
   },
   {
+    "name": "RootViewRef"
+  },
+  {
     "name": "RuntimeError"
   },
   {
     "name": "SERVER_TRANSITION_PROVIDERS"
+  },
+  {
+    "name": "SIMPLE_CHANGES_STORE"
+  },
+  {
+    "name": "SOURCE"
   },
   {
     "name": "SafeSubscriber"
@@ -289,6 +358,9 @@
   },
   {
     "name": "SharedStylesHost"
+  },
+  {
+    "name": "SimpleChange"
   },
   {
     "name": "SimpleInnerSubscriber"
@@ -330,6 +402,9 @@
     "name": "TRANSITION_ID"
   },
   {
+    "name": "TYPE"
+  },
+  {
     "name": "Testability"
   },
   {
@@ -351,6 +426,9 @@
     "name": "ViewEncapsulation"
   },
   {
+    "name": "ViewRef"
+  },
+  {
     "name": "_DOM"
   },
   {
@@ -366,7 +444,13 @@
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
+    "name": "_getInsertInFrontOfRNodeWithI18n"
+  },
+  {
     "name": "_global"
+  },
+  {
+    "name": "_icuContainerIterate"
   },
   {
     "name": "_injectImplementation"
@@ -376,6 +460,9 @@
   },
   {
     "name": "_platformInjector"
+  },
+  {
+    "name": "_processI18nInsertBefore"
   },
   {
     "name": "_randomChar"
@@ -877,6 +964,9 @@
   },
   {
     "name": "processInjectorTypesWithProviders"
+  },
+  {
+    "name": "profiler"
   },
   {
     "name": "promise"
