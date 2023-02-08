@@ -6,6 +6,9 @@
     "name": "ANIMATION_MODULE_TYPE"
   },
   {
+    "name": "ANY_STATE"
+  },
+  {
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
@@ -13,6 +16,9 @@
   },
   {
     "name": "APP_INITIALIZER"
+  },
+  {
+    "name": "AUTO_STYLE"
   },
   {
     "name": "AnimationAstBuilderContext"
@@ -28,6 +34,9 @@
   },
   {
     "name": "AnimationEngine"
+  },
+  {
+    "name": "AnimationFactory"
   },
   {
     "name": "AnimationGroupPlayer"
@@ -69,6 +78,12 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "BLOOM_BUCKET_BITS"
+  },
+  {
+    "name": "BLOOM_MASK"
+  },
+  {
     "name": "BROWSER_ANIMATIONS_PROVIDERS"
   },
   {
@@ -108,6 +123,9 @@
     "name": "COMPONENT_REGEX"
   },
   {
+    "name": "CONTAINER_HEADER_OFFSET"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -124,6 +142,9 @@
   },
   {
     "name": "ComponentFactoryResolver2"
+  },
+  {
+    "name": "ComponentRef"
   },
   {
     "name": "ComponentRef2"
@@ -147,10 +168,16 @@
     "name": "DIMENSIONAL_PROP_SET"
   },
   {
+    "name": "DI_DECORATOR_FLAG"
+  },
+  {
     "name": "DOCUMENT2"
   },
   {
     "name": "DefaultDomRenderer2"
+  },
+  {
+    "name": "DomAdapter"
   },
   {
     "name": "DomEventsPlugin"
@@ -186,6 +213,9 @@
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
+    "name": "ERROR_ORIGINAL_ERROR"
+  },
+  {
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
@@ -214,6 +244,12 @@
   },
   {
     "name": "FALSE_BOOLEAN_VALUES"
+  },
+  {
+    "name": "GenericBrowserDomAdapter"
+  },
+  {
+    "name": "HAS_TRANSPLANTED_VIEWS"
   },
   {
     "name": "INJECTOR2"
@@ -252,6 +288,15 @@
     "name": "MODIFIER_KEY_GETTERS"
   },
   {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
+    "name": "MOVED_VIEWS"
+  },
+  {
+    "name": "MapOperator"
+  },
+  {
     "name": "MapSubscriber"
   },
   {
@@ -262,6 +307,9 @@
   },
   {
     "name": "NAMESPACE_URIS"
+  },
+  {
+    "name": "NATIVE"
   },
   {
     "name": "NEW_LINE"
@@ -297,6 +345,15 @@
     "name": "NG_PROV_DEF"
   },
   {
+    "name": "NG_TEMPLATE_SELECTOR"
+  },
+  {
+    "name": "NG_TEMP_TOKEN_PATH"
+  },
+  {
+    "name": "NG_TOKEN_PATH"
+  },
+  {
     "name": "NOT_FOUND"
   },
   {
@@ -309,6 +366,12 @@
     "name": "NO_CHANGE"
   },
   {
+    "name": "NO_NEW_LINE"
+  },
+  {
+    "name": "NO_PARENT_INJECTOR"
+  },
+  {
     "name": "NULL_INJECTOR"
   },
   {
@@ -316,6 +379,12 @@
   },
   {
     "name": "NULL_REMOVED_QUERIED_STATE"
+  },
+  {
+    "name": "NgModuleFactory"
+  },
+  {
+    "name": "NgModuleFactory2"
   },
   {
     "name": "NgModuleRef"
@@ -342,6 +411,9 @@
     "name": "NullInjector"
   },
   {
+    "name": "ONE_SECOND"
+  },
+  {
     "name": "ObjectUnsubscribedError"
   },
   {
@@ -366,6 +438,9 @@
     "name": "R3Injector"
   },
   {
+    "name": "REMOVAL_FLAG"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -384,6 +459,9 @@
     "name": "RootComponent"
   },
   {
+    "name": "RootViewRef"
+  },
+  {
     "name": "RuntimeError"
   },
   {
@@ -396,6 +474,12 @@
     "name": "SHARED_ANIMATION_PROVIDERS"
   },
   {
+    "name": "SIMPLE_CHANGES_STORE"
+  },
+  {
+    "name": "SOURCE"
+  },
+  {
     "name": "SafeSubscriber"
   },
   {
@@ -406,6 +490,9 @@
   },
   {
     "name": "SharedStylesHost"
+  },
+  {
+    "name": "SimpleChange"
   },
   {
     "name": "SimpleInnerSubscriber"
@@ -459,6 +546,9 @@
     "name": "TRUE_BOOLEAN_VALUES"
   },
   {
+    "name": "TYPE"
+  },
+  {
     "name": "Testability"
   },
   {
@@ -481,6 +571,9 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewRef"
   },
   {
     "name": "WebAnimationsPlayer"
@@ -522,7 +615,13 @@
     "name": "_flattenGroupPlayersRecur"
   },
   {
+    "name": "_getInsertInFrontOfRNodeWithI18n"
+  },
+  {
     "name": "_global"
+  },
+  {
+    "name": "_icuContainerIterate"
   },
   {
     "name": "_injectImplementation"
@@ -532,6 +631,9 @@
   },
   {
     "name": "_platformInjector"
+  },
+  {
+    "name": "_processI18nInsertBefore"
   },
   {
     "name": "_query"
@@ -1170,6 +1272,9 @@
     "name": "processInjectorTypesWithProviders"
   },
   {
+    "name": "profiler"
+  },
+  {
     "name": "promise"
   },
   {
@@ -1354,6 +1459,9 @@
   },
   {
     "name": "writeStyleAttribute"
+  },
+  {
+    "name": "ɵPRE_STYLE"
   },
   {
     "name": "ɵɵdefineComponent"
