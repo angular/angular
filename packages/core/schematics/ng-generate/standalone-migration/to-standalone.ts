@@ -59,7 +59,8 @@ export function toStandalone(
     migrateNgModuleClass(node, declarations, tracker, typeChecker, templateTypeChecker);
   }
 
-  migrateTestDeclarations(testObjectsToMigrate, declarations, tracker, typeChecker);
+  migrateTestDeclarations(
+      testObjectsToMigrate, declarations, tracker, templateTypeChecker, typeChecker);
   return tracker.recordChanges();
 }
 
@@ -167,7 +168,8 @@ function migrateNgModuleClass(
 
   if (metadata) {
     moveDeclarationsToImports(
-        metadata, allDeclarations.map(decl => decl.node), typeChecker, tracker);
+        metadata, allDeclarations.map(decl => decl.node), typeChecker, templateTypeChecker,
+        tracker);
   }
 }
 
@@ -181,7 +183,8 @@ function migrateNgModuleClass(
  */
 function moveDeclarationsToImports(
     literal: ts.ObjectLiteralExpression, allDeclarations: ts.ClassDeclaration[],
-    typeChecker: ts.TypeChecker, tracker: ChangeTracker): void {
+    typeChecker: ts.TypeChecker, templateTypeChecker: TemplateTypeChecker,
+    tracker: ChangeTracker): void {
   const declarationsProp = findLiteralProperty(literal, 'declarations');
 
   if (!declarationsProp) {
@@ -202,7 +205,12 @@ function moveDeclarationsToImports(
         if (ts.isIdentifier(el)) {
           const correspondingClass = findClassDeclaration(el, typeChecker);
 
-          if (!correspondingClass || allDeclarations.includes(correspondingClass)) {
+          if (!correspondingClass ||
+              // Check whether the declaration is either standalone already or is being converted
+              // in this migration. We need to check if it's standalone already, in order to correct
+              // some cases where the main app and the test files are being migrated in separate
+              // programs.
+              isStandaloneDeclaration(correspondingClass, allDeclarations, templateTypeChecker)) {
             declarationsToCopy.push(el);
           } else {
             declarationsToPreserve.push(el);
@@ -502,13 +510,15 @@ export function extractDeclarationsFromModule(
 /**
  * Migrates the `declarations` from a unit test file to standalone.
  * @param testObjects Object literals used to configure the testing modules.
+ * @param declarationsOutsideOfTestFiles Non-testing declarations that are part of this migration.
  * @param tracker
+ * @param templateTypeChecker
  * @param typeChecker
  */
 export function migrateTestDeclarations(
     testObjects: ts.ObjectLiteralExpression[],
     declarationsOutsideOfTestFiles: Reference<ts.ClassDeclaration>[], tracker: ChangeTracker,
-    typeChecker: ts.TypeChecker) {
+    templateTypeChecker: TemplateTypeChecker, typeChecker: ts.TypeChecker) {
   const {decorators, componentImports} = analyzeTestingModules(testObjects, typeChecker);
   const allDeclarations: ts.ClassDeclaration[] =
       declarationsOutsideOfTestFiles.map(ref => ref.node);
@@ -544,7 +554,7 @@ export function migrateTestDeclarations(
   }
 
   for (const obj of testObjects) {
-    moveDeclarationsToImports(obj, allDeclarations, typeChecker, tracker);
+    moveDeclarationsToImports(obj, allDeclarations, typeChecker, templateTypeChecker, tracker);
   }
 }
 
@@ -635,4 +645,22 @@ function extractMetadataLiteral(decorator: ts.Decorator): ts.ObjectLiteralExpres
           ts.isObjectLiteralExpression(decorator.expression.arguments[0]) ?
       decorator.expression.arguments[0] :
       null;
+}
+
+/**
+ * Checks whether a class is a standalone declaration.
+ * @param node Class being checked.
+ * @param declarationsInMigration Classes that are being converted to standalone in this migration.
+ * @param templateTypeChecker
+ */
+function isStandaloneDeclaration(
+    node: ts.ClassDeclaration, declarationsInMigration: ts.ClassDeclaration[],
+    templateTypeChecker: TemplateTypeChecker): boolean {
+  if (declarationsInMigration.includes(node)) {
+    return true;
+  }
+
+  const metadata =
+      templateTypeChecker.getDirectiveMetadata(node) || templateTypeChecker.getPipeMetadata(node);
+  return metadata != null && metadata.isStandalone;
 }
