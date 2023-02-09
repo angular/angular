@@ -22,7 +22,7 @@
     "// 2": "Find the usage you are looking for with:",
     "// 3": "yarn ng-dev --help",
     "/ ": "",
-    "postinstall": "node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js && patch-package --patch-dir tools/esm-interop/patches/npm",
+    "postinstall": "node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js && patch-package --patch-dir tools/esm-interop/patches/npm",
     "prepare": "husky install",
     "ng-dev": "cross-env TS_NODE_PROJECT=$PWD/.ng-dev/tsconfig.json TS_NODE_TRANSPILE_ONLY=1 node --no-warnings --loader ts-node/esm node_modules/@angular/ng-dev/bundles/cli.mjs",
     "build": "ts-node --esm --project scripts/tsconfig.json scripts/build/build-packages-dist.mts",
@@ -211,12 +211,10 @@
     "vrsource-tslint-rules": "6.0.0"
   },
   "// 4": "Overwrite graceful-fs to a version that does not rely on the 'natives' package. This fixes gulp for >= 10.13, more information: #28213",
-  "// 5": "Ensure a single version of webdriver-manager so it is hoisted as the integration tests depend on it being found at ../../node_modules/webdriver-manager",
-  "// 6": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",
-  "// 7": "Ensure that a single instance of the `saucelabs` package is used. Protractor and the Karma sauce launcher pull this package as dependency. A single instance allows for e.g. easier patching in the Karma config.",
+  "// 5": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",
+  "// 6": "Ensure that a single instance of the `saucelabs` package is used. Protractor and the Karma sauce launcher pull this package as dependency. A single instance allows for e.g. easier patching in the Karma config.",
   "resolutions": {
     "**/graceful-fs": "4.2.10",
-    "**/webdriver-manager": "12.1.8",
     "**/https-proxy-agent": "5.0.1",
     "**/saucelabs": "7.2.0"
   }
