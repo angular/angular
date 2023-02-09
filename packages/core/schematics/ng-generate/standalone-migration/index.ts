@@ -74,6 +74,7 @@ function standaloneMigration(
         skipLibCheck: true,
         skipDefaultLibCheck: true,
       });
+  const referenceLookupExcludedFiles = /node_modules|\.ngtypecheck\.ts/;
   const program = createProgram({rootNames, host, options}) as NgtscProgram;
   const printer = ts.createPrinter();
 
@@ -82,10 +83,9 @@ function standaloneMigration(
         pathToMigrate} has to be a directory. Cannot run the standalone migration.`);
   }
 
-  const sourceFiles = program.getTsProgram().getSourceFiles().filter(sourceFile => {
-    return sourceFile.fileName.startsWith(pathToMigrate) &&
-        canMigrateFile(basePath, sourceFile, program.getTsProgram());
-  });
+  const sourceFiles = program.getTsProgram().getSourceFiles().filter(
+      sourceFile => sourceFile.fileName.startsWith(pathToMigrate) &&
+          canMigrateFile(basePath, sourceFile, program.getTsProgram()));
 
   if (sourceFiles.length === 0) {
     return 0;
@@ -95,14 +95,17 @@ function standaloneMigration(
   let filesToRemove: Set<ts.SourceFile>|null = null;
 
   if (schematicOptions.mode === MigrationMode.pruneModules) {
-    const result = pruneNgModules(program, host, basePath, rootNames, sourceFiles, printer);
+    const result = pruneNgModules(
+        program, host, basePath, rootNames, sourceFiles, printer, undefined,
+        referenceLookupExcludedFiles);
     pendingChanges = result.pendingChanges;
     filesToRemove = result.filesToRemove;
   } else if (schematicOptions.mode === MigrationMode.standaloneBootstrap) {
-    pendingChanges =
-        toStandaloneBootstrap(program, host, basePath, rootNames, sourceFiles, printer);
+    pendingChanges = toStandaloneBootstrap(
+        program, host, basePath, rootNames, sourceFiles, printer, undefined,
+        referenceLookupExcludedFiles);
   } else {
-    /** MigrationMode.toStandalone */
+    // This shouldn't happen, but default to `MigrationMode.toStandalone` just in case.
     pendingChanges = toStandalone(sourceFiles, program, printer);
   }
 

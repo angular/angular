@@ -24,6 +24,12 @@ export type NamedClassDeclaration = ts.ClassDeclaration&{name: ts.Identifier};
 /** Function that can be used to remap a generated import. */
 export type ImportRemapper = (moduleName: string) => string;
 
+/** Text span of an AST node. */
+export type ReferenceSpan = [start: number, end: number];
+
+/** Mapping between a file name and spans for node references inside of it. */
+export type ReferencesByFile = Map<string, ReferenceSpan[]>;
+
 /** Change that needs to be applied to a file. */
 interface PendingChange {
   /** Index at which to start changing the file. */
@@ -172,30 +178,114 @@ export class UniqueItemTracker<K, V> {
   }
 }
 
+/** Resolves references to nodes. */
+export class ReferenceResolver {
+  private _languageService: ts.LanguageService|undefined;
 
-/**
- * Creates a TypeScript language service.
- * @param program Program used to analyze the project.
- * @param host Compiler host used to interact with the file system.
- * @param rootFileNames Root files of the project.
- * @param basePath Root path of the project.
- */
-export function createLanguageService(
-    program: NgtscProgram, host: ts.CompilerHost, rootFileNames: string[],
-    basePath: string): ts.LanguageService {
-  return ts.createLanguageService({
-    getCompilationSettings: () => program.getTsProgram().getCompilerOptions(),
-    getScriptFileNames: () => rootFileNames,
-    getScriptVersion: () => '0',  // The files won't change so we can return the same version.
-    getScriptSnapshot: (fileName: string) => {
-      const content = host.readFile(fileName);
-      return content ? ts.ScriptSnapshot.fromString(content) : undefined;
-    },
-    getCurrentDirectory: () => basePath,
-    getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
-    readFile: (path: string) => host.readFile(path),
-    fileExists: (path: string) => host.fileExists(path)
-  });
+  /**
+   * If set, allows the language service to *only* read a specific file.
+   * Used to speed up single-file lookups.
+   */
+  private _tempOnlyFile: string|null = null;
+
+  constructor(
+      private _program: NgtscProgram, private _host: ts.CompilerHost,
+      private _rootFileNames: string[], private _basePath: string,
+      private _excludedFiles?: RegExp) {}
+
+  /** Finds all references to a node within the entire project. */
+  findReferencesInProject(node: ts.Node): ReferencesByFile {
+    const referencedSymbols =
+        this._getLanguageService().findReferences(node.getSourceFile().fileName, node.getStart()) ||
+        [];
+    const results: ReferencesByFile = new Map();
+
+    for (const symbol of referencedSymbols) {
+      for (const ref of symbol.references) {
+        if (!ref.isDefinition || symbol.definition.kind === ts.ScriptElementKind.alias) {
+          if (!results.has(ref.fileName)) {
+            results.set(ref.fileName, []);
+          }
+
+          results.get(ref.fileName)!.push(
+              [ref.textSpan.start, ref.textSpan.start + ref.textSpan.length]);
+        }
+      }
+    }
+
+    return results;
+  }
+
+  /** Finds all references to a node within a single file. */
+  findSameFileReferences(node: ts.Node, fileName: string): ReferenceSpan[] {
+    // Even though we're only passing in a single file into `getDocumentHighlights`, the language
+    // service ends up traversing the entire project. Prevent it from reading any files aside from
+    // the one we're interested in by intercepting it at the compiler host level.
+    // This is an order of magnitude faster on a large project.
+    this._tempOnlyFile = fileName;
+    const results: ReferenceSpan[] = [];
+    const highlights =
+        this._getLanguageService().getDocumentHighlights(fileName, node.getStart(), [fileName]);
+
+    if (highlights) {
+      for (const file of highlights) {
+        // We are pretty much guaranteed to only have one match from the current file since it is
+        // the only one being passed in `getDocumentHighlight`, but we check here just in case.
+        if (file.fileName === fileName) {
+          for (const {textSpan: {start, length}, kind} of file.highlightSpans) {
+            if (kind !== ts.HighlightSpanKind.none) {
+              results.push([start, start + length]);
+            }
+          }
+        }
+      }
+    }
+
+    // Restore full project access to the language service.
+    this._tempOnlyFile = null;
+    return results;
+  }
+
+  /** Used by the language service  */
+  private _readFile(path: string) {
+    if ((this._tempOnlyFile !== null && path !== this._tempOnlyFile) ||
+        this._excludedFiles?.test(path)) {
+      return '';
+    }
+    return this._host.readFile(path);
+  }
+
+  /** Gets a language service that can be used to perform lookups. */
+  private _getLanguageService(): ts.LanguageService {
+    if (!this._languageService) {
+      const rootFileNames = this._rootFileNames.slice();
+
+      this._program.getTsProgram().getSourceFiles().forEach(({fileName}) => {
+        if (!this._excludedFiles?.test(fileName) && !rootFileNames.includes(fileName)) {
+          rootFileNames.push(fileName);
+        }
+      });
+
+      this._languageService = ts.createLanguageService(
+          {
+            getCompilationSettings: () => this._program.getTsProgram().getCompilerOptions(),
+            getScriptFileNames: () => rootFileNames,
+            // The files won't change so we can return the same version.
+            getScriptVersion: () => '0',
+            getScriptSnapshot: (path: string) => {
+              const content = this._readFile(path);
+              return content ? ts.ScriptSnapshot.fromString(content) : undefined;
+            },
+            getCurrentDirectory: () => this._basePath,
+            getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
+            readFile: path => this._readFile(path),
+            fileExists: (path: string) => this._host.fileExists(path)
+          },
+          ts.createDocumentRegistry(), ts.LanguageServiceMode.PartialSemantic);
+    }
+
+    return this._languageService;
+  }
 }
 
 /** Creates a NodeLookup object from a source file. */
@@ -224,8 +314,7 @@ export function getNodeLookup(sourceFile: ts.SourceFile): NodeLookup {
  * @param results Set in which to store the results.
  */
 export function offsetsToNodes(
-    lookup: NodeLookup, offsets: [start: number, end: number][],
-    results: Set<ts.Node>): Set<ts.Node> {
+    lookup: NodeLookup, offsets: ReferenceSpan[], results: Set<ts.Node>): Set<ts.Node> {
   for (const [start, end] of offsets) {
     const match = lookup.get(start)?.find(node => node.getEnd() === end);
 

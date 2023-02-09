@@ -16,7 +16,7 @@ import {getAngularDecorators} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
 import {convertNgModuleDeclarationToStandalone, extractDeclarationsFromModule, findTestObjectsToMigrate, migrateTestDeclarations} from './to-standalone';
-import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, ImportRemapper, NamedClassDeclaration, NodeLookup, offsetsToNodes, UniqueItemTracker} from './util';
+import {ChangeTracker, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, ImportRemapper, NamedClassDeclaration, NodeLookup, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
 
 /** Information extracted from a `bootstrapModule` call necessary to migrate it. */
 interface BootstrapCallAnalysis {
@@ -34,11 +34,13 @@ interface BootstrapCallAnalysis {
 
 export function toStandaloneBootstrap(
     program: NgtscProgram, host: ts.CompilerHost, basePath: string, rootFileNames: string[],
-    sourceFiles: ts.SourceFile[], printer: ts.Printer, importRemapper?: ImportRemapper) {
+    sourceFiles: ts.SourceFile[], printer: ts.Printer, importRemapper?: ImportRemapper,
+    referenceLookupExcludedFiles?: RegExp) {
   const tracker = new ChangeTracker(printer, importRemapper);
   const typeChecker = program.getTsProgram().getTypeChecker();
   const templateTypeChecker = program.compiler.getTemplateTypeChecker();
-  const languageService = createLanguageService(program, host, rootFileNames, basePath);
+  const referenceResolver =
+      new ReferenceResolver(program, host, rootFileNames, basePath, referenceLookupExcludedFiles);
   const bootstrapCalls: BootstrapCallAnalysis[] = [];
   const testObjects: ts.ObjectLiteralExpression[] = [];
   const allDeclarations: Reference<ts.ClassDeclaration>[] = [];
@@ -62,7 +64,7 @@ export function toStandaloneBootstrap(
 
   for (const call of bootstrapCalls) {
     allDeclarations.push(...call.declarations);
-    migrateBootstrapCall(call, tracker, languageService, typeChecker, printer);
+    migrateBootstrapCall(call, tracker, referenceResolver, typeChecker, printer);
   }
 
   // The previous migrations explicitly skip over bootstrapped
@@ -133,12 +135,12 @@ function analyzeBootstrapCall(
  * Converts a `bootstrapModule` call to `bootstrapApplication`.
  * @param analysis Analysis result of the call.
  * @param tracker Tracker in which to register the changes.
- * @param languageService
+ * @param referenceResolver
  * @param typeChecker
  * @param printer
  */
 function migrateBootstrapCall(
-    analysis: BootstrapCallAnalysis, tracker: ChangeTracker, languageService: ts.LanguageService,
+    analysis: BootstrapCallAnalysis, tracker: ChangeTracker, referenceResolver: ReferenceResolver,
     typeChecker: ts.TypeChecker, printer: ts.Printer) {
   const sourceFile = analysis.call.getSourceFile();
   const moduleSourceFile = analysis.metadata.getSourceFile();
@@ -168,14 +170,14 @@ function migrateBootstrapCall(
       providersInNewCall.push(ts.factory.createSpreadElement(providers.initializer));
     }
 
-    addNodesToCopy(sourceFile, providers, nodeLookup, tracker, nodesToCopy, languageService);
+    addNodesToCopy(sourceFile, providers, nodeLookup, tracker, nodesToCopy, referenceResolver);
   }
 
   if (imports && ts.isPropertyAssignment(imports)) {
     nodeLookup = nodeLookup || getNodeLookup(moduleSourceFile);
     migrateImportsForBootstrapCall(
         sourceFile, imports, nodeLookup, moduleImportsInNewCall, providersInNewCall, tracker,
-        nodesToCopy, languageService, typeChecker);
+        nodesToCopy, referenceResolver, typeChecker);
   }
 
   if (nodesToCopy.size > 0) {
@@ -253,13 +255,13 @@ function replaceBootstrapCallExpression(
  * @param providersInNewCall Array keeping track of the providers in the new call.
  * @param tracker Tracker in which changes to files are being stored.
  * @param nodesToCopy Nodes that should be copied to the new file.
- * @param languageService
+ * @param referenceResolver
  * @param typeChecker
  */
 function migrateImportsForBootstrapCall(
     sourceFile: ts.SourceFile, imports: ts.PropertyAssignment, nodeLookup: NodeLookup,
     importsForNewCall: ts.Expression[], providersInNewCall: ts.Expression[], tracker: ChangeTracker,
-    nodesToCopy: Set<ts.Node>, languageService: ts.LanguageService,
+    nodesToCopy: Set<ts.Node>, referenceResolver: ReferenceResolver,
     typeChecker: ts.TypeChecker): void {
   if (!ts.isArrayLiteralExpression(imports.initializer)) {
     importsForNewCall.push(imports.initializer);
@@ -282,9 +284,9 @@ function migrateImportsForBootstrapCall(
             tracker.addImport(sourceFile, 'provideRouter', '@angular/router'), [],
             [element.arguments[0], ...features]));
         addNodesToCopy(
-            sourceFile, element.arguments[0], nodeLookup, tracker, nodesToCopy, languageService);
+            sourceFile, element.arguments[0], nodeLookup, tracker, nodesToCopy, referenceResolver);
         if (options) {
-          addNodesToCopy(sourceFile, options, nodeLookup, tracker, nodesToCopy, languageService);
+          addNodesToCopy(sourceFile, options, nodeLookup, tracker, nodesToCopy, referenceResolver);
         }
         continue;
       }
@@ -326,7 +328,7 @@ function migrateImportsForBootstrapCall(
         decorators.every(
             ({name}) => name !== 'Directive' && name !== 'Component' && name !== 'Pipe')) {
       importsForNewCall.push(element);
-      addNodesToCopy(sourceFile, element, nodeLookup, tracker, nodesToCopy, languageService);
+      addNodesToCopy(sourceFile, element, nodeLookup, tracker, nodesToCopy, referenceResolver);
     }
   }
 }
@@ -444,12 +446,12 @@ function getRouterModuleForRootFeatures(
  * @param nodeLookup Map used to look up nodes based on their positions in a file.
  * @param tracker Tracker in which changes to files are stored.
  * @param nodesToCopy Set that keeps track of the nodes being copied.
- * @param languageService
+ * @param referenceResolver
  */
 function addNodesToCopy(
     targetFile: ts.SourceFile, rootNode: ts.Node, nodeLookup: NodeLookup, tracker: ChangeTracker,
-    nodesToCopy: Set<ts.Node>, languageService: ts.LanguageService): void {
-  const refs = findAllSameFileReferences(rootNode, nodeLookup, languageService);
+    nodesToCopy: Set<ts.Node>, referenceResolver: ReferenceResolver): void {
+  const refs = findAllSameFileReferences(rootNode, nodeLookup, referenceResolver);
 
   for (const ref of refs) {
     const importSpecifier = closestOrSelf(ref, ts.isImportSpecifier);
@@ -504,10 +506,10 @@ function addNodesToCopy(
  * Finds all the nodes referenced within the root node in the same file.
  * @param rootNode Node from which to start looking for references.
  * @param nodeLookup Map used to look up nodes based on their positions in a file.
- * @param languageService
+ * @param referenceResolver
  */
 function findAllSameFileReferences(
-    rootNode: ts.Node, nodeLookup: NodeLookup, languageService: ts.LanguageService): Set<ts.Node> {
+    rootNode: ts.Node, nodeLookup: NodeLookup, referenceResolver: ReferenceResolver): Set<ts.Node> {
   const results = new Set<ts.Node>();
   const excludeStart = rootNode.getStart();
   const excludeEnd = rootNode.getEnd();
@@ -518,8 +520,8 @@ function findAllSameFileReferences(
       return;
     }
 
-    const refs =
-        referencesToNodeWithinSameFile(node, nodeLookup, excludeStart, excludeEnd, languageService);
+    const refs = referencesToNodeWithinSameFile(
+        node, nodeLookup, excludeStart, excludeEnd, referenceResolver);
 
     if (refs === null) {
       return;
@@ -551,38 +553,20 @@ function findAllSameFileReferences(
  * @param nodeLookup Map used to look up nodes based on their positions in a file.
  * @param excludeStart Start of a range that should be excluded from the results.
  * @param excludeEnd End of a range that should be excluded from the results.
- * @param languageService
+ * @param referenceResolver
  */
 function referencesToNodeWithinSameFile(
     node: ts.Identifier, nodeLookup: NodeLookup, excludeStart: number, excludeEnd: number,
-    languageService: ts.LanguageService): Set<ts.Node>|null {
-  const sourceFile = node.getSourceFile();
-  const fileName = sourceFile.fileName;
-  const highlights = languageService.getDocumentHighlights(fileName, node.getStart(), [fileName]);
+    referenceResolver: ReferenceResolver): Set<ts.Node>|null {
+  const offsets =
+      referenceResolver.findSameFileReferences(node, node.getSourceFile().fileName)
+          .filter(([start, end]) => isOutsideRange(excludeStart, excludeEnd, start, end));
 
-  if (highlights) {
-    const offsets: [start: number, end: number][] = [];
+  if (offsets.length > 0) {
+    const nodes = offsetsToNodes(nodeLookup, offsets, new Set());
 
-    for (const file of highlights) {
-      // We are pretty much guaranteed to only have one match from the current file since it is
-      // the only one being passed in `getDocumentHighlight`, but we check here just in case.
-      if (file.fileName === fileName) {
-        for (const {textSpan: {start, length}, kind} of file.highlightSpans) {
-          const end = start + length;
-          if (kind !== ts.HighlightSpanKind.none &&
-              isOutsideRange(excludeStart, excludeEnd, start, end)) {
-            offsets.push([start, end]);
-          }
-        }
-      }
-    }
-
-    if (offsets.length > 0) {
-      const nodes = offsetsToNodes(nodeLookup, offsets, new Set());
-
-      if (nodes.size > 0) {
-        return nodes;
-      }
+    if (nodes.size > 0) {
+      return nodes;
     }
   }
 
