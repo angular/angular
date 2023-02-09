@@ -5,3 +5,7 @@
 .form-row{
   margin-top: 10px;
 }
+
+input[type='text'].dynamicInput {
+  all: revert;
+}
