@@ -77,7 +77,6 @@ yarn_install(
         YARN_LABEL,
         "//:.yarnrc",
         "//:scripts/puppeteer-chromedriver-versions.js",
-        "//:scripts/webdriver-manager-update.js",
         "//tools:postinstall-patches.js",
         "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-246cebbf2a78566ff1fe9b88fdde2459606568dc.patch",
         "//tools/esm-interop:patches/npm/@bazel+concatjs+5.7.1.patch",
