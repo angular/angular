@@ -195,9 +195,20 @@ export class ReferenceResolver {
 
   /** Finds all references to a node within the entire project. */
   findReferencesInProject(node: ts.Node): ReferencesByFile {
-    const referencedSymbols =
-        this._getLanguageService().findReferences(node.getSourceFile().fileName, node.getStart()) ||
-        [];
+    const languageService = this._getLanguageService();
+    const fileName = node.getSourceFile().fileName;
+    const start = node.getStart();
+    let referencedSymbols: ts.ReferencedSymbol[];
+
+    // The language service can throw if it fails to read a file.
+    // Silently continue since we're making the lookup on a best effort basis.
+    try {
+      referencedSymbols = languageService.findReferences(fileName, start) || [];
+    } catch (e: any) {
+      console.error('Failed reference lookup for node ' + node.getText(), e.message);
+      referencedSymbols = [];
+    }
+
     const results: ReferencesByFile = new Map();
 
     for (const symbol of referencedSymbols) {
@@ -223,9 +234,19 @@ export class ReferenceResolver {
     // the one we're interested in by intercepting it at the compiler host level.
     // This is an order of magnitude faster on a large project.
     this._tempOnlyFile = fileName;
+
+    const nodeStart = node.getStart();
     const results: ReferenceSpan[] = [];
-    const highlights =
-        this._getLanguageService().getDocumentHighlights(fileName, node.getStart(), [fileName]);
+    let highlights: ts.DocumentHighlights[]|undefined;
+
+    // The language service can throw if it fails to read a file.
+    // Silently continue since we're making the lookup on a best effort basis.
+    try {
+      highlights =
+          this._getLanguageService().getDocumentHighlights(fileName, nodeStart, [fileName]);
+    } catch (e: any) {
+      console.error('Failed reference lookup for node ' + node.getText(), e.message);
+    }
 
     if (highlights) {
       for (const file of highlights) {
