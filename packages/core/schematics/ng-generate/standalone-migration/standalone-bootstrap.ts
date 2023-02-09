@@ -511,6 +511,7 @@ function addNodesToCopy(
 function findAllSameFileReferences(
     rootNode: ts.Node, nodeLookup: NodeLookup, referenceResolver: ReferenceResolver): Set<ts.Node> {
   const results = new Set<ts.Node>();
+  const traversedTopLevelNodes = new Set<ts.Node>();
   const excludeStart = rootNode.getStart();
   const excludeEnd = rootNode.getEnd();
 
@@ -531,14 +532,21 @@ function findAllSameFileReferences(
       if (results.has(ref)) {
         continue;
       }
-      const closestTopLevel = closestNode(ref, isTopLevelStatement);
+
       results.add(ref);
+
+      const closestTopLevel = closestNode(ref, isTopLevelStatement);
+      // Avoid re-traversing the same top-level nodes since we know what the result will be.
+      if (!closestTopLevel || traversedTopLevelNodes.has(closestTopLevel)) {
+        continue;
+      }
 
       // Keep searching, starting from the closest top-level node. We skip import declarations,
       // because we already know about them and they may put the search into an infinite loop.
-      if (closestTopLevel && !ts.isImportDeclaration(closestTopLevel) &&
+      if (!ts.isImportDeclaration(closestTopLevel) &&
           isOutsideRange(
               excludeStart, excludeEnd, closestTopLevel.getStart(), closestTopLevel.getEnd())) {
+        traversedTopLevelNodes.add(closestTopLevel);
         walk(closestTopLevel);
       }
     }

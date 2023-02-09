@@ -3259,4 +3259,48 @@ describe('standalone migration', () => {
         export class AppComponent {}
       `));
      });
+
+  it('should be able to migrate a bootstrapModule call where the root component does not belong to the bootstrapped component',
+     async () => {
+       writeFile('main.ts', `
+          import {AppModule} from './app/app.module';
+          import {platformBrowser} from '@angular/platform-browser';
+
+          platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+        `);
+
+       writeFile('./app/root.module.ts', `
+          import {NgModule, Component} from '@angular/core';
+
+          @Component({selector: 'root-comp', template: '', standalone: true})
+          export class Root {}
+
+          @NgModule({imports: [Root], exports: [Root]})
+          export class RootModule {}
+        `);
+
+       writeFile('./app/app.module.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {RootModule, Root} from './root.module';
+
+          @NgModule({
+            imports: [RootModule],
+            bootstrap: [Root]
+          })
+          export class AppModule {}
+        `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+          import {AppModule} from './app/app.module';
+          import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+          import {importProvidersFrom} from '@angular/core';
+          import {RootModule, Root} from './app/root.module';
+
+          bootstrapApplication(Root, {
+            providers: [importProvidersFrom(RootModule)]
+          }).catch(e => console.error(e));
+        `));
+     });
 });
