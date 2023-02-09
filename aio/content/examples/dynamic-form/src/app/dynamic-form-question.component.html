@@ -4,7 +4,7 @@
 
   <div [ngSwitch]="question.controlType">
 
-    <input *ngSwitchCase="'textbox'" [formControlName]="question.key"
+    <input class="dynamicInput" *ngSwitchCase="'textbox'" [formControlName]="question.key"
             [id]="question.key" [type]="question.type">
 
     <select [id]="question.key" *ngSwitchCase="'dropdown'" [formControlName]="question.key">

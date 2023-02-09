@@ -1,7 +1,13 @@
-.errorMessage{
-  color:red;
+.errorMessage {
+  color: red;
 }
 
-.form-row{
+.form-row {
   margin-top: 10px;
+}
+
+input[type='text'].dynamicInput {
+  box-sizing: revert;
+  width: revert;
+  padding: revert;
 }
