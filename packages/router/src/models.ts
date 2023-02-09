@@ -1008,7 +1008,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
  *   ): Observable<Hero>|Promise<Hero>|Hero {
- *     return this.service.getHero(route.paramMap.get('id'));
+ *     return this.service.getHero(route.paramMap.get('id')!);
  *   }
  * }
  * ```
