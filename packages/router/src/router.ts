@@ -179,8 +179,8 @@ export class Router {
    * A handler for navigation errors in this NgModule.
    *
    * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
-   *   `provideRouter` has the `withErrorHandler` feature to make this easier.
-   * @see `withErrorHandler`
+   *   `provideRouter` has the `withNavigationErrorHandler` feature to make this easier.
+   * @see `withNavigationErrorHandler`
    */
   errorHandler = this.options.errorHandler || defaultErrorHandler;
 
