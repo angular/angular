@@ -892,7 +892,7 @@ describe('standalone migration', () => {
       import {NgModule, Component} from '@angular/core';
       import {TestBed} from '@angular/core/testing';
 
-      describe('bootrstrapping an app', () => {
+      describe('bootstrapping an app', () => {
         it('should work', () => {
           @Component({selector: 'hello', template: 'Hello'})
           class Hello {}
@@ -942,7 +942,7 @@ describe('standalone migration', () => {
       import {TestBed} from '@angular/core/testing';
       import {MyComp} from './comp';
 
-      describe('bootrstrapping an app', () => {
+      describe('bootstrapping an app', () => {
         it('should work', () => {
           TestBed.configureTestingModule({declarations: [MyComp]});
           expect(() => TestBed.createComponent(MyComp)).not.toThrow();
@@ -956,7 +956,7 @@ describe('standalone migration', () => {
       import {TestBed} from '@angular/core/testing';
       import {MyComp} from './comp';
 
-      describe('bootrstrapping an app', () => {
+      describe('bootstrapping an app', () => {
         it('should work', () => {
           TestBed.configureTestingModule({imports: [MyComp]});
           expect(() => TestBed.createComponent(MyComp)).not.toThrow();
@@ -1064,7 +1064,7 @@ describe('standalone migration', () => {
       import {ButtonModule} from './button.module';
       import {MatCardModule} from '@angular/material/card';
 
-      describe('bootrstrapping an app', () => {
+      describe('bootstrapping an app', () => {
         it('should work', () => {
           TestBed.configureTestingModule({
             declarations: [App, Hello],
@@ -1136,7 +1136,7 @@ describe('standalone migration', () => {
       import {TestBed} from '@angular/core/testing';
       import {MatCardModule} from '@angular/material/card';
 
-      describe('bootrstrapping an app', () => {
+      describe('bootstrapping an app', () => {
         it('should work', () => {
           TestBed.configureTestingModule({
             declarations: [App],
@@ -1178,7 +1178,7 @@ describe('standalone migration', () => {
       import {ButtonModule} from './button.module';
       import {MatCardModule} from '@angular/material/card';
 
-      describe('bootrstrapping an app', () => {
+      describe('bootstrapping an app', () => {
         it('should work', () => {
           TestBed.configureTestingModule({
             imports: [ButtonModule, MatCardModule]
@@ -1206,7 +1206,7 @@ describe('standalone migration', () => {
       import {ButtonModule} from './button.module';
       import {MatCardModule} from '@angular/material/card';
 
-      describe('bootrstrapping an app', () => {
+      describe('bootstrapping an app', () => {
         it('should work', () => {
           setupModule({
             declarations: [App, Hello],
@@ -1299,7 +1299,7 @@ describe('standalone migration', () => {
         import {MatCardModule} from '@angular/material/card';
         import {AppComponent} from './app.component';
 
-        describe('bootrstrapping an app', () => {
+        describe('bootstrapping an app', () => {
           it('should work', () => {
             TestBed.configureTestingModule({
               declarations: [AppComponent, TestComp],
@@ -2365,7 +2365,7 @@ describe('standalone migration', () => {
       import {TestBed} from '@angular/core/testing';
       import {AppComponent} from './app.component';
 
-      describe('bootrstrapping an app', () => {
+      describe('bootstrapping an app', () => {
         it('should work', () => {
           TestBed.configureTestingModule({declarations: [AppComponent]});
           const fixture = TestBed.createComponent(AppComponent);
@@ -2395,7 +2395,7 @@ describe('standalone migration', () => {
       import {TestBed} from '@angular/core/testing';
       import {AppComponent} from './app.component';
 
-      describe('bootrstrapping an app', () => {
+      describe('bootstrapping an app', () => {
         it('should work', () => {
           TestBed.configureTestingModule({imports: [AppComponent]});
           const fixture = TestBed.createComponent(AppComponent);
@@ -2572,7 +2572,7 @@ describe('standalone migration', () => {
         `));
      });
 
-  it('should copy modules from the `imports` array to the `providers` and wrap them in `imporProvidersFrom`',
+  it('should copy modules from the `imports` array to the `providers` and wrap them in `importProvidersFrom`',
      async () => {
        writeFile('main.ts', `
         import {AppModule} from './app/app.module';
