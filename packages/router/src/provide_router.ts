@@ -615,7 +615,7 @@ export type NavigationErrorHandlerFeature =
  *   {
  *     providers: [
  *       provideRouter(appRoutes, withNavigationErrorHandler((e: NavigationError) =>
- * inject(MyErrorTracker).trackError(e))
+ * inject(MyErrorTracker).trackError(e)))
  *     ]
  *   }
  * );
