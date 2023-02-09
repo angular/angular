@@ -12,10 +12,7 @@ import ts from 'typescript';
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
-import {ChangeTracker, createLanguageService, findClassDeclaration, findLiteralProperty, getNodeLookup, ImportRemapper, offsetsToNodes, UniqueItemTracker} from './util';
-
-/** Mapping between a file name and spans for node references inside of it. */
-type ReferencesByFile = Map<string, [start: number, end: number][]>;
+import {ChangeTracker, findClassDeclaration, findLiteralProperty, getNodeLookup, ImportRemapper, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
 
 /** Keeps track of the places from which we need to remove AST nodes. */
 interface RemovalLocations {
@@ -28,11 +25,13 @@ interface RemovalLocations {
 
 export function pruneNgModules(
     program: NgtscProgram, host: ts.CompilerHost, basePath: string, rootFileNames: string[],
-    sourceFiles: ts.SourceFile[], printer: ts.Printer, importRemapper?: ImportRemapper) {
+    sourceFiles: ts.SourceFile[], printer: ts.Printer, importRemapper?: ImportRemapper,
+    referenceLookupExcludedFiles?: RegExp) {
   const filesToRemove = new Set<ts.SourceFile>();
   const tracker = new ChangeTracker(printer, importRemapper);
   const typeChecker = program.getTsProgram().getTypeChecker();
-  const languageService = createLanguageService(program, host, rootFileNames, basePath);
+  const referenceResolver =
+      new ReferenceResolver(program, host, rootFileNames, basePath, referenceLookupExcludedFiles);
   const removalLocations: RemovalLocations = {
     arrays: new UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>(),
     imports: new UniqueItemTracker<ts.NamedImports, ts.Node>(),
@@ -43,7 +42,7 @@ export function pruneNgModules(
 
   sourceFiles.forEach(function walk(node: ts.Node) {
     if (ts.isClassDeclaration(node) && canRemoveClass(node, typeChecker)) {
-      collectRemovalLocations(node, removalLocations, languageService, program);
+      collectRemovalLocations(node, removalLocations, referenceResolver, program);
       removalLocations.classes.add(node);
     }
     node.forEachChild(walk);
@@ -73,13 +72,13 @@ export function pruneNgModules(
  * Collects all the nodes that a module needs to be removed from.
  * @param ngModule Module being removed.
  * @param removalLocations
- * @param languageService
+ * @param referenceResolver
  * @param program
  */
 function collectRemovalLocations(
     ngModule: ts.ClassDeclaration, removalLocations: RemovalLocations,
-    languageService: ts.LanguageService, program: NgtscProgram) {
-  const refsByFile = extractReferences(ngModule, languageService);
+    referenceResolver: ReferenceResolver, program: NgtscProgram) {
+  const refsByFile = referenceResolver.findReferencesInProject(ngModule.name!);
   const tsProgram = program.getTsProgram();
   const nodes = new Set<ts.Node>();
 
@@ -293,34 +292,6 @@ function canRemoveFile(sourceFile: ts.SourceFile, classesToBeRemoved: Set<ts.Cla
   }
 
   return true;
-}
-
-
-/**
- * Finds all the locations in a file where a node is referenced.
- * @param node Node that is being looked up.
- * @param languageService Language service used to find the references.
- */
-function extractReferences(
-    node: ts.ClassDeclaration, languageService: ts.LanguageService): ReferencesByFile {
-  const result: ReferencesByFile = new Map();
-  const referencedSymbols =
-      languageService.findReferences(node.getSourceFile().fileName, node.name!.getStart()) || [];
-
-  for (const symbol of referencedSymbols) {
-    for (const ref of symbol.references) {
-      if (!ref.isDefinition || symbol.definition.kind === ts.ScriptElementKind.alias) {
-        if (!result.has(ref.fileName)) {
-          result.set(ref.fileName, []);
-        }
-
-        result.get(ref.fileName)!.push(
-            [ref.textSpan.start, ref.textSpan.start + ref.textSpan.length]);
-      }
-    }
-  }
-
-  return result;
 }
 
 /**
