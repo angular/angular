@@ -216,7 +216,7 @@
   "// 7": "Ensure that a single instance of the `saucelabs` package is used. Protractor and the Karma sauce launcher pull this package as dependency. A single instance allows for e.g. easier patching in the Karma config.",
   "resolutions": {
     "**/graceful-fs": "4.2.10",
-    "**/webdriver-manager": "12.1.8",
+    "**/webdriver-manager": "13.0.1",
     "**/https-proxy-agent": "5.0.1",
     "**/saucelabs": "7.2.0"
   }
