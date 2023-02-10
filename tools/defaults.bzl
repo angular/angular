@@ -110,7 +110,6 @@ def ts_library(
         # Match the types[] in //packages:tsconfig-test.json
         deps.append("@npm//@types/jasmine")
         deps.append("@npm//@types/node")
-        deps.append("@npm//@types/events")
     if not tsconfig and testonly:
         tsconfig = _DEFAULT_TSCONFIG_TEST
 
@@ -154,7 +153,6 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         # Match the types[] in //packages:tsconfig-test.json
         deps.append("@npm//@types/jasmine")
         deps.append("@npm//@types/node")
-        deps.append("@npm//@types/events")
     if not tsconfig and testonly:
         tsconfig = _DEFAULT_TSCONFIG_TEST
 

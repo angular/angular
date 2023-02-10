@@ -26,6 +26,7 @@
     "test-a11y-score-localhost": "bazel test //aio:test-a11y-score-localhost",
     "test-pwa-score": "sh -c 'bazel run //aio/scripts:audit-web-app ${0} all:0,pwa:${1}'",
     "test-pwa-score-localhost": "bazel test //aio:test-pwa-score-localhost",
+    "test-production-url": "bazel test //aio/tests/deployment/e2e",
     "example-e2e": "node --experimental-import-meta-resolve tools/examples/run-filtered-example-e2es.mjs",
     "example-list-overrides": "bazel run //aio/tools/examples:example-boilerplate list-overrides",
     "example-lint": "eslint content/examples",
