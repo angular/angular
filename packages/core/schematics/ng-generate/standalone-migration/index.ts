@@ -18,7 +18,7 @@ import {canMigrateFile, createProgramOptions} from '../../utils/typescript/compi
 import {pruneNgModules} from './prune-modules';
 import {toStandaloneBootstrap} from './standalone-bootstrap';
 import {toStandalone} from './to-standalone';
-import {ChangesByFile, normalizePath} from './util';
+import {ChangesByFile, knownInternalAliasRemapper, normalizePath} from './util';
 
 enum MigrationMode {
   toStandalone = 'convert-to-standalone',
@@ -106,7 +106,8 @@ function standaloneMigration(
         referenceLookupExcludedFiles);
   } else {
     // This shouldn't happen, but default to `MigrationMode.toStandalone` just in case.
-    pendingChanges = toStandalone(sourceFiles, program, printer);
+    pendingChanges =
+        toStandalone(sourceFiles, program, printer, undefined, knownInternalAliasRemapper);
   }
 
   for (const [file, changes] of pendingChanges.entries()) {

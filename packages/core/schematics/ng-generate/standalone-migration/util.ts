@@ -7,6 +7,7 @@
  */
 
 import {NgtscProgram} from '@angular/compiler-cli';
+import {PotentialImport} from '@angular/compiler-cli/private/migrations';
 import {dirname, relative} from 'path';
 import ts from 'typescript';
 
@@ -381,4 +382,12 @@ export function getRelativeImportPath(fromFile: string, toFile: string): string 
 /** Normalizes a path to use posix separators. */
 export function normalizePath(path: string): string {
   return path.replace(/\\/g, '/');
+}
+
+/** Function used to remap the generated `imports` for a component to known shorter aliases. */
+export function knownInternalAliasRemapper(imports: PotentialImport[]) {
+  return imports.map(
+      current => current.moduleSpecifier === '@angular/common' && current.symbolName === 'NgForOf' ?
+          {...current, symbolName: 'NgFor'} :
+          current);
 }
