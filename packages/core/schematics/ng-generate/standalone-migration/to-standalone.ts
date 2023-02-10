@@ -18,20 +18,31 @@ import {isReferenceToImport} from '../../utils/typescript/symbol';
 import {ChangesByFile, ChangeTracker, findClassDeclaration, findLiteralProperty, ImportRemapper, NamedClassDeclaration} from './util';
 
 /**
+ * Function that can be used to prcess the dependencies that
+ * are going to be added to the imports of a component.
+ */
+export type ComponentImportsRemapper =
+    (imports: PotentialImport[], component: Reference<ts.ClassDeclaration>) => PotentialImport[];
+
+/**
  * Converts all declarations in the specified files to standalone.
  * @param sourceFiles Files that should be migrated.
  * @param program
  * @param printer
+ * @param fileImportRemapper Optional function that can be used to remap file-level imports.
+ * @param componentImportRemapper Optional function that can be used to remap component-level
+ * imports.
  */
 export function toStandalone(
     sourceFiles: ts.SourceFile[], program: NgtscProgram, printer: ts.Printer,
-    importRemapper?: ImportRemapper): ChangesByFile {
+    fileImportRemapper?: ImportRemapper,
+    componentImportRemapper?: ComponentImportsRemapper): ChangesByFile {
   const templateTypeChecker = program.compiler.getTemplateTypeChecker();
   const typeChecker = program.getTsProgram().getTypeChecker();
   const modulesToMigrate: ts.ClassDeclaration[] = [];
   const testObjectsToMigrate: ts.ObjectLiteralExpression[] = [];
   const declarations: Reference<ts.ClassDeclaration>[] = [];
-  const tracker = new ChangeTracker(printer, importRemapper);
+  const tracker = new ChangeTracker(printer, fileImportRemapper);
 
   for (const sourceFile of sourceFiles) {
     const modules = findNgModuleClassesToMigrate(sourceFile, typeChecker);
@@ -52,7 +63,8 @@ export function toStandalone(
   }
 
   for (const declaration of declarations) {
-    convertNgModuleDeclarationToStandalone(declaration, declarations, tracker, templateTypeChecker);
+    convertNgModuleDeclarationToStandalone(
+        declaration, declarations, tracker, templateTypeChecker, componentImportRemapper);
   }
 
   for (const node of modulesToMigrate) {
@@ -70,10 +82,12 @@ export function toStandalone(
  * @param tracker Tracker used to track the file changes.
  * @param allDeclarations All the declarations that are being converted as a part of this migration.
  * @param typeChecker
+ * @param importRemapper
  */
 export function convertNgModuleDeclarationToStandalone(
     ref: Reference<ts.ClassDeclaration>, allDeclarations: Reference<ts.ClassDeclaration>[],
-    tracker: ChangeTracker, typeChecker: TemplateTypeChecker): void {
+    tracker: ChangeTracker, typeChecker: TemplateTypeChecker,
+    importRemapper?: ComponentImportsRemapper): void {
   const directiveMeta = typeChecker.getDirectiveMetadata(ref.node);
 
   if (directiveMeta && directiveMeta.decorator && !directiveMeta.isStandalone) {
@@ -81,7 +95,7 @@ export function convertNgModuleDeclarationToStandalone(
 
     if (directiveMeta.isComponent) {
       const importsToAdd =
-          getComponentImportExpressions(ref, allDeclarations, tracker, typeChecker);
+          getComponentImportExpressions(ref, allDeclarations, tracker, typeChecker, importRemapper);
 
       if (importsToAdd.length > 0) {
         decorator = addPropertyToAngularDecorator(
@@ -108,15 +122,18 @@ export function convertNgModuleDeclarationToStandalone(
  * @param allDeclarations All the declarations that are being converted as a part of this migration.
  * @param tracker
  * @param typeChecker
+ * @param importRemapper
  */
 function getComponentImportExpressions(
     ref: Reference<ts.ClassDeclaration>, allDeclarations: Reference<ts.ClassDeclaration>[],
-    tracker: ChangeTracker, typeChecker: TemplateTypeChecker): ts.Expression[] {
+    tracker: ChangeTracker, typeChecker: TemplateTypeChecker,
+    importRemapper?: ComponentImportsRemapper): ts.Expression[] {
   const templateDependencies = findTemplateDependencies(ref, typeChecker);
   const usedDependenciesInMigration = new Set(templateDependencies.filter(
       dep => allDeclarations.find(current => current.node === dep.node)));
   const imports: ts.Expression[] = [];
   const seenImports = new Set<string>();
+  const resolvedDependencies: PotentialImport[] = [];
 
   for (const dep of templateDependencies) {
     const importLocation = findImportLocation(
@@ -126,26 +143,32 @@ function getComponentImportExpressions(
         typeChecker);
 
     if (importLocation && !seenImports.has(importLocation.symbolName)) {
-      if (importLocation.moduleSpecifier) {
-        const identifier = tracker.addImport(
-            ref.node.getSourceFile(), importLocation.symbolName, importLocation.moduleSpecifier);
-        imports.push(identifier);
-      } else {
-        const identifier = ts.factory.createIdentifier(importLocation.symbolName);
-
-        if (importLocation.isForwardReference) {
-          const forwardRefExpression =
-              tracker.addImport(ref.node.getSourceFile(), 'forwardRef', '@angular/core');
-          const arrowFunction = ts.factory.createArrowFunction(
-              undefined, undefined, [], undefined, undefined, identifier);
-          imports.push(
-              ts.factory.createCallExpression(forwardRefExpression, undefined, [arrowFunction]));
-        } else {
-          imports.push(identifier);
-        }
-      }
-
       seenImports.add(importLocation.symbolName);
+      resolvedDependencies.push(importLocation);
+    }
+  }
+
+  const processedDependencies =
+      importRemapper ? importRemapper(resolvedDependencies, ref) : resolvedDependencies;
+
+  for (const importLocation of processedDependencies) {
+    if (importLocation.moduleSpecifier) {
+      const identifier = tracker.addImport(
+          ref.node.getSourceFile(), importLocation.symbolName, importLocation.moduleSpecifier);
+      imports.push(identifier);
+    } else {
+      const identifier = ts.factory.createIdentifier(importLocation.symbolName);
+
+      if (importLocation.isForwardReference) {
+        const forwardRefExpression =
+            tracker.addImport(ref.node.getSourceFile(), 'forwardRef', '@angular/core');
+        const arrowFunction = ts.factory.createArrowFunction(
+            undefined, undefined, [], undefined, undefined, identifier);
+        imports.push(
+            ts.factory.createCallExpression(forwardRefExpression, undefined, [arrowFunction]));
+      } else {
+        imports.push(identifier);
+      }
     }
   }
 

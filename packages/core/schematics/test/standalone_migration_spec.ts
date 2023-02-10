@@ -106,6 +106,8 @@ describe('standalone migration', () => {
         static ɵmod: ɵɵNgModuleDeclaration<CommonModule, never,
           [typeof NgIf, typeof NgForOf], [typeof NgIf, typeof NgForOf]>;
       }
+
+      export {NgForOf as NgFor};
     `);
 
     writeFile('/node_modules/@angular/router/index.d.ts', `
@@ -816,7 +818,7 @@ describe('standalone migration', () => {
 
     const myCompContent = tree.readContent('comp.ts');
 
-    expect(myCompContent).toContain(`import { NgForOf, NgIf } from '@angular/common';`);
+    expect(myCompContent).toContain(`import { NgFor, NgIf } from '@angular/common';`);
     expect(stripWhitespace(myCompContent)).toContain(stripWhitespace(`
       @Component({
         selector: 'my-comp',
@@ -826,7 +828,7 @@ describe('standalone migration', () => {
           </div>
         \`,
         standalone: true,
-        imports: [NgForOf, NgIf]
+        imports: [NgFor, NgIf]
       })
     `));
     expect(stripWhitespace(myCompContent)).toContain(stripWhitespace(`
