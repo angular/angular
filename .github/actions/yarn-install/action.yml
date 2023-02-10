@@ -4,7 +4,7 @@ description: 'Installs the dependencies using Yarn'
 runs:
   using: 'composite'
   steps:
-    - uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920 # v3
+    - uses: actions/cache@6998d139ddd3e68c71e9e398d8e40b71a2f39812 # v3
       with:
         path: |
           ./node_modules/
