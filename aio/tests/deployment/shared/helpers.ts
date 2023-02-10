@@ -1,18 +1,21 @@
 // tslint:disable-next-line: no-reference
 /// <reference path="./cjson.d.ts" />
 
-import { resolve as resolvePath } from 'canonical-path';
-import { load as loadJson } from 'cjson';
-import { readFileSync } from 'fs';
-import { get as httpGet } from 'http';
-import { get as httpsGet } from 'https';
+import canonicalPath from 'canonical-path';
+import {load as loadJson} from 'cjson';
+import {readFileSync} from 'fs';
+import {get as httpGet} from 'http';
+import {get as httpsGet} from 'https';
+import {fileURLToPath} from 'url';
 
-import { processNavigationUrls } from '../../../../packages/service-worker/config/src/generator';
-import { FirebaseRedirector, FirebaseRedirectConfig } from '../../../tools/firebase-test-utils/FirebaseRedirector';
+import {processNavigationUrls} from '../../../../packages/service-worker/config/src/generator';
+import {FirebaseRedirectConfig, FirebaseRedirector} from '../../../tools/firebase-test-utils/FirebaseRedirector';
 
 
-const AIO_DIR = resolvePath('aio');
-export const PATH_TO_LEGACY_URLS = resolvePath(__dirname, 'URLS_TO_REDIRECT.txt');
+const AIO_DIR = canonicalPath.resolve('aio');
+const containingDir = canonicalPath.dirname(fileURLToPath(import.meta.url));
+
+export const PATH_TO_LEGACY_URLS = canonicalPath.resolve(containingDir, 'URLS_TO_REDIRECT.txt');
 
 export function getRedirector() {
   return new FirebaseRedirector(loadRedirects());
@@ -22,16 +25,13 @@ export function getSwNavigationUrlChecker() {
   const config = loadJson(`${AIO_DIR}/src/generated/ngsw-config.json`);
   const navigationUrlSpecs = processNavigationUrls('', config.navigationUrls);
 
-  const includePatterns = navigationUrlSpecs
-      .filter(spec => spec.positive)
-      .map(spec => new RegExp(spec.regex));
-  const excludePatterns = navigationUrlSpecs
-      .filter(spec => !spec.positive)
-      .map(spec => new RegExp(spec.regex));
+  const includePatterns =
+      navigationUrlSpecs.filter(spec => spec.positive).map(spec => new RegExp(spec.regex));
+  const excludePatterns =
+      navigationUrlSpecs.filter(spec => !spec.positive).map(spec => new RegExp(spec.regex));
 
-  return (url: string) =>
-    includePatterns.some(regex => regex.test(url))
-    && !excludePatterns.some(regex => regex.test(url));
+  return (url: string) => includePatterns.some(regex => regex.test(url)) &&
+      !excludePatterns.some(regex => regex.test(url));
 }
 
 export function loadRedirects(): FirebaseRedirectConfig[] {
@@ -42,9 +42,9 @@ export function loadRedirects(): FirebaseRedirectConfig[] {
 
 export function loadLegacyUrls() {
   const urls = readFileSync(PATH_TO_LEGACY_URLS, 'utf8')
-      .split('\n')
-      .filter(line => line.trim() !== '')
-      .map(line => line.split(/\s*-->\s*/));
+                   .split('\n')
+                   .filter(line => line.trim() !== '')
+                   .map(line => line.split(/\s*-->\s*/));
   return urls;
 }
 
@@ -61,10 +61,10 @@ export async function loadRemoteSitemapUrls(host: string) {
 
   const xml = await new Promise<string>((resolve, reject) => {
     let responseText = '';
-    get(urlToSiteMap, res => res
-        .on('data', chunk => responseText += chunk)
-        .on('end', () => resolve(responseText))
-        .on('error', reject));
+    get(urlToSiteMap,
+        res => res.on('data', chunk => responseText += chunk)
+                   .on('end', () => resolve(responseText))
+                   .on('error', reject));
   });
 
   return extractSitemapUrls(xml);
