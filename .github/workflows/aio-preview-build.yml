@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - uses: ./.github/actions/yarn-install
 
-      - uses: angular/dev-infra/github-actions/setup-bazel-remote-exec@07b0f6423e0c5266b3792d8f4af43b8fd3f3d41b
+      - uses: angular/dev-infra/github-actions/setup-bazel-remote-exec@7770251c68b543840bdc78039e67ebc085ce9fdc
         with:
           bazelrc: ./.bazelrc.user
 
@@ -34,7 +34,7 @@ jobs:
       # the number of concurrent actions is determined based on the host resources.
       - run: bazel build //aio:build --jobs=32 --announce_rc --verbose_failures
 
-      - uses: angular/dev-infra/github-actions/deploy-previews/pack-and-upload-artifact@07b0f6423e0c5266b3792d8f4af43b8fd3f3d41b
+      - uses: angular/dev-infra/github-actions/deploy-previews/pack-and-upload-artifact@7770251c68b543840bdc78039e67ebc085ce9fdc
         with:
           workflow-artifact-name: 'aio'
           pull-number: '${{github.event.pull_request.number}}'

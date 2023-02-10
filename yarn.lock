@@ -234,9 +234,9 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#f7d26a0b0d6bd2043f2d32c2a99db903539d0c07":
-  version "0.0.0-07b0f6423e0c5266b3792d8f4af43b8fd3f3d41b"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#f7d26a0b0d6bd2043f2d32c2a99db903539d0c07"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#e859696da7af56c811b6589f1ae888222d93d797":
+  version "0.0.0-7770251c68b543840bdc78039e67ebc085ce9fdc"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#e859696da7af56c811b6589f1ae888222d93d797"
   dependencies:
     "@angular-devkit/build-angular" "15.2.0-next.3"
     "@angular/benchpress" "0.3.0"
@@ -388,9 +388,9 @@
     "@material/typography" "15.0.0-canary.684e33d25.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#8aa60413b3e14daf2f33a29fe9d09faa3e5bcb75":
-  version "0.0.0-07b0f6423e0c5266b3792d8f4af43b8fd3f3d41b"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#8aa60413b3e14daf2f33a29fe9d09faa3e5bcb75"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#812783e85373008ddf426c88495e6f8a8414f129":
+  version "0.0.0-7770251c68b543840bdc78039e67ebc085ce9fdc"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#812783e85373008ddf426c88495e6f8a8414f129"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
@@ -15893,17 +15893,7 @@ terser@5.16.2:
     commander "^2.20.0"
     source-map-support "~0.5.20"
 
-terser@5.16.3:
-  version "5.16.3"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-5.16.3.tgz#3266017a9b682edfe019b8ecddd2abaae7b39c6b"
-  integrity sha512-v8wWLaS/xt3nE9dgKEWhNUFP6q4kngO5B8eYFUuebsu7Dw/UNAnpUod6UHo04jSSkv8TzKHjZDSd7EXdDQAl8Q==
-  dependencies:
-    "@jridgewell/source-map" "^0.3.2"
-    acorn "^8.5.0"
-    commander "^2.20.0"
-    source-map-support "~0.5.20"
-
-terser@^5.0.0, terser@^5.7.2, terser@^5.8.0:
+terser@5.16.3, terser@^5.0.0, terser@^5.7.2, terser@^5.8.0:
   version "5.16.3"
   resolved "https://registry.yarnpkg.com/terser/-/terser-5.16.3.tgz#3266017a9b682edfe019b8ecddd2abaae7b39c6b"
   integrity sha512-v8wWLaS/xt3nE9dgKEWhNUFP6q4kngO5B8eYFUuebsu7Dw/UNAnpUod6UHo04jSSkv8TzKHjZDSd7EXdDQAl8Q==
