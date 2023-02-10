@@ -91,7 +91,6 @@
     "@types/chrome": "^0.0.208",
     "@types/convert-source-map": "^1.5.1",
     "@types/diff": "^5.0.0",
-    "@types/events": "3.0.0",
     "@types/filesystem": "^0.0.32",
     "@types/hammerjs": "2.0.41",
     "@types/jasmine": "^4.0.0",
@@ -148,7 +147,6 @@
     "ngx-flamegraph": "0.0.11",
     "nodejs-websocket": "^1.7.2",
     "protractor": "^7.0.0",
-    "puppeteer": "18.0.5",
     "reflect-metadata": "^0.1.3",
     "requirejs": "^2.3.6",
     "rollup": "~2.79.0",
@@ -184,6 +182,7 @@
     "@octokit/graphql": "^5.0.0",
     "@types/cldrjs": "^0.4.22",
     "@types/cli-progress": "^3.4.2",
+    "@types/xregexp": "^4.4.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "check-side-effects": "0.0.23",
     "cldr": "7.3.0",
@@ -208,7 +207,8 @@
     "tslint-no-toplevel-property-access": "0.0.2",
     "typed-graphqlify": "^3.1.1",
     "vlq": "2.0.4",
-    "vrsource-tslint-rules": "6.0.0"
+    "vrsource-tslint-rules": "6.0.0",
+    "xregexp": "^5.1.1"
   },
   "// 4": "Overwrite graceful-fs to a version that does not rely on the 'natives' package. This fixes gulp for >= 10.13, more information: #28213",
   "// 5": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",

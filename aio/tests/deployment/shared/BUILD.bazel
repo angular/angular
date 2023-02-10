@@ -1,10 +1,18 @@
+load("//tools:defaults.bzl", "ts_library")
+
 package(default_visibility = ["//aio/tests/deployment:__subpackages__"])
 
-filegroup(
+ts_library(
     name = "shared",
-    srcs = [
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    data = [
         "URLS_TO_REDIRECT.txt",
-        "cjson.d.ts",
-        "helpers.ts",
+        "@aio_npm//cjson",
+    ],
+    deps = [
+        "//aio/tools/firebase-test-utils",
+        "//packages/service-worker/config",
+        "@npm//canonical-path",
     ],
 )
