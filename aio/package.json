@@ -114,7 +114,7 @@
     "eslint": "^8.0.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jasmine": "^4.1.2",
-    "eslint-plugin-jsdoc": "^39.0.0",
+    "eslint-plugin-jsdoc": "^40.0.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "find-free-port": "^2.0.0",
     "firebase-tools": "^11.0.0",
