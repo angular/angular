@@ -57,11 +57,11 @@ export declare class NgIf<T = unknown> {
       ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>>;
 }
 
-export declare class NgTemplateOutlet {
-  ngTemplateOutlet: TemplateRef<any>|null;
-  ngTemplateOutletContext: Object|null;
+export declare class NgTemplateOutlet<T = unknown> {
+  ngTemplateOutlet: TemplateRef<T>
+  ngTemplateOutletContext: T;
 
-  static ɵdir: ɵɵDirectiveDeclaration < NgTemplateOutlet, '[ngTemplateOutlet]', never, {
+  static ɵdir: ɵɵDirectiveDeclaration < NgTemplateOutlet<unknown>, '[ngTemplateOutlet]', never, {
     'ngTemplateOutlet': 'ngTemplateOutlet';
     'ngTemplateOutletContext': 'ngTemplateOutletContext';
   }
