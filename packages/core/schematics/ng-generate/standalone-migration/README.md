@@ -194,8 +194,7 @@ modules were skipped explicitly in the first step of the migration.
 5. Adjust any dynamic import paths so that they're correct when they're copied over.
 6. If an API with a standalone equivalent is detected, it may be converted automatically as well.
 E.g. `RouterModule.forRoot` will become `provideRouter`.
-7. Comment out the module metadata of the root class and leave a TODO to remove it. This can also
-be done automatically by running the "Remove unnecessary NgModules" step again.
+7. Remove the root module.
 
 If the migration detects that the `providers` or `imports` of the root module are referencing code
 outside of the class declaration, it will attempt to carry over as much of it as it can to the new
@@ -276,26 +275,6 @@ interface NonImportedInterface {
 const token = new InjectionToken<NonImportedInterface>('token');
 
 export class ExportedConfigClass {}
-
-@NgModule(/*
-TODO(standalone-migration): clean up removed NgModule class manually or run the "Remove unnecessary NgModule classes" step of the migration again.
-{
-  imports: [
-    SharedModule,
-    BrowserAnimationsModule,
-    RouterModule.forRoot([{
-      path: 'shop',
-      loadComponent: () => import('./shop/shop.component').then(m => m.ShopComponent)
-    }])
-  ],
-  declarations: [AppComponent],
-  bootstrap: [AppComponent],
-  providers: [
-    {provide: token, useValue: {foo: true, bar: {baz: false}}},
-    {provide: CONFIG, useClass: ExportedConfigClass}
-  ]
-}*/)
-export class AppModule {}
 ```
 
 ```typescript

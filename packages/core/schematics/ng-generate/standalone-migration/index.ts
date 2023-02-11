@@ -32,7 +32,7 @@ interface Options {
 }
 
 export default function(options: Options): Rule {
-  return async (tree) => {
+  return async (tree, context) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
@@ -54,12 +54,17 @@ export default function(options: Options): Rule {
       throw new SchematicsException(`Could not find any files to migrate under the path ${
           pathToMigrate}. Cannot run the standalone migration.`);
     }
+
+    context.logger.info('🎉 Automated migration step has finished! 🎉');
+    context.logger.info(
+        'IMPORTANT! Please verify manually that your application builds and behaves as expected.');
+    // TODO(crisbeto): log a link to the guide once it's published
   };
 }
 
 function standaloneMigration(
     tree: Tree, tsconfigPath: string, basePath: string, pathToMigrate: string,
-    schematicOptions: Options): number {
+    schematicOptions: Options, oldProgram?: NgtscProgram): number {
   if (schematicOptions.path.startsWith('..')) {
     throw new SchematicsException(
         'Cannot run standalone migration outside of the current project.');
@@ -75,7 +80,7 @@ function standaloneMigration(
         skipDefaultLibCheck: true,
       });
   const referenceLookupExcludedFiles = /node_modules|\.ngtypecheck\.ts/;
-  const program = createProgram({rootNames, host, options}) as NgtscProgram;
+  const program = createProgram({rootNames, host, options, oldProgram}) as NgtscProgram;
   const printer = ts.createPrinter();
 
   if (existsSync(pathToMigrate) && !statSync(pathToMigrate).isDirectory()) {
@@ -132,6 +137,16 @@ function standaloneMigration(
     for (const file of filesToRemove) {
       tree.delete(relative(basePath, file.fileName));
     }
+  }
+
+  // Run the module pruning after the standalone bootstrap to automatically remove the root module.
+  // Note that we can't run the module pruning internally without propagating the changes to disk,
+  // because there may be conflicting AST node changes.
+  if (schematicOptions.mode === MigrationMode.standaloneBootstrap) {
+    return standaloneMigration(
+               tree, tsconfigPath, basePath, pathToMigrate,
+               {...schematicOptions, mode: MigrationMode.pruneModules}, program) +
+        sourceFiles.length;
   }
 
   return sourceFiles.length;
