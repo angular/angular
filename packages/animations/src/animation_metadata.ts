@@ -888,6 +888,30 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
 }
 
 /**
+ * @description Options that control the transition animation.
+ *
+ * @publicApi
+ */
+export declare interface AnimationTransitionOptions extends AnimationOptions {
+  /**
+   * A set of css properties that the developer wants to manually allow.
+   *
+   * Only a set of css properties are considered animatable during transitions
+   * (see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)
+   * all other properties still get handled but produce warnings in development mode.
+   *
+   * In this set the developer can add css properties (and so acknowledging that they might
+   * not work depending on the property itself and the css specs) so that no warnings get
+   * produced for them.
+   *
+   * (Alternatively they can disable the warnings altogether via the BrowserAnimationsModule's
+   * disableAnimatableDevWarnings option).
+   *
+   */
+  allowedProps?: Array<string>;
+}
+
+/**
  * Declares an animation transition which is played when a certain specified condition is met.
  *
  * @param stateChangeExpr A string with a specific format or a function that specifies when the
@@ -1043,7 +1067,7 @@ export function transition(
         params?: {[key: string]: any},
       ) => boolean),
   steps: AnimationMetadata | AnimationMetadata[],
-  options: AnimationOptions | null = null,
+  options: AnimationTransitionOptions | null = null,
 ): AnimationTransitionMetadata {
   return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation: steps, options};
 }

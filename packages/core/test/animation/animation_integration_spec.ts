@@ -8,6 +8,7 @@
 import {animate, animateChild, animation, AnimationEvent, AnimationMetadata, AnimationOptions, AUTO_STYLE, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, NoopAnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
+import {AnimationTransitionOptions} from '@angular/animations/src/animation_metadata';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild, ViewContainerRef} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
@@ -4359,7 +4360,8 @@ describe('animation tests', function() {
 
   describe('non-animatable css props', () => {
     function buildAndAnimateSimpleTestComponent(
-        triggerAnimationData: AnimationMetadata[], disableAnimatableDevWarnings = false) {
+        triggerAnimationData: AnimationMetadata[], disableAnimatableDevWarnings = false,
+        transitionOptions: AnimationTransitionOptions = {}) {
       @Component({
         selector: 'cmp',
         template: `
@@ -4367,7 +4369,8 @@ describe('animation tests', function() {
             <p *ngIf="exp"></p>
           </div>
         `,
-        animations: [trigger('myAnimation', [transition('void => *', triggerAnimationData)])]
+        animations: [trigger(
+            'myAnimation', [transition('void => *', triggerAnimationData, transitionOptions)])]
       })
       class Cmp {
         exp: any = false;
@@ -4460,6 +4463,28 @@ describe('animation tests', function() {
           [style({display: 'block'}), animate(500, style({display: 'inline'}))], true);
       expect(spyWarn).not.toHaveBeenCalled();
     });
+
+    it('should not show a warning if a non-animatable property is used but also included in the allowedProps option',
+       () => {
+         const spyWarn = spyOn(console, 'warn');
+         buildAndAnimateSimpleTestComponent(
+             [style({display: 'block'}), animate(500, style({display: 'inline'}))], false,
+             {allowedProps: ['display']});
+         expect(spyWarn).not.toHaveBeenCalled();
+       });
+
+    it('should not include a property in the non-animatable warning if such property is in the allowedProps option',
+       () => {
+         const spyWarn = spyOn(console, 'warn');
+         buildAndAnimateSimpleTestComponent(
+             [
+               style({display: 'block', 'flex-direction': 'column'}),
+               animate(500, style({display: 'inline', 'flex-direction': 'row'}))
+             ],
+             false, {allowedProps: ['display']});
+         expect(spyWarn).toHaveBeenCalledOnceWith(
+             getNonAnimatablePropsWarning('myAnimation', ['flex-direction']));
+       });
   });
 });
 })();
@@ -4482,5 +4507,6 @@ function getNonAnimatablePropsWarning(triggerName: string, props: string[]): str
       ' not animatable properties: ' + props.join(', ') + '\n' +
       '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)' +
       '\n\n' +
-      'You can disable this warning by setting disableAnimatableDevWarnings to true in the BrowserAnimations ngModule';
+      'You can disable this warning by setting disableAnimatableDevWarnings to true in the BrowserAnimations ngModule, or fine tune' +
+      ' the check by adding properties in the transition\'s allowedProps option';
 }

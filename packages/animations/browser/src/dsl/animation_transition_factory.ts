@@ -131,7 +131,12 @@ export class AnimationTransitionFactory {
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (this.animatableDevWarningsEnabled) {
-        checkNonAnimatableInTimelines(timelines, this._triggerName, driver);
+        checkNonAnimatableInTimelines(
+          timelines,
+          this._triggerName,
+          driver,
+          this.ast.options?.allowedProps ?? [],
+        );
       }
     }
 
@@ -164,18 +169,21 @@ export class AnimationTransitionFactory {
  * @param timelines The built timelines for the current instruction.
  * @param triggerName The name of the trigger for the current instruction.
  * @param driver Animation driver used to perform the check.
+ * @param allowedProps Properties that should be treated as if they were animatable.
  *
  */
 function checkNonAnimatableInTimelines(
   timelines: AnimationTimelineInstruction[],
   triggerName: string,
   driver: AnimationDriver,
+  allowedProps: string[],
 ): void {
   if (!driver.validateAnimatableStyleProperty) {
     return;
   }
 
-  const allowedNonAnimatableProps = new Set<string>([
+  const allowedPropsSet = new Set<string>([
+    ...allowedProps,
     // 'easing' is a utility/synthetic prop we use to represent
     // easing functions, it represents a property of the animation
     // which is not animatable but different values can be used
@@ -189,7 +197,7 @@ function checkNonAnimatableInTimelines(
     const nonAnimatablePropsInitialValues = new Map<string, string | number>();
     keyframes.forEach((keyframe) => {
       const entriesToCheck = Array.from(keyframe.entries()).filter(
-        ([prop]) => !allowedNonAnimatableProps.has(prop),
+        ([prop]) => !allowedPropsSet.has(prop),
       );
       for (const [prop, value] of entriesToCheck) {
         if (!driver.validateAnimatableStyleProperty!(prop)) {
@@ -214,7 +222,8 @@ function checkNonAnimatableInTimelines(
         '\n' +
         '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)' +
         '\n\n' +
-        'You can disable this warning by setting disableAnimatableDevWarnings to true in the BrowserAnimations ngModule',
+        'You can disable this warning by setting disableAnimatableDevWarnings to true in the BrowserAnimations ngModule, or fine tune' +
+        " the check by adding properties in the transition's allowedProps option",
     );
   }
 }
