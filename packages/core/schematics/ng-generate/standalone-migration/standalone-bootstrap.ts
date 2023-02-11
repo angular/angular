@@ -151,14 +151,11 @@ function migrateBootstrapCall(
   const moduleImportsInNewCall: ts.Expression[] = [];
   let nodeLookup: NodeLookup|null = null;
 
-  // We can't reuse the module pruning logic, because we would have to recreate the entire program.
-  // Instead we comment out the module's metadata so that the user doesn't get compilation errors
-  // for the classes that are left in the `declarations` array. This should allow the app to
-  // run and the user can run module pruning themselves to get rid of the module afterwards.
+  // Comment out the metadata so that it'll be removed when we run the module pruning afterwards.
+  // If the pruning is left for some reason, the user will still have an actionable TODO.
   tracker.insertText(
       moduleSourceFile, analysis.metadata.getStart(),
-      '/* TODO(standalone-migration): clean up removed NgModule class manually or run the ' +
-          '"Remove unnecessary NgModule classes" step of the migration again. \n');
+      '/* TODO(standalone-migration): clean up removed NgModule class manually. \n');
   tracker.insertText(moduleSourceFile, analysis.metadata.getEnd(), ' */');
 
   if (providers && ts.isPropertyAssignment(providers)) {
