@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵAnimationEngine as AnimationEngine, ɵAnimationRenderer as AnimationRenderer, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/animations/browser';
-import {inject, Injectable, NgZone, OnDestroy, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵAnimationRendererType as AnimationRendererType, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {ɵAnimationEngine as AnimationEngine, ɵAnimationRenderer as AnimationRenderer, ɵAnimationRendererFactory as AnimationRendererFactory,} from '@angular/animations/browser';
+import {inject, Injectable, NgZone, OnDestroy, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵAnimationRendererType as AnimationRendererType, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵRuntimeError as RuntimeError,} from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
 
 const ANIMATION_PREFIX = '@';
@@ -23,13 +23,21 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
    * @param moduleImpl allows to provide a mock implmentation (or will load the animation module)
    */
   constructor(
-      private doc: Document, private delegate: RendererFactory2, private zone: NgZone,
-      private animationType: 'animations'|'noop', private moduleImpl?: Promise<{
-        ɵcreateEngine:
-            (type: 'animations'|'noop', doc: Document,
-             scheduler: ChangeDetectionScheduler|null) => AnimationEngine,
-        ɵAnimationRendererFactory: typeof AnimationRendererFactory
-      }>) {}
+      private doc: Document,
+      private delegate: RendererFactory2,
+      private zone: NgZone,
+      private animationType: 'animations'|'noop',
+      private disableAnimatableDevWarnings: boolean,
+      private moduleImpl?: Promise<{
+        ɵcreateEngine: (
+            type: 'animations'|'noop',
+            doc: Document,
+            scheduler: ChangeDetectionScheduler|null,
+            disableAnimatableDevWarnings: boolean,
+            ) => AnimationEngine;
+        ɵAnimationRendererFactory: typeof AnimationRendererFactory;
+      }>,
+  ) {}
 
   /** @nodoc */
   ngOnDestroy(): void {
@@ -55,14 +63,23 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
               (typeof ngDevMode === 'undefined' || ngDevMode) &&
                   'Async loading for animations package was ' +
                       'enabled, but loading failed. Angular falls back to using regular rendering. ' +
-                      'No animations will be displayed and their styles won\'t be applied.');
+                      'No animations will be displayed and their styles won\'t be applied.',
+          );
         })
         .then(({ɵcreateEngine, ɵAnimationRendererFactory}) => {
           // We can't create the renderer yet because we might need the hostElement and the type
           // Both are provided in createRenderer().
-          this._engine = ɵcreateEngine(this.animationType, this.doc, this.scheduler);
-          const rendererFactory =
-              new ɵAnimationRendererFactory(this.delegate, this._engine, this.zone);
+          this._engine = ɵcreateEngine(
+              this.animationType,
+              this.doc,
+              this.scheduler,
+              this.disableAnimatableDevWarnings,
+          );
+          const rendererFactory = new ɵAnimationRendererFactory(
+              this.delegate,
+              this._engine,
+              this.zone,
+          );
           this.delegate = rendererFactory;
           return rendererFactory;
         });
@@ -100,11 +117,13 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
 
     this._rendererFactoryPromise
         ?.then((animationRendererFactory) => {
-          const animationRenderer =
-              animationRendererFactory.createRenderer(hostElement, rendererType);
+          const animationRenderer = animationRendererFactory.createRenderer(
+              hostElement,
+              rendererType,
+          );
           dynamicRenderer.use(animationRenderer);
         })
-        .catch(e => {
+        .catch((e) => {
           // Permanently use regular renderer when loading fails.
           dynamicRenderer.use(renderer);
         });

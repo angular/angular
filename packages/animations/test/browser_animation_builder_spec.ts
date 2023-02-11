@@ -264,6 +264,7 @@ describe('BrowserAnimationBuilder', () => {
                 renderer,
                 zone,
                 'noop',
+                true,
                 new Promise<any>(() => {}),
               );
             },

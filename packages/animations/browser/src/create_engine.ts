@@ -18,6 +18,7 @@ export function createEngine(
   type: 'animations' | 'noop',
   doc: Document,
   scheduler: ChangeDetectionScheduler | null,
+  disableAnimatableDevWarnings: boolean,
 ): AnimationEngine {
   // TODO: find a way to make this tree shakable.
   if (type === 'noop') {
@@ -25,6 +26,7 @@ export function createEngine(
       doc,
       new NoopAnimationDriver(),
       new NoopAnimationStyleNormalizer(),
+      disableAnimatableDevWarnings,
       scheduler,
     );
   }
@@ -33,6 +35,7 @@ export function createEngine(
     doc,
     new WebAnimationsDriver(),
     new WebAnimationsStyleNormalizer(),
+    disableAnimatableDevWarnings,
     scheduler,
   );
 }

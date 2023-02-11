@@ -4358,7 +4358,8 @@ describe('animation tests', function() {
   });
 
   describe('non-animatable css props', () => {
-    function buildAndAnimateSimpleTestComponent(triggerAnimationData: AnimationMetadata[]) {
+    function buildAndAnimateSimpleTestComponent(
+        triggerAnimationData: AnimationMetadata[], disableAnimatableDevWarnings = false) {
       @Component({
         selector: 'cmp',
         template: `
@@ -4372,7 +4373,11 @@ describe('animation tests', function() {
         exp: any = false;
       }
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        declarations: [Cmp],
+        imports: [BrowserAnimationsModule.withConfig({disableAnimatableDevWarnings})]
+      });
       const engine = TestBed.inject(ɵAnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
@@ -4381,16 +4386,14 @@ describe('animation tests', function() {
       engine.flush();
     }
 
-    it('should show a warning if the animation tries to transition a non-animatable property', () => {
-      const spyWarn = spyOn(console, 'warn');
-      buildAndAnimateSimpleTestComponent(
-          [style({display: 'block'}), animate(500, style({display: 'inline'}))]);
-      expect(spyWarn).toHaveBeenCalledOnceWith(
-          'Warning: The animation trigger "myAnimation" is attempting to animate the following' +
-          ' not animatable properties: display' +
-          '\n' +
-          '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)');
-    });
+    it('should show a warning if the animation tries to transition a non-animatable property',
+       () => {
+         const spyWarn = spyOn(console, 'warn');
+         buildAndAnimateSimpleTestComponent(
+             [style({display: 'block'}), animate(500, style({display: 'inline'}))]);
+         expect(spyWarn).toHaveBeenCalledOnceWith(
+             getNonAnimatablePropsWarning('myAnimation', ['display']));
+       });
 
     it('should not show a warning if the animation tries to transition an animatable property',
        () => {
@@ -4408,10 +4411,7 @@ describe('animation tests', function() {
            animate(500, style({display: 'inline', fontStyle: 'italic'}))
          ]);
          expect(spyWarn).toHaveBeenCalledOnceWith(
-             'Warning: The animation trigger "myAnimation" is attempting to animate the following' +
-             ' not animatable properties: display, fontStyle' +
-             '\n' +
-             '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)');
+             getNonAnimatablePropsWarning('myAnimation', ['display', 'fontStyle']));
        });
 
     it('should only warn on non-animatable properties if the animation tries to transition both animate and non-animatable properties',
@@ -4422,10 +4422,7 @@ describe('animation tests', function() {
            animate(500, style({'flex-direction': 'row', fontSize: 10}))
          ]);
          expect(spyWarn).toHaveBeenCalledOnceWith(
-             'Warning: The animation trigger "myAnimation" is attempting to animate the following' +
-             ' not animatable properties: flex-direction' +
-             '\n' +
-             '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)');
+             getNonAnimatablePropsWarning('myAnimation', ['flex-direction']));
        });
 
     it('should not show a warning if the animation uses but does not animate a non-animatable property',
@@ -4456,6 +4453,13 @@ describe('animation tests', function() {
          ])]);
          expect(spyWarn).not.toHaveBeenCalled();
        });
+
+    it('should not show a warning if the disableAnimatableDevWarnings flag is set to true', () => {
+      const spyWarn = spyOn(console, 'warn');
+      buildAndAnimateSimpleTestComponent(
+          [style({display: 'block'}), animate(500, style({display: 'inline'}))], true);
+      expect(spyWarn).not.toHaveBeenCalled();
+    });
   });
 });
 })();
@@ -4471,4 +4475,12 @@ function assertHasParent(element: any, yes: boolean) {
 
 function buildParams(params: {[name: string]: any}): AnimationOptions {
   return {params};
+}
+
+function getNonAnimatablePropsWarning(triggerName: string, props: string[]): string {
+  return `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
+      ' not animatable properties: ' + props.join(', ') + '\n' +
+      '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)' +
+      '\n\n' +
+      'You can disable this warning by setting disableAnimatableDevWarnings to true in the BrowserAnimations ngModule';
 }

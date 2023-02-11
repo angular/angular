@@ -30,18 +30,19 @@ export class AnimationEngine {
   public onRemovalComplete = (element: any, context: any) => {};
 
   constructor(
-    doc: Document,
+    private doc: Document,
     private _driver: AnimationDriver,
     private _normalizer: AnimationStyleNormalizer,
+    private _animatableDevWarningsEnabled = true,
     scheduler: ChangeDetectionScheduler | null,
   ) {
     this._transitionEngine = new TransitionAnimationEngine(
-      doc.body,
+      this.doc.body,
       _driver,
       _normalizer,
       scheduler,
     );
-    this._timelineEngine = new TimelineAnimationEngine(doc.body, _driver, _normalizer);
+    this._timelineEngine = new TimelineAnimationEngine(this.doc.body, _driver, _normalizer);
 
     this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
       this.onRemovalComplete(element, context);
@@ -71,7 +72,7 @@ export class AnimationEngine {
       if (warnings.length) {
         warnTriggerBuild(name, warnings);
       }
-      trigger = buildTrigger(name, ast, this._normalizer);
+      trigger = buildTrigger(name, ast, this._normalizer, this._animatableDevWarningsEnabled);
       this._triggerCache[cacheKey] = trigger;
     }
     this._transitionEngine.registerTrigger(namespaceId, name, trigger);

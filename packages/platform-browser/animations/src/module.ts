@@ -8,7 +8,7 @@
 import {ModuleWithProviders, NgModule, Provider} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from './providers';
+import {ANIMATABLE_DEV_WARNINGS_ENABLED, BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS,} from './providers';
 
 /**
  * Object used to configure the behavior of {@link BrowserAnimationsModule}
@@ -20,6 +20,11 @@ export interface BrowserAnimationsModuleConfig {
    * `NoopAnimationsModule`, but it can be controlled based on a runtime value.
    */
   disableAnimations?: boolean;
+  /**
+   * Whether in dev mode warnings should be presented when non-animatable css properties
+   * are part of an animation.
+   */
+  disableAnimatableDevWarnings?: boolean;
 }
 
 /**
@@ -52,8 +57,13 @@ export class BrowserAnimationsModule {
       ModuleWithProviders<BrowserAnimationsModule> {
     return {
       ngModule: BrowserAnimationsModule,
-      providers: config.disableAnimations ? BROWSER_NOOP_ANIMATIONS_PROVIDERS :
-                                            BROWSER_ANIMATIONS_PROVIDERS
+      providers: [
+        config.disableAnimations ? BROWSER_NOOP_ANIMATIONS_PROVIDERS : BROWSER_ANIMATIONS_PROVIDERS,
+        {
+          provide: ANIMATABLE_DEV_WARNINGS_ENABLED,
+          useValue: !config.disableAnimatableDevWarnings,
+        },
+      ],
     };
   }
 }

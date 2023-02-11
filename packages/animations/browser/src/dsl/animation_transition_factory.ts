@@ -29,6 +29,7 @@ export class AnimationTransitionFactory {
     private _triggerName: string,
     public ast: TransitionAst,
     private _stateStyles: Map<string, AnimationStateStyles>,
+    private animatableDevWarningsEnabled: boolean,
   ) {}
 
   match(currentState: any, nextState: any, element: any, params: {[key: string]: any}): boolean {
@@ -129,7 +130,9 @@ export class AnimationTransitionFactory {
     });
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      checkNonAnimatableInTimelines(timelines, this._triggerName, driver);
+      if (this.animatableDevWarningsEnabled) {
+        checkNonAnimatableInTimelines(timelines, this._triggerName, driver);
+      }
     }
 
     return createTransitionInstruction(
@@ -209,7 +212,9 @@ function checkNonAnimatableInTimelines(
         ' not animatable properties: ' +
         Array.from(invalidNonAnimatableProps).join(', ') +
         '\n' +
-        '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)',
+        '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)' +
+        '\n\n' +
+        'You can disable this warning by setting disableAnimatableDevWarnings to true in the BrowserAnimations ngModule',
     );
   }
 }

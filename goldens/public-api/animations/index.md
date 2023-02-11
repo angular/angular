@@ -275,7 +275,7 @@ export function style(tokens: '*' | {
 // @public
 export function transition(stateChangeExpr: string | ((fromState: string, toState: string, element?: any, params?: {
     [key: string]: any;
-}) => boolean), steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationTransitionMetadata;
+}) => boolean), steps: AnimationMetadata | AnimationMetadata[], options?: AnimationTransitionOptions | null): AnimationTransitionMetadata;
 
 // @public
 export function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata;

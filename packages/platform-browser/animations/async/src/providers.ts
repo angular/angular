@@ -40,13 +40,15 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  * @publicApi
  * @developerPreview
  */
-export function provideAnimationsAsync(type: 'animations'|'noop' = 'animations'):
-    EnvironmentProviders {
+export function provideAnimationsAsync(
+    type: 'animations'|'noop' = 'animations',
+    disableAnimatableDevWarnings: boolean = true): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
       provide: RendererFactory2,
       useFactory: (doc: Document, renderer: DomRendererFactory2, zone: NgZone) => {
-        return new AsyncAnimationRendererFactory(doc, renderer, zone, type);
+        return new AsyncAnimationRendererFactory(
+            doc, renderer, zone, type, disableAnimatableDevWarnings);
       },
       deps: [DOCUMENT, DomRendererFactory2, NgZone],
     },

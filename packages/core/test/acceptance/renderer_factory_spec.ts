@@ -7,11 +7,11 @@
  */
 
 import {AnimationEvent} from '@angular/animations';
-import {ɵAnimationEngine, ɵAnimationRendererFactory, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
+import {ɵAnimationEngine, ɵAnimationRendererFactory, ɵNoopAnimationStyleNormalizer,} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {Component, DoCheck, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {Component, DoCheck, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation,} from '@angular/core';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
@@ -73,19 +73,27 @@ describe('renderer factory lifecycle', () => {
 
     TestBed.configureTestingModule({
       declarations: [SomeComponent, SomeComponentWhichThrows, TestComponent],
-      providers: [{
-        provide: RendererFactory2,
-        useFactory: (document: any) => createPatchedRendererFactory(document),
-        deps: [DOCUMENT]
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useFactory: (document: any) => createPatchedRendererFactory(document),
+          deps: [DOCUMENT],
+        },
+      ],
     });
   });
 
   it('should work with a component', () => {
     const fixture = TestBed.createComponent(SomeComponent);
     fixture.detectChanges();
-    expect(logs).toEqual(
-        ['create', 'create', 'begin', 'some_component create', 'some_component update', 'end']);
+    expect(logs).toEqual([
+      'create',
+      'create',
+      'begin',
+      'some_component create',
+      'some_component update',
+      'end',
+    ]);
     logs = [];
     fixture.detectChanges();
     expect(logs).toEqual(['begin', 'some_component update', 'end']);
@@ -123,10 +131,7 @@ describe('renderer factory lifecycle', () => {
       @Component({
         standalone: true,
         template: '',
-        animations: [
-          animA,
-          animB,
-        ],
+        animations: [animA, animB],
       })
       class AnimComp {
       }
@@ -167,11 +172,13 @@ describe('renderer factory lifecycle', () => {
       const rendererFactory = new MockRendererFactory(['setProperty']);
 
       TestBed.configureTestingModule({
-        providers: [{
-          provide: RendererFactory2,
-          useValue: rendererFactory,
-          deps: [DOCUMENT],
-        }]
+        providers: [
+          {
+            provide: RendererFactory2,
+            useValue: rendererFactory,
+            deps: [DOCUMENT],
+          },
+        ],
       });
 
       const fixture = TestBed.createComponent(AnimComp);
@@ -201,11 +208,13 @@ describe('renderer factory lifecycle', () => {
 
     const rendererFactory = new MockRendererFactory(['destroy', 'createElement']);
     TestBed.configureTestingModule({
-      providers: [{
-        provide: RendererFactory2,
-        useValue: rendererFactory,
-        deps: [DOCUMENT],
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useValue: rendererFactory,
+          deps: [DOCUMENT],
+        },
+      ],
     });
 
     const fixture = TestBed.createComponent(Comp);
@@ -246,11 +255,13 @@ describe('animation renderer factory', () => {
 
     TestBed.configureTestingModule({
       declarations: [SomeComponentWithAnimation, SomeComponent],
-      providers: [{
-        provide: RendererFactory2,
-        useFactory: (d: Document) => rendererFactory = getAnimationRendererFactory2(d),
-        deps: [DOCUMENT]
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useFactory: (d: Document) => (rendererFactory = getAnimationRendererFactory2(d)),
+          deps: [DOCUMENT],
+        },
+      ],
     });
   });
 
@@ -263,17 +274,23 @@ describe('animation renderer factory', () => {
         foo
       </div>
     `,
-    animations: [{
-      type: 7,
-      name: 'myAnimation',
-      definitions: [{
-        type: 1,
-        expr: '* => on',
-        animation: [{type: 4, styles: {type: 6, styles: {opacity: 1}, offset: null}, timings: 10}],
-        options: null
-      }],
-      options: {}
-    }]
+    animations: [
+      {
+        type: 7,
+        name: 'myAnimation',
+        definitions: [
+          {
+            type: 1,
+            expr: '* => on',
+            animation: [
+              {type: 4, styles: {type: 6, styles: {opacity: 1}, offset: null}, timings: 10},
+            ],
+            options: null,
+          },
+        ],
+        options: {},
+      },
+    ],
   })
   class SomeComponentWithAnimation {
     exp: string|undefined;
@@ -299,15 +316,23 @@ describe('animation renderer factory', () => {
 
     expect(rendererFactory).toBeTruthy();
     expect(fixture.nativeElement.innerHTML)
-        .toMatch(/<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">\s+foo\s+<\/div>/);
+        .toMatch(
+            /<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">\s+foo\s+<\/div>/,
+        );
 
     fixture.componentInstance.exp = 'on';
     fixture.detectChanges();
 
     const [player] = getAnimationLog();
     expect(player.keyframes).toEqual([
-      new Map<string, string|number>([['opacity', '*'], ['offset', 0]]),
-      new Map<string, string|number>([['opacity', 1], ['offset', 1]]),
+      new Map<string, string|number>([
+        ['opacity', '*'],
+        ['offset', 0],
+      ]),
+      new Map<string, string|number>([
+        ['opacity', 1],
+        ['offset', 1],
+      ]),
     ]);
     player.finish();
 
@@ -323,8 +348,14 @@ function getRendererFactory2(document: Document): RendererFactory2 {
   const eventManager = new EventManager([], fakeNgZone);
   const appId = 'app-id';
   const rendererFactory = new DomRendererFactory2(
-      eventManager, new ɵSharedStylesHost(document, appId), appId, true, document,
-      isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID, fakeNgZone);
+      eventManager,
+      new ɵSharedStylesHost(document, appId),
+      appId,
+      true,
+      document,
+      isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID,
+      fakeNgZone,
+  );
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
     const renderer = origCreateRenderer.call(this, element, type);
@@ -339,8 +370,14 @@ function getAnimationRendererFactory2(document: Document): RendererFactory2 {
   return new ɵAnimationRendererFactory(
       getRendererFactory2(document),
       new ɵAnimationEngine(
-          document, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer(), null),
-      fakeNgZone);
+          document,
+          new MockAnimationDriver(),
+          new ɵNoopAnimationStyleNormalizer(),
+          true,
+          null,
+          ),
+      fakeNgZone,
+  );
 }
 
 describe('custom renderer', () => {
@@ -373,11 +410,13 @@ describe('custom renderer', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [SomeComponent],
-      providers: [{
-        provide: RendererFactory2,
-        useFactory: (document: Document) => createPatchedRendererFactory(document),
-        deps: [DOCUMENT]
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useFactory: (document: Document) => createPatchedRendererFactory(document),
+          deps: [DOCUMENT],
+        },
+      ],
     });
   });
 
@@ -428,11 +467,13 @@ describe('Renderer2 destruction hooks', () => {
 
     TestBed.configureTestingModule({
       declarations: [SimpleApp, AppWithComponents, BasicComponent],
-      providers: [{
-        provide: RendererFactory2,
-        useFactory: (document: Document) => getRendererFactory2(document),
-        deps: [DOCUMENT]
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useFactory: (document: Document) => getRendererFactory2(document),
+          deps: [DOCUMENT],
+        },
+      ],
     });
   });
 
@@ -474,7 +515,7 @@ export class MockRendererFactory implements RendererFactory2 {
   }
 
   createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer2 {
-    const renderer = this.lastRenderer = new MockRenderer(this._spyOnMethods);
+    const renderer = (this.lastRenderer = new MockRenderer(this._spyOnMethods));
     return renderer;
   }
 }
@@ -486,7 +527,7 @@ class MockRenderer implements Renderer2 {
   destroyNode: ((node: any) => void)|null = null;
 
   constructor(spyOnMethods: string[]) {
-    spyOnMethods.forEach(methodName => {
+    spyOnMethods.forEach((methodName) => {
       this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
     });
   }
