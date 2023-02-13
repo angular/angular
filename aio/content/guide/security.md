@@ -186,7 +186,7 @@ As your project grows, you may need to expand your CSP settings to accommodate e
 
 <!-- vale Angular.Google_Headings = YES -->
 
-It is recommended that you use [Trusted Types](https://w3c.github.io/webappsec-trusted-types/dist/spec) as a way to help secure your applications from cross-site scripting attacks.
+It is recommended that you use [Trusted Types](https://w3c.github.io/trusted-types/dist/spec/) as a way to help secure your applications from cross-site scripting attacks.
 Trusted Types is a [web platform](https://en.wikipedia.org/wiki/Web_platform) feature that can help you prevent cross-site scripting attacks by enforcing safer coding practices.
 Trusted Types can also help simplify the auditing of application code.
 
