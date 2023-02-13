@@ -408,6 +408,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "NoneEncapsulationDomRenderer"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -442,6 +445,9 @@
   },
   {
     "name": "R3ViewContainerRef"
+  },
+  {
+    "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
     "name": "RadioControlRegistryModule"
@@ -1450,9 +1456,6 @@
   },
   {
     "name": "removeListItem2"
-  },
-  {
-    "name": "removeStyle"
   },
   {
     "name": "removeValidators"

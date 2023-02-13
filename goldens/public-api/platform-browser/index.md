@@ -184,6 +184,9 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
 export function provideProtractorTestingSupport(): Provider[];
 
 // @public
+export const REMOVE_STYLES_ON_COMPONENT_DESTROY: InjectionToken<boolean>;
+
+// @public
 export interface SafeHtml extends SafeValue {
 }
 

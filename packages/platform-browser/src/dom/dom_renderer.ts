@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, InjectionToken, OnDestroy, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
@@ -26,6 +26,24 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 export const COMPONENT_VARIABLE = '%COMP%';
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+
+/**
+ * The default value for the `REMOVE_STYLES_ON_COMPONENT_DESTROY` DI token.
+ */
+const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = false;
+
+/**
+ * A [DI token](guide/glossary#di-token "DI token definition") that indicates whether styles
+ * of destroyed components should be removed from DOM.
+ *
+ * By default, the value is set to `false`. This will be changed in the next major version.
+ * @publicApi
+ */
+export const REMOVE_STYLES_ON_COMPONENT_DESTROY =
+    new InjectionToken<boolean>('RemoveStylesOnCompDestory', {
+      providedIn: 'root',
+      factory: () => REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT,
+    });
 
 export function shimContentAttribute(componentShortId: string): string {
   return CONTENT_ATTR.replace(COMPONENT_REGEX, componentShortId);
@@ -67,13 +85,15 @@ function decoratePreventDefault(eventHandler: Function): Function {
 }
 
 @Injectable()
-export class DomRendererFactory2 implements RendererFactory2 {
-  private rendererByCompId = new Map<string, Renderer2>();
+export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
+  private rendererByCompId =
+      new Map<string, EmulatedEncapsulationDomRenderer2|NoneEncapsulationDomRenderer>();
   private defaultRenderer: Renderer2;
 
   constructor(
       private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      @Inject(APP_ID) private appId: string) {
+      @Inject(APP_ID) private appId: string,
+      @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestory: boolean) {
     this.defaultRenderer = new DefaultDomRenderer2(eventManager);
   }
 
@@ -81,28 +101,51 @@ export class DomRendererFactory2 implements RendererFactory2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }
-    switch (type.encapsulation) {
-      case ViewEncapsulation.Emulated: {
-        let renderer = this.rendererByCompId.get(type.id);
-        if (!renderer) {
-          renderer = new EmulatedEncapsulationDomRenderer2(
-              this.eventManager, this.sharedStylesHost, type, this.appId);
-          this.rendererByCompId.set(type.id, renderer);
-        }
-        (<EmulatedEncapsulationDomRenderer2>renderer).applyToHost(element);
-        return renderer;
-      }
-      case ViewEncapsulation.ShadowDom:
-        return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
-      default: {
-        if (!this.rendererByCompId.has(type.id)) {
-          const styles = flattenStyles(type.id, type.styles);
-          this.sharedStylesHost.addStyles(styles);
-          this.rendererByCompId.set(type.id, this.defaultRenderer);
-        }
-        return this.defaultRenderer;
-      }
+
+    const renderer = this.getOrCreateRenderer(element, type);
+
+    // Renderers have different logic due to different encapsulation behaviours.
+    // Ex: for emulated, an attribute is added to the element.
+    if (renderer instanceof EmulatedEncapsulationDomRenderer2) {
+      renderer.applyToHost(element);
+    } else if (renderer instanceof NoneEncapsulationDomRenderer) {
+      renderer.applyStyles();
     }
+
+    return renderer;
+  }
+
+  private getOrCreateRenderer(element: any, type: RendererType2): Renderer2 {
+    const rendererByCompId = this.rendererByCompId;
+    let renderer = rendererByCompId.get(type.id);
+
+    if (!renderer) {
+      const eventManager = this.eventManager;
+      const sharedStylesHost = this.sharedStylesHost;
+      const removeStylesOnCompDestory = this.removeStylesOnCompDestory;
+
+      switch (type.encapsulation) {
+        case ViewEncapsulation.Emulated:
+          renderer = new EmulatedEncapsulationDomRenderer2(
+              eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestory);
+          break;
+        case ViewEncapsulation.ShadowDom:
+          return new ShadowDomRenderer(eventManager, sharedStylesHost, element, type);
+        default:
+          renderer = new NoneEncapsulationDomRenderer(
+              eventManager, sharedStylesHost, type, removeStylesOnCompDestory);
+          break;
+      }
+
+      renderer.onDestroy = () => rendererByCompId.delete(type.id);
+      rendererByCompId.set(type.id, renderer);
+    }
+
+    return renderer;
+  }
+
+  ngOnDestroy() {
+    this.rendererByCompId.clear();
   }
 
   begin() {}
@@ -265,34 +308,9 @@ function checkNoSyntheticProp(name: string, nameKind: string) {
   }
 }
 
+
 function isTemplateNode(node: any): node is HTMLTemplateElement {
   return node.tagName === 'TEMPLATE' && node.content !== undefined;
-}
-
-class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
-  private contentAttr: string;
-  private hostAttr: string;
-
-  constructor(
-      eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
-      private component: RendererType2, appId: string) {
-    super(eventManager);
-    const styles = flattenStyles(appId + '-' + component.id, component.styles);
-    sharedStylesHost.addStyles(styles);
-
-    this.contentAttr = shimContentAttribute(appId + '-' + component.id);
-    this.hostAttr = shimHostAttribute(appId + '-' + component.id);
-  }
-
-  applyToHost(element: any) {
-    super.setAttribute(element, this.hostAttr, '');
-  }
-
-  override createElement(parent: any, name: string): Element {
-    const el = super.createElement(parent, name);
-    super.setAttribute(el, this.contentAttr, '');
-    return el;
-  }
 }
 
 class ShadowDomRenderer extends DefaultDomRenderer2 {
@@ -303,21 +321,19 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       private hostEl: any, component: RendererType2) {
     super(eventManager);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+
     this.sharedStylesHost.addHost(this.shadowRoot);
     const styles = flattenStyles(component.id, component.styles);
-    for (let i = 0; i < styles.length; i++) {
+
+    for (const style of styles) {
       const styleEl = document.createElement('style');
-      styleEl.textContent = styles[i];
+      styleEl.textContent = style;
       this.shadowRoot.appendChild(styleEl);
     }
   }
 
   private nodeOrShadowRoot(node: any): any {
     return node === this.hostEl ? this.shadowRoot : node;
-  }
-
-  override destroy() {
-    this.sharedStylesHost.removeHost(this.shadowRoot);
   }
 
   override appendChild(parent: any, newChild: any): void {
@@ -331,5 +347,68 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   }
   override parentNode(node: any): any {
     return this.nodeOrShadowRoot(super.parentNode(this.nodeOrShadowRoot(node)));
+  }
+
+  override destroy() {
+    this.sharedStylesHost.removeHost(this.shadowRoot);
+  }
+}
+
+class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
+  private readonly styles: string[];
+  private rendererUsageCount = 0;
+  onDestroy: VoidFunction|undefined;
+
+  constructor(
+      eventManager: EventManager,
+      private readonly sharedStylesHost: DomSharedStylesHost,
+      component: RendererType2,
+      private removeStylesOnCompDestory: boolean,
+      compId = component.id,
+  ) {
+    super(eventManager);
+    this.styles = flattenStyles(compId, component.styles);
+  }
+
+  applyStyles(): void {
+    this.sharedStylesHost.addStyles(this.styles);
+    this.rendererUsageCount++;
+  }
+
+  override destroy(): void {
+    if (!this.removeStylesOnCompDestory) {
+      return;
+    }
+
+    this.sharedStylesHost.removeStyles(this.styles);
+    this.rendererUsageCount--;
+    if (this.rendererUsageCount === 0) {
+      this.onDestroy?.();
+    }
+  }
+}
+
+class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
+  private contentAttr: string;
+  private hostAttr: string;
+
+  constructor(
+      eventManager: EventManager, sharedStylesHost: DomSharedStylesHost, component: RendererType2,
+      appId: string, removeStylesOnCompDestory: boolean) {
+    const compId = appId + '-' + component.id;
+    super(eventManager, sharedStylesHost, component, removeStylesOnCompDestory, compId);
+    this.contentAttr = shimContentAttribute(compId);
+    this.hostAttr = shimHostAttribute(compId);
+  }
+
+  applyToHost(element: any): void {
+    this.applyStyles();
+    this.setAttribute(element, this.hostAttr, '');
+  }
+
+  override createElement(parent: any, name: string): Element {
+    const el = super.createElement(parent, name);
+    super.setAttribute(el, this.contentAttr, '');
+    return el;
   }
 }

@@ -6,75 +6,123 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 
 @Injectable()
-export class SharedStylesHost {
-  /** @internal */
-  protected _stylesSet = new Set<string>();
+export class SharedStylesHost implements OnDestroy {
+  private readonly usageCount = new Map<string /** Style string */, number /** Usage count */>();
 
   addStyles(styles: string[]): void {
-    const additions = new Set<string>();
-    styles.forEach(style => {
-      if (!this._stylesSet.has(style)) {
-        this._stylesSet.add(style);
-        additions.add(style);
+    for (const style of styles) {
+      const usageCount = this.changeUsageCount(style, 1);
+
+      if (usageCount === 1) {
+        this.onStyleAdded(style);
       }
-    });
-    this.onStylesAdded(additions);
+    }
   }
 
-  onStylesAdded(additions: Set<string>): void {}
+  removeStyles(styles: string[]): void {
+    for (const style of styles) {
+      const usageCount = this.changeUsageCount(style, -1);
 
-  getAllStyles(): string[] {
-    return Array.from(this._stylesSet);
+      if (usageCount === 0) {
+        this.onStyleRemoved(style);
+      }
+    }
+  }
+
+  onStyleRemoved(style: string): void {}
+
+  onStyleAdded(style: string): void {}
+
+  getAllStyles(): IterableIterator<string> {
+    return this.usageCount.keys();
+  }
+
+  private changeUsageCount(style: string, delta: number): number {
+    const map = this.usageCount;
+    let usage = map.get(style) ?? 0;
+    usage += delta;
+
+    if (usage > 0) {
+      map.set(style, usage);
+    } else {
+      map.delete(style);
+    }
+
+    return usage;
+  }
+
+  ngOnDestroy(): void {
+    for (const style of this.getAllStyles()) {
+      this.onStyleRemoved(style);
+    }
+
+    this.usageCount.clear();
   }
 }
 
 @Injectable()
 export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
   // Maps all registered host nodes to a list of style nodes that have been added to the host node.
-  private _hostNodes = new Map<Node, Node[]>();
+  private readonly styleRef = new Map<string, HTMLStyleElement[]>();
+  private hostNodes = new Set<Node>();
 
-  constructor(@Inject(DOCUMENT) private _doc: any) {
+  constructor(@Inject(DOCUMENT) private readonly doc: any) {
     super();
-    this._hostNodes.set(_doc.head, []);
+    this.resetHostNodes();
   }
 
-  private _addStylesToHost(styles: Set<string>, host: Node, styleNodes: Node[]): void {
-    styles.forEach((style: string) => {
-      const styleEl = this._doc.createElement('style');
-      styleEl.textContent = style;
-      styleNodes.push(host.appendChild(styleEl));
-    });
+  override onStyleAdded(style: string): void {
+    for (const host of this.hostNodes) {
+      this.addStyleToHost(host, style);
+    }
+  }
+
+  override onStyleRemoved(style: string): void {
+    const styleRef = this.styleRef;
+    const styleElements = styleRef.get(style);
+    styleElements?.forEach(e => e.remove());
+    styleRef.delete(style);
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.styleRef.clear();
+    this.resetHostNodes();
   }
 
   addHost(hostNode: Node): void {
-    const styleNodes: Node[] = [];
-    this._addStylesToHost(this._stylesSet, hostNode, styleNodes);
-    this._hostNodes.set(hostNode, styleNodes);
+    this.hostNodes.add(hostNode);
+
+    for (const style of this.getAllStyles()) {
+      this.addStyleToHost(hostNode, style);
+    }
   }
 
   removeHost(hostNode: Node): void {
-    const styleNodes = this._hostNodes.get(hostNode);
-    if (styleNodes) {
-      styleNodes.forEach(removeStyle);
+    this.hostNodes.delete(hostNode);
+  }
+
+  private addStyleToHost(host: Node, style: string): void {
+    const styleEl = this.doc.createElement('style');
+    styleEl.textContent = style;
+    host.appendChild(styleEl);
+
+    const styleElRef = this.styleRef.get(style);
+    if (styleElRef) {
+      styleElRef.push(styleEl);
+    } else {
+      this.styleRef.set(style, [styleEl]);
     }
-    this._hostNodes.delete(hostNode);
   }
 
-  override onStylesAdded(additions: Set<string>): void {
-    this._hostNodes.forEach((styleNodes, hostNode) => {
-      this._addStylesToHost(additions, hostNode, styleNodes);
-    });
+  private resetHostNodes(): void {
+    const hostNodes = this.hostNodes;
+    hostNodes.clear();
+    // Re-add the head element back since this is the default host.
+    hostNodes.add(this.doc.head);
   }
-
-  ngOnDestroy(): void {
-    this._hostNodes.forEach(styleNodes => styleNodes.forEach(removeStyle));
-  }
-}
-
-function removeStyle(styleNode: Node): void {
-  getDOM().remove(styleNode);
 }

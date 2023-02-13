@@ -270,6 +270,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "NoneEncapsulationDomRenderer"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -289,6 +292,9 @@
   },
   {
     "name": "R3Injector"
+  },
+  {
+    "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
     "name": "RefCountOperator"
@@ -868,9 +874,6 @@
   },
   {
     "name": "removeFromArray"
-  },
-  {
-    "name": "removeStyle"
   },
   {
     "name": "renderComponent"

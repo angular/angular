@@ -402,6 +402,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "NoneEncapsulationDomRenderer"
+  },
+  {
     "name": "NoopAnimationDriver"
   },
   {
@@ -439,6 +442,9 @@
   },
   {
     "name": "REMOVAL_FLAG"
+  },
+  {
+    "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
     "name": "RefCountOperator"
@@ -1309,9 +1315,6 @@
   },
   {
     "name": "removeNodesAfterAnimationDone"
-  },
-  {
-    "name": "removeStyle"
   },
   {
     "name": "renderComponent"
