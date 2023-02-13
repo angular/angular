@@ -77,7 +77,7 @@ yarn_install(
         YARN_LABEL,
         "//:.yarnrc",
         "//tools:postinstall-patches.js",
-        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-246cebbf2a78566ff1fe9b88fdde2459606568dc.patch",
+        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-e859696da7af56c811b6589f1ae888222d93d797.patch",
         "//tools/esm-interop:patches/npm/@bazel+concatjs+5.7.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+esbuild+5.7.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+protractor+5.7.1.patch",
