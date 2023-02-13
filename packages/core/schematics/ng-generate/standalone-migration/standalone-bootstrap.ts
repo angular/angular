@@ -15,7 +15,7 @@ import ts from 'typescript';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
-import {convertNgModuleDeclarationToStandalone, extractDeclarationsFromModule, findTestObjectsToMigrate, migrateTestDeclarations} from './to-standalone';
+import {ComponentImportsRemapper, convertNgModuleDeclarationToStandalone, extractDeclarationsFromModule, findTestObjectsToMigrate, migrateTestDeclarations} from './to-standalone';
 import {ChangeTracker, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, ImportRemapper, NamedClassDeclaration, NodeLookup, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
 
 /** Information extracted from a `bootstrapModule` call necessary to migrate it. */
@@ -35,7 +35,7 @@ interface BootstrapCallAnalysis {
 export function toStandaloneBootstrap(
     program: NgtscProgram, host: ts.CompilerHost, basePath: string, rootFileNames: string[],
     sourceFiles: ts.SourceFile[], printer: ts.Printer, importRemapper?: ImportRemapper,
-    referenceLookupExcludedFiles?: RegExp) {
+    referenceLookupExcludedFiles?: RegExp, componentImportRemapper?: ComponentImportsRemapper) {
   const tracker = new ChangeTracker(printer, importRemapper);
   const typeChecker = program.getTsProgram().getTypeChecker();
   const templateTypeChecker = program.compiler.getTemplateTypeChecker();
@@ -71,7 +71,7 @@ export function toStandaloneBootstrap(
   // declarations so we have to migrate them now.
   for (const declaration of allDeclarations) {
     convertNgModuleDeclarationToStandalone(
-        declaration, allDeclarations, tracker, templateTypeChecker);
+        declaration, allDeclarations, tracker, templateTypeChecker, componentImportRemapper);
   }
 
   migrateTestDeclarations(testObjects, allDeclarations, tracker, templateTypeChecker, typeChecker);

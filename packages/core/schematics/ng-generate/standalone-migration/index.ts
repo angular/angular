@@ -108,7 +108,7 @@ function standaloneMigration(
   } else if (schematicOptions.mode === MigrationMode.standaloneBootstrap) {
     pendingChanges = toStandaloneBootstrap(
         program, host, basePath, rootNames, sourceFiles, printer, undefined,
-        referenceLookupExcludedFiles);
+        referenceLookupExcludedFiles, knownInternalAliasRemapper);
   } else {
     // This shouldn't happen, but default to `MigrationMode.toStandalone` just in case.
     pendingChanges =
