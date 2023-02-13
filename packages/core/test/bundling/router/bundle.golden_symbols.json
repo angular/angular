@@ -477,6 +477,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "NoneEncapsulationDomRenderer"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -532,6 +535,9 @@
   },
   {
     "name": "R3ViewContainerRef"
+  },
+  {
+    "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
     "name": "ROUTER_CONFIGURATION"
@@ -1762,9 +1768,6 @@
   },
   {
     "name": "removeFromArray"
-  },
-  {
-    "name": "removeStyle"
   },
   {
     "name": "renderComponent"

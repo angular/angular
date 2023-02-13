@@ -46,15 +46,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       expect(doc.head).toHaveText('a {};b {};');
     });
 
-    it('should remove style nodes when the host is removed', () => {
-      ssh.addStyles(['a {};']);
-      ssh.addHost(someHost);
-      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
-
-      ssh.removeHost(someHost);
-      expect(someHost.innerHTML).toEqual('');
-    });
-
     it('should remove style nodes on destroy', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
