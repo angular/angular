@@ -22,8 +22,8 @@ export class ServerStylesHost extends SharedStylesHost {
     this.head = doc.getElementsByTagName('head')[0];
   }
 
-  private _addStyle(style: string): void {
-    let adapter = getDOM();
+  override onStyleAdded(style: string): void {
+    const adapter = getDOM();
     const el = adapter.createElement('style');
     el.textContent = style;
     if (!!this.transitionId) {
@@ -33,11 +33,9 @@ export class ServerStylesHost extends SharedStylesHost {
     this._styleNodes.add(el);
   }
 
-  override onStylesAdded(additions: Set<string>) {
-    additions.forEach(style => this._addStyle(style));
-  }
-
-  ngOnDestroy() {
+  override ngOnDestroy() {
     this._styleNodes.forEach(styleNode => styleNode.remove());
+    this._styleNodes.clear();
+    super.ngOnDestroy();
   }
 }
