@@ -11,15 +11,13 @@ import {Inject, Injectable, OnDestroy} from '@angular/core';
 
 @Injectable()
 export class SharedStylesHost implements OnDestroy {
-  private readonly usedStyles = new Map<string /** Style string */, number /** Usage count */>();
+  private readonly usageCount = new Map<string /** Style string */, number /** Usage count */>();
 
   addStyles(styles: string[]): void {
     for (const style of styles) {
-      let usedCount = this.usedStyles.get(style) ?? 0;
-      usedCount++;
-      this.usedStyles.set(style, usedCount);
+      const usageCount = this.changeUsageCount(style, 1);
 
-      if (usedCount === 1) {
+      if (usageCount === 1) {
         this.onStyleAdded(style);
       }
     }
@@ -27,13 +25,9 @@ export class SharedStylesHost implements OnDestroy {
 
   removeStyles(styles: string[]): void {
     for (const style of styles) {
-      let usedCount = this.usedStyles.get(style) ?? 0;
-      usedCount--;
+      const usageCount = this.changeUsageCount(style, -1);
 
-      if (usedCount > 0) {
-        this.usedStyles.set(style, usedCount);
-      } else {
-        this.usedStyles.delete(style);
+      if (usageCount === 0) {
         this.onStyleRemoved(style);
       }
     }
@@ -44,7 +38,21 @@ export class SharedStylesHost implements OnDestroy {
   onStyleAdded(style: string): void {}
 
   getAllStyles(): IterableIterator<string> {
-    return this.usedStyles.keys();
+    return this.usageCount.keys();
+  }
+
+  private changeUsageCount(style: string, delta: number): number {
+    const map = this.usageCount;
+    let usage = map.get(style) ?? 0;
+    usage += delta;
+
+    if (usage > 0) {
+      map.set(style, usage);
+    } else {
+      map.delete(style);
+    }
+
+    return usage;
   }
 
   ngOnDestroy(): void {
@@ -52,7 +60,7 @@ export class SharedStylesHost implements OnDestroy {
       this.onStyleRemoved(style);
     }
 
-    this.usedStyles.clear();
+    this.usageCount.clear();
   }
 }
 
@@ -74,16 +82,20 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
   }
 
   override onStyleRemoved(style: string): void {
-    const styleElements = this.styleRef.get(style);
+    const styleRef = this.styleRef;
+    const styleElements = styleRef.get(style);
     styleElements?.forEach(e => e.remove());
-    this.styleRef.delete(style);
+    styleRef.delete(style);
   }
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
     this.styleRef.clear();
-    this.hostNodes.clear();
-    this.hostNodes.add(this.doc.head);
+
+    const hostNodes = this.hostNodes;
+    hostNodes.clear();
+    // Re-add the head element back since thi sis the default host.
+    hostNodes.add(this.doc.head);
   }
 
   addHost(hostNode: Node): void {
@@ -103,9 +115,9 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     styleEl.textContent = style;
     host.appendChild(styleEl);
 
-    const styleRef = this.styleRef.get(style);
-    if (styleRef) {
-      styleRef.push(styleEl);
+    const styleElRef = this.styleRef.get(style);
+    if (styleElRef) {
+      styleElRef.push(styleEl);
     } else {
       this.styleRef.set(style, [styleEl]);
     }

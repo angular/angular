@@ -27,6 +27,11 @@ export const COMPONENT_VARIABLE = '%COMP%';
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
+/**
+ * The value for `REMOVE_STYLES_ON_COMPONENT_DESTROY` DI token.
+ * @defaultvalue false
+ */
+const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = false;
 
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") that indicates whether styles
@@ -39,7 +44,7 @@ export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 export const REMOVE_STYLES_ON_COMPONENT_DESTROY =
     new InjectionToken<boolean>('RemoveStylesOnCompDestory', {
       providedIn: 'root',
-      factory: () => false,
+      factory: () => REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT,
     });
 
 export function shimContentAttribute(componentShortId: string): string {
@@ -100,6 +105,9 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     }
 
     const renderer = this.getOrCreateRenderer(element, type);
+
+    // Renderers have different logic due to different encapsulation behaviours.
+    // Ex: for emulated, an attribute is added to the element.
     if (renderer instanceof EmulatedEncapsulationDomRenderer2) {
       renderer.applyToHost(element);
     } else if (renderer instanceof NoneEncapsulationDomRenderer) {
@@ -110,24 +118,29 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
   }
 
   private getOrCreateRenderer(element: any, type: RendererType2): Renderer2 {
-    let renderer = this.rendererByCompId.get(type.id);
+    const rendererByCompId = this.rendererByCompId;
+    let renderer = rendererByCompId.get(type.id);
+
     if (!renderer) {
+      const eventManager = this.eventManager;
+      const sharedStylesHost = this.sharedStylesHost;
+      const removeStylesOnCompDestory = this.removeStylesOnCompDestory;
+
       switch (type.encapsulation) {
         case ViewEncapsulation.Emulated:
           renderer = new EmulatedEncapsulationDomRenderer2(
-              this.eventManager, this.sharedStylesHost, type, this.appId,
-              this.removeStylesOnCompDestory);
+              eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestory);
           break;
         case ViewEncapsulation.ShadowDom:
-          return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
+          return new ShadowDomRenderer(eventManager, sharedStylesHost, element, type);
         default:
           renderer = new NoneEncapsulationDomRenderer(
-              this.eventManager, this.sharedStylesHost, type, this.removeStylesOnCompDestory);
+              eventManager, sharedStylesHost, type, removeStylesOnCompDestory);
           break;
       }
 
-      renderer.onDestroy = () => this.rendererByCompId.delete(type.id);
-      this.rendererByCompId.set(type.id, renderer);
+      renderer.onDestroy = () => rendererByCompId.delete(type.id);
+      rendererByCompId.set(type.id, renderer);
     }
 
     return renderer;
@@ -296,6 +309,7 @@ function checkNoSyntheticProp(name: string, nameKind: string) {
         name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
   }
 }
+
 
 function isTemplateNode(node: any): node is HTMLTemplateElement {
   return node.tagName === 'TEMPLATE' && node.content !== undefined;
