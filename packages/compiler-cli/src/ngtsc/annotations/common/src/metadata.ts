@@ -57,7 +57,17 @@ export function extractClassMetadata(
   let metaCtorParameters: Expression|null = null;
   const classCtorParameters = reflection.getConstructorParameters(clazz);
   if (classCtorParameters !== null) {
-    const ctorParameters = classCtorParameters.map(param => ctorParameterToMetadata(param, isCore));
+    const ctorParameters = classCtorParameters.map(param => {
+      if (param.typeValueReference.kind === TypeValueReferenceKind.LOCAL &&
+          param.typeValueReference.defaultImportStatement !== null &&
+          !param.decorators?.some(
+              dec => dec.name === 'Inject' && dec.import?.from === '@angular/core')) {
+        throw new Error(
+            `Default import not supported in ${param.nameNode.getSourceFile().fileName}`);
+      }
+
+      return ctorParameterToMetadata(param, isCore);
+    });
     metaCtorParameters = new FunctionExpr([], [
       new ReturnStatement(new LiteralArrayExpr(ctorParameters)),
     ]);

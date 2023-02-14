@@ -40,7 +40,7 @@ export function getConstructorDependencies(
     }
   }
   ctorParams.forEach((param, idx) => {
-    let token = valueReferenceToExpression(param.typeValueReference);
+    let token: Expression|null = null;
     let attributeNameType: Expression|null = null;
     let optional = false, self = false, skipSelf = false, host = false;
 
@@ -81,6 +81,10 @@ export function getConstructorDependencies(
             `Unexpected decorator ${name} on parameter.`);
       }
     });
+
+    if (token === null) {
+      token = valueReferenceToExpression(param.typeValueReference);
+    }
 
     if (token === null) {
       if (param.typeValueReference.kind !== TypeValueReferenceKind.UNAVAILABLE) {

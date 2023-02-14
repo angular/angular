@@ -139,7 +139,11 @@ export class DefaultImportTracker {
         // TODO(alxhub): discuss with the TypeScript team and determine if there's a better way to
         // deal with this issue.
         // tslint:disable-next-line: ban
-        stmt = ts.getMutableClone(stmt);
+        // stmt = ts.getMutableClone(stmt);
+
+        // stmt = createImportDeclaration(
+        //     ts.getModifiers(stmt), stmt.importClause, stmt.moduleSpecifier, stmt.assertClause);
+        throw new Error(`Unsupported import in ${stmt.getSourceFile().fileName}`);
       }
       return stmt;
     });
