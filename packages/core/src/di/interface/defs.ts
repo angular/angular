@@ -215,13 +215,12 @@ export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDeclarati
 
   if (def) {
     const typeName = getTypeName(type);
-    // TODO(FW-1307): Re-add ngDevMode when closure can handle it
-    // ngDevMode &&
-    console.warn(
-        `DEPRECATED: DI is instantiating a token "${
-            typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
-        `This will become an error in a future version of Angular. Please add @Injectable() to the "${
-            typeName}" class.`);
+    ngDevMode &&
+        console.warn(
+            `DEPRECATED: DI is instantiating a token "${
+                typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
+            `This will become an error in a future version of Angular. Please add @Injectable() to the "${
+                typeName}" class.`);
     return def;
   } else {
     return null;
