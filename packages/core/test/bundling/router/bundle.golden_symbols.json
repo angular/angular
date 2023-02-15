@@ -1152,9 +1152,6 @@
     "name": "flatten2"
   },
   {
-    "name": "flattenStyles"
-  },
-  {
     "name": "flattenUnsubscriptionErrors"
   },
   {
@@ -1867,6 +1864,9 @@
   },
   {
     "name": "shareSubjectFactory"
+  },
+  {
+    "name": "shimStylesContent"
   },
   {
     "name": "shouldSearchParent"
