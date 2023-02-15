@@ -1,3 +1,14 @@
+<a name="15.1.5"></a>
+# 15.1.5 (2023-02-15)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5f2a3edcf2](https://github.com/angular/angular/commit/5f2a3edcf27cfe6ffc6ae4d67ca2b47953f26336) | fix | Make radio buttons respect `[attr.disabled]` ([#48864](https://github.com/angular/angular/pull/48864)) |
+## Special Thanks
+AleksanderBodurri, Alvaro Junqueira, Dylan Hunn, Joey Perrott, Matthieu Riegler, PaloMiklo and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.0-next.4"></a>
 # 15.2.0-next.4 (2023-02-08)
 ### common
