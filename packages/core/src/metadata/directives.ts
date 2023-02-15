@@ -195,7 +195,7 @@ export interface Directive {
    * ```typescript
    * @Component({
    *   selector: 'child-dir',
-   *   outputs: [ 'bankNameChange' ]
+   *   outputs: [ 'bankNameChange' ],
    *   template: `<input (input)="bankNameChange.emit($event.target.value)" />`
    * })
    * class ChildDir {
