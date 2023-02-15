@@ -6,6 +6,7 @@ ts_library(
     name = "downlevel_decorators_transform",
     srcs = glob(["*.ts"]),
     deps = [
+        "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/ts_compatibility",
         "@npm//typescript",
