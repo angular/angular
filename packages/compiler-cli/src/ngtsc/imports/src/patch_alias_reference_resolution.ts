@@ -11,7 +11,7 @@ import ts from 'typescript';
 /**
  * Describes a TypeScript transformation context with the internal emit
  * resolver exposed. There are requests upstream in TypeScript to expose
- * that as public API: https://github.com/microsoft/TypeScript/issues/17516..
+ * that as public API: https://github.com/microsoft/TypeScript/issues/17516.
  */
 interface TransformationContextWithResolver extends ts.TransformationContext {
   getEmitResolver: () => EmitResolver;
@@ -61,7 +61,7 @@ interface EmitResolver {
  * The patch we apply to tell TypeScript about actual referenced aliases (i.e. imported symbols),
  * matches conceptually with the logic that runs internally in TypeScript when the
  * `emitDecoratorMetadata` flag is enabled. TypeScript basically surfaces the same problem and
- * solves it conceptually the same way, but obviously doesn't need to access an `@internal` API.
+ * solves it conceptually the same way, but obviously doesn't need to access an internal API.
  *
  * The set that is returned by this function is meant to be filled with import declaration nodes
  * that have been referenced in a value-position by the transform, such the installed patch can
@@ -129,9 +129,8 @@ function isTransformationContextWithEmitResolver(context: ts.TransformationConte
  */
 function throwIncompatibleTransformationContextError(): never {
   throw Error(
-      'Unable to downlevel Angular decorators due to an incompatible TypeScript ' +
-      'version.\nIf you recently updated TypeScript and this issue surfaces now, consider ' +
-      'downgrading.\n\n' +
+      'Angular compiler is incompatible with this version of the TypeScript compiler.\n\n' +
+      'If you recently updated TypeScript and this issue surfaces now, consider downgrading.\n\n' +
       'Please report an issue on the Angular repositories when this issue ' +
       'surfaces and you are using a supposedly compatible TypeScript version.');
 }
