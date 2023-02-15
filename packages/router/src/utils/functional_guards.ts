@@ -58,20 +58,19 @@ export function mapToCanActivateChild(
  * @publicApi
  * @see Route
  */
-export function mapToCanDeactivate(
-    providers: Array<Type<{canDeactivate: CanDeactivateFn<unknown>}>>): CanDeactivateFn<unknown>[] {
+export function mapToCanDeactivate<T = unknown>(
+    providers: Array<Type<{canDeactivate: CanDeactivateFn<T>}>>): CanDeactivateFn<T>[] {
   return providers.map(provider => (...params) => inject(provider).canDeactivate(...params));
 }
 /**
- * Maps an array of injectable classes with resolve functions to an array of equivalent `ResolveFn`
+ * Maps an injectable class with a resolve function to an equivalent `ResolveFn`
  * for use in a `Route` definition.
  *
- * Usage {@example router/utils/functional_guards.ts region='CanActivate'}
+ * Usage {@example router/utils/functional_guards.ts region='Resolve'}
  *
  * @publicApi
  * @see Route
  */
-export function mapToResolve(providers: Array<Type<{resolve: ResolveFn<unknown>}>>):
-    ResolveFn<unknown>[] {
-  return providers.map(provider => (...params) => inject(provider).resolve(...params));
+export function mapToResolve<T>(provider: Type<{resolve: ResolveFn<T>}>): ResolveFn<T> {
+  return (...params) => inject(provider).resolve(...params);
 }

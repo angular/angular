@@ -382,9 +382,9 @@ export function mapToCanActivateChild(providers: Array<Type<{
 }>>): CanActivateChildFn[];
 
 // @public
-export function mapToCanDeactivate(providers: Array<Type<{
-    canDeactivate: CanDeactivateFn<unknown>;
-}>>): CanDeactivateFn<unknown>[];
+export function mapToCanDeactivate<T = unknown>(providers: Array<Type<{
+    canDeactivate: CanDeactivateFn<T>;
+}>>): CanDeactivateFn<T>[];
 
 // @public
 export function mapToCanMatch(providers: Array<Type<{
@@ -392,9 +392,9 @@ export function mapToCanMatch(providers: Array<Type<{
 }>>): CanMatchFn[];
 
 // @public
-export function mapToResolve(providers: Array<Type<{
-    resolve: ResolveFn<unknown>;
-}>>): ResolveFn<unknown>[];
+export function mapToResolve<T>(provider: Type<{
+    resolve: ResolveFn<T>;
+}>): ResolveFn<T>;
 
 // @public
 export interface Navigation {

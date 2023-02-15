@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {mapToCanActivate, Route} from '@angular/router';
+import {mapToCanActivate, mapToResolve, Route} from '@angular/router';
 
 // #docregion CanActivate
 @Injectable({providedIn: 'root'})
@@ -20,5 +20,21 @@ export class AdminGuard {
 const route: Route = {
   path: 'admin',
   canActivate: mapToCanActivate([AdminGuard]),
+};
+// #enddocregion
+
+// #docregion Resolve
+@Injectable({providedIn: 'root'})
+export class ResolveUser {
+  resolve() {
+    return {name: 'Bob'};
+  }
+}
+
+const userRoute: Route = {
+  path: 'user',
+  resolve: {
+    user: mapToResolve(ResolveUser),
+  },
 };
 // #enddocregion

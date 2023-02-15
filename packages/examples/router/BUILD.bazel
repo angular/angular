@@ -7,7 +7,6 @@ ng_module(
     srcs = glob(
         ["**/*.ts"],
     ),
-    tsconfig = ":tsconfig.json",
     deps = [
         "//packages/core",
         "//packages/platform-browser",
