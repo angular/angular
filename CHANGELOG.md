@@ -1,3 +1,23 @@
+<a name="15.2.0-rc.0"></a>
+# 15.2.0-rc.0 (2023-02-15)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59685614f8](https://github.com/angular/angular/commit/59685614f82bee3f001b42398db88516407b34b1) | fix | Make radio buttons respect `[attr.disabled]` ([#48864](https://github.com/angular/angular/pull/48864)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [816e76a578](https://github.com/angular/angular/commit/816e76a5789b041fee78ddd278c0e0d19b9a617a) | fix | automatically prune root module after bootstrap step ([#49030](https://github.com/angular/angular/pull/49030)) |
+| [521ccfbe6c](https://github.com/angular/angular/commit/521ccfbe6ce9af1a7ddd6ab5e70151b7198f82ef) | fix | avoid interrupting the migration if language service lookup fails ([#49010](https://github.com/angular/angular/pull/49010)) |
+| [ebae506d89](https://github.com/angular/angular/commit/ebae506d894a90c38e0f2dd1e948acabdb0fdf2e) | fix | use import remapper in root component ([#49046](https://github.com/angular/angular/pull/49046)) |
+| [40c976c909](https://github.com/angular/angular/commit/40c976c90975878852a87b7722076eb78944098b) | fix | use NgForOf instead of NgFor ([#49022](https://github.com/angular/angular/pull/49022)) |
+| [4ac25b2aff](https://github.com/angular/angular/commit/4ac25b2affab4f959ad8c111f1e429a05b435422) | perf | avoid re-traversing nodes when resolving bootstrap call dependencies ([#49010](https://github.com/angular/angular/pull/49010)) |
+| [26cb7ab2e6](https://github.com/angular/angular/commit/26cb7ab2e6ac9b61904361a8a544467b69eef3f3) | perf | speed up language service lookups ([#49010](https://github.com/angular/angular/pull/49010)) |
+## Special Thanks
+AleksanderBodurri, Alvaro Junqueira, Dylan Hunn, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, PaloMiklo, Paul Gschwendtner, Pawel Kozlowski and cexbrayat
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.1.5"></a>
 # 15.1.5 (2023-02-15)
 ### forms
