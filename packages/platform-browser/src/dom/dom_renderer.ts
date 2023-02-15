@@ -53,10 +53,8 @@ export function shimHostAttribute(componentShortId: string): string {
   return HOST_ATTR.replace(COMPONENT_REGEX, componentShortId);
 }
 
-export function flattenStyles(compId: string, styles: Array<string|string[]>): string[] {
-  // Cannot use `Infinity` as depth as `infinity` is not a number literal in TypeScript.
-  // See: https://github.com/microsoft/TypeScript/issues/32277
-  return styles.flat(100).map(s => s.replace(COMPONENT_REGEX, compId));
+export function shimStylesContent(compId: string, styles: string[]): string[] {
+  return styles.map(s => s.replace(COMPONENT_REGEX, compId));
 }
 
 function decoratePreventDefault(eventHandler: Function): Function {
@@ -323,7 +321,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     this.sharedStylesHost.addHost(this.shadowRoot);
-    const styles = flattenStyles(component.id, component.styles);
+    const styles = shimStylesContent(component.id, component.styles);
 
     for (const style of styles) {
       const styleEl = document.createElement('style');
@@ -367,7 +365,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
       compId = component.id,
   ) {
     super(eventManager);
-    this.styles = flattenStyles(compId, component.styles);
+    this.styles = shimStylesContent(compId, component.styles);
   }
 
   applyStyles(): void {

@@ -1234,7 +1234,7 @@ export interface RendererType2 {
     };
     encapsulation: ViewEncapsulation;
     id: string;
-    styles: (string | any[])[];
+    styles: string[];
 }
 
 // @public

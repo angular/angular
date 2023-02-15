@@ -561,9 +561,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "flattenStyles"
-  },
-  {
     "name": "flattenUnsubscriptionErrors"
   },
   {
@@ -928,6 +925,9 @@
   },
   {
     "name": "shareSubjectFactory"
+  },
+  {
+    "name": "shimStylesContent"
   },
   {
     "name": "shouldSearchParent"

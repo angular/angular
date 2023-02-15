@@ -9,7 +9,7 @@
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {DomElementSchemaRegistry} from '@angular/compiler';
 import {Inject, Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
-import {EventManager, ɵflattenStyles as flattenStyles, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
+import {EventManager, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute, ɵshimStyles as shimStylesContent} from '@angular/platform-browser';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -45,7 +45,7 @@ export class ServerRendererFactory2 implements RendererFactory2 {
       }
       default: {
         if (!this.rendererByCompId.has(type.id)) {
-          const styles = flattenStyles(type.id, type.styles);
+          const styles = shimStylesContent(type.id, type.styles);
           this.sharedStylesHost.addStyles(styles);
           this.rendererByCompId.set(type.id, this.defaultRenderer);
         }
@@ -257,7 +257,7 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
     super(eventManager, document, ngZone, schema);
     // Add a 's' prefix to style attributes to indicate server.
     const componentId = 's' + component.id;
-    const styles = flattenStyles(componentId, component.styles);
+    const styles = shimStylesContent(componentId, component.styles);
     sharedStylesHost.addStyles(styles);
 
     this.contentAttr = shimContentAttribute(componentId);
