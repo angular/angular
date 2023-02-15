@@ -27,7 +27,6 @@ pkg_npm(
         "//packages/bazel/": "//@angular/bazel/",
         "@npm//@bazel/concatjs/internal:": "//@bazel/concatjs/internal:",
     },
-    tags = ["release-with-framework"],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [

@@ -20,7 +20,6 @@ def _exclude_pkgs(packages, *args):
 # All framework packages published to NPM.
 ALL_PACKAGES = [
     "@angular/animations",
-    "@angular/bazel",
     "@angular/benchpress",
     "@angular/common",
     "@angular/compiler",
