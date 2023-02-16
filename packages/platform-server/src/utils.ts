@@ -198,7 +198,6 @@ export function renderApplication<T>(rootComponent: Type<T>, options: {
   const appProviders = [
     importProvidersFrom(BrowserModule.withServerTransition({appId})),
     importProvidersFrom(ServerModule),
-    ...TRANSFER_STATE_SERIALIZATION_PROVIDERS,
     ...(options.providers ?? []),
   ];
   return _render(platform, internalCreateApplication({rootComponent, appProviders}));
