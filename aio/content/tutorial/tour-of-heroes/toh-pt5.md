@@ -299,7 +299,7 @@ The hero items in the `HeroesComponent` are `<li>` elements whose click events a
 
 <code-example header="src/app/heroes/heroes.component.html (list with onSelect)" path="toh-pt4/src/app/heroes/heroes.component.html" region="list"></code-example>
 
-Remove the `<li>` back to just its `*ngFor`.
+Remove the inner HTML of `<li>`.
 Wrap the badge and name in an anchor `<a>` element.
 Add a `routerLink` attribute to the anchor that's the same as in the dashboard template.
 
