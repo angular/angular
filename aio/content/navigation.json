@@ -312,9 +312,20 @@
           "tooltip": "A list of developer guides for building Angular applications."
         },
         {
-          "url": "guide/standalone-components",
-          "title": "Standalone components",
-          "tooltip": "Standalone components, directives, and pipes"
+          "title": "Standalone",
+          "tooltip": "Learn about Angular's standalone APIs and how to convert your application to them.",
+          "children": [
+            {
+              "url": "guide/standalone-components",
+              "title": "Standalone components",
+              "tooltip": "Standalone components, directives, and pipes"
+            },
+            {
+              "url": "guide/standalone-migration",
+              "title": "Migrating to standalone",
+              "tooltip": "Migrate your application to Angular's standalone APIs"
+            }
+          ]
         },
         {
           "title": "Change detection",
