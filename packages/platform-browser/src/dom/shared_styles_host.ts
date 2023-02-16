@@ -72,7 +72,7 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
 
   constructor(@Inject(DOCUMENT) private readonly doc: any) {
     super();
-    this.hostNodes.add(this.doc.head);
+    this.resetHostNodes();
   }
 
   override onStyleAdded(style: string): void {
@@ -91,11 +91,7 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
   override ngOnDestroy(): void {
     super.ngOnDestroy();
     this.styleRef.clear();
-
-    const hostNodes = this.hostNodes;
-    hostNodes.clear();
-    // Re-add the head element back since thi sis the default host.
-    hostNodes.add(this.doc.head);
+    this.resetHostNodes();
   }
 
   addHost(hostNode: Node): void {
@@ -121,5 +117,12 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     } else {
       this.styleRef.set(style, [styleEl]);
     }
+  }
+
+  private resetHostNodes(): void {
+    const hostNodes = this.hostNodes;
+    hostNodes.clear();
+    // Re-add the head element back since this is the default host.
+    hostNodes.add(this.doc.head);
   }
 }

@@ -28,8 +28,7 @@ export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
 /**
- * The value for `REMOVE_STYLES_ON_COMPONENT_DESTROY` DI token.
- * @defaultvalue false
+ * The default value for the `REMOVE_STYLES_ON_COMPONENT_DESTROY` DI token.
  */
 const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = false;
 
@@ -38,7 +37,6 @@ const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = false;
  * of destroyed components should be removed from DOM.
  *
  * By default, the value is set to `false`. This will be changed in the next major version.
-
  * @publicApi
  */
 export const REMOVE_STYLES_ON_COMPONENT_DESTROY =
