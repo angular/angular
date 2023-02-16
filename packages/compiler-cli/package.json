@@ -47,7 +47,6 @@
     "reflect-metadata": "^0.1.2",
     "chokidar": "^3.0.0",
     "convert-source-map": "^1.5.1",
-    "magic-string": "^0.27.0",
     "semver": "^7.0.0",
     "tslib": "^2.3.0",
     "yargs": "^17.2.1"

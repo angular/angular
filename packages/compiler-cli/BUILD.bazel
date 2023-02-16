@@ -38,7 +38,6 @@ esbuild(
         "reflect-metadata",
         "chokidar",
         "convert-source-map",
-        "magic-string",
         "semver",
         "@jridgewell/sourcemap-codec",
         "tslib",
