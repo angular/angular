@@ -27,6 +27,19 @@ describe('ShadowCss, :host and :host-context', () => {
       expect(shim(':host([a=b]) {}', 'contenta', 'a-host')).toEqualCss('[a=b][a-host] {}');
     });
 
+    it('should handle attribute and next operator without spaces', () => {
+      expect(shim(':host[foo]>div {}', 'contenta', 'a-host'))
+          .toEqualCss(('[foo][a-host] > div[contenta] {}'));
+    });
+
+    // we know that the following test doesn't pass
+    // the host attribute is added before the space
+    // We advise to a more simple class name that doesn't require escaping
+    xit('should handle host with escaped class selector', () => {
+      // here we're looking to shim :host.prüfung (an escaped ü is replaced by "\\fc ")
+      expect(shim(':host.pr\\fc fung {}', 'contenta', 'a-host')).toEqual('.pr\\fc fung[a-host] {}');
+    });
+
     it('should handle multiple tag selectors', () => {
       expect(shim(':host(ul,li) {}', 'contenta', 'a-host')).toEqualCss('ul[a-host], li[a-host] {}');
       expect(shim(':host(ul,li) > .z {}', 'contenta', 'a-host'))
