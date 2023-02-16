@@ -31,7 +31,6 @@ integration/ng_elements/node_modules
 integration/ng_elements_schematics/node_modules
 integration/ng_update/node_modules
 integration/ng_update_migrations/node_modules
-integration/ngcc/node_modules
 integration/platform-server/node_modules
 integration/service-worker-schema/node_modules
 integration/side-effects/node_modules

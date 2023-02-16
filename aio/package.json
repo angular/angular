@@ -60,6 +60,10 @@
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
   "private": true,
+  "// resolutions": "Temp resolutions until CLI releases v16.0.0-next.0",
+  "resolutions": {
+    "@ngtools/webpack": "https://github.com/angular/ngtools-webpack-builds.git#c784933671856a6529d7dd560ba1026890898f57"
+  },
   "dependencies": {
     "@angular/animations": "15.2.0-next.4",
     "@angular/cdk": "15.2.0-next.4",

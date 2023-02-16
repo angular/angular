@@ -246,7 +246,7 @@ The `footer` is optional. The [Commit Message Footer](#commit-footer) format des
   │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
   │                          elements|forms|http|language-service|localize|platform-browser|
   │                          platform-browser-dynamic|platform-server|router|service-worker|
-  │                          upgrade|zone.js|packaging|changelog|docs-infra|migrations|ngcc|ve|
+  │                          upgrade|zone.js|packaging|changelog|docs-infra|migrations|
   │                          devtools
   │
   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|test
@@ -305,10 +305,6 @@ There are currently a few exceptions to the "use package name" rule:
 * `docs-infra`: used for docs-app (angular.io) related changes within the /aio directory of the repo
 
 * `migrations`: used for changes to the `ng update` migrations.
-
-* `ngcc`: used for changes to the [Angular Compatibility Compiler](./packages/compiler-cli/ngcc/README.md)
-
-* `ve`: used for changes specific to ViewEngine (legacy compiler/renderer).
 
 * `devtools`: used for changes in the [browser extension](./devtools/README.md).
 

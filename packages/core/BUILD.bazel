@@ -66,7 +66,6 @@ ng_package(
         "//integration:__subpackages__",
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
-        "//packages/compiler-cli/ngcc/test:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
         "//packages/compiler-cli/test/diagnostics:__pkg__",
         "//packages/compiler-cli/test/transformers:__pkg__",

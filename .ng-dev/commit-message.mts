@@ -25,7 +25,6 @@ export const commitMessage: CommitMessageConfig = {
     'language-service',
     'localize',
     'migrations',
-    'ngcc',
     'packaging',
     'platform-browser',
     'platform-browser-dynamic',

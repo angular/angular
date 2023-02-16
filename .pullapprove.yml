@@ -149,7 +149,7 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude('packages/compiler-cli/ngcc/*'), [
+        contains_any_globs(files, [
           'packages/compiler/**/{*,.*}',
           'packages/examples/compiler/**/{*,.*}',
           'aio/content/examples/angular-compiler-options/**/{*,.*}',
@@ -164,18 +164,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - JoostK
-
-  # =========================================================
-  #  Framework: Compiler / ngcc
-  # =========================================================
-  fw-ngcc:
-    <<: *defaults
-    conditions:
-      - files.include('packages/compiler-cli/ngcc/*')
-    reviewers:
-      users:
-        - alxhub
         - JoostK
 
   # =========================================================

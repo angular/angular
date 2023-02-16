@@ -7,7 +7,6 @@ package(default_visibility = ["//visibility:public"])
 PUBLIC_TARGETS = [
     ":compiler-cli",
     "//packages/compiler-cli/private",
-    "//packages/compiler-cli/ngcc",
     "//packages/compiler-cli/linker",
     "//packages/compiler-cli/linker/babel",
 ]
@@ -23,8 +22,6 @@ esbuild(
     entry_points = [
         ":index.ts",
         "//packages/compiler-cli:src/bin/ngc.ts",
-        "//packages/compiler-cli/ngcc:main-ngcc.ts",
-        "//packages/compiler-cli/ngcc:index.ts",
         "//packages/compiler-cli:src/bin/ng_xi18n.ts",
         "//packages/compiler-cli/linker:index.ts",
         "//packages/compiler-cli/linker/babel:index.ts",
@@ -32,8 +29,6 @@ esbuild(
         "//packages/compiler-cli/private:localize.ts",
         "//packages/compiler-cli/private:migrations.ts",
         "//packages/compiler-cli/private:tooling.ts",
-        "//packages/compiler-cli/ngcc:src/locking/lock_file_with_child_process/ngcc_lock_unlocker.ts",
-        "//packages/compiler-cli/ngcc:src/execution/cluster/ngcc_cluster_worker.ts",
     ],
     external = [
         "@angular/compiler",
@@ -43,8 +38,6 @@ esbuild(
         "reflect-metadata",
         "chokidar",
         "convert-source-map",
-        "dependency-graph",
-        "magic-string",
         "semver",
         "@jridgewell/sourcemap-codec",
         "tslib",

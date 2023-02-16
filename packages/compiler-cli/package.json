@@ -4,7 +4,6 @@
   "description": "Angular - the compiler CLI for Node.js",
   "typings": "index.d.ts",
   "bin": {
-    "ngcc": "./bundles/ngcc/main-ngcc.js",
     "ngc": "./bundles/src/bin/ngc.js",
     "ng-xi18n": "./bundles/src/bin/ng_xi18n.js"
   },
@@ -16,10 +15,6 @@
     },
     "./package.json": {
       "default": "./package.json"
-    },
-    "./ngcc": {
-      "types": "./ngcc/index.d.ts",
-      "default": "./bundles/ngcc/index.js"
     },
     "./linker": {
       "types": "./linker/index.d.ts",
@@ -44,12 +39,6 @@
     "./private/tooling": {
       "types": "./private/tooling.d.ts",
       "default": "./bundles/private/tooling.js"
-    },
-    "./ngcc/src/execution/cluster/ngcc_cluster_worker": {
-      "default": "./bundles/ngcc/src/execution/cluster/ngcc_cluster_worker.js"
-    },
-    "./ngcc/src/locking/lock_file_with_child_process/ngcc_lock_unlocker": {
-      "default": "./bundles/ngcc/src/locking/lock_file_with_child_process/ngcc_lock_unlocker.js"
     }
   },
   "dependencies": {
@@ -58,8 +47,6 @@
     "reflect-metadata": "^0.1.2",
     "chokidar": "^3.0.0",
     "convert-source-map": "^1.5.1",
-    "dependency-graph": "^0.11.0",
-    "magic-string": "^0.27.0",
     "semver": "^7.0.0",
     "tslib": "^2.3.0",
     "yargs": "^17.2.1"
