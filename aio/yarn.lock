@@ -2877,15 +2877,9 @@
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.14.2.tgz#c3ec604a0b54b9a9b87e9735dfc59e1a5da6a5fb"
   integrity sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==
 
-"@ngtools/webpack@15.2.0-next.3":
-  version "15.2.0-next.3"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-15.2.0-next.3.tgz#3fc8b605d1be5ad6a66b908b89847681319ee95e"
-  integrity sha512-Je7rwxLPcpmkHIvOzzdhWr9xqK6FMi1lGh5rEW49E9O9E1ESfh5OMnC3pgC8gOEzrhcnOuXgV7JZ5AjJwCgmgQ==
-
-"@ngtools/webpack@15.2.0-next.4":
-  version "15.2.0-next.4"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-15.2.0-next.4.tgz#354d6096329a7f33e787d218385dbb610ad42bee"
-  integrity sha512-Ftqqo9AHVVbDLKS5q5AzN+InimGwCZQTCPfnA5WoDOPHjEDoA0Ekg+7IaRjRWpOd7lPYr9fh62KQLXVc2vIydg==
+"@ngtools/webpack@15.2.0-next.3", "@ngtools/webpack@15.2.0-next.4", "@ngtools/webpack@https://github.com/angular/ngtools-webpack-builds.git#c784933671856a6529d7dd560ba1026890898f57":
+  version "16.0.0-next.0"
+  resolved "https://github.com/angular/ngtools-webpack-builds.git#c784933671856a6529d7dd560ba1026890898f57"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"

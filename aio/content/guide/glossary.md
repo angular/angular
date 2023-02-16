@@ -500,11 +500,6 @@ Install Angular libraries with the [npm package manager][NpmjsDocsAboutNpm] and 
 
 Compare to [NgModule][AioGuideGlossaryNgmodule].
 
-## ngcc
-
-Angular compatibility compiler.
-If you build your application using [Ivy][AioGuideGlossaryIvy], but it depends on libraries that have not been compiled with Ivy, the Angular CLI uses `ngcc` to automatically update the dependent libraries to use Ivy.
-
 ## NgModule
 
 A class definition preceded by the `@NgModule()` [decorator][AioGuideGlossaryDecoratorDecoration], which declares and serves as a manifest for a block of code dedicated to an application domain, a workflow, or a closely related set of capabilities.
@@ -1085,7 +1080,6 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 [AioGuideGlossaryLibrary]: guide/glossary#library "library - Glossary | Angular"
 [AioGuideGlossaryM]: guide/glossary#module "M - Glossary | Angular"
 [AioGuideGlossaryModule]: guide/glossary#module "module - Glossary | Angular"
-[AioGuideGlossaryN]: guide/glossary#ngcc "N - Glossary | Angular"
 [AioGuideGlossaryNgmodule]: guide/glossary#ngmodule "NgModule - Glossary | Angular"
 [AioGuideGlossaryNpmPackage]: guide/glossary#npm-package "npm package - Glossary | Angular"
 [AioGuideGlossaryO]: guide/glossary#observable "O - Glossary | Angular"
@@ -1212,4 +1206,4 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-02-16
