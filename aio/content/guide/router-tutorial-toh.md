@@ -257,7 +257,7 @@ Because a wildcard route is the least specific route, place it last in the route
 
 </div>
 
-To test this feature, add a button with a `RouterLink` to the `HeroListComponent` template and set the link to a non-existant route called `"/sidekicks"`.
+To test this feature, add a button with a `RouterLink` to the `HeroListComponent` template and set the link to a non-existent route called `"/sidekicks"`.
 
 <code-example header="src/app/hero-list/hero-list.component.html (excerpt)" path="router/src/app/hero-list/hero-list.component.1.html"></code-example>
 
