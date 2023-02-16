@@ -134,9 +134,10 @@ build:remote --project_id=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
 
-# Ensure that tags like "no-remote-exec" get propagated to actions created by rules.
+# Ensure that tags like "no-remote-exec" get propagated to actions created by rules,
+# even if the rule implementation does not explicitly pass them to the execution requirements.
 # https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
-build --experimental_allow_tags_propagation
+common --experimental_allow_tags_propagation
 
 # Disable network access in the sandbox by default. To enable network access
 # for a particular target, use:
