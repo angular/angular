@@ -532,7 +532,7 @@
         {
           "name": "functional",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Specifies whether to generate a guard as a function."
         },
         {
@@ -823,7 +823,7 @@
         {
           "name": "functional",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Creates the resolver as a `ResolveFn`."
         },
         {
