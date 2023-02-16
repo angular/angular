@@ -251,7 +251,7 @@ The user should be able to get to these details in three ways.
 1.  By clicking a hero in the heroes list.
 1.  By pasting a "deep link" URL into the browser address bar that identifies the hero to display.
 
-This section enables navigation to the `HeroDetailComponent` and liberate it from the `HeroesComponent`.
+This section enables navigation to the `HeroDetailComponent` and liberates it from the `HeroesComponent`.
 
 ### Delete *hero details* from `HeroesComponent`
 
