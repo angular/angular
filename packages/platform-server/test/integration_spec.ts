@@ -10,9 +10,9 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostListener, Inject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation} from '@angular/core';
 import {inject, TestBed, waitForAsync} from '@angular/core/testing';
-import {BrowserModule, Title} from '@angular/platform-browser';
+import {BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule} from '@angular/platform-server';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
@@ -296,6 +296,33 @@ const MyStylesAppStandalone = createMyStylesApp(true);
   bootstrap: [MyStylesApp]
 })
 class ExampleStylesModule {
+}
+
+function createMyTransferStateApp(standalone: boolean) {
+  @Component({
+    standalone,
+    selector: 'app',
+    template: `<div>Works!</div>`,
+  })
+  class MyStylesApp {
+    state = coreInject(TransferState);
+    constructor() {
+      this.state.set(makeStateKey<string>('some-key'), 'some-value');
+    }
+  }
+  return MyStylesApp;
+}
+
+const MyTransferStateApp = createMyTransferStateApp(false);
+const MyTransferStateAppStandalone = createMyTransferStateApp(true);
+
+
+@NgModule({
+  declarations: [MyTransferStateApp],
+  imports: [BrowserModule.withServerTransition({appId: 'transfer-state-app'}), ServerModule],
+  bootstrap: [MyTransferStateApp]
+})
+class MyTransferStateModule {
 }
 
 @NgModule({
@@ -824,6 +851,23 @@ describe('platform-server integration', () => {
            bootstrap.then(output => {
              // All symbols other than [a-zA-Z0-9\-] are removed
              expect(output).toMatch(/ng-server-context="Someextrachars----"/);
+             called = true;
+           });
+         }));
+
+      it(`using ${isStandalone ? 'renderApplication' : 'renderModule'} ` +
+             `should serialize transfer state only once`,
+         waitForAsync(() => {
+           const options = {document: doc};
+           const bootstrap = isStandalone ?
+               renderApplication(
+                   MyTransferStateAppStandalone, {...options, appId: 'transfer-state-app'}) :
+               renderModule(MyTransferStateModule, {...options});
+           bootstrap.then(output => {
+             const expectedOutput =
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other"><div>Works!</div></app>' +
+                 '<script id="transfer-state-app-state" type="application/json">{&q;some-key&q;:&q;some-value&q;}</script></body></html>';
+             expect(output).toEqual(expectedOutput);
              called = true;
            });
          }));
