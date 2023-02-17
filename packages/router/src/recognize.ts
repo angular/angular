@@ -70,8 +70,7 @@ export class Recognizer {
           // navigation, resulting in the router being out of sync with the browser.
           const root = new ActivatedRouteSnapshot(
               [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}),
-              this.urlTree.fragment, {}, PRIMARY_OUTLET, this.rootComponentType, null,
-              this.urlTree.root, -1, {});
+              this.urlTree.fragment, {}, PRIMARY_OUTLET, this.rootComponentType, null, {});
 
           const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
           const routeState = new RouterStateSnapshot(this.url, rootNode);
@@ -177,11 +176,10 @@ export class Recognizer {
 
     if (route.path === '**') {
       const params = segments.length > 0 ? last(segments)!.parameters : {};
-      const pathIndexShift = getPathIndexShift(rawSegment) + segments.length;
       const snapshot = new ActivatedRouteSnapshot(
           segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment,
           getData(route), getOutlet(route), route.component ?? route._loadedComponent ?? null,
-          route, getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route));
+          route, getResolve(route));
       matchResult = of({
         snapshot,
         consumedSegments: [],
@@ -194,13 +192,11 @@ export class Recognizer {
                 if (!matched) {
                   return null;
                 }
-                const pathIndexShift = getPathIndexShift(rawSegment) + consumedSegments.length;
 
                 const snapshot = new ActivatedRouteSnapshot(
                     consumedSegments, parameters, Object.freeze({...this.urlTree.queryParams}),
                     this.urlTree.fragment, getData(route), getOutlet(route),
-                    route.component ?? route._loadedComponent ?? null, route,
-                    getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route));
+                    route.component ?? route._loadedComponent ?? null, route, getResolve(route));
                 return {snapshot, consumedSegments, remainingSegments};
               }));
     }
@@ -333,34 +329,6 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): v
     }
     names[n.value.outlet] = n.value;
   });
-}
-
-function getSourceSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGroup {
-  let s = segmentGroup;
-  while (s._sourceSegment) {
-    s = s._sourceSegment;
-  }
-  return s;
-}
-
-function getPathIndexShift(segmentGroup: UrlSegmentGroup): number {
-  let s = segmentGroup;
-  let res = s._segmentIndexShift ?? 0;
-  while (s._sourceSegment) {
-    s = s._sourceSegment;
-    res += s._segmentIndexShift ?? 0;
-  }
-  return res - 1;
-}
-
-function getCorrectedPathIndexShift(segmentGroup: UrlSegmentGroup): number {
-  let s = segmentGroup;
-  let res = s._segmentIndexShiftCorrected ?? s._segmentIndexShift ?? 0;
-  while (s._sourceSegment) {
-    s = s._sourceSegment;
-    res += s._segmentIndexShiftCorrected ?? s._segmentIndexShift ?? 0;
-  }
-  return res - 1;
 }
 
 function getData(route: Route): Data {

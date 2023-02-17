@@ -52,59 +52,13 @@ describe('recognize', async () => {
         ],
         'a(left:b//right:c)');
     expect(s.root.url.toString()).toEqual(url.root.toString());
-    expect((s.root as any)._lastPathIndex).toBe(-1);
 
     const c = s.root.children;
     expect(c[0].url.toString()).toEqual(url.root.children[PRIMARY_OUTLET].toString());
-    expect((c[0] as any)._lastPathIndex).toBe(0);
 
     expect(c[1].url.toString()).toEqual(url.root.children['left'].toString());
-    expect((c[1] as any)._lastPathIndex).toBe(0);
 
     expect(c[2].url.toString()).toEqual(url.root.children['right'].toString());
-    expect((c[2] as any)._lastPathIndex).toBe(0);
-  });
-
-  it('should set url segment and index properly (nested case)', async () => {
-    const url = tree('a/b/c');
-    const s = await recognize(
-        [
-          {path: 'a/b', component: ComponentA, children: [{path: 'c', component: ComponentC}]},
-        ],
-        'a/b/c');
-    expect((s.root as any)._urlSegment.toString()).toEqual(url.root.toString());
-    expect((s.root as any)._lastPathIndex).toBe(-1);
-
-    const compA = s.root.firstChild!;
-    expect((compA as any)._urlSegment.toString())
-        .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-    expect((compA as any)._lastPathIndex).toBe(1);
-
-    const compC = compA.firstChild!;
-    expect((compC as any)._urlSegment.toString())
-        .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-    expect((compC as any)._lastPathIndex).toBe(2);
-  });
-
-  it('should set url segment and index properly (wildcard)', async () => {
-    const url = tree('a/b/c');
-    const s = await recognize(
-        [
-          {path: 'a', component: ComponentA, children: [{path: '**', component: ComponentB}]},
-        ],
-        'a/b/c');
-    expect((s.root as any)._urlSegment.toString()).toEqual(url.root.toString());
-    expect((s.root as any)._lastPathIndex).toBe(-1);
-
-    const compA = s.root.firstChild!;
-    expect((compA as any)._urlSegment.toString())
-        .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-    expect((compA as any)._lastPathIndex).toBe(0);
-
-    const compC = compA.firstChild!;
-    expect((compC as any)._urlSegment.toString())
-        .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-    expect((compC as any)._lastPathIndex).toBe(2);
   });
 
   it('should match routes in the depth first order', async () => {
@@ -251,22 +205,6 @@ describe('recognize', async () => {
         checkActivatedRoute(s.root.firstChild!.firstChild!, '', {}, ComponentB);
       });
 
-      it('should set url segment and index properly', async () => {
-        const url = tree('') as any;
-        const s = await recognize(
-            [{path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}], '');
-        expect((s.root as any)._urlSegment.toString()).toEqual(url.root.toString());
-        expect((s.root as any)._lastPathIndex).toBe(-1);
-
-        const c = s.root.firstChild!;
-        expect((c as any)._urlSegment.toString()).toEqual(url.root.toString());
-        expect((c as any)._lastPathIndex).toBe(-1);
-
-        const c2 = s.root.firstChild!.firstChild!;
-        expect((c2 as any)._urlSegment.toString()).toEqual(url.root.toString());
-        expect((c2 as any)._lastPathIndex).toBe(-1);
-      });
-
       it('should inherit params', async () => {
         const s = await recognize(
             [{
@@ -349,129 +287,6 @@ describe('recognize', async () => {
         expect(c.length).toEqual(1);
         checkActivatedRoute(c[0], 'b', {}, ComponentB);
       });
-
-      it('should set url segment and index properly', async () => {
-        const url = tree('a/b') as any;
-        const s = await recognize(
-            [{
-              path: 'a',
-              component: ComponentA,
-              children: [
-                {path: 'b', component: ComponentB}, {path: '', component: ComponentC, outlet: 'aux'}
-              ]
-            }],
-            'a/b');
-        expect((s.root as any)._urlSegment.toString()).toEqual(url.root.toString());
-        expect((s.root as any)._lastPathIndex).toBe(-1);
-
-        const a = s.root.firstChild!;
-        expect((a as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((a as any)._lastPathIndex).toBe(0);
-
-        const b = a.firstChild!;
-        expect((b as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((b as any)._lastPathIndex).toBe(1);
-
-        const c = a.children[1];
-        expect((c as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((c as any)._lastPathIndex).toBe(0);
-      });
-
-      it('should set url segment and index properly when nested empty-path segments', async () => {
-        const url = tree('a') as any;
-        const s = await recognize(
-            [{
-              path: 'a',
-              children:
-                  [{path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}]
-            }],
-            'a');
-        expect((s.root as any)._urlSegment.toString()).toEqual(url.root.toString());
-        expect((s.root as any)._lastPathIndex).toBe(-1);
-
-        const a = s.root.firstChild!;
-        expect((a as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((a as any)._lastPathIndex).toBe(0);
-
-        const b = a.firstChild!;
-        expect((b as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((b as any)._lastPathIndex).toBe(0);
-
-        const c = b.firstChild!;
-        expect((c as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((c as any)._lastPathIndex).toBe(0);
-      });
-
-      it('should set url segment and index properly for nested empty-path segments', async () => {
-        const url = tree('a/b');
-        const s = await recognize(
-            [{
-              path: 'a',
-              children: [{
-                path: 'b',
-                component: ComponentB,
-                children: [
-                  {path: '', component: ComponentC, children: [{path: '', component: ComponentD}]}
-                ]
-              }]
-            }],
-            'a/b', 'emptyOnly');
-        expect((s.root as any)._urlSegment.toString()).toEqual(url.root.toString());
-        expect((s.root as any)._lastPathIndex).toBe(-1);
-
-        const a = s.root.firstChild!;
-        expect((a as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((a as any)._lastPathIndex).toBe(0);
-
-        const b = a.firstChild!;
-        expect((b as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((b as any)._lastPathIndex).toBe(1);
-
-        const c = b.firstChild!;
-        expect((c as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((c as any)._lastPathIndex).toBe(1);
-
-        const d = c.firstChild!;
-        expect((d as any)._urlSegment.toString())
-            .toEqual(url.root.children[PRIMARY_OUTLET].toString());
-        expect((d as any)._lastPathIndex).toBe(1);
-      });
-
-      it('should set url segment and index properly when nested empty-path segments (2)',
-         async () => {
-           const url = tree('');
-           const s = await recognize(
-               [{
-                 path: '',
-                 children: [
-                   {path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}
-                 ]
-               }],
-               '');
-           expect((s.root as any)._urlSegment.toString()).toEqual(url.root.toString());
-           expect((s.root as any)._lastPathIndex).toBe(-1);
-
-           const a = s.root.firstChild!;
-           expect((a as any)._urlSegment.toString()).toEqual(url.root.toString());
-           expect((a as any)._lastPathIndex).toBe(-1);
-
-           const b = a.firstChild!;
-           expect((b as any)._urlSegment.toString()).toEqual(url.root.toString());
-           expect((b as any)._lastPathIndex).toBe(-1);
-
-           const c = b.firstChild!;
-           expect((c as any)._urlSegment.toString()).toEqual(url.root.toString());
-           expect((c as any)._lastPathIndex).toBe(-1);
-         });
     });
 
     describe('aux split at the end (no right child)', async () => {
