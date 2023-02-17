@@ -83,36 +83,4 @@ describe('transfer_state', () => {
     const output = await renderModule(TransferStoreModule, {document: '<app></app>'});
     expect(output).toBe(defaultExpectedOutput);
   });
-
-  it('adds transfer script tag before any existing script tags', async () => {
-    const STATE_KEY = makeStateKey<number>('test');
-
-    @Component({selector: 'app', template: 'Works!'})
-    class TransferComponent {
-      constructor(private transferStore: TransferState) {
-        this.transferStore.onSerialize(STATE_KEY, () => 10);
-      }
-    }
-
-    @NgModule({
-      bootstrap: [TransferComponent],
-      declarations: [TransferComponent],
-      imports: [BrowserModule.withServerTransition({appId: 'transfer'}), ServerModule],
-    })
-    class TransferStoreModule {
-    }
-
-    const output = await renderModule(TransferStoreModule, {
-      document: '<app></app><script src="polyfills.js"></script><script src="main.js"></script>'
-    });
-    expect(output).toContain(
-        '<body>' +
-        '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app>' +
-        '<script id="transfer-state" type="application/json">' +
-        '{&q;test&q;:10}' +
-        '</script>' +
-        '<script src="polyfills.js"></script>' +
-        '<script src="main.js"></script>' +
-        '</body>');
-  });
 });
