@@ -9,7 +9,7 @@
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
-import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
+import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {last, shallowEqual} from './utils/collection';
@@ -121,38 +121,6 @@ export function createUrlTreeFromSegmentGroup(
       updateSegmentGroupChildren(position.segmentGroup, position.index, nav.commands) :
       updateSegmentGroup(position.segmentGroup, position.index, nav.commands);
   return tree(root, position.segmentGroup, newSegmentGroup, queryParams, fragment);
-}
-
-export function createUrlTree(
-    route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params|null,
-    fragment: string|null): UrlTree {
-  if (commands.length === 0) {
-    return tree(urlTree.root, urlTree.root, urlTree.root, queryParams, fragment);
-  }
-
-  const nav = computeNavigation(commands);
-
-  if (nav.toRoot()) {
-    return tree(urlTree.root, urlTree.root, new UrlSegmentGroup([], {}), queryParams, fragment);
-  }
-
-  function createTreeUsingPathIndex(lastPathIndex: number) {
-    const startingPosition =
-        findStartingPosition(nav, urlTree, route.snapshot?._urlSegment, lastPathIndex);
-
-    const segmentGroup = startingPosition.processChildren ?
-        updateSegmentGroupChildren(
-            startingPosition.segmentGroup, startingPosition.index, nav.commands) :
-        updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
-    return tree(urlTree.root, startingPosition.segmentGroup, segmentGroup, queryParams, fragment);
-  }
-  // Note: The types should disallow `snapshot` from being `undefined` but due to test mocks, this
-  // may be the case. Since we try to access it at an earlier point before the refactor to add the
-  // warning for `relativeLinkResolution: 'legacy'`, this may cause failures in tests where it
-  // didn't before.
-  const result = createTreeUsingPathIndex(route.snapshot?._lastPathIndex);
-
-  return result;
 }
 
 function isMatrixParams(command: any): boolean {
@@ -307,26 +275,6 @@ function findStartingPositionForTargetGroup(
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
   const index = target.segments.length - 1 + modifier;
   return createPositionApplyingDoubleDots(target, index, nav.numberOfDoubleDots);
-}
-
-function findStartingPosition(
-    nav: Navigation, tree: UrlTree, segmentGroup: UrlSegmentGroup,
-    lastPathIndex: number): Position {
-  if (nav.isAbsolute) {
-    return new Position(tree.root, true, 0);
-  }
-
-  if (lastPathIndex === -1) {
-    // Pathless ActivatedRoute has _lastPathIndex === -1 but should not process children
-    // see issue #26224, #13011, #35687
-    // However, if the ActivatedRoute is the root we should process children like above.
-    const processChildren = segmentGroup === tree.root;
-    return new Position(segmentGroup, processChildren, 0);
-  }
-
-  const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
-  const index = lastPathIndex + modifier;
-  return createPositionApplyingDoubleDots(segmentGroup, index, nav.numberOfDoubleDots);
 }
 
 function createPositionApplyingDoubleDots(

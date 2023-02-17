@@ -138,12 +138,6 @@
     "name": "Console"
   },
   {
-    "name": "CreateUrlTreeStrategy"
-  },
-  {
-    "name": "CreateUrlTreeUsingSnapshot"
-  },
-  {
     "name": "DEFAULT_APP_ID"
   },
   {
@@ -885,6 +879,9 @@
     "name": "absoluteRedirect"
   },
   {
+    "name": "addEmptyPathsToChildrenIfNeeded"
+  },
+  {
     "name": "addPropertyAlias"
   },
   {
@@ -1000,6 +997,9 @@
   },
   {
     "name": "convertToParamMap"
+  },
+  {
+    "name": "createChildrenForEmptyPaths"
   },
   {
     "name": "createContainerRef"
@@ -1359,9 +1359,6 @@
     "name": "getParentInjectorView"
   },
   {
-    "name": "getPathIndexShift"
-  },
-  {
     "name": "getPipeDef"
   },
   {
@@ -1381,9 +1378,6 @@
   },
   {
     "name": "getSimpleChangesStore"
-  },
-  {
-    "name": "getSourceSegmentGroup"
   },
   {
     "name": "getSymbolIterator"
