@@ -606,11 +606,6 @@ jobs:
             nvm install $(cat .nvmrc)
             nvm use $(cat .nvmrc)
 
-      - restore_cache:
-          keys:
-            - *cache_key_win
-            - *cache_key_win_fallback
-
       - run:
           name: Debug information for flakiness of Windows job
           command: |
