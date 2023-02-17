@@ -179,10 +179,10 @@ Because each service method returns a different kind of `Observable` result, `ha
 
 ### Tap into the Observable
 
-The `HeroService` methods taps into the flow of observable values and send a message, using the `log()` method, to the message area at the bottom of the page.
+The `getHero()` method taps into the flow of observable values and sends a message, using the `log()` method, to the message area at the bottom of the page.
 
 The RxJS `tap()` operator enables this ability by looking at the observable values, doing something with those values, and passing them along.
-The `tap()` call back doesn't access the values themselves.
+The `tap()` callback doesn't access the values themselves.
 
 Here is the final version of `getHeroes()` with the `tap()` that logs the operation.
 
