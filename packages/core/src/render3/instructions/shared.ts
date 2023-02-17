@@ -1060,7 +1060,7 @@ export function initializeDirectives(
     if (def.hostBindings !== null || def.hostAttrs !== null || def.hostVars !== 0)
       tNode.flags |= TNodeFlags.hasHostBindings;
 
-    const lifeCycleHooks: OnChanges&OnInit&DoCheck = def.type.prototype;
+    const lifeCycleHooks: Partial<OnChanges&OnInit&DoCheck> = def.type.prototype;
     // Only push a node index into the preOrderHooks array if this is the first
     // pre-order hook found on this node.
     if (!preOrderHooksFound &&

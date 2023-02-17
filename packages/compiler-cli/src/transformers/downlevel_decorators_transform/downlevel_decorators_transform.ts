@@ -425,7 +425,7 @@ export function getDownlevelDecoratorsTransform(
       if (decoratorsToKeep.length || elementModifiers?.length) {
         modifiers = ts.setTextRange(
             ts.factory.createNodeArray([...decoratorsToKeep, ...(elementModifiers || [])]),
-            element.modifiers);
+            (element as ts.HasModifiers).modifiers);
       }
 
       return [element.name.text, cloneClassElementWithModifiers(element, modifiers), toLower];

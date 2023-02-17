@@ -101,7 +101,7 @@ const properties: Properties = {
       o: 'o',
       o1: 'o_1',
     },
-    encapsulation: 1,
+    encapsulation: 0,
     onPush: false,
   },
 };

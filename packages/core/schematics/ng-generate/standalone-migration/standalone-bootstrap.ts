@@ -603,7 +603,7 @@ function referencesToNodeWithinSameFile(
  */
 function remapDynamicImports<T extends ts.Node>(targetFileName: string, rootNode: T): T {
   let hasChanged = false;
-  const transformer: ts.TransformerFactory<T> = context => {
+  const transformer: ts.TransformerFactory<ts.Node> = context => {
     return sourceFile => ts.visitNode(sourceFile, function walk(node: ts.Node): ts.Node {
       if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword &&
           node.arguments.length > 0 && ts.isStringLiteralLike(node.arguments[0]) &&
@@ -619,7 +619,7 @@ function remapDynamicImports<T extends ts.Node>(targetFileName: string, rootNode
     });
   };
 
-  const result = ts.transform(rootNode, [transformer]).transformed[0];
+  const result = ts.transform(rootNode, [transformer]).transformed[0] as T;
   return hasChanged ? result : rootNode;
 }
 

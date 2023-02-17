@@ -402,6 +402,7 @@ export function getOriginNodeForDiagnostics(
 }
 
 export function isAbstractClassDeclaration(clazz: ClassDeclaration): boolean {
-  return clazz.modifiers !== undefined &&
-      clazz.modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword);
+  return ts.canHaveModifiers(clazz) && clazz.modifiers !== undefined ?
+      clazz.modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword) :
+      false;
 }
