@@ -98,7 +98,7 @@ class DtsTransformer {
     };
 
     // Recursively scan through the AST and process all nodes as desired.
-    sf = ts.visitNode(sf, visitor);
+    sf = ts.visitNode(sf, visitor, ts.isSourceFile) || sf;
 
     // Add new imports for this file.
     return addImports(imports, sf);

@@ -181,7 +181,7 @@ function getExtendedConfigPathWorker(
     } =
         ts.nodeModuleNameResolver(
             extendsValue, configFile,
-            {moduleResolution: ts.ModuleResolutionKind.NodeJs, resolveJsonModule: true},
+            {moduleResolution: ts.ModuleResolutionKind.Node10, resolveJsonModule: true},
             parseConfigHost);
     if (resolvedModule) {
       return absoluteFrom(resolvedModule.resolvedFileName);

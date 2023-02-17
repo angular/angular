@@ -900,7 +900,7 @@ describe('downlevel decorator transform', () => {
     function createProgramWithTransform(files: string[]) {
       const program = ts.createProgram(
           files, {
-            moduleResolution: ts.ModuleResolutionKind.NodeJs,
+            moduleResolution: ts.ModuleResolutionKind.Node10,
             importHelpers: true,
             lib: [],
             module: ts.ModuleKind.ESNext,

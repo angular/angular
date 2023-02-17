@@ -14,7 +14,6 @@ import {FileUpdate, TsCreateProgramDriver, UpdateMode} from '../../program_drive
 import {sfExtensionData, ShimReferenceTagger} from '../../shims';
 import {expectCompleteReuse, makeProgram} from '../../testing';
 import {OptimizeFor} from '../api';
-
 import {setup} from '../testing';
 
 runInEachFileSystem(() => {

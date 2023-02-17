@@ -68,7 +68,7 @@ class MockRenderer implements Renderer {
   removeClass(el: RElement, name: string): void {
     el.classList.remove(name);
   }
-  setStyle(el: RElement, style: string, value: any, flags: RendererStyleFlags2 = 0): void {
+  setStyle(el: RElement, style: string, value: any, flags: RendererStyleFlags2): void {
     if (flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
       el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
     } else {

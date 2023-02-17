@@ -40,6 +40,9 @@ function getDiagnosticSourceCode(diag: ts.Diagnostic): string {
   return diag.file!.text.slice(diag.start!, diag.start! + diag.length!);
 }
 
+// (null! as ts.CompilerHost).resolveTypeReferenceDirectives();
+// (null! as ts.CompilerHost).resolveTypeReferenceDirectiveReferences();
+
 runInEachFileSystem(allTests);
 
 // Wrap all tests into a function to work around clang-format going crazy and (poorly)
