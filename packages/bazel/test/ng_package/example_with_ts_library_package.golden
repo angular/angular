@@ -75,17 +75,18 @@ export * from './portal-module';
  */
 import { NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
-export class PortalModule {
+class PortalModule {
 }
 PortalModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: PortalModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
 PortalModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: PortalModule });
 PortalModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: PortalModule });
+export { PortalModule };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: PortalModule, decorators: [{
             type: NgModule,
             args: [{}]
         }] });
 export const a = 1;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicG9ydGFsLW1vZHVsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlLXdpdGgtdHMtbGlicmFyeS9wb3J0YWwvcG9ydGFsLW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDOztBQUd2QyxNQUFNLE9BQU8sWUFBWTs7b0hBQVosWUFBWTtxSEFBWixZQUFZO3FIQUFaLFlBQVk7c0dBQVosWUFBWTtrQkFEeEIsUUFBUTttQkFBQyxFQUFFOztBQUlaLE1BQU0sQ0FBQyxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIExMQyBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBQb3J0YWxNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicG9ydGFsLW1vZHVsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlLXdpdGgtdHMtbGlicmFyeS9wb3J0YWwvcG9ydGFsLW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDOztBQUV2QyxNQUNhLFlBQVk7O29IQUFaLFlBQVk7cUhBQVosWUFBWTtxSEFBWixZQUFZO1NBQVosWUFBWTtzR0FBWixZQUFZO2tCQUR4QixRQUFRO21CQUFDLEVBQUU7O0FBSVosTUFBTSxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgTExDIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIFBvcnRhbE1vZHVsZSB7XG59XG5cbmV4cG9ydCBjb25zdCBhID0gMTtcbiJdfQ==
 
 --- esm2020/portal/portal.mjs ---
 

@@ -3,7 +3,7 @@
  ****************************************************************************************************/
 import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
-export class MyComponent {
+class MyComponent {
     constructor() {
         this.myStyleExp = [{ color: 'red' }, { color: 'blue', duration: 1000 }];
         this.myClassExp = 'foo bar apple';
@@ -11,15 +11,17 @@ export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<div [style]="myStyleExp" [class]="myClassExp"></div>`, isInline: true });
+export { MyComponent };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{ selector: 'my-component', template: `<div [style]="myStyleExp" [class]="myClassExp"></div>` }]
         }] });
-export class MyModule {
+class MyModule {
 }
 MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
 MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [MyComponent] });
 MyModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+export { MyModule };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
             type: NgModule,
             args: [{ declarations: [MyComponent] }]
@@ -52,25 +54,27 @@ export declare class MyModule {
  ****************************************************************************************************/
 import { Component, NgModule, Pipe } from '@angular/core';
 import * as i0 from "@angular/core";
-export class StylePipe {
+class StylePipe {
     transform(v) { }
 }
 StylePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StylePipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
 StylePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StylePipe, name: "stylePipe" });
+export { StylePipe };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StylePipe, decorators: [{
             type: Pipe,
             args: [{ name: 'stylePipe' }]
         }] });
-export class ClassPipe {
+class ClassPipe {
     transform(v) { }
 }
 ClassPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ClassPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
 ClassPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ClassPipe, name: "classPipe" });
+export { ClassPipe };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ClassPipe, decorators: [{
             type: Pipe,
             args: [{ name: 'classPipe' }]
         }] });
-export class MyComponent {
+class MyComponent {
     constructor() {
         this.myStyleExp = [{ color: 'red' }, { color: 'blue', duration: 1000 }];
         this.myClassExp = 'foo bar apple';
@@ -78,6 +82,7 @@ export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<div [style]="myStyleExp | stylePipe" [class]="myClassExp | classPipe"></div>`, isInline: true, dependencies: [{ kind: "pipe", type: StylePipe, name: "stylePipe" }, { kind: "pipe", type: ClassPipe, name: "classPipe" }] });
+export { MyComponent };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -85,11 +90,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `<div [style]="myStyleExp | stylePipe" [class]="myClassExp | classPipe"></div>`
                 }]
         }] });
-export class MyModule {
+class MyModule {
 }
 MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
 MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [MyComponent, StylePipe, ClassPipe] });
 MyModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+export { MyModule };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
             type: NgModule,
             args: [{ declarations: [MyComponent, StylePipe, ClassPipe] }]
@@ -132,16 +138,17 @@ export declare class MyModule {
  ****************************************************************************************************/
 import { Component, NgModule, Pipe } from '@angular/core';
 import * as i0 from "@angular/core";
-export class PipePipe {
+class PipePipe {
     transform(v) { }
 }
 PipePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipePipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
 PipePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipePipe, name: "pipe" });
+export { PipePipe };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipePipe, decorators: [{
             type: Pipe,
             args: [{ name: 'pipe' }]
         }] });
-export class MyComponent {
+class MyComponent {
     constructor() {
         this.myStyleExp = {};
         this.fooExp = 'foo';
@@ -159,6 +166,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "
          [style.bar]="barExp | pipe:3000"
          [style.baz]="bazExp | pipe:4000">
          {{ item }}</div>`, isInline: true, dependencies: [{ kind: "pipe", type: PipePipe, name: "pipe" }] });
+export { MyComponent };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -172,11 +180,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
          {{ item }}</div>`
                 }]
         }] });
-export class MyModule {
+class MyModule {
 }
 MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
 MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [MyComponent, PipePipe] });
 MyModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+export { MyModule };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
             type: NgModule,
             args: [{ declarations: [MyComponent, PipePipe] }]
@@ -212,7 +221,7 @@ export declare class MyModule {
  ****************************************************************************************************/
 import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
-export class MyComponent {
+class MyComponent {
     constructor() {
         this.w1 = '100px';
         this.h1 = '100px';
@@ -227,6 +236,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "
     <div [class.active]="a1"></div>
     <div [class.removed]="r1"></div>
   `, isInline: true });
+export { MyComponent };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -239,11 +249,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   `
                 }]
         }] });
-export class MyModule {
+class MyModule {
 }
 MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
 MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [MyComponent] });
 MyModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+export { MyModule };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
             type: NgModule,
             args: [{ declarations: [MyComponent] }]

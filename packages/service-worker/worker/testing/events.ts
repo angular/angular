@@ -7,10 +7,10 @@
  */
 
 export class MockEvent implements Event {
-  readonly AT_TARGET = -1;
-  readonly BUBBLING_PHASE = -1;
-  readonly CAPTURING_PHASE = -1;
-  readonly NONE = -1;
+  readonly AT_TARGET = 2;
+  readonly BUBBLING_PHASE = 3;
+  readonly CAPTURING_PHASE = 1;
+  readonly NONE = 0;
 
   readonly bubbles = false;
   cancelBubble = false;

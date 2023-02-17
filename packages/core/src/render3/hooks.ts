@@ -8,6 +8,7 @@
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
+
 import {assertFirstCreatePass} from './assert';
 import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature';
 import {DirectiveDef} from './interfaces/definition';
@@ -223,9 +224,10 @@ function callHooks(
         break;
       }
     } else {
-      const isInitHook = arr[i] < 0;
-      if (isInitHook)
+      const isInitHook = (arr[i] as number) < 0;
+      if (isInitHook) {
         currentView[PREORDER_HOOK_FLAGS] += PreOrderHookFlags.NumberOfInitHooksCalledIncrementer;
+      }
       if (lastNodeIndexFound < nodeIndexLimit || nodeIndexLimit == -1) {
         callHook(currentView, initPhase, arr, i);
         currentView[PREORDER_HOOK_FLAGS] =
@@ -246,7 +248,7 @@ function callHooks(
  * @param i The current index within the hook data array
  */
 function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, i: number) {
-  const isInitHook = arr[i] < 0;
+  const isInitHook = (arr[i] as number) < 0;
   const hook = arr[i + 1] as () => void;
   const directiveIndex = isInitHook ? -arr[i] : arr[i] as number;
   const directive = currentView[directiveIndex];

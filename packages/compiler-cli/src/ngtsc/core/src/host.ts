@@ -68,11 +68,14 @@ export class DelegatingCompilerHost implements
   useCaseSensitiveFileNames = this.delegateMethod('useCaseSensitiveFileNames');
   writeFile = this.delegateMethod('writeFile');
   getModuleResolutionCache = this.delegateMethod('getModuleResolutionCache');
-  // @ts-ignore 'hasInvalidatedResolutions' is visible (and thus required here) in latest TSC
-  // main. It's already present, so the code works at runtime.
-  // TODO: remove this comment including the suppression once Angular uses a TSC version that
-  // includes this change (github.com/microsoft/TypeScript@a455955).
   hasInvalidatedResolutions = this.delegateMethod('hasInvalidatedResolutions');
+  // The following methods are required in TS 5.0+, but they don't exist in earlier versions.
+  // TODO(crisbeto): remove the `ts-ignore` when dropping support for TypeScript 4.9.
+  // @ts-ignore
+  resolveModuleNameLiterals = this.delegateMethod('resolveModuleNameLiterals');
+  resolveTypeReferenceDirectiveReferences =
+      // @ts-ignore
+      this.delegateMethod('resolveTypeReferenceDirectiveReferences');
 }
 
 /**

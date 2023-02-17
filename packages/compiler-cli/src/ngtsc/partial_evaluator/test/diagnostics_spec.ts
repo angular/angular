@@ -73,7 +73,6 @@ runInEachFileSystem(os => {
 
       it('should describe enum values', () => {
         const decl = ts.factory.createEnumDeclaration(
-            /* decorators */ undefined,
             /* modifiers */ undefined,
             /* name */ 'MyEnum',
             /* members */[ts.factory.createEnumMember(

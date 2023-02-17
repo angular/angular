@@ -181,8 +181,11 @@ function getExtendedConfigPathWorker(
     } =
         ts.nodeModuleNameResolver(
             extendsValue, configFile,
-            {moduleResolution: ts.ModuleResolutionKind.NodeJs, resolveJsonModule: true},
-            parseConfigHost);
+            // TODO(crisbeto): the `moduleResolution` should be ts.ModuleResolutionKind.Node10, but
+            // it is temporarily hardcoded to the raw value while we're on TS 4.9 internally where
+            // the key is called `NodeJs`. The hardcoded value should be removed once the internal
+            // monorepo is on TS 5.0.
+            {moduleResolution: 2, resolveJsonModule: true}, parseConfigHost);
     if (resolvedModule) {
       return absoluteFrom(resolvedModule.resolvedFileName);
     }
