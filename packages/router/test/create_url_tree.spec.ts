@@ -235,12 +235,8 @@ describe('createUrlTree', async () => {
         expect(router.url).toEqual('/x(left:search)');
         expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
             .toEqual('/x(left:projects/123)');
-        // TODO(atscott): router.createUrlTree uses the "legacy" strategy based on the current
-        // UrlTree to generate new URLs. Once that changes, this can be `router.createUrlTree`
-        // again.
-        expect(createUrlTreeFromSnapshot(
-                   router.routerState.root.snapshot,
-                   [
+        expect(router
+                   .createUrlTree([
                      '/', {
                        outlets: {
                          'primary': [{
@@ -412,10 +408,7 @@ describe('createUrlTree', async () => {
 
     it('should support parameters-only navigation (with a double dot)', async () => {
       await router.navigateByUrl('/a/(c//left:cp)(left:ap)');
-      const t = createUrlTreeFromSnapshot(
-          router.routerState.root.children[0].children[0].snapshot, ['../', {x: 5}]);
-      // TODO(atscott): This will work when the router uses createUrlTreeFromSnapshot
-      // const t = create(router.routerState.root.children[0].children[0], ['../', {x: 5}]);
+      const t = create(router.routerState.root.children[0].children[0], ['../', {x: 5}]);
       expect(serializer.serialize(t)).toEqual('/a;x=5(left:ap)');
     });
 
@@ -433,6 +426,14 @@ describe('createUrlTree', async () => {
 
     it('should support going to a parent (across segments)', async () => {
       await router.navigateByUrl('/q/(a/(c//left:cp)//left:qp)(left:ap)');
+      // The resulting URL isn't necessarily correct. Though we could never truly navigate to the
+      // URL above, this should probably go to '/q/a/c(left:ap)' at the very least and potentially
+      // be able to go somewhere like /q/a/c/(left:xyz)(left:ap). That is, allow matching named
+      // outlets as long as they do not have a primary outlet sibling. Having a primary outlet
+      // sibling isn't possible because the wildcard should consume all the primary outlet segments
+      // so there cannot be any remaining in the children.
+      // https://github.com/angular/angular/issues/40089
+      expect(router.url).toEqual('/q(left:ap)');
 
       const t = create(router.routerState.root.children[0].children[0], ['../../q2']);
       expect(serializer.serialize(t)).toEqual('/q2(left:ap)');

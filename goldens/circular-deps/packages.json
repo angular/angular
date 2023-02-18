@@ -287,12 +287,6 @@
     "packages/forms/src/model/abstract_model.ts"
   ],
   [
-    "packages/router/src/apply_redirects.ts",
-    "packages/router/src/operators/check_guards.ts",
-    "packages/router/src/navigation_transition.ts",
-    "packages/router/src/operators/apply_redirects.ts"
-  ],
-  [
     "packages/router/src/directives/router_outlet.ts",
     "packages/router/src/router_outlet_context.ts"
   ],
@@ -311,7 +305,7 @@
   ],
   [
     "packages/router/src/navigation_transition.ts",
-    "packages/router/src/operators/apply_redirects.ts"
+    "packages/router/src/operators/check_guards.ts"
   ],
   [
     "packages/router/src/navigation_transition.ts",
