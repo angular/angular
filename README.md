@@ -47,25 +47,25 @@
 
 Get started with Angular, learn the fundamentals and explore advanced topics on our documentation website.
 
-- [Getting Started][quickstart]
-- [Architecture][architecture]
-- [Components and Templates][componentstemplates]
-- [Forms][forms]
-- [API][api]
+- [Getting Started][quickstart].
+- [Architecture][architecture].
+- [Components and Templates][componentstemplates].
+- [Forms][forms].
+- [API][api].
 
 ### Advanced
 
-- [Angular Elements][angularelements]
-- [Server Side Rendering][ssr]
-- [Schematics][schematics]
-- [Lazy Loading][lazyloading]
-- [Animations][animations]
+- [Angular Elements][angularelements].
+- [Server Side Rendering][ssr].
+- [Schematics][schematics].
+- [Lazy Loading][lazyloading].
+- [Animations][animations].
 
 ## Development Setup
 
 ### Prerequisites
 
-- Install [Node.js] which includes [Node Package Manager][npm]
+- Install [Node.js] which includes [Node Package Manager][npm].
 
 ### Setting Up a Project
 
@@ -100,8 +100,8 @@ Angular is cross-platform, fast, scalable, has incredible tooling, and is loved 
   <img src="/docs/images/angular-ecosystem-logos.png" alt="angular ecosystem logos" width="500px" height="auto">
 </p>
 
-- [Angular Command Line (CLI)][cli]
-- [Angular Material][angularmaterial]
+- [Angular Command Line (CLI)][cli].
+- [Angular Material][angularmaterial].
 
 ## Changelog
 
@@ -129,12 +129,12 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 
 Join the conversation and help the community.
 
-- [Twitter][twitter]
-- [Discord][discord]
-- [Gitter][gitter]
-- [YouTube][youtube]
-- [StackOverflow][stackoverflow]
-- Find a Local [Meetup][meetup]
+- [Twitter][twitter].
+- [Discord][discord].
+- [Gitter][gitter].
+- [YouTube][youtube].
+- [StackOverflow][stackoverflow].
+- Find a Local [Meetup][meetup].
 
 [![Love Angular badge](https://img.shields.io/badge/angular-love-blue?logo=angular&angular=love)](https://www.github.com/angular/angular)
 
