@@ -10,7 +10,7 @@ import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@a
 import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injectable, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {ChildrenOutletContexts, Resolve, Router, RouterOutlet} from '@angular/router';
+import {ChildrenOutletContexts, DefaultUrlSerializer, Resolve, Router, RouterOutlet, UrlSerializer, UrlTree} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 import {delay, mapTo} from 'rxjs/operators';
@@ -388,6 +388,32 @@ describe('Integration', () => {
     // Destroying the first one show not clear the outlet context because the second one takes over
     // as the registered outlet.
     expect(contexts.getContext('primary')?.outlet).not.toBeNull();
+  });
+
+  it('should respect custom serializer all the way to the final url on state', async () => {
+    const QUERY_VALUE = {user: 'atscott'};
+    const SPECIAL_SERIALIZATION = 'special';
+
+    class CustomSerializer extends DefaultUrlSerializer {
+      override serialize(tree: UrlTree): string {
+        const mutableCopy = new UrlTree(tree.root, {...tree.queryParams}, tree.fragment);
+        if (mutableCopy.queryParams['q']) {
+          mutableCopy.queryParams['q'] = SPECIAL_SERIALIZATION;
+        }
+        return new DefaultUrlSerializer().serialize(mutableCopy);
+      }
+    }
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), {provide: UrlSerializer, useValue: new CustomSerializer()}]
+    });
+
+    const router = TestBed.inject(Router);
+    const tree = router.createUrlTree([]);
+    tree.queryParams = {q: QUERY_VALUE};
+    await router.navigateByUrl(tree);
+
+    expect(router.url).toEqual(`/?q=${SPECIAL_SERIALIZATION}`);
   });
 });
 

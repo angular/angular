@@ -11,6 +11,7 @@ import {TestBed} from '@angular/core/testing';
 
 import {Routes} from '../src/models';
 import {Recognizer} from '../src/recognize';
+import {RouterConfigLoader} from '../src/router_config_loader';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
@@ -460,20 +461,21 @@ describe('recognize', async () => {
 
       it('should not persist a primary segment beyond the boundary of a named outlet match',
          async () => {
-           const s = await new Recognizer(
-                         TestBed.inject(EnvironmentInjector), RootComponent,
-                         [
-                           {
-                             path: '',
-                             component: ComponentA,
-                             outlet: 'a',
-                             children: [{path: 'b', component: ComponentB}],
-                           },
-                         ],
-                         tree('/b'), '/b', 'emptyOnly', new DefaultUrlSerializer())
-                         .recognize()
-                         .toPromise();
-           expect(s).toBeNull();
+           const recognizePromise = new Recognizer(
+                                        TestBed.inject(EnvironmentInjector),
+                                        TestBed.inject(RouterConfigLoader), RootComponent,
+                                        [
+                                          {
+                                            path: '',
+                                            component: ComponentA,
+                                            outlet: 'a',
+                                            children: [{path: 'b', component: ComponentB}],
+                                          },
+                                        ],
+                                        tree('/b'), 'emptyOnly', new DefaultUrlSerializer())
+                                        .recognize()
+                                        .toPromise();
+           await expectAsync(recognizePromise).toBeRejected();
          });
     });
   });
@@ -645,12 +647,11 @@ async function recognize(
     paramsInheritanceStrategy: 'emptyOnly'|'always' = 'emptyOnly'): Promise<RouterStateSnapshot> {
   const serializer = new DefaultUrlSerializer();
   const result = await new Recognizer(
-                     TestBed.inject(EnvironmentInjector), RootComponent, config, tree(url), url,
-                     paramsInheritanceStrategy, serializer)
+                     TestBed.inject(EnvironmentInjector), TestBed.inject(RouterConfigLoader),
+                     RootComponent, config, tree(url), paramsInheritanceStrategy, serializer)
                      .recognize()
                      .toPromise();
-  expect(result).not.toBeNull();
-  return result!;
+  return result.state;
 }
 
 function checkActivatedRoute(

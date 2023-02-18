@@ -741,17 +741,28 @@ export function createRoot(rootCandidate: UrlSegmentGroup) {
 }
 
 /**
- * Recursively merges primary segment children into their parents and also drops empty children
- * (those which have no segments and no children themselves). The latter prevents serializing a
- * group into something like `/a(aux:)`, where `aux` is an empty child segment.
+ * Recursively
+ * - merges primary segment children into their parents
+ * - drops empty children (those which have no segments and no children themselves). This latter
+ * prevents serializing a group into something like `/a(aux:)`, where `aux` is an empty child
+ * segment.
+ * - merges named outlets without a primary segment sibling into the children. This prevents
+ * serializing a URL like `//(a:a)(b:b) instead of `/(a:a//b:b)` when the aux b route lives on the
+ * root but the `a` route lives under an empty path primary route.
  */
 export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGroup {
   const newChildren: Record<string, UrlSegmentGroup> = {};
   for (const childOutlet of Object.keys(segmentGroup.children)) {
     const child = segmentGroup.children[childOutlet];
     const childCandidate = squashSegmentGroup(child);
-    // don't add empty children
-    if (childCandidate.segments.length > 0 || childCandidate.hasChildren()) {
+    // moves named children in an empty path primary child into this group
+    if (childOutlet === PRIMARY_OUTLET && childCandidate.segments.length === 0 &&
+        childCandidate.hasChildren()) {
+      for (const [grandChildOutlet, grandChild] of Object.entries(childCandidate.children)) {
+        newChildren[grandChildOutlet] = grandChild;
+      }
+    }  // don't add empty children
+    else if (childCandidate.segments.length > 0 || childCandidate.hasChildren()) {
       newChildren[childOutlet] = childCandidate;
     }
   }
