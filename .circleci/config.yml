@@ -74,7 +74,7 @@ var_9: &only_release_branches
 # https://circleci.com/developer/orbs.
 orbs:
   node: circleci/node@5.0.1
-  devinfra: angular/dev-infra@1.0.6
+  devinfra: angular/dev-infra@1.0.8
 
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
