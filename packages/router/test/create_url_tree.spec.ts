@@ -235,12 +235,8 @@ describe('createUrlTree', async () => {
         expect(router.url).toEqual('/x(left:search)');
         expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
             .toEqual('/x(left:projects/123)');
-        // TODO(atscott): router.createUrlTree uses the "legacy" strategy based on the current
-        // UrlTree to generate new URLs. Once that changes, this can be `router.createUrlTree`
-        // again.
-        expect(createUrlTreeFromSnapshot(
-                   router.routerState.root.snapshot,
-                   [
+        expect(router
+                   .createUrlTree([
                      '/', {
                        outlets: {
                          'primary': [{
@@ -412,10 +408,7 @@ describe('createUrlTree', async () => {
 
     it('should support parameters-only navigation (with a double dot)', async () => {
       await router.navigateByUrl('/a/(c//left:cp)(left:ap)');
-      const t = createUrlTreeFromSnapshot(
-          router.routerState.root.children[0].children[0].snapshot, ['../', {x: 5}]);
-      // TODO(atscott): This will work when the router uses createUrlTreeFromSnapshot
-      // const t = create(router.routerState.root.children[0].children[0], ['../', {x: 5}]);
+      const t = create(router.routerState.root.children[0].children[0], ['../', {x: 5}]);
       expect(serializer.serialize(t)).toEqual('/a;x=5(left:ap)');
     });
 
@@ -432,7 +425,14 @@ describe('createUrlTree', async () => {
     });
 
     it('should support going to a parent (across segments)', async () => {
-      await router.navigateByUrl('/q/(a/(c//left:cp)//left:qp)(left:ap)');
+      // TODO: This test used to have aux outlets under the wildcard primary match of 'q'
+      // Before, the apply_redirects would not attempt to match those outlets and effectively drop
+      // them completely from the final URL. Recognize, however, needs to continue matching routes
+      // under the wildcard (only empty paths would match) because of configs like this: {path:
+      // '**', loadChildren: () => childRoutes}
+      //
+      // await router.navigateByUrl('/q/(a/(c//left:cp)//left:qp)(left:ap)');
+      await router.navigateByUrl('/q/a/c(left:ap)');
 
       const t = create(router.routerState.root.children[0].children[0], ['../../q2']);
       expect(serializer.serialize(t)).toEqual('/q2(left:ap)');

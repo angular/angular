@@ -15,7 +15,6 @@ import {Event, GuardsCheckEnd, GuardsCheckStart, IMPERATIVE_NAVIGATION, Navigati
 import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
 import {isNavigationCancelingError, isRedirectingNavigationCancelingError, redirectingNavigationError} from './navigation_canceling_error';
 import {activateRoutes} from './operators/activate_routes';
-import {applyRedirects} from './operators/apply_redirects';
 import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
@@ -426,30 +425,21 @@ export class NavigationTransitions {
                                    return Promise.resolve(t);
                                  }),
 
-                                 // ApplyRedirects
-                                 applyRedirects(
-                                     this.environmentInjector, this.configLoader,
-                                     this.urlSerializer, router.config),
-
-                                 // Update the currentNavigation
-                                 // `urlAfterRedirects` is guaranteed to be set after this point
-                                 tap(t => {
-                                   this.currentNavigation = {
-                                     ...this.currentNavigation!,
-                                     finalUrl: t.urlAfterRedirects
-                                   };
-                                   overallTransitionState.urlAfterRedirects = t.urlAfterRedirects;
-                                 }),
-
                                  // Recognize
                                  recognize(
-                                     this.environmentInjector, this.rootComponentType,
-                                     router.config, this.urlSerializer,
+                                     this.environmentInjector, this.configLoader,
+                                     this.rootComponentType, router.config, this.urlSerializer,
                                      router.paramsInheritanceStrategy),
 
                                  // Update URL if in `eager` update mode
                                  tap(t => {
                                    overallTransitionState.targetSnapshot = t.targetSnapshot;
+                                   overallTransitionState.urlAfterRedirects = t.urlAfterRedirects;
+                                   this.currentNavigation = {
+                                     ...this.currentNavigation!,
+                                     finalUrl: t.urlAfterRedirects
+                                   };
+
                                    if (router.urlUpdateStrategy === 'eager') {
                                      if (!t.extras.skipLocationChange) {
                                        const rawUrl = router.urlHandlingStrategy.merge(
