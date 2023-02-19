@@ -19,19 +19,19 @@
   "license": "MIT",
   "repository": {},
   "dependencies": {
-    "@angular/animations": "^15.0.0-rc.1",
-    "@angular/common": "^15.0.0-rc.1",
-    "@angular/compiler": "^15.0.0-rc.1",
-    "@angular/core": "^15.0.0-rc.1",
-    "@angular/elements": "^15.0.0-rc.1",
-    "@angular/forms": "^15.0.0-rc.1",
-    "@angular/localize": "^15.0.0-rc.1",
-    "@angular/platform-browser": "^15.0.0-rc.1",
-    "@angular/platform-browser-dynamic": "^15.0.0-rc.1",
-    "@angular/platform-server": "^15.0.0-rc.1",
-    "@angular/router": "^15.0.0-rc.1",
-    "@angular/service-worker": "^15.0.0-rc.1",
-    "@angular/upgrade": "^15.0.0-rc.1",
+    "@angular/animations": "^15.2.0-rc.0",
+    "@angular/common": "^15.2.0-rc.0",
+    "@angular/compiler": "^15.2.0-rc.0",
+    "@angular/core": "^15.2.0-rc.0",
+    "@angular/elements": "^15.2.0-rc.0",
+    "@angular/forms": "^15.2.0-rc.0",
+    "@angular/localize": "^15.2.0-rc.0",
+    "@angular/platform-browser": "^15.2.0-rc.0",
+    "@angular/platform-browser-dynamic": "^15.2.0-rc.0",
+    "@angular/platform-server": "^15.2.0-rc.0",
+    "@angular/router": "^15.2.0-rc.0",
+    "@angular/service-worker": "^15.2.0-rc.0",
+    "@angular/upgrade": "^15.2.0-rc.0",
     "@nguniversal/express-engine": "^15.0.0-next.0",
     "angular": "^1.8.3",
     "angular-in-memory-web-api": "~0.15.0",
@@ -45,9 +45,9 @@
     "zone.js": "~0.12.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^15.0.0-rc.1",
-    "@angular/cli": "^15.0.0-rc.1",
-    "@angular/compiler-cli": "^15.0.0-rc.1",
+    "@angular-devkit/build-angular": "^15.2.0-rc.0",
+    "@angular/cli": "^15.2.0-rc.0",
+    "@angular/compiler-cli": "^15.2.0-rc.0",
     "@nguniversal/builders": "^15.0.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^13.2.0",
@@ -80,6 +80,6 @@
     "rollup-plugin-terser": "^7.0.2",
     "source-map-explorer": "^2.0.0",
     "ts-node": "~10.9.0",
-    "typescript": "~4.8.0"
+    "typescript": "~4.9.3"
   }
 }
