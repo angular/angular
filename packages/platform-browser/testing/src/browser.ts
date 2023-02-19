@@ -11,7 +11,6 @@ import {APP_ID, createPlatformFactory, NgModule, NgZone, PLATFORM_INITIALIZER, p
 import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
 import {BrowserDetection, createNgZone} from './browser_util';
-import {ENABLE_MOCK_PLATFORM_LOCATION} from './mock_platform_location_flag';
 
 function initBrowserTests() {
   BrowserDomAdapter.makeCurrent();
@@ -39,8 +38,7 @@ export const platformBrowserTesting =
   providers: [
     {provide: APP_ID, useValue: 'a'},
     {provide: NgZone, useFactory: createNgZone},
-    (ENABLE_MOCK_PLATFORM_LOCATION ? [{provide: PlatformLocation, useClass: MockPlatformLocation}] :
-                                     []),
+    {provide: PlatformLocation, useClass: MockPlatformLocation},
   ]
 })
 export class BrowserTestingModule {
