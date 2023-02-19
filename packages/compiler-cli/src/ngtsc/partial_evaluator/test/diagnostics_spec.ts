@@ -14,7 +14,7 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {Reference} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
-import {ObjectAssignBuiltinFn} from '../src/builtin';
+import {StringConcatBuiltinFn} from '../src/builtin';
 import {describeResolvedType, traceDynamicValue} from '../src/diagnostics';
 import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
@@ -89,7 +89,7 @@ runInEachFileSystem(os => {
       });
 
       it('should describe known functions', () => {
-        expect(describeResolvedType(new ObjectAssignBuiltinFn())).toBe('Function');
+        expect(describeResolvedType(new StringConcatBuiltinFn('foo'))).toBe('Function');
       });
 
       it('should describe external modules', () => {

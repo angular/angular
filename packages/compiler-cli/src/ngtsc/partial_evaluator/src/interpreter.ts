@@ -17,7 +17,6 @@ import {isDeclaration} from '../../util/src/typescript';
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn, StringConcatBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {ForeignFunctionResolver} from './interface';
-import {resolveKnownDeclaration} from './known_declaration';
 import {EnumValue, KnownFn, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 import {SyntheticValue} from './synthetic';
 
@@ -232,9 +231,6 @@ export class StaticInterpreter {
         return DynamicValue.fromUnknownIdentifier(node);
       }
     }
-    if (decl.known !== null) {
-      return resolveKnownDeclaration(decl.known);
-    }
     const declContext = {...context, ...joinModuleContext(context, node, decl)};
     const result = this.visitDeclaration(decl.node, declContext);
     if (result instanceof Reference) {
@@ -348,10 +344,6 @@ export class StaticInterpreter {
     }
 
     return new ResolvedModule(declarations, decl => {
-      if (decl.known !== null) {
-        return resolveKnownDeclaration(decl.known);
-      }
-
       const declContext = {
         ...context,
         ...joinModuleContext(context, node, decl),

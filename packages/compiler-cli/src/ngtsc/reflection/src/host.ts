@@ -25,10 +25,10 @@ export interface Decorator {
    */
   identifier: DecoratorIdentifier;
 
-  /**
-   * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
-   * if the decorator was declared in the same module and not imported.
-   */
+/**
+ * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
+ * if the decorator was declared in the same module and not imported.
+ */
   import: Import|null;
 
   /**
@@ -412,41 +412,6 @@ export interface FunctionDefinition {
 }
 
 /**
- * Possible declarations of known values, such as built-in objects/functions or TypeScript helpers.
- */
-export enum KnownDeclaration {
-  /**
-   * Indicates the JavaScript global `Object` class.
-   */
-  JsGlobalObject,
-
-  /**
-   * Indicates the `__assign` TypeScript helper function.
-   */
-  TsHelperAssign,
-
-  /**
-   * Indicates the `__spread` TypeScript helper function.
-   */
-  TsHelperSpread,
-
-  /**
-   * Indicates the `__spreadArrays` TypeScript helper function.
-   */
-  TsHelperSpreadArrays,
-
-  /**
-   * Indicates the `__spreadArray` TypeScript helper function.
-   */
-  TsHelperSpreadArray,
-
-  /**
-   * Indicates the `__read` TypeScript helper function.
-   */
-  TsHelperRead,
-}
-
-/**
  * A parameter to a function or method.
  */
 export interface Parameter {
@@ -505,11 +470,6 @@ export interface Declaration<T extends ts.Declaration = ts.Declaration> {
    * TypeScript reference to the declaration itself, if one exists.
    */
   node: T;
-
-  /**
-   * If set, describes the type of the known declaration this declaration resolves to.
-   */
-  known: KnownDeclaration|null;
 }
 
 /**
