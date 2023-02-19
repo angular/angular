@@ -769,9 +769,8 @@ function toHostDirectiveMetadata(
     hostDirective: HostDirectiveMeta, context: ts.SourceFile,
     refEmitter: ReferenceEmitter): R3HostDirectiveMetadata {
   return {
-    directive: toR3Reference(
-        hostDirective.directive.node, hostDirective.directive, hostDirective.directive, context,
-        context, refEmitter),
+    directive:
+        toR3Reference(hostDirective.directive.node, hostDirective.directive, context, refEmitter),
     isForwardReference: hostDirective.isForwardReference,
     inputs: hostDirective.inputs || null,
     outputs: hostDirective.outputs || null

@@ -189,10 +189,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return declaration.initializer || null;
   }
 
-  getDtsDeclaration(_: ClassDeclaration): ts.Declaration|null {
-    return null;
-  }
-
   getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier {
     return clazz.name;
   }

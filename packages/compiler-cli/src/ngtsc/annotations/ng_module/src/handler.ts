@@ -268,36 +268,28 @@ export class NgModuleDecoratorHandler implements
 
     const valueContext = node.getSourceFile();
 
-    let typeContext = valueContext;
-    const typeNode = this.reflector.getDtsDeclaration(node);
-    if (typeNode !== null) {
-      typeContext = typeNode.getSourceFile();
-    }
-
-
     const exportedNodes = new Set(exportRefs.map(ref => ref.node));
     const declarations: R3Reference[] = [];
     const exportedDeclarations: Expression[] = [];
 
     const bootstrap = bootstrapRefs.map(
         bootstrap => this._toR3Reference(
-            bootstrap.getOriginForDiagnostics(meta, node.name), bootstrap, valueContext,
-            typeContext));
+            bootstrap.getOriginForDiagnostics(meta, node.name), bootstrap, valueContext));
 
     for (const ref of declarationRefs) {
-      const decl = this._toR3Reference(
-          ref.getOriginForDiagnostics(meta, node.name), ref, valueContext, typeContext);
+      const decl =
+          this._toR3Reference(ref.getOriginForDiagnostics(meta, node.name), ref, valueContext);
       declarations.push(decl);
       if (exportedNodes.has(ref.node)) {
         exportedDeclarations.push(decl.type);
       }
     }
     const imports = importRefs.map(
-        imp => this._toR3Reference(
-            imp.getOriginForDiagnostics(meta, node.name), imp, valueContext, typeContext));
+        imp =>
+            this._toR3Reference(imp.getOriginForDiagnostics(meta, node.name), imp, valueContext));
     const exports = exportRefs.map(
-        exp => this._toR3Reference(
-            exp.getOriginForDiagnostics(meta, node.name), exp, valueContext, typeContext));
+        exp =>
+            this._toR3Reference(exp.getOriginForDiagnostics(meta, node.name), exp, valueContext));
 
 
     const isForwardReference = (ref: R3Reference) =>
@@ -686,17 +678,12 @@ export class NgModuleDecoratorHandler implements
   }
 
   private _toR3Reference(
-      origin: ts.Node, valueRef: Reference<ClassDeclaration>, valueContext: ts.SourceFile,
-      typeContext: ts.SourceFile): R3Reference {
+      origin: ts.Node, valueRef: Reference<ClassDeclaration>,
+      valueContext: ts.SourceFile): R3Reference {
     if (valueRef.hasOwningModuleGuess) {
-      return toR3Reference(origin, valueRef, valueRef, valueContext, valueContext, this.refEmitter);
+      return toR3Reference(origin, valueRef, valueContext, this.refEmitter);
     } else {
-      let typeRef = valueRef;
-      let typeNode = this.reflector.getDtsDeclaration(typeRef.node);
-      if (typeNode !== null && isNamedClassDeclaration(typeNode)) {
-        typeRef = new Reference(typeNode);
-      }
-      return toR3Reference(origin, valueRef, typeRef, valueContext, typeContext, this.refEmitter);
+      return toR3Reference(origin, valueRef, valueContext, this.refEmitter);
     }
   }
 
