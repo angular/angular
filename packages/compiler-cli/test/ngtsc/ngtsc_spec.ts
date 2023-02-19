@@ -5568,8 +5568,8 @@ function allTests(os: string) {
 
         verifyThrownError(
             ErrorCode.NGMODULE_INVALID_IMPORT,
-            'This likely means that the library (external) which declares NotAModule has not ' +
-                'been processed correctly by ngcc, or is not compatible with Angular Ivy.');
+            'This likely means that the library (external) which declares NotAModule is not ' +
+                'compatible with Angular Ivy.');
       });
 
       it('should provide a hint when importing an invalid NgModule from a local library', () => {
@@ -5589,8 +5589,8 @@ function allTests(os: string) {
 
         verifyThrownError(
             ErrorCode.NGMODULE_INVALID_IMPORT,
-            'This likely means that the dependency which declares NotAModule has not ' +
-                'been processed correctly by ngcc.');
+            'This likely means that the dependency which declares NotAModule is not ' +
+                'compatible with Angular Ivy.');
       });
 
       it('should provide a hint when importing an invalid NgModule in the current program', () => {
