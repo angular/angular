@@ -1033,7 +1033,7 @@ export class NgCompiler {
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, ngModuleScopeRegistry, metaReader,
             injectableRegistry, refEmitter, isCore, strictCtorDeps, semanticDepGraphUpdater,
-          this.closureCompilerEnabled, /** compileUndecoratedClassesWithAngularFeatures */ false,
+          this.closureCompilerEnabled,
           this.delegatingPerfRecorder,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
