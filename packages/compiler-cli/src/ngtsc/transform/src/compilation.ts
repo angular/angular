@@ -82,13 +82,13 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
    * Maps source files to any class declaration(s) within them which have been discovered to contain
    * Ivy traits.
    */
-  protected fileToClasses = new Map<ts.SourceFile, Set<ClassDeclaration>>();
+  private fileToClasses = new Map<ts.SourceFile, Set<ClassDeclaration>>();
 
   /**
    * Tracks which source files have been analyzed but did not contain any traits. This set allows
    * the compiler to skip analyzing these files in an incremental rebuild.
    */
-  protected filesWithoutTraits = new Set<ts.SourceFile>();
+  private filesWithoutTraits = new Set<ts.SourceFile>();
 
   private reexportMap = new Map<string, Map<string, [string, string]>>();
 
@@ -179,17 +179,6 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     } else {
       return null;
     }
-  }
-
-  recordsFor(sf: ts.SourceFile): ClassRecord[]|null {
-    if (!this.fileToClasses.has(sf)) {
-      return null;
-    }
-    const records: ClassRecord[] = [];
-    for (const clazz of this.fileToClasses.get(sf)!) {
-      records.push(this.classes.get(clazz)!);
-    }
-    return records;
   }
 
   getAnalyzedRecords(): Map<ts.SourceFile, ClassRecord[]> {
@@ -361,7 +350,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     return symbol;
   }
 
-  protected analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[]|null): void {
+  private analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[]|null): void {
     const traits = this.scanClassForTraits(clazz);
 
     if (traits === null) {
@@ -395,7 +384,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
   }
 
-  protected analyzeTrait(
+  private analyzeTrait(
       clazz: ClassDeclaration, trait: Trait<unknown, unknown, SemanticSymbol|null, unknown>,
       flags?: HandlerFlags): void {
     if (trait.state !== TraitState.Pending) {
