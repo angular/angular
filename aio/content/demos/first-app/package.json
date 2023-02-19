@@ -22,9 +22,9 @@
     "e2e": "ng e2e"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~15.0.1",
-    "@angular/cli": "~15.0.1",
-    "@angular/compiler-cli": "~15.0.1",
+    "@angular-devkit/build-angular": "~15.2.0-rc.0",
+    "@angular/cli": "~15.2.0-rc.0",
+    "@angular/compiler-cli": "~15.2.0-rc.0",
     "@types/jasmine": "~4.3.0",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
@@ -38,6 +38,6 @@
     "protractor": "~7.0.0",
     "ts-node": "~10.9.0",
     "tslint": "~6.1.0",
-    "typescript": "~4.8.4"
+    "typescript": "~4.9.3"
   }
 }
