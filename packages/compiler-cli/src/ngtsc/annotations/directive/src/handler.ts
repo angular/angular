@@ -65,8 +65,7 @@ export class DirectiveDecoratorHandler implements
       DetectResult<Decorator|null>|undefined {
     // If a class is undecorated but uses Angular features, we detect it as an
     // abstract directive. This is an unsupported pattern as of v10, but we want
-    // to still detect these patterns so that we can report diagnostics, or compile
-    // them for backwards compatibility in ngcc.
+    // to still detect these patterns so that we can report diagnostics.
     if (!decorators) {
       const angularField = this.findClassFieldWithAngularFeatures(node);
       return angularField ? {trigger: angularField.node, decorator: null, metadata: null} :

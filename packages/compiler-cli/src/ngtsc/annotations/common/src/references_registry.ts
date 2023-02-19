@@ -22,9 +22,7 @@ export interface ReferencesRegistry {
 }
 
 /**
- * This registry does nothing, since ngtsc does not currently need
- * this functionality.
- * The ngcc tool implements a working version for its purposes.
+ * This registry does nothing.
  */
 export class NoopReferencesRegistry implements ReferencesRegistry {
   add(source: DeclarationNode, ...references: Reference<DeclarationNode>[]): void {}

@@ -452,9 +452,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     // declaration.
     //
     // Note: when checking multiple classes declared in the same file, this repeats some operations.
-    // In theory, this could be expensive if run in the context of a massive input file (like a
-    // large FESM in ngcc). If performance does become an issue here, it should be possible to
-    // create a `Set<>`
+    // In theory, this could be expensive if run in the context of a massive input file. If
+    // performance does become an issue here, it should be possible to create a `Set<>`
 
     // Unfortunately, `ts.Iterator` doesn't implement the iterator protocol, so iteration here is
     // done manually.
