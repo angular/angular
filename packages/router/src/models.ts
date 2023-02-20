@@ -915,7 +915,7 @@ export type CanDeactivateFn<T> =
  * ```
  * class UserToken {}
  * class Permissions {
- *   canAccess(user: UserToken, id: string, segments: UrlSegment[]): boolean {
+ *   canAccess(user: UserToken, route: Route, segments: UrlSegment[]): boolean {
  *     return true;
  *   }
  * }
