@@ -595,22 +595,15 @@ jobs:
     executor: windows-executor
     steps:
       - checkout
-      - save_month_to_file
-      - capture_patches_for_cache_key
-      - init_environment
 
       # Setup the proper NodeJS version. The image comes pre-installed with `nvm-windows`.
+      # Note: This happens immediately after checkout because environment initialization logic
+      # might rely on Node and shouldn't use the older image-provided NodeJS version.
       - run:
           name: Install NodeJS version from `.nvmrc`.
           command: |
             nvm install $(cat .nvmrc)
             nvm use $(cat .nvmrc)
-
-      - restore_cache:
-          keys:
-            - *cache_key_win
-            - *cache_key_win_fallback
-
       - run:
           name: Debug information for flakiness of Windows job
           command: |
@@ -620,6 +613,14 @@ jobs:
             which yarn
             echo "Path: $PATH"
             yarn node -v
+
+      - save_month_to_file
+      - capture_patches_for_cache_key
+      - init_environment
+      - restore_cache:
+          keys:
+            - *cache_key_win
+            - *cache_key_win_fallback
 
       # Install project dependencies, and install Bazelisk globally. This is necessary as
       # Windows might error when `bazel` is invoked from the project node modules. The Bazel
