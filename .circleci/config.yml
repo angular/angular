@@ -604,6 +604,7 @@ jobs:
           command: |
             nvm install $(cat .nvmrc)
             nvm use $(cat .nvmrc)
+            nvm on
       - run:
           name: Debug information for flakiness of Windows job
           command: |
