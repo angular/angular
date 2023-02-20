@@ -7,8 +7,10 @@
  */
 
 import {Expression, ExternalExpr} from '@angular/compiler';
+
 import {AbsoluteFsPath} from '../../../file_system';
 import {ClassDeclaration} from '../../../reflection';
+
 import {SemanticReference, SemanticSymbol} from './api';
 
 export interface SemanticDependencyResult {
@@ -49,7 +51,13 @@ class OpaqueSymbol extends SemanticSymbol {
  */
 export class SemanticDepGraph {
   readonly files = new Map<AbsoluteFsPath, Map<string, SemanticSymbol>>();
-  readonly symbolByDecl = new Map<ClassDeclaration, SemanticSymbol>();
+
+  // Note: the explicit type annotation is used to work around a CI failure on Windows:
+  // error TS2742: The inferred type of 'symbolByDecl' cannot be named without a reference to
+  // '../../../../../../../external/npm/node_modules/typescript/lib/typescript'. This is likely
+  // not portable. A type annotation is necessary.
+  readonly symbolByDecl: Map<ClassDeclaration, SemanticSymbol> =
+      new Map<ClassDeclaration, SemanticSymbol>();
 
   /**
    * Registers a symbol in the graph. The symbol is given a unique identifier if possible, such that
