@@ -237,7 +237,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#7dad055464ea9847e4870b9e3baad1f0c417bdf7":
   version "0.0.0-5f06c4774df908ed69e1441f4ec63b898acf0c68"
-  uid "7dad055464ea9847e4870b9e3baad1f0c417bdf7"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#7dad055464ea9847e4870b9e3baad1f0c417bdf7"
   dependencies:
     "@angular-devkit/build-angular" "16.0.0-rc.0"
@@ -371,7 +370,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#231bc6ee07c0f799d28f201a4e6d68ae31d88cfa":
   version "0.0.0-5f06c4774df908ed69e1441f4ec63b898acf0c68"
-  uid "231bc6ee07c0f799d28f201a4e6d68ae31d88cfa"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#231bc6ee07c0f799d28f201a4e6d68ae31d88cfa"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -3671,6 +3669,13 @@
   dependencies:
     "@types/glob" "*"
     "@types/node" "*"
+
+"@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.12":
+  version "4.1.12"
+  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.12.tgz#a2042f6bef044c48ca7a8b4caede4928242271a9"
+  integrity sha512-3DxuYHEbzIyUtuICRtxXtJomdOOkBeCbkXAlAPm/h8ArIn/ArWNnVSC6tIj/ECZ/sdxBoI0F/wuwcpxBew3hGw==
+  dependencies:
+    "@types/ws" "*"
 
 "@types/selenium-webdriver@3.0.7":
   version "3.0.7"
@@ -7244,8 +7249,7 @@ domhandler@^4.2.0, domhandler@^4.3.1:
     domelementtype "^2.2.0"
 
 "domino@https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1":
-  version "2.1.6+git"
-  uid aa8de3486307f57a518b4b0d9e5e16d9fbd998d1
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1"
 
 domutils@^2.8.0:
@@ -14038,7 +14042,6 @@ sass@1.62.1:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz":
   version "0.0.0"
-  uid "9c16682e4c9716734432789884f868212f95f563"
   resolved "https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz#9c16682e4c9716734432789884f868212f95f563"
 
 saucelabs@7.2.1, saucelabs@^1.5.0, saucelabs@^4.6.3:
@@ -14095,6 +14098,15 @@ select-hose@^2.0.0:
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
+"selenium-webdriver4@npm:selenium-webdriver@4.8.1", selenium-webdriver@4.8.1:
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.8.1.tgz#4b0a546c4ea747c44e9688c108f7a46b8d8244ab"
+  integrity sha512-p4MtfhCQdcV6xxkS7eI0tQN6+WNReRULLCAuT4RDGkrjfObBNXMJ3WT8XdK+aXTr5nnBKuh+PxIevM0EjJgkxA==
+  dependencies:
+    jszip "^3.10.0"
+    tmp "^0.2.1"
+    ws ">=8.11.0"
+
 selenium-webdriver@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-3.5.0.tgz#9036c82874e6c0f5cbff0a0f18223bc31c99cb77"
@@ -14114,15 +14126,6 @@ selenium-webdriver@3.6.0, selenium-webdriver@^3.0.1:
     rimraf "^2.5.4"
     tmp "0.0.30"
     xml2js "^0.4.17"
-
-selenium-webdriver@4.8.1:
-  version "4.8.1"
-  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.8.1.tgz#4b0a546c4ea747c44e9688c108f7a46b8d8244ab"
-  integrity sha512-p4MtfhCQdcV6xxkS7eI0tQN6+WNReRULLCAuT4RDGkrjfObBNXMJ3WT8XdK+aXTr5nnBKuh+PxIevM0EjJgkxA==
-  dependencies:
-    jszip "^3.10.0"
-    tmp "^0.2.1"
-    ws ">=8.11.0"
 
 selfsigned@^2.1.1:
   version "2.1.1"

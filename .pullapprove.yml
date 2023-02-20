@@ -1166,6 +1166,7 @@ groups:
           'tools/legacy-saucelabs/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',
           'tools/saucelabs/**/{*,.*}',
+          'tools/saucelabs-daemon/**/{*,.*}',
           'tools/symbol-extractor/**/{*,.*}',
           'tools/testing/**/{*,.*}',
           'tools/tslint/**/{*,.*}',
