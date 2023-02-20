@@ -1526,6 +1526,51 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should use the generated alias if a conflicting symbol already exists', async () => {
+    writeFile('module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {MyButton} from './button';
+
+      @NgModule({declarations: [MyComp, MyButton], exports: [MyComp]})
+      export class Mod {}
+    `);
+
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+      import {MyButton} from '@external/button';
+
+      MyButton.sayHello();
+
+      @Component({selector: 'my-comp', template: '<my-button>Hello</my-button>'})
+      export class MyComp {}
+    `);
+
+    writeFile('button.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-button', template: '<ng-content></ng-content>'})
+      export class MyButton {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(stripWhitespace(`
+      import {Component} from '@angular/core';
+      import {MyButton} from '@external/button';
+      import {MyButton as MyButton_1} from './button';
+
+      MyButton.sayHello();
+
+      @Component({
+        selector: 'my-comp', template: '<my-button>Hello</my-button>',
+        standalone: true,
+        imports: [MyButton_1]
+      })
+      export class MyComp {}
+    `));
+  });
+
   it('should remove a module that only has imports and exports', async () => {
     writeFile('app.module.ts', `
       import {NgModule} from '@angular/core';
