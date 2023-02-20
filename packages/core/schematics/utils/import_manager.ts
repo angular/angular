@@ -170,7 +170,7 @@ export class ImportManager {
     if (symbolName) {
       const {propertyName, name} = this._getImportParts(sourceFile, symbolName, alias);
       const importMap = this.newImports.get(sourceFile)!.namedImports;
-      identifier = propertyName || name;
+      identifier = name;
 
       if (!importMap.has(moduleName)) {
         importMap.set(moduleName, []);
