@@ -18,4 +18,8 @@ const rejected = (reason) => {
   return Promise.reject(reason);
 };
 
+process.on('unhandledRejection', (error) => {
+  console.log('unhandled', error);
+});
+
 export default {deferred, resolved, rejected};
