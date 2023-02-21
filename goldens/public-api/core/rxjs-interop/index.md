@@ -4,6 +4,24 @@
 
 ```ts
 
+import { Injector } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Signal } from '@angular/core';
+
+// @public
+export function fromObservable<T>(source: Observable<T>): Signal<T>;
+
+// @public
+export function fromObservable<T, U extends T | null | undefined>(source: Observable<T>, initialValue: U): Signal<T | U>;
+
+// @public
+export function fromSignal<T>(source: Signal<T>, options?: FromSignalOptions): Observable<T>;
+
+// @public
+export interface FromSignalOptions {
+    injector?: Injector;
+}
+
 // (No @packageDocumentation comment for this package)
 
 ```
