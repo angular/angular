@@ -8,8 +8,8 @@
 
 export {isSignal, Signal, ValueEqualityFn} from './src/api';
 export {computed} from './src/computed';
-export {effect} from './src/effect';
+export {effect, Effect} from './src/effect';
 export {setActiveConsumer} from './src/graph';
 export {SettableSignal, signal} from './src/signal';
-export {untracked as untrack} from './src/untracked';
+export {untracked} from './src/untracked';
 export {Watch} from './src/watch';

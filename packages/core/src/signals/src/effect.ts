@@ -11,6 +11,8 @@ import {Watch} from './watch';
 
 /**
  * A global reactive effect, which can be manually scheduled or destroyed.
+ *
+ * @developerPreview
  */
 export interface Effect {
   /**
