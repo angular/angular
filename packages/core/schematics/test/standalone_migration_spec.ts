@@ -1274,6 +1274,82 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should not copy over the NoopAnimationsModule into the imports of a test component',
+     async () => {
+       writeFile('app.spec.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {TestBed} from '@angular/core/testing';
+          import {MatCardModule} from '@angular/material/card';
+          import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+
+          describe('bootstrapping an app', () => {
+            it('should work', () => {
+              TestBed.configureTestingModule({
+                imports: [MatCardModule, NoopAnimationsModule],
+                declarations: [App]
+              });
+              const fixture = TestBed.createComponent(App);
+              expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
+            });
+          });
+
+          @Component({template: 'hello'})
+          class App {}
+        `);
+
+       await runMigration('convert-to-standalone');
+
+       const content = stripWhitespace(tree.readContent('app.spec.ts'));
+
+       expect(content).toContain(stripWhitespace(`
+          TestBed.configureTestingModule({
+            imports: [MatCardModule, NoopAnimationsModule, App]
+          });
+        `));
+       expect(content).toContain(stripWhitespace(`
+          @Component({template: 'hello', standalone: true, imports: [MatCardModule]})
+          class App {}
+        `));
+     });
+
+  it('should not copy over the BrowserAnimationsModule into the imports of a test component',
+     async () => {
+       writeFile('app.spec.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {TestBed} from '@angular/core/testing';
+          import {MatCardModule} from '@angular/material/card';
+          import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
+          describe('bootstrapping an app', () => {
+            it('should work', () => {
+              TestBed.configureTestingModule({
+                imports: [MatCardModule, BrowserAnimationsModule],
+                declarations: [App]
+              });
+              const fixture = TestBed.createComponent(App);
+              expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
+            });
+          });
+
+          @Component({template: 'hello'})
+          class App {}
+        `);
+
+       await runMigration('convert-to-standalone');
+
+       const content = stripWhitespace(tree.readContent('app.spec.ts'));
+
+       expect(content).toContain(stripWhitespace(`
+          TestBed.configureTestingModule({
+            imports: [MatCardModule, BrowserAnimationsModule, App]
+          });
+        `));
+       expect(content).toContain(stripWhitespace(`
+          @Component({template: 'hello', standalone: true, imports: [MatCardModule]})
+          class App {}
+        `));
+     });
+
   it('should not move declarations that are not being migrated out of the declarations array',
      async () => {
        const appComponentContent = `

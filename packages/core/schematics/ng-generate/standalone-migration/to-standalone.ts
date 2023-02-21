@@ -15,7 +15,7 @@ import {getImportSpecifier} from '../../utils/typescript/imports';
 import {closestNode} from '../../utils/typescript/nodes';
 import {isReferenceToImport} from '../../utils/typescript/symbol';
 
-import {ChangesByFile, ChangeTracker, findClassDeclaration, findLiteralProperty, ImportRemapper, NamedClassDeclaration} from './util';
+import {ChangesByFile, ChangeTracker, findClassDeclaration, findLiteralProperty, ImportRemapper, isClassReferenceInAngularModule, NamedClassDeclaration} from './util';
 
 /**
  * Function that can be used to prcess the dependencies that
@@ -602,8 +602,16 @@ function analyzeTestingModules(
 
     const importsProp = findLiteralProperty(obj, 'imports');
     const importElements = importsProp && hasNgModuleMetadataElements(importsProp) ?
-        // Filter out calls since they may be a `ModuleWithProviders`.
-        importsProp.initializer.elements.filter(el => !ts.isCallExpression(el)) :
+        importsProp.initializer.elements.filter(el => {
+          // Filter out calls since they may be a `ModuleWithProviders`.
+          return !ts.isCallExpression(el) &&
+              // Also filter out the animations modules since they throw errors if they're imported
+              // multiple times and it's common for apps to use the `NoopAnimationsModule` to
+              // disable animations in screenshot tests.
+              !isClassReferenceInAngularModule(
+                  el, /^BrowserAnimationsModule|NoopAnimationsModule$/,
+                  'platform-browser/animations', typeChecker);
+        }) :
         null;
 
     for (const decl of declarations) {
