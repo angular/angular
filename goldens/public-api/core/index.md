@@ -263,6 +263,9 @@ export abstract class ComponentRef<C> {
 }
 
 // @public
+export function computed<T>(computation: () => T, equal?: ValueEqualityFn<T>): Signal<T>;
+
+// @public
 export interface ConstructorProvider extends ConstructorSansProvider {
     multi?: boolean;
     provide: Type<any>;
@@ -474,6 +477,16 @@ export interface DoBootstrap {
 export interface DoCheck {
     ngDoCheck(): void;
 }
+
+// @public
+export interface Effect {
+    readonly consumer: Consumer;
+    destroy(): void;
+    schedule(): void;
+}
+
+// @public
+export function effect(effectFn: () => void): Effect;
 
 // @public
 export class ElementRef<T = any> {
@@ -786,6 +799,9 @@ export interface InputDecorator {
 
 // @public
 export function isDevMode(): boolean;
+
+// @public
+export function isSignal(value: Function): value is Signal<unknown>;
 
 // @public
 export function isStandalone(type: Type<unknown>): boolean;
@@ -1301,7 +1317,22 @@ export interface SelfDecorator {
 }
 
 // @public
+export interface SettableSignal<T> extends Signal<T> {
+    mutate(mutatorFn: (value: T) => void): void;
+    set(value: T): void;
+    update(updateFn: (value: T) => T): void;
+}
+
+// @public
 export function setTestabilityGetter(getter: GetTestability): void;
+
+// @public
+export type Signal<T> = (() => T) & {
+    [SIGNAL]: true;
+};
+
+// @public
+export function signal<T>(initialValue: T, equal?: ValueEqualityFn<T>): SettableSignal<T>;
 
 // @public
 export class SimpleChange {
@@ -1420,6 +1451,12 @@ export interface TypeDecorator {
 // @public
 export interface TypeProvider extends Type<any> {
 }
+
+// @public
+export function untracked<T>(nonReactiveReadsFn: () => T): T;
+
+// @public
+export type ValueEqualityFn<T> = (a: T, b: T) => boolean;
 
 // @public
 export interface ValueProvider extends ValueSansProvider {

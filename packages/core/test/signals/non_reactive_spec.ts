@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal, untrack} from '@angular/core/src/signals';
+import {computed, signal, untracked} from '@angular/core/src/signals';
 import {effect, effectsDone as flush, resetEffects} from '@angular/core/src/signals/src/effect';
 
 describe('non-reactive reads', () => {
@@ -17,15 +17,15 @@ describe('non-reactive reads', () => {
   it('should read the latest value from signal', () => {
     const counter = signal(0);
 
-    expect(untrack(counter)).toEqual(0);
+    expect(untracked(counter)).toEqual(0);
 
     counter.set(1);
-    expect(untrack(counter)).toEqual(1);
+    expect(untracked(counter)).toEqual(1);
   });
 
   it('should not add dependencies to computed when reading a value from a signal', () => {
     const counter = signal(0);
-    const double = computed(() => untrack(counter) * 2);
+    const double = computed(() => untracked(counter) * 2);
 
     expect(double()).toEqual(0);
 
@@ -37,10 +37,10 @@ describe('non-reactive reads', () => {
     const counter = signal(0);
     const double = computed(() => counter() * 2);
 
-    expect(untrack(double)).toEqual(0);
+    expect(untracked(double)).toEqual(0);
 
     counter.set(2);
-    expect(untrack(double)).toEqual(4);
+    expect(untracked(double)).toEqual(4);
   });
 
   it('should not make surrounding effect depend on the signal', async () => {
@@ -48,7 +48,7 @@ describe('non-reactive reads', () => {
 
     const runLog: number[] = [];
     effect(() => {
-      runLog.push(untrack(s));
+      runLog.push(untracked(s));
     });
 
     // an effect will run at least once
@@ -89,7 +89,7 @@ describe('non-reactive reads', () => {
 
     let runLog: string[] = [];
     const effectRef = effect(() => {
-      untrack(() => runLog.push(`${first()} ${last()}`));
+      untracked(() => runLog.push(`${first()} ${last()}`));
     });
 
     // effects run at least once
