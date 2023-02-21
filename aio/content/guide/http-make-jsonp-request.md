@@ -1,6 +1,6 @@
 # HTTP: Make a JSONP request
 
-“JSON with Padding” (JSONP) is a method to deceive a web browser into carrying out requests with a <script> tag that uses the SRC attribute to make a special API request.
+“JSON with Padding” (JSONP) is a method to deceive a web browser into carrying out requests with a `<script>` tag that uses the SRC attribute to make a special API request.
 
 Apps can use the `HttpClient` to make [JSONP](https://en.wikipedia.org/wiki/JSONP) requests across domains when a server doesn't support [CORS protocol](https://developer.mozilla.org/docs/Web/HTTP/CORS).
 
