@@ -12,6 +12,7 @@ import {dirname, relative} from 'path';
 import ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
+import {closestNode} from '../../utils/typescript/nodes';
 
 /** Mapping between a source file and the changes that have to be applied to it. */
 export type ChangesByFile = ReadonlyMap<ts.SourceFile, PendingChange[]>;
@@ -390,4 +391,44 @@ export function knownInternalAliasRemapper(imports: PotentialImport[]) {
       current => current.moduleSpecifier === '@angular/common' && current.symbolName === 'NgForOf' ?
           {...current, symbolName: 'NgFor'} :
           current);
+}
+
+/**
+ * Gets the closest node that matches a predicate, including the node that the search started from.
+ * @param node Node from which to start the search.
+ * @param predicate Predicate that the result needs to pass.
+ */
+export function closestOrSelf<T extends ts.Node>(
+    node: ts.Node, predicate: (n: ts.Node) => n is T): T|null {
+  return predicate(node) ? node : closestNode(node, predicate);
+}
+
+/**
+ * Checks whether a node is referring to a specific class declaration.
+ * @param node Node that is being checked.
+ * @param className Name of the class that the node might be referring to.
+ * @param moduleName Name of the Angular module that should contain the class.
+ * @param typeChecker
+ */
+export function isClassReferenceInAngularModule(
+    node: ts.Node, className: string|RegExp, moduleName: string,
+    typeChecker: ts.TypeChecker): boolean {
+  const symbol = typeChecker.getTypeAtLocation(node).getSymbol();
+  const externalName = `@angular/${moduleName}`;
+  const internalName = `angular2/rc/packages/${moduleName}`;
+
+  return !!symbol?.declarations?.some(decl => {
+    const closestClass = closestOrSelf(decl, ts.isClassDeclaration);
+    const closestClassFileName = closestClass?.getSourceFile().fileName;
+
+    if (!closestClass || !closestClassFileName || !closestClass.name ||
+        !ts.isIdentifier(closestClass.name) ||
+        (!closestClassFileName.includes(externalName) &&
+         !closestClassFileName.includes(internalName))) {
+      return false;
+    }
+
+    return typeof className === 'string' ? closestClass.name.text === className :
+                                           className.test(closestClass.name.text);
+  });
 }

@@ -16,7 +16,7 @@ import {getAngularDecorators} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
 import {ComponentImportsRemapper, convertNgModuleDeclarationToStandalone, extractDeclarationsFromModule, findTestObjectsToMigrate, migrateTestDeclarations} from './to-standalone';
-import {ChangeTracker, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, ImportRemapper, NamedClassDeclaration, NodeLookup, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
+import {ChangeTracker, closestOrSelf, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, ImportRemapper, isClassReferenceInAngularModule, NamedClassDeclaration, NodeLookup, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
 
 /** Information extracted from a `bootstrapModule` call necessary to migrate it. */
 interface BootstrapCallAnalysis {
@@ -659,16 +659,6 @@ function isExported(node: ts.Node): node is ts.Node {
 }
 
 /**
- * Gets the closest node that matches a predicate, including the node that the search started from.
- * @param node Node from which to start the search.
- * @param predicate Predicate that the result needs to pass.
- */
-function closestOrSelf<T extends ts.Node>(node: ts.Node, predicate: (n: ts.Node) => n is T): T|
-    null {
-  return predicate(node) ? node : closestNode(node, predicate);
-}
-
-/**
  * Asserts that a node is an exportable declaration, which means that it can either be exported or
  * it can be safely copied into another file.
  * @param node Node to be checked.
@@ -678,29 +668,6 @@ function isExportableDeclaration(node: ts.Node): node is ts.EnumDeclaration|ts.C
   return ts.isEnumDeclaration(node) || ts.isClassDeclaration(node) ||
       ts.isFunctionDeclaration(node) || ts.isInterfaceDeclaration(node) ||
       ts.isTypeAliasDeclaration(node);
-}
-
-/**
- * Checks whether a node is referring to a specific class declaration.
- * @param node Node that is being checked.
- * @param className Name of the class that the node might be referring to.
- * @param moduleName Name of the Angular module that should contain the class.
- * @param typeChecker
- */
-function isClassReferenceInAngularModule(
-    node: ts.Node, className: string, moduleName: string, typeChecker: ts.TypeChecker): boolean {
-  const symbol = typeChecker.getTypeAtLocation(node).getSymbol();
-  const externalName = `@angular/${moduleName}`;
-  const internalName = `angular2/rc/packages/${moduleName}`;
-
-  return !!symbol?.declarations?.some(decl => {
-    const closestClass = closestOrSelf(decl, ts.isClassDeclaration);
-    const closestClassFileName = closestClass?.getSourceFile().fileName;
-    return closestClass && closestClassFileName && closestClass.name &&
-        ts.isIdentifier(closestClass.name) && closestClass.name.text === className &&
-        (closestClassFileName.includes(externalName) ||
-         closestClassFileName.includes(internalName));
-  });
 }
 
 /**
