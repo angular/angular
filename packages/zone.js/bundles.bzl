@@ -14,7 +14,7 @@ BUNDLES_ENTRY_POINTS = {
         "entrypoint": _DIR + "mix/rollup-mix",
     },
     "zone-node": {
-        "entrypoint": _DIR + "node/rollup-main",
+        "entrypoint": _DIR + "node/rollup-main-node-bundle",
     },
     "async-test": {
         "entrypoint": _DIR + "testing/async-testing",
