@@ -129,7 +129,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -150,7 +150,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body of type `Blob`.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -171,7 +171,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body of type string.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -193,7 +193,7 @@ export class HttpClient {
    * @return An `Observable` of the response, with the response body as an array of `HttpEvent`s for
    * the request.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -215,7 +215,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body of type `Blob`.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
@@ -236,7 +236,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body of type string.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
@@ -257,7 +257,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body of type `Object`.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -279,7 +279,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body of type `R`.
    */
-  request<R>(method: string, url: string, options: {
+  request<R>(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -300,7 +300,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the `HttpResponse`, with the response body as an `ArrayBuffer`.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
@@ -319,7 +319,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the `HttpResponse`, with the response body of type `Blob`.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
@@ -339,7 +339,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the HTTP response, with the response body of type string.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
@@ -360,7 +360,7 @@ export class HttpClient {
    * @return An `Observable` of the full `HttpResponse`,
    * with the response body of type `Object`.
    */
-  request(method: string, url: string, options: {
+  request(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -381,7 +381,7 @@ export class HttpClient {
    *
    * @return  An `Observable` of the full `HttpResponse`, with the response body of type `R`.
    */
-  request<R>(method: string, url: string, options: {
+  request<R>(method: string, url: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -402,7 +402,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the `HttpResponse`, with the response body of type `Object`.
    */
-  request(method: string, url: string, options?: {
+  request(method: string, url: string|URL, options?: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -424,7 +424,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the `HttpResponse`, with the response body of type `R`.
    */
-  request<R>(method: string, url: string, options?: {
+  request<R>(method: string, url: string|URL, options?: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -445,7 +445,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the requested response, with body of type `any`.
    */
-  request(method: string, url: string, options?: {
+  request(method: string, url: string|URL, options?: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -483,7 +483,7 @@ export class HttpClient {
    *   * An `observe` value of body returns an observable of `<T>` with the same `T` body type.
    *
    */
-  request(first: string|HttpRequest<any>, url?: string, options: {
+  request(first: string|HttpRequest<any>, url?: string|URL, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
@@ -523,16 +523,19 @@ export class HttpClient {
         }
       }
 
+      let urlAsString = url?.toString();
+
       // Construct the request.
-      req = new HttpRequest(first, url!, (options.body !== undefined ? options.body : null), {
-        headers,
-        context: options.context,
-        params,
-        reportProgress: options.reportProgress,
-        // By default, JSON is assumed to be returned for all calls.
-        responseType: options.responseType || 'json',
-        withCredentials: options.withCredentials,
-      });
+      req =
+          new HttpRequest(first, urlAsString!, (options.body !== undefined ? options.body : null), {
+            headers,
+            context: options.context,
+            params,
+            reportProgress: options.reportProgress,
+            // By default, JSON is assumed to be returned for all calls.
+            responseType: options.responseType || 'json',
+            withCredentials: options.withCredentials,
+          });
     }
 
     // Start with an Observable.of() the initial request, and run the handler (which
@@ -611,7 +614,7 @@ export class HttpClient {
    *
    * @return  An `Observable` of the response body as an `ArrayBuffer`.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -632,7 +635,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response body as a `Blob`.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -652,7 +655,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body of type string.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -673,7 +676,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with response body as an `ArrayBuffer`.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -693,7 +696,7 @@ export class HttpClient {
    * @return An `Observable` of all the `HttpEvent`s for the request, with the response body as a
    * `Blob`.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -713,7 +716,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request, with the response
    * body of type string.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -733,7 +736,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request, with response body of
    * type `Object`.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -754,7 +757,7 @@ export class HttpClient {
    * @return An `Observable` of all the `HttpEvent`s for the request, with a response
    * body in the requested type.
    */
-  delete<T>(url: string, options: {
+  delete<T>(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -774,7 +777,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the full `HttpResponse`, with the response body as an `ArrayBuffer`.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -793,7 +796,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the `HttpResponse`, with the response body of type `Blob`.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -812,7 +815,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the full `HttpResponse`, with the response body of type string.
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -832,7 +835,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse`, with the response body of type `Object`.
    *
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -852,7 +855,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the `HttpResponse`, with the response body of the requested type.
    */
-  delete<T>(url: string, options: {
+  delete<T>(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -872,7 +875,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body of type `Object`.
    */
-  delete(url: string, options?: {
+  delete(url: string|URL, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -893,7 +896,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the `HttpResponse`, with response body in the requested type.
    */
-  delete<T>(url: string, options?: {
+  delete<T>(url: string|URL, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -914,7 +917,7 @@ export class HttpClient {
    * @param options The HTTP options to send with the request.
    *
    */
-  delete(url: string, options: {
+  delete(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body'|'events'|'response',
@@ -938,7 +941,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -957,7 +960,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -976,7 +979,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body of type string.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -996,7 +999,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request, with the response
    * body as an `ArrayBuffer`.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1014,7 +1017,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1032,7 +1035,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body of type string.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1050,7 +1053,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body of type `Object`.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1069,7 +1072,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with a response body in the requested type.
    */
-  get<T>(url: string, options: {
+  get<T>(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1089,7 +1092,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body as an `ArrayBuffer`.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1108,7 +1111,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body as a `Blob`.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1127,7 +1130,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body of type string.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1146,7 +1149,7 @@ export class HttpClient {
    * @return An `Observable` of the full `HttpResponse`,
    * with the response body of type `Object`.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1166,7 +1169,7 @@ export class HttpClient {
    * @return An `Observable` of the full `HttpResponse` for the request,
    * with a response body in the requested type.
    */
-  get<T>(url: string, options: {
+  get<T>(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1186,7 +1189,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response body as a JavaScript object.
    */
-  get(url: string, options?: {
+  get(url: string|URL, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1206,7 +1209,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the `HttpResponse`, with a response body in the requested type.
    */
-  get<T>(url: string, options?: {
+  get<T>(url: string|URL, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1222,7 +1225,7 @@ export class HttpClient {
    * `GET` request to execute on the server. See the individual overloads for
    * details on the return type.
    */
-  get(url: string, options: {
+  get(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body'|'events'|'response',
@@ -1245,7 +1248,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1265,7 +1268,7 @@ export class HttpClient {
    * @return  An `Observable` of the response, with the response body as a `Blob`.
    */
 
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1284,7 +1287,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body of type string.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1304,7 +1307,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body as an `ArrayBuffer`.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1323,7 +1326,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body as a `Blob`.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1342,7 +1345,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request, with the response body of type
    * string.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1361,7 +1364,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request, with a response body of
    * type `Object`.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1381,7 +1384,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    */
-  head<T>(url: string, options: {
+  head<T>(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1401,7 +1404,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body as an `ArrayBuffer`.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1420,7 +1423,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body as a blob.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1439,7 +1442,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body of type string.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1458,7 +1461,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body of type `Object`.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1478,7 +1481,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with a response body of the requested type.
    */
-  head<T>(url: string, options: {
+  head<T>(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1498,7 +1501,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an object parsed from JSON.
    */
-  head(url: string, options?: {
+  head(url: string|URL, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1519,7 +1522,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with a response body of the given type.
    */
-  head<T>(url: string, options?: {
+  head<T>(url: string|URL, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1537,7 +1540,7 @@ export class HttpClient {
    * resource itself. See the individual overloads for
    * details on the return type.
    */
-  head(url: string, options: {
+  head(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body'|'events'|'response',
@@ -1558,7 +1561,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response object, with response body as an object.
    */
-  jsonp(url: string, callbackParam: string): Observable<Object>;
+  jsonp(url: string|URL, callbackParam: string): Observable<Object>;
 
   /**
    * Constructs a `JSONP` request for the given URL and name of the callback parameter.
@@ -1572,7 +1575,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response object, with response body in the requested type.
    */
-  jsonp<T>(url: string, callbackParam: string): Observable<T>;
+  jsonp<T>(url: string|URL, callbackParam: string): Observable<T>;
 
   /**
    * Constructs an `Observable` that, when subscribed, causes a request with the special method
@@ -1592,7 +1595,7 @@ export class HttpClient {
    * @param callbackParam The callback function name.
    *
    */
-  jsonp<T>(url: string, callbackParam: string): Observable<T> {
+  jsonp<T>(url: string|URL, callbackParam: string): Observable<T> {
     return this.request<any>('JSONP', url, {
       params: new HttpParams().append(callbackParam, 'JSONP_CALLBACK'),
       observe: 'body',
@@ -1609,7 +1612,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1628,7 +1631,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1647,7 +1650,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body of type string.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1667,7 +1670,7 @@ export class HttpClient {
    * @return  An `Observable` of all `HttpEvent`s for the request,
    * with the response body as an `ArrayBuffer`.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1686,7 +1689,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body as a `Blob`.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1705,7 +1708,7 @@ export class HttpClient {
    * @return An `Observable` of all the `HttpEvent`s for the request,
    * with the response body of type string.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1724,7 +1727,7 @@ export class HttpClient {
    * @return An `Observable` of all the `HttpEvent`s for the request with the response
    * body of type `Object`.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1744,7 +1747,7 @@ export class HttpClient {
    * @return An `Observable` of all the `HttpEvent`s for the request,
    * with a response body in the requested type.
    */
-  options<T>(url: string, options: {
+  options<T>(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -1764,7 +1767,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body as an `ArrayBuffer`.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1783,7 +1786,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body as a `Blob`.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1802,7 +1805,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body of type string.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1821,7 +1824,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body of type `Object`.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1841,7 +1844,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with a response body in the requested type.
    */
-  options<T>(url: string, options: {
+  options<T>(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -1861,7 +1864,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an object parsed from JSON.
    */
-  options(url: string, options?: {
+  options(url: string|URL, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1881,7 +1884,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the `HttpResponse`, with a response body of the given type.
    */
-  options<T>(url: string, options?: {
+  options<T>(url: string|URL, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1899,7 +1902,7 @@ export class HttpClient {
    * without implying a resource action. See the individual overloads for
    * details on the return type.
    */
-  options(url: string, options: {
+  options(url: string|URL, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body'|'events'|'response',
@@ -1922,7 +1925,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1942,7 +1945,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1962,7 +1965,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with a response body of type string.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -1984,7 +1987,7 @@ export class HttpClient {
    * with the response body as an `ArrayBuffer`.
    */
 
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2004,7 +2007,7 @@ export class HttpClient {
    * @return An `Observable` of all the `HttpEvent`s for the request, with the
    * response body as `Blob`.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2024,7 +2027,7 @@ export class HttpClient {
    * @return An `Observable` of all the `HttpEvent`s for the request, with a
    * response body of type string.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2044,7 +2047,7 @@ export class HttpClient {
    * @return An `Observable` of all the `HttpEvent`s for the request,
    * with a response body of type `Object`.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2065,7 +2068,7 @@ export class HttpClient {
    * @return An `Observable` of all the `HttpEvent`s for the request,
    * with a response body in the requested type.
    */
-  patch<T>(url: string, body: any|null, options: {
+  patch<T>(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2086,7 +2089,7 @@ export class HttpClient {
    * @return  An `Observable` of the `HttpResponse` for the request,
    * with the response body as an `ArrayBuffer`.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2106,7 +2109,7 @@ export class HttpClient {
    * @return  An `Observable` of the `HttpResponse` for the request,
    * with the response body as a `Blob`.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2126,7 +2129,7 @@ export class HttpClient {
    * @return  An `Observable` of the `HttpResponse` for the request,
    * with a response body of type string.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2146,7 +2149,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with a response body in the requested type.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2167,7 +2170,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with a response body in the given type.
    */
-  patch<T>(url: string, body: any|null, options: {
+  patch<T>(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2188,7 +2191,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an object parsed from JSON.
    */
-  patch(url: string, body: any|null, options?: {
+  patch(url: string|URL, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2210,7 +2213,7 @@ export class HttpClient {
    * @return  An `Observable` of the `HttpResponse` for the request,
    * with a response body in the given type.
    */
-  patch<T>(url: string, body: any|null, options?: {
+  patch<T>(url: string|URL, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2226,7 +2229,7 @@ export class HttpClient {
    * `PATCH` request to execute on the server. See the individual overloads for
    * details on the return type.
    */
-  patch(url: string, body: any|null, options: {
+  patch(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body'|'events'|'response',
@@ -2249,7 +2252,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2269,7 +2272,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2289,7 +2292,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with a response body of type string.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2310,7 +2313,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body as an `ArrayBuffer`.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2329,7 +2332,7 @@ export class HttpClient {
    *
    * @return An `Observable` of all `HttpEvent`s for the request, with the response body as `Blob`.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2349,7 +2352,7 @@ export class HttpClient {
    * @return  An `Observable` of all `HttpEvent`s for the request,
    * with a response body of type string.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2369,7 +2372,7 @@ export class HttpClient {
    * @return  An `Observable` of all `HttpEvent`s for the request,
    * with a response body of type `Object`.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2390,7 +2393,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with a response body in the requested type.
    */
-  post<T>(url: string, body: any|null, options: {
+  post<T>(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2411,7 +2414,7 @@ export class HttpClient {
    * @return  An `Observable` of the `HttpResponse` for the request, with the response body as an
    * `ArrayBuffer`.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2431,7 +2434,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body as a `Blob`.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2451,7 +2454,7 @@ export class HttpClient {
    * @return  An `Observable` of the `HttpResponse` for the request,
    * with a response body of type string.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2471,7 +2474,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request, with a response body of type
    * `Object`.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2493,7 +2496,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request, with a response body in the
    * requested type.
    */
-  post<T>(url: string, body: any|null, options: {
+  post<T>(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2513,7 +2516,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an object parsed from JSON.
    */
-  post(url: string, body: any|null, options?: {
+  post(url: string|URL, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2535,7 +2538,7 @@ export class HttpClient {
    * @return  An `Observable` of the `HttpResponse` for the request, with a response body in the
    * requested type.
    */
-  post<T>(url: string, body: any|null, options?: {
+  post<T>(url: string|URL, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2552,7 +2555,7 @@ export class HttpClient {
    * the replaced resource. See the individual overloads for
    * details on the return type.
    */
-  post(url: string, body: any|null, options: {
+  post(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body'|'events'|'response',
@@ -2575,7 +2578,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2595,7 +2598,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2615,7 +2618,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response, with a response body of type string.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2636,7 +2639,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body as an `ArrayBuffer`.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2656,7 +2659,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body as a `Blob`.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2676,7 +2679,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request, with a response body
    * of type string.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2696,7 +2699,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request, with a response body of
    * type `Object`.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2717,7 +2720,7 @@ export class HttpClient {
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with a response body in the requested type.
    */
-  put<T>(url: string, body: any|null, options: {
+  put<T>(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'events',
     context?: HttpContext,
     params?: HttpParams|
@@ -2738,7 +2741,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request, with the response body as an
    * `ArrayBuffer`.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2758,7 +2761,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with the response body as a `Blob`.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2778,7 +2781,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request, with a response body of type
    * string.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2798,7 +2801,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request, with a response body
    * of type 'Object`.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2819,7 +2822,7 @@ export class HttpClient {
    * @return An `Observable` of the `HttpResponse` for the request,
    * with a response body in the requested type.
    */
-  put<T>(url: string, body: any|null, options: {
+  put<T>(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
     context?: HttpContext,
     params?: HttpParams|
@@ -2839,7 +2842,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the response as a JavaScript object.
    */
-  put(url: string, body: any|null, options?: {
+  put(url: string|URL, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2860,7 +2863,7 @@ export class HttpClient {
    *
    * @return An `Observable` of the requested type.
    */
-  put<T>(url: string, body: any|null, options?: {
+  put<T>(url: string|URL, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body',
@@ -2877,7 +2880,7 @@ export class HttpClient {
    * with a new set of values.
    * See the individual overloads for details on the return type.
    */
-  put(url: string, body: any|null, options: {
+  put(url: string|URL, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
     context?: HttpContext,
     observe?: 'body'|'events'|'response',

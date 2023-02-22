@@ -30,6 +30,13 @@ import {toArray} from 'rxjs/operators';
         });
         backend.expectOne('/test').flush({'data': 'hello world'});
       });
+      it('with URL parameter', done => {
+        client.get(new URL('http://localhost/test')).subscribe(res => {
+          expect((res as any)['data']).toEqual('hello world');
+          done();
+        });
+        backend.expectOne('http://localhost/test').flush({'data': 'hello world'});
+      });
       it('should allow flushing requests with a boolean value', (done: DoneFn) => {
         client.get('/test').subscribe(res => {
           expect((res as any)).toEqual(true);
@@ -133,6 +140,18 @@ import {toArray} from 'rxjs/operators';
             });
         backend.expectOne('/test').flush('hello world');
       });
+      it('with URL param', done => {
+        client
+            .post(
+                new URL('http://localhost/test'), 'text body',
+                {observe: 'response', responseType: 'text'})
+            .subscribe(res => {
+              expect(res.ok).toBeTruthy();
+              expect(res.status).toBe(HttpStatusCode.Ok);
+              done();
+            });
+        backend.expectOne('http://localhost/test').flush('hello world');
+      });
       it('with json data', done => {
         const body = {data: 'json body'};
         client.post('/test', body, {observe: 'response', responseType: 'text'}).subscribe(res => {
@@ -196,6 +215,17 @@ import {toArray} from 'rxjs/operators';
           done();
         });
         const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(null);
+        testReq.flush('hello world');
+      });
+      it('with URL param', done => {
+        client.delete(new URL('http://localhost/test'), {observe: 'response', responseType: 'text'})
+            .subscribe(res => {
+              expect(res.ok).toBeTruthy();
+              expect(res.status).toBe(200);
+              done();
+            });
+        const testReq = backend.expectOne('http://localhost/test');
         expect(testReq.request.body).toBe(null);
         testReq.flush('hello world');
       });
