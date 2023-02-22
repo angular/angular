@@ -24,7 +24,7 @@ counter.update(count => count + 1);
 The signal value can be also updated in-place, using the dedicated `.mutate` method:
 
 ```typescript
-const todoList = signal<Todo[])([]);
+const todoList = signal<Todo[]>([]);
 
 todoList.mutate(list => {
     list.push({title: 'One more task', completed: false});
@@ -94,7 +94,7 @@ Consider the following setup:
 ```typescript
 const counter = signal(0);
 const evenOrOdd = computed(() => counter() % 2 === 0 ? 'even' : 'odd');
-effect(() => console.log(counter() + ' is ' + evenOrOdd());
+effect(() => console.log(counter() + ' is ' + evenOrOdd()));
 
 counter.set(1);
 ```
