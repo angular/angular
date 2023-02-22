@@ -8,7 +8,6 @@ ts_library(
         "src/**/*.ts",
     ]),
     deps = [
-        "//packages/compiler-cli/src/ngtsc/ts_compatibility",
         "@npm//typescript",
     ],
 )

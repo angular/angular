@@ -12,7 +12,6 @@ import ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassPropertyName} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-import {createFunctionDeclaration, createParameterDeclaration} from '../../ts_compatibility';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
@@ -131,7 +130,7 @@ export function generateTypeCheckBlock(
   // the `ts.Printer` to format the type-check block nicely.
   const body = ts.factory.createBlock(
       [ts.factory.createIfStatement(ts.factory.createTrue(), innerBody, undefined)]);
-  const fnDecl = createFunctionDeclaration(
+  const fnDecl = ts.factory.createFunctionDeclaration(
       /* modifiers */ undefined,
       /* asteriskToken */ undefined,
       /* name */ name,
@@ -1653,7 +1652,7 @@ interface TcbBoundInput {
  */
 function tcbThisParam(
     name: ts.EntityName, typeArguments: ts.TypeNode[]|undefined): ts.ParameterDeclaration {
-  return createParameterDeclaration(
+  return ts.factory.createParameterDeclaration(
       /* modifiers */ undefined,
       /* dotDotDotToken */ undefined,
       /* name */ 'this',
@@ -1986,7 +1985,7 @@ function tcbCreateEventHandler(
     body = ts.factory.createIfStatement(guards, body);
   }
 
-  const eventParam = createParameterDeclaration(
+  const eventParam = ts.factory.createParameterDeclaration(
       /* modifiers */ undefined,
       /* dotDotDotToken */ undefined,
       /* name */ EVENT_PARAMETER,
