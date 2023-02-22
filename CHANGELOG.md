@@ -1,20 +1,80 @@
-<a name="15.2.0-rc.0"></a>
-# 15.2.0-rc.0 (2023-02-15)
-### forms
+<a name="15.2.0"></a>
+# 15.2.0 (2023-02-22)
+## Deprecations
+### 
+- Class and `InjectionToken` guards and resolvers are
+  deprecated. Instead, write guards as plain JavaScript functions and
+  inject dependencies with `inject` from `@angular/core`.
+### 
 | Commit | Type | Description |
 | -- | -- | -- |
-| [59685614f8](https://github.com/angular/angular/commit/59685614f82bee3f001b42398db88516407b34b1) | fix | Make radio buttons respect `[attr.disabled]` ([#48864](https://github.com/angular/angular/pull/48864)) |
+| [926c35f4ac](https://github.com/angular/angular/commit/926c35f4ac70f5e4d142e545d6d056dd67aac97b) | docs | Deprecate class and InjectionToken and resolvers ([#47924](https://github.com/angular/angular/pull/47924)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [54b24eb40f](https://github.com/angular/angular/commit/54b24eb40fed13c926305ad475202a5608d41c6b) | feat | Add loaderParams attribute to NgOptimizedImage ([#48907](https://github.com/angular/angular/pull/48907)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0cf11167f1](https://github.com/angular/angular/commit/0cf11167f13108992ec781e88ab2a7d1fc7f5a0d) | fix | incorrectly detecting forward refs when symbol already exists in file ([#48988](https://github.com/angular/angular/pull/48988)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a154db8a81](https://github.com/angular/angular/commit/a154db8a81cbdfed8c3d0db1e2a5bf43aa3e0bbf) | feat | add ng generate schematic to convert declarations to standalone ([#48790](https://github.com/angular/angular/pull/48790)) |
+| [345e737daa](https://github.com/angular/angular/commit/345e737daa7b9f635a4c2923358e5e765f716434) | feat | add ng generate schematic to convert to standalone bootstrapping APIs ([#48848](https://github.com/angular/angular/pull/48848)) |
+| [e7318fc758](https://github.com/angular/angular/commit/e7318fc758d9e64d1a7f60a2c7071a769b73e7d8) | feat | add ng generate schematic to remove unnecessary modules ([#48832](https://github.com/angular/angular/pull/48832)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4ae384fd61](https://github.com/angular/angular/commit/4ae384fd619a13eaadf737d08a97f07e1f6b273c) | feat | Allow auto-imports of a pipe via quick fix when its selector is used, both directly and via reexports. ([#48354](https://github.com/angular/angular/pull/48354)) |
+| [141333411e](https://github.com/angular/angular/commit/141333411e67769d752c7162e4cb03376022f5e1) | feat | Introduce a new NgModuleIndex, and use it to suggest re-exports. ([#48354](https://github.com/angular/angular/pull/48354)) |
+| [d0145033bd](https://github.com/angular/angular/commit/d0145033bd11eccd16fa8b61ba9170037d0c62b3) | fix | generate forwardRef for same file imports ([#48898](https://github.com/angular/angular/pull/48898)) |
 ### migrations
 | Commit | Type | Description |
 | -- | -- | -- |
+| [2796230e95](https://github.com/angular/angular/commit/2796230e953eb8c29d6227a1a3858f5f08a8f200) | fix | add `enum` in `mode` option in `standalone` schema ([#48851](https://github.com/angular/angular/pull/48851)) |
 | [816e76a578](https://github.com/angular/angular/commit/816e76a5789b041fee78ddd278c0e0d19b9a617a) | fix | automatically prune root module after bootstrap step ([#49030](https://github.com/angular/angular/pull/49030)) |
+| [bdbf21d04b](https://github.com/angular/angular/commit/bdbf21d04ba74a6f73469242076d6ce697c57edf) | fix | avoid generating imports with forward slashes ([#48993](https://github.com/angular/angular/pull/48993)) |
+| [32cf4e5cb9](https://github.com/angular/angular/commit/32cf4e5cb989f365296d519dddf72fb38ca47c40) | fix | avoid internal modules when generating imports ([#48958](https://github.com/angular/angular/pull/48958)) |
 | [521ccfbe6c](https://github.com/angular/angular/commit/521ccfbe6ce9af1a7ddd6ab5e70151b7198f82ef) | fix | avoid interrupting the migration if language service lookup fails ([#49010](https://github.com/angular/angular/pull/49010)) |
+| [a40cd47aa7](https://github.com/angular/angular/commit/a40cd47aa7ebccfbeeb26e397e03f1372aa10a55) | fix | avoid modifying testing modules without declarations ([#48921](https://github.com/angular/angular/pull/48921)) |
+| [1afa6ed322](https://github.com/angular/angular/commit/1afa6ed3227e784e3fe2b4b31443961589cb6332) | fix | don't add ModuleWithProviders to standalone test components ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [c98c6a8452](https://github.com/angular/angular/commit/c98c6a845286b9b89daf275a9c4a2bdbc7ad77a7) | fix | don't copy animations modules into the imports of test components ([#49147](https://github.com/angular/angular/pull/49147)) |
+| [8389557848](https://github.com/angular/angular/commit/83895578488bd35c7e47609f092907eb0f53f435) | fix | don't copy unmigrated declarations into imports array ([#48882](https://github.com/angular/angular/pull/48882)) |
+| [f82bdc4b01](https://github.com/angular/angular/commit/f82bdc4b01f93a7103870449d37da61cc4c4f179) | fix | don't delete classes that may provide dependencies transitively ([#48866](https://github.com/angular/angular/pull/48866)) |
+| [759db12e0b](https://github.com/angular/angular/commit/759db12e0b618fcb51f4cb141adeb49bfa495a60) | fix | duplicated comments on migrated classes ([#48966](https://github.com/angular/angular/pull/48966)) |
+| [ba38178d19](https://github.com/angular/angular/commit/ba38178d1918d413f9c2260c40eb6542eadfddba) | fix | generate forwardRef for same file imports ([#48898](https://github.com/angular/angular/pull/48898)) |
+| [03fcb36cfd](https://github.com/angular/angular/commit/03fcb36cfd36731028bf288f156e16cb8ac4c758) | fix | migrate HttpClientModule to provideHttpClient() ([#48949](https://github.com/angular/angular/pull/48949)) |
+| [2de6dae16d](https://github.com/angular/angular/commit/2de6dae16d4b0b83f0517a3033cda44ba44154ed) | fix | migrate RouterModule.forRoot with a config object to use features ([#48935](https://github.com/angular/angular/pull/48935)) |
+| [770191cf1f](https://github.com/angular/angular/commit/770191cf1f1254546625dfa7a882b716c3f0aab3) | fix | migrate tests when switching to standalone bootstrap API ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [c7926b5773](https://github.com/angular/angular/commit/c7926b57730c23f765a00d3dd9f92079c95e87e0) | fix | move standalone migrations into imports ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [65c74ed93e](https://github.com/angular/angular/commit/65c74ed93e04cb560c27838d440c6aa7a9859a4e) | fix | normalize paths to posix ([#48850](https://github.com/angular/angular/pull/48850)) |
+| [6377487b1a](https://github.com/angular/angular/commit/6377487b1ab7679cef9a44f88440fe5e8eb97480) | fix | only exclude bootstrapped declarations from initial standalone migration ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [e9e4449a43](https://github.com/angular/angular/commit/e9e4449a43430e026e61b0f05ebd32dd830fa916) | fix | preserve tsconfig in standalone migration ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [ffad1b49d9](https://github.com/angular/angular/commit/ffad1b49d95ab90637e7184f92cb5136d490d865) | fix | reduce number of files that need to be checked ([#48987](https://github.com/angular/angular/pull/48987)) |
+| [ba7a757cc5](https://github.com/angular/angular/commit/ba7a757cc5a2f3f942adcbabdcd5b7aef33ea493) | fix | return correct alias when conflicting import exists ([#49139](https://github.com/angular/angular/pull/49139)) |
+| [49a7c9f94a](https://github.com/angular/angular/commit/49a7c9f94ae8f89907da8b3620242e62f87ec5a4) | fix | standalone migration incorrectly throwing path error for multi app projects ([#48958](https://github.com/angular/angular/pull/48958)) |
+| [584976e6c8](https://github.com/angular/angular/commit/584976e6c8a783d40578ab191132673300394a52) | fix | support --defaults in standalone migration ([#48921](https://github.com/angular/angular/pull/48921)) |
+| [03f47ac901](https://github.com/angular/angular/commit/03f47ac9019eddbcb373b50c41bc6f523293ece1) | fix | use consistent quotes in generated imports ([#48876](https://github.com/angular/angular/pull/48876)) |
 | [ebae506d89](https://github.com/angular/angular/commit/ebae506d894a90c38e0f2dd1e948acabdb0fdf2e) | fix | use import remapper in root component ([#49046](https://github.com/angular/angular/pull/49046)) |
 | [40c976c909](https://github.com/angular/angular/commit/40c976c90975878852a87b7722076eb78944098b) | fix | use NgForOf instead of NgFor ([#49022](https://github.com/angular/angular/pull/49022)) |
 | [4ac25b2aff](https://github.com/angular/angular/commit/4ac25b2affab4f959ad8c111f1e429a05b435422) | perf | avoid re-traversing nodes when resolving bootstrap call dependencies ([#49010](https://github.com/angular/angular/pull/49010)) |
 | [26cb7ab2e6](https://github.com/angular/angular/commit/26cb7ab2e6ac9b61904361a8a544467b69eef3f3) | perf | speed up language service lookups ([#49010](https://github.com/angular/angular/pull/49010)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bf4ad38117](https://github.com/angular/angular/commit/bf4ad3811762d9ba43d18c3360d014a9ceb06b4d) | fix | remove styles from DOM of destroyed components ([#48298](https://github.com/angular/angular/pull/48298)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [25e220a23a](https://github.com/angular/angular/commit/25e220a23ab90520efc65f05cd9b7a22db582b87) | fix | avoid duplicate TransferState info after renderApplication call ([#49094](https://github.com/angular/angular/pull/49094)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [31b94c762f](https://github.com/angular/angular/commit/31b94c762fc91ab6cabe08ea6812780fdcf92a64) | feat | Add a withNavigationErrorHandler feature to provideRouter ([#48551](https://github.com/angular/angular/pull/48551)) |
+| [dedac8d3f7](https://github.com/angular/angular/commit/dedac8d3f73ebf4f05b773454e2a22ab5fa4bf7c) | feat | Add test helper for trigger navigations in tests ([#48552](https://github.com/angular/angular/pull/48552)) |
 ## Special Thanks
-AleksanderBodurri, Alvaro Junqueira, Dylan Hunn, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, PaloMiklo, Paul Gschwendtner, Pawel Kozlowski and cexbrayat
+Alan Agius, Alex Castle, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dylan Hunn, Ikko Eltociear Ashimine, Ilyass, Jessica Janiuk, Joey Perrott, John Manners, Kalbarczyk, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Virginia Dooley, Walid Bouguima, cexbrayat and mgechev
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -26,40 +86,6 @@ AleksanderBodurri, Alvaro Junqueira, Dylan Hunn, Joey Perrott, Kristiyan Kostadi
 | [5f2a3edcf2](https://github.com/angular/angular/commit/5f2a3edcf27cfe6ffc6ae4d67ca2b47953f26336) | fix | Make radio buttons respect `[attr.disabled]` ([#48864](https://github.com/angular/angular/pull/48864)) |
 ## Special Thanks
 AleksanderBodurri, Alvaro Junqueira, Dylan Hunn, Joey Perrott, Matthieu Riegler, PaloMiklo and Paul Gschwendtner
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.2.0-next.4"></a>
-# 15.2.0-next.4 (2023-02-08)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [54b24eb40f](https://github.com/angular/angular/commit/54b24eb40fed13c926305ad475202a5608d41c6b) | feat | Add loaderParams attribute to NgOptimizedImage ([#48907](https://github.com/angular/angular/pull/48907)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0cf11167f1](https://github.com/angular/angular/commit/0cf11167f13108992ec781e88ab2a7d1fc7f5a0d) | fix | incorrectly detecting forward refs when symbol already exists in file ([#48988](https://github.com/angular/angular/pull/48988)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d0145033bd](https://github.com/angular/angular/commit/d0145033bd11eccd16fa8b61ba9170037d0c62b3) | fix | generate forwardRef for same file imports ([#48898](https://github.com/angular/angular/pull/48898)) |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [bdbf21d04b](https://github.com/angular/angular/commit/bdbf21d04ba74a6f73469242076d6ce697c57edf) | fix | avoid generating imports with forward slashes ([#48993](https://github.com/angular/angular/pull/48993)) |
-| [32cf4e5cb9](https://github.com/angular/angular/commit/32cf4e5cb989f365296d519dddf72fb38ca47c40) | fix | avoid internal modules when generating imports ([#48958](https://github.com/angular/angular/pull/48958)) |
-| [1afa6ed322](https://github.com/angular/angular/commit/1afa6ed3227e784e3fe2b4b31443961589cb6332) | fix | don't add ModuleWithProviders to standalone test components ([#48987](https://github.com/angular/angular/pull/48987)) |
-| [759db12e0b](https://github.com/angular/angular/commit/759db12e0b618fcb51f4cb141adeb49bfa495a60) | fix | duplicated comments on migrated classes ([#48966](https://github.com/angular/angular/pull/48966)) |
-| [ba38178d19](https://github.com/angular/angular/commit/ba38178d1918d413f9c2260c40eb6542eadfddba) | fix | generate forwardRef for same file imports ([#48898](https://github.com/angular/angular/pull/48898)) |
-| [2de6dae16d](https://github.com/angular/angular/commit/2de6dae16d4b0b83f0517a3033cda44ba44154ed) | fix | migrate RouterModule.forRoot with a config object to use features ([#48935](https://github.com/angular/angular/pull/48935)) |
-| [770191cf1f](https://github.com/angular/angular/commit/770191cf1f1254546625dfa7a882b716c3f0aab3) | fix | migrate tests when switching to standalone bootstrap API ([#48987](https://github.com/angular/angular/pull/48987)) |
-| [c7926b5773](https://github.com/angular/angular/commit/c7926b57730c23f765a00d3dd9f92079c95e87e0) | fix | move standalone migrations into imports ([#48987](https://github.com/angular/angular/pull/48987)) |
-| [6377487b1a](https://github.com/angular/angular/commit/6377487b1ab7679cef9a44f88440fe5e8eb97480) | fix | only exclude bootstrapped declarations from initial standalone migration ([#48987](https://github.com/angular/angular/pull/48987)) |
-| [e9e4449a43](https://github.com/angular/angular/commit/e9e4449a43430e026e61b0f05ebd32dd830fa916) | fix | preserve tsconfig in standalone migration ([#48987](https://github.com/angular/angular/pull/48987)) |
-| [ffad1b49d9](https://github.com/angular/angular/commit/ffad1b49d95ab90637e7184f92cb5136d490d865) | fix | reduce number of files that need to be checked ([#48987](https://github.com/angular/angular/pull/48987)) |
-| [49a7c9f94a](https://github.com/angular/angular/commit/49a7c9f94ae8f89907da8b3620242e62f87ec5a4) | fix | standalone migration incorrectly throwing path error for multi app projects ([#48958](https://github.com/angular/angular/pull/48958)) |
-## Special Thanks
-Alex Castle, Andrew Scott, Dylan Hunn, Jessica Janiuk, Kian Yang Lee, Kristiyan Kostadinov, Matthieu Riegler, Pawel Kozlowski, Redouane Bekkouche, Simona Cotin and Walid Bouguima
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -102,73 +128,6 @@ Alan Agius, Besim Gürbüz, Brecht Billiet, Dario Piotrowicz, Dylan Hunn, Iván 
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="15.2.0-next.3"></a>
-# 15.2.0-next.3 (2023-02-02)
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b4187548ca](https://github.com/angular/angular/commit/b4187548cae42f25624bf7ab7ad0cca121242de7) | fix | fix non-animatable warnings for easing ([#48583](https://github.com/angular/angular/pull/48583)) |
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a055196c55](https://github.com/angular/angular/commit/a055196c55c57de281ff7167cd4dfb3df783c337) | fix | warn if using ngSrcset without a configured image loader ([#48804](https://github.com/angular/angular/pull/48804)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [06e161f2dd](https://github.com/angular/angular/commit/06e161f2dd78b42ad1938578f4d730a41404a24f) | fix | incorrect code when non-null assertion is used after a safe access ([#48801](https://github.com/angular/angular/pull/48801)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [345e737daa](https://github.com/angular/angular/commit/345e737daa7b9f635a4c2923358e5e765f716434) | feat | add ng generate schematic to convert to standalone bootstrapping APIs ([#48848](https://github.com/angular/angular/pull/48848)) |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2796230e95](https://github.com/angular/angular/commit/2796230e953eb8c29d6227a1a3858f5f08a8f200) | fix | add `enum` in `mode` option in `standalone` schema ([#48851](https://github.com/angular/angular/pull/48851)) |
-| [a40cd47aa7](https://github.com/angular/angular/commit/a40cd47aa7ebccfbeeb26e397e03f1372aa10a55) | fix | avoid modifying testing modules without declarations ([#48921](https://github.com/angular/angular/pull/48921)) |
-| [8389557848](https://github.com/angular/angular/commit/83895578488bd35c7e47609f092907eb0f53f435) | fix | don't copy unmigrated declarations into imports array ([#48882](https://github.com/angular/angular/pull/48882)) |
-| [f82bdc4b01](https://github.com/angular/angular/commit/f82bdc4b01f93a7103870449d37da61cc4c4f179) | fix | don't delete classes that may provide dependencies transitively ([#48866](https://github.com/angular/angular/pull/48866)) |
-| [04e0ac3d7c](https://github.com/angular/angular/commit/04e0ac3d7ca89bf38d4d2a38b7ca120d9b7b96ae) | fix | migration host incorrectly reading empty files ([#48849](https://github.com/angular/angular/pull/48849)) |
-| [65c74ed93e](https://github.com/angular/angular/commit/65c74ed93e04cb560c27838d440c6aa7a9859a4e) | fix | normalize paths to posix ([#48850](https://github.com/angular/angular/pull/48850)) |
-| [584976e6c8](https://github.com/angular/angular/commit/584976e6c8a783d40578ab191132673300394a52) | fix | support --defaults in standalone migration ([#48921](https://github.com/angular/angular/pull/48921)) |
-| [03f47ac901](https://github.com/angular/angular/commit/03f47ac9019eddbcb373b50c41bc6f523293ece1) | fix | use consistent quotes in generated imports ([#48876](https://github.com/angular/angular/pull/48876)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2fc5b70fce](https://github.com/angular/angular/commit/2fc5b70fcedb8ac35b825b245c0ae394dc125244) | fix | insert transfer state `script` before other `script` tags ([#48868](https://github.com/angular/angular/pull/48868)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [dedac8d3f7](https://github.com/angular/angular/commit/dedac8d3f73ebf4f05b773454e2a22ab5fa4bf7c) | feat | Add test helper for trigger navigations in tests ([#48552](https://github.com/angular/angular/pull/48552)) |
-| [16ef770db8](https://github.com/angular/angular/commit/16ef770db803ce4037a90c72477da412642dfb33) | fix | Handle routerLink directive on svg anchors. ([#48857](https://github.com/angular/angular/pull/48857)) |
-## Special Thanks
-Alan Agius, Andrew Scott, Besim Gürbüz, Brecht Billiet, Dario Piotrowicz, Dylan Hunn, Iván Navarro, Kristiyan Kostadinov, Matthieu Riegler, Onkar Ruikar, Payam Valadkhan, Santosh Yadav, Virginia Dooley and Walid Bouguima
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.2.0-next.2"></a>
-# 15.2.0-next.2 (2023-01-25)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [bc8cfa2552](https://github.com/angular/angular/commit/bc8cfa25520c3b8b0a506c69a269e42a63f097d6) | fix | handle css selectors with space after an escaped character. ([#48558](https://github.com/angular/angular/pull/48558)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4da1f2948c](https://github.com/angular/angular/commit/4da1f2948cc67b68527a91579ee14bb1a22b0c58) | fix | resolve deprecation warning ([#48812](https://github.com/angular/angular/pull/48812)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a154db8a81](https://github.com/angular/angular/commit/a154db8a81cbdfed8c3d0db1e2a5bf43aa3e0bbf) | feat | add ng generate schematic to convert declarations to standalone ([#48790](https://github.com/angular/angular/pull/48790)) |
-| [e7318fc758](https://github.com/angular/angular/commit/e7318fc758d9e64d1a7f60a2c7071a769b73e7d8) | feat | add ng generate schematic to remove unnecessary modules ([#48832](https://github.com/angular/angular/pull/48832)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4dcab333ae](https://github.com/angular/angular/commit/4dcab333ae009f923cf3864e20ee47e43d32dfe6) | fix | 'createUrlTreeFromSnapshot' with empty paths and named outlets ([#48734](https://github.com/angular/angular/pull/48734)) |
-## Special Thanks
-Alan Agius, AleksanderBodurri, Andrew Kushnir, Andrew Scott, Charles Lyding, Dylan Hunn, Jessica Janiuk, JoostK, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Payam Valadkhan, Virginia Dooley, Yann Thomas LE MOIGNE and dario-piotrowicz
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="15.1.2"></a>
 # 15.1.2 (2023-01-25)
 ### compiler
@@ -188,36 +147,6 @@ Alan Agius, AleksanderBodurri, Andrew Kushnir, Andrew Scott, Charles Lyding, Dyl
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="15.2.0-next.1"></a>
-# 15.2.0-next.1 (2023-01-18)
-## Deprecations
-### 
-- Class and `InjectionToken` guards and resolvers are
-  deprecated. Instead, write guards as plain JavaScript functions and
-  inject dependencies with `inject` from `@angular/core`.
-### 
-| Commit | Type | Description |
-| -- | -- | -- |
-| [926c35f4ac](https://github.com/angular/angular/commit/926c35f4ac70f5e4d142e545d6d056dd67aac97b) | docs | Deprecate class and InjectionToken and resolvers ([#47924](https://github.com/angular/angular/pull/47924)) |
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8802b4aab9](https://github.com/angular/angular/commit/8802b4aab9600870f3e09f198c993845587e9622) | fix | Update `Location` to get a normalized URL valid in case a represented URL starts with the substring equals `APP_BASE_HREF` ([#48489](https://github.com/angular/angular/pull/48489)) |
-| [5f21c6d627](https://github.com/angular/angular/commit/5f21c6d627892dfad942b55f13861c213f9c0afb) | perf | avoid excessive DOM mutation in NgClass ([#48433](https://github.com/angular/angular/pull/48433)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f00bf71411](https://github.com/angular/angular/commit/f00bf714110100549111bd27345943ab8830128c) | fix | makeEnvironmentProviders should accept EnvironmentProviders ([#48720](https://github.com/angular/angular/pull/48720)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4ae384fd61](https://github.com/angular/angular/commit/4ae384fd619a13eaadf737d08a97f07e1f6b273c) | feat | Allow auto-imports of a pipe via quick fix when its selector is used, both directly and via reexports. ([#48354](https://github.com/angular/angular/pull/48354)) |
-| [141333411e](https://github.com/angular/angular/commit/141333411e67769d752c7162e4cb03376022f5e1) | feat | Introduce a new NgModuleIndex, and use it to suggest re-exports. ([#48354](https://github.com/angular/angular/pull/48354)) |
-## Special Thanks
-Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, Dylan Hunn, Jens, Konstantin Kharitonov, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Vladyslav Slipchenko, ced, dario-piotrowicz, mgechev and ノウラ
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="15.1.1"></a>
 # 15.1.1 (2023-01-18)
 ### common
@@ -231,17 +160,6 @@ Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, 
 | [dd54f6bd96](https://github.com/angular/angular/commit/dd54f6bd963f859d18af90d5b3834c443ec073f9) | fix | makeEnvironmentProviders should accept EnvironmentProviders ([#48720](https://github.com/angular/angular/pull/48720)) |
 ## Special Thanks
 Alan Agius, Alex Rickabaugh, Andrew Scott, Aristeidis Bampakos, Bob Watson, Jens, Konstantin Kharitonov, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Vladyslav Slipchenko, ced, dario-piotrowicz, mgechev and ノウラ
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.2.0-next.0"></a>
-# 15.2.0-next.0 (2023-01-11)
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [31b94c762f](https://github.com/angular/angular/commit/31b94c762fc91ab6cabe08ea6812780fdcf92a64) | feat | Add a withNavigationErrorHandler feature to provideRouter ([#48551](https://github.com/angular/angular/pull/48551)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Scott, Paul Gschwendtner and angular-robot[bot]
 
 <!-- CHANGELOG SPLIT MARKER -->
 
