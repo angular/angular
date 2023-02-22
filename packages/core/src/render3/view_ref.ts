@@ -13,11 +13,12 @@ import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 
 import {collectNativeNodes} from './collect_native_nodes';
-import {checkNoChangesInternal, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
+import {checkNoChangesInternal, detectChangesInternal, markViewDirty} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
 import {destroyLView, detachView, renderDetachView} from './node_manipulation';
+import {storeLViewOnDestroy} from './util/view_utils';
 
 
 
@@ -94,7 +95,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   }
 
   onDestroy(callback: Function) {
-    storeCleanupWithContext(this._lView[TVIEW], this._lView, null, callback);
+    storeLViewOnDestroy(this._lView, callback as () => void);
   }
 
   /**

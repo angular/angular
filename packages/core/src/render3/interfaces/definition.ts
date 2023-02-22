@@ -13,9 +13,9 @@ import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {FactoryFn} from '../definition_factory';
 
-import {TAttributes, TConstantsOrFactory, TContainerNode, TElementContainerNode, TElementNode} from './node';
+import {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
-import {LView, TView} from './view';
+import {TView} from './view';
 
 
 /**

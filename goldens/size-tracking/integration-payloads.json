@@ -19,14 +19,14 @@
   "cli-hello-world-ivy-i18n": {
     "uncompressed": {
       "runtime": 926,
-      "main": 125026,
+      "main": 124522,
       "polyfills": 34628
     }
   },
   "cli-hello-world-lazy": {
     "uncompressed": {
       "runtime": 2734,
-      "main": 228487,
+      "main": 228996,
       "polyfills": 33810,
       "src_app_lazy_lazy_routes_ts": 487
     }
@@ -41,14 +41,14 @@
   "animations": {
     "uncompressed": {
       "runtime": 898,
-      "main": 157699,
+      "main": 157195,
       "polyfills": 33897
     }
   },
   "standalone-bootstrap": {
     "uncompressed": {
       "runtime": 918,
-      "main": 85547,
+      "main": 85043,
       "polyfills": 33945
     }
   },

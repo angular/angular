@@ -96,11 +96,6 @@
     "packages/core/src/di/r3_injector.ts"
   ],
   [
-    "packages/core/src/di/r3_injector.ts",
-    "packages/core/src/render3/definition.ts",
-    "packages/core/src/render3/interfaces/definition.ts"
-  ],
-  [
     "packages/core/src/di/reflective_errors.ts",
     "packages/core/src/di/reflective_injector.ts"
   ],

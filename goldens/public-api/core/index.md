@@ -437,6 +437,11 @@ export const defineInjectable: typeof ɵɵdefineInjectable;
 export function destroyPlatform(): void;
 
 // @public
+export abstract class DestroyRef {
+    abstract onDestroy(callback: () => void): void;
+}
+
+// @public
 export interface Directive {
     exportAs?: string;
     host?: {

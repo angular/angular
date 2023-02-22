@@ -33,16 +33,16 @@ import {Renderer, RendererFactory} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler, ProfilerEvent} from '../profiler';
-import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
+import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
-import {renderStringify, stringifyForError} from '../util/stringify_utils';
+import {renderStringify} from '../util/stringify_utils';
 import {getFirstLContainer, getLViewParent, getNextLContainer} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector} from '../util/view_utils';
 
@@ -676,25 +676,27 @@ export function locateHostElement(
  * On the first template pass, saves in TView:
  * - Cleanup function
  * - Index of context we just saved in LView.cleanupInstances
- *
- * This function can also be used to store instance specific cleanup fns. In that case the `context`
- * is `null` and the function is store in `LView` (rather than it `TView`).
  */
 export function storeCleanupWithContext(
     tView: TView, lView: LView, context: any, cleanupFn: Function): void {
   const lCleanup = getOrCreateLViewCleanup(lView);
-  if (context === null) {
-    // If context is null that this is instance specific callback. These callbacks can only be
-    // inserted after template shared instances. For this reason in ngDevMode we freeze the TView.
+
+  // Historically the `storeCleanupWithContext` was used to register both framework-level and
+  // user-defined cleanup callbacks, but over time those two types of cleanups were separated. This
+  // dev mode checks assures that user-level cleanup callbacks are _not_ stored in data structures
+  // reserved for framework-specific hooks.
+  ngDevMode &&
+      assertDefined(
+          context, 'Cleanup context is mandatory when registering framework-level destroy hooks');
+  lCleanup.push(context);
+
+  if (tView.firstCreatePass) {
+    getOrCreateTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
+  } else {
+    // Make sure that no new framework-level cleanup functions are registered after the first
+    // template pass is done (and TView data structures are meant to fully constructed).
     if (ngDevMode) {
       Object.freeze(getOrCreateTViewCleanup(tView));
-    }
-    lCleanup.push(cleanupFn);
-  } else {
-    lCleanup.push(context);
-
-    if (tView.firstCreatePass) {
-      getOrCreateTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
     }
   }
 }

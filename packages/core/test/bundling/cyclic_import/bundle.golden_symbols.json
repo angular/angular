@@ -225,6 +225,9 @@
     "name": "NG_ELEMENT_ID"
   },
   {
+    "name": "NG_ENV_ID"
+  },
+  {
     "name": "NG_FACTORY_DEF"
   },
   {
