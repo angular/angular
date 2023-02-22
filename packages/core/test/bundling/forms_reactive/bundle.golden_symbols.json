@@ -312,6 +312,9 @@
     "name": "NG_ELEMENT_ID"
   },
   {
+    "name": "NG_ENV_ID"
+  },
+  {
     "name": "NG_FACTORY_DEF"
   },
   {
@@ -999,16 +1002,10 @@
     "name": "getOrCreateInjectable"
   },
   {
-    "name": "getOrCreateLViewCleanup"
-  },
-  {
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
     "name": "getOrCreateTNode"
-  },
-  {
-    "name": "getOrCreateTViewCleanup"
   },
   {
     "name": "getOrCreateViewRefs"

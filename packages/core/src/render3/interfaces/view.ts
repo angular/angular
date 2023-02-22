@@ -48,6 +48,7 @@ export const PREORDER_HOOK_FLAGS = 18;
 export const QUERIES = 19;
 export const ID = 20;
 export const EMBEDDED_VIEW_INJECTOR = 21;
+export const ON_DESTROY_HOOKS = 22;
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -55,7 +56,7 @@ export const EMBEDDED_VIEW_INJECTOR = 21;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 22;
+export const HEADER_OFFSET = 23;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -327,6 +328,13 @@ export interface LView<T = unknown> extends Array<any> {
    * precedence over the element and module injectors.
    */
   readonly[EMBEDDED_VIEW_INJECTOR]: Injector|null;
+
+  /**
+   * A collection of callbacks functions that are executed when a given LView is destroyed. Those
+   * are user defined, LView-specific destroy callbacks that don't have any corresponding TView
+   * entries.
+   */
+  [ON_DESTROY_HOOKS]: Array<() => void>|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

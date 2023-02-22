@@ -11,9 +11,9 @@ import '../util/ng_dev_mode';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
-import {getComponentDef} from '../render3/definition';
 import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
+import {NG_ENV_ID} from '../render3/fields';
 import {newArray} from '../util/array_utils';
 import {EMPTY_ARRAY} from '../util/empty';
 import {stringify} from '../util/stringify';
@@ -231,6 +231,11 @@ export class R3Injector extends EnvironmentInjector {
       token: ProviderToken<T>, notFoundValue: any = THROW_IF_NOT_FOUND,
       flags: InjectFlags|InjectOptions = InjectFlags.Default): T {
     this.assertNotDestroyed();
+
+    if (token.hasOwnProperty(NG_ENV_ID)) {
+      return (token as any)[NG_ENV_ID](this);
+    }
+
     flags = convertToBitFlags(flags) as InjectFlags;
 
     // Set the injection context.
