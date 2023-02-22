@@ -337,6 +337,23 @@ describe('standalone in Router API', () => {
          TestBed.inject(Router).navigateByUrl('/home');
          expect(() => advance(root)).toThrowError(/.*home.*component must be standalone/);
        }));
+
+    it('throws error when loadComponent is used with a module', fakeAsync(() => {
+         @NgModule()
+         class LazyModule {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{
+             path: 'home',
+             loadComponent: () => LazyModule,
+           }])],
+         });
+
+         const root = TestBed.createComponent(RootCmp);
+         TestBed.inject(Router).navigateByUrl('/home');
+         expect(() => advance(root)).toThrowError(/.*home.*Use 'loadChildren' instead/);
+       }));
   });
   describe('default export unwrapping', () => {
     it('should work for loadComponent', async () => {
