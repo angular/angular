@@ -115,6 +115,10 @@ describe('ShadowCss', () => {
     expect(css).toEqualCss('div[contenta]::after { content:"{}"}');
   });
 
+  it('should pseudo class function with multiple arguments', () => {
+    expect(shim('div:is(.foo, .bar) {}', 'contenta')).toEqualCss('div[contenta]:is(.foo, .bar) {}');
+  });
+
   describe('comments', () => {
     // Comments should be kept in the same position as otherwise inline sourcemaps break due to
     // shift in lines.

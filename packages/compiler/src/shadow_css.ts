@@ -599,8 +599,9 @@ export class ShadowCss {
   }
 
   private _scopeSelector(selector: string, scopeSelector: string, hostSelector: string): string {
-    return selector.split(',')
-        .map((part) => part.trim().split(_shadowDeepSelectors))
+    // split on commas except when they are inside parenthesis (for example :is(), :has())
+    return selector.split(/(?!\(.*),(?![^(]*?\))/g)
+        .map(part => part.trim().split(_shadowDeepSelectors))
         .map((deepParts) => {
           const [shallowPart, ...otherParts] = deepParts;
           const applyScope = (shallowPart: string) => {
@@ -688,7 +689,10 @@ export class ShadowCss {
     let scopedSelector = '';
     let startIndex = 0;
     let res: RegExpExecArray|null;
-    const sep = /( |>|\+|~(?!=))\s*/g;
+
+    // spaces are only used as separators when they are not inside parenthesis (for example in :is()
+    // or :has())
+    const sep = /((?!\(.*)\s(?![^(]*?\))|>|\+|~(?!=))\s*/g;
 
     // If a selector appears before :host it should not be shimmed as it
     // matches on ancestor elements and not on elements in the host's shadow
