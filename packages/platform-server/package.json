@@ -16,7 +16,7 @@
     "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER"
   },
   "dependencies": {
-    "domino": "^2.1.2",
+    "domino": "https://github.com/angular/domino.git#4280d0380df839d97b81e7680877ad5b55500e77",
     "tslib": "^2.3.0",
     "xhr2": "^0.2.0"
   },
