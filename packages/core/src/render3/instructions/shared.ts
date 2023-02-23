@@ -986,12 +986,11 @@ export function setNgReflectProperties(
  */
 export function resolveDirectives(
     tView: TView, lView: LView, tNode: TElementNode|TContainerNode|TElementContainerNode,
-    localRefs: string[]|null): boolean {
+    localRefs: string[]|null): void {
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in
   // tsickle.
   ngDevMode && assertFirstCreatePass(tView);
 
-  let hasDirectives = false;
   if (getBindingsEnabled()) {
     const exportsMap: ({[key: string]: number}|null) = localRefs === null ? null : {'': -1};
     const matchResult = findDirectiveDefMatches(tView, tNode);
@@ -1005,14 +1004,12 @@ export function resolveDirectives(
     }
 
     if (directiveDefs !== null) {
-      hasDirectives = true;
       initializeDirectives(tView, lView, tNode, directiveDefs, exportsMap, hostDirectiveDefs);
     }
     if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
   }
   // Merge the template attrs last so that they have the highest priority.
   tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
-  return hasDirectives;
 }
 
 /** Initializes the data structures necessary for a list of directives to be instantiated. */
