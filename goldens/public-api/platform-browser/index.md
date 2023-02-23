@@ -229,6 +229,7 @@ export class Title {
 
 // @public
 export class TransferState {
+    constructor();
     get<T>(key: StateKey<T>, defaultValue: T): T;
     hasKey<T>(key: StateKey<T>): boolean;
     get isEmpty(): boolean;
