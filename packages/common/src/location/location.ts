@@ -301,9 +301,15 @@ export function createLocation() {
 }
 
 function _stripBasePath(basePath: string, url: string): string {
-  return basePath && new RegExp(`^${basePath}([/;?#]|$)`).test(url) ?
-      url.substring(basePath.length) :
-      url;
+  if (!basePath || !url.startsWith(basePath)) {
+    return url;
+  }
+  if (url.length === basePath.length) {
+    return '';
+  }
+  return ['/', ';', '?', '#'].includes(url[basePath.length]) ?
+    url.substring(basePath.length) :
+    url;
 }
 
 function _stripIndexHtml(url: string): string {
