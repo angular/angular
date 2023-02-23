@@ -2877,9 +2877,9 @@
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.14.2.tgz#c3ec604a0b54b9a9b87e9735dfc59e1a5da6a5fb"
   integrity sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==
 
-"@ngtools/webpack@15.2.0-next.3", "@ngtools/webpack@15.2.0-next.4", "@ngtools/webpack@https://github.com/angular/ngtools-webpack-builds.git#c784933671856a6529d7dd560ba1026890898f57":
-  version "16.0.0-next.0"
-  resolved "https://github.com/angular/ngtools-webpack-builds.git#c784933671856a6529d7dd560ba1026890898f57"
+"@ngtools/webpack@15.2.0-next.3", "@ngtools/webpack@15.2.0-next.4", "@ngtools/webpack@https://github.com/angular/ngtools-webpack-builds.git#ffec2b2304992abe094f5a1f3c56bf9a0dd75309":
+  version "16.0.0-next.1"
+  resolved "https://github.com/angular/ngtools-webpack-builds.git#ffec2b2304992abe094f5a1f3c56bf9a0dd75309"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"

@@ -62,7 +62,7 @@
   "private": true,
   "// resolutions": "Temp resolutions until CLI releases v16.0.0-next.0",
   "resolutions": {
-    "@ngtools/webpack": "https://github.com/angular/ngtools-webpack-builds.git#c784933671856a6529d7dd560ba1026890898f57"
+    "@ngtools/webpack": "https://github.com/angular/ngtools-webpack-builds.git#ffec2b2304992abe094f5a1f3c56bf9a0dd75309"
   },
   "dependencies": {
     "@angular/animations": "15.2.0-next.4",
