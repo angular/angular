@@ -420,6 +420,14 @@ export class Router {
   }
 
   /**
+   * The `Navigation` object of the most recent navigation to succeed and `null` if there
+   *     has not been a successful navigation yet.
+   */
+  get lastSuccessfulNavigation(): Navigation|null {
+    return this.navigationTransitions.lastSuccessfulNavigation;
+  }
+
+  /**
    * Resets the route configuration used for navigation and generating links.
    *
    * @param config The route array for the new configuration.

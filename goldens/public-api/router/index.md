@@ -703,6 +703,7 @@ export class Router {
     // @deprecated
     isActive(url: string | UrlTree, exact: boolean): boolean;
     isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
+    get lastSuccessfulNavigation(): Navigation | null;
     // @deprecated
     malformedUriErrorHandler: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
