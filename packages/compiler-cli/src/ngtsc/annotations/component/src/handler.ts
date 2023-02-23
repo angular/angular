@@ -318,8 +318,8 @@ export class ComponentDecoratorHandler implements
       template = preanalyzed;
     } else {
       const templateDecl = parseTemplateDeclaration(
-          decorator, component, containingFile, this.evaluator, this.resourceLoader,
-          this.defaultPreserveWhitespaces);
+          node, decorator, component, containingFile, this.evaluator, this.depTracker,
+          this.resourceLoader, this.defaultPreserveWhitespaces);
       template = extractTemplate(
           node, templateDecl, this.evaluator, this.depTracker, this.resourceLoader, {
             enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -353,6 +353,13 @@ export class ComponentDecoratorHandler implements
           this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
         }
       } catch {
+        if (this.depTracker !== null) {
+          // The analysis of this file cannot be re-used if one of the style URLs could
+          // not be resolved or loaded. Future builds should re-analyze and re-attempt
+          // resolution/loading.
+          this.depTracker.recordDependencyAnalysisFailure(node.getSourceFile());
+        }
+
         if (diagnostics === undefined) {
           diagnostics = [];
         }
