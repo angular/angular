@@ -26,8 +26,8 @@ import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, reso
 
 
 function elementStartFirstCreatePass(
-    index: number, tView: TView, lView: LView, native: RElement, name: string,
-    attrsIndex?: number|null, localRefsIndex?: number): TElementNode {
+    index: number, tView: TView, lView: LView, name: string, attrsIndex?: number|null,
+    localRefsIndex?: number): TElementNode {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
 
@@ -35,11 +35,7 @@ function elementStartFirstCreatePass(
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, index, TNodeType.Element, name, attrs);
 
-  const hasDirectives =
-      resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  if (ngDevMode) {
-    validateElementIsKnown(native, lView, tNode.value, tView.schemas, hasDirectives);
-  }
+  resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
 
   if (tNode.attrs !== null) {
     computeStaticStyling(tNode, tNode.attrs, false);
@@ -85,11 +81,16 @@ export function ɵɵelementStart(
   ngDevMode && assertIndexInRange(lView, adjustedIndex);
 
   const renderer = lView[RENDERER];
-  const native = lView[adjustedIndex] = createElementNode(renderer, name, getNamespace());
   const tNode = tView.firstCreatePass ?
-      elementStartFirstCreatePass(
-          adjustedIndex, tView, lView, native, name, attrsIndex, localRefsIndex) :
+      elementStartFirstCreatePass(adjustedIndex, tView, lView, name, attrsIndex, localRefsIndex) :
       tView.data[adjustedIndex] as TElementNode;
+  const native = lView[adjustedIndex] = createElementNode(renderer, name, getNamespace());
+  const hasDirectives = isDirectiveHost(tNode);
+
+  if (ngDevMode && tView.firstCreatePass) {
+    validateElementIsKnown(native, lView, tNode.value, tView.schemas, hasDirectives);
+  }
+
   setCurrentTNode(tNode, true);
   setupStaticAttributes(renderer, native, tNode);
 
@@ -107,8 +108,7 @@ export function ɵɵelementStart(
   }
   increaseElementDepthCount();
 
-
-  if (isDirectiveHost(tNode)) {
+  if (hasDirectives) {
     createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
