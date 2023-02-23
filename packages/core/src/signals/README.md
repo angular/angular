@@ -24,7 +24,7 @@ counter.update(count => count + 1);
 The signal value can be also updated in-place, using the dedicated `.mutate` method:
 
 ```typescript
-const todoList = signal<Todo[])([]);
+const todoList = signal<Todo[]>([]);
 
 todoList.mutate(list => {
     list.push({title: 'One more task', completed: false});
