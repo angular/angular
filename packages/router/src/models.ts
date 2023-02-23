@@ -177,6 +177,7 @@ export interface DefaultExport<T> {
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.routes'),
  * }];
+ * ```
  *
  * @see [Route.loadChildren](api/router/Route#loadChildren)
  * @publicApi
