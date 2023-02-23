@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
@@ -943,6 +944,50 @@ runInEachFileSystem(() => {
           expect(written).toContain('/cmp.js');
           expect(written).not.toContain('/dir.js');
         });
+      });
+    });
+
+    describe('missing resource files', () => {
+      it('should re-analyze a component if a template file becomes available later', () => {
+        env.write('app.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'app',
+          templateUrl: './some-template.html',
+        })
+        export class AppComponent {}
+      `);
+
+        const firstDiagnostics = env.driveDiagnostics();
+        expect(firstDiagnostics.length).toBe(1);
+        expect(firstDiagnostics[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_RESOURCE_NOT_FOUND));
+
+        env.write('some-template.html', `
+          <span>Test</span>
+        `);
+
+        env.driveMain();
+      });
+
+      it('should re-analyze if component style file becomes available later', () => {
+        env.write('app.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'app',
+          template: 'Works',
+          styleUrls: ['./some-style.css'],
+        })
+        export class AppComponent {}
+      `);
+
+        const firstDiagnostics = env.driveDiagnostics();
+        expect(firstDiagnostics.length).toBe(1);
+        expect(firstDiagnostics[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_RESOURCE_NOT_FOUND));
+
+        env.write('some-style.css', `body {}`);
+        env.driveMain();
       });
     });
   });
