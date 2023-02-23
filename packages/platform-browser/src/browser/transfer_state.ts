@@ -83,19 +83,14 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
  *
  * @publicApi
  */
-@Injectable({
-  providedIn: 'root',
-  useFactory: () => {
-    const doc = inject(DOCUMENT);
-    const appId = inject(APP_ID);
-    const state = new TransferState();
-    state.store = retrieveTransferredState(doc, appId);
-    return state;
-  }
-})
+@Injectable({providedIn: 'root'})
 export class TransferState {
   private store: {[k: string]: unknown|undefined} = {};
   private onSerializeCallbacks: {[k: string]: () => unknown | undefined} = {};
+
+  constructor() {
+    this.store = retrieveTransferredState(inject(DOCUMENT), inject(APP_ID));
+  }
 
   /**
    * Get the value corresponding to a key. Return `defaultValue` if key is not found.
