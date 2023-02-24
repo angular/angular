@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createEnvironmentInjector, EnvironmentInjector, isStandalone, Type, ɵNG_MOD_DEF as NG_MOD_DEF, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {createEnvironmentInjector, EnvironmentInjector, isStandalone, Type, ɵisNgModule as isNgModule, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {EmptyOutletComponent} from '../components/empty_outlet';
 import {RuntimeErrorCode} from '../errors';
@@ -57,7 +57,7 @@ export function validateConfig(
 }
 
 export function assertStandalone(fullPath: string, component: Type<unknown>|undefined) {
-  if (component && (component as any)[NG_MOD_DEF]) {
+  if (component && isNgModule(component)) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_ROUTE_CONFIG,
         `Invalid configuration of route '${
