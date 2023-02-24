@@ -82,7 +82,7 @@ describe('Built-in image directive loaders', () => {
       const loader = createCloudinaryLoader(path);
       expect(loader({src: 'img.png'})).toBe(`${path}/image/upload/f_auto,q_auto/img.png`);
       expect(loader({
-        src: 'marketing/img-2.png'
+        src: 'marketing/img-2.png',
       })).toBe(`${path}/image/upload/f_auto,q_auto/marketing/img-2.png`);
     });
 
@@ -126,8 +126,16 @@ describe('Built-in image directive loaders', () => {
     it('should construct an image loader with the given path', () => {
       const path = 'https://ik.imageengine.io/imagetest';
       const loader = createImageKitLoader(path);
-      expect(loader({src: 'img.png'})).toBe(`${path}/tr:q-auto/img.png`);
-      expect(loader({src: 'marketing/img-2.png'})).toBe(`${path}/tr:q-auto/marketing/img-2.png`);
+      expect(loader({src: 'img.png'})).toBe(`${path}/img.png`);
+      expect(loader({src: 'marketing/img-2.png'})).toBe(`${path}/marketing/img-2.png`);
+    });
+
+    it('should construct an image loader with the given path', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const loader = createImageKitLoader(path);
+      expect(loader({src: 'img.png', width: 100})).toBe(`${path}/tr:w-100/img.png`);
+      expect(loader({src: 'marketing/img-2.png', width: 200}))
+          .toBe(`${path}/tr:w-200/marketing/img-2.png`);
     });
 
     describe('input validation', () => {
@@ -148,13 +156,13 @@ describe('Built-in image directive loaders', () => {
       it('should handle a trailing forward slash on the path', () => {
         const path = 'https://ik.imageengine.io/imagetest';
         const loader = createImageKitLoader(`${path}/`);
-        expect(loader({src: 'img.png'})).toBe(`${path}/tr:q-auto/img.png`);
+        expect(loader({src: 'img.png'})).toBe(`${path}/img.png`);
       });
 
       it('should handle a leading forward slash on the image src', () => {
         const path = 'https://ik.imageengine.io/imagetest';
         const loader = createImageKitLoader(path);
-        expect(loader({src: '/img.png'})).toBe(`${path}/tr:q-auto/img.png`);
+        expect(loader({src: '/img.png'})).toBe(`${path}/img.png`);
       });
     });
   });
