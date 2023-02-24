@@ -175,6 +175,10 @@ export class UniqueItemTracker<K, V> {
     }
   }
 
+  get(key: K): Set<V>|undefined {
+    return this._nodes.get(key);
+  }
+
   getEntries(): IterableIterator<[K, Set<V>]> {
     return this._nodes.entries();
   }
