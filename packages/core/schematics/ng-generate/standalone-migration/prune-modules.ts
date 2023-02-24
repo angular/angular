@@ -19,7 +19,6 @@ interface RemovalLocations {
   arrays: UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>;
   imports: UniqueItemTracker<ts.NamedImports, ts.Node>;
   exports: UniqueItemTracker<ts.NamedExports, ts.Node>;
-  classes: Set<ts.ClassDeclaration>;
   unknown: Set<ts.Node>;
 }
 
@@ -29,21 +28,33 @@ export function pruneNgModules(
     referenceLookupExcludedFiles?: RegExp) {
   const filesToRemove = new Set<ts.SourceFile>();
   const tracker = new ChangeTracker(printer, importRemapper);
-  const typeChecker = program.getTsProgram().getTypeChecker();
+  const tsProgram = program.getTsProgram();
+  const typeChecker = tsProgram.getTypeChecker();
   const referenceResolver =
       new ReferenceResolver(program, host, rootFileNames, basePath, referenceLookupExcludedFiles);
   const removalLocations: RemovalLocations = {
     arrays: new UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>(),
     imports: new UniqueItemTracker<ts.NamedImports, ts.Node>(),
     exports: new UniqueItemTracker<ts.NamedExports, ts.Node>(),
-    classes: new Set<ts.ClassDeclaration>(),
     unknown: new Set<ts.Node>()
   };
+  const classesToRemove = new Set<ts.ClassDeclaration>();
+  const barrelExports = new UniqueItemTracker<ts.SourceFile, ts.ExportDeclaration>();
+  const nodesToRemove = new Set<ts.Node>();
 
   sourceFiles.forEach(function walk(node: ts.Node) {
     if (ts.isClassDeclaration(node) && canRemoveClass(node, typeChecker)) {
       collectRemovalLocations(node, removalLocations, referenceResolver, program);
-      removalLocations.classes.add(node);
+      classesToRemove.add(node);
+    } else if (
+        ts.isExportDeclaration(node) && !node.exportClause && node.moduleSpecifier &&
+        ts.isStringLiteralLike(node.moduleSpecifier) && node.moduleSpecifier.text.startsWith('.')) {
+      const exportedSourceFile =
+          typeChecker.getSymbolAtLocation(node.moduleSpecifier)?.valueDeclaration?.getSourceFile();
+
+      if (exportedSourceFile) {
+        barrelExports.track(exportedSourceFile, node);
+      }
     }
     node.forEachChild(walk);
   });
@@ -55,10 +66,27 @@ export function pruneNgModules(
   removeExportReferences(removalLocations.exports, tracker);
   addRemovalTodos(removalLocations.unknown, tracker);
 
-  for (const node of removalLocations.classes) {
+  // Collect all the nodes to be removed before determining which files to delete since we need
+  // to know it ahead of time when deleting barrel files that export other barrel files.
+  (function trackNodesToRemove(nodes: Set<ts.Node>) {
+    for (const node of nodes) {
+      const sourceFile = node.getSourceFile();
+
+      if (!filesToRemove.has(sourceFile) && canRemoveFile(sourceFile, nodes)) {
+        const barrelExportsForFile = barrelExports.get(sourceFile);
+        nodesToRemove.add(node);
+        filesToRemove.add(sourceFile);
+        barrelExportsForFile && trackNodesToRemove(barrelExportsForFile);
+      } else {
+        nodesToRemove.add(node);
+      }
+    }
+  })(classesToRemove);
+
+  for (const node of nodesToRemove) {
     const sourceFile = node.getSourceFile();
 
-    if (!filesToRemove.has(sourceFile) && canRemoveFile(sourceFile, removalLocations.classes)) {
+    if (!filesToRemove.has(sourceFile) && canRemoveFile(sourceFile, nodesToRemove)) {
       filesToRemove.add(sourceFile);
     } else {
       tracker.removeNode(node);
@@ -276,17 +304,17 @@ function isNonEmptyNgModuleProperty(node: ts.Node): node is ts.PropertyAssignmen
  * Determines if a file is safe to delete. A file is safe to delete if all it contains are
  * import statements, class declarations that are about to be deleted and non-exported code.
  * @param sourceFile File that is being checked.
- * @param classesToBeRemoved Classes that are being removed as a part of the migration.
+ * @param nodesToBeRemoved Nodes that are being removed as a part of the migration.
  */
-function canRemoveFile(sourceFile: ts.SourceFile, classesToBeRemoved: Set<ts.ClassDeclaration>) {
+function canRemoveFile(sourceFile: ts.SourceFile, nodesToBeRemoved: Set<ts.Node>) {
   for (const node of sourceFile.statements) {
-    if (ts.isImportDeclaration(node) ||
-        (ts.isClassDeclaration(node) && classesToBeRemoved.has(node))) {
+    if (ts.isImportDeclaration(node) || nodesToBeRemoved.has(node)) {
       continue;
     }
 
-    if (ts.canHaveModifiers(node) &&
-        ts.getModifiers(node)?.some(m => m.kind === ts.SyntaxKind.ExportKeyword)) {
+    if (ts.isExportDeclaration(node) ||
+        (ts.canHaveModifiers(node) &&
+         ts.getModifiers(node)?.some(m => m.kind === ts.SyntaxKind.ExportKeyword))) {
       return false;
     }
   }
