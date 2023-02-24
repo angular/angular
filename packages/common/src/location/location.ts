@@ -304,12 +304,11 @@ function _stripBasePath(basePath: string, url: string): string {
   if (!basePath || !url.startsWith(basePath)) {
     return url;
   }
-  if (url.length === basePath.length) {
-    return '';
+  const strippedUrl = url.substring(basePath.length);
+  if (strippedUrl === '' || ['/', ';', '?', '#'].includes(strippedUrl[0])) {
+    return strippedUrl;
   }
-  return ['/', ';', '?', '#'].includes(url[basePath.length]) ?
-    url.substring(basePath.length) :
-    url;
+  return url;
 }
 
 function _stripIndexHtml(url: string): string {
