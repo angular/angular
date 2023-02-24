@@ -2245,6 +2245,122 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should remove barrel export if the corresponding file is deleted', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+
+      @NgModule({imports: [MyComp]})
+      export class AppModule {}
+    `);
+
+    writeFile('button.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyButton} from './button';
+
+      @NgModule({imports: [MyButton], exports: [MyButton]})
+      export class ButtonModule {}
+    `);
+
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+      import {MyButton} from './button';
+
+      @Component({
+        selector: 'my-comp',
+        template: '<my-button>Hello</my-button>',
+        standalone: true,
+        imports: [MyButton]
+      })
+      export class MyComp {}
+    `);
+
+    writeFile('button.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-button', template: '<ng-content></ng-content>', standalone: true})
+      export class MyButton {}
+    `);
+
+    writeFile('index.ts', `
+      export * from './app.module';
+      export {MyComp} from './comp';
+      export {ButtonModule} from './button.module';
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('app.module.ts')).toBe(false);
+    expect(tree.exists('button.module.ts')).toBe(false);
+    expect(stripWhitespace(tree.readContent('index.ts'))).toBe(stripWhitespace(`
+      export {MyComp} from './comp';
+    `));
+  });
+
+  it('should remove barrel files referring to other barrel files that were deleted', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyDir} from './dir';
+
+      @NgModule({imports: [MyDir]})
+      export class AppModule {}
+    `);
+
+    writeFile('dir.ts', `
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[dir]', standalone: true})
+      export class MyDir {}
+    `);
+
+    writeFile('index.ts', `export * from './app.module';`);
+    writeFile('index-2.ts', `export * from './index';`);
+    writeFile('index-3.ts', `export * from './index-2';`);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('index.ts')).toBe(false);
+    expect(tree.exists('index-2.ts')).toBe(false);
+    expect(tree.exists('index-3.ts')).toBe(false);
+  });
+
+  it('should not delete dependent barrel files if they have some barrel exports that will not be removed',
+     async () => {
+       writeFile('app.module.ts', `
+        import {NgModule} from '@angular/core';
+        import {MyDir} from './dir';
+
+        @NgModule({imports: [MyDir]})
+        export class AppModule {}
+      `);
+
+       writeFile('dir.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class MyDir {}
+      `);
+
+       writeFile('utils.ts', `
+        export function sum(a: number, b: number) { return a + b; }
+      `);
+
+       writeFile('index.ts', `export * from './app.module';`);
+       writeFile('index-2.ts', `
+        export * from './index';
+        export * from './utils';
+      `);
+       writeFile('index-3.ts', `export * from './index-2';`);
+
+       await runMigration('prune-ng-modules');
+
+       expect(tree.exists('index.ts')).toBe(false);
+       expect(stripWhitespace(tree.readContent('index-2.ts')))
+           .toBe(stripWhitespace(`export * from './utils';`));
+       expect(stripWhitespace(tree.readContent('index-3.ts')))
+           .toBe(stripWhitespace(`export * from './index-2';`));
+     });
+
   it('should add a comment to locations that cannot be removed automatically', async () => {
     writeFile('app.module.ts', `
       import {NgModule} from '@angular/core';
