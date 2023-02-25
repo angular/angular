@@ -337,7 +337,10 @@ export function patchMethod(
   const delegateName = zoneSymbol(name);
   let delegate: Function|null = null;
   if (proto && (!(delegate = proto[delegateName]) || !proto.hasOwnProperty(delegateName))) {
-    delegate = proto[delegateName] = proto[name];
+    delegate = proto[name];
+    Object.defineProperty(
+        proto, delegateName,
+        {configurable: true, enumerable: false, writable: true, value: delegate});
     // check whether proto[name] is writable
     // some property is readonly in safari, such as HtmlCanvasElement.prototype.toBlob
     const desc = proto && ObjectGetOwnPropertyDescriptor(proto, name);
