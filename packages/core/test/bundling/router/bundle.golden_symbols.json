@@ -834,9 +834,6 @@
     "name": "_stripIndexHtml"
   },
   {
-    "name": "_symbolIterator"
-  },
-  {
     "name": "_wrapInTimeout"
   },
   {
@@ -1351,9 +1348,6 @@
   },
   {
     "name": "getSymbolIterator"
-  },
-  {
-    "name": "getSymbolIterator2"
   },
   {
     "name": "getTNode"
