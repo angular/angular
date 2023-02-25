@@ -31,7 +31,7 @@ Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const supportAbort = typeof OriginalAbortController === 'function';
   let abortNative: Function|null = null;
   if (supportAbort) {
-    api.patchFunctionProprety(global, 'AbortController', function() {
+    api.patchFunctionProperty(global, 'AbortController', function() {
       const abortController = new OriginalAbortController();
       const signal = abortController.signal;
       signal.abortController = abortController;
@@ -47,7 +47,7 @@ Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
         });
   }
   const placeholder = function() {};
-  api.patchFunctionProprety(global, 'fetch', function(this: unknown) {
+  api.patchFunctionProperty(global, 'fetch', function(this: unknown) {
     const args = Array.prototype.slice.call(arguments);
     const options = args.length > 1 ? args[1] : null;
     const signal = options && options.signal;

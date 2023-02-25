@@ -18,7 +18,7 @@ Zone.__load_patch('util', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const eventNames: string[] = getOnEventNames(global);
   api.patchOnProperties = patchOnProperties;
   api.patchMethod = patchMethod;
-  api.patchFunctionProprety = patchFunctionProperty;
+  api.patchFunctionProperty = patchFunctionProperty;
   api.bindArguments = bindArguments;
   api.patchMacroTask = patchMacroTask;
   // In earlier version of zone.js (<0.9.0), we use env name `__zone_symbol__BLACK_LISTED_EVENTS` to

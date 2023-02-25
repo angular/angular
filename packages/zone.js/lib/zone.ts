@@ -359,7 +359,7 @@ interface _ZonePrivate {
       (target: any, name: string,
        patchFn: (delegate: Function, delegateName: string, name: string) =>
            (self: any, args: any[]) => any) => Function | null;
-  patchFunctionProprety(target: any, name: string, patchFn: Function): boolean;
+  patchFunctionProperty(target: any, name: string, patchFn: Function): boolean;
   bindArguments: (args: any[], source: string) => any[];
   patchMacroTask:
       (obj: any, funcName: string, metaCreator: (self: any, args: any[]) => any) => void;
@@ -1447,7 +1447,7 @@ const Zone: ZoneType = (function(global: any) {
     patchEventTarget: () => [],
     patchOnProperties: noop,
     patchMethod: () => noop,
-    patchFunctionProprety: () => true,
+    patchFunctionProperty: () => true,
     bindArguments: () => [],
     patchThen: () => noop,
     patchMacroTask: () => noop,
