@@ -675,7 +675,7 @@
     "name": "getSimpleChangesStore"
   },
   {
-    "name": "getSymbolIterator2"
+    "name": "getSymbolIterator"
   },
   {
     "name": "getTNodeFromLView"

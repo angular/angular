@@ -642,9 +642,6 @@
     "name": "_randomChar"
   },
   {
-    "name": "_symbolIterator"
-  },
-  {
     "name": "_testabilityGetter"
   },
   {
@@ -1054,9 +1051,6 @@
   },
   {
     "name": "getSymbolIterator"
-  },
-  {
-    "name": "getSymbolIterator2"
   },
   {
     "name": "getTNode"

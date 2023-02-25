@@ -1002,7 +1002,7 @@
     "name": "getStyleAttributeString"
   },
   {
-    "name": "getSymbolIterator2"
+    "name": "getSymbolIterator"
   },
   {
     "name": "getTNode"

@@ -10,10 +10,10 @@ import {Observable} from 'rxjs';
 
 import {EventEmitter} from '../event_emitter';
 import {arrayEquals, flatten} from '../util/array_utils';
-import {getSymbolIterator} from '../util/symbol';
 
 function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
-  return ((this as any as {_results: Array<T>})._results as any)[getSymbolIterator()]();
+  // @ts-expect-error accessing a private member
+  return this._results[Symbol.iterator]();
 }
 
 /**
@@ -68,10 +68,9 @@ export class QueryList<T> implements Iterable<T> {
     // This function should be declared on the prototype, but doing so there will cause the class
     // declaration to have side-effects and become not tree-shakable. For this reason we do it in
     // the constructor.
-    // [getSymbolIterator()](): Iterator<T> { ... }
-    const symbol = getSymbolIterator();
-    const proto = QueryList.prototype as any;
-    if (!proto[symbol]) proto[symbol] = symbolIterator;
+    // [Symbol.iterator](): Iterator<T> { ... }
+    const proto = QueryList.prototype;
+    if (!proto[Symbol.iterator]) proto[Symbol.iterator] = symbolIterator;
   }
 
   /**
