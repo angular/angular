@@ -329,7 +329,7 @@ This template binds directly to the component's `messageService`.
 
 The messages look better after you add the private CSS styles to `messages.component.css` as listed in one of the ["final code review"](#final-code-review) tabs below.
 
-## Add messages to hero service
+## Add MessageService to HeroesComponent
 
 The following example shows how to display a history of each time the user clicks on a hero.
 This helps when you get to the next section on [Routing](tutorial/tour-of-heroes/toh-pt5).
