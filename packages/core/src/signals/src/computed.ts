@@ -67,7 +67,7 @@ class ComputedImpl<T> implements Producer, Consumer {
    * It's possible that no dependency has _actually_ changed, in which case the `stale`
    * state can be resolved without recomputing the value.
    */
-  private stale = true;
+  private stale: Producer|boolean = true;
 
   readonly id = nextReactiveId();
   readonly ref = new WeakRef(this);
@@ -79,14 +79,15 @@ class ComputedImpl<T> implements Producer, Consumer {
   constructor(private computation: () => T, private equal: (oldValue: T, newValue: T) => boolean) {}
 
   checkForChangedValue(): void {
-    if (!this.stale) {
+    if (this.stale === false) {
       // The current value and its version are already up to date.
       return;
     }
 
     // The current value is stale. Check whether we need to produce a new one.
 
-    if (this.value !== UNSET && this.value !== COMPUTING && !consumerPollValueStatus(this)) {
+    if (this.value !== UNSET && this.value !== COMPUTING &&
+        !consumerPollValueStatus(this, this.stale)) {
       // Even though we were previously notified of a potential dependency update, all of
       // our dependencies report that they have not actually changed in value, so we can
       // resolve the stale state without needing to recompute the current value.
@@ -135,14 +136,14 @@ class ComputedImpl<T> implements Producer, Consumer {
     this.valueVersion++;
   }
 
-  notify(): void {
-    if (this.stale) {
+  notify(notifier?: Producer): void {
+    if (this.stale !== false) {
       // We've already notified consumers that this value has potentially changed.
       return;
     }
 
     // Record that the currently cached value may be stale.
-    this.stale = true;
+    this.stale = notifier ?? true;
 
     // Notify any consumers about the potential change.
     producerNotifyConsumers(this);

@@ -164,7 +164,7 @@ export function producerNotifyConsumers(producer: Producer): void {
       continue;
     }
 
-    consumer.notify();
+    consumer.notify(producer);
   }
 }
 
@@ -272,7 +272,7 @@ export interface Consumer {
    * `consumerPollValueStatus` method to poll the `Producer`s on which it depends
    * and determine if any of them have actually updated.
    */
-  notify(): void;
+  notify(notifier?: Producer): void;
 }
 
 /**
@@ -281,13 +281,50 @@ export interface Consumer {
  * reports a semantically new value, then the `Consumer` has not observed a real dependency change
  * (even though it may have been notified of one).
  */
-export function consumerPollValueStatus(consumer: Consumer): boolean {
-  for (const [producerId, edge] of consumer.producers) {
+export function consumerPollValueStatus(consumer: Consumer, notifier: Producer|boolean): boolean {
+  const producers = consumer.producers;
+
+  let skipProducer: ProducerId|null = null;
+  if (typeof notifier !== 'boolean') {
+    // Prioritize checking the producer that was the first to mark us dirty first. This is purely a
+    // performance optimization, which contributes in two ways:
+    // 1. The producer that marked the consumer as dirty is likely to report a changed value,
+    //    allowing us to avoid iterating over all producers.
+    // 2. The notifier producer is captured using a strong reference, avoiding the need to
+    //    dereference a `WeakRef` which is relatively expensive.
+    //
+    // If the notifier producer does not report a change, we still have to check the remaining
+    // producers as they may report a change. This is because we only capture a single notifier when
+    // there could have been multiple, and because the push-phase does not descend into consumers
+    // that have already been marked dirty.
+    const edge = producers.get(notifier.id);
+    if (edge !== undefined) {
+      if (edge.atTrackingVersion === consumer.trackingVersion &&
+          producerPollStatus(notifier, edge.seenValueVersion)) {
+        // The producer that notified us has indeed changed.
+        return true;
+      }
+
+      if (producers.size === 1) {
+        // There is only a single producer that we've now already checked, so we know for certain we
+        // are not dirty.
+        return false;
+      }
+    }
+
+    // Skip over the producer we already checked.
+    skipProducer = notifier.id;
+  }
+
+  for (const [producerId, edge] of producers) {
+    if (producerId === skipProducer) {
+      continue;
+    }
     const producer = edge.producerRef.deref();
 
     if (producer === undefined || edge.atTrackingVersion !== consumer.trackingVersion) {
       // This dependency edge is stale, so remove it.
-      consumer.producers.delete(producerId);
+      producers.delete(producerId);
       producer?.consumers.delete(consumer.id);
       continue;
     }

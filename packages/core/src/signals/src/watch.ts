@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Consumer, consumerPollValueStatus, Edge, nextReactiveId, ProducerId, setActiveConsumer} from './graph';
+import {Consumer, consumerPollValueStatus, Edge, nextReactiveId, Producer, ProducerId, setActiveConsumer} from './graph';
 import {WeakRef} from './weak_ref';
 
 /**
@@ -22,15 +22,15 @@ export class Watch implements Consumer {
   readonly producers = new Map<ProducerId, Edge>();
   trackingVersion = 0;
 
-  private dirty = false;
+  private dirty: Producer|boolean = false;
 
   constructor(private watch: () => void, public schedule: (watch: Watch) => void) {}
 
-  notify(): void {
-    if (!this.dirty) {
+  notify(notifier?: Producer): void {
+    if (this.dirty === false) {
       this.schedule(this);
     }
-    this.dirty = true;
+    this.dirty = notifier ?? true;
   }
 
   /**
@@ -40,8 +40,9 @@ export class Watch implements Consumer {
    * `schedule` hook is called by `Watch`.
    */
   run(): void {
+    const dirty = this.dirty;
     this.dirty = false;
-    if (this.trackingVersion !== 0 && !consumerPollValueStatus(this)) {
+    if (this.trackingVersion !== 0 && !consumerPollValueStatus(this, dirty)) {
       return;
     }
 
