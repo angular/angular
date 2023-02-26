@@ -57,7 +57,20 @@ export function effect(effectFn: () => void): Effect {
  * Get a `Promise` that resolves when any scheduled effects have resolved.
  */
 export function effectsDone(): Promise<void> {
-  return watchQueuePromise?.promise ?? Promise.resolve();
+  if (watchQueuePromise === undefined) {
+    // There are no pending effects, so resolve immediately.
+    return Promise.resolve();
+  }
+  if (watchQueuePromise === null) {
+    // There are pending effects but the notification promise has not yet been created; do so now.
+    let resolveFn!: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolveFn = resolve;
+    });
+
+    watchQueuePromise = {promise, resolveFn};
+  }
+  return watchQueuePromise.promise;
 }
 
 /**
@@ -71,7 +84,19 @@ export function resetEffects(): void {
 const globalWatches = new Set<Watch>();
 const queuedWatches = new Set<Watch>();
 
-let watchQueuePromise: {promise: Promise<void>; resolveFn: () => void;}|null = null;
+interface EffectsDone {
+  promise: Promise<void>;
+  resolveFn: () => void;
+}
+
+/**
+ * Represents the outstanding watch queue promise. A value of `undefined` indicates that no
+ * microtick has been scheduled yet, indicating that the effects queue is empty. The value is set to
+ * `null` once an effect is being queued, to indicate that a microtick to flush the queue has been
+ * scheduled. Only when `effectsDone()` is being used do we create a promise to notify when the
+ * effects queue has been flushed, to avoid the cost of this promise unless it has been requested.
+ */
+let watchQueuePromise: EffectsDone|null|undefined = undefined;
 
 function queueWatch(watch: Watch): void {
   if (queuedWatches.has(watch) || !globalWatches.has(watch)) {
@@ -80,18 +105,9 @@ function queueWatch(watch: Watch): void {
 
   queuedWatches.add(watch);
 
-  if (watchQueuePromise === null) {
+  if (watchQueuePromise === undefined) {
     Promise.resolve().then(runWatchQueue);
-
-    let resolveFn!: () => void;
-    const promise = new Promise<void>((resolve) => {
-      resolveFn = resolve;
-    });
-
-    watchQueuePromise = {
-      promise,
-      resolveFn,
-    };
+    watchQueuePromise = null;
   }
 }
 
@@ -101,6 +117,6 @@ function runWatchQueue(): void {
     watch.run();
   }
 
-  watchQueuePromise!.resolveFn();
-  watchQueuePromise = null;
+  watchQueuePromise?.resolveFn();
+  watchQueuePromise = undefined;
 }
