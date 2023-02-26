@@ -8,6 +8,7 @@
 
 import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
 import {ConsumerId, Edge, nextReactiveId, Producer, producerAccessed, producerNotifyConsumers} from './graph';
+import {LinearMap} from './linear_map';
 import {WeakRef} from './weak_ref';
 
 /**
@@ -42,7 +43,7 @@ class SettableSignalImpl<T> implements Producer {
 
   readonly id = nextReactiveId();
   readonly ref = new WeakRef(this);
-  readonly consumers = new Map<ConsumerId, Edge>();
+  readonly consumers = new LinearMap<ConsumerId, Edge>();
   valueVersion = 0;
 
   checkForChangedValue(): void {

@@ -7,6 +7,7 @@
  */
 
 import {Consumer, consumerPollValueStatus, Edge, nextReactiveId, Producer, ProducerId, setActiveConsumer} from './graph';
+import {LinearMap} from './linear_map';
 import {WeakRef} from './weak_ref';
 
 /**
@@ -19,7 +20,7 @@ import {WeakRef} from './weak_ref';
 export class Watch implements Consumer {
   readonly id = nextReactiveId();
   readonly ref = new WeakRef(this);
-  readonly producers = new Map<ProducerId, Edge>();
+  readonly producers = new LinearMap<ProducerId, Edge>();
   trackingVersion = 0;
 
   private dirty: Producer|boolean = false;

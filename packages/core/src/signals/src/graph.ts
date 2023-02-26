@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {LinearMap} from './linear_map';
 import {WeakRef} from './weak_ref';
 
 /**
@@ -135,7 +136,7 @@ export interface Producer {
    *
    * Used when the produced value changes to notify interested `Consumer`s.
    */
-  readonly consumers: Map<ConsumerId, Edge>;
+  readonly consumers: LinearMap<ConsumerId, Edge>;
 
   /**
    * Monotonically increasing counter which increases when the value of this `Producer`
@@ -156,10 +157,15 @@ export interface Producer {
  * Notify all `Consumer`s of the given `Producer` that its value may have changed.
  */
 export function producerNotifyConsumers(producer: Producer): void {
-  for (const [consumerId, edge] of producer.consumers) {
+  const consumers = producer.consumers;
+  for (let i = 0, len = consumers.length; i < len; i += 2) {
+    const edge = consumers[i + 1] as Edge | null;
+    if (edge === null) {
+      continue;
+    }
     const consumer = edge.consumerRef.deref();
     if (consumer === undefined || consumer.trackingVersion !== edge.atTrackingVersion) {
-      producer.consumers.delete(consumerId);
+      consumers.deleteIndex(i);
       consumer?.producers.delete(producer.id);
       continue;
     }
@@ -254,7 +260,7 @@ export interface Consumer {
    * Used to poll `Producer`s to determine if the `Consumer` has really updated
    * or not.
    */
-  readonly producers: Map<ProducerId, Edge>;
+  readonly producers: LinearMap<ProducerId, Edge>;
 
   /**
    * Monotonically increasing counter representing a version of this `Consumer`'s
@@ -304,27 +310,25 @@ export function consumerPollValueStatus(consumer: Consumer, notifier: Producer|b
         // The producer that notified us has indeed changed.
         return true;
       }
-
-      if (producers.size === 1) {
-        // There is only a single producer that we've now already checked, so we know for certain we
-        // are not dirty.
-        return false;
-      }
     }
 
     // Skip over the producer we already checked.
     skipProducer = notifier.id;
   }
-
-  for (const [producerId, edge] of producers) {
+  for (let i = 0, len = producers.length; i < len; i += 2) {
+    const producerId = producers[i] as ProducerId | null;
     if (producerId === skipProducer) {
+      continue;
+    }
+    const edge = producers[i + 1] as Edge | null;
+    if (edge === null) {
       continue;
     }
     const producer = edge.producerRef.deref();
 
     if (producer === undefined || edge.atTrackingVersion !== consumer.trackingVersion) {
       // This dependency edge is stale, so remove it.
-      producers.delete(producerId);
+      producers.deleteIndex(i);
       producer?.consumers.delete(consumer.id);
       continue;
     }
