@@ -3,12 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@angular/animations": "15.1.0-next.2",
-    "@angular/common": "15.1.0-next.2",
-    "@angular/compiler": "15.1.0-next.2",
-    "@angular/core": "15.1.0-next.2",
-    "@angular/platform-browser": "15.1.0-next.2",
-    "@angular/platform-browser-dynamic": "15.1.0-next.2",
+    "@angular/animations": "~15.2.0",
+    "@angular/common": "~15.2.0",
+    "@angular/compiler": "~15.2.0",
+    "@angular/core": "~15.2.0",
+    "@angular/platform-browser": "~15.2.0",
+    "@angular/platform-browser-dynamic": "~15.2.0",
     "rxjs": "^7.5.2",
     "tslib": "^2.3.1",
     "zone.js": "^0.12.0"
@@ -22,9 +22,9 @@
     "e2e": "ng e2e"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~15.2.0-rc.0",
-    "@angular/cli": "~15.2.0-rc.0",
-    "@angular/compiler-cli": "~15.2.0-rc.0",
+    "@angular-devkit/build-angular": "~15.2.0",
+    "@angular/cli": "~15.2.0",
+    "@angular/compiler-cli": "~15.2.0",
     "@types/jasmine": "~4.3.0",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
