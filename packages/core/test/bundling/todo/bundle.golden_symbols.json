@@ -948,6 +948,9 @@
     "name": "initializeDirectives"
   },
   {
+    "name": "inject"
+  },
+  {
     "name": "injectArgs"
   },
   {

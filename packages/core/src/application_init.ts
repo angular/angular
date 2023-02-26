@@ -8,10 +8,8 @@
 
 import {Observable} from 'rxjs';
 
-import {Inject, Injectable, InjectionToken, Optional} from './di';
+import {inject, Injectable, InjectionToken} from './di';
 import {isObservable, isPromise} from './util/lang';
-import {noop} from './util/noop';
-
 
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") that you can use to provide
@@ -94,20 +92,20 @@ export const APP_INITIALIZER =
  */
 @Injectable({providedIn: 'root'})
 export class ApplicationInitStatus {
-  private resolve = noop;
-  private reject = noop;
-  private initialized = false;
-  public readonly donePromise: Promise<any>;
-  public readonly done = false;
+  // Using non null assertion, these fields are defined below
+  // within the `new Promise` callback (synchronously).
+  private resolve!: (...args: any[]) => void;
+  private reject!: (...args: any[]) => void;
 
-  constructor(@Inject(APP_INITIALIZER) @Optional() private readonly appInits:
-                  ReadonlyArray<() => Observable<unknown>| Promise<unknown>| void>) {
-    // TODO: Throw RuntimeErrorCode.INVALID_MULTI_PROVIDER if appInits is not an array
-    this.donePromise = new Promise((res, rej) => {
-      this.resolve = res;
-      this.reject = rej;
-    });
-  }
+  private initialized = false;
+  public readonly done = false;
+  public readonly donePromise: Promise<any> = new Promise((res, rej) => {
+    this.resolve = res;
+    this.reject = rej;
+  });
+
+  // TODO: Throw RuntimeErrorCode.INVALID_MULTI_PROVIDER if appInits is not an array
+  private readonly appInits = inject(APP_INITIALIZER, {optional: true}) ?? [];
 
   /** @internal */
   runInitializers() {
@@ -115,26 +113,24 @@ export class ApplicationInitStatus {
       return;
     }
 
-    const asyncInitPromises: Promise<any>[] = [];
-
-    const complete = () => {
-      (this as {done: boolean}).done = true;
-      this.resolve();
-    };
-
-    if (this.appInits) {
-      for (let i = 0; i < this.appInits.length; i++) {
-        const initResult = this.appInits[i]();
-        if (isPromise(initResult)) {
-          asyncInitPromises.push(initResult);
-        } else if (isObservable(initResult)) {
-          const observableAsPromise = new Promise<void>((resolve, reject) => {
-            initResult.subscribe({complete: resolve, error: reject});
-          });
-          asyncInitPromises.push(observableAsPromise);
-        }
+    const asyncInitPromises = [];
+    for (const appInits of this.appInits) {
+      const initResult = appInits();
+      if (isPromise(initResult)) {
+        asyncInitPromises.push(initResult);
+      } else if (isObservable(initResult)) {
+        const observableAsPromise = new Promise<void>((resolve, reject) => {
+          initResult.subscribe({complete: resolve, error: reject});
+        });
+        asyncInitPromises.push(observableAsPromise);
       }
     }
+
+    const complete = () => {
+      // @ts-expect-error overwriting a readonly
+      this.done = true;
+      this.resolve();
+    };
 
     Promise.all(asyncInitPromises)
         .then(() => {

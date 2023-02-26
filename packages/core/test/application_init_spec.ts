@@ -5,8 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ApplicationInitStatus} from '@angular/core/src/application_init';
+import {APP_INITIALIZER, ApplicationInitStatus} from '@angular/core/src/application_init';
 import {EMPTY, Observable, Subscriber} from 'rxjs';
+
+import {TestBed} from '../testing';
 
 describe('ApplicationInitStatus', () => {
   let status: ApplicationInitStatus;
@@ -16,7 +18,8 @@ describe('ApplicationInitStatus', () => {
 
   describe('no initializers', () => {
     beforeEach(() => {
-      status = new ApplicationInitStatus([]);
+      TestBed.configureTestingModule({providers: [{provide: APP_INITIALIZER, useValue: []}]});
+      status = TestBed.inject(ApplicationInitStatus);
     });
 
     it('should return true for `done`', () => {
@@ -42,7 +45,9 @@ describe('ApplicationInitStatus', () => {
         resolve = res;
         reject = rej;
       });
-      status = new ApplicationInitStatus([() => promise]);
+      TestBed.configureTestingModule(
+          {providers: [{provide: APP_INITIALIZER, useValue: [() => promise]}]});
+      status = TestBed.inject(ApplicationInitStatus);
     });
 
     it('should update the status once all async promise initializers are done', async () => {
@@ -85,7 +90,10 @@ describe('ApplicationInitStatus', () => {
       const observable = new Observable((res) => {
         subscriber = res;
       });
-      status = new ApplicationInitStatus([() => observable]);
+
+      TestBed.configureTestingModule(
+          {providers: [{provide: APP_INITIALIZER, useValue: [() => observable]}]});
+      status = TestBed.inject(ApplicationInitStatus);
     });
 
     it('should update the status once all async observable initializers are completed',
@@ -124,7 +132,10 @@ describe('ApplicationInitStatus', () => {
        async () => {
          // Create a status instance using an initializer that returns the `EMPTY` Observable
          // which completes synchronously upon subscription.
-         status = new ApplicationInitStatus([() => EMPTY]);
+         TestBed.resetTestingModule();
+         TestBed.configureTestingModule(
+             {providers: [{provide: APP_INITIALIZER, useValue: [() => EMPTY]}]});
+         status = TestBed.inject(ApplicationInitStatus);
 
          runInitializers();
 

@@ -56,13 +56,12 @@ export interface ApplicationConfig {
 
 // @public
 export class ApplicationInitStatus {
-    constructor(appInits: ReadonlyArray<() => Observable<unknown> | Promise<unknown> | void>);
     // (undocumented)
     readonly done = false;
     // (undocumented)
     readonly donePromise: Promise<any>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<ApplicationInitStatus, [{ optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ApplicationInitStatus, never>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<ApplicationInitStatus>;
 }

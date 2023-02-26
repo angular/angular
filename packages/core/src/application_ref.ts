@@ -104,7 +104,7 @@ export function compileNgModuleFactory<M>(
     return Promise.resolve(moduleFactory);
   }
 
-  const compilerProviders = _mergeArrays(compilerOptions.map(o => o.providers!));
+  const compilerProviders = compilerOptions.flatMap((option) => option.providers ?? []);
 
   // In case there are no compiler providers, we just return the module factory as
   // there won't be any resource loader. This can happen with Ivy, because AOT compiled
@@ -169,7 +169,7 @@ export function createPlatform(injector: Injector): PlatformRef {
  * but avoid referencing `PlatformRef` class.
  * This function is needed for bootstrapping a Standalone Component.
  */
-export function createOrReusePlatformInjector(providers: StaticProvider[] = []): Injector {
+function createOrReusePlatformInjector(providers: StaticProvider[] = []): Injector {
   // If a platform injector already exists, it means that the platform
   // is already bootstrapped and no additional actions are required.
   if (_platformInjector) return _platformInjector;
@@ -182,11 +182,9 @@ export function createOrReusePlatformInjector(providers: StaticProvider[] = []):
   return injector;
 }
 
-export function runPlatformInitializers(injector: Injector): void {
+function runPlatformInitializers(injector: Injector): void {
   const inits = injector.get(PLATFORM_INITIALIZER, null);
-  if (inits) {
-    inits.forEach((init: any) => init());
-  }
+  inits?.forEach((init) => init());
 }
 
 /**
@@ -219,8 +217,8 @@ export function internalCreateApplication(config: {
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.
     const allAppProviders = [
-      {provide: NgZone, useValue: ngZone},  //
-      ...(appProviders || []),              //
+      {provide: NgZone, useValue: ngZone},
+      ...(appProviders || []),
     ];
 
     const envInjector = createEnvironmentInjector(
@@ -466,8 +464,8 @@ export class PlatformRef {
             RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND,
             ngDevMode && 'No ErrorHandler. Is platform module (BrowserModule) included?');
       }
-      ngZone!.runOutsideAngular(() => {
-        const subscription = ngZone!.onError.subscribe({
+      ngZone.runOutsideAngular(() => {
+        const subscription = ngZone.onError.subscribe({
           next: (error: any) => {
             exceptionHandler.handleError(error);
           }
@@ -477,7 +475,7 @@ export class PlatformRef {
           subscription.unsubscribe();
         });
       });
-      return _callAndReportToErrorHandler(exceptionHandler, ngZone!, () => {
+      return _callAndReportToErrorHandler(exceptionHandler, ngZone, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         initStatus.runInitializers();
         return initStatus.donePromise.then(() => {
@@ -591,8 +589,8 @@ interface NgZoneOptions {
 function getNgZoneOptions(options?: BootstrapOptions): NgZoneOptions {
   return {
     enableLongStackTrace: typeof ngDevMode === 'undefined' ? false : !!ngDevMode,
-    shouldCoalesceEventChangeDetection: !!(options && options.ngZoneEventCoalescing) || false,
-    shouldCoalesceRunChangeDetection: !!(options && options.ngZoneRunCoalescing) || false,
+    shouldCoalesceEventChangeDetection: options?.ngZoneEventCoalescing ?? false,
+    shouldCoalesceRunChangeDetection: options?.ngZoneRunCoalescing ?? false,
   };
 }
 
@@ -627,13 +625,11 @@ function _callAndReportToErrorHandler(
   }
 }
 
-function optionsReducer<T extends Object>(dst: any, objs: T|T[]): T {
+function optionsReducer<T extends Object>(dst: T, objs: T|T[]): T {
   if (Array.isArray(objs)) {
-    dst = objs.reduce(optionsReducer, dst);
-  } else {
-    dst = {...dst, ...(objs as any)};
+    return objs.reduce(optionsReducer, dst);
   }
-  return dst;
+  return {...dst, ...objs};
 }
 
 /**
@@ -763,8 +759,7 @@ export class ApplicationRef {
    *
    * @see  [Usage notes](#is-stable-examples) for examples and caveats when using this API.
    */
-  // TODO(issue/24571): remove '!'.
-  public readonly isStable!: Observable<boolean>;
+  public readonly isStable: Observable<boolean>;
 
   /**
    * The `EnvironmentInjector` used to create this application.
@@ -832,8 +827,7 @@ export class ApplicationRef {
       };
     });
 
-    (this as {isStable: Observable<boolean>}).isStable =
-        merge(isCurrentlyStable, isStable.pipe(share()));
+    this.isStable = merge(isCurrentlyStable, isStable.pipe(share()));
   }
 
   /**
@@ -1172,10 +1166,4 @@ function _lastDefined<T>(args: T[]): T|undefined {
     }
   }
   return undefined;
-}
-
-function _mergeArrays(parts: any[][]): any[] {
-  const result: any[] = [];
-  parts.forEach((part) => part && result.push(...part));
-  return result;
 }
