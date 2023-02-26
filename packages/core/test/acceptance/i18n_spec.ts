@@ -2441,20 +2441,16 @@ describe('runtime i18n', () => {
     it('detached nodes should still be part of query', () => {
       @Directive({selector: '[text]', inputs: ['text'], exportAs: 'textDir'})
       class TextDirective {
-        // TODO(issue/24571): remove '!'.
-        text!: string;
+        text: string|undefined;
         constructor() {}
       }
 
       @Component({selector: 'div-query', template: '<ng-container #vc></ng-container>'})
       class DivQuery {
-        // TODO(issue/24571): remove '!'.
         @ContentChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
 
-        // TODO(issue/24571): remove '!'.
         @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
 
-        // TODO(issue/24571): remove '!'.
         @ContentChildren(TextDirective, {descendants: true}) query!: QueryList<TextDirective>;
 
         create() {
@@ -2836,13 +2832,13 @@ describe('runtime i18n', () => {
         child = this;
       }
     }
-    let child!: Child;
+    let child: Child|undefined;
 
 
     TestBed.configureTestingModule({declarations: [MyApp, Parent, Middle, Child]});
     const fixture = TestBed.createComponent(MyApp);
     fixture.detectChanges();
-    expect(child.middle).toBeInstanceOf(Middle);
+    expect(child?.middle).toBeInstanceOf(Middle);
   });
 
   it('should allow container in gotClosestRElement', () => {

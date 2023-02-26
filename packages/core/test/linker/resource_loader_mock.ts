@@ -103,9 +103,9 @@ export class MockResourceLoader extends ResourceLoader {
 }
 
 class _PendingRequest {
-  // TODO(issue/24571): remove '!'.
+  // Using non null assertion, these fields are defined below
+  // within the `new Promise` callback (synchronously).
   resolve!: (result: string) => void;
-  // TODO(issue/24571): remove '!'.
   reject!: (error: any) => void;
   promise: Promise<string>;
 

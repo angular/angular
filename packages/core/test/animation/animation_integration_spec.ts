@@ -1850,8 +1850,7 @@ describe('animation tests', function() {
         ]
       })
       class Cmp {
-        // TODO(issue/24571): remove '!'.
-        public exp!: string|null;
+        public exp: string|null|undefined;
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2236,8 +2235,7 @@ describe('animation tests', function() {
          })
          class Cmp {
            public exp: any;
-           // TODO(issue/24571): remove '!'.
-           public color!: string|null;
+           public color: string|null|undefined;
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2737,8 +2735,7 @@ describe('animation tests', function() {
          })
          class Cmp {
            exp: any = false;
-           // TODO(issue/24571): remove '!'.
-           event!: AnimationEvent;
+           event: AnimationEvent|undefined;
 
            callback = (event: any) => {
              this.event = event;
@@ -2754,11 +2751,11 @@ describe('animation tests', function() {
          fixture.detectChanges();
          flushMicrotasks();
 
-         expect(cmp.event.triggerName).toEqual('myAnimation');
-         expect(cmp.event.phaseName).toEqual('start');
-         expect(cmp.event.totalTime).toEqual(500);
-         expect(cmp.event.fromState).toEqual('void');
-         expect(cmp.event.toState).toEqual('true');
+         expect(cmp.event?.triggerName).toEqual('myAnimation');
+         expect(cmp.event?.phaseName).toEqual('start');
+         expect(cmp.event?.totalTime).toEqual(500);
+         expect(cmp.event?.fromState).toEqual('void');
+         expect(cmp.event?.toState).toEqual('true');
        }));
 
     it('should trigger a `done` state change listener for when the animation changes state from a => b',
@@ -2775,8 +2772,7 @@ describe('animation tests', function() {
          })
          class Cmp {
            exp: any = false;
-           // TODO(issue/24571): remove '!'.
-           event!: AnimationEvent;
+           event: AnimationEvent|undefined;
 
            callback = (event: any) => {
              this.event = event;
@@ -2799,11 +2795,11 @@ describe('animation tests', function() {
          player.finish();
          flushMicrotasks();
 
-         expect(cmp.event.triggerName).toEqual('myAnimation123');
-         expect(cmp.event.phaseName).toEqual('done');
-         expect(cmp.event.totalTime).toEqual(999);
-         expect(cmp.event.fromState).toEqual('void');
-         expect(cmp.event.toState).toEqual('b');
+         expect(cmp.event?.triggerName).toEqual('myAnimation123');
+         expect(cmp.event?.phaseName).toEqual('done');
+         expect(cmp.event?.totalTime).toEqual(999);
+         expect(cmp.event?.fromState).toEqual('void');
+         expect(cmp.event?.toState).toEqual('b');
        }));
 
     it('should handle callbacks for multiple triggers running simultaneously', fakeAsync(() => {
@@ -2832,10 +2828,8 @@ describe('animation tests', function() {
          class Cmp {
            exp1: any = false;
            exp2: any = false;
-           // TODO(issue/24571): remove '!'.
-           event1!: AnimationEvent;
-           // TODO(issue/24571): remove '!'.
-           event2!: AnimationEvent;
+           event1: AnimationEvent|undefined;
+           event2: AnimationEvent|undefined;
            // tslint:disable:semicolon
            callback1 = (event: any) => {
              this.event1 = event;
@@ -2869,8 +2863,8 @@ describe('animation tests', function() {
          expect(cmp.event2).toBeFalsy();
 
          flushMicrotasks();
-         expect(cmp.event1.triggerName).toBeTruthy('ani1');
-         expect(cmp.event2.triggerName).toBeTruthy('ani2');
+         expect(cmp.event1?.triggerName).toBeTruthy('ani1');
+         expect(cmp.event2?.triggerName).toBeTruthy('ani2');
        }));
 
     it('should handle callbacks for multiple triggers running simultaneously on the same element',
@@ -2899,10 +2893,8 @@ describe('animation tests', function() {
          class Cmp {
            exp1: any = false;
            exp2: any = false;
-           // TODO(issue/24571): remove '!'.
-           event1!: AnimationEvent;
-           // TODO(issue/24571): remove '!'.
-           event2!: AnimationEvent;
+           event1: AnimationEvent|undefined;
+           event2: AnimationEvent|undefined;
            callback1 = (event: any) => {
              this.event1 = event;
            };
@@ -2934,8 +2926,8 @@ describe('animation tests', function() {
          expect(cmp.event2).toBeFalsy();
 
          flushMicrotasks();
-         expect(cmp.event1.triggerName).toBeTruthy('ani1');
-         expect(cmp.event2.triggerName).toBeTruthy('ani2');
+         expect(cmp.event1?.triggerName).toBeTruthy('ani1');
+         expect(cmp.event2?.triggerName).toBeTruthy('ani2');
        }));
 
     it('should handle a leave animation for multiple triggers even if not all triggers have their own leave transition specified',
@@ -3010,8 +3002,7 @@ describe('animation tests', function() {
                    [style({'opacity': '0'}), animate(1000, style({'opacity': '1'}))])])],
          })
          class Cmp {
-           // TODO(issue/24571): remove '!'.
-           event!: AnimationEvent;
+           event: AnimationEvent|undefined;
 
            @HostBinding('@myAnimation2') exp: any = false;
 
@@ -3030,11 +3021,11 @@ describe('animation tests', function() {
          fixture.detectChanges();
          flushMicrotasks();
 
-         expect(cmp.event.triggerName).toEqual('myAnimation2');
-         expect(cmp.event.phaseName).toEqual('start');
-         expect(cmp.event.totalTime).toEqual(1000);
-         expect(cmp.event.fromState).toEqual('void');
-         expect(cmp.event.toState).toEqual('TRUE');
+         expect(cmp.event?.triggerName).toEqual('myAnimation2');
+         expect(cmp.event?.phaseName).toEqual('start');
+         expect(cmp.event?.totalTime).toEqual(1000);
+         expect(cmp.event?.fromState).toEqual('void');
+         expect(cmp.event?.toState).toEqual('TRUE');
        }));
 
     it('should always fire callbacks even when a transition is not detected', fakeAsync(() => {
@@ -3046,8 +3037,7 @@ describe('animation tests', function() {
            animations: [trigger('myAnimation', [])]
          })
          class Cmp {
-           // TODO(issue/24571): remove '!'.
-           exp!: string;
+           exp: string|undefined;
            log: any[] = [];
            callback = (event: any) => this.log.push(`${event.phaseName} => ${event.toState}`);
          }
@@ -3158,10 +3148,8 @@ describe('animation tests', function() {
          })
          class Cmp {
            log: string[] = [];
-           // TODO(issue/24571): remove '!'.
-           exp1!: string;
-           // TODO(issue/24571): remove '!'.
-           exp2!: string;
+           exp1: string|undefined;
+           exp2: string|undefined;
 
            cb(name: string, event: AnimationEvent) {
              this.log.push(name);
@@ -3239,8 +3227,7 @@ describe('animation tests', function() {
          class Cmp {
            log: string[] = [];
            events: {[name: string]: any} = {};
-           // TODO(issue/24571): remove '!'.
-           exp!: string;
+           exp: string|undefined;
            items: any = [0, 1, 2, 3];
 
            cb(name: string, phase: string, event: AnimationEvent) {
@@ -3546,7 +3533,7 @@ describe('animation tests', function() {
         fixture.detectChanges();
         resetLog();
 
-        const parent = cmp.parentElm!.nativeElement;
+        const parent = cmp.parentElm.nativeElement;
 
         cmp.exp = true;
         fixture.detectChanges();
@@ -3580,10 +3567,8 @@ describe('animation tests', function() {
            class Cmp {
              disableExp = false;
              exp = '';
-             // TODO(issue/24571): remove '!'.
-             startEvent!: AnimationEvent;
-             // TODO(issue/24571): remove '!'.
-             doneEvent!: AnimationEvent;
+             startEvent: AnimationEvent|undefined;
+             doneEvent: AnimationEvent|undefined;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -3599,17 +3584,17 @@ describe('animation tests', function() {
            cmp.exp = '1';
            fixture.detectChanges();
            flushMicrotasks();
-           expect(cmp.startEvent.totalTime).toEqual(9876);
-           expect(cmp.startEvent.disabled).toBeTruthy();
-           expect(cmp.doneEvent.totalTime).toEqual(9876);
-           expect(cmp.doneEvent.disabled).toBeTruthy();
+           expect(cmp.startEvent?.totalTime).toEqual(9876);
+           expect(cmp.startEvent?.disabled).toBeTruthy();
+           expect(cmp.doneEvent?.totalTime).toEqual(9876);
+           expect(cmp.doneEvent?.disabled).toBeTruthy();
 
            cmp.exp = '2';
            cmp.disableExp = false;
            fixture.detectChanges();
            flushMicrotasks();
-           expect(cmp.startEvent.totalTime).toEqual(9876);
-           expect(cmp.startEvent.disabled).toBeFalsy();
+           expect(cmp.startEvent?.totalTime).toEqual(9876);
+           expect(cmp.startEvent?.disabled).toBeFalsy();
            // the done event isn't fired because it's an actual animation
          }));
 

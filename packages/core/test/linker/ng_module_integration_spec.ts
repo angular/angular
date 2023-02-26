@@ -59,8 +59,7 @@ class SomeComp {
 
 @Directive({selector: '[someDir]'})
 class SomeDirective {
-  // TODO(issue/24571): remove '!'.
-  @HostBinding('title') @Input() someDir!: string;
+  @HostBinding('title') @Input() someDir: string|undefined;
 }
 
 @Pipe({name: 'somePipe'})
@@ -109,7 +108,7 @@ describe('NgModule', () => {
 
     const comp = cf.create(Injector.NULL);
 
-    return new ComponentFixture(comp, null!, false);
+    return new ComponentFixture(comp, null, false);
   }
 
   describe('errors', () => {
@@ -326,7 +325,7 @@ describe('NgModule', () => {
       }
 
       const ngModule = createModule(SomeModule);
-      expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp)!.componentType)
+      expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
           .toBe(SomeComp);
     });
 

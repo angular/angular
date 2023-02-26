@@ -173,13 +173,10 @@ class LocalsComp {
   },
 })
 class BankAccount {
-  // TODO(issue/24571): remove '!'.
-  @Input() bank!: string;
-  // TODO(issue/24571): remove '!'.
-  @Input('account') id!: string;
+  @Input() bank: string|undefined;
+  @Input('account') id: string|undefined;
 
-  // TODO(issue/24571): remove '!'.
-  normalizedBankName!: string;
+  normalizedBankName: string|undefined;
 }
 
 @Component({
@@ -792,7 +789,7 @@ class TestCmptWithPropInterpolation {
       fixture = TestBed.createComponent(LocalsComp);
       fixture.detectChanges();
 
-      expect(fixture.debugElement.children[0].references!['alice']).toBeInstanceOf(MyDir);
+      expect(fixture.debugElement.children[0].references['alice']).toBeInstanceOf(MyDir);
     });
 
     it('should allow injecting from the element injector', () => {
