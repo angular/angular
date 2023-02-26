@@ -1057,8 +1057,7 @@ describe('animation query tests', function() {
             ])]
         })
         class Cmp {
-        // TODO(issue/24571): remove '!'.
-        public items!: any[];
+        public items: any[]|undefined;
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1080,7 +1079,7 @@ describe('animation query tests', function() {
       expect(players.length).toEqual(5);
 
       for (let i = 0; i < 5; i++) {
-        let player = players[i]!;
+        let player = players[i];
         expect(player.keyframes).toEqual([
           new Map<string, string|number>([['opacity', '0'], ['offset', 0]]),
           new Map<string, string|number>([['opacity', '1'], ['offset', 1]]),
@@ -1100,7 +1099,7 @@ describe('animation query tests', function() {
       expect(players.length).toEqual(5);
 
       for (let i = 0; i < 5; i++) {
-        let player = players[i]!;
+        let player = players[i];
         expect(player.keyframes).toEqual([
           new Map<string, string|number>([['opacity', '1'], ['offset', 0]]),
           new Map<string, string|number>([['opacity', '0'], ['offset', 1]]),
@@ -1138,8 +1137,7 @@ describe('animation query tests', function() {
         })
         class Cmp {
            public exp: any;
-           // TODO(issue/24571): remove '!'.
-           public items!: any[];
+           public items: any[]|undefined;
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1361,8 +1359,7 @@ describe('animation query tests', function() {
       })
       class Cmp {
         public exp: any;
-        // TODO(issue/24571): remove '!'.
-        public items!: any[];
+        public items: any[]|undefined;
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1416,8 +1413,7 @@ describe('animation query tests', function() {
       })
       class Cmp {
         public exp: any;
-        // TODO(issue/24571): remove '!'.
-        public items!: any[];
+        public items: any[]|undefined;
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1481,8 +1477,7 @@ describe('animation query tests', function() {
         class Cmp {
         public exp1: any;
         public exp2: any;
-        // TODO(issue/24571): remove '!'.
-        public items!: any[];
+        public items: any[]|undefined;
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1555,8 +1550,7 @@ describe('animation query tests', function() {
          })
          class Cmp {
            public exp: any;
-           // TODO(issue/24571): remove '!'.
-           public items!: any[];
+           public items: any[]|undefined;
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1612,8 +1606,7 @@ describe('animation query tests', function() {
           })
           class Cmp {
            public exp: any;
-           // TODO(issue/24571): remove '!'.
-           public items!: any[];
+           public items: any[]|undefined;
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2585,7 +2578,7 @@ describe('animation query tests', function() {
          const players = getLog();
          expect(players.length).toEqual(1);
 
-         const element = players[0]!.element;
+         const element = players[0].element;
          expect(element.innerText.trim()).toMatch(/this\s+child/mg);
        }));
 
@@ -2627,8 +2620,7 @@ describe('animation query tests', function() {
           `
          })
          class Cmp {
-           // TODO(issue/24571): remove '!'.
-           public exp!: boolean;
+           public exp: boolean|undefined;
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2805,8 +2797,7 @@ describe('animation query tests', function() {
           `
          })
          class Cmp {
-           // TODO(issue/24571): remove '!'.
-           public exp!: boolean;
+           public exp: boolean|undefined;
            public log: string[] = [];
            callback(event: any) {
              this.log.push(event.element.getAttribute('data-name') + '-' + event.phaseName);
