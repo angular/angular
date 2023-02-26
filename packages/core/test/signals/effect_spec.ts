@@ -7,7 +7,7 @@
  */
 
 import {computed, signal} from '@angular/core/src/signals';
-import {effect, effectsDone as flush, resetEffects} from '@angular/core/src/signals/src/effect';
+import {effect, effectsDone as flush, resetEffects, runWatchQueue} from '@angular/core/src/signals/src/effect';
 
 describe('effects', () => {
   afterEach(() => {
@@ -106,5 +106,62 @@ describe('effects', () => {
     source.set(4);
     await flush();
     expect(updateCounter).toEqual(3);
+  });
+
+  it('should prevent effects from being queued when effects are reset', async () => {
+    const source = signal(0);
+    let effectCounter = 0;
+    effect(() => {
+      effectCounter++;
+      source();
+    });
+
+    await flush();
+    expect(effectCounter).toBe(1);
+
+    resetEffects();
+
+    source.set(1);
+    await flush();
+
+    expect(effectCounter).toBe(1);
+  });
+
+  it('only rerun pending effects when some effects throws', () => {
+    const source = signal(0);
+    let effect1Counter = 0;
+    let effect2Counter = 0;
+    let effect3Counter = 0;
+    effect(() => {
+      effect1Counter++;
+      source();
+    });
+    effect(() => {
+      effect2Counter++;
+      if (source() % 2 === 0) {
+        throw new Error('Even numbers throw an error');
+      }
+    });
+    effect(() => {
+      effect3Counter++;
+      source();
+    });
+
+    expect(runWatchQueue).toThrowError('Even numbers throw an error');
+    expect(effect1Counter).toBe(1);
+    expect(effect2Counter).toBe(1);
+    expect(effect3Counter).toBe(0);
+
+    expect(runWatchQueue).not.toThrowError('Even numbers throw an error');
+    expect(effect1Counter).toBe(1);
+    expect(effect2Counter).toBe(1);
+    expect(effect3Counter).toBe(1);
+
+    source.set(1);
+
+    expect(runWatchQueue).not.toThrowError();
+    expect(effect1Counter).toBe(2);
+    expect(effect2Counter).toBe(2);
+    expect(effect3Counter).toBe(2);
   });
 });

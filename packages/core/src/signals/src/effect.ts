@@ -31,6 +31,8 @@ export interface Effect {
   readonly consumer: Consumer;
 }
 
+function noop() {}
+
 /**
  * Create a global `Effect` for the given reactive function.
  *
@@ -47,6 +49,7 @@ export function effect(effectFn: () => void): Effect {
     consumer: watch,
     schedule: watch.notify.bind(watch),
     destroy: () => {
+      watch.schedule = noop;
       queuedWatches.delete(watch);
       globalWatches.delete(watch);
     },
@@ -78,6 +81,9 @@ export function effectsDone(): Promise<void> {
  */
 export function resetEffects(): void {
   queuedWatches.clear();
+  for (const watch of globalWatches) {
+    watch.schedule = noop;
+  }
   globalWatches.clear();
 }
 
@@ -99,10 +105,6 @@ interface EffectsDone {
 let watchQueuePromise: EffectsDone|null|undefined = undefined;
 
 function queueWatch(watch: Watch): void {
-  if (queuedWatches.has(watch) || !globalWatches.has(watch)) {
-    return;
-  }
-
   queuedWatches.add(watch);
 
   if (watchQueuePromise === undefined) {
@@ -111,11 +113,11 @@ function queueWatch(watch: Watch): void {
   }
 }
 
-function runWatchQueue(): void {
+export function runWatchQueue(): void {
   for (const watch of queuedWatches) {
-    queuedWatches.delete(watch);
     watch.run();
   }
+  queuedWatches.clear();
 
   watchQueuePromise?.resolveFn();
   watchQueuePromise = undefined;

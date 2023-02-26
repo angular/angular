@@ -24,7 +24,7 @@ export class Watch implements Consumer {
 
   private dirty = false;
 
-  constructor(private watch: () => void, private schedule: (watch: Watch) => void) {}
+  constructor(private watch: () => void, public schedule: (watch: Watch) => void) {}
 
   notify(): void {
     if (!this.dirty) {
