@@ -601,6 +601,14 @@
     "bio": "Suguru is a community-loving Frontend developer and a lead of Angular Japan User Group. He organizes the largest Angular event in Japan (ng-japan). And he is a contributor to Angular by sending patches, writing, speaking, and localizing resources in Japanese.",
     "groups": ["GDE"]
   },
+  "laranewsom": {
+    "name": "Lara Newsom",
+    "picture": "laranewsom.jpg",
+    "twitter": "laranerdsom",
+    "website": "https://www.linkedin.com/in/lara-newsom",
+    "bio": "Lara is a Software Engineering Technical Leader on the Customer Experience Angular Team at Cisco based in Des Moines, Iowa. In addition to speaking at conferences and talking about Angular and related technologies on the Angular Plus Show Podcast, Lara loves traveling with her husband and two teens. Much to the disappointment of her own two cats, Lara also enjoys fostering orphaned kittens. ",
+    "groups": ["GDE"]
+  },
   "leonardozizzamia": {
     "name": "Leonardo Zizzamia",
     "picture": "leonardo.jpg",
