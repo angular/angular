@@ -612,6 +612,9 @@
     "name": "incrementInitPhaseFlags"
   },
   {
+    "name": "inject"
+  },
+  {
     "name": "injectArgs"
   },
   {
