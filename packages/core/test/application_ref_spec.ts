@@ -108,7 +108,7 @@ class SomeComponent {
              const modFactory = compiler.compileModuleSync(SomeModule);
              const module = modFactory.create(TestBed);
              const cmpFactory =
-                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
+                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
              const component = app.bootstrap(cmpFactory);
 
              // The component should see the child module providers
@@ -138,7 +138,7 @@ class SomeComponent {
              const modFactory = compiler.compileModuleSync(SomeModule);
              const module = modFactory.create(TestBed);
              const cmpFactory =
-                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
+                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
              const component = app.bootstrap(cmpFactory, 'custom-selector');
 
              // The component should see the child module providers
@@ -596,13 +596,11 @@ class SomeComponent {
 
       @Component({template: '<ng-container #vc></ng-container>'})
       class ContainerComp {
-        // TODO(issue/24571): remove '!'.
         @ViewChild('vc', {read: ViewContainerRef}) vc!: ViewContainerRef;
       }
 
       @Component({template: '<ng-template #t>Dynamic content</ng-template>'})
       class EmbeddedViewComp {
-        // TODO(issue/24571): remove '!'.
         @ViewChild(TemplateRef, {static: true}) tplRef!: TemplateRef<Object>;
       }
 

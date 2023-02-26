@@ -32,7 +32,7 @@ const trackByIdentity = (index: number, item: any) => item;
  */
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
   public readonly length: number = 0;
-  // TODO(issue/24571): remove '!'.
+  // TODO: confirm the usage of `collection` as it's unused, readonly and on a non public API.
   public readonly collection!: V[]|Iterable<V>|null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
   private _linkedRecords: _DuplicateMap<V>|null = null;
@@ -217,7 +217,8 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     }
 
     this._truncate(record);
-    (this as {collection: V[] | Iterable<V>}).collection = collection;
+    // @ts-expect-error overwriting a readonly member
+    this.collection = collection;
     return this.isDirty;
   }
 
