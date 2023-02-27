@@ -12,7 +12,7 @@ export {ApplicationConfig, bootstrapApplication, BrowserModule, createApplicatio
 export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
-export {BrowserTransferStateModule} from './browser/transfer_state';
+export {BrowserTransferStateModule} from './browser/transfer_state_module';
 export {By} from './dom/debug/by';
 export {REMOVE_STYLES_ON_COMPONENT_DESTROY} from './dom/dom_renderer';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';

@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {BrowserModule, BrowserTransferStateModule} from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
 
 import {TransferStateComponent} from './transfer-state.component';
 
