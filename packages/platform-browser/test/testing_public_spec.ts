@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, Inject, Injectable, InjectionToken, Injector, Input, NgModule, Optional, Pipe, SkipSelf, Type, ɵstringify as stringify} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, Inject, Injectable, InjectionToken, Injector, Input, NgModule, Optional, Pipe, SkipSelf, Type} from '@angular/core';
 import {fakeAsync, getTestBed, inject, TestBed, tick, waitForAsync, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -92,7 +92,6 @@ class TestViewProvidersComp {
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 class SomeDirective {
-  // TODO(issue/24571): remove '!'.
   @Input() someDir!: string;
 }
 
@@ -762,7 +761,6 @@ const bTok = new InjectionToken<string>('b');
               testDir = this;
             }
 
-            // TODO(issue/24571): remove '!'.
             @Input('test') test!: string;
           }
 

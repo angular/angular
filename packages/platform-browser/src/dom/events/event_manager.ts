@@ -32,7 +32,9 @@ export class EventManager {
    * Initializes an instance of the event-manager service.
    */
   constructor(@Inject(EVENT_MANAGER_PLUGINS) plugins: EventManagerPlugin[], private _zone: NgZone) {
-    plugins.forEach(p => p.manager = this);
+    plugins.forEach((plugin) => {
+      plugin.manager = this;
+    });
     this._plugins = plugins.slice().reverse();
   }
 
@@ -94,7 +96,7 @@ export class EventManager {
 export abstract class EventManagerPlugin {
   constructor(private _doc: any) {}
 
-  // TODO(issue/24571): remove '!'.
+  // Using non-null assertion because it's set by EventManager's constructor
   manager!: EventManager;
 
   abstract supports(eventName: string): boolean;
