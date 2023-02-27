@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injector} from '@angular/core';
+import {EnvironmentInjector} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -15,7 +15,6 @@ import {runCanMatchGuards} from '../operators/check_guards';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
-import {forEach} from './collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
 
 export interface MatchResult {
@@ -72,7 +71,7 @@ export function match(
   if (!res) return {...noMatch};
 
   const posParams: {[n: string]: string} = {};
-  forEach(res.posParams!, (v: UrlSegment, k: string) => {
+  Object.entries(res.posParams ?? {}).forEach(([k, v]) => {
     posParams[k] = v.path;
   });
   const parameters = res.consumed.length > 0 ?

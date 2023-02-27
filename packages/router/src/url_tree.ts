@@ -10,7 +10,7 @@ import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
-import {equalArraysOrString, forEach, shallowEqual} from './utils/collection';
+import {equalArraysOrString, shallowEqual} from './utils/collection';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -252,7 +252,7 @@ export class UrlSegmentGroup {
       public segments: UrlSegment[],
       /** The list of children of this group */
       public children: {[key: string]: UrlSegmentGroup}) {
-    forEach(children, (v: any, k: any) => v.parent = this);
+    Object.values(children).forEach((v) => (v.parent = this));
   }
 
   /** Whether the segment has child segments */
@@ -334,12 +334,12 @@ export function equalPath(as: UrlSegment[], bs: UrlSegment[]): boolean {
 export function mapChildrenIntoArray<T>(
     segment: UrlSegmentGroup, fn: (v: UrlSegmentGroup, k: string) => T[]): T[] {
   let res: T[] = [];
-  forEach(segment.children, (child: UrlSegmentGroup, childOutlet: string) => {
+  Object.entries(segment.children).forEach(([childOutlet, child]) => {
     if (childOutlet === PRIMARY_OUTLET) {
       res = res.concat(fn(child, childOutlet));
     }
   });
-  forEach(segment.children, (child: UrlSegmentGroup, childOutlet: string) => {
+  Object.entries(segment.children).forEach(([childOutlet, child]) => {
     if (childOutlet !== PRIMARY_OUTLET) {
       res = res.concat(fn(child, childOutlet));
     }
@@ -422,7 +422,7 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
         '';
     const children: string[] = [];
 
-    forEach(segment.children, (v: UrlSegmentGroup, k: string) => {
+    Object.entries(segment.children).forEach(([k, v]) => {
       if (k !== PRIMARY_OUTLET) {
         children.push(`${k}:${serializeSegment(v, false)}`);
       }

@@ -18,7 +18,6 @@ import {runCanLoadGuards} from './operators/check_guards';
 import {RouterConfigLoader} from './router_config_loader';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {forEach} from './utils/collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
 import {isEmptyError} from './utils/type_guards';
@@ -400,7 +399,7 @@ class ApplyRedirects {
 
   private createQueryParams(redirectToParams: Params, actualParams: Params): Params {
     const res: Params = {};
-    forEach(redirectToParams, (v: any, k: string) => {
+    Object.entries(redirectToParams).forEach(([k, v]) => {
       const copySourceValue = typeof v === 'string' && v.startsWith(':');
       if (copySourceValue) {
         const sourceName = v.substring(1);
@@ -418,7 +417,7 @@ class ApplyRedirects {
     const updatedSegments = this.createSegments(redirectTo, group.segments, segments, posParams);
 
     let children: {[n: string]: UrlSegmentGroup} = {};
-    forEach(group.children, (child: UrlSegmentGroup, name: string) => {
+    Object.entries(group.children).forEach(([name, child]) => {
       children[name] = this.createSegmentGroup(redirectTo, child, segments, posParams);
     });
 

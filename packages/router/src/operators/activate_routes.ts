@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactoryResolver, EnvironmentInjector, NgModuleRef} from '@angular/core';
+import {ComponentFactoryResolver} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -15,7 +15,6 @@ import {NavigationTransition} from '../navigation_transition';
 import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state';
-import {forEach} from '../utils/collection';
 import {getClosestRouteInjector} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
@@ -57,7 +56,7 @@ export class ActivateRoutes {
     });
 
     // De-activate the routes that will not be re-used
-    forEach(children, (v: TreeNode<ActivatedRoute>, childName: string) => {
+    Object.values(children).forEach((v: TreeNode<ActivatedRoute>) => {
       this.deactivateRouteAndItsChildren(v, contexts);
     });
   }

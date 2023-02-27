@@ -12,7 +12,7 @@ import {RuntimeErrorCode} from './errors';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {forEach, last, shallowEqual} from './utils/collection';
+import {last, shallowEqual} from './utils/collection';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -172,7 +172,7 @@ function tree(
     queryParams: Params|null, fragment: string|null): UrlTree {
   let qp: any = {};
   if (queryParams) {
-    forEach(queryParams, (value: any, name: any) => {
+    Object.entries(queryParams).forEach(([name, value]) => {
       qp[name] = Array.isArray(value) ? value.map((v: any) => `${v}`) : `${value}`;
     });
   }
@@ -199,7 +199,7 @@ function replaceSegment(
     current: UrlSegmentGroup, oldSegment: UrlSegmentGroup,
     newSegment: UrlSegmentGroup): UrlSegmentGroup {
   const children: {[key: string]: UrlSegmentGroup} = {};
-  forEach(current.children, (c: UrlSegmentGroup, outletName: string) => {
+  Object.entries(current.children).forEach(([outletName, c]) => {
     if (c === oldSegment) {
       children[outletName] = newSegment;
     } else {
@@ -244,7 +244,7 @@ function computeNavigation(commands: any[]): Navigation {
     if (typeof cmd === 'object' && cmd != null) {
       if (cmd.outlets) {
         const outlets: {[k: string]: any} = {};
-        forEach(cmd.outlets, (commands: any, name: string) => {
+        Object.entries(cmd.outlets).forEach(([name, commands]) => {
           outlets[name] = typeof commands === 'string' ? commands.split('/') : commands;
         });
         return [...res, {outlets}];
@@ -415,7 +415,7 @@ function updateSegmentGroupChildren(
           segmentGroup.children[PRIMARY_OUTLET], startIndex, commands);
     }
 
-    forEach(outlets, (commands, outlet) => {
+    Object.entries(outlets).forEach(([outlet, commands]) => {
       if (typeof commands === 'string') {
         commands = [commands];
       }
@@ -424,7 +424,7 @@ function updateSegmentGroupChildren(
       }
     });
 
-    forEach(segmentGroup.children, (child: UrlSegmentGroup, childOutlet: string) => {
+    Object.entries(segmentGroup.children).forEach(([childOutlet, child]) => {
       if (outlets[childOutlet] === undefined) {
         children[childOutlet] = child;
       }
@@ -503,7 +503,7 @@ function createNewSegmentGroup(
 function createNewSegmentChildren(outlets: {[name: string]: unknown[]|string}):
     {[outlet: string]: UrlSegmentGroup} {
   const children: {[outlet: string]: UrlSegmentGroup} = {};
-  forEach(outlets, (commands, outlet) => {
+  Object.entries(outlets).forEach(([outlet, commands]) => {
     if (typeof commands === 'string') {
       commands = [commands];
     }
@@ -516,7 +516,7 @@ function createNewSegmentChildren(outlets: {[name: string]: unknown[]|string}):
 
 function stringify(params: {[key: string]: any}): {[key: string]: string} {
   const res: {[key: string]: string} = {};
-  forEach(params, (v: any, k: string) => res[k] = `${v}`);
+  Object.entries(params).forEach(([k, v]) => res[k] = `${v}`);
   return res;
 }
 
