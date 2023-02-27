@@ -89,11 +89,9 @@ export class Container implements Node {
 }
 
 export class Icu implements Node {
-  // TODO(issue/24571): remove '!'.
-  public expressionPlaceholder!: string;
   constructor(
       public expression: string, public type: string, public cases: {[k: string]: Node},
-      public sourceSpan: ParseSourceSpan) {}
+      public sourceSpan: ParseSourceSpan, public expressionPlaceholder?: string) {}
 
   visit(visitor: Visitor, context?: any): any {
     return visitor.visitIcu(this, context);
@@ -162,8 +160,7 @@ export class CloneVisitor implements Visitor {
   visitIcu(icu: Icu, context?: any): Icu {
     const cases: {[k: string]: Node} = {};
     Object.keys(icu.cases).forEach(key => cases[key] = icu.cases[key].visit(this, context));
-    const msg = new Icu(icu.expression, icu.type, cases, icu.sourceSpan);
-    msg.expressionPlaceholder = icu.expressionPlaceholder;
+    const msg = new Icu(icu.expression, icu.type, cases, icu.sourceSpan, icu.expressionPlaceholder);
     return msg;
   }
 
