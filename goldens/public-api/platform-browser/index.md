@@ -12,6 +12,7 @@ import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
+import { ɵmakeStateKey as makeStateKey } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
@@ -19,7 +20,9 @@ import { Predicate } from '@angular/core';
 import { Provider } from '@angular/core';
 import { Sanitizer } from '@angular/core';
 import { SecurityContext } from '@angular/core';
+import { ɵStateKey as StateKey } from '@angular/core';
 import { StaticProvider } from '@angular/core';
+import { ɵTransferState as TransferState } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
@@ -143,8 +146,7 @@ export class HammerModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<HammerModule, never, never, never>;
 }
 
-// @public
-export function makeStateKey<T = void>(key: string): StateKey<T>;
+export { makeStateKey }
 
 // @public
 export class Meta {
@@ -210,11 +212,7 @@ export interface SafeUrl extends SafeValue {
 export interface SafeValue {
 }
 
-// @public
-export type StateKey<T> = string & {
-    __not_a_string: never;
-    __value_type?: T;
-};
+export { StateKey }
 
 // @public
 export class Title {
@@ -227,21 +225,7 @@ export class Title {
     static ɵprov: i0.ɵɵInjectableDeclaration<Title>;
 }
 
-// @public
-export class TransferState {
-    constructor();
-    get<T>(key: StateKey<T>, defaultValue: T): T;
-    hasKey<T>(key: StateKey<T>): boolean;
-    get isEmpty(): boolean;
-    onSerialize<T>(key: StateKey<T>, callback: () => T): void;
-    remove<T>(key: StateKey<T>): void;
-    set<T>(key: StateKey<T>, value: T): void;
-    toJson(): string;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<TransferState, never>;
-    // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<TransferState>;
-}
+export { TransferState }
 
 // @public (undocumented)
 export const VERSION: Version;
