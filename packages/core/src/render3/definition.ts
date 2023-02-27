@@ -309,8 +309,10 @@ export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<
       _: null,
       schemas: componentDefinition.schemas || null,
       tView: null,
-      id: getComponentId(def),
+      id: '',
     };
+
+    def.id = getComponentId(def);
 
     initFeatures(def);
     const dependencies = componentDefinition.dependencies;

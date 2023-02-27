@@ -10,7 +10,6 @@ import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BR
 import {APP_ID, ApplicationConfig as ApplicationConfigFromCore, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalCreateApplication as internalCreateApplication, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
-import {TRANSITION_ID} from './browser/server-transition';
 import {BrowserGetTestability} from './browser/testability';
 import {BrowserXhr} from './browser/xhr';
 import {DomRendererFactory2, REMOVE_STYLES_ON_COMPONENT_DESTROY} from './dom/dom_renderer';
@@ -252,7 +251,6 @@ export class BrowserModule {
       ngModule: BrowserModule,
       providers: [
         {provide: APP_ID, useValue: params.appId},
-        {provide: TRANSITION_ID, useExisting: APP_ID},
       ],
     };
   }
