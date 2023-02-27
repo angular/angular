@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {APP_ID as APP_ID_TOKEN} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule, BrowserTransferStateModule, TransferState} from '@angular/platform-browser';
-import {escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
+
+import {getDocument} from '../src/render3/interfaces/document';
+import {escapeTransferStateContent, makeStateKey, TransferState, unescapeTransferStateContent} from '../src/transfer_state';
 
 (function() {
 function removeScriptTag(doc: Document, id: string) {
@@ -24,7 +25,7 @@ function addScriptTag(doc: Document, appId: string, data: {}) {
   const id = appId + '-state';
   script.id = id;
   script.setAttribute('type', 'application/json');
-  script.textContent = escapeHtml(JSON.stringify(data));
+  script.textContent = escapeTransferStateContent(JSON.stringify(data));
 
   // Remove any stale script tags.
   removeScriptTag(doc, id);
@@ -41,12 +42,10 @@ describe('TransferState', () => {
   const DELAYED_KEY = makeStateKey<string>('delayed');
 
   beforeEach(() => {
+    doc = getDocument();
     TestBed.configureTestingModule({
-      imports: [
-        BrowserModule.withServerTransition({appId: APP_ID}),
-      ]
+      providers: [{provide: APP_ID_TOKEN, useValue: APP_ID}],
     });
-    doc = TestBed.inject(DOCUMENT);
   });
 
   afterEach(() => {
@@ -135,12 +134,12 @@ describe('escape/unescape', () => {
   it('works with all escaped characters', () => {
     const testString = '</script><script>alert(\'Hello&\' + "World");';
     const testObj = {testString};
-    const escaped = escapeHtml(JSON.stringify(testObj));
+    const escaped = escapeTransferStateContent(JSON.stringify(testObj));
     expect(escaped).toBe(
         '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
         'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}');
 
-    const unescapedObj = JSON.parse(unescapeHtml(escaped)) as {testString: string};
+    const unescapedObj = JSON.parse(unescapeTransferStateContent(escaped)) as {testString: string};
     expect(unescapedObj['testString']).toBe(testString);
   });
 });

@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// Re-export TransferState to the public API of the `platform-browser` for backwards-compatibility.
+export {ɵmakeStateKey as makeStateKey, ɵStateKey as StateKey, ɵTransferState as TransferState} from '@angular/core';
 export {ApplicationConfig, bootstrapApplication, BrowserModule, createApplication, platformBrowser, provideProtractorTestingSupport} from './browser';
 export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
-export {BrowserTransferStateModule, makeStateKey, StateKey, TransferState} from './browser/transfer_state';
+export {BrowserTransferStateModule} from './browser/transfer_state';
 export {By} from './dom/debug/by';
 export {REMOVE_STYLES_ON_COMPONENT_DESTROY} from './dom/dom_renderer';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
