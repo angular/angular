@@ -180,10 +180,9 @@ export function withInMemoryScrolling(options: InMemoryScrollingOptions = {}):
     provide: ROUTER_SCROLLER,
     useFactory: () => {
       const viewportScroller = inject(ViewportScroller);
-      const zone = inject(NgZone);
       const transitions = inject(NavigationTransitions);
       const urlSerializer = inject(UrlSerializer);
-      return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, options);
+      return new RouterScroller(urlSerializer, transitions, viewportScroller, options);
     },
   }];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
