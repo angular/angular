@@ -167,6 +167,7 @@ const ShapeOfTNode: ShapeOf<TNode> = {
   outputs: true,
   tViews: true,
   next: true,
+  prev: true,
   projectionNext: true,
   child: true,
   parent: true,
