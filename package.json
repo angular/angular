@@ -149,7 +149,7 @@
     "shelljs": "^0.8.5",
     "source-map": "0.7.4",
     "source-map-support": "0.5.21",
-    "start-server-and-test": "^1.10.11",
+    "start-server-and-test": "^2.0.0",
     "systemjs": "0.18.10",
     "terser": "^5.8.0",
     "tmp": "0.2.1",
