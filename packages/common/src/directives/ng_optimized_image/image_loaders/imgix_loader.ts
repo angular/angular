@@ -6,21 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createImageLoader, ImageLoaderConfig} from './image_loader';
+import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
+
+/**
+ * Name and URL tester for Imgix.
+ */
+export const imgixLoaderInfo: ImageLoaderInfo = {
+  name: 'Imgix',
+  testUrl: isImgixUrl
+};
+
+const IMGIX_LOADER_REGEX = /https?\:\/\/[^\/]+\.imgix\.net\/.+/;
+/**
+ * Tests whether a URL is from Imgix CDN.
+ */
+function isImgixUrl(url: string): boolean {
+  return IMGIX_LOADER_REGEX.test(url);
+}
 
 /**
  * Function that generates an ImageLoader for Imgix and turns it into an Angular provider.
  *
  * @param path path to the desired Imgix origin,
  * e.g. https://somepath.imgix.net or https://images.mysite.com
- * @param options An object with extra configuration:
- * - `ensurePreconnect`: boolean flag indicating whether the NgOptimizedImage directive
- *                       should verify that there is a corresponding `<link rel="preconnect">`
- *                       present in the document's `<head>`.
  * @returns Set of providers to configure the Imgix loader.
  *
  * @publicApi
- * @developerPreview
  */
 export const provideImgixLoader =
     createImageLoader(createImgixUrl, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
