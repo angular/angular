@@ -35,9 +35,9 @@ ts_library(
         "//packages/compiler",
         "//packages/core/testing",
         "//packages/platform-server",
+        "//packages/platform-server:bundled_domino_lib",
         "//packages/platform-server/testing",
         "//packages/zone.js/lib",
-        "@npm//domino",
     ],
 )
 

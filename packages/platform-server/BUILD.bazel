@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "esbuild", "ng_module", "ng_package", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,8 +11,10 @@ ng_module(
             "*.ts",
             "src/**/*.ts",
         ],
+        exclude = ["src/bundled-domino.d.ts"],
     ),
     deps = [
+        ":bundled_domino_lib",
         "//packages/animations/browser",
         "//packages/common",
         "//packages/common/http",
@@ -28,6 +31,22 @@ ng_module(
     ],
 )
 
+esbuild(
+    name = "bundled_domino",
+    entry_point = "@npm//:node_modules/domino/lib/index.js",
+    format = "esm",
+    output = "src/bundled-domino.mjs",
+    deps = ["@npm//domino"],
+)
+
+js_library(
+    name = "bundled_domino_lib",
+    srcs = [
+        "src/bundled-domino.d.ts",
+        ":bundled_domino",
+    ],
+)
+
 tsec_test(
     name = "tsec_test",
     target = "platform-server",
@@ -40,7 +59,6 @@ ng_package(
         "package.json",
     ],
     externals = [
-        "domino",
         "xhr2",
     ],
     tags = [
