@@ -52,33 +52,12 @@ export function equalArraysOrString(a: string|string[], b: string|string[]) {
 }
 
 /**
- * Flattens single-level nested arrays.
- */
-export function flatten<T>(arr: T[][]): T[] {
-  return Array.prototype.concat.apply([], arr);
-}
-
-/**
  * Return the last element of an array.
  */
 export function last<T>(a: T[]): T|null {
   return a.length > 0 ? a[a.length - 1] : null;
 }
 
-/**
- * Verifys all booleans in an array are `true`.
- */
-export function and(bools: boolean[]): boolean {
-  return !bools.some(v => !v);
-}
-
-export function forEach<K, V>(map: {[key: string]: V}, callback: (v: V, k: string) => void): void {
-  for (const prop in map) {
-    if (map.hasOwnProperty(prop)) {
-      callback(map[prop], prop);
-    }
-  }
-}
 
 export function wrapIntoObservable<T>(value: T|Promise<T>|Observable<T>): Observable<T> {
   if (isObservable(value)) {

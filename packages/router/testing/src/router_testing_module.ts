@@ -9,7 +9,7 @@
 import {Location} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
 import {Compiler, inject, Injector, ModuleWithProviders, NgModule} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
+import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
 
 function isUrlHandlingStrategy(opts: ExtraOptions|
                                UrlHandlingStrategy): opts is UrlHandlingStrategy {

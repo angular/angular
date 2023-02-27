@@ -1146,13 +1146,7 @@
     "name": "first"
   },
   {
-    "name": "flatten2"
-  },
-  {
     "name": "flattenUnsubscriptionErrors"
-  },
-  {
-    "name": "forEach"
   },
   {
     "name": "forEachSingleProvider"

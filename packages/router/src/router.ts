@@ -23,7 +23,6 @@ import {createEmptyState, RouterState} from './router_state';
 import {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSerializer, UrlTree} from './url_tree';
-import {flatten} from './utils/collection';
 import {standardizeConfig, validateConfig} from './utils/config';
 
 
@@ -303,7 +302,7 @@ export class Router {
   canceledNavigationResolution: 'replace'|'computed' =
       this.options.canceledNavigationResolution || 'replace';
 
-  config: Routes = flatten(inject(ROUTES, {optional: true}) ?? []);
+  config: Routes = inject(ROUTES, {optional: true})?.flat() ?? [];
 
   private readonly navigationTransitions = inject(NavigationTransitions);
   private readonly urlSerializer = inject(UrlSerializer);

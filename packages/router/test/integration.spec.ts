@@ -18,7 +18,7 @@ import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/opera
 
 import {CanActivateChildFn, CanActivateFn, CanMatch, CanMatchFn, Data, ResolveFn} from '../src/models';
 import {provideRouter, withNavigationErrorHandler, withRouterConfig} from '../src/provide_router';
-import {forEach, wrapIntoObservable} from '../src/utils/collection';
+import {wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
 
 const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
@@ -6345,7 +6345,7 @@ describe('Integration', () => {
             children[PRIMARY_OUTLET] = oldRoot.children[PRIMARY_OUTLET];
           }
 
-          forEach(wholeUrl.root.children, (v: any, k: any) => {
+          Object.entries(wholeUrl.root.children).forEach(([k, v]: [string, any]) => {
             if (k !== PRIMARY_OUTLET) {
               children[k] = v;
             }

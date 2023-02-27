@@ -8,11 +8,11 @@
 
 import {Compiler, EnvironmentInjector, Injectable, InjectFlags, InjectionToken, Injector, NgModuleFactory, Type} from '@angular/core';
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
-import {catchError, finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
+import {finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
 import {deprecatedLoadChildrenString} from './deprecated_load_children';
 import {DefaultExport, LoadChildren, LoadChildrenCallback, LoadedRouterConfig, Route, Routes} from './models';
-import {flatten, wrapIntoObservable} from './utils/collection';
+import {wrapIntoObservable} from './utils/collection';
 import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
 
 
@@ -105,7 +105,7 @@ export class RouterConfigLoader {
             // will get stuck in an infinite loop. The child module's Injector will look to
             // its parent `Injector` when it doesn't find any ROUTES so it will return routes
             // for it's parent module instead.
-            rawRoutes = flatten(injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional));
+            rawRoutes = injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional).flat();
           }
           const routes = rawRoutes.map(standardizeConfig);
           NG_DEV_MODE && validateConfig(routes, route.path, requireStandaloneComponents);
