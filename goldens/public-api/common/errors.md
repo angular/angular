@@ -17,6 +17,10 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
     // (undocumented)
+    MISSING_BUILTIN_LOADER = 2962,
+    // (undocumented)
+    MISSING_NECESSARY_LOADER = 2963,
+    // (undocumented)
     NG_FOR_MISSING_DIFFER = -2200,
     // (undocumented)
     OVERSIZED_IMAGE = 2960,
@@ -26,6 +30,8 @@ export const enum RuntimeErrorCode {
     PRIORITY_IMG_MISSING_PRECONNECT_TAG = 2956,
     // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
+    // (undocumented)
+    TOO_MANY_PRELOADED_IMAGES = 2961,
     // (undocumented)
     UNEXPECTED_DEV_MODE_CHECK_IN_PROD_MODE = 2958,
     // (undocumented)

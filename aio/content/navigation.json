@@ -816,11 +816,6 @@
           "tooltip": "Create a template-driven form using directives and Angular template syntax."
         },
         {
-          "url": "guide/image-directive-setup",
-          "title": "Setting up NgOptimizedImage",
-          "tooltip": "Setup the Angular image directive"
-        },
-        {
           "title": "Angular Libraries",
           "tooltip": "Extending Angular with shared libraries.",
           "children": [

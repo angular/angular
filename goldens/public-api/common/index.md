@@ -266,6 +266,9 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 
 // @public
 export interface ImageLoaderConfig {
+    loaderParams?: {
+        [key: string]: any;
+    };
     src: string;
     width?: number;
 }
@@ -535,9 +538,18 @@ export abstract class NgLocalization {
 
 // @public
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
+    set disableOptimizedSrcset(value: string | boolean | undefined);
+    // (undocumented)
+    get disableOptimizedSrcset(): boolean;
+    set fill(value: string | boolean | undefined);
+    // (undocumented)
+    get fill(): boolean;
     set height(value: string | number | undefined);
     // (undocumented)
     get height(): number | undefined;
+    loaderParams?: {
+        [key: string]: any;
+    };
     loading?: 'lazy' | 'eager' | 'auto';
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
@@ -550,13 +562,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     set priority(value: string | boolean | undefined);
     // (undocumented)
     get priority(): boolean;
-    // @deprecated
-    set rawSrc(value: string);
+    sizes?: string;
     set width(value: string | number | undefined);
     // (undocumented)
     get width(): number | undefined;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc],img[rawSrc]", never, { "rawSrc": "rawSrc"; "ngSrc": "ngSrc"; "ngSrcset": "ngSrcset"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": "ngSrc"; "ngSrcset": "ngSrcset"; "sizes": "sizes"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "loaderParams": "loaderParams"; "disableOptimizedSrcset": "disableOptimizedSrcset"; "fill": "fill"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
 }
@@ -791,24 +802,16 @@ export { PopStateEvent_2 as PopStateEvent }
 export const PRECONNECT_CHECK_BLOCKLIST: InjectionToken<(string | string[])[]>;
 
 // @public
-export const provideCloudflareLoader: (path: string, options?: {
-    ensurePreconnect?: boolean | undefined;
-}) => Provider[];
+export const provideCloudflareLoader: (path: string) => Provider[];
 
 // @public
-export const provideCloudinaryLoader: (path: string, options?: {
-    ensurePreconnect?: boolean | undefined;
-}) => Provider[];
+export const provideCloudinaryLoader: (path: string) => Provider[];
 
 // @public
-export const provideImageKitLoader: (path: string, options?: {
-    ensurePreconnect?: boolean | undefined;
-}) => Provider[];
+export const provideImageKitLoader: (path: string) => Provider[];
 
 // @public
-export const provideImgixLoader: (path: string, options?: {
-    ensurePreconnect?: boolean | undefined;
-}) => Provider[];
+export const provideImgixLoader: (path: string) => Provider[];
 
 // @public
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
