@@ -80,11 +80,9 @@ function createLazyProperty(messages: any, id: string, valueFn: () => any) {
 
 // Extract messages as xml nodes from the xtb file
 class XtbParser implements ml.Visitor {
-  // TODO(issue/24571): remove '!'.
+  // using non-null assertions because they're (re)set by parse()
   private _bundleDepth!: number;
-  // TODO(issue/24571): remove '!'.
   private _errors!: I18nError[];
-  // TODO(issue/24571): remove '!'.
   private _msgIdToHtml!: {[msgId: string]: string};
   private _locale: string|null = null;
 
@@ -161,7 +159,7 @@ class XtbParser implements ml.Visitor {
 
 // Convert ml nodes (xtb syntax) to i18n nodes
 class XmlToI18n implements ml.Visitor {
-  // TODO(issue/24571): remove '!'.
+  // using non-null assertion because it's (re)set by convert()
   private _errors!: I18nError[];
 
   convert(message: string, url: string) {
