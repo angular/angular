@@ -23,8 +23,7 @@ export class HttpHeaders {
   /**
    * Internal map of lowercase header names to values.
    */
-  // TODO(issue/24571): remove '!'.
-  private headers!: Map<string, string[]>;
+  private headers: Map<string, string[]> = new Map<string, string[]>();
 
 
   /**
@@ -36,7 +35,7 @@ export class HttpHeaders {
   /**
    * Complete the lazy initialization of this object (needed before reading).
    */
-  private lazyInit!: HttpHeaders|Function|null;
+  private lazyInit: HttpHeaders|Function|null = null;
 
   /**
    * Queued updates to be materialized the next initialization.
@@ -46,11 +45,8 @@ export class HttpHeaders {
   /**  Constructs a new HTTP header object with the given values.*/
 
   constructor(headers?: string|{[name: string]: string | string[]}) {
-    if (!headers) {
-      this.headers = new Map<string, string[]>();
-    } else if (typeof headers === 'string') {
+    if (typeof headers === 'string') {
       this.lazyInit = () => {
-        this.headers = new Map<string, string[]>();
         headers.split('\n').forEach(line => {
           const index = line.indexOf(':');
           if (index > 0) {
@@ -66,12 +62,11 @@ export class HttpHeaders {
           }
         });
       };
-    } else {
+    } else if (headers) {
       this.lazyInit = () => {
         if (typeof ngDevMode === 'undefined' || ngDevMode) {
           assertValidHeaders(headers);
         }
-        this.headers = new Map<string, string[]>();
         Object.keys(headers).forEach(name => {
           let values: string|string[] = headers[name];
           const key = name.toLowerCase();
@@ -183,7 +178,7 @@ export class HttpHeaders {
   }
 
   private init(): void {
-    if (!!this.lazyInit) {
+    if (this.lazyInit) {
       if (this.lazyInit instanceof HttpHeaders) {
         this.copyFrom(this.lazyInit);
       } else {

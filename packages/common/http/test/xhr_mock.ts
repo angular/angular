@@ -10,8 +10,7 @@ import {XhrFactory} from '@angular/common';
 import {HttpHeaders} from '@angular/common/http/src/headers';
 
 export class MockXhrFactory implements XhrFactory {
-  // TODO(issue/24571): remove '!'.
-  mock!: MockXMLHttpRequest;
+  mock = new MockXMLHttpRequest();
 
   build(): XMLHttpRequest {
     return (this.mock = new MockXMLHttpRequest()) as any;
@@ -33,10 +32,8 @@ export class MockXMLHttpRequestUpload {
 export class MockXMLHttpRequest {
   // Set by method calls.
   body: any;
-  // TODO(issue/24571): remove '!'.
-  method!: string;
-  // TODO(issue/24571): remove '!'.
-  url!: string;
+  method: string = 'GET';
+  url: string = 'http://someurl.com';
   mockHeaders: {[key: string]: string} = {};
   mockAborted: boolean = false;
 

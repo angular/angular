@@ -100,8 +100,7 @@ export class HttpRequest<T> {
   /**
    * Outgoing headers for this request.
    */
-  // TODO(issue/24571): remove '!'.
-  readonly headers!: HttpHeaders;
+  readonly headers: HttpHeaders;
 
   /**
    * Shared and mutable context that can be used by interceptors
@@ -114,12 +113,12 @@ export class HttpRequest<T> {
    * Progress events are expensive (change detection runs on each event) and so
    * they should only be requested if the consumer intends to monitor them.
    */
-  readonly reportProgress: boolean = false;
+  readonly reportProgress: boolean;
 
   /**
    * Whether this request should be sent with outgoing credentials (cookies).
    */
-  readonly withCredentials: boolean = false;
+  readonly withCredentials: boolean;
 
   /**
    * The expected response type of the server.
@@ -127,7 +126,7 @@ export class HttpRequest<T> {
    * This is used to parse the response appropriately before returning it to
    * the requestee.
    */
-  readonly responseType: 'arraybuffer'|'blob'|'json'|'text' = 'json';
+  readonly responseType: 'arraybuffer'|'blob'|'json'|'text';
 
   /**
    * The outgoing HTTP request method.
@@ -144,8 +143,7 @@ export class HttpRequest<T> {
    * new HttpParams({fromString: 'angular=awesome'})
    * ```
    */
-  // TODO(issue/24571): remove '!'.
-  readonly params!: HttpParams;
+  readonly params: HttpParams;
 
   /**
    * The outgoing URL with all URL parameters set.
@@ -200,53 +198,26 @@ export class HttpRequest<T> {
 
     // Check whether a body argument is expected. The only valid way to omit
     // the body argument is to use a known no-body method like GET.
-    if (mightHaveBody(this.method) || !!fourth) {
+    if (mightHaveBody(this.method) || fourth) {
       // Body is the third argument, options are the fourth.
-      this.body = (third !== undefined) ? third as T : null;
+      this.body = third as T ?? null;
       options = fourth;
     } else {
       // No body required, options are the third argument. The body stays null.
       options = third as HttpRequestInit;
     }
 
-    // If options have been passed, interpret them.
-    if (options) {
-      // Normalize reportProgress and withCredentials.
-      this.reportProgress = !!options.reportProgress;
-      this.withCredentials = !!options.withCredentials;
+    // If options have been passed, interpret them or fallback to default
+    this.reportProgress = options?.reportProgress ?? false;
+    this.withCredentials = options?.withCredentials ?? false;
+    this.responseType = options?.responseType ?? 'json';
+    this.params = options?.params ?? new HttpParams();
 
-      // Override default response type of 'json' if one is provided.
-      if (!!options.responseType) {
-        this.responseType = options.responseType;
-      }
-
-      // Override headers if they're provided.
-      if (!!options.headers) {
-        this.headers = options.headers;
-      }
-
-      if (!!options.context) {
-        this.context = options.context;
-      }
-
-      if (!!options.params) {
-        this.params = options.params;
-      }
-    }
-
-    // If no headers have been passed in, construct a new HttpHeaders instance.
-    if (!this.headers) {
-      this.headers = new HttpHeaders();
-    }
-
-    // If no context have been passed in, construct a new HttpContext instance.
-    if (!this.context) {
-      this.context = new HttpContext();
-    }
+    this.headers = options?.headers ?? new HttpHeaders();
+    this.context = options?.context ?? new HttpContext();
 
     // If no parameters have been passed in, construct a new HttpUrlEncodedParams instance.
     if (!this.params) {
-      this.params = new HttpParams();
       this.urlWithParams = url;
     } else {
       // Encode the parameters to a string in preparation for inclusion in the URL.

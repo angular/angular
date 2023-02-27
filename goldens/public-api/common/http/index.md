@@ -1713,6 +1713,7 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
     // (undocumented)
     readonly name = "HttpErrorResponse";
     readonly ok = false;
+    readonly type: undefined;
 }
 
 // @public
@@ -1952,7 +1953,7 @@ export class HttpResponse<T> extends HttpResponseBase {
         url?: string;
     }): HttpResponse<V>;
     // (undocumented)
-    readonly type: HttpEventType.Response;
+    readonly type = HttpEventType.Response;
 }
 
 // @public
@@ -1967,7 +1968,7 @@ export abstract class HttpResponseBase {
     readonly ok: boolean;
     readonly status: number;
     readonly statusText: string;
-    readonly type: HttpEventType.Response | HttpEventType.ResponseHeader;
+    readonly abstract type: HttpEventType.Response | HttpEventType.ResponseHeader | undefined;
     readonly url: string | null;
 }
 

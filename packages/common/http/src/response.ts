@@ -175,8 +175,7 @@ export abstract class HttpResponseBase {
   /**
    * Type of the response, narrowed to either the full response or the header.
    */
-  // TODO(issue/24571): remove '!'.
-  readonly type!: HttpEventType.Response|HttpEventType.ResponseHeader;
+  readonly abstract type: HttpEventType.Response|HttpEventType.ResponseHeader|undefined;
 
   /**
    * Super-constructor for all responses.
@@ -274,7 +273,7 @@ export class HttpResponse<T> extends HttpResponseBase {
     this.body = init.body !== undefined ? init.body : null;
   }
 
-  override readonly type: HttpEventType.Response = HttpEventType.Response;
+  override readonly type = HttpEventType.Response;
 
   clone(): HttpResponse<T>;
   clone(update: {headers?: HttpHeaders; status?: number; statusText?: string; url?: string;}):
@@ -325,6 +324,11 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
    * Errors are never okay, even when the status code is in the 2xx success range.
    */
   override readonly ok = false;
+
+  /**
+   * Error have no response type.
+   */
+  override readonly type = undefined;
 
   constructor(init: {
     error?: any;

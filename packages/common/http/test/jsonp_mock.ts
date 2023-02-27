@@ -24,8 +24,7 @@ export class MockScriptElement {
 }
 
 export class MockDocument {
-  // TODO(issue/24571): remove '!'.
-  mock!: MockScriptElement|null;
+  mock: MockScriptElement|null = null;
   readonly body: any = this;
 
   implementation = {
