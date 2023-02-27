@@ -7,17 +7,15 @@
  */
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, Optional} from '@angular/core';
-import {ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID} from '@angular/platform-browser';
+import {APP_ID, Inject, Injectable} from '@angular/core';
+import {ɵSharedStylesHost as SharedStylesHost} from '@angular/platform-browser';
 
 @Injectable()
 export class ServerStylesHost extends SharedStylesHost {
   private head: any = null;
   private _styleNodes = new Set<HTMLElement>();
 
-  constructor(
-      @Inject(DOCUMENT) private doc: any,
-      @Optional() @Inject(ɵTRANSITION_ID) private transitionId: string) {
+  constructor(@Inject(DOCUMENT) doc: any, @Inject(APP_ID) private appId: string) {
     super();
     this.head = doc.getElementsByTagName('head')[0];
   }
@@ -26,8 +24,8 @@ export class ServerStylesHost extends SharedStylesHost {
     const adapter = getDOM();
     const el = adapter.createElement('style');
     el.textContent = style;
-    if (!!this.transitionId) {
-      el.setAttribute('ng-transition', this.transitionId);
+    if (!!this.appId) {
+      el.setAttribute('ng-app', this.appId);
     }
     this.head.appendChild(el);
     this._styleNodes.add(el);

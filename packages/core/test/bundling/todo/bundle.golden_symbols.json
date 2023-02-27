@@ -378,9 +378,6 @@
     "name": "RuntimeError"
   },
   {
-    "name": "SERVER_TRANSITION_PROVIDERS"
-  },
-  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {
@@ -444,15 +441,9 @@
     "name": "TRACKED_LVIEWS"
   },
   {
-<<<<<<< HEAD
-    "name": "TRANSITION_ID"
-  },
-  {
     "name": "TYPE"
   },
   {
-=======
->>>>>>> 0bd0ef957b (fix(core): generate consistent component IDs)
     "name": "TemplateRef"
   },
   {

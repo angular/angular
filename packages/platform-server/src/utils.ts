@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, EnvironmentProviders, importProvidersFrom, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵgetComponentDef as getComponentDef, ɵinternalCreateApplication as internalCreateApplication, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
-import {BrowserModule, ɵTRANSITION_ID} from '@angular/platform-browser';
+import {APP_ID, ApplicationRef, EnvironmentProviders, importProvidersFrom, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵgetComponentDef as getComponentDef, ɵinternalCreateApplication as internalCreateApplication, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
@@ -49,7 +49,7 @@ function _render<T>(
     bootstrapPromise: Promise<NgModuleRef<T>|ApplicationRef>): Promise<string> {
   return bootstrapPromise.then((moduleOrApplicationRef) => {
     const environmentInjector = moduleOrApplicationRef.injector;
-    const transitionId = environmentInjector.get(ɵTRANSITION_ID, null);
+    const transitionId = environmentInjector.get(APP_ID, null);
     if (!transitionId) {
       throw new Error(
           `renderModule[Factory]() requires the use of BrowserModule.withServerTransition() to ensure

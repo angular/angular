@@ -480,9 +480,6 @@
     "name": "RuntimeError"
   },
   {
-    "name": "SERVER_TRANSITION_PROVIDERS"
-  },
-  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {
@@ -544,9 +541,6 @@
   },
   {
     "name": "TRACKED_LVIEWS"
-  },
-  {
-    "name": "TRANSITION_ID"
   },
   {
     "name": "TYPE"
