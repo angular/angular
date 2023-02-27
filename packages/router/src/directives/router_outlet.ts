@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, inject, Injector, Input, OnDestroy, OnInit, Output, SimpleChanges, ViewContainerRef, ɵRuntimeError as RuntimeError,} from '@angular/core';
+import {ChangeDetectorRef, ComponentRef, Directive, EnvironmentInjector, EventEmitter, inject, Injector, Input, OnDestroy, OnInit, Output, SimpleChanges, ViewContainerRef, ɵRuntimeError as RuntimeError,} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 import {Data} from '../models';
@@ -54,13 +54,6 @@ export interface RouterOutletContract {
    * Called by the `Router` when the outlet should activate (create a component).
    */
   activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector|null): void;
-  /**
-   * Called by the `Router` when the outlet should activate (create a component).
-   *
-   * @deprecated Passing a resolver to retrieve a component factory is not required and is
-   *     deprecated since v14.
-   */
-  activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver|null): void;
 
   /**
    * A request to destroy the currently activated component.
@@ -311,9 +304,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     }
   }
 
-  activateWith(
-      activatedRoute: ActivatedRoute,
-      resolverOrInjector?: ComponentFactoryResolver|EnvironmentInjector|null) {
+  activateWith(activatedRoute: ActivatedRoute, environmentInjector?: EnvironmentInjector|null) {
     if (this.isActivated) {
       throw new RuntimeError(
           RuntimeErrorCode.OUTLET_ALREADY_ACTIVATED,
@@ -326,14 +317,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
     const injector = new OutletInjector(activatedRoute, childContexts, location.injector);
 
-    if (resolverOrInjector && isComponentFactoryResolver(resolverOrInjector)) {
-      const factory = resolverOrInjector.resolveComponentFactory(component);
-      this.activated = location.createComponent(factory, location.length, injector);
-    } else {
-      const environmentInjector = resolverOrInjector ?? this.environmentInjector;
-      this.activated = location.createComponent(
-          component, {index: location.length, injector, environmentInjector});
-    }
+    this.activated = location.createComponent(component, {
+      index: location.length,
+      injector,
+      environmentInjector: environmentInjector ?? this.environmentInjector
+    });
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
@@ -357,8 +345,4 @@ class OutletInjector implements Injector {
 
     return this.parent.get(token, notFoundValue);
   }
-}
-
-function isComponentFactoryResolver(item: any): item is ComponentFactoryResolver {
-  return !!item.resolveComponentFactory;
 }

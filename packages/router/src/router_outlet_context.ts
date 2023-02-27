@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactoryResolver, ComponentRef, EnvironmentInjector, Injectable} from '@angular/core';
+import {ComponentRef, EnvironmentInjector, Injectable} from '@angular/core';
 
 import {RouterOutletContract} from './directives/router_outlet';
 import {ActivatedRoute} from './router_state';
@@ -20,11 +20,6 @@ import {ActivatedRoute} from './router_state';
 export class OutletContext {
   outlet: RouterOutletContract|null = null;
   route: ActivatedRoute|null = null;
-  /**
-   * @deprecated Passing a resolver to retrieve a component factory is not required and is
-   *     deprecated since v14.
-   */
-  resolver: ComponentFactoryResolver|null = null;
   injector: EnvironmentInjector|null = null;
   children = new ChildrenOutletContexts();
   attachRef: ComponentRef<any>|null = null;
