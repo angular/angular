@@ -1499,8 +1499,7 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
 
   private _queuedCallbacks = new Map<string, ((event: any) => any)[]>();
   public readonly destroyed = false;
-  // TODO(issue/24571): remove '!'.
-  public parentPlayer!: AnimationPlayer;
+  public parentPlayer: AnimationPlayer|null = null;
 
   public markedForDestroy: boolean = false;
   public disabled = false;

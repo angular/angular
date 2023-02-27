@@ -30,7 +30,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _originalOnDoneFns: Function[] = [];
   private _originalOnStartFns: Function[] = [];
 
-  // TODO(issue/24571): remove '!'.
+  // using non-null assertion because it's re(set) by init();
   public readonly domPlayer!: DOMAnimation;
   public time = 0;
 
@@ -64,8 +64,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._initialized = true;
 
     const keyframes = this.keyframes;
-    (this as {domPlayer: DOMAnimation}).domPlayer =
-        this._triggerWebAnimation(this.element, keyframes, this.options);
+    // @ts-expect-error overwriting a readonly property
+    this.domPlayer = this._triggerWebAnimation(this.element, keyframes, this.options);
     this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : new Map();
     this.domPlayer.addEventListener('finish', () => this._onFinish());
   }
