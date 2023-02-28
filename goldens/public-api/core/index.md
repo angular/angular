@@ -908,6 +908,9 @@ export const LOCALE_ID: InjectionToken<string>;
 export function makeEnvironmentProviders(providers: (Provider | EnvironmentProviders)[]): EnvironmentProviders;
 
 // @public
+export function mergeApplicationConfig(...configs: ApplicationConfig[]): ApplicationConfig;
+
+// @public
 export enum MissingTranslationStrategy {
     // (undocumented)
     Error = 0,
