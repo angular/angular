@@ -30,7 +30,22 @@
     "remark",
     "remark-html",
     "selenium-webdriver",
-    "watchr"
+    "watchr",
+    "rxjs",
+    "glob",
+    "chalk",
+    "convert-source-map",
+    "@rollup/plugin-node-resolve",
+    "hast-util-is-element",
+    "hast-util-has-property",
+    "hast-util-to-string",
+    "rehype-slug",
+    "rollup",
+    "systemjs",
+    "unist-util-filter",
+    "unist-util-source",
+    "unist-util-visit",
+    "unist-util-visit-parents"
   ],
   "packageRules": [
     {
