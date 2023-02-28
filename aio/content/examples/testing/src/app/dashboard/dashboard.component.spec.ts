@@ -1,20 +1,24 @@
-// #docplaster
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {TestBed, waitForAsync} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {NavigationEnd, provideRouter, Router} from '@angular/router';
+import {RouterTestingHarness} from '@angular/router/testing';
+import {firstValueFrom} from 'rxjs';
+import {filter} from 'rxjs/operators';
 
-import { addMatchers, asyncData, click } from '../../testing';
-import { HeroService } from '../model/hero.service';
-import { getTestHeroes } from '../model/testing/test-heroes';
+import {addMatchers, click} from '../../testing';
+import {HeroService} from '../model/hero.service';
+import {getTestHeroes} from '../model/testing/test-heroes';
 
-import { By } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-
-import { DashboardComponent } from './dashboard.component';
-import { DashboardModule } from './dashboard.module';
+import {DashboardComponent} from './dashboard.component';
+import {DashboardModule} from './dashboard.module';
 
 beforeEach(addMatchers);
 
 let comp: DashboardComponent;
-let fixture: ComponentFixture<DashboardComponent>;
+let harness: RouterTestingHarness;
 
 ////////  Deep  ////////////////
 
@@ -29,14 +33,14 @@ describe('DashboardComponent (deep)', () => {
 
   function clickForDeep() {
     // get first <div class="hero">
-    const heroEl: HTMLElement = fixture.nativeElement.querySelector('.hero');
+    const heroEl: HTMLElement = harness.routeNativeElement!.querySelector('.hero')!;
     click(heroEl);
+    return firstValueFrom(
+        TestBed.inject(Router).events.pipe(filter(e => e instanceof NavigationEnd)));
   }
 });
 
 ////////  Shallow ////////////////
-
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('DashboardComponent (shallow)', () => {
   beforeEach(() => {
@@ -50,33 +54,32 @@ describe('DashboardComponent (shallow)', () => {
 
   function clickForShallow() {
     // get first <dashboard-hero> DebugElement
-    const heroDe = fixture.debugElement.query(By.css('dashboard-hero'));
+    const heroDe = harness.routeDebugElement!.query(By.css('dashboard-hero'));
     heroDe.triggerEventHandler('selected', comp.heroes[0]);
+    return Promise.resolve();
   }
 });
 
 /** Add TestBed providers, compile, and create DashboardComponent */
 function compileAndCreate() {
   beforeEach(waitForAsync(() => {
-    // #docregion router-spy
-    const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
-    const heroServiceSpy = jasmine.createSpyObj('HeroService', ['getHeroes']);
-
+    // #docregion router-harness
     TestBed
         .configureTestingModule({
           providers: [
-            {provide: HeroService, useValue: heroServiceSpy}, {provide: Router, useValue: routerSpy}
+            provideRouter([{path: '**', component: DashboardComponent}]),
+            provideHttpClient(),
+            provideHttpClientTesting(),
+            HeroService,
           ]
         })
-        // #enddocregion router-spy
         .compileComponents()
-        .then(() => {
-          fixture = TestBed.createComponent(DashboardComponent);
-          comp = fixture.componentInstance;
-
-          // getHeroes spy returns observable of test heroes
-          heroServiceSpy.getHeroes.and.returnValue(asyncData(getTestHeroes()));
+        .then(async () => {
+          harness = await RouterTestingHarness.create();
+          comp = await harness.navigateByUrl('/', DashboardComponent);
+          TestBed.inject(HttpTestingController).expectOne('api/heroes').flush(getTestHeroes());
         });
+    // #enddocregion router-harness
   }));
 }
 
@@ -84,61 +87,38 @@ function compileAndCreate() {
  * The (almost) same tests for both.
  * Only change: the way that the first hero is clicked
  */
-function tests(heroClick: () => void) {
-
-  it('should NOT have heroes before ngOnInit', () => {
-    expect(comp.heroes.length)
-      .withContext('should not have heroes before ngOnInit')
-      .toBe(0);
-  });
-
-  it('should NOT have heroes immediately after ngOnInit', () => {
-    fixture.detectChanges();  // runs initial lifecycle hooks
-
-    expect(comp.heroes.length)
-      .withContext('should not have heroes until service promise resolves')
-      .toBe(0);
-  });
-
+function tests(heroClick: () => Promise<unknown>) {
   describe('after get dashboard heroes', () => {
     let router: Router;
 
-     // Trigger component so it gets heroes and binds to them
+    // Trigger component so it gets heroes and binds to them
     beforeEach(waitForAsync(() => {
-      router = fixture.debugElement.injector.get(Router);
-      fixture.detectChanges(); // runs ngOnInit -> getHeroes
-      fixture.whenStable() // No need for the `lastPromise` hack!
-        .then(() => fixture.detectChanges()); // bind to heroes
+      router = TestBed.inject(Router);
+      harness.detectChanges();  // runs ngOnInit -> getHeroes
     }));
 
     it('should HAVE heroes', () => {
       expect(comp.heroes.length)
-        .withContext('should have heroes after service promise resolves')
-        .toBeGreaterThan(0);
+          .withContext('should have heroes after service promise resolves')
+          .toBeGreaterThan(0);
     });
 
     it('should DISPLAY heroes', () => {
       // Find and examine the displayed heroes
       // Look for them in the DOM by css class
-      const heroes = fixture.nativeElement.querySelectorAll('dashboard-hero');
-      expect(heroes.length)
-        .withContext('should display 4 heroes')
-        .toBe(4);
+      const heroes = harness.routeNativeElement!.querySelectorAll('dashboard-hero');
+      expect(heroes.length).withContext('should display 4 heroes').toBe(4);
     });
 
     // #docregion navigate-test
-    it('should tell ROUTER to navigate when hero clicked', () => {
-      heroClick();  // trigger click on first inner <div class="hero">
-
-      // args passed to router.navigateByUrl() spy
-      const spy = router.navigateByUrl as jasmine.Spy;
-      const navArgs = spy.calls.first().args[0];
+    it('should tell navigate when hero clicked', async () => {
+      await heroClick();  // trigger click on first inner <div class="hero">
 
       // expecting to navigate to id of the component's first hero
       const id = comp.heroes[0].id;
-      expect(navArgs)
-        .withContext('should nav to HeroDetail for first hero')
-        .toBe('/heroes/' + id);
+      expect(TestBed.inject(Router).url)
+          .withContext('should nav to HeroDetail for first hero')
+          .toEqual(`/heroes/${id}`);
     });
     // #enddocregion navigate-test
   });
