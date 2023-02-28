@@ -141,7 +141,7 @@ describe('di', () => {
     it('should handle initial undefined state', () => {
       const contentView = createLView(
           null, createTView(TViewType.Component, null, null, 1, 0, null, null, null, null, null),
-          {}, LViewFlags.CheckAlways, null, null, {} as any, {} as any, null, null, null);
+          {}, LViewFlags.CheckAlways, null, null, {} as any, {} as any, null, null, null, null);
       enterView(contentView);
       try {
         const parentTNode = getOrCreateTNode(contentView[TVIEW], 0, TNodeType.Element, null, null);

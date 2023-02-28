@@ -63,9 +63,11 @@ export interface RNode {
 export interface RElement extends RNode {
   style: RCssStyleDeclaration;
   classList: RDomTokenList;
+  firstChild: RNode|null;
   className: string;
   tagName: string;
   textContent: string|null;
+  getAttribute(name: string): string|null;
   setAttribute(name: string, value: string|TrustedHTML|TrustedScript|TrustedScriptURL): void;
   removeAttribute(name: string): void;
   setAttributeNS(

@@ -9,6 +9,9 @@
 import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {DehydratedView} from '../../hydration/interfaces';
+import {IS_HYDRATION_FEATURE_ENABLED, PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
+import {retrieveHydrationInfo} from '../../hydration/utils';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
@@ -33,7 +36,7 @@ import {Renderer, RendererFactory} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -120,8 +123,8 @@ function renderChildComponents(hostLView: LView, components: number[]): void {
 export function createLView<T>(
     parentLView: LView|null, tView: TView, context: T|null, flags: LViewFlags, host: RElement|null,
     tHostNode: TNode|null, rendererFactory: RendererFactory|null, renderer: Renderer|null,
-    sanitizer: Sanitizer|null, injector: Injector|null,
-    embeddedViewInjector: Injector|null): LView {
+    sanitizer: Sanitizer|null, injector: Injector|null, embeddedViewInjector: Injector|null,
+    hydrationInfo: DehydratedView|null): LView {
   const lView = tView.blueprint.slice() as LView;
   lView[HOST] = host;
   lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
@@ -141,6 +144,7 @@ export function createLView<T>(
   lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
   lView[T_HOST] = tHostNode;
   lView[ID] = getUniqueLViewId();
+  lView[HYDRATION] = hydrationInfo;
   lView[EMBEDDED_VIEW_INJECTOR as any] = embeddedViewInjector;
   ngDevMode &&
       assertEqual(
@@ -661,12 +665,22 @@ function createViewBlueprint(bindingStartIndex: number, initialViewLength: numbe
  * @param rendererFactory Factory function to create renderer instance.
  * @param elementOrSelector Render element or CSS selector to locate the element.
  * @param encapsulation View Encapsulation defined for component that requests host element.
+ * @param injector Root view injector instance.
  */
 export function locateHostElement(
-    renderer: Renderer, elementOrSelector: RElement|string,
-    encapsulation: ViewEncapsulation): RElement {
-  // When using native Shadow DOM, do not clear host element to allow native slot projection
-  const preserveContent = encapsulation === ViewEncapsulation.ShadowDom;
+    renderer: Renderer, elementOrSelector: RElement|string, encapsulation: ViewEncapsulation,
+    injector: Injector): RElement {
+  // Note: we use default value for the `PRESERVE_HOST_CONTENT` here even though it's a
+  // tree-shakable one (providedIn:'root'). This code path can be triggered during dynamic component
+  // creation (after calling ViewContainerRef.createComponent) when an injector instance can be
+  // provided. The injector instance might be disconnected from the main DI tree, thus the
+  // `PRESERVE_HOST_CONTENT` woild not be able to instantiate. In this case, the default value will
+  // be used.
+  const preserveHostContent = injector.get(PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT);
+
+  // When using native Shadow DOM, do not clear host element to allow native slot
+  // projection.
+  const preserveContent = preserveHostContent || encapsulation === ViewEncapsulation.ShadowDom;
   return renderer.selectRootElement(elementOrSelector, preserveContent);
 }
 
@@ -1388,7 +1402,7 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
       createLView(
           lView, tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, native,
           hostTNode as TElementNode, rendererFactory, rendererFactory.createRenderer(native, def),
-          null, null, null));
+          null, null, null, null));
 
   // Component view will always be created before any injected LContainers,
   // so this is a regular element, wrap it with the component view
@@ -1666,6 +1680,13 @@ function renderComponent(hostLView: LView, componentHostIdx: number) {
   const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
   const componentTView = componentView[TVIEW];
   syncViewWithBlueprint(componentTView, componentView);
+
+  const hostRNode = componentView[HOST];
+  // Populate an LView with hydration info retrieved from the DOM via TransferState.
+  if (hostRNode !== null && componentView[HYDRATION] === null) {
+    componentView[HYDRATION] = retrieveHydrationInfo(hostRNode, componentView[INJECTOR]!);
+  }
+
   renderView(componentTView, componentView, componentView[CONTEXT]);
 }
 

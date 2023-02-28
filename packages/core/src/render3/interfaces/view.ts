@@ -8,6 +8,7 @@
 
 import {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';
+import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 
@@ -49,6 +50,8 @@ export const QUERIES = 19;
 export const ID = 20;
 export const EMBEDDED_VIEW_INJECTOR = 21;
 export const ON_DESTROY_HOOKS = 22;
+export const HYDRATION = 23;
+
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -56,7 +59,7 @@ export const ON_DESTROY_HOOKS = 22;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 23;
+export const HEADER_OFFSET = 24;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -322,6 +325,11 @@ export interface LView<T = unknown> extends Array<any> {
 
   /** Unique ID of the view. Used for `__ngContext__` lookups in the `LView` registry. */
   [ID]: number;
+
+  /**
+   * A container related to hydration annotation information that's associated with this LView.
+   */
+  [HYDRATION]: DehydratedView|null;
 
   /**
    * Optional injector assigned to embedded views that takes

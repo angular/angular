@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, EnvironmentProviders, importProvidersFrom, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵgetComponentDef as getComponentDef, ɵinternalCreateApplication as internalCreateApplication, ɵisPromise} from '@angular/core';
+import {ApplicationRef, EnvironmentProviders, importProvidersFrom, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵgetComponentDef as getComponentDef, ɵinternalCreateApplication as internalCreateApplication, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
 import {BrowserModule, ɵTRANSITION_ID} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
@@ -68,6 +68,10 @@ the server-rendered app can be properly bootstrapped into a client app.`);
           const platformState = platform.injector.get(PlatformState);
 
           const asyncPromises: Promise<any>[] = [];
+
+          if (applicationRef.injector.get(IS_HYDRATION_FEATURE_ENABLED, false)) {
+            annotateForHydration(applicationRef, platformState.getDocument());
+          }
 
           // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
           const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
