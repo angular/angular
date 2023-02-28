@@ -26,13 +26,15 @@ const browserAction = (() => {
 
 // By default use the black and white icon.
 // Replace it only when we detect an Angular app.
-browserAction.setIcon({
-  path: {
-    16: chrome.runtime.getURL(`assets/icon-bw16.png`),
-    48: chrome.runtime.getURL(`assets/icon-bw48.png`),
-    128: chrome.runtime.getURL(`assets/icon-bw128.png`),
-  },
-});
+browserAction.setIcon(
+    {
+      path: {
+        16: chrome.runtime.getURL(`assets/icon-bw16.png`),
+        48: chrome.runtime.getURL(`assets/icon-bw48.png`),
+        128: chrome.runtime.getURL(`assets/icon-bw128.png`),
+      },
+    },
+    () => {});
 
 const ports: {
   [tab: string]:
@@ -181,13 +183,15 @@ chrome.runtime.onMessage.addListener((req, sender) => {
     });
   }
   if (sender && sender.tab && req.isAngular) {
-    browserAction.setIcon({
-      tabId: sender.tab.id,
-      path: {
-        16: chrome.runtime.getURL(`assets/icon16.png`),
-        48: chrome.runtime.getURL(`assets/icon48.png`),
-        128: chrome.runtime.getURL(`assets/icon128.png`),
-      },
-    });
+    browserAction.setIcon(
+        {
+          tabId: sender.tab.id,
+          path: {
+            16: chrome.runtime.getURL(`assets/icon16.png`),
+            48: chrome.runtime.getURL(`assets/icon48.png`),
+            128: chrome.runtime.getURL(`assets/icon128.png`),
+          },
+        },
+        () => {});
   }
 });
