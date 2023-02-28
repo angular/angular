@@ -10,7 +10,6 @@ import * as i1 from '@angular/common/http';
 import * as i2 from '@angular/platform-browser/animations';
 import * as i3 from '@angular/platform-browser';
 import { InjectionToken } from '@angular/core';
-import { NgModuleFactory } from '@angular/core';
 import { PlatformRef } from '@angular/core';
 import { Provider } from '@angular/core';
 import { StaticProvider } from '@angular/core';
@@ -60,13 +59,6 @@ export function renderApplication<T>(rootComponent: Type<T>, options: {
 // @public
 export function renderModule<T>(moduleType: Type<T>, options: {
     document?: string | Document;
-    url?: string;
-    extraProviders?: StaticProvider[];
-}): Promise<string>;
-
-// @public @deprecated
-export function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>, options: {
-    document?: string;
     url?: string;
     extraProviders?: StaticProvider[];
 }): Promise<string>;
