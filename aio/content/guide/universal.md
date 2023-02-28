@@ -228,7 +228,7 @@ It accepts an object with the following properties:
 
 | Properties       | Details |
 |:---              |:---     |
-| `bootstrap`      | The root `NgModule` or `NgModule` factory to use for bootstrapping the application when rendering on the server. For the example application, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application. |
+| `bootstrap`      | The root `NgModule` to use for bootstrapping the application when rendering on the server. For the example application, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application. |
 | `extraProviders` | This property is optional and lets you specify dependency providers that apply only when rendering the application on the server. Do this when your application needs information that can only be determined by the currently running server instance.       |
 
 The `ngExpressEngine()` function returns a `Promise` callback that resolves to the rendered page.
@@ -313,7 +313,7 @@ You don't need to do anything to make relative URLs work on the server.
 
 If, for some reason, you are not using an `@nguniversal/*-engine` package, you might need to handle it yourself.
 
-The recommended solution is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule) or [renderModuleFactory()](api/platform-server/renderModuleFactory) \(depending on what you use to render `AppServerModule` on the server\).
+The recommended solution is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule).
 This option is the least intrusive as it does not require any changes to the application.
 Here, "request URL" refers to the URL of the request as a response to which the application is being rendered on the server.
 For example, if the client requested `https://my-server.com/dashboard` and you are rendering the application on the server to respond to that request, `options.url` should be set to `https://my-server.com/dashboard`.

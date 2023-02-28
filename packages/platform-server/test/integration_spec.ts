@@ -10,10 +10,10 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation} from '@angular/core';
-import {inject, TestBed, waitForAsync} from '@angular/core/testing';
+import {ApplicationRef, Component, destroyPlatform, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, ViewEncapsulation} from '@angular/core';
+import {TestBed, waitForAsync} from '@angular/core/testing';
 import {BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule} from '@angular/platform-server';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, ServerModule} from '@angular/platform-server';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -701,18 +701,6 @@ describe('platform-server integration', () => {
                called = true;
              });
        }));
-
-    it('using renderModuleFactory should work',
-       waitForAsync(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
-         const compilerFactory: CompilerFactory =
-             defaultPlatform.injector.get(CompilerFactory, null)!;
-         const moduleFactory =
-             compilerFactory.createCompiler().compileModuleSync(AsyncServerModule);
-         renderModuleFactory(moduleFactory, {document: doc}).then(output => {
-           expect(output).toBe(expectedOutput);
-           called = true;
-         });
-       })));
 
     // Run the set of tests with regular and standalone components.
     [true, false].forEach((isStandalone: boolean) => {

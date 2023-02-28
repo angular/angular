@@ -79,7 +79,6 @@ v15 - v18
 | `@angular/core`                     | [Factory-based signature of `ApplicationRef.bootstrap`](#core)                                             | v13           | v15         |
 | `@angular/core`                     | [`PlatformRef.bootstrapModuleFactory`](#core)                                                              | v13           | v15         |
 | `@angular/core`                     | [Factory-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent) | v13           | v15         |
-| `@angular/platform-server`          | [`renderModuleFactory`](#platform-server)                                                                  | v13           | v15         |
 | `@angular/upgrade`                  | [Factory-based signature of `downgradeModule`](#upgrade-static)                                            | v13           | v15         |
 | template syntax                     | [`bind-`, `on-`, `bindon-`, and `ref-`](#bind-syntax)                                                      | v13           | v15         |
 
@@ -228,7 +227,6 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 
 | API                                                              | Replacement                                        | Deprecation announced | Details |
 |:---                                                              |:---                                                |:---                   |:---     |
-| [`renderModuleFactory`](api/platform-server/renderModuleFactory) | [`renderModule`](api/platform-server/renderModule) | v13                   | This symbol is no longer necessary. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context. |
 | [`ServerTransferStateModule`](api/platform-server/ServerTransferStateModule) | No replacement needed.  | v14.1                   | The `TransferState` class is available for injection without importing additional modules during server side rendering, when `ServerModule` is imported or `renderApplication` function is used for bootstrap. |
 
 <a id="forms"></a>
@@ -383,7 +381,7 @@ The injector no longer requires the Reflect polyfill, reducing application size 
 ### Router class and InjectionToken guards and resolvers
 
 Class and injection token guards and resolvers are deprecated. Instead, `Route`
-objects should use functional-style guards and resolvers. Class-based guards can 
+objects should use functional-style guards and resolvers. Class-based guards can
 be converted to functions by instead using `inject` to get dependencies.
 
 For testing a function `canActivate` guard, using `TestBed` and `TestBed.runInInjectionContext` is recommended.
@@ -408,8 +406,8 @@ const route = {
 This deprecation only affects the support for class and
 `InjectionToken` guards at the `Route` definition. `Injectable` classes
 and `InjectionToken` providers are _not_ deprecated in the general
-sense. That said, the interfaces like `CanActivate`, 
-`CanDeactivate`, etc.  will be deleted in a future release of Angular. Simply removing the 
+sense. That said, the interfaces like `CanActivate`,
+`CanDeactivate`, etc.  will be deleted in a future release of Angular. Simply removing the
 `implements CanActivate` from the injectable class and updating the route definition
 to be a function like `canActivate: [() => inject(MyGuard).canActivate()]` is sufficient
 to get rid of the deprecation warning.

@@ -50,7 +50,7 @@ export interface PlatformConfig {
 export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL_CONFIG');
 
 /**
- * A function that will be executed when calling `renderApplication`, `renderModuleFactory` or
+ * A function that will be executed when calling `renderApplication` or
  * `renderModule` just before current platform state is rendered to string.
  *
  * @publicApi
