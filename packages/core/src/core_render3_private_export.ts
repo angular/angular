@@ -219,6 +219,7 @@ export {
 export {
   setDocument as ɵsetDocument
 } from './render3/interfaces/document';
+export { getComponentDef as ɵgetComponentDef} from './render3/definition';
 export {
   compileComponent as ɵcompileComponent,
   compileDirective as ɵcompileDirective,
@@ -280,5 +281,6 @@ export {
 export {
   noSideEffects as ɵnoSideEffects,
 } from './util/closure';
+
 
 // clang-format on
