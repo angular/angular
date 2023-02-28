@@ -35,7 +35,6 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular-1.8/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.8/angular-mocks.js', included: false, watched: false},
 
-      'node_modules/core-js-bundle/index.js',
       'node_modules/jasmine-ajax/lib/mock-ajax.js',
 
       // Static test assets.
