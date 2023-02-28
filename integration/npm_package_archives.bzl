@@ -6,7 +6,6 @@ NPM_PACKAGE_ARCHIVES = [
     "@rollup/plugin-node-resolve",
     "@rollup/plugin-commonjs",
     "check-side-effects",
-    "core-js",
     "google-closure-compiler",
     "jasmine",
     "typescript",
