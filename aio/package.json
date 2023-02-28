@@ -122,7 +122,7 @@
     "get-port": "^6.1.2",
     "globby": "^13.0.0",
     "hast-util-has-property": "^1.0.4",
-    "hast-util-is-element": "^1.1.0",
+    "hast-util-is-element": "^2.0.0",
     "hast-util-to-string": "^1.0.4",
     "html": "^1.0.0",
     "ignore": "^5.1.8",
