@@ -73,7 +73,6 @@ v15 - v18
 
 | Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
 |:---                                 |:---                                                                                                        |:---           |:---               |
-| `@angular/common/http`              | [`XhrFactory`](api/common/http/XhrFactory)                                                                 | v12           | v15         |
 | `@angular/compiler-cli`             | [Input setter coercion](#input-setter-coercion)                                                            | v13           | v15         |
 | `@angular/compiler-cli`             | [`fullTemplateTypeCheck`](#full-template-type-check)                                                       | v13           | v15         |
 | `@angular/core`                     | [Factory-based signature of `ApplicationRef.bootstrap`](#core)                                             | v13           | v15         |
@@ -144,14 +143,6 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 |:---                                                                                           |:---                                                 |:---                   |:---     |
 | [`NgComponentOutlet.ngComponentOutletNgModuleFactory`](api/common/NgComponentOutlet)          | `NgComponentOutlet.ngComponentOutletNgModule`       | v14                   | Use the `ngComponentOutletNgModule` input instead. This input doesn't require resolving NgModule factory. |
 | [`DatePipe` - `DATE_PIPE_DEFAULT_TIMEZONE`](api/common/DATE_PIPE_DEFAULT_TIMEZONE) |`{ provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: { timezone: '-1200' }` | v15                    | Use the `DATE_PIPE_DEFAULT_OPTIONS` injection token, which can configure multiple settings at once instead. |
-
-<a id="common-http"></a>
-
-### &commat;angular/common/http
-
-| API                                        | Replacement                       | Deprecation announced | Details |
-|:---                                        |:---                               |:---                   |:---     |
-| [`XhrFactory`](api/common/http/XhrFactory) | `XhrFactory` in `@angular/common` | v12                   | The `XhrFactory` has moved from `@angular/common/http` to `@angular/common`. |
 
 <a id="core"></a>
 
