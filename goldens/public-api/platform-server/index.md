@@ -4,6 +4,7 @@
 
 ```ts
 
+import { ApplicationRef } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common/http';
@@ -46,6 +47,13 @@ export class PlatformState {
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<PlatformState>;
 }
+
+// @public
+export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {
+    document?: string | Document;
+    url?: string;
+    platformProviders?: Provider[];
+}): Promise<string>;
 
 // @public
 export function renderApplication<T>(rootComponent: Type<T>, options: {
