@@ -113,7 +113,6 @@
     "chalk": "^4.1.0",
     "chokidar": "^3.5.1",
     "convert-source-map": "^1.5.1",
-    "core-js-bundle": "^3.10.2",
     "d3": "^7.0.0",
     "diff": "^5.0.0",
     "document-register-element": "^1.7.2",

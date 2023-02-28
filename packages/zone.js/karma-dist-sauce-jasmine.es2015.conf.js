@@ -2,13 +2,6 @@
 module.exports = function(config) {
   require('./karma-dist-jasmine.conf.js')(config);
   require('./sauce.es2015.conf')(config);
-  const files = config.files;
-  config.files = [];
-  for (let i = 0; i < files.length; i++) {
-    if (files[i] !== 'node_modules/core-js-bundle/index.js' || files[i] === 'build/test/main.js') {
-      config.files.push(files[i]);
-    }
-  }
   config.files.push('build/test/wtf_mock.js');
   config.files.push('build/test/test_fake_polyfill.js');
   config.files.push('build/test/custom_error.js');
