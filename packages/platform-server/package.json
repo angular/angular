@@ -5,7 +5,7 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^14.20.0 || ^16.13.0 || >=18.10.0"
+    "node": "^16.13.0 || >=18.10.0"
   },
   "peerDependencies": {
     "@angular/animations": "0.0.0-PLACEHOLDER",
