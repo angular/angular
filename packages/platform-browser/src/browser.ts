@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, EnvironmentProviders, ErrorHandler, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalCreateApplication as internalCreateApplication, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
+import {APP_ID, ApplicationConfig as ApplicationConfigFromCore, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalCreateApplication as internalCreateApplication, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
@@ -25,13 +25,13 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
  * Set of config options available during the application bootstrap operation.
  *
  * @publicApi
+ *
+ * @deprecated
+ * `ApplicationConfig` has moved, please import `ApplicationConfig` from `@angular/core` instead.
  */
-export interface ApplicationConfig {
-  /**
-   * List of providers that should be available to the root component and all its children.
-   */
-  providers: Array<Provider|EnvironmentProviders>;
-}
+// The below is a workaround to add a deprecated message.
+type ApplicationConfig = ApplicationConfigFromCore;
+export {ApplicationConfig};
 
 /**
  * Bootstraps an instance of an Angular application and renders a standalone component as the
@@ -136,7 +136,8 @@ function createProvidersConfig(options?: ApplicationConfig) {
  */
 export function provideProtractorTestingSupport(): Provider[] {
   // Return a copy to prevent changes to the original array in case any in-place
-  // alterations are performed to the `provideProtractorTestingSupport` call results in app code.
+  // alterations are performed to the `provideProtractorTestingSupport` call results in app
+  // code.
   return [...TESTABILITY_PROVIDERS];
 }
 

@@ -50,6 +50,11 @@ export const APP_ID: InjectionToken<string>;
 export const APP_INITIALIZER: InjectionToken<readonly (() => Observable<unknown> | Promise<unknown> | void)[]>;
 
 // @public
+export interface ApplicationConfig {
+    providers: Array<Provider | EnvironmentProviders>;
+}
+
+// @public
 export class ApplicationInitStatus {
     constructor(appInits: ReadonlyArray<() => Observable<unknown> | Promise<unknown> | void>);
     // (undocumented)

@@ -4,11 +4,11 @@
 
 ```ts
 
+import { ApplicationConfig as ApplicationConfig_2 } from '@angular/core';
 import { ApplicationRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { DebugElement } from '@angular/core';
 import { DebugNode } from '@angular/core';
-import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
@@ -26,10 +26,8 @@ import { ɵTransferState as TransferState } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
-// @public
-export interface ApplicationConfig {
-    providers: Array<Provider | EnvironmentProviders>;
-}
+// @public @deprecated
+export type ApplicationConfig = ApplicationConfig_2;
 
 // @public
 export function bootstrapApplication(rootComponent: Type<unknown>, options?: ApplicationConfig): Promise<ApplicationRef>;
