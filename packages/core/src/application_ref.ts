@@ -594,15 +594,15 @@ function getNgZoneOptions(options?: BootstrapOptions): NgZoneOptions {
   };
 }
 
-function getNgZone(ngZoneToUse: NgZone|'zone.js'|'noop'|undefined, options: NgZoneOptions): NgZone {
-  let ngZone: NgZone;
-
+function getNgZone(
+    ngZoneToUse: NgZone|'zone.js'|'noop' = 'zone.js', options: NgZoneOptions): NgZone {
   if (ngZoneToUse === 'noop') {
-    ngZone = new NoopNgZone();
-  } else {
-    ngZone = (ngZoneToUse === 'zone.js' ? undefined : ngZoneToUse) || new NgZone(options);
+    return new NoopNgZone();
   }
-  return ngZone;
+  if (ngZoneToUse === 'zone.js') {
+    return new NgZone(options);
+  }
+  return ngZoneToUse;
 }
 
 function _callAndReportToErrorHandler(
