@@ -812,22 +812,13 @@ Testing the `DashboardComponent` seemed daunting in part because it involves the
 
 <code-example header="app/dashboard/dashboard.component.ts (constructor)" path="testing/src/app/dashboard/dashboard.component.ts" region="ctor"></code-example>
 
-Mocking the `HeroService` with a spy is a [familiar story](#component-with-async-service).
-But the `Router` has a complicated API and is entwined with other services and application preconditions.
-Might it be difficult to mock?
-
-Fortunately, not in this case because the `DashboardComponent` isn't doing much with the `Router`
-
 <code-example header="app/dashboard/dashboard.component.ts (goToDetail)" path="testing/src/app/dashboard/dashboard.component.ts" region="goto-detail" ></code-example>
 
-This is often the case with *routing components*.
-As a rule you test the component, not the router, and care only if the component navigates with the right address under the given conditions.
+Angular provides test helpers to reduce boilerplate and more effectively test code which depends on the Router and HttpClient.
 
-Providing a router spy for *this component* test suite happens to be as easy as providing a `HeroService` spy.
+<code-example header="app/dashboard/dashboard.component.spec.ts" path="testing/src/app/dashboard/dashboard.component.spec.ts" region="router-harness"></code-example>
 
-<code-example header="app/dashboard/dashboard.component.spec.ts (spies)" path="testing/src/app/dashboard/dashboard.component.spec.ts" region="router-spy"></code-example>
-
-The following test clicks the displayed hero and confirms that `Router.navigateByUrl` is called with the expected url.
+The following test clicks the displayed hero and confirms that we navigate to the expected URL.
 
 <code-example header="app/dashboard/dashboard.component.spec.ts (navigate test)" path="testing/src/app/dashboard/dashboard.component.spec.ts" region="navigate-test"></code-example>
 
@@ -863,36 +854,9 @@ The [ActivatedRoute in action](guide/router-tutorial-toh#activated-route-in-acti
 
 </div>
 
-Tests can explore how the `HeroDetailComponent` responds to different `id` parameter values by manipulating the `ActivatedRoute` injected into the component's constructor.
+Tests can explore how the `HeroDetailComponent` responds to different `id` parameter values by navigating to different routes.
 
-You know how to spy on the `Router` and a data service.
-
-You'll take a different approach with `ActivatedRoute` because
-
-*   `paramMap` returns an `Observable` that can emit more than one value during a test
-*   You need the router helper function, `convertToParamMap()`, to create a `ParamMap`
-*   Other *routed component* tests need a test double for `ActivatedRoute`
-
-These differences argue for a re-usable stub class.
-
-#### `ActivatedRouteStub`
-
-The following `ActivatedRouteStub` class serves as a test double for `ActivatedRoute`.
-
-<code-example header="testing/activated-route-stub.ts (ActivatedRouteStub)" path="testing/src/testing/activated-route-stub.ts" region="activated-route-stub"></code-example>
-
-Consider placing such helpers in a `testing` folder sibling to the `app` folder.
-This sample puts `ActivatedRouteStub` in `testing/activated-route-stub.ts`.
-
-<div class="alert is-helpful">
-
-Consider writing a more capable version of this stub class with the [*marble testing library*](#marble-testing).
-
-</div>
-
-<a id="tests-w-test-double"></a>
-
-#### Testing with `ActivatedRouteStub`
+#### Testing with the `RouterTestingHarness`
 
 Here's a test demonstrating the component's behavior when the observed `id` refers to an existing hero:
 
@@ -907,20 +871,11 @@ Rely on your intuition for now.
 
 When the `id` cannot be found, the component should re-route to the `HeroListComponent`.
 
-The test suite setup provided the same router spy [described above](#routing-component) which spies on the router without actually navigating.
+The test suite setup provided the same router harness [described above](#routing-component).
 
 This test expects the component to try to navigate to the `HeroListComponent`.
 
 <code-example header="app/hero/hero-detail.component.spec.ts (bad id)" path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-bad-id"></code-example>
-
-While this application doesn't have a route to the `HeroDetailComponent` that omits the `id` parameter, it might add such a route someday.
-The component should do something reasonable when there is no `id`.
-
-In this implementation, the component should create and display a new hero.
-New heroes have `id=0` and a blank `name`.
-This test confirms that the component behaves as expected:
-
-<code-example header="app/hero/hero-detail.component.spec.ts (no id)" path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-no-id" ></code-example>
 
 ## Nested component tests
 
@@ -931,8 +886,6 @@ The component tree can be very deep and, most of the time, the nested components
 The `AppComponent`, for example, displays a navigation bar with anchors and their `RouterLink` directives.
 
 <code-example header="app/app.component.html" path="testing/src/app/app.component.html"></code-example>
-
-While the `AppComponent` *class* is empty, you might want to write unit tests to confirm that the links are wired properly to the `RouterLink` directives, perhaps for the reasons as explained in the [following section](#why-stubbed-routerlink-tests).
 
 To validate the links, you don't need the `Router` to navigate and you don't need the `<router-outlet>` to mark where the `Router` inserts *routed components*.
 
@@ -966,8 +919,6 @@ Then declare them in the `TestBed` configuration next to the components, directi
 
 The `AppComponent` is the test subject, so of course you declare the real version.
 
-The `RouterLinkDirectiveStub`, [described later](#routerlink), is a test version of the real `RouterLink` that helps with the link tests.
-
 The rest are stubs.
 
 <a id="no-errors-schema"></a>
@@ -980,7 +931,7 @@ In the second approach, add `NO_ERRORS_SCHEMA` to the `TestBed.schemas` metadata
 
 The `NO_ERRORS_SCHEMA` tells the Angular compiler to ignore unrecognized elements and attributes.
 
-The compiler recognizes the `<app-root>` element and the `routerLink` attribute because you declared a corresponding `AppComponent` and `RouterLinkDirectiveStub` in the `TestBed` configuration.
+The compiler recognizes the `<app-root>` element and the `routerLink` attribute because you declared a corresponding `AppComponent` and `RouterLink` in the `TestBed` configuration.
 
 But the compiler won't throw an error when it encounters `<app-banner>`, `<app-welcome>`, or `<router-outlet>`.
 It simply renders them as empty tags and the browser ignores them.
@@ -1003,31 +954,7 @@ In practice you will combine the two techniques in the same setup, as seen in th
 
 <code-example header="app/app.component.spec.ts (mixed setup)" path="testing/src/app/app.component.spec.ts" region="mixed-setup"></code-example>
 
-The Angular compiler creates the `BannerStubComponent` for the `<app-banner>` element and applies the `RouterLinkStubDirective` to the anchors with the `routerLink` attribute, but it ignores the `<app-welcome>` and `<router-outlet>` tags.
-
-<a id="routerlink"></a>
-
-## Components with `RouterLink`
-
-The real `RouterLinkDirective` is quite complicated and entangled with other components and directives of the `RouterModule`.
-It requires challenging setup to mock and use in tests.
-
-The `RouterLinkDirectiveStub` in this sample code replaces the real directive with an alternative version designed to validate the kind of anchor tag wiring seen in the `AppComponent` template.
-
-<code-example header="testing/router-link-directive-stub.ts (RouterLinkDirectiveStub)" path="testing/src/testing/router-link-directive-stub.ts" region="router-link"></code-example>
-
-The URL bound to the `[routerLink]` attribute flows in to the directive's `linkParams` property.
-
-The `HostListener` wires the click event of the host element \(the `<a>` anchor elements in `AppComponent`\) to the stub directive's `onClick` method.
-
-Clicking the anchor should trigger the `onClick()` method, which sets the stub's telltale `navigatedTo` property.
-Tests inspect `navigatedTo` to confirm that clicking the anchor sets the expected route definition.
-
-<div class="alert is-helpful">
-
-Whether the router is configured properly to navigate with that route definition is a question for a separate set of tests.
-
-</div>
+The Angular compiler creates the `BannerStubComponent` for the `<app-banner>` element and applies the `RouterLink` to the anchors with the `routerLink` attribute, but it ignores the `<app-welcome>` and `<router-outlet>` tags.
 
 <a id="by-directive"></a>
 <a id="inject-directive"></a>
@@ -1053,39 +980,6 @@ The `AppComponent` links to validate are as follows:
 Here are some tests that confirm those links are wired to the `routerLink` directives as expected:
 
 <code-example header="app/app.component.spec.ts (selected tests)" path="testing/src/app/app.component.spec.ts" region="tests"></code-example>
-
-<div class="alert is-helpful">
-
-The "click" test *in this example* is misleading.
-It tests the `RouterLinkDirectiveStub` rather than the *component*.
-This is a common failing of directive stubs.
-
-It has a legitimate purpose in this guide.
-It demonstrates how to find a `RouterLink` element, click it, and inspect a result, without engaging the full router machinery.
-This is a skill you might need to test a more sophisticated component, one that changes the display, re-calculates parameters, or re-arranges navigation options when the user clicks the link.
-
-</div>
-
-<a id="why-stubbed-routerlink-tests"></a>
-
-#### What good are these tests?
-
-Stubbed `RouterLink` tests can confirm that a component with links and an outlet is set up properly, that the component has the links it should have, and that they are all pointing in the expected direction.
-These tests do not concern whether the application will succeed in navigating to the target component when the user clicks a link.
-
-Stubbing the RouterLink and RouterOutlet is the best option for such limited testing goals.
-Relying on the real router would make them brittle.
-They could fail for reasons unrelated to the component.
-For example, a navigation guard could prevent an unauthorized user from visiting the `HeroListComponent`.
-That's not the fault of the `AppComponent` and no change to that component could cure the failed test.
-
-A *different* battery of tests can explore whether the application navigates as expected in the presence of conditions that influence guards such as whether the user is authenticated and authorized.
-
-<div class="alert is-helpful">
-
-A future guide update explains how to write such tests with the `RouterTestingModule`.
-
-</div>
 
 <a id="page-object"></a>
 
@@ -1125,9 +1019,6 @@ Now the important hooks for component manipulation and inspection are neatly org
 A `createComponent` method creates a `page` object and fills in the blanks once the `hero` arrives.
 
 <code-example header="app/hero/hero-detail.component.spec.ts (createComponent)" path="testing/src/app/hero/hero-detail.component.spec.ts" region="create-component"></code-example>
-
-The [`HeroDetailComponent` tests](#tests-w-test-double) in an earlier section demonstrate how `createComponent` and `page` keep the tests short and *on message*.
-There are no distractions: no waiting for promises to resolve and no searching the DOM for element values to compare.
 
 Here are a few more `HeroDetailComponent` tests to reinforce the point.
 
@@ -1263,8 +1154,8 @@ In addition to the support it receives from the default testing module `CommonMo
 
 *   `NgModel` and friends in the `FormsModule` to enable two-way data binding
 *   The `TitleCasePipe` from the `shared` folder
-*   The Router services that these tests are stubbing out
-*   The Hero data access services that are also stubbed out
+*   The Router services
+*   The Hero data access services
 
 One approach is to configure the testing module from the individual pieces as in this example:
 
@@ -1297,7 +1188,6 @@ Try a test configuration that imports the `HeroModule` like this one:
 
 <code-example header="app/hero/hero-detail.component.spec.ts (HeroModule setup)" path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-hero-module"></code-example>
 
-That's *really* crisp.
 Only the *test doubles* in the `providers` remain.
 Even the `HeroDetailComponent` declaration is gone.
 
