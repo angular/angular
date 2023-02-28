@@ -438,6 +438,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PRESERVE_HOST_CONTENT"
+  },
+  {
     "name": "PlatformRef"
   },
   {
@@ -649,6 +652,9 @@
   },
   {
     "name": "_randomChar"
+  },
+  {
+    "name": "_retrieveHydrationInfoImpl"
   },
   {
     "name": "_testabilityGetter"
@@ -1339,6 +1345,9 @@
   },
   {
     "name": "resolveTimingValue"
+  },
+  {
+    "name": "retrieveHydrationInfo"
   },
   {
     "name": "roundOffset"

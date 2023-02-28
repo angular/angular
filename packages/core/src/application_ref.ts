@@ -729,12 +729,13 @@ function optionsReducer<T extends Object>(dst: T, objs: T|T[]): T {
 export class ApplicationRef {
   /** @internal */
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
-  private _views: InternalViewRef[] = [];
   private _runningTick: boolean = false;
   private _stable = true;
   private _onMicrotaskEmptySubscription: Subscription;
   private _destroyed = false;
   private _destroyListeners: Array<() => void> = [];
+  /** @internal */
+  _views: InternalViewRef[] = [];
 
   /**
    * Indicates whether this instance was destroyed.

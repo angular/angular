@@ -246,6 +246,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PRESERVE_HOST_CONTENT"
+  },
+  {
     "name": "PlatformRef"
   },
   {
@@ -355,6 +358,9 @@
   },
   {
     "name": "_platformInjector"
+  },
+  {
+    "name": "_retrieveHydrationInfoImpl"
   },
   {
     "name": "_wrapInTimeout"
@@ -793,6 +799,9 @@
   },
   {
     "name": "resolveForwardRef"
+  },
+  {
+    "name": "retrieveHydrationInfo"
   },
   {
     "name": "rxSubscriber"

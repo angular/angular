@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from './di';
-
+import {InjectionToken} from './di/injection_token';
 
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") representing a unique string ID, used

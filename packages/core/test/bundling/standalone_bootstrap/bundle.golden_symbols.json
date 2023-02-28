@@ -201,7 +201,7 @@
     "name": "NG_COMP_DEF"
   },
   {
-    "name": "NG_DEV_MODE"
+    "name": "NG_DEV_MODE2"
   },
   {
     "name": "NG_DIR_DEF"
@@ -295,6 +295,9 @@
   },
   {
     "name": "PLATFORM_INITIALIZER"
+  },
+  {
+    "name": "PRESERVE_HOST_CONTENT"
   },
   {
     "name": "R3Injector"
@@ -430,6 +433,9 @@
   },
   {
     "name": "_randomChar"
+  },
+  {
+    "name": "_retrieveHydrationInfoImpl"
   },
   {
     "name": "_wrapInTimeout"
@@ -892,6 +898,9 @@
   },
   {
     "name": "resolveForwardRef"
+  },
+  {
+    "name": "retrieveHydrationInfo"
   },
   {
     "name": "rxSubscriber"

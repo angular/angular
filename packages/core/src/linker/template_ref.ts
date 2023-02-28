@@ -82,7 +82,7 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
     const embeddedTView = this._declarationTContainer.tViews as TView;
     const embeddedLView = createLView(
         this._declarationLView, embeddedTView, context, LViewFlags.CheckAlways, null,
-        embeddedTView.declTNode, null, null, null, null, injector || null);
+        embeddedTView.declTNode, null, null, null, null, injector || null, null);
 
     const declarationLContainer = this._declarationLView[this._declarationTContainer.index];
     ngDevMode && assertLContainer(declarationLContainer);
