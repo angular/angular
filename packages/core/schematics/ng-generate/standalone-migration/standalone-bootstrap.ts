@@ -29,7 +29,7 @@ interface BootstrapCallAnalysis {
   /** Component that the module is bootstrapping. */
   component: NamedClassDeclaration;
   /** Classes declared by the bootstrapped module. */
-  declarations: Reference<ts.ClassDeclaration>[];
+  declarations: ts.ClassDeclaration[];
 }
 
 export function toStandaloneBootstrap(
@@ -42,8 +42,8 @@ export function toStandaloneBootstrap(
   const referenceResolver =
       new ReferenceResolver(program, host, rootFileNames, basePath, referenceLookupExcludedFiles);
   const bootstrapCalls: BootstrapCallAnalysis[] = [];
-  const testObjects: ts.ObjectLiteralExpression[] = [];
-  const allDeclarations: Reference<ts.ClassDeclaration>[] = [];
+  const testObjects = new Set<ts.ObjectLiteralExpression>();
+  const allDeclarations = new Set<ts.ClassDeclaration>();
 
   for (const sourceFile of sourceFiles) {
     sourceFile.forEachChild(function walk(node) {
@@ -59,11 +59,11 @@ export function toStandaloneBootstrap(
       node.forEachChild(walk);
     });
 
-    testObjects.push(...findTestObjectsToMigrate(sourceFile, typeChecker));
+    findTestObjectsToMigrate(sourceFile, typeChecker).forEach(obj => testObjects.add(obj));
   }
 
   for (const call of bootstrapCalls) {
-    allDeclarations.push(...call.declarations);
+    call.declarations.forEach(decl => allDeclarations.add(decl));
     migrateBootstrapCall(call, tracker, referenceResolver, typeChecker, printer);
   }
 
