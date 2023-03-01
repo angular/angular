@@ -231,11 +231,12 @@ export function compileComponentFromMetadata(
 
     // Finally we emit the template function:
     const templateFn = emitTemplateFn(tpl, constantPool);
-
-    definitionMap.set('template', templateFn);
     definitionMap.set('decls', o.literal(tpl.root.decls as number));
     definitionMap.set('vars', o.literal(tpl.root.vars as number));
-    definitionMap.set('consts', o.literalArr(tpl.consts));
+    if (tpl.consts.length > 0) {
+      definitionMap.set('consts', o.literalArr(tpl.consts));
+    }
+    definitionMap.set('template', templateFn);
   }
 
   if (meta.declarations.length > 0) {
