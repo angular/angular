@@ -14,10 +14,19 @@ import type {XrefId} from './operations';
  */
 export type SemanticVariable = ContextVariable|IdentifierVariable|SavedViewVariable;
 
+export interface SemanticVariableBase {
+  kind: SemanticVariableKind;
+
+  /**
+   * Name assigned to this variable in generated code, or `null` if not yet assigned.
+   */
+  name: string|null;
+}
+
 /**
  * A variable that represents the context of a particular view.
  */
-export interface ContextVariable {
+export interface ContextVariable extends SemanticVariableBase {
   kind: SemanticVariableKind.Context;
 
   /**
@@ -29,19 +38,19 @@ export interface ContextVariable {
 /**
  * A variable that represents a specific identifier within a template.
  */
-export interface IdentifierVariable {
+export interface IdentifierVariable extends SemanticVariableBase {
   kind: SemanticVariableKind.Identifier;
 
   /**
    * The identifier whose value in the template is tracked in this variable.
    */
-  name: string;
+  identifier: string;
 }
 
 /**
  * A variable that represents a saved view context.
  */
-export interface SavedViewVariable {
+export interface SavedViewVariable extends SemanticVariableBase {
   kind: SemanticVariableKind.SavedView;
 
   /**
