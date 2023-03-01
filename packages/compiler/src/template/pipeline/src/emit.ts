@@ -48,15 +48,22 @@ export function transformTemplate(cpl: ComponentCompilation): void {
  */
 export function emitTemplateFn(tpl: ComponentCompilation, pool: ConstantPool): o.FunctionExpr {
   const rootFn = emitView(tpl.root);
-  for (const view of tpl.views.values()) {
-    if (view === tpl.root) {
+  emitChildViews(tpl.root, pool);
+  return rootFn;
+}
+
+function emitChildViews(parent: ViewCompilation, pool: ConstantPool): void {
+  for (const view of parent.tpl.views.values()) {
+    if (view.parent !== parent.xref) {
       continue;
     }
+
+    // Child views are emitted depth-first.
+    emitChildViews(view, pool);
 
     const viewFn = emitView(view);
     pool.statements.push(viewFn.toDeclStmt(viewFn.name!));
   }
-  return rootFn;
 }
 
 /**
