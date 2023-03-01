@@ -24,6 +24,7 @@ import {phaseGenerateVariables} from './phases/generate_variables';
 import {phaseResolveNames} from './phases/resolve_names';
 import {phaseResolveContexts} from './phases/resolve_contexts';
 import {phaseVariableOptimization} from './phases/variable_optimization';
+import {phaseChaining} from './phases/chaining';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
@@ -42,6 +43,7 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseNaming(cpl);
   phaseVariableOptimization(cpl, {conservative: true});
   phaseReify(cpl);
+  phaseChaining(cpl);
 }
 
 /**
