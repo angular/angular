@@ -60,7 +60,7 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
                 childView.decls!,
                 childView.vars!,
                 op.tag,
-                op.localRefs as number,
+                op.attributes as number,
                 ),
         );
         break;
