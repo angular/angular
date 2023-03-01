@@ -199,7 +199,7 @@ function generateVariablesInScopeForView(
           kind: ir.SemanticVariableKind.Identifier,
           name,
         },
-        new o.ReadPropExpr(new ir.ContextExpr(view.xref), value)));
+        new o.ReadPropExpr(new ir.ContextExpr(scope.view), value)));
   }
 
   // Add variables for all local references declared for elements in this scope.
