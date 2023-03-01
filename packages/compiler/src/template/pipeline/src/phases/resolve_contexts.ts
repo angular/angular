@@ -56,6 +56,6 @@ function processLexicalScope(view: ViewCompilation, ops: ir.OpList<ir.CreateOp|i
       } else {
         return expr;
       }
-    });
+    }, ir.VisitorContextFlag.None);
   }
 }

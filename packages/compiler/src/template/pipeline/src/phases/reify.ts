@@ -29,7 +29,7 @@ export function phaseReify(cpl: ComponentCompilation): void {
 
 function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp>): void {
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, reifyIrExpression);
+    ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
     switch (op.kind) {
       case ir.OpKind.Text:
@@ -94,7 +94,7 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
 
 function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, reifyIrExpression);
+    ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
     switch (op.kind) {
       case ir.OpKind.Advance:
