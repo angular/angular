@@ -230,7 +230,7 @@ export function renderApplication<T>(
   const {document, url, platformProviders, appId = ''} = options;
   const platform = _getPlatform(platformDynamicServer, {document, url, platformProviders});
 
-  if (isApplicationBootstrapFn(rootComponentOrBootstrapFn)) {
+  if (isBootstrapFn(rootComponentOrBootstrapFn)) {
     return _render(platform, rootComponentOrBootstrapFn());
   }
 
@@ -245,7 +245,7 @@ export function renderApplication<T>(
       internalCreateApplication({rootComponent: rootComponentOrBootstrapFn, appProviders}));
 }
 
-function isApplicationBootstrapFn(value: unknown): value is() => Promise<ApplicationRef> {
+function isBootstrapFn(value: unknown): value is() => Promise<ApplicationRef> {
   // We can differentiate between a component and a bootstrap function by reading `cmp`:
   return typeof value === 'function' && !getComponentDef(value);
 }
