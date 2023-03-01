@@ -134,7 +134,7 @@ To get information from a route:
     *   [`ActivatedRoute`](api/router/ActivatedRoute)
     *   [`ParamMap`](api/router/ParamMap)
 
-1.  Inject an instance of `ActivatedRoute` by adding it to your application's constructor:
+1.  Inject an instance of `ActivatedRoute` by adding it to your component's constructor:
 
     <code-example header="In the component class (excerpt)" path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="activated-route"></code-example>
 
