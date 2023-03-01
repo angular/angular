@@ -94,7 +94,7 @@ function processLexicalScope(
       } else {
         return expr;
       }
-    });
+    }, ir.VisitorContextFlag.None);
   }
 }
 

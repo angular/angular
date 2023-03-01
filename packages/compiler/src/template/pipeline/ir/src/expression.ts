@@ -26,7 +26,7 @@ export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextEx
  * Transformer type which converts IR expressions into general `o.Expression`s (which may be an
  * identity transformation).
  */
-export type ExpressionTransform = (expr: Expression) => o.Expression;
+export type ExpressionTransform = (expr: Expression, flags: VisitorContextFlag) => o.Expression;
 
 /**
  * Check whether a given `o.Expression` is a logical IR expression type.
@@ -49,7 +49,8 @@ export abstract class ExpressionBase extends o.Expression {
    * Run the transformer against any nested expressions which may be present in this IR expression
    * subtype.
    */
-  abstract transformInternalExpressions(transform: ExpressionTransform): void;
+  abstract transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void;
 }
 
 /**
@@ -206,9 +207,10 @@ export class RestoreViewExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform): void {
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
     if (typeof this.view !== 'number') {
-      this.view = transformExpressionsInExpression(this.view, transform);
+      this.view = transformExpressionsInExpression(this.view, transform, flags);
     }
   }
 }
@@ -235,8 +237,9 @@ export class ResetViewExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform): void {
-    this.expr = transformExpressionsInExpression(this.expr, transform);
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.expr = transformExpressionsInExpression(this.expr, transform, flags);
   }
 }
 
@@ -271,7 +274,12 @@ export function visitExpressionsInOp(
   transformExpressionsInOp(op, (expr) => {
     visitor(expr);
     return expr;
-  });
+  }, VisitorContextFlag.None);
+}
+
+export enum VisitorContextFlag {
+  None = 0b0000,
+  FunctionBody = 0b0001,
 }
 
 /**
@@ -281,25 +289,25 @@ export function visitExpressionsInOp(
  * identity transformation.
  */
 export function transformExpressionsInOp(
-    op: CreateOp|UpdateOp, transform: ExpressionTransform): void {
+    op: CreateOp|UpdateOp, transform: ExpressionTransform, flags: VisitorContextFlag): void {
   switch (op.kind) {
     case OpKind.Property:
-      op.expression = transformExpressionsInExpression(op.expression, transform);
+      op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;
     case OpKind.Statement:
-      transformExpressionsInStatement(op.statement, transform);
+      transformExpressionsInStatement(op.statement, transform, flags);
       break;
     case OpKind.Variable:
-      op.initializer = transformExpressionsInExpression(op.initializer, transform);
+      op.initializer = transformExpressionsInExpression(op.initializer, transform, flags);
       break;
     case OpKind.InterpolateText:
       for (let i = 0; i < op.expressions.length; i++) {
-        op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform);
+        op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform, flags);
       }
       break;
     case OpKind.Listener:
       for (const innerOp of op.handlerOps) {
-        transformExpressionsInOp(innerOp, transform);
+        transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.FunctionBody);
       }
       break;
     case OpKind.Element:
@@ -321,19 +329,19 @@ export function transformExpressionsInOp(
  * identity transformation.
  */
 export function transformExpressionsInExpression(
-    expr: o.Expression, transform: ExpressionTransform): o.Expression {
+    expr: o.Expression, transform: ExpressionTransform, flags: VisitorContextFlag): o.Expression {
   if (expr instanceof ExpressionBase) {
-    expr.transformInternalExpressions(transform);
-    return transform(expr as Expression);
+    expr.transformInternalExpressions(transform, flags);
+    return transform(expr as Expression, flags);
   } else if (expr instanceof o.BinaryOperatorExpr) {
-    expr.lhs = transformExpressionsInExpression(expr.lhs, transform);
-    expr.rhs = transformExpressionsInExpression(expr.rhs, transform);
+    expr.lhs = transformExpressionsInExpression(expr.lhs, transform, flags);
+    expr.rhs = transformExpressionsInExpression(expr.rhs, transform, flags);
   } else if (expr instanceof o.ReadPropExpr) {
-    expr.receiver = transformExpressionsInExpression(expr.receiver, transform);
+    expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
   } else if (expr instanceof o.InvokeFunctionExpr) {
-    expr.fn = transformExpressionsInExpression(expr.fn, transform);
+    expr.fn = transformExpressionsInExpression(expr.fn, transform, flags);
     for (let i = 0; i < expr.args.length; i++) {
-      expr.args[i] = transformExpressionsInExpression(expr.args[i], transform);
+      expr.args[i] = transformExpressionsInExpression(expr.args[i], transform, flags);
     }
   } else if (
       expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
@@ -352,11 +360,11 @@ export function transformExpressionsInExpression(
  * identity transformation.
  */
 export function transformExpressionsInStatement(
-    stmt: o.Statement, transform: ExpressionTransform): void {
+    stmt: o.Statement, transform: ExpressionTransform, flags: VisitorContextFlag): void {
   if (stmt instanceof o.ExpressionStatement) {
-    stmt.expr = transformExpressionsInExpression(stmt.expr, transform);
+    stmt.expr = transformExpressionsInExpression(stmt.expr, transform, flags);
   } else if (stmt instanceof o.ReturnStatement) {
-    stmt.value = transformExpressionsInExpression(stmt.value, transform);
+    stmt.value = transformExpressionsInExpression(stmt.value, transform, flags);
   } else {
     throw new Error(`Unhandled statement kind: ${stmt.constructor.name}`);
   }
