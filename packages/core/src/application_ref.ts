@@ -12,7 +12,7 @@ import {merge, Observable, Observer, Subscription} from 'rxjs';
 import {share} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
-import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
+import {PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
 import {Injectable} from './di/injectable';
@@ -46,6 +46,8 @@ import {scheduleMicroTask} from './util/microtask';
 import {stringify} from './util/stringify';
 import {NgZone, NoopNgZone} from './zone/ng_zone';
 
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
+
 let _platformInjector: Injector|null = null;
 
 /**
@@ -63,7 +65,18 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultip
 const PLATFORM_DESTROY_LISTENERS =
     new InjectionToken<Set<VoidFunction>>('PlatformDestroyListeners');
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
+/**
+ * A [DI token](guide/glossary#di-token "DI token definition") that provides a set of callbacks to
+ * be called for every component that is bootstrapped.
+ *
+ * Each callback must take a `ComponentRef` instance and return nothing.
+ *
+ * `(componentRef: ComponentRef) => void`
+ *
+ * @publicApi
+ */
+export const APP_BOOTSTRAP_LISTENER =
+    new InjectionToken<Array<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
 
 export function compileNgModuleFactory<M>(
     injector: Injector, options: CompilerOptions,
