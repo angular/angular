@@ -3647,4 +3647,94 @@ describe('standalone migration', () => {
           }).catch(e => console.error(e));
         `));
      });
+
+  it('should add Protractor support if any tests are detected', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+
+      @Component({selector: 'app', template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({declarations: [AppComponent], bootstrap: [AppComponent]})
+      export class AppModule {}
+    `);
+
+    writeFile('./app/app.e2e.spec.ts', `
+      import {browser, by, element} from 'protractor';
+
+      describe('app', () => {
+        beforeAll(async () => {
+          await browser.get(browser.params.testUrl);
+        });
+
+        it('should work', async () => {
+          const rootSelector = element(by.css('app'));
+          expect(await rootSelector.isPresent()).toBe(true);
+        });
+      });
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppComponent} from './app/app.module';
+      import {platformBrowser, provideProtractorTestingSupport, bootstrapApplication} from '@angular/platform-browser';
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideProtractorTestingSupport()]
+      }).catch(e => console.error(e));
+    `));
+  });
+
+  it('should add Protractor support if any tests with deep imports are detected', async () => {
+    writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+    writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+
+      @Component({selector: 'app', template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({declarations: [AppComponent], bootstrap: [AppComponent]})
+      export class AppModule {}
+    `);
+
+    writeFile('./app/app.e2e.spec.ts', `
+      import {browser, by, element} from 'protractor/some/deep-import';
+
+      describe('app', () => {
+        beforeAll(async () => {
+          await browser.get(browser.params.testUrl);
+        });
+
+        it('should work', async () => {
+          const rootSelector = element(by.css('app'));
+          expect(await rootSelector.isPresent()).toBe(true);
+        });
+      });
+    `);
+
+    await runMigration('standalone-bootstrap');
+
+    expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppComponent} from './app/app.module';
+      import {platformBrowser, provideProtractorTestingSupport, bootstrapApplication} from '@angular/platform-browser';
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideProtractorTestingSupport()]
+      }).catch(e => console.error(e));
+    `));
+  });
 });
