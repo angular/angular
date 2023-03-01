@@ -1,3 +1,31 @@
+<a name="15.2.1"></a>
+# 15.2.1 (2023-03-01)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f0e926074d](https://github.com/angular/angular/commit/f0e926074df189b3e3ca361a6a3bcd852c05e010) | fix | make Location.normalize() return the correct path when the base path contains characters that interfere with regex syntax. ([#49181](https://github.com/angular/angular/pull/49181)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [04d8b6c61a](https://github.com/angular/angular/commit/04d8b6c61a0d0a2d61b9202d09774f3ab347e82f) | fix | do not persist component analysis if template/styles are missing ([#49184](https://github.com/angular/angular/pull/49184)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d60ea6ab5a](https://github.com/angular/angular/commit/d60ea6ab5a22cb4f3677e34d0d7f6be0c3fe23fe) | fix | update zone.js peerDependencies ranges ([#49244](https://github.com/angular/angular/pull/49244)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [44d095a61c](https://github.com/angular/angular/commit/44d095a61cb340ea1f5e0a19370ea839378b02c3) | fix | avoid migrating the same class multiple times in standalone migration ([#49245](https://github.com/angular/angular/pull/49245)) |
+| [92b0bda9e4](https://github.com/angular/angular/commit/92b0bda9e4e7117552f929bf86acfc0ae65779a1) | fix | delete barrel exports in standalone migration ([#49176](https://github.com/angular/angular/pull/49176)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3062442728](https://github.com/angular/angular/commit/30624427289ad65bdbabd865d028146753c3a97a) | fix | add error message when using loadComponent with a NgModule ([#49164](https://github.com/angular/angular/pull/49164)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Aristeidis Bampakos, Craig Spence, Doug Parker, Iván Navarro, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Michael Ziluck, Paul Gschwendtner, Stephanie Tuerk, Vincent and Virginia Dooley
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-next.0"></a>
 # 16.0.0-next.0 (2023-02-22)
 ## Breaking Changes
