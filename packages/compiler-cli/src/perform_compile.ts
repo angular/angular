@@ -57,6 +57,7 @@ export function calcProjectFileAndBasePath(
   const projectFile = projectIsDir ? host.join(absProject, 'tsconfig.json') : absProject;
   const projectDir = projectIsDir ? absProject : host.dirname(absProject);
   const basePath = host.resolve(projectDir);
+
   return {projectFile, basePath};
 }
 
@@ -79,25 +80,34 @@ export function readConfiguration(
 
           // we are only interested into merging 'angularCompilerOptions' as
           // other options like 'compilerOptions' are merged by TS
-          const existingNgCompilerOptions = {...config.angularCompilerOptions, ...parentOptions};
-
-          if (config.extends && typeof config.extends === 'string') {
-            const extendedConfigPath = getExtendedConfigPath(
-                configFile, config.extends, host, fs,
-            );
-
-            if (extendedConfigPath !== null) {
-              // Call readAngularCompilerOptions recursively to merge NG Compiler options
-              return readAngularCompilerOptions(extendedConfigPath, existingNgCompilerOptions);
-            }
+          let existingNgCompilerOptions = {...config.angularCompilerOptions, ...parentOptions};
+          if (!config.extends) {
+            return existingNgCompilerOptions;
           }
 
-          return existingNgCompilerOptions;
+          const extendsPaths: string[] =
+              typeof config.extends === 'string' ? [config.extends] : config.extends;
+
+          // Call readAngularCompilerOptions recursively to merge NG Compiler options
+          // Reverse the array so the overrides happen from right to left.
+          return [...extendsPaths].reverse().reduce((prevOptions, extendsPath) => {
+            const extendedConfigPath = getExtendedConfigPath(
+                configFile,
+                extendsPath,
+                host,
+                fs,
+            );
+
+            return extendedConfigPath === null ?
+                prevOptions :
+                readAngularCompilerOptions(extendedConfigPath, prevOptions);
+          }, existingNgCompilerOptions);
         };
 
     const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
     const configFileName = host.resolve(host.pwd(), projectFile);
     const {config, error} = readConfigFile(projectFile);
+
     if (error) {
       return {
         project,
@@ -107,6 +117,7 @@ export function readConfiguration(
         emitFlags: api.EmitFlags.Default
       };
     }
+
     const existingCompilerOptions: api.CompilerOptions = {
       genDir: basePath,
       basePath,
