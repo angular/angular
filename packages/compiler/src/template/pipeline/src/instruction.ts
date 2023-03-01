@@ -124,12 +124,18 @@ export function textInterpolate(strings: string[], expressions: o.Expression[]):
         `AssertionError: expected specific shape of args for strings/expressions in interpolation`);
   }
   const interpolationArgs: o.Expression[] = [];
-  let idx: number;
-  for (idx = 0; idx < expressions.length; idx++) {
-    interpolationArgs.push(o.literal(strings[idx]), expressions[idx]);
+
+  if (expressions.length === 1 && strings[0] === '' && strings[1] === '') {
+    interpolationArgs.push(expressions[0]);
+  } else {
+    let idx: number;
+    for (idx = 0; idx < expressions.length; idx++) {
+      interpolationArgs.push(o.literal(strings[idx]), expressions[idx]);
+    }
+    // idx points at the last string.
+    interpolationArgs.push(o.literal(strings[idx]));
   }
-  // idx points at the last string.
-  interpolationArgs.push(o.literal(strings[idx]));
+
   return callInterpolation(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs);
 }
 
