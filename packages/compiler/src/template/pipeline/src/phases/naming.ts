@@ -17,18 +17,12 @@ import type {ComponentCompilation, ViewCompilation} from '../compilation';
  * the reads can be emitted correctly.
  */
 export function phaseNaming(cpl: ComponentCompilation): void {
-  addNamesToView(cpl.root, {index: 0});
+  addNamesToView(cpl.root, cpl.componentName, {index: 0});
 }
 
-function addNamesToView(view: ViewCompilation, state: {index: number}): void {
+function addNamesToView(view: ViewCompilation, baseName: string, state: {index: number}): void {
   if (view.fnName === null) {
-    // TODO(alxhub): convert this temporary name to match how the `TemplateDefinitionBuilder`
-    // names embedded view functions.
-    if (view === view.tpl.root) {
-      view.fnName = `${view.tpl.componentName}_Template`;
-    } else {
-      view.fnName = `${view.tpl.componentName}_EmbeddedView_${state.index++}`;
-    }
+    view.fnName = `${baseName}_Template`;
   }
 
   // Keep track of the names we assign to variables in the view. We'll need to propagate these
@@ -48,7 +42,13 @@ function addNamesToView(view: ViewCompilation, state: {index: number}): void {
         varNames.set(op.xref, getVariableName(op.variable, state));
         break;
       case ir.OpKind.Template:
-        addNamesToView(view.tpl.views.get(op.xref)!, state);
+        const childView = view.tpl.views.get(op.xref)!;
+        if (op.slot === null) {
+          throw new Error(`Expected slot to be assigned`);
+        }
+        // TODO: properly escape the tag name.
+        const safeTagName = op.tag.replace('-', '_');
+        addNamesToView(childView, `${baseName}_${safeTagName}_${op.slot}`, state);
         break;
     }
   }
