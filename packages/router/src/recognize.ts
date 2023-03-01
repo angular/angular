@@ -65,7 +65,6 @@ export class Recognizer {
                 // After an absolute redirect we do not apply any more redirects!
                 // If this implementation changes, update the documentation note in `redirectTo`.
                 this.allowRedirects = false;
-                // TODO: there were no tests covering this line locally. Only g3 failures
                 this.urlTree = e.urlTree;
                 return this.match(e.urlTree);
               }
@@ -298,6 +297,11 @@ export class Recognizer {
         consumedSegments: [],
         remainingSegments: [],
       });
+      // Prior versions of the route matching algorithm would stop matching at the wildcard route.
+      // We should investigate a better strategy for any existing children. Otherwise, these
+      // child segments are silently dropped from the navigation.
+      // https://github.com/angular/angular/issues/40089
+      rawSegment.children = {};
     } else {
       matchResult =
           matchWithChecks(rawSegment, route, segments, injector, this.urlSerializer)

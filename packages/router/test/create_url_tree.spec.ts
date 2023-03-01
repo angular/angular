@@ -425,14 +425,15 @@ describe('createUrlTree', async () => {
     });
 
     it('should support going to a parent (across segments)', async () => {
-      // TODO: This test used to have aux outlets under the wildcard primary match of 'q'
-      // Before, the apply_redirects would not attempt to match those outlets and effectively drop
-      // them completely from the final URL. Recognize, however, needs to continue matching routes
-      // under the wildcard (only empty paths would match) because of configs like this: {path:
-      // '**', loadChildren: () => childRoutes}
-      //
-      // await router.navigateByUrl('/q/(a/(c//left:cp)//left:qp)(left:ap)');
-      await router.navigateByUrl('/q/a/c(left:ap)');
+      await router.navigateByUrl('/q/(a/(c//left:cp)//left:qp)(left:ap)');
+      // The resulting URL isn't necessarily correct. Though we could never truly navigate to the
+      // URL above, this should probably go to '/q/a/c(left:ap)' at the very least and potentially
+      // be able to go somewhere like /q/a/c/(left:xyz)(left:ap). That is, allow matching named
+      // outlets as long as they do not have a primary outlet sibling. Having a primary outlet
+      // sibling isn't possible because the wildcard should consume all the primary outlet segments
+      // so there cannot be any remaining in the children.
+      // https://github.com/angular/angular/issues/40089
+      expect(router.url).toEqual('/q(left:ap)');
 
       const t = create(router.routerState.root.children[0].children[0], ['../../q2']);
       expect(serializer.serialize(t)).toEqual('/q2(left:ap)');
