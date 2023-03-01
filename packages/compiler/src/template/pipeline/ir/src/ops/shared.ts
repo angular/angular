@@ -60,11 +60,6 @@ export interface VariableOp<OpT extends Op<OpT>> extends Op<OpT> {
   xref: XrefId;
 
   /**
-   * Name assigned to this variable in generated code, or `null` if not yet assigned.
-   */
-  name: string|null;
-
-  /**
    * The `SemanticVariable` which describes the meaning behind this variable.
    */
   variable: SemanticVariable;
@@ -83,7 +78,6 @@ export function createVariableOp<OpT extends Op<OpT>>(
   return {
     kind: OpKind.Variable,
     xref,
-    name: null,
     variable,
     initializer,
     ...NEW_OP,

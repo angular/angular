@@ -74,11 +74,13 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
                 ));
         break;
       case ir.OpKind.Variable:
-        if (op.name === null) {
+        if (op.variable.name === null) {
           throw new Error(`AssertionError: unnamed variable ${op.xref}`);
         }
         ir.OpList.replace<ir.CreateOp>(
-            op, ir.createStatementOp(new o.DeclareVarStmt(op.name, op.initializer)));
+            op,
+            ir.createStatementOp(new o.DeclareVarStmt(
+                op.variable.name, op.initializer, undefined, o.StmtModifier.Final)));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
@@ -105,11 +107,13 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.textInterpolate(op.strings, op.expressions));
         break;
       case ir.OpKind.Variable:
-        if (op.name === null) {
+        if (op.variable.name === null) {
           throw new Error(`AssertionError: unnamed variable ${op.xref}`);
         }
         ir.OpList.replace<ir.UpdateOp>(
-            op, ir.createStatementOp(new o.DeclareVarStmt(op.name, op.initializer)));
+            op,
+            ir.createStatementOp(new o.DeclareVarStmt(
+                op.variable.name, op.initializer, undefined, o.StmtModifier.Final)));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
