@@ -7,7 +7,6 @@
  */
 
 import {InjectionToken} from './di';
-import {ComponentRef} from './linker/component_factory';
 
 
 /**
@@ -58,19 +57,6 @@ export const PLATFORM_ID = new InjectionToken<Object>('Platform ID', {
   providedIn: 'platform',
   factory: () => 'unknown',  // set a default platform name, when none set explicitly
 });
-
-/**
- * A [DI token](guide/glossary#di-token "DI token definition") that provides a set of callbacks to
- * be called for every component that is bootstrapped.
- *
- * Each callback must take a `ComponentRef` instance and return nothing.
- *
- * `(componentRef: ComponentRef) => void`
- *
- * @publicApi
- */
-export const APP_BOOTSTRAP_LISTENER =
-    new InjectionToken<Array<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
 
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") that indicates the root directory of
