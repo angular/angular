@@ -1,0 +1,44 @@
+name: Update AIO Angular CLI help
+
+on:
+  workflow_dispatch:
+    inputs: {}
+  push:
+    branches:
+      - 'main'
+      - '[0-9]+.[0-9]+.x'
+
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
+jobs:
+  update_cli_help:
+    name: Update Angular CLI help (if necessary)
+    if: github.repository == 'angular/angular'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          # Setting `persist-credentials: false` prevents the github-action account from being the
+          # account that is attempted to be used for authentication, instead the remote is set to
+          # an authenticated URL.
+          persist-credentials: false
+          # This is needed as otherwise the PR creation will fail with `shallow update not allowed` when the forked branch is not in sync.
+          fetch-depth: 0
+      - name: Generate CLI help
+        run: node aio/scripts/update-cli-help/index.mjs
+        env:
+          ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN }}
+      - name: Create a PR (if necessary)
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@c12a0ca820b97029279dbc3c71c25da5de5bab26
+        with:
+          branch-prefix: update-cli-help
+          pr-title: 'docs: update Angular CLI help [${{github.ref_name}}]'
+          pr-description: |
+            Updated Angular CLI help contents.
+          pr-labels: |
+            action: review
+            area: docs
+          angular-robot-token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}

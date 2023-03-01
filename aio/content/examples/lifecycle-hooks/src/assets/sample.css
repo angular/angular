@@ -1,0 +1,61 @@
+.parent {
+  padding: 2rem 0;
+}
+
+h2 {
+  text-align: center;
+}
+
+.comment {
+  color: #890000;
+  font-style: italic;
+}
+
+.log {
+  background-color: #e4e4e4;
+  padding: .25rem;
+}
+
+.info {
+  background: #fff4f4;
+  padding: .75rem;
+  margin-top: 1rem;
+}
+
+p {
+  padding: .25rem;
+}
+
+a {
+  display: block;
+  padding-bottom: .5rem;
+  font-size: 1.1rem;
+  color: #264d73
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+a[href="#top"] {
+  margin: 1rem 0;
+  padding: .5rem;
+  background-color: #264d73;
+  color: #fff;
+}
+
+a[href="#top"]:hover {
+  background-color:#eaeaea;
+  color: black;
+}
+
+a[href="#top"]:active {
+  background-color: black;
+  color: #eaeaea;
+}
+
+input {
+  margin-bottom: 1rem;
+  margin-top: .5rem;
+  font-size: 1rem;
+}

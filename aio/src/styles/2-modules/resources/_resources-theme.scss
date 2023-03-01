@@ -1,0 +1,21 @@
+@use 'sass:map';
+@use '../../constants';
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  aio-resource-list {
+    .subcategory-title {
+      background-color: if($is-dark-theme, constants.$deepgray, constants.$mist);
+    }
+
+    .resource-row-link {
+      background-color: if($is-dark-theme, constants.$darkgray, constants.$white);
+
+      &:hover {
+        border-color: if($is-dark-theme, rgba(constants.$lightblue, 0.5), rgba(constants.$blue, 0.5));
+        box-shadow: 0 8px 8px rgb(1 131 163 / 24%), 0 0 8px rgb(1 67 163 / 12%), 0 6px 18px rgb(43 133 231 / 12%);
+      }
+    }
+  }
+}

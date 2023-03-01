@@ -1,0 +1,18 @@
+{%- macro ngModuleList(ngModules, heading) -%}
+{%- if ngModules and ngModules.length > 0 %}
+<h2>{$ heading $}</h2>
+<ul>
+  {%- for ngModule in ngModules %}
+  <li>
+    {%- if ngModule.path %}
+    <a href="{$ ngModule.path $}">
+      <code-example language="ts" hideCopy="true" class="no-box">{$ ngModule.name | escape $}</code-example>
+    </a>
+    {%- else %}
+    <code-example language="ts" hideCopy="true" class="no-box">'{$ ngModule | escape $}'</code-example>
+    {%- endif %}
+  </li>
+  {%- endfor %}
+</ul>
+{%- endif -%}
+{%- endmacro -%}

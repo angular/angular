@@ -1,0 +1,53 @@
+@use '../../constants';
+
+@mixin api-pages-theme($theme) {
+  .api-body {
+    details.overloads {
+      .detail-contents {
+        border: 1px solid constants.$lightgray;
+      }
+
+      summary {
+        .actions {
+          color: constants.$blue;
+        }
+      }
+    }
+
+    table {
+      &.method-table,
+      &.option-table,
+      &.list-table {
+        .with-github-links {
+          .github-links {
+            a {
+              color: constants.$mediumgray;
+
+              .material-icons:hover {
+                color: constants.$blue;
+              }
+            }
+          }
+        }
+      }
+
+      tr {
+        border-bottom: 1px solid constants.$lightgray;
+      }
+    }
+
+    .from-constructor,
+    .read-only-property,
+    .write-only-property {
+      background-color: constants.$lightgray;
+    }
+  }
+
+  .github-links {
+    .material-icons {
+      &:hover {
+        background-color: constants.$mist;
+      }
+    }
+  }
+}

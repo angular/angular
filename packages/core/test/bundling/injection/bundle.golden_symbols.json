@@ -1,0 +1,185 @@
+[
+  {
+    "name": "CIRCULAR"
+  },
+  {
+    "name": "DI_DECORATOR_FLAG"
+  },
+  {
+    "name": "EMPTY_ARRAY"
+  },
+  {
+    "name": "ENVIRONMENT_INITIALIZER"
+  },
+  {
+    "name": "EnvironmentInjector"
+  },
+  {
+    "name": "INJECTOR2"
+  },
+  {
+    "name": "INJECTOR_DEF_TYPES"
+  },
+  {
+    "name": "INJECTOR_SCOPE"
+  },
+  {
+    "name": "InjectFlags"
+  },
+  {
+    "name": "InjectionToken"
+  },
+  {
+    "name": "NEW_LINE"
+  },
+  {
+    "name": "NG_COMP_DEF"
+  },
+  {
+    "name": "NG_ENV_ID"
+  },
+  {
+    "name": "NG_FACTORY_DEF"
+  },
+  {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
+    "name": "NG_INJECTOR_DEF"
+  },
+  {
+    "name": "NG_INJ_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF"
+  },
+  {
+    "name": "NG_TEMP_TOKEN_PATH"
+  },
+  {
+    "name": "NG_TOKEN_PATH"
+  },
+  {
+    "name": "NOT_YET"
+  },
+  {
+    "name": "NO_NEW_LINE"
+  },
+  {
+    "name": "NULL_INJECTOR"
+  },
+  {
+    "name": "NullInjector"
+  },
+  {
+    "name": "R3Injector"
+  },
+  {
+    "name": "RuntimeError"
+  },
+  {
+    "name": "SOURCE"
+  },
+  {
+    "name": "ScopedService"
+  },
+  {
+    "name": "THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "USE_VALUE"
+  },
+  {
+    "name": "__forward_ref__"
+  },
+  {
+    "name": "_currentInjector"
+  },
+  {
+    "name": "_injectImplementation"
+  },
+  {
+    "name": "createInjector"
+  },
+  {
+    "name": "deepForEach"
+  },
+  {
+    "name": "deepForEachProvider"
+  },
+  {
+    "name": "forEachSingleProvider"
+  },
+  {
+    "name": "forwardRef"
+  },
+  {
+    "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getFactoryDef"
+  },
+  {
+    "name": "getInjectableDef"
+  },
+  {
+    "name": "getInjectorDef"
+  },
+  {
+    "name": "getNullInjector"
+  },
+  {
+    "name": "getOwnDefinition"
+  },
+  {
+    "name": "importProvidersFrom"
+  },
+  {
+    "name": "injectArgs"
+  },
+  {
+    "name": "injectInjectorOnly"
+  },
+  {
+    "name": "injectableDefOrInjectorDefFactory"
+  },
+  {
+    "name": "internalImportProvidersFrom"
+  },
+  {
+    "name": "isEnvironmentProviders"
+  },
+  {
+    "name": "isTypeProvider"
+  },
+  {
+    "name": "isValueProvider"
+  },
+  {
+    "name": "makeRecord"
+  },
+  {
+    "name": "processInjectorTypesWithProviders"
+  },
+  {
+    "name": "resolveForwardRef"
+  },
+  {
+    "name": "setCurrentInjector"
+  },
+  {
+    "name": "setInjectImplementation"
+  },
+  {
+    "name": "stringify"
+  },
+  {
+    "name": "walkProviderTree"
+  },
+  {
+    "name": "ɵɵdefineInjectable"
+  },
+  {
+    "name": "ɵɵinject"
+  }
+]

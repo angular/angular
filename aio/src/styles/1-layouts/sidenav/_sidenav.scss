@@ -1,0 +1,173 @@
+@use '../../constants';
+@use '../../mixins';
+
+// Disable sidenav animations for the initial render.
+.no-animations.mat-drawer-transition .mat-drawer-content {
+  transition: none;
+}
+
+mat-sidenav-container.sidenav-container {
+  min-height: 100%;
+  height: auto !important;
+  margin: 0;
+  transform: none;
+
+  &.has-floating-toc {
+    .sidenav-content-container {
+      padding-right: 18vw;
+    }
+  }
+
+  .sidenav-content-container {
+    height: auto;
+
+    .sidenav-content {
+      overflow-x: auto;
+    }
+  }
+
+  mat-sidenav.sidenav {
+    position: fixed;
+    top: 64px;
+    bottom: 0;
+    left: 0;
+    min-width: 260px;
+
+    @media (max-width: 599px) {
+      top: 56px;
+    }
+  }
+}
+
+aio-nav-menu {
+  display: block;
+  margin: 0 2px;
+  max-width: 268px;
+
+  &:first-of-type {
+    margin-top: 16px;
+  }
+
+  &:last-of-type {
+    margin-bottom: 16px;
+  }
+
+  ul, a {
+    margin: 0;
+  }
+
+  aio-nav-item {
+    .vertical-menu-item {
+      box-sizing: border-box;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow-wrap: break-word;
+      padding: 8px;
+      text-decoration: none;
+      text-align: left;
+      width: 100%;
+      word-wrap: break-word;
+
+      &:focus {
+        outline: constants.$focus-outline-onlight auto 2px;
+      }
+
+      span {
+        padding-right: 32px;
+      }
+
+      //icons _within_ nav
+      .mat-icon {
+        flex: 0 0 2.4rem;
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    a.vertical-menu-item {
+      &[href^="http:"],
+      &[href^="https:"] {
+        .vertical-menu-item-text {
+          @include mixins.external-link-with-icon();
+        }
+      }
+    }
+
+    button.vertical-menu-item {
+      border: none;
+      background-color: transparent;
+      margin: 0;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .heading-children {
+      &.expanded {
+        visibility: visible;
+        opacity: 1;
+        padding-left: 0;
+        max-height: 4000px; // Arbitrary max-height. Can increase if needed. Must have measurement to transition height.
+        transition: visibility 500ms, opacity 500ms, max-height 500ms;
+        transition-timing-function: ease-in-out;
+      }
+
+      &.collapsed {
+        overflow: hidden;  // Needed to prevent unnecessary sidenav scrollbar.
+        visibility: hidden;
+        padding-left: 0;
+        opacity: 0;
+        max-height: 1px; // Must have measurement to transition height.
+        transition: visibility 275ms, opacity 275ms, max-height 280ms;
+        transition-timing-function: ease-out;
+      }
+
+      .no-animations &.expanded,
+      .no-animations &.collapsed {
+        transition: none !important;
+      }
+    }
+
+    .level-1 {
+      @include mixins.font-size(16);
+      @include mixins.line-height(28);
+      font-weight: 400;
+      padding-left: 20px;
+      margin: 0;
+      transition: background-color 0.2s;
+    }
+
+    .level-2 {
+      @include mixins.font-size(14);
+      @include mixins.line-height(24);
+      font-weight: 400;
+      margin: 0;
+      padding-left: 36px;
+    }
+
+    .level-3 {
+      @include mixins.font-size(14);
+      @include mixins.line-height(24);
+      margin: 0;
+      padding-left: 44px;
+    }
+
+    .level-4 {
+      @include mixins.font-size(14);
+      @include mixins.line-height(24);
+      margin: 0;
+      padding-left: 52px;
+    }
+
+    .level-1, .level-2, .level-3 {
+      &.collapsed > .mat-icon {
+        @include mixins.rotate(0deg);
+      }
+
+      &.expanded > .mat-icon {
+        @include mixins.rotate(90deg);
+      }
+    }
+  }
+}

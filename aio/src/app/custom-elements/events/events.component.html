@@ -1,0 +1,41 @@
+<h2>Where we'll be presenting:</h2>
+<ng-container [ngSwitch]="!!upcomingEvents.length">
+  <div *ngSwitchCase="false">
+    <p>We don't have any upcoming speaking engagements at the moment.</p>
+    <p>
+      Until something comes up, make sure you check our <a href="https://www.youtube.com/angular">YouTube channel</a>
+      and follow us on <a href="https://twitter.com/angular">social media</a>.
+    </p>
+    <p>
+      If you want us to be part of your event reach out on <a href="mailto:devrel@angular.io">devrel@angular.io</a>!
+    </p>
+  </div>
+  <ng-container *ngSwitchDefault>
+    <ng-container *ngTemplateOutlet="eventsTable; context: {$implicit: upcomingEvents}"></ng-container>
+  </ng-container>
+</ng-container>
+
+<br />
+
+<h2>Where we already presented:</h2>
+<ng-container *ngTemplateOutlet="eventsTable; context: {$implicit: pastEvents}"></ng-container>
+
+<ng-template #eventsTable let-events>
+  <table class="is-full-width">
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Start date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let event of events">
+        <th [ngSwitch]="!!event.linkUrl">
+          <span *ngSwitchCase="false">{{ event.name }}</span>
+          <a *ngSwitchDefault href="{{ event.linkUrl }}">{{ event.name }}</a>
+        </th>
+        <td>{{ event.date.start }}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>

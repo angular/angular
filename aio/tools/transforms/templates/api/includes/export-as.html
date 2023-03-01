@@ -1,0 +1,21 @@
+{%- if doc.exportAs %}
+<section class="export-as">
+  <h2>Template variable references</h2>
+  <table class="is-full-width list-table export-as-table">
+    <thead>
+      <tr>
+        <th>Identifier</th>
+        <th>Usage</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for exportAs in doc.exportAsArray %}
+      <tr class="export-as">
+        <td><code>{$ exportAs $}</code></td>
+        <td><code>#myTemplateVar="{$ exportAs $}"</code></td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</section>
+{%- endif -%}

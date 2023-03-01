@@ -1,0 +1,42 @@
+# This workflow builds the AIO previews for pull requests when a certain label is applied.
+# The actual deployment happens as part of a dedicated second workflow to avoid security
+# issues where the building would otherwise occur in an authorized context where secrets
+# could be leaked. More details can be found here:
+
+# https://securitylab.github.com/research/github-actions-preventing-pwn-requests/.
+
+name: Build AIO app for preview deployment
+
+on:
+  pull_request:
+    types: [synchronize, labeled]
+
+permissions: read-all
+
+jobs:
+  aio-build:
+    runs-on: ubuntu-latest
+    # We only want to build and deploy the AIO app if the `aio: preview` label has been
+    # added, or if the label is already applied and new changes have been made in the PR.
+    if: |
+      (github.event.action == 'labeled' && github.event.label.name == 'aio: preview') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'aio: preview'))
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: ./.github/actions/yarn-install
+
+      - uses: angular/dev-infra/github-actions/setup-bazel-remote-exec@c12a0ca820b97029279dbc3c71c25da5de5bab26
+        with:
+          bazelrc: ./.bazelrc.user
+
+      # Build the web package. Note: We run Bazel from a low-resource Github action container,
+      # so we manually need to instruct Bazel to run more actions concurrently as by default
+      # the number of concurrent actions is determined based on the host resources.
+      - run: bazel build //aio:build --jobs=32 --announce_rc --verbose_failures
+
+      - uses: angular/dev-infra/github-actions/deploy-previews/pack-and-upload-artifact@c12a0ca820b97029279dbc3c71c25da5de5bab26
+        with:
+          workflow-artifact-name: 'aio'
+          pull-number: '${{github.event.pull_request.number}}'
+          artifact-build-revision: '${{github.event.pull_request.head.sha}}'
+          deploy-directory: './dist/bin/aio/build'

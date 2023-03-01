@@ -1,0 +1,9 @@
+extends: existence
+message: "'%s' is a malapropism."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: true
+level: error
+tokens:
+  - the infinitesimal universe
+  - a serial experience
+  - attack my voracity

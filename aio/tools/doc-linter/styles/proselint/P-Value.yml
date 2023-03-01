@@ -1,0 +1,7 @@
+extends: existence
+message: "You should use more decimal places, unless '%s' is really true."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: true
+level: suggestion
+tokens:
+  - 'p = 0\.0{2,4}'

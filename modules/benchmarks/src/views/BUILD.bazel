@@ -1,0 +1,45 @@
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ng_module(
+    name = "application_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+app_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":application_lib",
+    ],
+)
+
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
+    name = "app_bundle",
+    srcs = [":bundle.debug.min.js"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $< $@",
+)
+
+http_server(
+    name = "server",
+    srcs = [
+        "index.html",
+    ],
+    deps = [
+        ":bundle.debug.min.js",
+        ":bundle.min.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)

@@ -1,0 +1,44 @@
+# This workflow runs whenever the AIO build workflow has completed. Deployment happens
+# as part of a dedicated second workflow to avoid security issues where the building would
+# otherwise occur in an authorized context where secrets could be leaked.
+#
+# More details can be found here:
+# https://securitylab.github.com/research/github-actions-preventing-pwn-requests/.
+
+name: Deploying AIO preview to Firebase
+
+on:
+  workflow_run:
+    workflows: ['Build AIO app for preview deployment']
+    types: [completed]
+
+permissions:
+  # Needed in order to be able to comment on the pull request.
+  pull-requests: write
+
+env:
+  PREVIEW_PROJECT: ng-dev-previews
+  PREVIEW_SITE: ng-dev-previews-fw
+
+jobs:
+  aio-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # tag=v3
+
+      - name: Configure Firebase deploy target
+        working-directory: aio/
+        run: |
+          # We can use `npx` as the Firebase deploy actions uses it too.
+          npx -y firebase-tools@latest target:clear --project ${{env.PREVIEW_PROJECT}} hosting aio
+          npx -y firebase-tools@latest target:apply --project ${{env.PREVIEW_PROJECT}} hosting aio ${{env.PREVIEW_SITE}}
+
+      - uses: angular/dev-infra/github-actions/deploy-previews/upload-artifacts-to-firebase@c12a0ca820b97029279dbc3c71c25da5de5bab26
+        with:
+          github-token: '${{secrets.GITHUB_TOKEN}}'
+          workflow-artifact-name: 'aio'
+          firebase-config-dir: './aio/'
+          firebase-public-dir: './aio/dist'
+          firebase-project-id: '${{env.PREVIEW_PROJECT}}'
+          firebase-service-key: '${{secrets.FIREBASE_PREVIEW_SERVICE_TOKEN}}'

@@ -1,0 +1,68 @@
+load("//tools:defaults.bzl", "esbuild", "jasmine_node_test", "ts_config", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig-build.json",
+    deps = ["//packages:tsconfig-build.json"],
+)
+
+ts_library(
+    name = "ng-add",
+    srcs = [
+        "index.ts",
+        "schema.d.ts",
+    ],
+    tsconfig = ":tsconfig",
+    deps = [
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+    ],
+)
+
+esbuild(
+    name = "ng_add_bundle",
+    entry_point = ":index.ts",
+    external = [
+        "@angular-devkit/*",
+        "@schematics/*",
+    ],
+    format = "cjs",
+    platform = "node",
+    deps = [":ng-add"],
+)
+
+filegroup(
+    name = "assets",
+    srcs = [
+        "schema.json",
+        ":ng_add_bundle",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = [
+        "index_spec.ts",
+    ],
+    data = [
+        "//packages/localize/schematics:package_assets",
+    ],
+    deps = [
+        "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    deps = [
+        ":assets",
+        ":ng-add",
+        ":test_lib",
+    ],
+)

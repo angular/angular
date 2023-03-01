@@ -1,0 +1,20 @@
+<div class="tax-return">
+  <div class="msg" [class.canceled]="message==='Canceled'">{{message}}</div>
+  <fieldset>
+    <span  id=name>{{taxReturn.name}}</span>
+    <span id=tid>TID: {{taxReturn.tid}}</span>
+  </fieldset>
+  <fieldset>
+    <label>
+      Income: <input [(ngModel)]="taxReturn.income" class="num">
+    </label>
+  </fieldset>
+  <fieldset>
+    <span>Tax: {{taxReturn.tax}}</span>
+  </fieldset>
+  <fieldset>
+    <button type="button" (click)="onSaved()">Save</button>
+    <button type="button" (click)="onCanceled()">Cancel</button>
+    <button type="button" (click)="onClose()">Close</button>
+  </fieldset>
+</div>

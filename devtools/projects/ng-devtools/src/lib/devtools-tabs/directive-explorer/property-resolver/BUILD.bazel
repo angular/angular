@@ -1,0 +1,55 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "property-resolver",
+    srcs = [
+        "arrayify-props.ts",
+        "directive-property-resolver.ts",
+        "element-property-resolver.ts",
+        "flatten.ts",
+        "property-data-source.ts",
+        "property-expanded-directive-properties.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "@npm//@angular/cdk",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
+
+ts_test_library(
+    name = "property_resolver_test",
+    srcs = [
+        "arrayify-props.spec.ts",
+        "directive-property-resolver.spec.ts",
+        "element-property-resolver.spec.ts",
+        "property-data-source.spec.ts",
+    ],
+    deps = [
+        ":property-resolver",
+        "//devtools/projects/protocol",
+        "@npm//@angular/cdk",
+        "@npm//@angular/material",
+    ],
+)
+
+# todo(aleksanderbodurri): fix this test suite
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":property_resolver_test",
+        "//packages/common/http",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "@npm//@angular/material",
+    ],
+)

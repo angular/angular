@@ -1,0 +1,60 @@
+{% import "lib/githubLinks.html" as github -%}
+{% import "lib/memberHelpers.html" as memberHelper -%}
+{% import "lib/paramList.html" as params -%}
+{% extends 'export-base.template.html' %}
+
+{% block overview %}{% include "includes/decorator-overview.html" %}{% endblock %}
+{% block details %}
+{% include "includes/description.html" %}
+
+<section class="decorator-options">
+  <h2>Options</h2>
+  {% for option in doc.members %}
+  <a id="{$ option.anchor $}"></a>
+  <table class="is-full-width option-table">
+    <thead>
+      <tr>
+        <th>
+          <div class="with-github-links">
+            <h3>{$ option.name $}</h3>
+            {%- if option.developerPreview %}
+            <label class="api-status-label dev-preview" title="This API is in Developer Preview">
+              <a href="guide/releases#developer-preview">developer
+                preview</a>
+            </label>
+            {% endif %}
+            {$ github.githubLinks(option, versionInfo) $}
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          {% if option.shortDescription %}{$ option.shortDescription | marked $}{% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code-example language="ts" hideCopy="true"
+            class="no-box api-heading{% if option.deprecated %} deprecated-api-item{% endif %}">
+            {$ option.name $}{%- if option.isOptional  %}?{% endif -%}: {$ option.type | escape $}
+          </code-example>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {%- if option.description %}
+          {$ option.description | marked({ h3: 'h4' }) $}
+          {% endif %}
+
+          {%- if option.usageNotes %}
+          {$ option.usageNotes | marked({ h3: 'h4' }) $}
+          {% endif %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {% endfor %}
+</section>
+{% endblock %}

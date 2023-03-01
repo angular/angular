@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ts_library(
+    name = "init",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    module_name = "@angular/localize/init",
+    deps = [
+        "//packages/localize",
+        "@npm//@types/node",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+    ]) + ["PACKAGE.md"],
+)

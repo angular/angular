@@ -1,0 +1,26 @@
+<mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" *ngIf="controlsLoaded" [multi]="true">
+  <div class="mat-accordion-content" *ngFor="let index of categoryOrder" cdkDrag>
+    <mat-expansion-panel [class]="panels[index].class" *ngIf="!panels[index].hidden" [expanded]="true">
+      <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
+        <mat-panel-title>
+          {{ panels[index].title }}
+          <a
+            href="{{ panels[index].documentation }}"
+            target="_blank"
+            class="documentation"
+            matTooltip="Open docs reference"
+            (click)="$event.stopPropagation()"
+          >
+            <mat-icon class="docs-link">open_in_new</mat-icon>
+          </a>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-property-view-tree
+        [dataSource]="panels[index].controls.dataSource"
+        [treeControl]="panels[index].controls.treeControl"
+        (updateValue)="updateValue($event)"
+        (inspect)="handleInspect($event)"
+      ></ng-property-view-tree>
+    </mat-expansion-panel>
+  </div>
+</mat-accordion>

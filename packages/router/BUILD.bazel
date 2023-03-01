@@ -1,0 +1,74 @@
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "router",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    package_name = "@angular/router",
+    srcs = [
+        "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
+        "//integration:__subpackages__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+        "//packages/compiler-cli/test/transformers:__pkg__",
+    ],
+    deps = [
+        ":router",
+        "//packages/router/testing",
+        "//packages/router/upgrade",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "router_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "angular/goldens/public-api/router",
+    npm_package = "angular/packages/router/npm_package",
+)
+
+api_golden_test(
+    name = "router_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/router",
+    ],
+    entry_point = "angular/packages/router/src/errors.d.ts",
+    golden = "angular/goldens/public-api/router/errors.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)

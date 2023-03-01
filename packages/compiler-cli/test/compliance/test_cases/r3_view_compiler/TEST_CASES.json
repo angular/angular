@@ -1,0 +1,22 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should be able to generate the TODO example",
+      "inputFiles": [
+        "todo_example.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "todo_example_template.js",
+              "generated": "todo_example.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

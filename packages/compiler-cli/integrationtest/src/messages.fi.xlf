@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" datatype="plaintext" original="ng2.template">
+        <body>
+            <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
+                <source>translate me</source>
+                <target>käännä teksti</target>
+                <note priority="1" from="description">desc</note>
+                <note priority="1" from="meaning">meaning</note>
+            </trans-unit>
+            <trans-unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2" datatype="html">
+                <source>Welcome</source>
+                <target>tervetuloa</target>
+            </trans-unit>
+            <trans-unit id="63a85808f03b8181e36a952e0fa38202c2304862" datatype="html">
+                <source>other-3rdP-component
+multi-lines</source>
+                <target>other-3rdP-component
+multi-lines</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

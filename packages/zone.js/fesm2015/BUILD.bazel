@@ -1,0 +1,8 @@
+load("//packages/zone.js:tools.bzl", "generate_dist")
+load("//packages/zone.js:bundles.bzl", "BUNDLES_ENTRY_POINTS")
+
+generate_dist(
+    bundles = BUNDLES_ENTRY_POINTS.items(),
+    output_format = "es2015",
+    umd = "",
+)

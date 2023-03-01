@@ -1,0 +1,392 @@
+load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "npm_package_bin")
+load("//tools:defaults.bzl", "nodejs_binary")
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load(":local_packages_util.bzl", "link_local_packages", "substitute_local_package_deps")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
+load("//aio/scripts:local_server_test.bzl", "local_server_test")
+load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load(":aio_targets.bzl", "aio_test")
+load("@bazel_skylib//lib:collections.bzl", "collections")
+
+exports_files([
+    "firebase.json",
+    "ngsw-config.json",
+    "ngsw-config.template.json",
+    "tsconfig.json",
+])
+
+# If set will use first party angular deps for aio targets instead of their npm equivalent
+bool_flag(
+    name = "flag_aio_local_deps",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "aio_local_deps",
+    flag_values = {
+        ":flag_aio_local_deps": "true",
+    },
+)
+
+# Config setting controlling the AIO architect configuration to build with
+string_flag(
+    name = "flag_aio_build_config",
+    build_setting_default = "stable",
+    values = [
+        "stable",
+        "rc",
+        "next",
+        "archive",
+    ],
+)
+
+config_setting(
+    name = "aio_build_config_stable",
+    flag_values = {
+        ":flag_aio_build_config": "stable",
+    },
+)
+
+config_setting(
+    name = "aio_build_config_rc",
+    flag_values = {
+        ":flag_aio_build_config": "rc",
+    },
+)
+
+config_setting(
+    name = "aio_build_config_next",
+    flag_values = {
+        ":flag_aio_build_config": "next",
+    },
+)
+
+config_setting(
+    name = "aio_build_config_archive",
+    flag_values = {
+        ":flag_aio_build_config": "archive",
+    },
+)
+
+# Run dgeni generation
+npm_package_bin(
+    name = "dgeni",
+    # angular.io-package is a js_library target, which copies sources to $(BINDIR)
+    args = ["./$(BINDIR)/aio/tools/transforms/angular.io-package"],
+    data = [
+        "//aio/tools/transforms/angular.io-package",
+        # Dgeni typescript package crawls type definitions for Angular dependencies
+        "@npm//rxjs",
+        "@npm//@types/node",
+    ],
+    env = {
+        "BAZEL_DGENI_OUTPUT_PATH": "$(@D)",
+        "GIT_BIN": "$(GIT_BIN_PATH)",
+    },
+    exec_properties = ENABLE_NETWORK,
+    output_dir = True,
+    stamp = "@rules_nodejs//nodejs/stamp:use_stamp_flag",
+    # Makes remote git calls to get previous versions
+    tags = [
+        "requires-network",
+    ],
+    tool = "@aio_npm//dgeni/bin:dgeni",
+    toolchains = [
+        "@npm//@angular/build-tooling/bazel/git-toolchain:current_git_toolchain",
+    ],
+    visibility = ["//aio/tests/deployment:__subpackages__"],
+)
+
+# Copy stackblitz live examples to expected assets location
+copy_to_directory(
+    name = "stackblitz",
+    srcs = ["//aio/content/examples:all-stackblitz"],
+    replace_prefixes = {
+        "examples": "generated/live-examples",
+    },
+    root_paths = [
+        "aio/content",
+    ],
+)
+
+# Copy example zips to expected assets location
+copy_to_directory(
+    name = "example-zips",
+    srcs = ["//aio/content/examples:all-example-zips"],
+    replace_prefixes = {
+        "examples": "generated/zips",
+    },
+    root_paths = [
+        "aio/content",
+    ],
+)
+
+# All source and configuration files required to build the docs app
+APPLICATION_FILES = [
+    "angular.json",
+    "tsconfig.app.json",
+    "tsconfig.json",
+    "tsconfig.worker.json",
+    "security-exemptions.json",
+    "//aio/src/assets",
+    "//aio/src/assets/js",
+] + glob(
+    ["src/**/*"],
+    exclude = [
+        "src/**/*.spec.ts",
+        # Temporarily exclude generated sources produced by the non-bazel
+        # build until the whole project is built by bazel and this directory
+        # isn't needed.
+        "src/generated/**/*",
+    ],
+)
+
+# Dependencies required to build the docs app.
+APPLICATION_DEPS = [
+    ":dgeni",
+    ":stackblitz",
+    ":example-zips",
+    "//aio/src/generated:ngsw-config",
+    "@aio_npm//@angular-devkit/build-angular",
+    "@aio_npm//@angular-eslint/builder",
+    "@aio_npm//@angular/animations",
+    "@aio_npm//@angular/cdk",
+    "@aio_npm//@angular/cli",
+    "@aio_npm//@angular/common",
+    "@aio_npm//@angular/compiler",
+    "@aio_npm//@angular/compiler-cli",
+    "@aio_npm//@angular/core",
+    "@aio_npm//@angular/elements",
+    "@aio_npm//@angular/forms",
+    "@aio_npm//@angular/material",
+    "@aio_npm//@angular/platform-browser",
+    "@aio_npm//@angular/platform-browser-dynamic",
+    "@aio_npm//@angular/router",
+    "@aio_npm//@angular/service-worker",
+    "@aio_npm//@types/lunr",
+    "@aio_npm//@types/trusted-types",
+    "@aio_npm//lunr",
+    "@aio_npm//rxjs",
+    "@aio_npm//safevalues",
+    "@aio_npm//tslib",
+    "@aio_npm//zone.js",
+]
+
+# All sources, specs, and config files required to test the docs app
+TEST_FILES = APPLICATION_FILES + [
+    "karma.conf.js",
+    "tsconfig.spec.json",
+] + glob(
+    ["src/**/*.spec.ts"],
+)
+
+# Dependencies required to test the docs app
+TEST_DEPS = APPLICATION_DEPS + [
+    "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
+    "@aio_npm//@types/jasmine",
+    "@aio_npm//@types/node",
+    "@aio_npm//assert",
+    "@aio_npm//jasmine",
+    "@aio_npm//jasmine-core",
+    "@aio_npm//karma-chrome-launcher",
+    "@aio_npm//karma-coverage",
+    "@aio_npm//karma-jasmine",
+    "@aio_npm//karma-jasmine-html-reporter",
+    "//aio/tools:windows-chromium-path",
+]
+
+# All sources, specs, and config files required to serve the app
+# and run e2e tests against it
+E2E_FILES = APPLICATION_FILES + glob(["tests/e2e/**"])
+
+# Dependencies required to run the e2e tests
+E2E_DEPS = APPLICATION_DEPS + [
+    "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
+    "@aio_npm//@types/jasmine",
+    "@aio_npm//@types/node",
+    "@aio_npm//jasmine-spec-reporter",
+    "@aio_npm//protractor",
+    "@aio_npm//ts-node",
+    "//aio/tools:windows-chromium-path",
+]
+
+# Poll period for architect rules that watch for changes
+ARCHITECT_POLL_MS = 1000
+
+# Stamp npm_link targets for all dependencies that correspond to a
+# first-party equivalent pacakge in angular.
+link_local_packages(all_aio_deps = collections.uniq(APPLICATION_DEPS + TEST_DEPS + E2E_DEPS))
+
+copy_to_bin(
+    name = "application_files_bin",
+    srcs = APPLICATION_FILES,
+)
+
+architect(
+    name = "build-app",
+    args = select({
+        ":aio_build_config_stable": ["site:build:stable"],
+        ":aio_build_config_next": ["site:build:next"],
+        ":aio_build_config_rc": ["site:build:rc"],
+        ":aio_build_config_archive": ["site:build:archive"],
+    }) + [
+        "--output-path=build-app",
+    ],
+    chdir = "$(RULEDIR)",
+    data = [":application_files_bin"] + select({
+        ":aio_local_deps": substitute_local_package_deps(APPLICATION_DEPS),
+        "//conditions:default": APPLICATION_DEPS,
+    }),
+    output_dir = True,
+    # When building with local packages (--config=aio_local_deps), RBE complains about
+    # the input tree being too large (> 70,000 files).
+    tags = ["no-remote-exec"],
+)
+
+npm_package_bin(
+    name = "404-page",
+    outs = ["404.html"],
+    args = [
+        "$(execpath src/404-body.html)",
+        "$(execpath :build-app)",
+        "$@",
+    ],
+    data = [
+        "src/404-body.html",
+        ":build-app",
+    ],
+    tool = "//aio/scripts:build-404-page",
+)
+
+# Prepare the final build artifact which substitutes a generated 404 page
+# into the architect output.
+copy_to_directory(
+    name = "build",
+    srcs = [
+        ":404-page",
+        ":build-app",
+    ],
+    replace_prefixes = {
+        "build-app": "",
+    },
+    visibility = ["//aio/scripts/deploy-to-firebase:__pkg__"],
+)
+
+TEST_DATA = TEST_FILES + select({
+    ":aio_local_deps": substitute_local_package_deps(TEST_DEPS),
+    "//conditions:default": TEST_DEPS,
+})
+
+aio_test(
+    name = "test",
+    args = [
+        "site:test",
+        "--no-watch",
+    ],
+    data = TEST_DATA,
+)
+
+aio_test(
+    name = "test-and-watch",
+    args = [
+        "site:test",
+        "--watch",
+        "--poll=%d" % ARCHITECT_POLL_MS,
+    ],
+    data = TEST_DATA,
+    tags = [
+        "ibazel_notify_changes",
+        "manual",
+    ],
+)
+
+architect_test(
+    name = "e2e",
+    size = "large",
+    args = [
+        "site:e2e",
+        "--no-webdriver-update",
+        "--port=0",
+    ],
+    chdir = package_name(),
+    data = E2E_FILES + select({
+        ":aio_local_deps": substitute_local_package_deps(E2E_DEPS),
+        "//conditions:default": E2E_DEPS,
+    }),
+    env = {
+        "CHROME_BIN": "../$(CHROMIUM)",
+        "CHROMEDRIVER_BIN": "../$(CHROMEDRIVER)",
+    },
+    # TODO: investigate why those tests became more flaky
+    #       (presumably after AIO migration to Bazel)
+    flaky = True,
+    toolchains = [
+        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+    ],
+)
+
+# Build and serve the app. Run with ibazel to watch for changes and re-serve.
+architect(
+    name = "serve",
+    args = [
+        "site:serve",
+        "--open",
+        "--poll=%d" % ARCHITECT_POLL_MS,
+        "--live-reload",
+        "--watch",
+    ],
+    chdir = package_name(),
+    data = APPLICATION_FILES + select({
+        ":aio_local_deps": substitute_local_package_deps(APPLICATION_DEPS),
+        "//conditions:default": APPLICATION_DEPS,
+    }),
+    tags = ["ibazel_notify_changes"],
+)
+
+# Build and serve the app, watch for changes, and run a fast but low-fidelity
+# rebuild when docs change. Watching and serving is a part of the node script,
+# so there is no need to run with ibazel, which would be slow as it would redo
+# the full dgeni build on each change.
+
+nodejs_binary(
+    name = "docs-watch",
+    chdir = package_name(),
+    data = APPLICATION_FILES + [
+        "//aio/scripts:fast-serve-and-watch",
+    ] + select({
+        ":aio_local_deps": substitute_local_package_deps(APPLICATION_DEPS),
+        "//conditions:default": APPLICATION_DEPS,
+    }),
+    enable_linker = True,
+    entry_point = "//aio/scripts:fast-serve-and-watch.js",
+    env = {
+        # Have the authors package output its low-fi dgeni build
+        # to a different directory in the runfiles tree because bazel
+        # write-protects original dgeni runfiles. Then in angular.json
+        # we list this folder last under assets so that it will
+        # take precedence over the original dgeni assets, effectively
+        # overwriting select sources and then serving them.
+        "BAZEL_DGENI_OUTPUT_PATH": "dgeni-fast",
+    },
+)
+
+local_server_test(
+    name = "test-a11y-score-localhost",
+    args = ["LOCALHOST_URL"],
+    entry_point = "//aio/scripts:test-aio-a11y",
+    serve_target = ":build",
+)
+
+local_server_test(
+    name = "test-pwa-score-localhost",
+    args = [
+        "LOCALHOST_URL",
+        "all:0,pwa:100",
+    ],
+    data = [
+        "//aio/scripts:audit-web-app",
+    ],
+    entry_point = "//aio/scripts:audit-web-app-script",
+    serve_target = ":build",
+)

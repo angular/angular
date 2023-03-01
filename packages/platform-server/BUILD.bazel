@@ -1,0 +1,99 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "esbuild", "ng_module", "ng_package", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "platform-server",
+    package_name = "@angular/platform-server",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = ["src/bundled-domino.d.ts"],
+    ),
+    deps = [
+        ":bundled_domino_lib",
+        "//packages/animations/browser",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//@types/node",
+        "@npm//domino",
+        "@npm//rxjs",
+        "@npm//xhr2",
+    ],
+)
+
+esbuild(
+    name = "bundled_domino",
+    entry_point = "@npm//:node_modules/domino/lib/index.js",
+    format = "esm",
+    output = "src/bundled-domino.mjs",
+    deps = ["@npm//domino"],
+)
+
+js_library(
+    name = "bundled_domino_lib",
+    srcs = [
+        "src/bundled-domino.d.ts",
+        ":bundled_domino",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "platform-server",
+    tsconfig = "//packages:tsec_config",
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+    ],
+    externals = [
+        "xhr2",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
+        "//integration:__subpackages__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+    ],
+    deps = [
+        ":platform-server",
+        "//packages/platform-server/init",
+        "//packages/platform-server/testing",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "platform-server_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "angular/goldens/public-api/platform-server",
+    npm_package = "angular/packages/platform-server/npm_package",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)

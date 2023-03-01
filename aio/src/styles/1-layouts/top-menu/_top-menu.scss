@@ -1,0 +1,268 @@
+@use '../../mixins';
+@use '../../constants';
+
+// VARIABLES
+$showTopMenuWidth: 1150px;
+$hideTopMenuWidth: $showTopMenuWidth - 1;
+$hamburgerShownMargin: 0 8px 0 0;
+$hamburgerHiddenMargin: 0 16px 0 -64px;
+
+// DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
+mat-toolbar.app-toolbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+
+  // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
+  .page-home & {
+    @media (min-width: 481px) {
+      &:not(.transitioning) {
+        background-color: transparent;
+        box-shadow: none;
+        position: absolute;
+        transition: background-color 0.2s linear;
+      }
+    }
+  }
+
+  // DOCS PAGES OVERRIDE: HAMBURGER
+  @include mixins.docs-pages($nestParentSelector: true) {
+    @media (min-width: $showTopMenuWidth) {
+      .hamburger {
+        // Hamburger shown on non-marketing pages even on large screens.
+        margin: $hamburgerShownMargin;
+        visibility: visible;
+      }
+    }
+  }
+
+  mat-toolbar-row {
+    padding: 0 16px 0 0;
+  }
+
+  // HAMBURGER BUTTON
+  .hamburger {
+    height: 100%;
+    margin: $hamburgerShownMargin;
+    padding: 0;
+
+    @media (min-width: $showTopMenuWidth) {
+      // Hamburger hidden by default on large screens.
+      // (Will be shown per doc.)
+      margin: $hamburgerHiddenMargin;
+      visibility: hidden;
+    }
+
+    @media (max-width: 480px) {
+      min-width: 15%;
+    }
+
+    &:not(.no-animations) {
+      transition-duration: 0.4s;
+      transition-property: color, margin;
+      transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    & .mat-icon {
+      position: inherit;
+    }
+  }
+
+  // HOME NAV-LINK
+  .nav-link.home {
+    cursor: pointer;
+    margin: 0 16px 0 0;
+    padding: 8px 0;
+
+    &:focus {
+      // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
+      outline-offset: 4px;
+    }
+
+    @media screen and (max-width: $hideTopMenuWidth) {
+      padding: 4px 0;
+    }
+
+    @media screen and (max-width: 480px) {
+      margin-right: 8px;
+    }
+
+    img {
+      position: relative;
+      margin-top: -21px;
+      top: 12px;
+      height: 40px;
+
+      @media (max-width: $hideTopMenuWidth) {
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+
+  // TOP MENU
+  aio-top-menu {
+    ul {
+      display: flex;
+      padding: 0px;
+      margin: 0px;
+
+      li {
+        display: flex;
+        padding-bottom: 2px;
+        cursor: pointer;
+
+        &:focus {
+          outline: none;
+        }
+
+        a.nav-link {
+          margin: 0 4px;
+          padding: 0px;
+          cursor: pointer;
+          display: flex;
+
+          .nav-link-inner {
+            border-radius: 4px;
+            font-size: 1.3rem;
+            font-size: clamp(10px, 1.6rem, 20px);
+            padding: 8px 16px;
+            padding: 8px clamp(5px, 0.7vw, 16px);
+          }
+
+          &[href^="http:"],
+          &[href^="https:"] {
+            .nav-link-inner {
+              @include mixins.external-link-with-icon();
+            }
+          }
+
+          &:focus {
+            outline: none;
+
+            .nav-link-inner {
+              border-radius: 1px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // SEARCH BOX
+  aio-search-box.search-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    min-width: 150px;
+    height: 100%;
+    margin-right: 16px;
+    position: relative;
+
+    input {
+      border: none;
+      border-radius: 100px;
+      padding: 5px 3rem 5px 16px;
+      margin-left: 8px;
+      width: 180px;
+      max-width: 240px;
+      line-height: normal;
+      height: 50%;
+      -webkit-appearance: none;
+
+      &:focus {
+        outline: none;
+      }
+
+      @include mixins.placeholder {
+        @include mixins.font-size(14);
+      }
+
+      @media (min-width: 1000px) {
+        transition: width 0.4s ease-in-out;
+
+        &:focus {
+          width: 80%;
+        }
+      }
+
+      @media (max-width: 515px) {
+        width: 150px;
+      }
+
+      &::-webkit-search-cancel-button {
+        display: none;
+      }
+
+      &::-ms-clear {
+        display: none;
+      }
+
+      &:not(:focus):not(:hover) + mat-icon:not(:hover):not(:focus) {
+        display: none;
+      }
+    }
+
+    .search-box-shortcut {
+      display: none;
+      position: absolute;
+      right: 16px;
+      font-size: 1.2rem;
+      line-height: 2.2rem;
+      padding: 0 0.8rem;
+      pointer-events: none;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 4px;
+      border: 1px solid;
+    }
+
+    input:not(:focus):placeholder-shown + .search-box-shortcut {
+      display: block;
+    }
+
+    mat-icon {
+      position: absolute;
+      color: constants.$blue;
+      right: 0.7rem;
+      font-size: 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  aio-theme-toggle {
+    @media screen and (min-width: 350px) {
+      padding-right: 2px;
+      margin-right: 2px;
+    }
+  }
+
+  // EXTERNAL LINK ICONS
+  .toolbar-external-icons-container {
+    a {
+      @media screen and (max-width: 480px) {
+        margin: 0 -8px 0 0;
+      }
+
+      @media screen and (max-width: 420px) {
+        &:not([title="GitHub"]) {
+          display: none;
+        }
+      }
+
+      @media screen and (max-width: 350px) {
+        &[title="GitHub"] {
+          display: none;
+        }
+      }
+    }
+  }
+}

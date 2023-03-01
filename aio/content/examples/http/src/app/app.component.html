@@ -1,0 +1,46 @@
+<h1>HttpClient Example</h1>
+<div class="checkboxes">
+  <label>
+    <input type="checkbox" [checked]="showHeroes" (click)="toggleHeroes()">
+    Heroes
+  </label>
+
+  <label>
+    <input type="checkbox" [checked]="showConfig" (click)="toggleConfig()">
+    Config
+  </label>
+
+  <label>
+    <input type="checkbox" [checked]="showDownloader" (click)="toggleDownloader()">
+    Downloader
+  </label>
+
+  <label>
+    <input type="checkbox" [checked]="showUploader" (click)="toggleUploader()">
+    Uploader
+  </label>
+
+  <label>
+    <input type="checkbox" id="search" [checked]="showSearch" (click)="toggleSearch()">
+    Search
+  </label>
+</div>
+
+<section>
+  <app-messages></app-messages>
+</section>
+<section *ngIf="showHeroes">
+  <app-heroes></app-heroes>
+</section>
+<section *ngIf="showConfig">
+  <app-config></app-config>
+</section>
+<section *ngIf="showDownloader">
+  <app-downloader></app-downloader>
+</section>
+<section *ngIf="showUploader">
+  <app-uploader></app-uploader>
+</section>
+<section *ngIf="showSearch">
+  <app-package-search></app-package-search>
+</section>

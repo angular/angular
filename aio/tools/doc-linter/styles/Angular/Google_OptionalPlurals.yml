@@ -1,0 +1,13 @@
+# adapted from Google style library
+extends: existence
+message: "Don't use an 's' in parentheses such as in '%s'. If it can be more than one, use the plural form without parentheses."
+link: 'https://developers.google.com/style/plurals-parentheses'
+level: error
+nonword: true
+action:
+  name: edit
+  params:
+    - remove
+    - '(s)'
+tokens:
+  - '\b\w+\(s\)'

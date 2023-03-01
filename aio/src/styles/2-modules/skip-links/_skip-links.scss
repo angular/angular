@@ -1,0 +1,28 @@
+@use 'sass:map';
+@use '@angular/cdk' as cdk;
+@use '@angular/material' as mat;
+@use '../../constants' as c;
+
+.skip-to-content-link {
+  @include mat.elevation(6);
+  background: map.get(mat.$grey-palette, 50);
+  border: 1px dashed;
+  border-radius: 8px;
+  color: c.$blue;
+  font-weight: 500;
+  margin: 5px;
+  outline: none;
+  padding: 1rem 1.5rem;
+  position: fixed;
+  top: -100%;
+  z-index: cdk.$overlay-container-z-index + 1;
+
+  &:active,
+  &:focus {
+    top: auto;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

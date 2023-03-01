@@ -1,0 +1,110 @@
+:host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hidden {
+  display: none;
+}
+
+.tab-content {
+  height: calc(100% - 31px);
+}
+
+#nav-buttons {
+  display: flex;
+}
+
+.inspector-active {
+  color: #1a73e8 !important;
+}
+
+#app-angular-version {
+  align-self: center;
+  margin-left: auto;
+  margin-right: 8px;
+  font-size: 0.8em;
+  font-weight: bold;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+#version-number {
+  color: #1b1aa5;
+  cursor: text;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+button.mat-icon-button {
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  margin-right: 0px;
+}
+
+mat-icon {
+  font-size: 16px;
+
+  .mat-menu-item & {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+  }
+}
+
+.mat-tab-link {
+  min-width: unset;
+  line-height: 30px;
+  height: 30px;
+  font-size: 13px;
+  padding: 0px 10px;
+  opacity: 1;
+  font-weight: 400;
+}
+
+.mat-menu-item {
+  font-size: 0.7em;
+  font-weight: 500;
+  height: 36px;
+  line-height: 36px;
+  overflow: visible; // Avoids clipping of the button toggle ripple.
+  color: #777;
+
+  ::ng-deep .dark-theme & {
+    color: white;
+  }
+
+  mat-slide-toggle {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+:host-context(.dark-theme) {
+  #version-number {
+    color: #5caace;
+  }
+
+  .inspector-active {
+    color: #4688f1 !important;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  #app-angular-version {
+    max-width: 135px;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  #app-angular-version {
+    display: none;
+  }
+}

@@ -1,0 +1,63 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "directive_explorer_component_styles",
+    src = "directive-explorer.component.scss",
+)
+
+ng_module(
+    name = "directive-explorer",
+    srcs = [
+        "directive-explorer.component.ts",
+        "directive-explorer.module.ts",
+    ],
+    angular_assets = [
+        "directive-explorer.component.html",
+        ":directive_explorer_component_styles",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
+        "//devtools/projects/protocol",
+        "//packages/common",
+        "//packages/core",
+        "@npm//@angular/cdk",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
+
+ts_test_library(
+    name = "directive_explorer_test",
+    srcs = ["directive-explorer.spec.ts"],
+    deps = [
+        ":directive-explorer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/protocol",
+    ],
+)
+
+# todo(aleksanderbodurri): fix this test suite
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":directive_explorer_test",
+        "//packages/common/http",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+    ],
+)

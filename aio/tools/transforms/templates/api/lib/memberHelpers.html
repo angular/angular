@@ -1,0 +1,290 @@
+{% import "lib/githubLinks.html" as github -%}
+{% import "lib/paramList.html" as params -%}
+
+{%- macro renderHeritage(exportDoc) -%}
+  {%- if exportDoc.extendsClauses.length %} extends {% for clause in exportDoc.extendsClauses -%}
+  {$ clause.text | escape $}{% if not loop.last %}, {% endif -%}
+  {% endfor %}{% endif %}
+  {%- if exportDoc.implementsClauses.length %} implements {% for clause in exportDoc.implementsClauses -%}
+  {$ clause.text | escape $}{% if not loop.last %}, {% endif -%}
+  {% endfor %}{% endif %}
+{%- endmacro -%}
+
+{%- macro renderMembers(doc) -%}
+  {%- for member in doc.staticProperties %}{% if not member.internal %}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {% for member in doc.staticMethods %}{% if not member.internal %}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {% if doc.constructorDoc and not doc.constructorDoc.internal %}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ doc.constructorDoc.anchor | urlencode $}">{$ renderMemberSyntax(doc.constructorDoc, 1) $}</a>{% endif -%}
+  {% for member in doc.properties %}{% if not member.internal %}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {% for member in doc.methods %}{% if not member.internal %}
+  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+
+  {%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
+
+  // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor -%}
+{%- endmacro -%}
+
+{%- macro renderMemberSyntax(member, truncateLines) -%}
+    {%- if member.boundTo %}<span class="property-binding">@{$ member.boundTo.type $}(
+    {%- if member.boundTo.propertyName != member.boundTo.bindingName %}'{$ member.boundTo.bindingName $}'{% endif -%}
+    )</span><br>{% endif -%}
+    {%- if member.accessibility !== 'public' %}{$ member.accessibility $} {% endif -%}
+    {%- if member.isAbstract %}abstract {% endif -%}
+    {%- if member.isStatic %}static {% endif -%}
+    <span class="member-name">{$ member.name $}</span>{$ member.typeParameters | escape $}{% if not member.isGetAccessor %}{$ params.paramList(member.parameters, truncateLines) | trim $}{% endif %}
+    {%- if member.isOptional  %}?{% endif -%}
+    {$ params.returnType(member.type) | trim | truncateCode(truncateLines) $}
+{%- endmacro -%}
+
+{%- macro renderOverloadInfo(overload, cssClass, method) -%}
+<div class="overload-info">
+  {% if overload.shortDescription and (overload.shortDescription != method.shortDescription) -%}
+  <div class="short-description">
+    {$ overload.shortDescription | marked $}
+  </div>
+  {% endif -%}
+
+  <code-example language="ts" hideCopy="true" class="no-box api-heading{% if overload.deprecated %} deprecated-api-item{% endif %}">{$ renderMemberSyntax(overload) $}</code-example>
+
+  {%- if overload.deprecated !== undefined %}
+  <div class="deprecated">
+    {$ ('**Deprecated** ' + overload.deprecated) | marked $}
+  </div>{% endif %}
+
+  <h6 class="no-anchor">Parameters</h6>
+  {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter', true) $}
+
+  {%- if overload.type or overload.returns.type %}
+  <h6 class="no-anchor">Returns</h6>
+  {% marked %}`{$ (overload.type or overload.returns.type) $}`{% if overload.returns %}: {$ overload.returns.description $}{% endif %}{% endmarked %}
+  {%- endif %}
+
+  {%- if overload.throws.length %}
+  <h6 class="no-anchor">Throws</h6>
+  {%- for error in overload.throws %}
+  {% marked %}`{$ (error.typeList or 'Error') $}` {$ error.description $}{% endmarked %}
+  {%- endfor %}
+  {%- endif %}
+
+  {%- if overload.description and (overload.description != method.description) %}
+  <div class="description">
+    {$ overload.description | marked | trim $}
+  </div>
+  {%- endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro renderMethodDetail(versionInfo, method, cssClass) -%}
+<a id="{$ method.anchor $}"></a>
+<table class="is-full-width method-table {$ cssClass $}">
+  {%- if method.name !== 'constructor' %}
+  <thead><tr><th>
+    <div class="with-github-links">
+      <h3>
+        {%- if method.isCallMember %}<i>call signature</i>
+        {%- elseif method.isNewMember %}<i>construct signature</i>
+        {%- else %}{$ method.name $}()
+        {%- endif -%}
+      </h3>
+      {%- if method.developerPreview %}
+      <label class="api-status-label dev-preview" title="This API is in Developer Preview">
+        <a href="guide/releases#developer-preview">developer preview</a>
+      </label>
+      {% endif %}
+      {$ github.githubLinks(method, versionInfo) $}
+    </div>
+  </th></tr></thead>
+  {%- endif %}
+  <tbody>
+  {%- if method.shortDescription %}
+    <tr>
+      <td class="short-description">
+        {$ method.shortDescription | marked $}
+
+        {%- if method.containerDoc.docType === 'class' and method.name === 'constructor' and not method.containerDoc.isAbstract and method.containerDoc.extensible !== true %}
+        <p class="final-message">
+          This class is "final" and should not be extended.
+          See the <a href="{$ github.githubVersionedUrl(versionInfo) $}/docs/PUBLIC_API.md#final-classes">public API notes</a>.
+        </p>
+        {% endif -%}
+
+        {%- if method.see.length %}
+        <p>See also:</p>
+        <ul>
+          {%- for see in method.see %}
+          <li>{$ see | marked $}</li>
+          {%- endfor %}
+        </ul>
+        {% endif -%}
+      </td>
+    </tr>{% endif -%}
+  {%- if method.overloads.length == 0 %}
+    <tr>
+      <td>
+        {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
+      </td>
+    </tr>
+  {%- elseif method.overloads.length < 3 -%}
+    {%- if method.isAbstract or method.containerDoc.docType === 'interface' or method.containerDoc.isPseudoClass %}
+    <tr>
+      <td>
+        {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
+      </td>
+    </tr>
+    {%- endif %}
+    {%- for overload in method.overloads %}
+    <tr>
+      <td>
+        {$ renderOverloadInfo(overload, cssClass + '-overload', method) $}
+      </td>
+    </tr>
+    {%- endfor -%}
+  {%- else %}
+    <tr>
+      <td>
+        <details class="overloads">
+          <summary>
+            <h4 class="no-anchor">{$ method.overloads.length $} overloads...</h4>
+            <span class="actions">
+              <span class="action-expand">Show All</span>
+              <span class="action-collapse">Hide All</span>
+              <i class="material-icons expand">expand_more</i>
+            </span>
+          </summary>
+          <div class="details-content">
+            {%- if method.isAbstract %}
+            {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
+            <hr class="hr-margin fullwidth">
+            {%- endif %}
+
+            {%- for overload in method.overloads %}
+            <h5 class="no-anchor">Overload #{$ loop.index $}</h5>
+            {$ renderOverloadInfo(overload, cssClass + '-overload', method) $}
+            {%- if not loop.last %}
+            <hr class="hr-margin">{% endif %}
+            {%- endfor %}
+          </div>
+        </details>
+      </td>
+    </tr>
+  {%- endif %}
+
+  {%- if method.description %}
+    <tr>
+      <td class="description">
+        {$ method.description | marked({ h3: 'h5' }) $}
+      </td>
+    </tr>
+  {%- endif %}
+
+  {%- if method.usageNotes %}
+    <tr>
+      <td class="usage-notes">
+        <h4 id="{$ method.anchor $}-usage-notes">Usage Notes</h4>
+        {$ method.usageNotes | marked({ h3: 'h5' }) $}
+      </td>
+    </tr>
+  {%- endif %}
+  </tbody>
+</table>
+{%- endmacro -%}
+
+{%- macro renderMethodDetails(versionInfo, methods, containerClass, itemClass, headingText) -%}
+{%- set nonInternalMethods = methods | filterByPropertyValue('internal', undefined) -%}
+{%- if nonInternalMethods.length %}
+<section class="{$ containerClass $}">
+  <h2>{$ headingText $}</h2>
+
+  {%- for member in nonInternalMethods %}
+  {$ renderMethodDetail(versionInfo, member, itemClass) $}
+  {%- endfor %}
+</section>
+{%- endif %}
+{%- endmacro -%}
+
+
+{%- macro renderProperties(properties, containerClass, propertyClass, headingText, headings, headingLevel = 2) -%}
+{%- set nonInternalProperties = properties | filterByPropertyValue('internal', undefined) -%}
+{%- if nonInternalProperties.length %}
+<section class="{$ containerClass $}">
+  <h{$ headingLevel $}>{$ headingText $}</h{$ headingLevel $}>
+  <table class="is-full-width list-table property-table">
+    <thead>
+      <tr>
+        <th>{$ headings[0] or 'Property' $}</th>
+        <th>{$ headings[1] or 'Description' $}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for property in nonInternalProperties %}
+      <tr class="{$ propertyClass $}">
+        <td>
+          <a id="{$ property.anchor $}"></a>
+          <code class="{% if property.deprecated %} deprecated-api-item{% endif %}">{$ renderMemberSyntax(property) $}</code>
+        </td>
+        <td>
+          {%- if property.developerPreview %}
+          <label class="api-status-label dev-preview" title="This API is in Developer Preview">
+            <a href="guide/releases#developer-preview">developer preview</a>
+          </label>
+          {% endif %}
+
+          {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}
+          <span class='read-only-property'>Read-Only</span>{% endif %}
+
+          {%- if property.isSetAccessor and not property.isGetAccessor %}
+          <span class='write-only-property'>Write-Only</span>{% endif %}
+
+          {%- if property.constructorParamDoc %}
+          <span class='from-constructor'>Declared in Constructor</span>{% endif %}
+
+          {%- if property.shortDescription %}
+          {$ property.shortDescription | marked | trim $}{% endif %}
+          {$ (property.description or property.constructorParamDoc.description) | marked $}
+
+          {%- if property.deprecated !== undefined %}
+          {$ ('**Deprecated** ' + property.deprecated) | marked | trim $}
+          {%- endif %}
+
+          {%- if property.see.length %}
+          <p>See also:</p>
+          <ul>
+            {%- for see in property.see %}
+            <li>{$ see | marked $}</li>{% endfor %}
+          </ul>
+          {%- endif %}
+        </td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</section>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro renderDirectiveAncestors(doc, collectionName) -%}
+{%- for ancestor in doc.extendsClauses %}{% if ancestor.doc -%}
+{%- set nonInternalMembers = ancestor.doc[collectionName] | filterByPropertyValue('internal', undefined) -%}
+{%- if nonInternalMembers.length %}
+<section class="inherited-members-list">
+  <h3>Inherited from <code><a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.name $}</a></code></h3>
+  <ul>
+    {%- for member in nonInternalMembers %}
+    <li>
+      <code><a class="code-anchor" href="{$ ancestor.doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member) $}</a></code>
+    </li>
+    {%- endfor %}
+  </ul>
+</section>
+{%- endif %}
+{$ renderDirectiveAncestors(ancestor.doc, collectionName) $}
+{%- endif %}{% endfor -%}
+{%- endmacro -%}
+
+{%- macro renderDirectiveProperties(doc, heading) -%}
+{$ renderProperties(doc.properties, 'instance-properties', 'instance-property', heading) $}
+{$ renderDirectiveAncestors(doc, 'properties') $}
+{%- endmacro -%}

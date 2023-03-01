@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ng_module(
+    name = "animate",
+    srcs = glob(["**/*.ts"]),
+    assets = glob(["**/*.css"]),
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    deps = [
+        "//packages/animations",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+    ],
+)
+
+app_bundle(
+    name = "app_bundle",
+    entry_point = ":index.ts",
+    deps = [":animate"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "css/animate-app.css",
+        "index.html",
+    ],
+    deps = [
+        ":app_bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)

@@ -1,0 +1,32 @@
+{
+  // Format js and ts files on save with `clang-format.executable`
+  // If `clang-format.executable` is not being used, these two settings should be removed otherwise it will break existing formatting.
+  // You can instead run `yarn gulp format` to manually format your code.
+  "[javascript]": {
+    "editor.formatOnSave": true,
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true,
+  },
+  // Please install https://marketplace.visualstudio.com/items?itemName=xaver.clang-format to take advantage of `clang-format` in VSCode.
+  // (See https://clang.llvm.org/docs/ClangFormat.html for more info `clang-format`.)
+  "clang-format.executable": "${workspaceRoot}/node_modules/.bin/clang-format",
+  // Exclude third party modules and build artifacts from the editor watchers/searches.
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/bazel-out/**": true,
+    "**/dist/**": true,
+    "**/aio/src/generated/**": true,
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/bazel-out": true,
+    "**/dist": true,
+    "**/aio/src/generated": true,
+    ".history": true,
+  },
+  "git.ignoreLimitWarning": true,
+}

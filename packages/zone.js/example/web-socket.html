@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>WebSockets with Zones</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="../dist/zone.js"></script>
+</head>
+<body>
+
+  <p>
+    Ensure that you started <code>node test/ws-server.js</code> before loading
+    this page. Then check console output.
+  </p>
+
+  <script>
+
+  var ws = new WebSocket('ws://localhost:8001');
+
+  ws.onopen = function() {
+    Zone.current.fork({properties: {secretPayload: 'bah!'}, name: 'secrete-zone'}).run(function() {
+      ws.onmessage = function(eventListener) {
+        if (Zone.current.get('secretPayload') === 'bah!') {
+          console.log("The current zone (id: %s) has secretPayload. Zones are working!",
+                  Zone.current.name);
+        } else {
+          console.error('Secret payload not found where expected! Zones are not working! :-(', Zone.current.name);
+        }
+      };
+      console.log('Setting secret payload in the current zone (id: %s)', Zone.current.name);
+    });
+
+    ws.send('hello!');
+  };
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
+
+package(default_visibility = ["//visibility:public"])
+
+_STYLE_SRCS = [
+    "heavy.component.scss",
+    "zippy.component.scss",
+]
+
+_STYLE_LABELS = [
+    src[:-len(".component.scss")].replace("-", "_") + "_styles"
+    for src in _STYLE_SRCS
+]
+
+[
+    sass_binary(
+        name = label,
+        src = src,
+    )
+    for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
+]
+
+sass_library(
+    name = "todo_mvc",
+    srcs = [
+        "@npm//:node_modules/todomvc-app-css/index.css",
+        "@npm//:node_modules/todomvc-common/base.css",
+    ],
+)
+
+sass_binary(
+    name = "demo_app_component_styles",
+    src = "demo-app.component.scss",
+    deps = [
+        ":todo_mvc",
+    ],
+)
+
+ng_module(
+    name = "demo-app",
+    srcs = [
+        "demo-app.component.ts",
+        "demo-app.module.ts",
+        "heavy.component.ts",
+        "zippy.component.ts",
+    ],
+    angular_assets = [
+        "demo-app.component.html",
+        "heavy.component.html",
+        "zippy.component.html",
+        ":demo_app_component_styles",
+    ] + _STYLE_LABELS,
+    deps = [
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/src:zone-unaware-iframe_message_bus",
+        "//devtools/src/app/demo-app/todo",
+        "//packages/core",
+        "//packages/elements",
+        "//packages/router",
+    ],
+)

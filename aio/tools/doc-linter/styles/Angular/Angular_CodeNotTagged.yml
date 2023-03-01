@@ -1,0 +1,8 @@
+# code and CLI references that should be marked as code
+extends: existence
+message: "If '%s' is a code reference, make sure it's marked correctly."
+link: 'https://developers.google.com/style/code-in-text'
+scope: sentence
+ignorecase: false
+level: suggestion
+tokens: (ng [a-z]+)

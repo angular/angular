@@ -1,0 +1,7 @@
+<div class="detail">
+  <p>This is the ItemDetailComponent</p>
+  <img src="{{itemImageUrl}}" alt="{{item.name}}" [style.display]="displayNone">
+  <span [style.text-decoration]="lineThrough">{{ item.name }}
+  </span>
+  <button type="button" (click)="delete()">Delete</button>
+</div>

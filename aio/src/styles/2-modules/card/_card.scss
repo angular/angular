@@ -1,0 +1,85 @@
+@use '../../constants';
+@use '../../mixins';
+
+.card-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 16px 0;
+
+  .docs-card {
+    @include mixins.card(35%);
+
+    max-width: 340px;
+    min-width: 300px;
+    margin: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    @media screen and (max-width: 600px) {
+      width: 100%;
+      margin: 8px auto;
+      max-width: none;
+    }
+
+    section {
+      @include mixins.font-size(20);
+      @include mixins.line-height(24);
+      margin: 0;
+      padding: 2.7rem 1.5rem 2.1rem;
+      text-transform: none;
+      text-align: center;
+    }
+
+    p {
+      @include mixins.font-size(13);
+      @include mixins.line-height(24);
+      padding: 0 16px;
+      margin: 0;
+      margin-bottom: 1.6rem;
+      text-align: center;
+    }
+
+    .card-footer {
+      margin-bottom: 0;
+      box-sizing: border-box;
+      @include mixins.line-height(24);
+      padding: 1.3rem 1.5rem;
+      text-align: right;
+
+      a {
+        @include mixins.font-size(13);
+      }
+    }
+  }
+}
+
+.card-section {
+  padding: 16px 32px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  // Removes on-hover effect from card mixin
+  &:hover {
+    box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 8px 0;
+  }
+
+  a,
+  .button,
+  button {
+    text-align: center;
+  }
+}

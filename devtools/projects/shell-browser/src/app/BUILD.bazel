@@ -1,0 +1,237 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_library")
+load("//tools:defaults.bzl", "esbuild")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "app_component_styles",
+    src = "app.component.scss",
+)
+
+ng_module(
+    name = "app",
+    srcs = [
+        "app.component.ts",
+        "app.module.ts",
+        "inject.ts",
+    ],
+    angular_assets = [
+        "app.component.html",
+        ":app_component_styles",
+    ],
+    deps = [
+        ":chrome_application_environment",
+        ":chrome_application_operations",
+        ":zone_aware_chrome_message_bus",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shell-browser/src/app:backend",
+        "//devtools/projects/shell-browser/src/app:background",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+    ],
+)
+
+ts_library(
+    name = "ng_validate",
+    srcs = [
+        "ng-validate.ts",
+    ],
+    deps = [
+        "@npm//@types/chrome",
+    ],
+)
+
+ts_library(
+    name = "chrome_window_extensions",
+    srcs = [
+        "chrome-window-extensions.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
+        "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "chrome_application_environment",
+    srcs = [
+        "chrome-application-environment.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/shell-browser/src/environments:environment",
+        "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "chrome_application_operations",
+    srcs = [
+        "chrome-application-operations.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/protocol",
+        "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "same_page_message_bus",
+    srcs = [
+        "same-page-message-bus.ts",
+    ],
+    deps = [
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "zone_aware_chrome_message_bus",
+    srcs = [
+        "zone-aware-chrome-message-bus.ts",
+    ],
+    deps = [
+        ":chrome_message_bus",
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "chrome_message_bus",
+    srcs = [
+        "chrome-message-bus.ts",
+    ],
+    deps = [
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "background",
+    srcs = [
+        "background.ts",
+    ],
+    deps = ["//devtools/projects/shell-browser/src/app:detect_angular_for_extension_icon"],
+)
+
+ts_library(
+    name = "backend",
+    srcs = [
+        "backend.ts",
+    ],
+    deps = [
+        ":same_page_message_bus",
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/shell-browser/src/app:chrome_window_extensions",
+        "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "content_script",
+    srcs = [
+        "content-script.ts",
+    ],
+    deps = [
+        ":chrome_message_bus",
+        ":same_page_message_bus",
+        "//devtools/projects/protocol",
+        "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "detect_angular_for_extension_icon",
+    srcs = [
+        "detect-angular-for-extension-icon.ts",
+    ],
+    deps = [
+        "@npm//@types",
+    ],
+)
+
+esbuild(
+    name = "detect_angular_for_extension_icon_bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    entry_point = "detect-angular-for-extension-icon.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":detect_angular_for_extension_icon",
+    ],
+)
+
+esbuild(
+    name = "backend_bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    entry_point = "backend.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":backend",
+    ],
+)
+
+esbuild(
+    name = "ng_validate_bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    entry_point = "ng-validate.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":ng_validate",
+    ],
+)
+
+esbuild(
+    name = "background_bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    entry_point = "background.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":background",
+    ],
+)
+
+esbuild(
+    name = "content_script_bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    entry_point = "content-script.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":content_script",
+    ],
+)

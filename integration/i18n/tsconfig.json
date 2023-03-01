@@ -1,0 +1,28 @@
+{
+  "angularCompilerOptions": {
+    "annotationsAs": "static fields",
+    "annotateForClosureCompiler": true,
+  },
+  "compilerOptions": {
+    "module": "es2020",
+    "moduleResolution": "node",
+    // TODO(i): strictNullChecks should turned on but are temporarily disabled due to #15432
+    "strictNullChecks": false,
+    "target": "es2020",
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "experimentalDecorators": true,
+    "outDir": "built",
+    "rootDir": ".",
+    "declaration": true,
+    "types": []
+  },
+
+  "exclude": [
+    "vendor",
+    "node_modules",
+    "built",
+    "dist",
+    "e2e"
+  ]
+}

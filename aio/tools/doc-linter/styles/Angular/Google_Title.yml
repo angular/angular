@@ -1,0 +1,13 @@
+# adapted from Google style library
+extends: occurrence
+message: 'Only one title is allowed per topic'
+link: https://angular.io/guide/docs-style-guide#title
+level: error
+# Here, we're counting the number of times a comma appears
+# in a sentence.
+#
+# If it occurs more than 3 times, we'll flag it.
+scope: raw
+ignorecase: false
+max: 1
+token: '^# '

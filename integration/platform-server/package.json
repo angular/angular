@@ -1,0 +1,43 @@
+{
+  "name": "platform-server-integration",
+  "version": "0.0.0",
+  "license": "MIT",
+  "description": "Integration tests for @angular/platform-server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  },
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "express": "4.16.4",
+    "rxjs": "file:../../node_modules/rxjs",
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
+    "@types/node": "file:../../node_modules/@types/node",
+    "babel-loader": "^8.2.2",
+    "concurrently": "3.1.0",
+    "protractor": "file:../../node_modules/protractor",
+    "raw-loader": "^4.0.2",
+    "webpack": "^5.53.0",
+    "webpack-cli": "^4.8.0"
+  },
+  "scripts": {
+    "build": "./build.sh",
+    "test": "yarn build && concurrently \"yarn serve\" \"yarn protractor\" --kill-others --success first",
+    "serve": "node webpack-out/server-bundle.js",
+    "preprotractor": "tsc -p e2e",
+    "protractor": "protractor e2e/protractor.config.js"
+  }
+}

@@ -1,0 +1,12 @@
+    :host { 
+      display: block; 
+      width: 300px; 
+      height: 25px; 
+      border: 1px solid black; 
+      margin-top: 16px;
+    }
+    
+    .bar { 
+      background: blue; 
+      height: 100%; 
+    }

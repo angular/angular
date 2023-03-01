@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/sync-test",
+  "main": "../../bundles/sync-test.umd.js",
+  "fesm2015": "../../fesm2015/sync-test.js",
+  "es2015": "../../fesm2015/sync-test.js",
+  "module": "../../fesm2015/sync-test.js"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-patch-message-port.min",
+  "main": "../../bundles/zone-patch-message-port.umd.min.js",
+  "fesm2015": "../../fesm2015/zone-patch-message-port.min.js",
+  "es2015": "../../fesm2015/zone-patch-message-port.min.js",
+  "module": "../../fesm2015/zone-patch-message-port.min.js"
+}

@@ -1,0 +1,48 @@
+# Update the `events.json` file that powers the [AIO events page](https://angular.io/events) (if
+# necessary) and create a pull request.
+#
+# For more details on the overall process, see
+# [aio/scripts/generate-events/README.md](../../aio/scripts/generate-events/README.md).
+
+name: Update AIO events
+
+on:
+  workflow_dispatch:
+    inputs: {}
+  schedule:
+    # Run every day at 15:00.
+    - cron: '0 15 * * *'
+
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
+jobs:
+  update_events:
+    name: Update `events.json` (if necessary)
+    if: github.repository == 'angular/angular'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          # Setting `persist-credentials: false` prevents the github-action account from being the
+          # account that is attempted to be used for authentication, instead the remote is set to
+          # an authenticated URL.
+          persist-credentials: false
+          # This is needed as otherwise the PR creation will fail with `shallow update not allowed` when the forked branch is not in sync.
+          fetch-depth: 0
+      - name: Generate `events.json`
+        run: node aio/scripts/generate-events/index.mjs --ignore-invalid-dates
+      - name: Create a PR (if necessary)
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@c12a0ca820b97029279dbc3c71c25da5de5bab26
+        with:
+          branch-prefix: docs-update-events
+          pr-title: 'docs: update events'
+          pr-description: |
+            Generated `events.json` with the latest events retrieved from the Firebase DB.
+          pr-labels: |
+            action: review
+            area: docs
+            target: patch
+          angular-robot-token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}

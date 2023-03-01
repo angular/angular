@@ -1,0 +1,8 @@
+# adapted from Google style library
+extends: existence
+message: 'Commas and periods go inside quotation marks. UI text should be bold and data entered by a user should be monospace.'
+link: 'https://developers.google.com/style/quotation-marks'
+level: error
+nonword: true
+tokens:
+  - '"[^"]+"[.,?]'

@@ -1,0 +1,101 @@
+{% macro renderSyntax(container, prefix) -%}
+{% for usage in container.usages %}
+<code-example hideCopy="true" class="api-heading no-auto-link{% if container.deprecated %} deprecated-api-item{% endif %}">
+  {$ usage $}
+</code-example>
+{% endfor %}
+{% endmacro %}
+
+{% macro renderArguments(arguments, level = 2) %}
+{% if arguments.length %}
+<h{$ level $} class="no-anchor">Arguments</h{$ level $}>
+<table class="is-full-width list-table property-table">
+  <thead>
+    <tr>
+      <th width="15%">Argument</th>
+      <th width="40%">Description</th>
+      <th>Value Type</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for option in arguments %}
+  <tr class="cli-option">
+    <td><code class="cli-option-syntax no-auto-link">{$ option.name $}</code></td>
+    <td>
+      {$ option.description | marked $}
+    </td>
+    <td><code class="cli-option-syntax no-auto-link">{% if option.enum.length > 0 %}{$ renderValues(option.enum) $}{% else %}string{% endif %}</code></td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endmacro %}
+
+{% macro renderNamedOptions(options, level = 2) %}
+{% if options.length %}
+<h{$ level $} class="no-anchor">Options</h{$ level $}>
+<table class="is-full-width list-table property-table">
+  <thead>
+    <tr>
+      <th width="15%">Option</th>
+      <th width="40%">Description</th>
+      <th>Value Type</th>
+      <th>Default Value</th>
+      </tr>
+  </thead>
+  <tbody>
+  {% for option in options %}
+    <tr class="cli-option">
+      <td>
+        <code class="cli-option-syntax no-auto-link{% if option.deprecated %} deprecated-api-item{% endif %}">{$ renderOptionName(option.name) $}</code>
+      </td>
+      <td>
+        {% if option.deprecated %}
+          {% if option.deprecated === true %}
+            <p><strong>Deprecated</strong></p>
+          {% else %}
+            {$ ('**Deprecated:** ' + option.deprecated) | marked $}
+          {% endif %}
+        {% endif %}
+        {$ option.description | marked $}
+        {% if option.aliases.length %}<p><span class="cli-aliases">Aliases:</span> {% for alias in option.aliases %}{$ renderOptionName(alias) $}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+      </td>
+      <td><code class="no-auto-link">{$ renderOptionValues(option.type, option.enum) $}</td>
+      <td>{% if option.default !== undefined and option.default !== '' %}<code class="no-auto-link">{$ option.default $}</code>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endmacro %}
+
+{%- macro renderOptionName(name) -%}
+{% if name.length > 1 %}-{% endif %}-{$ name $}
+{%- endmacro %}
+
+{%- macro renderValues(values) -%}
+{$ values.join(' | ') $}
+{%- endmacro -%}
+
+{%- macro renderOptionValues(type, values) -%}
+{%- if values.length -%}
+{$ renderValues(values) $}
+{%- else -%}
+{$ type $}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro renderSubcommands(container) -%}
+{% if container.subcommands.length %}
+<h2><a id="{$ container.name $}-commands"></a>{$ container.name | title $} commands</h2>
+{% for subcommand in container.subcommands %}
+<h3><a id="{$ subcommand.name $}-command"></a>{$ subcommand.name $}</h3>
+{$ renderSyntax(subcommand, name) $}
+{$ subcommand.shortDescription | marked $}
+{# for now we assume that commands do not have further sub-commands #}
+{$ renderArguments(subcommand.positionalOptions, 4) $}
+{$ renderNamedOptions(subcommand.namedOptions, 4) $}
+{% endfor %}
+{% endif %}
+{%- endmacro -%}

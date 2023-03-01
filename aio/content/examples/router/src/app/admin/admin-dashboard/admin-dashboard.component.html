@@ -1,0 +1,10 @@
+<h3>Dashboard</h3>
+
+<p>Session ID: {{ sessionId | async }}</p>
+<div id="anchor"></div>
+<p>Token: {{ token | async }}</p>
+
+Preloaded Modules
+<ul>
+  <li *ngFor="let module of modules">{{ module }}</li>
+</ul>

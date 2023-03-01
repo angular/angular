@@ -1,0 +1,77 @@
+load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "image-directive",
+    srcs = [
+        "e2e/basic/basic.ts",
+        "e2e/fill-mode/fill-mode.ts",
+        "e2e/image-distortion/image-distortion.ts",
+        "e2e/lcp-check/lcp-check.ts",
+        "e2e/oversized-image/oversized-image.ts",
+        "e2e/preconnect-check/preconnect-check.ts",
+        "index.ts",
+        "playground.ts",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/router",
+    ],
+)
+
+# Note: Cannot use `app_bundle` as the e2e tests rely on `ngDevMode`
+# output which would otherwise be omitted.
+esbuild(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":image-directive",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "e2e/a.png",
+        "e2e/b.png",
+        "e2e/logo-1500w.jpg",
+        "e2e/logo-500w.jpg",
+        "index.html",
+    ],
+    deps = [
+        ":bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)
+
+ts_library(
+    name = "img_dir_e2e_tests_lib",
+    testonly = True,
+    srcs = ["e2e/browser-logs-util.ts"] + glob([
+        "e2e/**/*.e2e-spec.ts",
+    ]),
+    tsconfig = ":e2e/tsconfig-e2e.json",
+    deps = [
+        "//packages/private/testing",
+        "@npm//@types/selenium-webdriver",
+        "@npm//protractor",
+    ],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    on_prepare = ":e2e/start-server.js",
+    server = ":devserver",
+    deps = [
+        ":img_dir_e2e_tests_lib",
+        "@npm//selenium-webdriver",
+    ],
+)

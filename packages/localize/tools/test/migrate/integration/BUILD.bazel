@@ -1,0 +1,40 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/localize/tools",
+        "//packages/localize/tools/test:test_lib",
+        "//packages/localize/tools/test/helpers",
+    ],
+)
+
+# Use copy_to_bin since filegroup doesn't seem to work on Windows.
+copy_to_bin(
+    name = "test_files",
+    srcs = glob(["test_files/**/*"]),
+)
+
+jasmine_node_test(
+    name = "integration",
+    bootstrap = ["//tools/testing:node_no_angular"],
+    data = [
+        ":test_files",
+    ],
+    deps = [
+        ":test_lib",
+        "@npm//glob",
+        "@npm//yargs",
+    ],
+)

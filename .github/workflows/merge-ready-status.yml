@@ -1,0 +1,14 @@
+name: Merge Ready
+
+on: pull_request_target
+
+# Declare default permissions as read only.
+permissions: {}
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: angular/dev-infra/github-actions/unified-status-check@c12a0ca820b97029279dbc3c71c25da5de5bab26
+        with:
+          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}

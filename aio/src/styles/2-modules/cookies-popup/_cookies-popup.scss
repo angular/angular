@@ -1,0 +1,29 @@
+@use 'sass:math';
+@use '@angular/cdk' as cdk;
+@use '@angular/material' as mat;
+
+$inner-spacing: 16px;
+
+aio-cookies-popup {
+  .cookies-popup {
+    @include mat.elevation(6);
+    border-radius: 4px;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    margin: 24px;
+    max-width: 430px;
+    padding: $inner-spacing $inner-spacing math.div($inner-spacing, 2);
+    z-index: cdk.$overlay-container-z-index + 1;
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      margin: $inner-spacing math.div($inner-spacing, -2) 0 0;
+
+      .mat-button {
+        text-transform: uppercase;
+      }
+    }
+  }
+}

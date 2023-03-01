@@ -1,0 +1,94 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "render3_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*_perf.ts",
+            "domino.d.ts",
+            "load_domino.ts",
+            "is_shape_of.ts",
+            "jit_spec.ts",
+            "matchers.ts",
+        ],
+    ),
+    deps = [
+        ":matchers",
+        "//packages:types",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/util",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "matchers",
+    testonly = True,
+    srcs = [
+        "is_shape_of.ts",
+        "matchers.ts",
+    ],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ts_library(
+    name = "domino",
+    testonly = True,
+    srcs = [
+        "load_domino.ts",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/platform-server",
+        "//packages/platform-server:bundled_domino_lib",
+        "//packages/zone.js/lib:zone_d_ts",
+    ],
+)
+
+ts_library(
+    name = "render3_node_lib",
+    testonly = True,
+    srcs = [],
+    deps = [
+        ":domino",
+        ":render3_lib",
+    ],
+)
+
+jasmine_node_test(
+    name = "render3",
+    bootstrap = [
+        ":domino",
+        "//tools/testing:node",
+    ],
+    deps = [
+        ":render3_node_lib",
+        "//packages/zone.js/lib",
+    ],
+)
+
+karma_web_test_suite(
+    name = "render3_web",
+    deps = [
+        ":render3_lib",
+    ],
+)

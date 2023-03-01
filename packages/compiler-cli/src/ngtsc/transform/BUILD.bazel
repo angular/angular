@@ -1,0 +1,28 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "transform",
+    srcs = ["index.ts"] + glob([
+        "src/**/*.ts",
+    ]),
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/incremental:api",
+        "//packages/compiler-cli/src/ngtsc/incremental/semantic_graph",
+        "//packages/compiler-cli/src/ngtsc/indexer",
+        "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/shims",
+        "//packages/compiler-cli/src/ngtsc/translator",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "//packages/compiler-cli/src/ngtsc/xi18n",
+        "@npm//typescript",
+    ],
+)

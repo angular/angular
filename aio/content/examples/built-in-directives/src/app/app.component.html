@@ -1,0 +1,238 @@
+<h1>Built-in Directives</h1>
+
+<h2>Built-in attribute directives</h2>
+
+<h3 id="ngModel">NgModel (two-way) Binding</h3>
+
+<fieldset><h4>NgModel examples</h4>
+  <p>Current item name: {{currentItem.name}}</p>
+  <p>
+    <label for="without">without NgModel:</label>
+    <input [value]="currentItem.name" (input)="currentItem.name=getValue($event)" id="without">
+  </p>
+
+  <p>
+    <!-- #docregion NgModel-1 -->
+    <label for="example-ngModel">[(ngModel)]:</label>
+    <input [(ngModel)]="currentItem.name" id="example-ngModel">
+    <!-- #enddocregion NgModel-1 -->
+  </p>
+
+  <p>
+    <label for="example-change">(ngModelChange)="...name=$event":</label>
+    <input [ngModel]="currentItem.name" (ngModelChange)="currentItem.name=$event" id="example-change">
+  </p>
+
+  <p>
+    <label for="example-uppercase">(ngModelChange)="setUppercaseName($event)"
+      <!-- #docregion uppercase -->
+      <input [ngModel]="currentItem.name" (ngModelChange)="setUppercaseName($event)" id="example-uppercase">
+      <!-- #enddocregion uppercase -->
+    </label>
+  </p>
+</fieldset>
+
+<hr><h2 id="ngClass">NgClass Binding</h2>
+
+<p>currentClasses is {{currentClasses | json}}</p>
+<!-- #docregion NgClass-1 -->
+<div [ngClass]="currentClasses">This div is initially saveable, unchanged, and special.</div>
+<!-- #enddocregion NgClass-1 -->
+<ul>
+  <li>
+    <label for="saveable">saveable</label>
+    <input type="checkbox" [(ngModel)]="canSave" id="saveable">
+  </li>
+  <li>
+    <label for="modified">modified:</label>
+    <input type="checkbox" [value]="!isUnchanged" (change)="isUnchanged=!isUnchanged" id="modified"></li>
+  <li>
+    <label for="special">special: <input type="checkbox" [(ngModel)]="isSpecial" id="special"></label>
+</li>
+</ul>
+<button type="button" (click)="setCurrentClasses()">Refresh currentClasses</button>
+
+<div [ngClass]="currentClasses">
+  This div should be {{ canSave ? "": "not"}} saveable,
+                  {{ isUnchanged ? "unchanged" : "modified" }} and
+                  {{ isSpecial ? "": "not"}} special after clicking "Refresh".</div>
+<br><br>
+<!-- #docregion special-div -->
+<!-- toggle the "special" class on/off with a property -->
+<div [ngClass]="isSpecial ? 'special' : ''">This div is special</div>
+<!-- #enddocregion special-div -->
+<div class="helpful study course">Helpful study course</div>
+<div [ngClass]="{'helpful':false, 'study':true, 'course':true}">Study course</div>
+
+
+<!-- NgStyle binding -->
+<hr><h3>NgStyle Binding</h3>
+<div [style.font-size]="isSpecial ? 'x-large' : 'smaller'">
+  This div is x-large or smaller.
+</div>
+
+<h4>[ngStyle] binding to currentStyles - CSS property names</h4>
+<p>currentStyles is {{currentStyles | json}}</p>
+
+<!-- #docregion NgStyle-2 -->
+<div [ngStyle]="currentStyles">
+  This div is initially italic, normal weight, and extra large (24px).
+</div>
+<!-- #enddocregion NgStyle-2 -->
+
+
+
+<br>
+<label>italic: <input type="checkbox" [(ngModel)]="canSave"></label> |
+<label>normal: <input type="checkbox" [(ngModel)]="isUnchanged"></label> |
+<label>xlarge: <input type="checkbox" [(ngModel)]="isSpecial"></label>
+<button type="button" (click)="setCurrentStyles()">Refresh currentStyles</button>
+<br><br>
+<div [ngStyle]="currentStyles">
+  This div should be {{ canSave ? "italic": "plain"}},
+                  {{ isUnchanged ? "normal weight" : "bold" }} and,
+                  {{ isSpecial ? "extra large": "normal size"}} after clicking "Refresh".</div>
+
+<hr>
+<h2>Built-in structural directives</h2>
+<h3 id="ngIf">NgIf Binding</h3>
+<div>
+  <p>If isActive is true, app-item-detail will render: </p>
+  <!-- #docregion NgIf-1 -->
+  <app-item-detail *ngIf="isActive" [item]="item"></app-item-detail>
+  <!-- #enddocregion NgIf-1 -->
+
+  <button type="button" (click)="isActiveToggle()">Toggle app-item-detail</button>
+</div>
+<p>If currentCustomer isn't null, say hello to Laura:</p>
+<!-- #docregion NgIf-2 -->
+<div *ngIf="currentCustomer">Hello, {{currentCustomer.name}}</div>
+<!-- #enddocregion NgIf-2 -->
+<p>nullCustomer is null by default. NgIf guards against null. Give it a value to show it:</p>
+<!-- #docregion NgIf-2b -->
+<div *ngIf="nullCustomer">Hello, <span>{{nullCustomer}}</span></div>
+<!-- #enddocregion NgIf-2b -->
+<button type="button" (click)="giveNullCustomerValue()">Give nullCustomer a value</button>
+
+
+<h4>NgIf binding with template (no *)</h4>
+
+<ng-template [ngIf]="currentItem">Add {{currentItem.name}} with template</ng-template>
+<hr>
+
+<h4>Show/hide vs. NgIf</h4>
+<!-- isSpecial is true -->
+<div [class.hidden]="!isSpecial">Show with class</div>
+<div [class.hidden]="isSpecial">Hide with class</div>
+
+<p>ItemDetail is in the DOM but hidden</p>
+<app-item-detail [class.hidden]="isSpecial"></app-item-detail>
+
+<div [style.display]="isSpecial ? 'block' : 'none'">Show with style</div>
+<div [style.display]="isSpecial ? 'none'  : 'block'">Hide with style</div>
+
+
+<hr>
+<h2 id="ngFor">NgFor Binding</h2>
+
+<div class="box">
+  <!-- #docregion NgFor-1, NgFor-1-2 -->
+  <div *ngFor="let item of items">{{item.name}}</div>
+  <!-- #enddocregion NgFor-1, NgFor-1-2 -->
+</div>
+
+<p>*ngFor with ItemDetailComponent element</p>
+<div class="box">
+  <!-- #docregion NgFor-2, NgFor-1-2 -->
+  <app-item-detail *ngFor="let item of items" [item]="item"></app-item-detail>
+  <!-- #enddocregion NgFor-2, NgFor-1-2 -->
+</div>
+
+
+<h4 id="ngFor-index">*ngFor with index</h4>
+<p>with <i>semi-colon</i> separator</p>
+<div class="box">
+  <!-- #docregion NgFor-3 -->
+  <div *ngFor="let item of items; let i=index">{{i + 1}} - {{item.name}}</div>
+  <!-- #enddocregion NgFor-3 -->
+</div>
+
+<p>with <i>comma</i> separator</p>
+<div class="box">
+ <div *ngFor="let item of items, let i=index">{{i + 1}} - {{item.name}}</div>
+</div>
+
+<h4 id="ngFor-trackBy">*ngFor trackBy</h4>
+<button type="button" (click)="resetList()">Reset items</button>
+<button type="button" (click)="changeIds()">Change ids</button>
+<button type="button" (click)="clearTrackByCounts()">Clear counts</button>
+
+<p><i>without</i> trackBy</p>
+<div class="box">
+  <div #noTrackBy *ngFor="let item of items">({{item.id}}) {{item.name}}</div>
+
+  <div id="noTrackByCnt" *ngIf="itemsNoTrackByCount" >
+    Item DOM elements change #{{itemsNoTrackByCount}} without trackBy
+  </div>
+</div>
+
+<p>with trackBy</p>
+<div class="box">
+  <div #withTrackBy *ngFor="let item of items; trackBy: trackByItems">({{item.id}}) {{item.name}}</div>
+
+  <div id="withTrackByCnt" *ngIf="itemsWithTrackByCount">
+    Item DOM elements change #{{itemsWithTrackByCount}} with trackBy
+  </div>
+</div>
+
+<br><br><br>
+
+<p>with trackBy and <i>semi-colon</i> separator</p>
+<div class="box">
+  <!-- #docregion trackBy -->
+  <div *ngFor="let item of items; trackBy: trackByItems">
+    ({{item.id}}) {{item.name}}
+  </div>
+  <!-- #enddocregion trackBy -->
+</div>
+
+<p>with trackBy and <i>comma</i> separator</p>
+<div class="box">
+  <div *ngFor="let item of items, trackBy: trackByItems">({{item.id}}) {{item.name}}</div>
+</div>
+
+<p>with trackBy and <i>space</i> separator</p>
+<div class="box">
+  <div *ngFor="let item of items trackBy: trackByItems">({{item.id}}) {{item.name}}</div>
+</div>
+
+<p>with <i>generic</i> trackById function</p>
+<div class="box">
+  <div *ngFor="let item of items, trackBy: trackById">({{item.id}}) {{item.name}}</div>
+</div>
+
+<hr><h2>NgSwitch Binding</h2>
+
+<p>Pick your favorite item</p>
+<div>
+  <label *ngFor="let i of items">
+    <div><input type="radio" name="items" [(ngModel)]="currentItem" [value]="i">{{i.name}}
+    </div>
+  </label>
+</div>
+
+<!-- #docregion NgSwitch -->
+<div [ngSwitch]="currentItem.feature">
+  <app-stout-item    *ngSwitchCase="'stout'"    [item]="currentItem"></app-stout-item>
+  <app-device-item   *ngSwitchCase="'slim'"     [item]="currentItem"></app-device-item>
+  <app-lost-item     *ngSwitchCase="'vintage'"  [item]="currentItem"></app-lost-item>
+  <app-best-item     *ngSwitchCase="'bright'"   [item]="currentItem"></app-best-item>
+<!-- #enddocregion NgSwitch -->
+  <!-- #docregion NgSwitch-div -->
+  <div *ngSwitchCase="'bright'"> Are you as bright as {{currentItem.name}}?</div>
+  <!-- #enddocregion NgSwitch-div -->
+<!-- #docregion NgSwitch -->
+  <app-unknown-item  *ngSwitchDefault           [item]="currentItem"></app-unknown-item>
+</div>
+<!-- #enddocregion NgSwitch -->
+

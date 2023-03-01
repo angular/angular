@@ -1,0 +1,9 @@
+extends: existence
+message: "'%s' is airlinese."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: true
+level: error
+tokens:
+  - enplan(?:e|ed|ing|ement)
+  - deplan(?:e|ed|ing|ement)
+  - taking off momentarily

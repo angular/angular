@@ -1,0 +1,163 @@
+load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
+load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_config", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+PUBLIC_TARGETS = [
+    ":compiler-cli",
+    "//packages/compiler-cli/private",
+    "//packages/compiler-cli/linker",
+    "//packages/compiler-cli/linker/babel",
+]
+
+esbuild_config(
+    name = "esbuild_config",
+    config_file = "esbuild.config.js",
+)
+
+esbuild(
+    name = "bundles",
+    config = ":esbuild_config",
+    entry_points = [
+        ":index.ts",
+        "//packages/compiler-cli:src/bin/ngc.ts",
+        "//packages/compiler-cli:src/bin/ng_xi18n.ts",
+        "//packages/compiler-cli/linker:index.ts",
+        "//packages/compiler-cli/linker/babel:index.ts",
+        "//packages/compiler-cli/private:bazel.ts",
+        "//packages/compiler-cli/private:localize.ts",
+        "//packages/compiler-cli/private:migrations.ts",
+        "//packages/compiler-cli/private:tooling.ts",
+    ],
+    external = [
+        "@angular/compiler",
+        "typescript",
+        "tsickle",
+        "@babel/core",
+        "reflect-metadata",
+        "chokidar",
+        "convert-source-map",
+        "semver",
+        "@jridgewell/sourcemap-codec",
+        "tslib",
+        "yargs",
+    ],
+    format = "esm",
+    platform = "node",
+    splitting = True,
+    target = "node12",
+    deps = PUBLIC_TARGETS,
+)
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig-build.json",
+    deps = ["//packages:tsconfig-build.json"],
+)
+
+ts_library(
+    name = "compiler-cli",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = [
+            "src/integrationtest/**/*.ts",
+        ],
+    ),
+    tsconfig = ":tsconfig",
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/core",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/incremental",
+        "//packages/compiler-cli/src/ngtsc/indexer",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/program_driver",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/shims",
+        "//packages/compiler-cli/src/ngtsc/translator",
+        "//packages/compiler-cli/src/ngtsc/typecheck",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "//packages/compiler-cli/src/transformers/downlevel_decorators_transform",
+        "@npm//@bazel/concatjs",
+        "@npm//@types/node",
+        "@npm//@types/yargs",
+        "@npm//chokidar",
+        "@npm//reflect-metadata",
+        "@npm//tsickle",
+        "@npm//typescript",
+    ],
+)
+
+extract_types(
+    name = "api_type_definitions",
+    deps = PUBLIC_TARGETS,
+)
+
+pkg_npm(
+    name = "npm_package",
+    package_name = "@angular/compiler-cli",
+    srcs = [
+        "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//aio:__pkg__",
+        "//aio/content/examples:__subpackages__",
+        "//aio/tools/examples:__pkg__",
+        "//integration:__subpackages__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+    ],
+    deps = [
+        ":api_type_definitions",
+        ":bundles",
+    ],
+)
+
+api_golden_test(
+    name = "error_code_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/error_code.d.ts",
+    golden = "angular/goldens/public-api/compiler-cli/error_code.md",
+)
+
+api_golden_test(
+    name = "extended_template_diagnostic_name_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/extended_template_diagnostic_name.d.ts",
+    golden = "angular/goldens/public-api/compiler-cli/extended_template_diagnostic_name.md",
+)
+
+api_golden_test(
+    name = "compiler_options_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/core/api/src/public_options.d.ts",
+    golden = "angular/goldens/public-api/compiler-cli/compiler_options.md",
+)
+
+# Controls whether the Ivy compiler produces performance traces as part of each build
+ng_perf_flag(
+    name = "ng_perf",
+    build_setting_default = False,
+)

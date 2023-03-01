@@ -1,0 +1,61 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should be generated with text-only content",
+      "inputFiles": [
+        "text_only_content.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should be generated for ICU-only i18n blocks",
+      "inputFiles": [
+        "icu_only.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should be generated within <ng-container> and <ng-template> blocks",
+      "inputFiles": [
+        "ng-container_ng-template.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not be generated in case we have styling instructions",
+      "inputFiles": [
+        "styles.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    }
+  ]
+}

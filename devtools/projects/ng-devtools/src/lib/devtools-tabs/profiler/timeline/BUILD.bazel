@@ -1,0 +1,89 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+_STYLE_SRCS = [
+    "frame-selector.component.scss",
+    "recording-dialog.component.scss",
+    "timeline.component.scss",
+    "timeline-controls.component.scss",
+]
+
+_STYLE_LABELS = [
+    src[:-len(".component.scss")].replace("-", "_") + "_styles"
+    for src in _STYLE_SRCS
+]
+
+[
+    sass_binary(
+        name = label,
+        src = src,
+    )
+    for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
+]
+
+sass_binary(
+    name = "recording_modal_styles",
+    src = "recording-modal.component.scss",
+    include_paths = ["node_modules"],
+)
+
+ng_module(
+    name = "timeline",
+    srcs = [
+        "filter.ts",
+        "frame-selector.component.ts",
+        "recording-dialog.component.ts",
+        "recording-modal.component.ts",
+        "timeline.component.ts",
+        "timeline.module.ts",
+        "timeline-controls.component.ts",
+    ],
+    angular_assets = [
+        "timeline.component.html",
+        "timeline-controls.component.html",
+        "recording-modal.component.html",
+        "recording-dialog.component.html",
+        "frame-selector.component.html",
+        ":recording_modal_styles",
+    ] + _STYLE_LABELS,
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/recording-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/visualization-mode",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
+        "//devtools/projects/protocol",
+        "//packages/common",
+        "//packages/core",
+        "//packages/forms",
+        "@npm//@angular/cdk",
+        "@npm//@angular/material",
+        "@npm//ngx-flamegraph",
+        "@npm//rxjs",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "filter.spec.ts",
+        "timeline.component.spec.ts",
+    ],
+    deps = [
+        ":timeline",
+    ],
+)
+
+# todo(aleksanderbodurri): fix this test suite
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+        "//packages/common/http",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+    ],
+)

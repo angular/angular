@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-patch-cordova",
+  "main": "../../bundles/zone-patch-cordova.umd.js",
+  "fesm2015": "../../fesm2015/zone-patch-cordova.js",
+  "es2015": "../../fesm2015/zone-patch-cordova.js",
+  "module": "../../fesm2015/zone-patch-cordova.js"
+}

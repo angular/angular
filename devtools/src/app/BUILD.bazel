@@ -1,0 +1,32 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "app_component_styles",
+    src = "app.component.scss",
+)
+
+ng_module(
+    name = "app",
+    srcs = [
+        "app.component.ts",
+        "app.module.ts",
+    ],
+    angular_assets = [
+        "app.component.html",
+        ":app_component_styles",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools",
+        "//devtools/src:demo_application_environment",
+        "//devtools/src:demo_application_operations",
+        "//devtools/src/app/demo-app",
+        "//devtools/src/app/devtools-app",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/router",
+    ],
+)

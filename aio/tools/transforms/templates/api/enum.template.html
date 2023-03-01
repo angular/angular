@@ -1,0 +1,14 @@
+{% import "lib/memberHelpers.html" as memberHelpers -%}
+{% extends 'export-base.template.html' -%}
+
+{% block details %}
+<section class="enum-overview">
+<code-example language="ts" hideCopy="true">
+enum {$ doc.name $} {{$ memberHelpers.renderMembers(doc) $}
+}
+</code-example>
+</section>
+
+{% include "includes/description.html" %}
+{$ memberHelpers.renderProperties(doc.properties, 'members', 'member', 'Members', ['Member']) $}
+{% endblock %}

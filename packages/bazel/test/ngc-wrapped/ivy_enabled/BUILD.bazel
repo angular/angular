@@ -1,0 +1,40 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library")
+
+ts_library(
+    name = "ng_module_ivy_test_lib",
+    testonly = True,
+    srcs = ["ng_module_ivy_test.ts"],
+    tags = [],
+    deps = ["@npm//@bazel/runfiles"],
+)
+
+ng_module(
+    name = "test_module_default_compilation",
+    srcs = ["test_module_default_compilation.ts"],
+    tags = [],
+    deps = ["//packages/core"],
+)
+
+jasmine_node_test(
+    name = "ng_module_ivy_test",
+    srcs = [":ng_module_ivy_test_lib"],
+    data = [
+        ":test_module_default_compilation",
+    ],
+    tags = [],
+)
+
+ng_module(
+    name = "test_module_warnings_lib",
+    srcs = ["test_module_warnings.ts"],
+    strict_templates = True,
+    tags = [],
+    deps = ["//packages/core"],
+)
+
+build_test(
+    name = "test_module_warnings",
+    tags = [],
+    targets = [":test_module_warnings_lib"],
+)

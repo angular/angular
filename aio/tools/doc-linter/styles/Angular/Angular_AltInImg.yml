@@ -1,0 +1,8 @@
+# tests for <img> elements without alt attribute
+extends: existence
+message: '<img> elements need the alt attribute to be the first attribute.'
+link: https://angular.io/guide/docs-style-guide#images
+level: error
+scope: raw
+raw:
+  - '<img (?!alt=)[^\>]+>'

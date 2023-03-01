@@ -1,0 +1,11 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "events": {
+      ".read": true,
+      ".write": false
+    }
+  }
+}

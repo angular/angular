@@ -1,0 +1,70 @@
+load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("//tools:defaults.bzl", "extract_types", "pkg_npm", "ts_library")
+
+ts_library(
+    name = "tools",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    visibility = ["//packages/localize/tools:__subpackages__"],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/private",
+        "//packages/localize",
+        "@npm//@babel/core",
+        "@npm//@types/babel__core",
+        "@npm//@types/babel__traverse",
+        "@npm//@types/glob",
+        "@npm//@types/node",
+        "@npm//@types/yargs",
+        "@npm//glob",
+    ],
+)
+
+esbuild_config(
+    name = "esbuild_config",
+    config_file = "esbuild.config.js",
+)
+
+esbuild(
+    name = "bundles",
+    config = ":esbuild_config",
+    entry_points = [
+        ":index.ts",
+        ":src/extract/cli.ts",
+        ":src/migrate/cli.ts",
+        ":src/translate/cli.ts",
+    ],
+    external = [
+        "@angular/localize",
+        "@angular/compiler",
+        "@angular/compiler-cli/private/localize",
+        "@babel/core",
+        "yargs",
+        "glob",
+    ],
+    format = "esm",
+    platform = "node",
+    splitting = True,
+    target = "node12",
+    deps = [
+        ":tools",
+    ],
+)
+
+extract_types(
+    name = "api_type_definitions",
+    deps = [":tools"],
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = ["README.md"],
+    visibility = ["//packages/localize:__pkg__"],
+    deps = [
+        ":api_type_definitions",
+        ":bundles",
+    ],
+)

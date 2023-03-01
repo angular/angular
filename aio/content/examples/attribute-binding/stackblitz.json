@@ -1,0 +1,10 @@
+{
+  "description": "Attribute Binding",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["Attribute Binding"]
+}

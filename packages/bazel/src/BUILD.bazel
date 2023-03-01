@@ -1,0 +1,16 @@
+load("//packages/bazel/src/ng_module:partial_compilation.bzl", "ng_partial_compilation_flag")
+
+# BEGIN-DEV-ONLY
+package(default_visibility = ["//packages/bazel:__subpackages__"])
+
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*"]),
+)
+# END-DEV-ONLY
+
+ng_partial_compilation_flag(
+    name = "partial_compilation",
+    build_setting_default = False,
+    visibility = ["//visibility:public"],
+)

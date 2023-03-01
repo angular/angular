@@ -1,0 +1,216 @@
+@use '../constants';
+@use '../mixins';
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: constants.$main-font;
+  margin: 0;
+  @include mixins.font-size(16);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+h1 {
+  @include mixins.font-size(40);
+  display: inline-block;
+  margin: 1.6rem 0;
+
+  @media screen and (max-width: 600px) {
+    margin-top: 0;
+  }
+}
+
+h2 {
+  clear: both;
+  @include mixins.font-size(32);
+  margin-top: 4rem;
+  padding-top: 4rem;
+
+  @include mixins.marketing-pages($extraSelectors: ('.page-api'), $nestParentSelector: true) {
+    border-top: 0;
+    margin-top: 2rem;
+    padding-top: 0;
+  }
+}
+
+h3 {
+  @include mixins.font-size(24);
+  margin-top: 3rem;
+  clear: both;
+}
+
+h4 {
+  @include mixins.font-size(20);
+  margin-top: 3rem;
+  clear: both;
+}
+
+h5 {
+  @include mixins.font-size(18);
+  margin-top: 2rem;
+  clear: both;
+}
+
+h6 {
+  @include mixins.font-size(16);
+  margin-top: 2rem;
+  clear: both;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  a {
+    font-size: inherit;
+  }
+
+  @media screen and (max-width: 600px) {
+    margin: 8px 0;
+  }
+}
+
+.mat-tab-body-wrapper h2 {
+  margin-top: 0;
+}
+
+p,
+ol,
+ul,
+li,
+input,
+a {
+  @include mixins.font-size(16);
+  @include mixins.line-height(32);
+  font-family: inherit;
+  font-weight: 400;
+
+  & > em {
+    @include mixins.letter-spacing(0.3);
+  }
+}
+
+p {
+  margin: 1em 0;
+}
+
+p + ul {
+  margin-top: 4px;
+}
+
+ol {
+  li,
+  p {
+    margin: 4px 0;
+  }
+}
+
+ol ol {
+  list-style-type: lower-alpha;
+
+  ol {
+    list-style-type: lower-roman;
+  }
+}
+
+li {
+  padding-bottom: 8px;
+  @include mixins.line-height(24);
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    line-height: inherit;
+  }
+}
+
+a {
+  text-decoration: none;
+}
+
+.app-toolbar a {
+  @include mixins.font-size(16);
+  font-weight: 400;
+  font-family: constants.$main-font;
+  text-transform: uppercase;
+}
+
+strong {
+  font-weight: 500;
+}
+
+table {
+  border-collapse: collapse;
+  border-radius: 2px;
+  border-spacing: 0;
+  margin: 12px 0 32px;
+}
+
+table tbody th {
+  max-width: 100px;
+  padding: 13px 32px;
+  text-align: left;
+}
+
+td {
+  font-weight: 400;
+  padding: 8px 30px;
+
+  > p,
+  ul {
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+th {
+  @include mixins.font-size(16);
+  font-weight: 500;
+  padding: 13px 32px;
+  text-align: left;
+}
+
+code {
+  font-family: constants.$code-font;
+  font-size: 90%;
+}
+
+.sidenav-content a {
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// The following css rule adds an icon to external links in the docs area, based on the classes that are applied to the
+// `doc-viewer` component when it is displaying docs for the different areas of the documentation.
+// We add the icon to all external links which are identified as absolute links (those that start with `http:` or https:`).
+// For more info see PR #36601.
+@include mixins.docs-pages {
+  aio-doc-viewer {
+    // The docs-viewer also contain links to GitHub (e.g. the "edit this page" icon) identified with
+    // the `.github-links` class. We don't want to add the external link icon to these links.
+    :not(.github-links) {
+      > a {
+        &[href^="http:"],
+        &[href^="https:"] {
+          @include mixins.external-link-with-icon();
+        }
+      }
+    }
+  }
+}

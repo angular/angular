@@ -1,0 +1,40 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "ngtsc_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/indexer",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/invalid_banana_in_box",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "//packages/compiler-cli/test:test_utils",
+        "@npm//source-map",
+        "@npm//tsickle",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "ngtsc",
+    timeout = "long",
+    bootstrap = ["//tools/testing:node_no_angular"],
+    data = [
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
+    ],
+    shard_count = 4,
+    deps = [
+        ":ngtsc_lib",
+        "@npm//yargs",
+    ],
+)

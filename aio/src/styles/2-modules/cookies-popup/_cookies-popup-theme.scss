@@ -1,0 +1,27 @@
+@use 'sass:map';
+@use '../../constants' as c;
+@use '@angular/material' as mat;
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  aio-cookies-popup {
+    .cookies-popup {
+      background: if($is-dark-theme, map.get(mat.$grey-palette, 50), #252525);
+      color: if($is-dark-theme,
+        map.get(map.get(mat.$grey-palette, contrast), 50),
+        map.get(mat.$dark-theme-foreground-palette, secondary-text)
+      );
+
+      .actions {
+        .mat-button {
+          color: if($is-dark-theme, c.$blue, c.$lightblue);
+
+          .mat-button-focus-overlay {
+            background: if($is-dark-theme, c.$black, c.$white);
+          }
+        }
+      }
+    }
+  }
+}

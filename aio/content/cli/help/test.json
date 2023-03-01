@@ -1,0 +1,127 @@
+{
+  "name": "test",
+  "command": "ng test [project]",
+  "shortDescription": "Runs unit tests in a project.",
+  "longDescriptionRelativePath": "@angular/cli/src/commands/test/long-description.md",
+  "longDescription": "Takes the name of the project, as specified in the `projects` section of the `angular.json` workspace configuration file.\nWhen a project name is not supplied, it will execute for all projects.\n",
+  "aliases": [
+    "t"
+  ],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "browsers",
+      "type": "string",
+      "description": "Override which browsers tests are run against."
+    },
+    {
+      "name": "code-coverage",
+      "type": "boolean",
+      "default": false,
+      "description": "Output a code coverage report."
+    },
+    {
+      "name": "code-coverage-exclude",
+      "type": "array",
+      "description": "Globs to exclude from code coverage."
+    },
+    {
+      "name": "configuration",
+      "type": "string",
+      "aliases": [
+        "c"
+      ],
+      "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.io/guide/workspace-config#alternate-build-configurations."
+    },
+    {
+      "name": "exclude",
+      "type": "array",
+      "description": "Globs of files to exclude, relative to the project root."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "include",
+      "type": "array",
+      "description": "Globs of files to include, relative to project root. \nThere are 2 special cases:\n - when a path to directory is provided, all spec files ending \".spec.@(ts|tsx)\" will be included\n - when a path to a file is provided, and a matching spec file exists it will be included instead."
+    },
+    {
+      "name": "inline-style-language",
+      "type": "string",
+      "default": "css",
+      "enum": [
+        "css",
+        "less",
+        "sass",
+        "scss"
+      ],
+      "description": "The stylesheet language to use for the application's inline component styles."
+    },
+    {
+      "name": "karma-config",
+      "type": "string",
+      "description": "The name of the Karma configuration file."
+    },
+    {
+      "name": "main",
+      "type": "string",
+      "description": "The name of the main entry-point file."
+    },
+    {
+      "name": "poll",
+      "type": "number",
+      "description": "Enable and define the file watching poll time period in milliseconds."
+    },
+    {
+      "name": "polyfills",
+      "type": "string",
+      "description": "Polyfills to be included in the build."
+    },
+    {
+      "name": "preserve-symlinks",
+      "type": "boolean",
+      "description": "Do not use the real path when resolving modules. If unset then will default to `true` if NodeJS option --preserve-symlinks is set."
+    },
+    {
+      "name": "progress",
+      "type": "boolean",
+      "default": true,
+      "description": "Log progress to the console while building."
+    },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "The name of the project to build. Can be an application or a library.",
+      "positional": 0
+    },
+    {
+      "name": "reporters",
+      "type": "array",
+      "description": "Karma reporters to use. Directly passed to the karma runner."
+    },
+    {
+      "name": "source-map",
+      "type": "boolean",
+      "default": true,
+      "description": "Output source maps for scripts and styles. For more information, see https://angular.io/guide/workspace-config#source-map-configuration."
+    },
+    {
+      "name": "ts-config",
+      "type": "string",
+      "description": "The name of the TypeScript configuration file."
+    },
+    {
+      "name": "watch",
+      "type": "boolean",
+      "description": "Run build when files change."
+    },
+    {
+      "name": "web-worker-ts-config",
+      "type": "string",
+      "description": "TypeScript configuration for Web Worker modules."
+    }
+  ]
+}

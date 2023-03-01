@@ -1,0 +1,20 @@
+name: Google Internal Tests Enforcement
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  pull-requests: read
+  statuses: write
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: angular/dev-infra/github-actions/google-internal-tests@c12a0ca820b97029279dbc3c71c25da5de5bab26
+        with:
+          run-tests-guide-url: http://go/angular/g3sync
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sync-config: ./.ng-dev/google-sync-config.json

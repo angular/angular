@@ -1,0 +1,11 @@
+# adapted from Google style library
+# tests that the word following a colon is sentenced cased
+#  unless it appears to be an abbreviation
+extends: existence
+message: "'%s' should be in lowercase."
+link: 'https://developers.google.com/style/colons'
+nonword: true
+level: warning
+scope: sentence
+tokens:
+  - ':\s[A-Z][a-z][a-z]'

@@ -1,0 +1,10 @@
+<!-- #docregion -->
+<h1>My First Attribute Directive</h1>
+<!-- #docregion applied -->
+<p appHighlight>Highlight me!</p>
+<!-- #enddocregion applied  -->
+
+<p appHighlight highlightColor="yellow">Highlighted in yellow</p>
+<p appHighlight [highlightColor]="'orange'">Highlighted in orange</p>
+
+<p appHighlight [highlightColor]="color">Highlighted with parent component's color</p>

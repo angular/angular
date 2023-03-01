@@ -1,0 +1,7 @@
+extends: repetition
+message: "'%s' is repeated. Try to rewrite the sentence without it."
+level: warning
+ignorecase: true
+alpha: true
+tokens:
+  - '[^\s]+'

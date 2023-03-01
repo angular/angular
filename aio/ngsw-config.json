@@ -1,0 +1,150 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app-shell",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/index.html",
+          "/pwa-manifest.json",
+          "/assets/images/favicons/favicon.ico",
+          "/assets/js/*.js",
+          "/*.css",
+          "/*.js"
+        ],
+        "urls": [
+          "https://fonts.googleapis.com/**",
+          "https://fonts.gstatic.com/s/**"
+        ]
+      }
+    },
+    {
+      "name": "assets-eager",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/images/**",
+          "/generated/images/marketing/**",
+          "!/assets/images/favicons/**",
+          "!/**/_unused/**"
+        ]
+      }
+    },
+    {
+      "name": "assets-lazy",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/images/favicons/**",
+          "!/**/_unused/**"
+        ]
+      }
+    },
+    {
+      "name": "docs-index",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/generated/*.json",
+          "/generated/docs/*.json",
+          "/generated/docs/api/api-list.json",
+          "/generated/docs/app/search-data.json"
+        ]
+      }
+    },
+    {
+      "name": "docs-lazy",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "resources": {
+        "files": [
+          "/generated/docs/**/*.json",
+          "/generated/images/**",
+          "!/**/_unused/**"
+        ]
+      }
+    }
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**",
+    "!/**/stackblitz/{0,1}",
+    "!/**/AnimationStateDeclarationMetadata*",
+    "!/**/CORE_DIRECTIVES*",
+    "!/**/DirectiveMetadata-*",
+    "!/**/HTTP_PROVIDERS*",
+    "!/**/NgFor-*",
+    "!/**/OptionalMetadata-*",
+    "!/**/PLATFORM_PIPES*",
+    "!/**/api/common/Control*",
+    "!/**/api/common/ControlGroup*",
+    "!/**/api/common/NgModel/{0,1}",
+    "!/**/api/common/SelectControlValueAccessor-*",
+    "!/**/api/common/index/MaxLengthValidator-*",
+    "!/**/cookbook/ts-to-js*",
+    "!/analytics/{0,1}",
+    "!/apf/{0,1}",
+    "!/api/*/*-(class|decorator|directive|function|interface|let|pipe|type|type-alias|var)",
+    "!/api/*/testing/*-(class|decorator|directive|function|interface|let|pipe|type|type-alias|var)",
+    "!/api/*/testing/index/*",
+    "!/api/animate/**",
+    "!/api/api/**",
+    "!/api/http/**",
+    "!/api/http/{0,1}",
+    "!/api/platform-browser/AnimationDriver/{0,1}",
+    "!/api/testing/*-*",
+    "!/api/upgrade/*/*-(class|decorator|directive|function|interface|let|pipe|type|type-alias|var)",
+    "!/api/upgrade/*/index/*",
+    "!/cli/usage-analytics-gathering/{0,1}",
+    "!/config/solution-tsconfig/{0,1}",
+    "!/config/tsconfig/{0,1}",
+    "!/devtools/{0,1}",
+    "!/docs/*/latest/**",
+    "!/docs/*/latest/{0,1}",
+    "!/docs/latest/**",
+    "!/docs/styleguide*",
+    "!/docs/styleguide/{0,1}",
+    "!/getting-started/**",
+    "!/getting-started/{0,1}",
+    "!/guide/bazel/{0,1}",
+    "!/guide/change-log/{0,1}",
+    "!/guide/cli-quickstart/{0,1}",
+    "!/guide/displaying-data/{0,1}",
+    "!/guide/i18n/{0,1}",
+    "!/guide/ivy/{0,1}",
+    "!/guide/learning-angular*",
+    "!/guide/metadata/{0,1}",
+    "!/guide/ngmodule/{0,1}",
+    "!/guide/quickstart/{0,1}",
+    "!/guide/service-worker-comm/{0,1}",
+    "!/guide/service-worker-configref/{0,1}",
+    "!/guide/service-worker-getstart/{0,1}",
+    "!/guide/set-document-title/{0,1}",
+    "!/guide/setup-systemjs-anatomy/{0,1}",
+    "!/guide/setup/{0,1}",
+    "!/guide/update-to-latest-version/{0,1}",
+    "!/guide/updating-to-version-10/{0,1}",
+    "!/guide/updating-to-version-11/{0,1}",
+    "!/guide/updating-to-version-12/{0,1}",
+    "!/guide/updating-to-version-13/{0,1}",
+    "!/guide/webpack/{0,1}",
+    "!/guide/{0,1}",
+    "!/news*",
+    "!/start/data/{0,1}",
+    "!/start/deployment/{0,1}",
+    "!/start/forms/{0,1}",
+    "!/start/routing/{0,1}",
+    "!/strict/{0,1}",
+    "!/styleguide/{0,1}",
+    "!/testing/**",
+    "!/testing/{0,1}"
+  ]
+}

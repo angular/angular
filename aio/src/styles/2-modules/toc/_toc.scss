@@ -1,0 +1,200 @@
+@use 'sass:math';
+@use '../../mixins';
+
+$tocItemLineHeight: 24;
+$tocItemTopPadding: 9;
+$tocMarkerRailSize: 1;
+$tocMarkerSize: 6;
+
+@mixin tocMarker() {
+  border-radius: 50%;
+  content: "";
+  height: #{$tocMarkerSize}px;
+  left: -#{math.div($tocMarkerSize - $tocMarkerRailSize, 2)}px;
+  position: absolute;
+  top: calc(#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2)}px - #{math.div($tocMarkerSize, 2)}px);
+  top: calc(#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2 * 10)}rem - #{math.div($tocMarkerSize, 2)}px);
+  width: #{$tocMarkerSize}px;
+}
+
+.toc-container {
+  width: 18vw;
+  position: fixed;
+  top: 76px;
+  right: 0;
+  bottom: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+aio-toc {
+  .toc-inner {
+    @include mixins.font-size(13);
+    overflow-y: visible;
+    padding: 4px 0 0 10px;
+
+    .toc-heading,
+    .toc-list .h1 {
+      @include mixins.font-size(16);
+    }
+
+    .toc-heading {
+      font-weight: 500;
+      margin: 0 0 16px 8px;
+      padding: 0;
+
+      &.secondary {
+        position: relative;
+        top: -8px;
+      }
+    }
+
+    button {
+      &.toc-heading,
+      &.toc-more-items {
+        cursor: pointer;
+        display: inline-block;
+        background: 0;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        text-align: start;
+
+        &.embedded:focus {
+          outline: none;
+        }
+      }
+
+      &.toc-heading {
+        mat-icon.rotating-icon {
+          height: 18px;
+          width: 18px;
+          position: relative;
+          left: -4px;
+          top: 5px;
+        }
+      }
+
+      &.toc-more-items {
+        top: 10px;
+        position: relative;
+
+        &::after {
+          content: "expand_less";
+        }
+
+        &.collapsed::after {
+          content: "more_horiz";
+        }
+      }
+    }
+
+    .mat-icon {
+      &.collapsed {
+        @include mixins.rotate(0deg);
+      }
+
+      &:not(.collapsed) {
+        @include mixins.rotate(90deg);
+      }
+    }
+
+    ul.toc-list {
+      list-style-type: none;
+      margin: 0;
+      padding: 0 8px 0 0;
+
+      @media (max-width: 800px) {
+        width: auto;
+      }
+
+      li {
+        box-sizing: border-box;
+        @include mixins.line-height($tocItemLineHeight);
+        padding: #{$tocItemTopPadding}px 0 #{$tocItemTopPadding}px 12px;
+        position: relative;
+        transition: all 0.3s ease-in-out;
+
+        &.h1:after {
+          content: "";
+          display: block;
+          height: 1px;
+          width: 40%;
+          margin: 7px 0 4px 0;
+          clear: both;
+        }
+
+        &.h3 {
+          padding-left: 24px;
+        }
+
+        a {
+          overflow: visible;
+          @include mixins.font-size(14);
+          line-height: inherit;
+          display: table-cell;
+        }
+
+        &.active {
+          * {
+            font-weight: 500;
+          }
+
+          a:before {
+            @include tocMarker();
+          }
+        }
+      }
+
+      &:not(.embedded) li {
+        &:before {
+          bottom: 0;
+          content: "";
+          left: 0;
+          position: absolute;
+          top: 0;
+          border-left-width: #{$tocMarkerRailSize}px;
+          border-left-style: solid;
+        }
+
+        &:first-child:before {
+          top: calc(#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2)}px - #{math.div($tocMarkerSize, 2)}px);
+          top: calc(#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2 * 10)}rem - #{math.div($tocMarkerSize, 2)}px);
+        }
+
+        &:last-child:before {
+          bottom: calc(100% - (#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2)}px + #{math.div($tocMarkerSize, 2)}px));
+          bottom: calc(100% - (#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2 * 10)}rem + #{math.div($tocMarkerSize, 2)}px));
+        }
+
+        &:not(.active):hover {
+          a:before {
+            @include tocMarker();
+          }
+        }
+      }
+    }
+  }
+
+  // Alternative TOC View for Smaller Screens
+  &.embedded {
+    @media (min-width: 801px) {
+      display: none;
+    }
+
+    .toc-inner {
+      padding: 12px 0 0 0;
+
+      .toc-heading {
+        margin: 0 0 8px;
+      }
+
+      &.collapsed {
+        .secondary {
+          display: none;
+        }
+      }
+    }
+  }
+}

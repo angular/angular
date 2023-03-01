@@ -1,0 +1,21 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "platform_browser_examples",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)

@@ -1,0 +1,25 @@
+{
+  "description": "Heroes Test App",
+  "files": [
+    "src/index.html",
+    "src/main.ts",
+    "src/test.ts",
+    "src/styles.css",
+    "src/test.css",
+    "e2e/src/**/*.ts",
+    "src/app/**/*.css",
+    "src/app/**/*.html",
+    "src/app/**/*.ts",
+    "src/app/**/*.spec.ts",
+    "src/testing/**/*.ts",
+    "src/expected.ts",
+    "karma.conf.js"
+  ],
+  "tags": [
+    "testing"
+  ],
+  "devDependencies": [
+    "jasmine-core",
+    "jasmine-marbles"
+  ]
+}

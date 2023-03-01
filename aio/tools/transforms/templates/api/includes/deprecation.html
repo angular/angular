@@ -1,0 +1,5 @@
+{%- if doc.deprecated !== undefined %}
+<section class="deprecated">
+  {$ ('**Deprecated:** ' + doc.deprecated) | marked $}
+</section>
+{%- endif -%}
