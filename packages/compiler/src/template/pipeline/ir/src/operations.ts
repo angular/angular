@@ -154,6 +154,17 @@ export class OpList<OpT extends Op<OpT>> {
     }
   }
 
+  * reversed(): Generator<OpT> {
+    let current = this.tail.prev!;
+    while (current !== this.head) {
+      OpList.assertIsOwned(current, this.debugListId);
+
+      const prev = current.prev!;
+      yield current;
+      current = prev;
+    }
+  }
+
   /**
    * Replace `oldOp` with `newOp` in the list.
    */

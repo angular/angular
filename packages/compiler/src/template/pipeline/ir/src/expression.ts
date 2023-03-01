@@ -270,16 +270,16 @@ export class ReadVariableExpr extends ExpressionBase {
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
 export function visitExpressionsInOp(
-    op: CreateOp|UpdateOp, visitor: (expr: Expression) => void): void {
-  transformExpressionsInOp(op, (expr) => {
-    visitor(expr);
+    op: CreateOp|UpdateOp, visitor: (expr: Expression, flags: VisitorContextFlag) => void): void {
+  transformExpressionsInOp(op, (expr, flags) => {
+    visitor(expr, flags);
     return expr;
   }, VisitorContextFlag.None);
 }
 
 export enum VisitorContextFlag {
   None = 0b0000,
-  FunctionBody = 0b0001,
+  InChildOperation = 0b0001,
 }
 
 /**
@@ -307,7 +307,7 @@ export function transformExpressionsInOp(
       break;
     case OpKind.Listener:
       for (const innerOp of op.handlerOps) {
-        transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.FunctionBody);
+        transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.InChildOperation);
       }
       break;
     case OpKind.Element:
