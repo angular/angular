@@ -7,8 +7,8 @@
  */
 
 import {APP_ID} from './application_tokens';
-import {Injectable} from './di/injectable';
 import {inject} from './di/injector_compatibility';
+import {ɵɵdefineInjectable} from './di/interface/defs';
 import {getDocument} from './render3/interfaces/document';
 
 export function escapeTransferStateContent(text: string): string {
@@ -70,6 +70,12 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
   return key as StateKey<T>;
 }
 
+function initTransferState() {
+  const transferState = new TransferState();
+  transferState.store = retrieveTransferredState(getDocument(), inject(APP_ID));
+  return transferState;
+}
+
 /**
  * A key value store that is transferred from the application on the server side to the application
  * on the client side.
@@ -85,14 +91,19 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
 export class TransferState {
-  private store: {[k: string]: unknown|undefined} = {};
-  private onSerializeCallbacks: {[k: string]: () => unknown | undefined} = {};
+  /** @nocollapse */
+  static ɵprov =
+      /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+        token: TransferState,
+        providedIn: 'root',
+        factory: initTransferState,
+      });
 
-  constructor() {
-    this.store = retrieveTransferredState(getDocument(), inject(APP_ID));
-  }
+  /** @internal */
+  store: {[k: string]: unknown|undefined} = {};
+
+  private onSerializeCallbacks: {[k: string]: () => unknown | undefined} = {};
 
   /**
    * Get the value corresponding to a key. Return `defaultValue` if key is not found.
