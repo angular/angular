@@ -194,4 +194,52 @@ describe('perform_compile', () => {
          debug: false,
        }));
      });
+
+  it('should merge tsconfig "angularCompilerOptions" when extends is an array', () => {
+    support.writeFiles({
+      'tsconfig-level-1.json': `{
+        "extends": [
+          "./tsconfig-level-2.json",
+          "./tsconfig-level-3.json",
+        ],
+        "compilerOptions": {
+          "target": "es2020"
+        },
+        "angularCompilerOptions": {
+          "annotateForClosureCompiler": false,
+          "debug": false
+        }
+      }`,
+      'tsconfig-level-2.json': `{
+        "compilerOptions": {
+          "target": "es5",
+          "module": "es2015"
+        },
+        "angularCompilerOptions": {
+          "skipMetadataEmit": true,
+          "annotationsAs": "decorators"
+        }
+      }`,
+      'tsconfig-level-3.json': `{
+        "compilerOptions": {
+          "target": "esnext",
+          "module": "esnext"
+        },
+        "angularCompilerOptions": {
+          "annotateForClosureCompiler": true,
+          "skipMetadataEmit": false
+        }
+      }`,
+    });
+
+    const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+    expect(options).toEqual(jasmine.objectContaining({
+      target: ts.ScriptTarget.ES2020,
+      module: ts.ModuleKind.ESNext,
+      debug: false,
+      annotationsAs: 'decorators',
+      annotateForClosureCompiler: false,
+      skipMetadataEmit: false,
+    }));
+  });
 });
