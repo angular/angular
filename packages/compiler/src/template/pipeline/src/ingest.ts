@@ -168,7 +168,7 @@ function ingestBindings(
   if (element instanceof t.Template) {
     for (const attr of element.templateAttrs) {
       if (typeof attr.value === 'string') {
-        throw new Error(`TODO: unhandled static attribute bindings (is this a thing?)`);
+        // TODO: do we need to handle static attribute bindings here?
       } else {
         view.update.push(ir.createPropertyOp(op.xref, attr.name, convertAst(attr.value)));
       }
