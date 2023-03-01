@@ -43,10 +43,10 @@ function processLexicalScope(
         switch (op.variable.kind) {
           case ir.SemanticVariableKind.Identifier:
             // This variable represents some kind of identifier which can be used in the template.
-            if (scope.has(op.variable.name)) {
+            if (scope.has(op.variable.identifier)) {
               continue;
             }
-            scope.set(op.variable.name, op.xref);
+            scope.set(op.variable.identifier, op.xref);
             break;
           case ir.SemanticVariableKind.SavedView:
             // This variable represents a snapshot of the current view context, and can be used to

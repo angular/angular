@@ -44,11 +44,7 @@ function recursivelyProcessView(view: ViewCompilation, parentScope: Scope|null):
   // used to restore the view context in any listeners that may be present.
   view.create.prepend([
     ir.createVariableOp<ir.CreateOp>(
-        view.tpl.allocateXrefId(), {
-          kind: ir.SemanticVariableKind.SavedView,
-          view: view.xref,
-        },
-        new ir.GetCurrentViewExpr()),
+        view.tpl.allocateXrefId(), scope.savedViewVariable, new ir.GetCurrentViewExpr()),
   ]);
 
   for (const op of view.create) {
@@ -61,10 +57,7 @@ function recursivelyProcessView(view: ViewCompilation, parentScope: Scope|null):
         // Listeners get a preamble which starts with a call to restore the view.
         const preambleOps = [
           ir.createVariableOp<ir.UpdateOp>(
-              view.tpl.allocateXrefId(), {
-                kind: ir.SemanticVariableKind.Context,
-                view: view.xref,
-              },
+              view.tpl.allocateXrefId(), scope.viewContextVariable,
               new ir.RestoreViewExpr(view.xref)),
           // And includes all variables available to this view.
           ...generateVariablesInScopeForView(view, scope)
@@ -98,6 +91,12 @@ interface Scope {
    * `XrefId` of the view to which this scope corresponds.
    */
   view: ir.XrefId;
+
+  viewContextVariable: ir.SemanticVariable;
+
+  savedViewVariable: ir.SemanticVariable;
+
+  contextVariables: Map<string, ir.SemanticVariable>;
 
   /**
    * Local references collected from elements within the view.
@@ -133,6 +132,8 @@ interface Reference {
    * A generated offset of this reference among all the references on a specific element.
    */
   offset: number;
+
+  variable: ir.SemanticVariable;
 }
 
 /**
@@ -142,9 +143,28 @@ interface Reference {
 function getScopeForView(view: ViewCompilation, parent: Scope|null): Scope {
   const scope: Scope = {
     view: view.xref,
+    viewContextVariable: {
+      kind: ir.SemanticVariableKind.Context,
+      name: null,
+      view: view.xref,
+    },
+    savedViewVariable: {
+      kind: ir.SemanticVariableKind.SavedView,
+      name: null,
+      view: view.xref,
+    },
+    contextVariables: new Map<string, ir.SemanticVariable>(),
     references: [],
     parent,
   };
+
+  for (const identifier of view.contextVariables.keys()) {
+    scope.contextVariables.set(identifier, {
+      kind: ir.SemanticVariableKind.Identifier,
+      name: null,
+      identifier,
+    });
+  }
 
   for (const op of view.create) {
     switch (op.kind) {
@@ -161,6 +181,11 @@ function getScopeForView(view: ViewCompilation, parent: Scope|null): Scope {
             name: op.localRefs[offset].name,
             targetId: op.xref,
             offset,
+            variable: {
+              kind: ir.SemanticVariableKind.Identifier,
+              name: null,
+              identifier: op.localRefs[offset].name,
+            },
           });
         }
         break;
@@ -185,31 +210,20 @@ function generateVariablesInScopeForView(
     // view with a `nextContext` expression. This context switching operation itself declares a
     // variable, because the context of the view may be referenced directly.
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), {
-          kind: ir.SemanticVariableKind.Context,
-          view: scope.view,
-        },
-        new ir.NextContextExpr()));
+        view.tpl.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr()));
   }
 
   // Add variables for all context variables available in this scope's view.
   for (const [name, value] of view.tpl.views.get(scope.view)!.contextVariables) {
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), {
-          kind: ir.SemanticVariableKind.Identifier,
-          name,
-        },
+        view.tpl.allocateXrefId(), scope.contextVariables.get(name)!,
         new o.ReadPropExpr(new ir.ContextExpr(scope.view), value)));
   }
 
   // Add variables for all local references declared for elements in this scope.
   for (const ref of scope.references) {
     newOps.push(ir.createVariableOp(
-        view.tpl.allocateXrefId(), {
-          kind: ir.SemanticVariableKind.Identifier,
-          name: ref.name,
-        },
-        new ir.ReferenceExpr(ref.targetId, ref.offset)));
+        view.tpl.allocateXrefId(), ref.variable, new ir.ReferenceExpr(ref.targetId, ref.offset)));
   }
 
   if (scope.parent !== null) {
