@@ -1,3 +1,67 @@
+<a name="16.0.0-next.1"></a>
+# 16.0.0-next.1 (2023-03-01)
+## Breaking Changes
+### compiler
+- * TypeScript 4.8 is no longer supported.
+### core
+- Node.js v14 support has been removed
+  
+  Node.js v14 is planned to be End-of-Life on 2023-04-30. Angular will stop supporting Node.js v14 in Angular v16. Angular v16 will continue to officially support Node.js versions v16 and v18.
+### router
+- Tests which mock `ActivatedRoute` instances may need to be adjusted
+  because Router.createUrlTree now does the right thing in more
+  scenarios. This means that tests with invalid/incomplete ActivatedRoute mocks
+  may behave differently than before. Additionally, tests may now navigate
+  to a real URL where before they would navigate to the root. Ensure that
+  tests provide expected routes to match.
+  There is rarely production impact, but it has been found that relative
+  navigations when using an `ActivatedRoute` that does not appear in the
+  current router state were effectively ignored in the past. By creating
+  the correct URLs, this sometimes resulted in different navigation
+  behavior in the application. Most often, this happens when attempting to
+  create a navigation that only updates query params using an empty
+  command array, for example `router.navigate([], {relativeTo: route,
+  queryParams: newQueryParams})`. In this case, the `relativeTo` property
+  should be removed.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3c9d49a4d7](https://github.com/angular/angular/commit/3c9d49a4d7304202d60eeed97b2bb00686c079d0) | fix | make Location.normalize() return the correct path when the base path contains characters that interfere with regex syntax. ([#49181](https://github.com/angular/angular/pull/49181)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [79cdfeb392](https://github.com/angular/angular/commit/79cdfeb3921687dfbc8fea8d9f7ba4dbb14a7193) | feat | drop support for TypeScript 4.8 ([#49155](https://github.com/angular/angular/pull/49155)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b6c6dfd278](https://github.com/angular/angular/commit/b6c6dfd2781864de51bdf4bc45636aae68ea8828) | fix | do not persist component analysis if template/styles are missing ([#49184](https://github.com/angular/angular/pull/49184)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [99d874fe3b](https://github.com/angular/angular/commit/99d874fe3b486f3669b0e8f1910e31c4fa278308) | feat | add support for TypeScript 5.0 ([#49126](https://github.com/angular/angular/pull/49126)) |
+| [0f5c8003cc](https://github.com/angular/angular/commit/0f5c8003ccd1a75516d6a0e31cdb752d031ec430) | feat | introduce concept of DestroyRef ([#49158](https://github.com/angular/angular/pull/49158)) |
+| [e9edea363c](https://github.com/angular/angular/commit/e9edea363cd2da6560c3c3ec2522d1048084461b) | fix | update zone.js peerDependencies ranges ([#49244](https://github.com/angular/angular/pull/49244)) |
+| [f594725951](https://github.com/angular/angular/commit/f594725951fafde475ee99ffccf1175c13c48288) | refactor | remove Node.js v14 support ([#49255](https://github.com/angular/angular/pull/49255)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [87affadb87](https://github.com/angular/angular/commit/87affadb8710bbe0f23314115065fe9cc58306da) | fix | avoid migrating the same class multiple times in standalone migration ([#49245](https://github.com/angular/angular/pull/49245)) |
+| [7dd19570e8](https://github.com/angular/angular/commit/7dd19570e8452fbdafe50636dcd18809ccea97ae) | fix | delete barrel exports in standalone migration ([#49176](https://github.com/angular/angular/pull/49176)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a08a8ff108](https://github.com/angular/angular/commit/a08a8ff108bba88ba4bd7f30a6a8c1bcadb13db7) | fix | bundle @angular/domino in via esbuild ([#49229](https://github.com/angular/angular/pull/49229)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [455c728525](https://github.com/angular/angular/commit/455c7285257a8def53ae6c9d14e9848d72ae2613) | feat | helper functions to convert class guards to functional ([#48709](https://github.com/angular/angular/pull/48709)) |
+| [7e35a917c5](https://github.com/angular/angular/commit/7e35a917c56e746cadfcd115c559853d3e632a1e) | fix | add error message when using loadComponent with a NgModule ([#49164](https://github.com/angular/angular/pull/49164)) |
+| [31f210bf2c](https://github.com/angular/angular/commit/31f210bf2cd8a5cc8245c05a30ae3b8f8b9d826a) | fix | Router.createUrlTree should work with any ActivatedRoute ([#48508](https://github.com/angular/angular/pull/48508)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Craig Spence, Doug Parker, Iván Navarro, Jessica Janiuk, JiaLiPassion, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Michael Ziluck, Paul Gschwendtner, Pawel Kozlowski, Stephanie Tuerk, Vincent and Virginia Dooley
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.1"></a>
 # 15.2.1 (2023-03-01)
 ### common
