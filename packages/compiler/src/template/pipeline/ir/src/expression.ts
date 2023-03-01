@@ -315,6 +315,7 @@ export function transformExpressionsInOp(
     case OpKind.ElementEnd:
     case OpKind.Template:
     case OpKind.Text:
+    case OpKind.Advance:
       // These operations contain no expressions.
       break;
     default:
