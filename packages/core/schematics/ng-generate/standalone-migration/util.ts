@@ -24,7 +24,7 @@ export type NodeLookup = Map<number, ts.Node[]>;
 export type NamedClassDeclaration = ts.ClassDeclaration&{name: ts.Identifier};
 
 /** Function that can be used to remap a generated import. */
-export type ImportRemapper = (moduleName: string) => string;
+export type ImportRemapper = (moduleName: string, inFile: string) => string;
 
 /** Text span of an AST node. */
 export type ReferenceSpan = [start: number, end: number];
@@ -116,7 +116,7 @@ export class ChangeTracker {
       sourceFile: ts.SourceFile, symbolName: string, moduleName: string,
       alias: string|null = null): ts.Expression {
     if (this._importRemapper) {
-      moduleName = this._importRemapper(moduleName);
+      moduleName = this._importRemapper(moduleName, sourceFile.fileName);
     }
 
     // It's common for paths to be manipulated with Node's `path` utilties which
