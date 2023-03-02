@@ -34,6 +34,3 @@ export {global as ɵglobal} from './util/global';
 export {isObservable as ɵisObservable, isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './util/lang';
 export {stringify as ɵstringify} from './util/stringify';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider_flags';
-
-// TODO(alxhub): allows tests to compile, can be removed when tests have been updated.
-export const ɵivyEnabled = true;
