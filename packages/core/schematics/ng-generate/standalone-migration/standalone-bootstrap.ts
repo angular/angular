@@ -12,11 +12,12 @@ import {TemplateTypeChecker} from '@angular/compiler-cli/private/migrations';
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
+import {ChangeTracker, ImportRemapper} from '../../utils/change_tracker';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
 import {ComponentImportsRemapper, convertNgModuleDeclarationToStandalone, extractDeclarationsFromModule, findTestObjectsToMigrate, migrateTestDeclarations} from './to-standalone';
-import {ChangeTracker, closestOrSelf, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, ImportRemapper, isClassReferenceInAngularModule, NamedClassDeclaration, NodeLookup, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
+import {closestOrSelf, findClassDeclaration, findLiteralProperty, getNodeLookup, getRelativeImportPath, isClassReferenceInAngularModule, NamedClassDeclaration, NodeLookup, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
 
 /** Information extracted from a `bootstrapModule` call necessary to migrate it. */
 interface BootstrapCallAnalysis {

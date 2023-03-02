@@ -10,12 +10,13 @@ import {NgtscProgram} from '@angular/compiler-cli';
 import {PotentialImport, PotentialImportKind, PotentialImportMode, Reference, TemplateTypeChecker} from '@angular/compiler-cli/private/migrations';
 import ts from 'typescript';
 
+import {ChangesByFile, ChangeTracker, ImportRemapper} from '../../utils/change_tracker';
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {getImportSpecifier} from '../../utils/typescript/imports';
 import {closestNode} from '../../utils/typescript/nodes';
 import {isReferenceToImport} from '../../utils/typescript/symbol';
 
-import {ChangesByFile, ChangeTracker, findClassDeclaration, findLiteralProperty, ImportRemapper, isClassReferenceInAngularModule, NamedClassDeclaration} from './util';
+import {findClassDeclaration, findLiteralProperty, isClassReferenceInAngularModule, NamedClassDeclaration} from './util';
 
 /**
  * Function that can be used to prcess the dependencies that
