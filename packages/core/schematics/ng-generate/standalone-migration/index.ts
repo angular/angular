@@ -12,13 +12,14 @@ import {existsSync, statSync} from 'fs';
 import {join, relative} from 'path';
 import ts from 'typescript';
 
+import {ChangesByFile, normalizePath} from '../../utils/change_tracker';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createProgramOptions} from '../../utils/typescript/compiler_host';
 
 import {pruneNgModules} from './prune-modules';
 import {toStandaloneBootstrap} from './standalone-bootstrap';
 import {toStandalone} from './to-standalone';
-import {ChangesByFile, knownInternalAliasRemapper, normalizePath} from './util';
+import {knownInternalAliasRemapper} from './util';
 
 enum MigrationMode {
   toStandalone = 'convert-to-standalone',

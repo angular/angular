@@ -9,10 +9,11 @@
 import {NgtscProgram} from '@angular/compiler-cli';
 import ts from 'typescript';
 
+import {ChangeTracker, ImportRemapper} from '../../utils/change_tracker';
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
-import {ChangeTracker, findClassDeclaration, findLiteralProperty, getNodeLookup, ImportRemapper, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
+import {findClassDeclaration, findLiteralProperty, getNodeLookup, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
 
 /** Keeps track of the places from which we need to remove AST nodes. */
 interface RemovalLocations {
