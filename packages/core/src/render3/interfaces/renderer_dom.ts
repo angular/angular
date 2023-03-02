@@ -61,9 +61,9 @@ export interface RNode {
  * listeners on Element.
  */
 export interface RElement extends RNode {
+  firstChild: RNode|null;
   style: RCssStyleDeclaration;
   classList: RDomTokenList;
-  firstChild: RNode|null;
   className: string;
   tagName: string;
   textContent: string|null;

@@ -426,6 +426,9 @@
     "name": "_keyMap"
   },
   {
+    "name": "_locateOrCreateTextNode"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -436,6 +439,9 @@
   },
   {
     "name": "_retrieveHydrationInfoImpl"
+  },
+  {
+    "name": "_wasLastNodeCreated"
   },
   {
     "name": "_wrapInTimeout"

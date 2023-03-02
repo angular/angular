@@ -639,6 +639,12 @@
     "name": "_keyMap"
   },
   {
+    "name": "_locateOrCreateElementNode"
+  },
+  {
+    "name": "_locateOrCreateTextNode"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -652,6 +658,9 @@
   },
   {
     "name": "_testabilityGetter"
+  },
+  {
+    "name": "_wasLastNodeCreated"
   },
   {
     "name": "_wrapInTimeout"
@@ -1272,6 +1281,9 @@
     "name": "keyValueArraySet"
   },
   {
+    "name": "lastNodeWasCreated"
+  },
+  {
     "name": "leaveDI"
   },
   {
@@ -1615,6 +1627,9 @@
   },
   {
     "name": "walkProviderTree"
+  },
+  {
+    "name": "wasLastNodeCreated"
   },
   {
     "name": "wrapListener"
