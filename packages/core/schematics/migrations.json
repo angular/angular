@@ -9,6 +9,11 @@
       "version": "15.0.0",
       "description": "In Angular version 15, the deprecated `relativeLinkResolution` config parameter of the Router is removed. This migration removes all `relativeLinkResolution` fields from the Router config objects.",
       "factory": "./migrations/relative-link-resolution/bundle"
+    },
+    "migration-v16-functional-guards": {
+      "version": "16.0.0",
+      "description": "In Angular v15.2, class and injection-token guards and resolvers were deprecated at the `Route` definition. This migration update `Route` guards and resolvers to map classes and injection tokens to equivalent functions.",
+      "factory": "./migrations/functional-guards/bundle"
     }
   }
 }

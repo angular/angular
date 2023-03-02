@@ -19,6 +19,8 @@ jasmine_node_test(
     data = [
         "//packages/core/schematics:collection.json",
         "//packages/core/schematics:migrations.json",
+        "//packages/core/schematics/migrations/functional-guards",
+        "//packages/core/schematics/migrations/functional-guards:bundle",
         "//packages/core/schematics/migrations/relative-link-resolution",
         "//packages/core/schematics/migrations/relative-link-resolution:bundle",
         "//packages/core/schematics/migrations/router-link-with-href",

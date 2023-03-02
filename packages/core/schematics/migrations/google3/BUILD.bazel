@@ -5,6 +5,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
+        "//packages/core/schematics/migrations/functional-guards",
         "//packages/core/schematics/migrations/relative-link-resolution",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
@@ -31,9 +32,19 @@ esbuild(
     deps = [":google3"],
 )
 
+esbuild(
+    name = "functional_gaurds_rule_cjs",
+    entry_point = ":functionalGuardsRule.ts",
+    format = "cjs",
+    output = "functionalGuardsCjsRule.js",
+    platform = "node",
+    deps = [":google3"],
+)
+
 filegroup(
     name = "google3_cjs",
     srcs = [
+        ":functional_gaurds_rule_cjs",
         ":relative_link_resolution_cjs",
         ":wait_for_async_rule_cjs",
     ],
