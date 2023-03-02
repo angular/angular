@@ -8,18 +8,6 @@
 
 import {ɵglobal as global} from '@angular/core';
 
-const CAMEL_CASE_REGEXP = /([A-Z])/g;
-const DASH_CASE_REGEXP = /-([a-z])/g;
-
-
-export function camelCaseToDashCase(input: string): string {
-  return input.replace(CAMEL_CASE_REGEXP, (...m: string[]) => '-' + m[1].toLowerCase());
-}
-
-export function dashCaseToCamelCase(input: string): string {
-  return input.replace(DASH_CASE_REGEXP, (...m: string[]) => m[1].toUpperCase());
-}
-
 /**
  * Exports the value under a given `name` in the global property `ng`. For example `ng.probe` if
  * `name` is `'probe'`.
