@@ -661,11 +661,6 @@ export function getDebugNode(nativeNode: any): DebugNode|null {
   return null;
 }
 
-// TODO: cleanup all references to this function and remove it.
-export function getDebugNodeR2(_nativeNode: any): DebugNode|null {
-  return null;
-}
-
 export function getAllDebugNodes(): DebugNode[] {
   return Array.from(_nativeNodeToDebugNode.values());
 }
