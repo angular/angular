@@ -9,7 +9,7 @@
 
 import {Injector} from '../di/injector';
 import {ViewRef} from '../linker/view_ref';
-import {RElement} from '../render3/interfaces/renderer_dom';
+import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {isRootView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
@@ -77,6 +77,13 @@ export function retrieveHydrationInfoImpl(rNode: RElement, injector: Injector): 
   // The `ngh` attribute is cleared from the DOM node now
   // that the data has been retrieved.
   rNode.removeAttribute(NGH_ATTR_NAME);
+
+  // Note: don't check whether this node was claimed for hydration,
+  // because this node might've been previously claimed while processing
+  // template instructions.
+  ngDevMode && markRNodeAsClaimedByHydration(rNode, /* checkIfAlreadyClaimed */ false);
+  ngDevMode && ngDevMode.hydratedComponents++;
+
   return dehydratedView;
 }
 
@@ -114,4 +121,34 @@ export function getComponentLViewForHydration(viewRef: ViewRef): LView|null {
     lView = lView[HEADER_OFFSET];
   }
   return lView;
+}
+
+/**
+ * Internal type that represents a claimed node.
+ * Only used in dev mode.
+ */
+type ClaimedNode = {
+  __claimed?: boolean;
+};
+
+/**
+ * Marks a node as "claimed" by hydration process.
+ * This is needed to make assessments in tests whether
+ * the hydration process handled all nodes.
+ */
+export function markRNodeAsClaimedByHydration(node: RNode, checkIfAlreadyClaimed = true) {
+  if (!ngDevMode) {
+    throw new Error(
+        'Calling `markRNodeAsClaimedByHydration` in prod mode ' +
+        'is not supported and likely a mistake.');
+  }
+  if (checkIfAlreadyClaimed && isRNodeClaimedForHydration(node)) {
+    throw new Error('Trying to claim a node, which was claimed already.');
+  }
+  (node as ClaimedNode).__claimed = true;
+  ngDevMode.hydratedNodes++;
+}
+
+export function isRNodeClaimedForHydration(node: RNode): boolean {
+  return !!(node as ClaimedNode).__claimed;
 }

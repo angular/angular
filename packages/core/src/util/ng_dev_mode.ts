@@ -48,6 +48,8 @@ declare global {
     rendererAppendChild: number;
     rendererInsertBefore: number;
     rendererCreateComment: number;
+    hydratedNodes: number;
+    hydratedComponents: number;
   }
 }
 
@@ -77,6 +79,8 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererAppendChild: 0,
     rendererInsertBefore: 0,
     rendererCreateComment: 0,
+    hydratedNodes: 0,
+    hydratedComponents: 0,
   };
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.

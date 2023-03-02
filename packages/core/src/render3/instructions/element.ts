@@ -6,17 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {validateMatchingNode} from '../../hydration/error_handling';
+import {locateNextRNode} from '../../hydration/node_lookup_utils';
+import {markRNodeAsClaimedByHydration} from '../../hydration/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild, createElementNode, setupStaticAttributes} from '../node_manipulation';
-import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
+import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, lastNodeWasCreated, setCurrentTNode, setCurrentTNodeAsNotParent, wasLastNodeCreated} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
 
@@ -84,7 +88,10 @@ export function ɵɵelementStart(
   const tNode = tView.firstCreatePass ?
       elementStartFirstCreatePass(adjustedIndex, tView, lView, name, attrsIndex, localRefsIndex) :
       tView.data[adjustedIndex] as TElementNode;
-  const native = lView[adjustedIndex] = createElementNode(renderer, name, getNamespace());
+
+  const native = _locateOrCreateElementNode(tView, lView, tNode, renderer, name);
+  lView[adjustedIndex] = native;
+
   const hasDirectives = isDirectiveHost(tNode);
 
   if (ngDevMode && tView.firstCreatePass) {
@@ -94,7 +101,7 @@ export function ɵɵelementStart(
   setCurrentTNode(tNode, true);
   setupStaticAttributes(renderer, native, tNode);
 
-  if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
+  if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached && wasLastNodeCreated()) {
     // In the i18n case, the translation may have removed this element, so only add it if it is not
     // detached. See `TNodeType.Placeholder` and `LFrame.inI18n` for more context.
     appendChild(tView, lView, native, tNode);
@@ -176,4 +183,38 @@ export function ɵɵelement(
   ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
   return ɵɵelement;
+}
+
+let _locateOrCreateElementNode: typeof locateOrCreateElementNodeImpl =
+    (tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string) => {
+      lastNodeWasCreated(true);
+      return createElementNode(renderer, name, getNamespace());
+    };
+
+/**
+ * Enables hydration code path (to lookup existing elements in DOM)
+ * in addition to the regular creation mode of element nodes.
+ */
+function locateOrCreateElementNodeImpl(
+    tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string): RElement {
+  const hydrationInfo = lView[HYDRATION];
+  const isNodeCreationMode = !hydrationInfo;
+  lastNodeWasCreated(isNodeCreationMode);
+
+  // Regular creation mode.
+  if (isNodeCreationMode) {
+    return createElementNode(renderer, name, getNamespace());
+  }
+
+  // Hydration mode, looking up an existing element in DOM.
+  const native = locateNextRNode<RElement>(hydrationInfo, tView, lView, tNode)!;
+  ngDevMode &&
+      validateMatchingNode(native as unknown as Node, Node.ELEMENT_NODE, name, lView, tNode);
+  ngDevMode && markRNodeAsClaimedByHydration(native);
+
+  return native;
+}
+
+export function enableLocateOrCreateElementNodeImpl() {
+  _locateOrCreateElementNode = locateOrCreateElementNodeImpl;
 }

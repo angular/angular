@@ -742,3 +742,21 @@ export function namespaceHTMLInternal() {
 export function getNamespace(): string|null {
   return instructionState.lFrame.currentNamespace;
 }
+
+let _wasLastNodeCreated = true;
+
+/**
+ * Retrieves a global flag that indicates whether the most recent DOM node
+ * was created or hydrated.
+ */
+export function wasLastNodeCreated(): boolean {
+  return _wasLastNodeCreated;
+}
+
+/**
+ * Sets a global flag to indicate whether the most recent DOM node
+ * was created or hydrated.
+ */
+export function lastNodeWasCreated(flag: boolean): void {
+  _wasLastNodeCreated = flag;
+}

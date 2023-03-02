@@ -831,6 +831,12 @@
     "name": "_keyMap"
   },
   {
+    "name": "_locateOrCreateElementNode"
+  },
+  {
+    "name": "_locateOrCreateTextNode"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -844,6 +850,9 @@
   },
   {
     "name": "_stripIndexHtml"
+  },
+  {
+    "name": "_wasLastNodeCreated"
   },
   {
     "name": "_wrapInTimeout"
@@ -1572,6 +1581,9 @@
     "name": "last2"
   },
   {
+    "name": "lastNodeWasCreated"
+  },
+  {
     "name": "leaveDI"
   },
   {
@@ -1981,6 +1993,9 @@
   },
   {
     "name": "walkProviderTree"
+  },
+  {
+    "name": "wasLastNodeCreated"
   },
   {
     "name": "wrapIntoObservable"

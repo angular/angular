@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {APP_ID, ApplicationRef, Component, ComponentRef, destroyPlatform, getPlatform, inject, Provider, TemplateRef, Type, ViewChild, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationRef, Component, ComponentRef, destroyPlatform, getPlatform, inject, Provider, TemplateRef, Type, ViewChild, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 
@@ -64,6 +64,45 @@ function convertHtmlToDom(html: string, doc: Document): HTMLElement {
   const container = doc.createElement('div');
   container.innerHTML = contents;
   return container;
+}
+
+function stripTransferDataScript(input: string): string {
+  return input.replace(/<script (.*?)<\/script>/s, '');
+}
+
+function verifyClientAndSSRContentsMatch(ssrContents: string, clientAppRootElement: HTMLElement) {
+  const clientContents =
+      stripTransferDataScript(stripUtilAttributes(clientAppRootElement.outerHTML, false));
+  ssrContents = stripTransferDataScript(stripUtilAttributes(ssrContents, false));
+  expect(clientContents).toBe(ssrContents, 'Client and server contents mismatch');
+}
+
+/**
+ * Walks over DOM nodes starting from a given node and checks
+ * whether all nodes were claimed for hydration, i.e. annotated
+ * with a special monkey-patched flag (which is added in dev mode
+ * only).
+ */
+function verifyAllNodesClaimedForHydration(el: HTMLElement) {
+  if (!(el as any).__claimed) {
+    fail('Hydration error: the node is *not* hydrated: ' + el.outerHTML);
+  }
+  let current = el.firstChild;
+  while (current) {
+    verifyAllNodesClaimedForHydration(current as HTMLElement);
+    current = current.nextSibling;
+  }
+}
+
+/**
+ * Reset TView, so that we re-enter the first create pass as
+ * we would normally do when we hydrate on the client. Otherwise,
+ * hydration info would not be applied to T data structures.
+ */
+function resetTViewsFor(...types: Type<unknown>[]) {
+  for (const type of types) {
+    getComponentDef(type)!.tView = null;
+  }
 }
 
 describe('platform-server integration', () => {
@@ -261,12 +300,171 @@ describe('platform-server integration', () => {
 
         expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
 
+        resetTViewsFor(SimpleComponent);
+
         const appRef = await hydrate(html, SimpleComponent);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 
         const appHostNode = compRef.location.nativeElement;
         expect(appHostNode.getAttribute(NGH_ATTR_NAME)).toBeNull();
+      });
+
+      describe('basic scenarios', () => {
+        it('should support text-only contents', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              This is hydrated content.
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should support text and HTML elements', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <header>Header</header>
+              <main>This is hydrated content in the main element.</main>
+              <footer>Footer</footer>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should support text and HTML elements in nested components', async () => {
+          @Component({
+            standalone: true,
+            selector: 'nested-cmp',
+            template: `
+              <h1>Hello World!</h1>
+              <div>This is the content of a nested component</div>
+            `,
+          })
+          class NestedComponent {
+          }
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            imports: [NestedComponent],
+            template: `
+              <header>Header</header>
+              <nested-cmp />
+              <footer>Footer</footer>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent, NestedComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should support elements with local refs', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <header #headerRef>Header</header>
+              <main #mainRef>This is hydrated content in the main element.</main>
+              <footer #footerRef>Footer</footer>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should handle extra child nodes within a root app component', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <div>Some content</div>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const extraChildNodes = '<!--comment--> Some text! <b>and a tag</b>';
+          const doc = `<html><head></head><body><app>${extraChildNodes}</app></body></html>`;
+          const html = await ssr(SimpleComponent, doc);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
       });
     });
   });

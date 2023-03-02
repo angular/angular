@@ -642,6 +642,9 @@
     "name": "_keyMap"
   },
   {
+    "name": "_locateOrCreateElementNode"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -658,6 +661,9 @@
   },
   {
     "name": "_testabilityGetter"
+  },
+  {
+    "name": "_wasLastNodeCreated"
   },
   {
     "name": "_wrapInTimeout"
