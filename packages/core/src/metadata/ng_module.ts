@@ -204,7 +204,6 @@ export interface NgModule {
 
 /**
  * @Annotation
- * @publicApi
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
     'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,

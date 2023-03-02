@@ -32,7 +32,6 @@ export {TESTABILITY as ɵTESTABILITY, TESTABILITY_GETTER as ɵTESTABILITY_GETTER
 export {escapeTransferStateContent as ɵescapeTransferStateContent, unescapeTransferStateContent as ɵunescapeTransferStateContent} from './transfer_state';
 export {coerceToBoolean as ɵcoerceToBoolean} from './util/coercion';
 export {devModeEqual as ɵdevModeEqual} from './util/comparison';
-export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {global as ɵglobal} from './util/global';
 export {isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './util/lang';
 export {stringify as ɵstringify} from './util/stringify';
