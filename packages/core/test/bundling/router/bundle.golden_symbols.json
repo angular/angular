@@ -1524,9 +1524,6 @@
     "name": "isObject"
   },
   {
-    "name": "isObservable"
-  },
-  {
     "name": "isPositive"
   },
   {

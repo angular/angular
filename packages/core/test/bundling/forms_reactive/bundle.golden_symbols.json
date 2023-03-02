@@ -1221,9 +1221,6 @@
     "name": "isObject"
   },
   {
-    "name": "isObservable"
-  },
-  {
     "name": "isOptionsObj"
   },
   {
@@ -1243,6 +1240,9 @@
   },
   {
     "name": "isStylingValuePresent"
+  },
+  {
+    "name": "isSubscribable"
   },
   {
     "name": "isTemplateNode"
