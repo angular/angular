@@ -33,6 +33,6 @@ export {coerceToBoolean as ɵcoerceToBoolean} from './util/coercion';
 export {devModeEqual as ɵdevModeEqual} from './util/comparison';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {global as ɵglobal} from './util/global';
-export {isObservable as ɵisObservable, isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './util/lang';
+export {isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './util/lang';
 export {stringify as ɵstringify} from './util/stringify';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider_flags';

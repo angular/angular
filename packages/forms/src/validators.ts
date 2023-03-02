@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {InjectionToken, ɵisPromise as isPromise, ɵisSubscribable as isSubscribable, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -572,7 +572,7 @@ function isPresent(o: any): boolean {
 
 export function toObservable(value: any): Observable<any> {
   const obs = isPromise(value) ? from(value) : value;
-  if (NG_DEV_MODE && !(isObservable(obs))) {
+  if (NG_DEV_MODE && !(isSubscribable(obs))) {
     let errorMessage = `Expected async validator to return Promise or Observable.`;
     // A synchronous validator will return object or null.
     if (typeof value === 'object') {

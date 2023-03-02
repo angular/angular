@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {from, Observable, of} from 'rxjs';
+import {ɵisPromise as isPromise} from '@angular/core';
+import {from, isObservable, Observable, of} from 'rxjs';
 
 import {Params} from '../shared';
 
@@ -57,7 +57,6 @@ export function equalArraysOrString(a: string|string[], b: string|string[]) {
 export function last<T>(a: T[]): T|null {
   return a.length > 0 ? a[a.length - 1] : null;
 }
-
 
 export function wrapIntoObservable<T>(value: T|Promise<T>|Observable<T>): Observable<T> {
   if (isObservable(value)) {

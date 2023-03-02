@@ -9,7 +9,7 @@
 import {Observable} from 'rxjs';
 
 import {inject, Injectable, InjectionToken} from './di';
-import {isObservable, isPromise} from './util/lang';
+import {isPromise, isSubscribable} from './util/lang';
 
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") that you can use to provide
@@ -118,7 +118,7 @@ export class ApplicationInitStatus {
       const initResult = appInits();
       if (isPromise(initResult)) {
         asyncInitPromises.push(initResult);
-      } else if (isObservable(initResult)) {
+      } else if (isSubscribable(initResult)) {
         const observableAsPromise = new Promise<void>((resolve, reject) => {
           initResult.subscribe({complete: resolve, error: reject});
         });
