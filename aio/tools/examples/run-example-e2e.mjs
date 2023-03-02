@@ -101,7 +101,12 @@ async function attempt(testFn, maxAttempts) {
 
   while (true) {
     attempts++;
-    passed = await testFn();
+    passed = true;
+    try {
+      await testFn();
+    } catch (e) {
+      passed = false;
+    }
 
     if (passed || (attempts >= maxAttempts)) break;
   }
@@ -136,13 +141,15 @@ async function runE2eTestsSystemJS(exampleName, appDir) {
   const appBuildSpawnInfo = spawnExt(NODE, [VENDORED_YARN, config.build], {cwd: appDir});
   const appRunSpawnInfo = spawnExt(NODE, [VENDORED_YARN, ...runArgs, '-s'], {cwd: appDir}, true);
 
-  let run = runProtractorSystemJS(exampleName, appBuildSpawnInfo.promise, appDir, appRunSpawnInfo);
-
-  if (fs.existsSync(appDir + '/aot/index.html')) {
-    run = run.then((ok) => ok && runProtractorAoT(exampleName, appDir));
+  try {
+    await runProtractorSystemJS(exampleName, appBuildSpawnInfo.promise, appDir);
+  } finally {
+    treeKill(appRunSpawnInfo.proc.pid);
   }
 
-  return run;
+  if (fs.existsSync(appDir + '/aot/index.html')) {
+    await runProtractorAoT(exampleName, appDir);
+  }
 }
 
 // The SystemJS examples spawn an http server and protractor using a hardcoded
@@ -180,46 +187,16 @@ async function overrideSystemJsExampleToUseRandomPort(exampleConfig, exampleDir)
   return runArgs;
 }
 
-function runProtractorSystemJS(exampleName, prepPromise, appDir, appRunSpawnInfo) {
-  const specFilename = path.resolve(`${appDir}/${SJS_SPEC_FILENAME}`);
-  return prepPromise
-      .catch(() => {
-        const emsg = `Application at ${appDir} failed to transpile.\n\n`;
-        console.log(emsg);
-        return Promise.reject(emsg);
-      })
-      .then(() => {
-        let transpileError = false;
+async function runProtractorSystemJS(exampleName, prepPromise, appDir) {
+  await prepPromise;
 
-        // Start protractor.
-        console.log(`\n\n=========== Running aio example tests for: ${exampleName}`);
-        const spawnInfo = spawnExt(NODE, [VENDORED_YARN, 'protractor'], {cwd: appDir});
-
-        spawnInfo.proc.stderr.on('data', function(data) {
-          transpileError = transpileError || /npm ERR! Exit status 100/.test(data.toString());
-        });
-        return spawnInfo.promise.catch(function() {
-          if (transpileError) {
-            const emsg = `${specFilename} failed to transpile.\n\n`;
-            console.log(emsg);
-          }
-          return Promise.reject();
-        });
-      })
-      .then(
-          () => finish(appRunSpawnInfo.proc.pid, true),
-          () => finish(appRunSpawnInfo.proc.pid, false));
-}
-
-function finish(spawnProcId, ok) {
-  // Ugh... proc.kill does not work properly on windows with child processes.
-  // appRun.proc.kill();
-  treeKill(spawnProcId);
-  return ok;
+  // Wait for the app to be running. Then we can start Protractor tests.
+  console.log(`\n\n=========== Running aio example tests for: ${exampleName}`);
+  await spawnExt(NODE, [VENDORED_YARN, 'protractor'], {cwd: appDir}).promise;
 }
 
 // Run e2e tests over the AOT build for projects that examples it.
-function runProtractorAoT(exampleName, appDir) {
+async function runProtractorAoT(exampleName, appDir) {
   const aotBuildSpawnInfo = spawnExt(NODE, [VENDORED_YARN, 'build:aot'], {cwd: appDir});
   let promise = aotBuildSpawnInfo.promise;
 
@@ -227,15 +204,22 @@ function runProtractorAoT(exampleName, appDir) {
   if (fs.existsSync(appDir + '/' + copyFileCmd)) {
     promise = promise.then(() => spawnExt('node', [copyFileCmd], {cwd: appDir}).promise);
   }
+
+  // Run the server in the background. Will be killed upon test completion.
   const aotRunSpawnInfo = spawnExt(NODE, [VENDORED_YARN, 'serve:aot'], {cwd: appDir}, true);
-  return runProtractorSystemJS(exampleName, promise, appDir, aotRunSpawnInfo);
+
+  try {
+    await runProtractorSystemJS(exampleName, promise, appDir);
+  } finally {
+    treeKill(aotRunSpawnInfo.proc.pid);
+  }
 }
 
 // Start the example in appDir; then run protractor with the specified
 // fileName; then shut down the example.
 // All protractor output is appended to the outputFile.
 // CLI version
-function runE2eTestsCLI(exampleName, appDir) {
+async function runE2eTestsCLI(exampleName, appDir) {
   console.log(`\n\n=========== Running aio example tests for: ${exampleName}`);
 
   const config = loadExampleConfig(appDir);
@@ -264,17 +248,10 @@ function runE2eTestsCLI(exampleName, appDir) {
                          ],
                        }];
 
-  const e2eSpawnPromise = testCommands.reduce((prevSpawnPromise, {cmd, args}) => {
-    return prevSpawnPromise.then(() => {
-      const currSpawn = spawnExt(cmd, args, {cwd: appDir}, false);
-      return currSpawn.promise.then(
-          () => finish(currSpawn.proc.pid, true),
-          () => finish(currSpawn.proc.pid, false),
-      )
-    });
-  }, Promise.resolve());
 
-  return e2eSpawnPromise;
+  for (const {cmd, args} of testCommands) {
+    await spawnExt(cmd, args, {cwd: appDir}, false).promise;
+  }
 }
 
 // Returns both a promise and the spawned process so that it can be killed if needed.
