@@ -228,7 +228,7 @@ export interface TestDirective extends Partial<Pick<
     Exclude<
         keyof TypeCheckableDirectiveMeta,
         'ref'|'coercedInputFields'|'restrictedInputFields'|'stringLiteralInputFields'|
-        'undeclaredInputFields'|'inputs'|'outputs'|'hostDirectives'>>> {
+        'undeclaredInputFields'|'requiredInputs'|'inputs'|'outputs'|'hostDirectives'>>> {
   selector: string;
   name: string;
   file?: AbsoluteFsPath;
@@ -238,6 +238,7 @@ export interface TestDirective extends Partial<Pick<
   coercedInputFields?: string[];
   restrictedInputFields?: string[];
   stringLiteralInputFields?: string[];
+  requiredInputs?: string[];
   undeclaredInputFields?: string[];
   isGeneric?: boolean;
   code?: string;
@@ -652,10 +653,11 @@ function getDirectiveMetaFromDeclaration(
     inputs: ClassPropertyMapping.fromMappedObject(decl.inputs || {}),
     isComponent: decl.isComponent || false,
     ngTemplateGuards: decl.ngTemplateGuards || [],
-    coercedInputFields: new Set<string>(decl.coercedInputFields || []),
-    restrictedInputFields: new Set<string>(decl.restrictedInputFields || []),
-    stringLiteralInputFields: new Set<string>(decl.stringLiteralInputFields || []),
-    undeclaredInputFields: new Set<string>(decl.undeclaredInputFields || []),
+    coercedInputFields: new Set(decl.coercedInputFields || []),
+    restrictedInputFields: new Set(decl.restrictedInputFields || []),
+    stringLiteralInputFields: new Set(decl.stringLiteralInputFields || []),
+    undeclaredInputFields: new Set(decl.undeclaredInputFields || []),
+    requiredInputs: new Set(decl.requiredInputs || []),
     isGeneric: decl.isGeneric ?? false,
     outputs: ClassPropertyMapping.fromMappedObject(decl.outputs || {}),
     queries: decl.queries || [],
@@ -709,6 +711,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         restrictedInputFields: new Set(decl.restrictedInputFields ?? []),
         stringLiteralInputFields: new Set(decl.stringLiteralInputFields ?? []),
         undeclaredInputFields: new Set(decl.undeclaredInputFields ?? []),
+        requiredInputs: new Set(decl.requiredInputs ?? []),
         isGeneric: decl.isGeneric ?? false,
         isPoisoned: false,
         isStructural: false,
@@ -782,4 +785,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   requiresInlineTypeConstructors(): void {}
   suboptimalTypeInference(): void {}
   splitTwoWayBinding(): void {}
+  missingRequiredInputs(): void {}
 }

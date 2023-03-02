@@ -98,6 +98,11 @@ export interface DirectiveTypeCheckMeta {
   undeclaredInputFields: Set<ClassPropertyName>;
 
   /**
+   * The set of input fields that are required for the directive to function.
+   */
+  requiredInputs: Set<ClassPropertyName>|null;
+
+  /**
    * Whether the Directive's class is generic, i.e. `class MyDir<T> {...}`.
    */
   isGeneric: boolean;

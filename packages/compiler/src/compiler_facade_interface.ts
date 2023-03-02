@@ -165,7 +165,7 @@ export interface R3DirectiveMetadataFacade {
   host: {[key: string]: string};
   propMetadata: {[key: string]: OpaqueValue[]};
   lifecycle: {usesOnChanges: boolean;};
-  inputs: string[];
+  inputs: (string|{name: string, publicName?: string, required?: boolean})[];
   outputs: string[];
   usesInheritance: boolean;
   exportAs: string[]|null;

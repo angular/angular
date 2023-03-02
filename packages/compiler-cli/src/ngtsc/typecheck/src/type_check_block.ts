@@ -701,6 +701,8 @@ class TcbDirectiveInputsOp extends TcbOp {
     // TODO(joost): report duplicate properties
 
     const inputs = getBoundInputs(this.dir, this.node, this.tcb);
+    const seenRequiredInputs = new Set<string>();
+
     for (const input of inputs) {
       // For bound inputs, the property is assigned the binding expression.
       const expr = widenBinding(translateInput(input.attribute, this.tcb, this.scope), this.tcb);
@@ -709,6 +711,11 @@ class TcbDirectiveInputsOp extends TcbOp {
 
       for (const fieldName of input.fieldNames) {
         let target: ts.LeftHandSideExpression;
+
+        if (this.dir.requiredInputs?.has(fieldName)) {
+          seenRequiredInputs.add(fieldName);
+        }
+
         if (this.dir.coercedInputFields.has(fieldName)) {
           // The input has a coercion declaration which should be used instead of assigning the
           // expression into the input field directly. To achieve this, a variable is declared
@@ -784,6 +791,27 @@ class TcbDirectiveInputsOp extends TcbOp {
       }
 
       this.scope.addStatement(ts.factory.createExpressionStatement(assignment));
+    }
+
+    if (this.dir.requiredInputs !== null &&
+        this.dir.requiredInputs.size !== seenRequiredInputs.size) {
+      const missing: string[] = [];
+
+      for (const name of this.dir.requiredInputs) {
+        if (!seenRequiredInputs.has(name)) {
+          const input = this.dir.inputs.getByClassPropertyName(name);
+
+          // Users shouldn't be able to hit this code path, but it may happen during our own tests.
+          if (input === null) {
+            throw new Error(`Required input ${name} is not registered as a directive input`);
+          }
+
+          missing.push(input.bindingPropertyName);
+        }
+      }
+
+      this.tcb.oobRecorder.missingRequiredInputs(
+          this.tcb.id, this.node, this.dir.name, this.dir.isComponent, missing);
     }
 
     return null;

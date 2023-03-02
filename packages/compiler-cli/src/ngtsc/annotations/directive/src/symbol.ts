@@ -119,6 +119,9 @@ function isTypeCheckMetaEqual(
   if (!isSetEqual(current.undeclaredInputFields, previous.undeclaredInputFields)) {
     return false;
   }
+  if (!isSetEqual(current.requiredInputs, previous.requiredInputs)) {
+    return false;
+  }
   return true;
 }
 

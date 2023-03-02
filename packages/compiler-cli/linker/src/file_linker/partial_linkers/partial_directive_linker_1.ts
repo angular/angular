@@ -50,6 +50,7 @@ export function toR3DirectiveMeta<TExpression>(
     deps: null,
     host: toHostMetadata(metaObj),
     inputs: metaObj.has('inputs') ? metaObj.getObject('inputs').toLiteral(toInputMapping) : {},
+    requiredInputs: null,  // Required inputs aren't supported at runtime.
     outputs: metaObj.has('outputs') ?
         metaObj.getObject('outputs').toLiteral(value => value.getString()) :
         {},

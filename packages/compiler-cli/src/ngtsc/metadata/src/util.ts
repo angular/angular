@@ -112,7 +112,7 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
  * making this metadata invariant to changes of inherited classes.
  */
 export function extractDirectiveTypeCheckMeta(
-    node: ClassDeclaration, inputs: ClassPropertyMapping,
+    node: ClassDeclaration, inputs: ClassPropertyMapping, requiredInputs: Set<string>|null,
     reflector: ReflectionHost): DirectiveTypeCheckMeta {
   const members = reflector.getMembersOfClass(node);
   const staticMembers = members.filter(member => member.isStatic);
@@ -152,6 +152,7 @@ export function extractDirectiveTypeCheckMeta(
     restrictedInputFields,
     stringLiteralInputFields,
     undeclaredInputFields,
+    requiredInputs,
     isGeneric: arity !== null && arity > 0,
   };
 }

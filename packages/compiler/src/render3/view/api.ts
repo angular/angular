@@ -92,6 +92,11 @@ export interface R3DirectiveMetadata {
   inputs: {[field: string]: string|[string, string]};
 
   /**
+   * Names of the class fields that are marked as required inputs.
+   */
+  requiredInputs: Set<string>|null;
+
+  /**
    * A mapping of outputs from class property names to binding property names, or to a tuple of
    * binding property name and class property name if the names are different.
    */

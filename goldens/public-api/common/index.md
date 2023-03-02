@@ -485,7 +485,7 @@ export class NgClass implements DoCheck {
     // (undocumented)
     ngDoCheck(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgClass, "[ngClass]", never, { "klass": "class"; "ngClass": "ngClass"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgClass, "[ngClass]", never, { "klass": { "publicName": "class"; "required": false; }; "ngClass": { "publicName": "ngClass"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgClass, never>;
 }
@@ -508,7 +508,7 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet, "[ngComponentOutlet]", never, { "ngComponentOutlet": "ngComponentOutlet"; "ngComponentOutletInjector": "ngComponentOutletInjector"; "ngComponentOutletContent": "ngComponentOutletContent"; "ngComponentOutletNgModule": "ngComponentOutletNgModule"; "ngComponentOutletNgModuleFactory": "ngComponentOutletNgModuleFactory"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet, "[ngComponentOutlet]", never, { "ngComponentOutlet": { "publicName": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInjector": { "publicName": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletContent": { "publicName": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "publicName": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "publicName": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet, never>;
 }
@@ -524,7 +524,7 @@ class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     get ngForTrackBy(): TrackByFunction<T>;
     static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForOf<any, any>, "[ngFor][ngForOf]", never, { "ngForOf": "ngForOf"; "ngForTrackBy": "ngForTrackBy"; "ngForTemplate": "ngForTemplate"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForOf<any, any>, "[ngFor][ngForOf]", never, { "ngForOf": { "publicName": "ngForOf"; "required": false; }; "ngForTrackBy": { "publicName": "ngForTrackBy"; "required": false; }; "ngForTemplate": { "publicName": "ngForTemplate"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgForOf<any, any>, never>;
 }
@@ -561,7 +561,7 @@ export class NgIf<T = unknown> {
     static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false | 0 | '' | null | undefined>>;
     static ngTemplateGuard_ngIf: 'binding';
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgIf<any>, "[ngIf]", never, { "ngIf": "ngIf"; "ngIfThen": "ngIfThen"; "ngIfElse": "ngIfElse"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgIf<any>, "[ngIf]", never, { "ngIf": { "publicName": "ngIf"; "required": false; }; "ngIfThen": { "publicName": "ngIfThen"; "required": false; }; "ngIfElse": { "publicName": "ngIfElse"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgIf<any>, never>;
 }
@@ -628,7 +628,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // (undocumented)
     get width(): number | undefined;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": "ngSrc"; "ngSrcset": "ngSrcset"; "sizes": "sizes"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "loaderParams": "loaderParams"; "disableOptimizedSrcset": "disableOptimizedSrcset"; "fill": "fill"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": { "publicName": "ngSrc"; "required": false; }; "ngSrcset": { "publicName": "ngSrcset"; "required": false; }; "sizes": { "publicName": "sizes"; "required": false; }; "width": { "publicName": "width"; "required": false; }; "height": { "publicName": "height"; "required": false; }; "loading": { "publicName": "loading"; "required": false; }; "priority": { "publicName": "priority"; "required": false; }; "loaderParams": { "publicName": "loaderParams"; "required": false; }; "disableOptimizedSrcset": { "publicName": "disableOptimizedSrcset"; "required": false; }; "fill": { "publicName": "fill"; "required": false; }; "src": { "publicName": "src"; "required": false; }; "srcset": { "publicName": "srcset"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
 }
@@ -641,7 +641,7 @@ export class NgPlural {
     // (undocumented)
     set ngPlural(value: number);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgPlural, "[ngPlural]", never, { "ngPlural": "ngPlural"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgPlural, "[ngPlural]", never, { "ngPlural": { "publicName": "ngPlural"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgPlural, never>;
 }
@@ -667,7 +667,7 @@ export class NgStyle implements DoCheck {
         [klass: string]: any;
     } | null | undefined);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgStyle, "[ngStyle]", never, { "ngStyle": "ngStyle"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgStyle, "[ngStyle]", never, { "ngStyle": { "publicName": "ngStyle"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgStyle, never>;
 }
@@ -677,7 +677,7 @@ export class NgSwitch {
     // (undocumented)
     set ngSwitch(newValue: any);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitch, "[ngSwitch]", never, { "ngSwitch": "ngSwitch"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitch, "[ngSwitch]", never, { "ngSwitch": { "publicName": "ngSwitch"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitch, never>;
 }
@@ -688,7 +688,7 @@ export class NgSwitchCase implements DoCheck {
     ngDoCheck(): void;
     ngSwitchCase: any;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitchCase, "[ngSwitchCase]", never, { "ngSwitchCase": "ngSwitchCase"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitchCase, "[ngSwitchCase]", never, { "ngSwitchCase": { "publicName": "ngSwitchCase"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitchCase, [null, null, { optional: true; host: true; }]>;
 }
@@ -711,7 +711,7 @@ export class NgTemplateOutlet implements OnChanges {
     ngTemplateOutletContext: Object | null;
     ngTemplateOutletInjector: Injector | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": "ngTemplateOutletContext"; "ngTemplateOutlet": "ngTemplateOutlet"; "ngTemplateOutletInjector": "ngTemplateOutletInjector"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": { "publicName": "ngTemplateOutletContext"; "required": false; }; "ngTemplateOutlet": { "publicName": "ngTemplateOutlet"; "required": false; }; "ngTemplateOutletInjector": { "publicName": "ngTemplateOutletInjector"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgTemplateOutlet, never>;
 }

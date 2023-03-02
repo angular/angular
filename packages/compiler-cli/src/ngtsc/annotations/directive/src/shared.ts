@@ -18,12 +18,17 @@ import {HandlerFlags} from '../../../transform';
 import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
+const EMPTY_ARRAY: any[] = [];
 const QUERY_TYPES = new Set([
   'ContentChild',
   'ContentChildren',
   'ViewChild',
   'ViewChildren',
 ]);
+
+type StringMap<T> = {
+  [key: string]: T;
+};
 
 /**
  * Helper function to extract metadata from a `Directive` or `Component`. `Directive`s without a
@@ -74,19 +79,21 @@ export function extractDirectiveMetadata(
   const coreModule = isCore ? undefined : '@angular/core';
 
   // Construct the map of inputs both from the @Directive/@Component
-  // decorator, and the decorated
-  // fields.
-  const inputsFromMeta = parseFieldToPropertyMapping(directive, 'inputs', evaluator);
-  const inputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), evaluator,
-      resolveInput);
+  // decorator, and the decorated fields.
+  const [inputsFromMeta, requiredInputsFromMeta] = parseInputsArray(directive, evaluator);
+  const [inputsFromFields, requiredInputsFromFields] = parseInputFields(
+      filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), evaluator);
+  const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
+  const requiredInputs = requiredInputsFromMeta.length > 0 || requiredInputsFromFields.length > 0 ?
+      new Set([...requiredInputsFromMeta, ...requiredInputsFromFields]) :
+      null;
 
   // And outputs.
-  const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', evaluator);
-  const outputsFromFields =
-      parseDecoratedFields(
-          filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator,
-          resolveOutput) as {[field: string]: string};
+  const outputsFromMeta = parseOutputsArray(directive, evaluator);
+  const outputsFromFields = parseOutputFields(
+      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator);
+  const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
+
   // Construct the list of queries.
   const contentChildFromFields = queriesFromFields(
       filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), reflector,
@@ -185,8 +192,6 @@ export function extractDirectiveMetadata(
   const sourceFile = clazz.getSourceFile();
   const type = wrapTypeReference(reflector, clazz);
   const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
-  const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
-  const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
   const rawHostDirectives = directive.get('hostDirectives') || null;
   const hostDirectives =
       rawHostDirectives === null ? null : extractHostDirectives(rawHostDirectives, evaluator);
@@ -198,6 +203,7 @@ export function extractDirectiveMetadata(
     lifecycle: {
       usesOnChanges,
     },
+    requiredInputs,
     inputs: inputs.toJointMappedObject(),
     outputs: outputs.toDirectMappedObject(),
     queries,
@@ -448,7 +454,7 @@ function extractQueriesFromDecorator(
   return {content, view};
 }
 
-export function parseFieldArrayValue(
+export function parseFieldStringArrayValue(
     directive: Map<string, ts.Expression>, field: string, evaluator: PartialEvaluator): null|
     string[] {
   if (!directive.has(field)) {
@@ -512,76 +518,167 @@ function isPropertyTypeMember(member: ClassMember): boolean {
       member.kind === ClassMemberKind.Property;
 }
 
-/**
- * Interpret property mapping fields on the decorator (e.g. inputs or outputs) and return the
- * correctly shaped metadata object.
- */
-function parseFieldToPropertyMapping(
-    directive: Map<string, ts.Expression>, field: string,
-    evaluator: PartialEvaluator): {[field: string]: string} {
-  const metaValues = parseFieldArrayValue(directive, field, evaluator);
-  return metaValues ? parseInputOutputMappingArray(metaValues) : EMPTY_OBJECT;
-}
-
-function parseInputOutputMappingArray(values: string[]) {
+function parseMappingStringArray(values: string[]) {
   return values.reduce((results, value) => {
     if (typeof value !== 'string') {
       throw new Error('Mapping value must be a string');
     }
 
-    // Either the value is 'field' or 'field: property'. In the first case, `property` will
-    // be undefined, in which case the field name should also be used as the property name.
-    const [field, property] = value.split(':', 2).map(str => str.trim());
-    results[field] = property || field;
+    const [publicName, fieldName] = parseMappingString(value);
+    results[fieldName] = publicName;
     return results;
   }, {} as {[field: string]: string});
 }
 
+function parseMappingString(value: string): [publicName: string, fieldName: string] {
+  // Either the value is 'field' or 'field: property'. In the first case, `property` will
+  // be undefined, in which case the field name should also be used as the property name.
+  const [fieldName, publicName] = value.split(':', 2).map(str => str.trim());
+  return [publicName ?? fieldName, fieldName];
+}
+
 /**
- * Parse property decorators (e.g. `Input` or `Output`) and return the correctly shaped metadata
- * object.
+ * Parse property decorators (e.g. `Input` or `Output`) and invoke callback with the parsed data.
  */
 function parseDecoratedFields(
     fields: {member: ClassMember, decorators: Decorator[]}[], evaluator: PartialEvaluator,
-    mapValueResolver: (publicName: string, internalName: string) =>
-        string | [string, string]): {[field: string]: string|[string, string]} {
-  return fields.reduce((results, field) => {
+    callback: (fieldName: string, mapValue: ResolvedValue, decorator: Decorator) => void): void {
+  for (const field of fields) {
     const fieldName = field.member.name;
-    field.decorators.forEach(decorator => {
-      // The decorator either doesn't have an argument (@Input()) in which case the property
-      // name is used, or it has one argument (@Output('named')).
-      if (decorator.args == null || decorator.args.length === 0) {
-        results[fieldName] = fieldName;
-      } else if (decorator.args.length === 1) {
-        const property = evaluator.evaluate(decorator.args[0]);
-        if (typeof property !== 'string') {
-          throw createValueHasWrongTypeError(
-              Decorator.nodeForError(decorator), property,
-              `@${decorator.name} decorator argument must resolve to a string`);
-        }
-        results[fieldName] = mapValueResolver(property, fieldName);
-      } else {
-        // Too many arguments.
+
+    for (const decorator of field.decorators) {
+      if (decorator.args != null && decorator.args.length > 1) {
         throw new FatalDiagnosticError(
             ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
             `@${decorator.name} can have at most one argument, got ${
                 decorator.args.length} argument(s)`);
       }
-    });
-    return results;
-  }, {} as {[field: string]: string | [string, string]});
+
+      const value = decorator.args != null && decorator.args.length > 0 ?
+          evaluator.evaluate(decorator.args[0]) :
+          null;
+
+      callback(fieldName, value, decorator);
+    }
+  }
 }
 
-function resolveInput(publicName: string, internalName: string): [string, string] {
-  return [publicName, internalName];
+/** Parses the `inputs` array of a directive/component decorator. */
+function parseInputsArray(
+    decoratorMetadata: Map<string, ts.Expression>,
+    evaluator: PartialEvaluator): [inputs: StringMap<string>, requiredInputs: string[]] {
+  const inputsField = decoratorMetadata.get('inputs');
+
+  if (inputsField == null) {
+    return [EMPTY_OBJECT, EMPTY_ARRAY];
+  }
+
+  const inputs = {} as StringMap<string>;
+  const requiredInputs: string[] = [];
+  const inputsArray = evaluator.evaluate(inputsField);
+
+  if (!Array.isArray(inputsArray)) {
+    throw createValueHasWrongTypeError(
+        inputsField, inputsArray, `Failed to resolve @Directive.inputs to an array`);
+  }
+
+  for (let i = 0; i < inputsArray.length; i++) {
+    const value = inputsArray[i];
+
+    if (typeof value === 'string') {
+      // If the value is a string, we treat it as a mapping string;
+      const [publicName, fieldName] = parseMappingString(value);
+      inputs[fieldName] = publicName;
+    } else if (value instanceof Map) {
+      // If it's a map, we treat it as a config object.
+      const fieldName = value.get('name');
+      const publicName = value.get('publicName');
+      const required = value.get('required');
+
+      if (typeof fieldName !== 'string') {
+        throw createValueHasWrongTypeError(
+            inputsField, fieldName,
+            `Value at position ${i} of @Directive.inputs array must have a "name" property`);
+      }
+
+      if (required === true) {
+        requiredInputs.push(fieldName);
+      }
+
+      inputs[fieldName] =
+          typeof publicName === 'string' && publicName.length > 0 ? publicName : fieldName;
+    } else {
+      throw createValueHasWrongTypeError(
+          inputsField, value,
+          `@Directive.inputs array can only contain strings or object literals`);
+    }
+  }
+
+  return [inputs, requiredInputs];
 }
 
-function resolveOutput(publicName: string, internalName: string) {
-  return publicName;
+/** Parses the class members that are decorated as inputs. */
+function parseInputFields(
+    inputMembers: {member: ClassMember, decorators: Decorator[]}[],
+    evaluator: PartialEvaluator): [inputs: StringMap<[string, string]>, requiredInputs: string[]] {
+  const inputs = {} as StringMap<[string, string]>;
+  const requiredInputs: string[] = [];
+
+  parseDecoratedFields(inputMembers, evaluator, (fieldName, value, decorator) => {
+    let publicName: string|undefined;
+
+    if (value === null) {
+      publicName = fieldName;
+    } else if (typeof value === 'string') {
+      publicName = value;
+    } else if (value instanceof Map) {
+      const publicNameInConfig = value.get('publicName');
+      const required = value.get('required');
+
+      if (typeof publicNameInConfig === 'string') {
+        publicName = publicNameInConfig;
+      }
+
+      if (required === true) {
+        requiredInputs.push(fieldName);
+      }
+    } else {
+      throw createValueHasWrongTypeError(
+          Decorator.nodeForError(decorator), value,
+          `@${decorator.name} decorator argument must resolve to a string`);
+    }
+
+    inputs[fieldName] = [publicName ?? fieldName, fieldName];
+  });
+
+  return [inputs, requiredInputs];
 }
-type StringMap<T> = {
-  [key: string]: T;
-};
+
+/** Parses the `outputs` array of a directive/component. */
+function parseOutputsArray(
+    directive: Map<string, ts.Expression>, evaluator: PartialEvaluator): StringMap<string> {
+  const metaValues = parseFieldStringArrayValue(directive, 'outputs', evaluator);
+  return metaValues ? parseMappingStringArray(metaValues) : EMPTY_OBJECT;
+}
+
+/** Parses the class members that are decorated as outputs. */
+function parseOutputFields(
+    outputMembers: {member: ClassMember, decorators: Decorator[]}[],
+    evaluator: PartialEvaluator): StringMap<string> {
+  const outputs = {} as StringMap<string>;
+
+  parseDecoratedFields(outputMembers, evaluator, (fieldName, publicName, decorator) => {
+    if (publicName != null && typeof publicName !== 'string') {
+      throw createValueHasWrongTypeError(
+          Decorator.nodeForError(decorator), publicName,
+          `@${decorator.name} decorator argument must resolve to a string`);
+    }
+
+    outputs[fieldName] = publicName ?? fieldName;
+  });
+
+  return outputs;
+}
 
 function evaluateHostExpressionBindings(
     hostExpr: ts.Expression, evaluator: PartialEvaluator): ParsedHostBindings {
@@ -679,7 +776,7 @@ function parseHostDirectivesMapping(
     const rawInputs = resolvedValue.get(field);
 
     if (isStringArrayOrDie(rawInputs, nameForErrors, sourceExpression)) {
-      return parseInputOutputMappingArray(rawInputs);
+      return parseMappingStringArray(rawInputs);
     }
   }
 

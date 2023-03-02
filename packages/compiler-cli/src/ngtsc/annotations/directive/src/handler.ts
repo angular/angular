@@ -118,7 +118,8 @@ export class DirectiveDecoratorHandler implements
         classMetadata: extractClassMetadata(
             node, this.reflector, this.isCore, this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
-        typeCheckMeta: extractDirectiveTypeCheckMeta(node, directiveResult.inputs, this.reflector),
+        typeCheckMeta: extractDirectiveTypeCheckMeta(
+            node, directiveResult.inputs, analysis.requiredInputs, this.reflector),
         providersRequiringFactory,
         isPoisoned: false,
         isStructural: directiveResult.isStructural,

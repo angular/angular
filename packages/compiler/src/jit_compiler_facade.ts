@@ -325,8 +325,8 @@ function convertQueryPredicate(predicate: OpaqueValue|string[]): MaybeForwardRef
 }
 
 function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3DirectiveMetadata {
-  const inputsFromMetadata = parseInputOutputs(facade.inputs || []);
-  const outputsFromMetadata = parseInputOutputs(facade.outputs || []);
+  const inputsFromMetadata = parseInputsArray(facade.inputs || []);
+  const outputsFromMetadata = parseMappingStringArray(facade.outputs || []);
   const propMetadata = facade.propMetadata;
   const inputsFromType: StringMapWithRename = {};
   const outputsFromType: StringMap = {};
@@ -334,10 +334,9 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     if (propMetadata.hasOwnProperty(field)) {
       propMetadata[field].forEach(ann => {
         if (isInput(ann)) {
-          inputsFromType[field] =
-              ann.bindingPropertyName ? [ann.bindingPropertyName, field] : field;
+          inputsFromType[field] = ann.publicName ? [ann.publicName, field] : field;
         } else if (isOutput(ann)) {
-          outputsFromType[field] = ann.bindingPropertyName || field;
+          outputsFromType[field] = ann.publicName || field;
         }
       });
     }
@@ -358,6 +357,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
     fullInheritance: false,
     hostDirectives: convertHostDirectivesToMetadata(facade),
+    requiredInputs: null,  // Required inputs aren't supported in JIT mode.
   };
 }
 
@@ -384,6 +384,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     fullInheritance: false,
     isStandalone: declaration.isStandalone ?? false,
     hostDirectives: convertHostDirectivesToMetadata(declaration),
+    requiredInputs: null,  // Required inputs aren't supported in JIT mode.
   };
 }
 
@@ -414,8 +415,8 @@ function convertHostDirectivesToMetadata(
           {
             directive: wrapReference(hostDirective.directive),
             isForwardReference: false,
-            inputs: hostDirective.inputs ? parseInputOutputs(hostDirective.inputs) : null,
-            outputs: hostDirective.outputs ? parseInputOutputs(hostDirective.outputs) : null,
+            inputs: hostDirective.inputs ? parseMappingStringArray(hostDirective.inputs) : null,
+            outputs: hostDirective.outputs ? parseMappingStringArray(hostDirective.outputs) : null,
           };
     });
   }
@@ -661,12 +662,31 @@ function isOutput(value: any): value is Output {
   return value.ngMetadataName === 'Output';
 }
 
-function parseInputOutputs(values: string[]): StringMap {
+function parseInputsArray(values: (string|{name: string, publicName?: string})[]): StringMap {
   return values.reduce((results, value) => {
-    const [field, property] = value.split(':', 2).map(str => str.trim());
-    results[field] = property || field;
+    if (typeof value === 'string') {
+      const [publicName, fieldName] = parseMappingString(value);
+      results[fieldName] = publicName;
+    } else {
+      results[value.name] = value.publicName ?? value.name;
+    }
     return results;
   }, {} as StringMap);
+}
+
+function parseMappingStringArray(values: string[]): StringMap {
+  return values.reduce((results, value) => {
+    const [publicName, fieldName] = parseMappingString(value);
+    results[fieldName] = publicName;
+    return results;
+  }, {} as StringMap);
+}
+
+function parseMappingString(value: string): [publicName: string, fieldName: string] {
+  // Either the value is 'field' or 'field: property'. In the first case, `property` will
+  // be undefined, in which case the field name should also be used as the property name.
+  const [fieldName, publicName] = value.split(':', 2).map(str => str.trim());
+  return [publicName ?? fieldName, fieldName];
 }
 
 function convertDeclarePipeFacadeToMetadata(declaration: R3DeclarePipeFacade): R3PipeMetadata {

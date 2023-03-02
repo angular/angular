@@ -818,7 +818,7 @@ class RouterLink implements OnChanges, OnDestroy {
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, "[routerLink]", never, { "target": "target"; "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "state": "state"; "relativeTo": "relativeTo"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "routerLink": "routerLink"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, "[routerLink]", never, { "target": { "publicName": "target"; "required": false; }; "queryParams": { "publicName": "queryParams"; "required": false; }; "fragment": { "publicName": "fragment"; "required": false; }; "queryParamsHandling": { "publicName": "queryParamsHandling"; "required": false; }; "state": { "publicName": "state"; "required": false; }; "relativeTo": { "publicName": "relativeTo"; "required": false; }; "preserveFragment": { "publicName": "preserveFragment"; "required": false; }; "skipLocationChange": { "publicName": "skipLocationChange"; "required": false; }; "replaceUrl": { "publicName": "replaceUrl"; "required": false; }; "routerLink": { "publicName": "routerLink"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, [null, null, { attribute: "tabindex"; }, null, null, null]>;
 }
@@ -846,7 +846,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
         exact: boolean;
     } | IsActiveMatchOptions;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": "routerLinkActiveOptions"; "ariaCurrentWhenActive": "ariaCurrentWhenActive"; "routerLinkActive": "routerLinkActive"; }, { "isActiveChange": "isActiveChange"; }, ["links"], never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": { "publicName": "routerLinkActiveOptions"; "required": false; }; "ariaCurrentWhenActive": { "publicName": "ariaCurrentWhenActive"; "required": false; }; "routerLinkActive": { "publicName": "routerLinkActive"; "required": false; }; }, { "isActiveChange": "isActiveChange"; }, ["links"], never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkActive, [null, null, null, null, { optional: true; }]>;
 }
@@ -894,7 +894,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     ngOnInit(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": "name"; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": { "publicName": "name"; "required": false; }; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, never>;
 }

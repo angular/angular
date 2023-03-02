@@ -96,8 +96,8 @@ export class DtsMetadataReader implements MetadataReader {
     const isStandalone =
         def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
 
-    const inputs = ClassPropertyMapping.fromMappedObject(
-        readMapType(def.type.typeArguments[3], readStringType));
+    const [inputsMap, requiredInputs] = readInputsType(def.type.typeArguments[3]);
+    const inputs = ClassPropertyMapping.fromMappedObject(inputsMap);
     const outputs = ClassPropertyMapping.fromMappedObject(
         readMapType(def.type.typeArguments[4], readStringType));
     const hostDirectives = def.type.typeArguments.length > 8 ?
@@ -116,7 +116,7 @@ export class DtsMetadataReader implements MetadataReader {
       outputs,
       hostDirectives,
       queries: readStringArrayType(def.type.typeArguments[5]),
-      ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
+      ...extractDirectiveTypeCheckMeta(clazz, inputs, requiredInputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
       isPoisoned: false,
       isStructural,
@@ -165,6 +165,44 @@ export class DtsMetadataReader implements MetadataReader {
       decorator: null,
     };
   }
+}
+
+function readInputsType(type: ts.TypeNode):
+    [inputsMap: {[field: string]: string}, requiredInputs: Set<string>|null] {
+  const inputsMap = {} as {[field: string]: string};
+  let requiredInputs: Set<string>|null = null;
+
+  if (ts.isTypeLiteralNode(type)) {
+    for (const member of type.members) {
+      if (!ts.isPropertySignature(member) || member.type === undefined ||
+          member.name === undefined ||
+          (!ts.isStringLiteral(member.name) && !ts.isIdentifier(member.name))) {
+        continue;
+      }
+
+      // Before v16 the inputs map has the type of `{[field: string]: string}`.
+      // After v16 it has the type of `{[field: string]: {publicName: string, required: boolean}}`.
+      const stringValue = readStringType(member.type);
+      if (stringValue != null) {
+        inputsMap[member.name.text] = stringValue;
+      } else {
+        const config = readMapType(member.type, innerValue => {
+                         return readStringType(innerValue) ?? readBooleanType(innerValue);
+                       }) as {publicName: string, required: boolean};
+
+        inputsMap[member.name.text] = config.publicName;
+
+        if (config.required) {
+          if (requiredInputs === null) {
+            requiredInputs = new Set<string>();
+          }
+          requiredInputs.add(member.name.text);
+        }
+      }
+    }
+  }
+
+  return [inputsMap, requiredInputs];
 }
 
 function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflector: ReflectionHost):

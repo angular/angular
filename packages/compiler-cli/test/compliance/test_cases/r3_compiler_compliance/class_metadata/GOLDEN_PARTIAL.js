@@ -156,7 +156,7 @@ export declare class MyDir {
     mixed: string;
     none: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, never, never, { "foo": "foo"; "bar": "baz"; "mixed": "mixed"; }, { "mixed": "mixed"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, never, never, { "foo": { "publicName": "foo"; "required": false; }; "bar": { "publicName": "baz"; "required": false; }; "mixed": { "publicName": "mixed"; "required": false; }; }, { "mixed": "mixed"; }, never, never, false, never>;
 }
 
 /****************************************************************************************************

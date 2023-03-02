@@ -457,7 +457,7 @@ export declare class DivDir {
     and: any;
     or: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<DivDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<DivDir, "div", never, { "ternary": "ternary"; "pipe": "pipe"; "and": "and"; "or": "or"; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DivDir, "div", never, { "ternary": { "publicName": "ternary"; "required": false; }; "pipe": { "publicName": "pipe"; "required": false; }; "and": { "publicName": "and"; "required": false; }; "or": { "publicName": "or"; "required": false; }; }, {}, never, never, false, never>;
 }
 export declare class PipePipe {
     transform(v: any, a: any, a2: any): void;
@@ -546,7 +546,7 @@ export declare class MyComponent {
     collapsedWidth: string;
     getExpandedState(): string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "expandedHeight": "expandedHeight"; "collapsedHeight": "collapsedHeight"; "expandedWidth": "expandedWidth"; "collapsedWidth": "collapsedWidth"; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "expandedHeight": { "publicName": "expandedHeight"; "required": false; }; "collapsedHeight": { "publicName": "collapsedHeight"; "required": false; }; "expandedWidth": { "publicName": "expandedWidth"; "required": false; }; "collapsedWidth": { "publicName": "collapsedWidth"; "required": false; }; }, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
