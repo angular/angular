@@ -7,14 +7,15 @@
  */
 
 import {ApplicationRef} from '../application_ref';
-import {TNode} from '../render3/interfaces/node';
+import {collectNativeNodes} from '../render3/collect_native_nodes';
+import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HOST, LView, RENDERER, TVIEW} from '../render3/interfaces/view';
+import {HEADER_OFFSET, HOST, LView, RENDERER, TView, TVIEW} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
-import {SerializedView} from './interfaces';
+import {ELEMENT_CONTAINERS, SerializedView} from './interfaces';
 import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY} from './utils';
 
 /**
@@ -50,6 +51,16 @@ class SerializedViewCollection {
  */
 interface HydrationContext {
   serializedViewCollection: SerializedViewCollection;
+}
+
+/**
+ * Computes the number of root nodes in a given view
+ * (or child nodes in a given container if a tNode is provided).
+ */
+function calcNumRootNodes(tView: TView, lView: LView, tNode: TNode|null): number {
+  const rootNodes: unknown[] = [];
+  collectNativeNodes(tView, lView, tNode, rootNodes);
+  return rootNodes.length;
 }
 
 /**
@@ -98,6 +109,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
   // Iterate over DOM element references in an LView.
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
     const tNode = tView.data[i] as TNode;
+    const noOffsetIndex = i - HEADER_OFFSET;
     // Local refs (e.g. <div #localRef>) take up an extra slot in LViews
     // to store the same element. In this case, there is no information in
     // a corresponding slot in TNode data structure. If that's the case, just
@@ -112,6 +124,15 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       // This is a component, annotate the host node with an `ngh` attribute.
       const targetNode = unwrapRNode(lView[i][HOST]!);
       annotateHostElementForHydration(targetNode as RElement, lView[i], context);
+    } else {
+      // <ng-container> case
+      if (tNode.type & TNodeType.ElementContainer) {
+        // An <ng-container> is represented by the number of
+        // top-level nodes. This information is needed to skip over
+        // those nodes to reach a corresponding anchor node (comment node).
+        ngh[ELEMENT_CONTAINERS] ??= {};
+        ngh[ELEMENT_CONTAINERS][noOffsetIndex] = calcNumRootNodes(tView, lView, tNode.child);
+      }
     }
   }
   return ngh;

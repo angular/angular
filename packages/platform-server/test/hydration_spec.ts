@@ -466,6 +466,110 @@ describe('platform-server integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
       });
+
+      describe('ng-container', () => {
+        it('should support empty containers', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              This is an empty container: <ng-container></ng-container>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should support non-empty containers', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              This is a non-empty container:
+              <ng-container>
+                <h1>Hello world!</h1>
+              </ng-container>
+              <div>Post-container element</div>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should support nested containers', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              This is a non-empty container:
+              <ng-container>
+                <ng-container>
+                  <ng-container>
+                    <h1>Hello world!</h1>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+              <div>Post-container element</div>
+              <ng-container>
+                <div>Tags between containers</div>
+                <ng-container>
+                  <div>More tags between containers</div>
+                  <ng-container>
+                    <h1>Hello world!</h1>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+      });
     });
   });
 });

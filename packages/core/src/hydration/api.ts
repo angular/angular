@@ -10,6 +10,7 @@ import {PLATFORM_ID} from '../application_tokens';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, makeEnvironmentProviders} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';
+import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructions/element_container';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
 
 import {IS_HYDRATION_FEATURE_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
@@ -39,6 +40,7 @@ function enableHydrationRuntimeSupport() {
     enableRetrieveHydrationInfoImpl();
     enableLocateOrCreateElementNodeImpl();
     enableLocateOrCreateTextNodeImpl();
+    enableLocateOrCreateElementContainerNodeImpl();
   }
 }
 
