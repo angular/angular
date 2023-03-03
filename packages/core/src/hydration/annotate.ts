@@ -16,6 +16,7 @@ import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {ELEMENT_CONTAINERS, SerializedView} from './interfaces';
+import {SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY} from './utils';
 
 /**
@@ -123,7 +124,9 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
     } else if (Array.isArray(lView[i])) {
       // This is a component, annotate the host node with an `ngh` attribute.
       const targetNode = unwrapRNode(lView[i][HOST]!);
-      annotateHostElementForHydration(targetNode as RElement, lView[i], context);
+      if (!(targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
+        annotateHostElementForHydration(targetNode as RElement, lView[i], context);
+      }
     } else {
       // <ng-container> case
       if (tNode.type & TNodeType.ElementContainer) {

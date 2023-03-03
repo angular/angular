@@ -8,6 +8,7 @@
 
 import {validateMatchingNode} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
+import {hasNgSkipHydrationAttr} from '../../hydration/skip_hydration';
 import {markRNodeAsClaimedByHydration} from '../../hydration/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
@@ -19,8 +20,8 @@ import {RElement} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {appendChild, createElementNode, setupStaticAttributes} from '../node_manipulation';
-import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, lastNodeWasCreated, setCurrentTNode, setCurrentTNodeAsNotParent, wasLastNodeCreated} from '../state';
+import {appendChild, clearElementContents, createElementNode, setupStaticAttributes} from '../node_manipulation';
+import {decreaseElementDepthCount, enterSkipHydrationBlock, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, isInSkipHydrationBlock, isSkipHydrationRootTNode, lastNodeWasCreated, leaveSkipHydrationBlock, setCurrentTNode, setCurrentTNodeAsNotParent, wasLastNodeCreated} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
 
@@ -145,6 +146,9 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
   const tNode = currentTNode;
   ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
 
+  if (isSkipHydrationRootTNode(tNode)) {
+    leaveSkipHydrationBlock();
+  }
 
   decreaseElementDepthCount();
 
@@ -198,7 +202,7 @@ let _locateOrCreateElementNode: typeof locateOrCreateElementNodeImpl =
 function locateOrCreateElementNodeImpl(
     tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string): RElement {
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo;
+  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock();
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
@@ -212,6 +216,15 @@ function locateOrCreateElementNodeImpl(
       validateMatchingNode(native as unknown as Node, Node.ELEMENT_NODE, name, lView, tNode);
   ngDevMode && markRNodeAsClaimedByHydration(native);
 
+  // Checks if the skip hydration attribute is present during hydration so we know to
+  // skip attempting to hydrate this block.
+  if (hydrationInfo && hasNgSkipHydrationAttr(tNode)) {
+    enterSkipHydrationBlock(tNode);
+
+    // Since this isn't hydratable, we need to empty the node
+    // so there's no duplicate content after render
+    clearElementContents(renderer, native);
+  }
   return native;
 }
 

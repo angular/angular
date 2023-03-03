@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {APP_ID, ApplicationRef, Component, ComponentRef, destroyPlatform, getPlatform, inject, Provider, TemplateRef, Type, ViewChild, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationRef, Component, ComponentRef, destroyPlatform, ElementRef, getPlatform, inject, Input, Provider, TemplateRef, Type, ViewChild, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 
@@ -19,7 +19,8 @@ import {renderApplication} from '../src/utils';
  * could be found.
  */
 const NGH_ATTR_NAME = 'ngh';
-
+const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
+const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
 const NGH_ATTR_REGEXP = new RegExp(` ${NGH_ATTR_NAME}=".*?"`, 'g');
 
 /**
@@ -81,9 +82,12 @@ function verifyClientAndSSRContentsMatch(ssrContents: string, clientAppRootEleme
  * Walks over DOM nodes starting from a given node and checks
  * whether all nodes were claimed for hydration, i.e. annotated
  * with a special monkey-patched flag (which is added in dev mode
- * only).
+ * only). It skips any nodes with the skip hydration attribute.
  */
 function verifyAllNodesClaimedForHydration(el: HTMLElement) {
+  if ((el.nodeType === Node.ELEMENT_NODE && el.hasAttribute(SKIP_HYDRATION_ATTR_NAME_LOWER_CASE)))
+    return;
+
   if (!(el as any).__claimed) {
     fail('Hydration error: the node is *not* hydrated: ' + el.outerHTML);
   }
@@ -570,6 +574,334 @@ describe('platform-server integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
       });
+    });
+
+    describe('ngSkipHydration', () => {
+      it('should skip hydrating elements with ngSkipHydration attribute', async () => {
+        @Component({
+          standalone: true,
+          selector: 'nested-cmp',
+          template: `
+            <h1>Hello World!</h1>
+            <div>This is the content of a nested component</div>
+          `,
+        })
+        class NestedComponent {
+          @Input() title = '';
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NestedComponent],
+          template: `
+            <header>Header</header>
+            <nested-cmp [title]="someTitle" style="width:100px; height:200px; color:red" moo="car" foo="value" baz ngSkipHydration />
+            <footer>Footer</footer>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, NestedComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should hydrate when the value of an attribute is "ngskiphydration"', async () => {
+        @Component({
+          standalone: true,
+          selector: 'nested-cmp',
+          template: `
+            <h1>Hello World!</h1>
+            <div>This is the content of a nested component</div>
+          `,
+        })
+        class NestedComponent {
+          @Input() title = '';
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NestedComponent],
+          template: `
+            <header>Header</header>
+            <nested-cmp style="width:100px; height:200px; color:red" moo="car" foo="value" baz [title]="ngSkipHydration" />
+            <footer>Footer</footer>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, NestedComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should skip hydrating elements with ngSkipHydration host binding', async () => {
+        @Component({
+          standalone: true,
+          selector: 'second-cmp',
+          template: `<div>Not hydrated</div>`,
+        })
+        class SecondCmd {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [SecondCmd],
+          selector: 'nested-cmp',
+          template: `<second-cmp />`,
+          host: {ngSkipHydration: 'true'},
+        })
+        class NestedCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [NestedCmp],
+          selector: 'app',
+          template: `
+            <nested-cmp />
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, NestedCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should skip hydrating all child content of an element with ngSkipHydration attribute',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'nested-cmp',
+             template: `
+            <h1>Hello World!</h1>
+            <div>This is the content of a nested component</div>
+          `,
+           })
+           class NestedComponent {
+             @Input() title = '';
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [NestedComponent],
+             template: `
+            <header>Header</header>
+            <nested-cmp ngSkipHydration>
+              <h1>Dehydrated content header</h1>
+              <p>This content is definitely dehydrated and could use some water.</p>
+            </nested-cmp>
+            <footer>Footer</footer>
+          `,
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh');
+
+           resetTViewsFor(SimpleComponent, NestedComponent);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           verifyAllNodesClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
+
+      it('should skip hydrating when ng-containers exist and ngSkipHydration attribute is present',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'nested-cmp',
+             template: `
+            <h1>Hello World!</h1>
+            <div>This is the content of a nested component</div>
+          `,
+           })
+           class NestedComponent {
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [NestedComponent],
+             template: `
+            <header>Header</header>
+              <nested-cmp ngSkipHydration>
+                <ng-container>
+                  <h1>Dehydrated content header</h1>
+                </ng-container>
+              </nested-cmp>
+            <footer>Footer</footer>
+          `,
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh');
+
+           resetTViewsFor(SimpleComponent, NestedComponent);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           verifyAllNodesClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
+
+      it('should skip hydrating and safely allow DOM manipulation inside block that was skipped',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'nested-cmp',
+             template: `
+            <h1>Hello World!</h1>
+            <div #nestedDiv>This is the content of a nested component</div>
+          `,
+           })
+           class NestedComponent {
+             el = inject(ElementRef);
+
+             ngAfterViewInit() {
+               const span = document.createElement('span');
+               span.innerHTML = 'Appended span';
+               this.el.nativeElement.appendChild(span);
+             }
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [NestedComponent],
+             template: `
+            <header>Header</header>
+            <nested-cmp ngSkipHydration />
+            <footer>Footer</footer>
+          `,
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh');
+
+           resetTViewsFor(SimpleComponent, NestedComponent);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           expect(clientRootNode.outerHTML).toContain('Appended span');
+           verifyAllNodesClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
+
+      it('should skip hydrating and safely allow adding and removing DOM nodes inside block that was skipped',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'nested-cmp',
+             template: `
+            <h1>Hello World!</h1>
+            <div #nestedDiv>
+              <p>This content will be removed</p>
+            </div>
+          `,
+           })
+           class NestedComponent {
+             el = inject(ElementRef);
+
+             ngAfterViewInit() {
+               const pTag = document.querySelector('p');
+               pTag?.parentElement?.removeChild(pTag);
+               const span = document.createElement('span');
+               span.innerHTML = 'Appended span';
+               this.el.nativeElement.appendChild(span);
+             }
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [NestedComponent],
+             template: `
+            <header>Header</header>
+            <nested-cmp ngSkipHydration />
+            <footer>Footer</footer>
+          `,
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh');
+
+           resetTViewsFor(SimpleComponent, NestedComponent);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           expect(clientRootNode.outerHTML).toContain('Appended span');
+           expect(clientRootNode.outerHTML).not.toContain('This content will be removed');
+           verifyAllNodesClaimedForHydration(clientRootNode);
+         });
     });
   });
 });
