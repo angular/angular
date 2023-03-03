@@ -13,7 +13,7 @@ import {TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RText} from '../interfaces/renderer_dom';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, T_HOST, TView} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
-import {getBindingIndex, getLView, getTView, lastNodeWasCreated, setCurrentTNode, wasLastNodeCreated} from '../state';
+import {getBindingIndex, getLView, getTView, isInSkipHydrationBlock, lastNodeWasCreated, setCurrentTNode, wasLastNodeCreated} from '../state';
 
 import {getOrCreateTNode} from './shared';
 
@@ -66,7 +66,7 @@ let _locateOrCreateTextNode: typeof locateOrCreateTextNodeImpl =
 function locateOrCreateTextNodeImpl(
     tView: TView, lView: LView, tNode: TNode, value: string): RText {
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo;
+  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock();
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.

@@ -18,7 +18,7 @@ import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild, createCommentNode} from '../node_manipulation';
-import {getBindingIndex, getCurrentTNode, getLView, getTView, isCurrentTNodeParent, lastNodeWasCreated, setCurrentTNode, setCurrentTNodeAsNotParent, wasLastNodeCreated} from '../state';
+import {getBindingIndex, getCurrentTNode, getLView, getTView, isCurrentTNodeParent, isInSkipHydrationBlock, lastNodeWasCreated, setCurrentTNode, setCurrentTNodeAsNotParent, wasLastNodeCreated} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
 
@@ -166,7 +166,8 @@ function locateOrCreateElementContainerNode(
     tView: TView, lView: LView, tNode: TNode, index: number): RComment {
   let comment: RComment;
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo;
+  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock();
+
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
