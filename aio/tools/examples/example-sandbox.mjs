@@ -25,7 +25,7 @@ export async function constructExampleSandbox(examplePath, destPath, nodeModules
   await constructSymlinkedNodeModules(destPath, nodeModulesPath, localPackages);
 
   // Add preserveSymlinks fixups to various files --- needed when linkin in local deps
-  preserveSymlinksWhenUsingLocalPackages(localPackages, destPath);
+  ensurePreserveSymlinks(destPath);
 }
 
 async function constructSymlinkedNodeModules(examplePath, exampleDepsNodeModules, localPackages) {
@@ -137,13 +137,11 @@ function pointBinSymlinksToLocalPackages(linkedNodeModules, exampleDepsNodeModul
  * their output location in the `bazel-bin`. This will then cause transitive dependencies
  * to be incorrectly resolved from `bazel-bin`, instead of from within the example sandbox.
  *
- * Setting `preserveSymlinks` in relevant files fixes this.
+ * Setting `preserveSymlinks` in relevant files fixes this. Note that we are intending to
+ * preserve symlinks in general (regardless of local packages being used), because it
+ * allows us to safely enable `NODE_PRESERVE_SYMLINKS=1` when executing commands inside. 
  */
-function preserveSymlinksWhenUsingLocalPackages(LOCAL_PACKAGES, appDir) {
-  if (Object.keys(LOCAL_PACKAGES).length === 0) {
-    return;
-  }
-
+function ensurePreserveSymlinks(appDir) {
   // Set preserveSymlinks in angular.json
   const angularJsonPath = path.join(appDir, 'angular.json');
   if (fs.existsSync(angularJsonPath)) {

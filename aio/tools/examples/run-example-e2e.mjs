@@ -72,6 +72,8 @@ async function runE2e(examplePath) {
   const maxAttempts = argv.retry || 1;
   const exampleTestPath = generatePathForExampleTest(exampleName);
 
+  console.info('Running example tests in directory: ', exampleTestPath)
+
   try {
     await constructExampleSandbox(
         examplePath, exampleTestPath,
@@ -282,7 +284,15 @@ function spawnExt(
     let descr = command + ' ' + args.join(' ');
     printMessage(`running: ${descr}\n`);
     try {
-      proc = spawn(command, args, options);
+      proc = spawn(command, args, {
+        // All NodeJS scripts executed for running example e2e tests should preserve symlinks.
+        // This is important as otherwise test commands like `yarn ng build` would escape from the
+        // example sandbox into the `bazel-bin` where ultimately incorrect versions of local
+        // framework packages might be resolved. e.g. the `@angular/compiler-cli` version is never
+        // the one locally built.
+        env: {...process.env, NODE_PRESERVE_SYMLINKS: '1'},
+        ...options
+      });
     } catch (e) {
       console.log(e);
       return reject(e);
