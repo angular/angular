@@ -555,7 +555,7 @@ interface UntypedFormControlCtor {
 }
 
 /**
- * UntypedFormControl is a non-strongly-typed version of @see FormControl.
+ * UntypedFormControl is a non-strongly-typed version of `FormControl`.
  */
 export type UntypedFormControl = FormControl<any>;
 
