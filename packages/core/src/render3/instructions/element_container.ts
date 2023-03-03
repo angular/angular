@@ -5,16 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertEqual, assertIndexInRange} from '../../util/assert';
+import {validateMatchingNode} from '../../hydration/error_handling';
+import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
+import {getNgContainerSize, markRNodeAsClaimedByHydration, storeNgContainerInfo} from '../../hydration/utils';
+import {assertEqual, assertIndexInRange, assertNumber} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TElementContainerNode, TNodeType} from '../interfaces/node';
+import {TAttributes, TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
+import {RComment} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {appendChild} from '../node_manipulation';
-import {getBindingIndex, getCurrentTNode, getLView, getTView, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
+import {appendChild, createCommentNode} from '../node_manipulation';
+import {getBindingIndex, getCurrentTNode, getLView, getTView, isCurrentTNodeParent, lastNodeWasCreated, setCurrentTNode, setCurrentTNodeAsNotParent, wasLastNodeCreated} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
 
@@ -80,10 +84,14 @@ export function ɵɵelementContainerStart(
   setCurrentTNode(tNode, true);
 
   ngDevMode && ngDevMode.rendererCreateComment++;
-  const native = lView[adjustedIndex] =
-      lView[RENDERER].createComment(ngDevMode ? 'ng-container' : '');
-  appendChild(tView, lView, native, tNode);
-  attachPatchData(native, lView);
+
+  const comment = _locateOrCreateElementContainerNode(tView, lView, tNode, index);
+  lView[adjustedIndex] = comment;
+
+  if (wasLastNodeCreated()) {
+    appendChild(tView, lView, comment, tNode);
+  }
+  attachPatchData(comment, lView);
 
   if (isDirectiveHost(tNode)) {
     createDirectivesInstances(tView, lView, tNode);
@@ -141,4 +149,54 @@ export function ɵɵelementContainer(
   ɵɵelementContainerStart(index, attrsIndex, localRefsIndex);
   ɵɵelementContainerEnd();
   return ɵɵelementContainer;
+}
+
+let _locateOrCreateElementContainerNode: typeof locateOrCreateElementContainerNode =
+    (tView: TView, lView: LView, tNode: TNode, index: number) => {
+      lastNodeWasCreated(true);
+      return createCommentNode(lView[RENDERER], ngDevMode ? 'ng-container' : '');
+    };
+
+/**
+ * Enables hydration code path (to lookup existing elements in DOM)
+ * in addition to the regular creation mode of comment nodes that
+ * represent <ng-container>'s anchor.
+ */
+function locateOrCreateElementContainerNode(
+    tView: TView, lView: LView, tNode: TNode, index: number): RComment {
+  let comment: RComment;
+  const hydrationInfo = lView[HYDRATION];
+  const isNodeCreationMode = !hydrationInfo;
+  lastNodeWasCreated(isNodeCreationMode);
+
+  // Regular creation mode.
+  if (isNodeCreationMode) {
+    return createCommentNode(lView[RENDERER], ngDevMode ? 'ng-container' : '');
+  }
+
+  // Hydration mode, looking up existing elements in DOM.
+  const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
+  const ngContainerSize = getNgContainerSize(hydrationInfo, index) as number;
+  ngDevMode &&
+      assertNumber(
+          ngContainerSize,
+          'Unexpected state: hydrating an <ng-container>, ' +
+              'but no hydration info is available.');
+  if (ngContainerSize > 0) {
+    storeNgContainerInfo(hydrationInfo, index, currentRNode);
+    comment = siblingAfter<RComment>(ngContainerSize, currentRNode)!;
+  } else {
+    // If <ng-container> has no nodes,
+    // the current node is an anchor (comment) node.
+    comment = currentRNode as RComment;
+  }
+
+  ngDevMode && validateMatchingNode(comment as Node, Node.COMMENT_NODE, null, lView, tNode);
+  ngDevMode && markRNodeAsClaimedByHydration(comment);
+
+  return comment;
+}
+
+export function enableLocateOrCreateElementContainerNodeImpl() {
+  _locateOrCreateElementContainerNode = locateOrCreateElementContainerNode;
 }

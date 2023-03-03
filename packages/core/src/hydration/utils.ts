@@ -15,7 +15,7 @@ import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 
-import {DehydratedView, SerializedView} from './interfaces';
+import {DehydratedView, ELEMENT_CONTAINERS, SerializedView} from './interfaces';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -151,4 +151,14 @@ export function markRNodeAsClaimedByHydration(node: RNode, checkIfAlreadyClaimed
 
 export function isRNodeClaimedForHydration(node: RNode): boolean {
   return !!(node as ClaimedNode).__claimed;
+}
+
+export function storeNgContainerInfo(
+    hydrationInfo: DehydratedView, index: number, firstChild: RNode): void {
+  hydrationInfo.ngContainers ??= {};
+  hydrationInfo.ngContainers[index] = {firstChild};
+}
+
+export function getNgContainerSize(hydrationInfo: DehydratedView, index: number): number|null {
+  return hydrationInfo.data[ELEMENT_CONTAINERS]?.[index] ?? null;
 }

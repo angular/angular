@@ -22,3 +22,13 @@ export function validateMatchingNode(
     throw new Error(`Unexpected node found during hydration.`);
   }
 }
+
+/**
+ * Verifies whether next sibling node exists.
+ */
+export function validateSiblingNodeExists(node: Node): void {
+  if (!node.nextSibling) {
+    // TODO: improve error message and use RuntimeError instead.
+    throw new Error(`Unexpected state: insufficient number of sibling nodes.`);
+  }
+}
