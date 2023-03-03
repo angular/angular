@@ -206,7 +206,7 @@ This `getHeroes()` returns the sliced list of heroes at positions 1 and 5, retur
 
 To navigate to the dashboard, the router needs an appropriate route.
 
-Import the `DashboardComponent` in the `app-routing-module.ts` file.
+Import the `DashboardComponent` in the `app-routing.module.ts` file.
 
 <code-example header="src/app/app-routing.module.ts (import DashboardComponent)" path="toh-pt5/src/app/app-routing.module.ts" region="import-dashboard"></code-example>
 
