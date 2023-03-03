@@ -6,10 +6,12 @@ import { HomeComponent } from './home/home.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  // #docregion app-directives
+  // #docregion app-metadata-imports
   imports: [
     HomeComponent,
   ],
+  // #enddocregion
+  // #docregion app-metadata-template
   template: `
     <main>
       <header class="brand-name">
