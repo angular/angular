@@ -523,7 +523,7 @@ interface UntypedFormArrayCtor {
 }
 
 /**
- * UntypedFormArray is a non-strongly-typed version of @see FormArray, which
+ * UntypedFormArray is a non-strongly-typed version of `FormArray`, which
  * permits heterogenous controls.
  */
 export type UntypedFormArray = FormArray<any>;
