@@ -160,13 +160,14 @@ export function provideRouterScroller(): Provider {
     provide: ROUTER_SCROLLER,
     useFactory: () => {
       const viewportScroller = inject(ViewportScroller);
+      const zone = inject(NgZone);
       const config: ExtraOptions = inject(ROUTER_CONFIGURATION);
       const transitions = inject(NavigationTransitions);
       const urlSerializer = inject(UrlSerializer);
       if (config.scrollOffset) {
         viewportScroller.setOffset(config.scrollOffset);
       }
-      return new RouterScroller(urlSerializer, transitions, viewportScroller, config);
+      return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, config);
     },
   };
 }

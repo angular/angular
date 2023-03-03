@@ -32,8 +32,8 @@ describe('RouterScroller', () => {
         'viewportScroller',
         ['getScrollPosition', 'scrollToPosition', 'scrollToAnchor', 'setHistoryScrollRestoration']);
     setScroll(viewportScroller, 0, 0);
-    const scroller =
-        new RouterScroller(new DefaultUrlSerializer(), {events} as any, viewportScroller);
+    const scroller = new RouterScroller(
+        new DefaultUrlSerializer(), {events} as any, viewportScroller, fakeZone as any);
 
     expect((scroller as any).options.scrollPositionRestoration).toBe('disabled');
     expect((scroller as any).options.anchorScrolling).toBe('disabled');
@@ -197,7 +197,7 @@ describe('RouterScroller', () => {
     setScroll(viewportScroller, 0, 0);
 
     const scroller = new RouterScroller(
-        new DefaultUrlSerializer(), transitions, viewportScroller,
+        new DefaultUrlSerializer(), transitions, viewportScroller, fakeZone as any,
         {scrollPositionRestoration, anchorScrolling});
     scroller.init();
 

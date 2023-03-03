@@ -29,7 +29,8 @@ export class RouterScroller implements OnDestroy {
   /** @nodoc */
   constructor(
       readonly urlSerializer: UrlSerializer, private transitions: NavigationTransitions,
-      public readonly viewportScroller: ViewportScroller, private options: {
+      public readonly viewportScroller: ViewportScroller, private readonly zone: NgZone,
+      private options: {
         scrollPositionRestoration?: 'disabled'|'enabled'|'top',
         anchorScrolling?: 'disabled'|'enabled'
       } = {}) {
@@ -92,13 +93,17 @@ export class RouterScroller implements OnDestroy {
 
   private scheduleScrollEvent(routerEvent: NavigationEnd|NavigationSkipped, anchor: string|null):
       void {
-    // The scroll event needs to be delayed until after change detection. Otherwise, we may
-    // attempt to restore the scroll position before the router outlet has fully rendered the
-    // component by executing its update block of the template function.
-    setTimeout(() => {
-      this.transitions.events.next(new Scroll(
-          routerEvent, this.lastSource === 'popstate' ? this.store[this.restoredId] : null,
-          anchor));
+    this.zone.runOutsideAngular(() => {
+      // The scroll event needs to be delayed until after change detection. Otherwise, we may
+      // attempt to restore the scroll position before the router outlet has fully rendered the
+      // component by executing its update block of the template function.
+      setTimeout(() => {
+        this.zone.run(() => {
+          this.transitions.events.next(new Scroll(
+              routerEvent, this.lastSource === 'popstate' ? this.store[this.restoredId] : null,
+              anchor));
+        });
+      }, 0);
     });
   }
 
