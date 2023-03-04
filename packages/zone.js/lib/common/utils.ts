@@ -324,10 +324,13 @@ export function setShouldCopySymbolProperties(flag: boolean) {
 export function patchMethod(
     target: any, name: string,
     patchFn: (delegate: Function, delegateName: string, name: string) => (self: any, args: any[]) =>
-        any): Function|null {
+        any,
+    findPrototype = true): Function|null {
   let proto = target;
-  while (proto && !proto.hasOwnProperty(name)) {
-    proto = ObjectGetPrototypeOf(proto);
+  if (findPrototype) {
+    while (proto && !proto.hasOwnProperty(name)) {
+      proto = ObjectGetPrototypeOf(proto);
+    }
   }
   if (!proto && target[name]) {
     // somehow we did not find it, but we can see it. This happens on IE for Window properties.

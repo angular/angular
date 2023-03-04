@@ -40,5 +40,5 @@ export function patchCallbacks(
     }
 
     return delegate.call(self, name, opts, options);
-  });
+  }, false);
 }

@@ -358,7 +358,8 @@ interface _ZonePrivate {
   patchMethod:
       (target: any, name: string,
        patchFn: (delegate: Function, delegateName: string, name: string) =>
-           (self: any, args: any[]) => any) => Function | null;
+           (self: any, args: any[]) => any,
+       findPrototype?: boolean) => Function | null;
   patchFunctionProperty(target: any, name: string, patchFn: Function): boolean;
   bindArguments: (args: any[], source: string) => any[];
   patchMacroTask:
