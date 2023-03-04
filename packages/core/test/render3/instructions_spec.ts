@@ -282,7 +282,7 @@ describe('instructions', () => {
   });
 
   describe('performance counters', () => {
-    it('should create tViews only once for each nested level', () => {
+    it('should create tView only once for each nested level', () => {
       @Component({
         selector: 'nested-loops',
         standalone: true,
