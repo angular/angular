@@ -15,6 +15,7 @@ import {HEADER_OFFSET, LView, RENDERER, TView, TViewType} from '../interfaces/vi
 import {appendChild} from '../node_manipulation';
 import {getLView, getTView, setCurrentTNode} from '../state';
 import {getConstant} from '../util/view_utils';
+
 import {addToViewTree, createDirectivesInstances, createLContainer, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 
@@ -34,7 +35,7 @@ function templateFirstCreatePass(
   resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
   registerPostOrderHooks(tView, tNode);
 
-  const embeddedTView = tNode.tViews = createTView(
+  const embeddedTView = tNode.tView = createTView(
       TViewType.Embedded, tNode, templateFn, decls, vars, tView.directiveRegistry,
       tView.pipeRegistry, null, tView.schemas, tViewConsts);
 

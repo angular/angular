@@ -718,13 +718,12 @@ export function storeCleanupWithContext(
 /**
  * Constructs a TNode object from the arguments.
  *
- * @param tView `TView` to which this `TNode` belongs (used only in `ngDevMode`)
+ * @param tView `TView` to which this `TNode` belongs
  * @param tParent Parent `TNode`
  * @param type The type of the node
  * @param index The index of the TNode in TView.data, adjusted for HEADER_OFFSET
  * @param tagName The tag name of the node
  * @param attrs The attributes defined on this node
- * @param tViews Any TViews attached to this node
  * @returns the TNode object
  */
 export function createTNode(
@@ -774,7 +773,7 @@ export function createTNode(
     initialInputs: undefined,
     inputs: null,
     outputs: null,
-    tViews: null,
+    tView: null,
     next: null,
     prev: null,
     projectionNext: null,
