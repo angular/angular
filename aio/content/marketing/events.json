@@ -1135,16 +1135,56 @@
   },
   {
     "date": {
-      "start": "2023-11-07"
+      "start": "2023-01-24"
     },
-    "linkUrl": "http://ng-poland.pl/",
-    "name": "NG Poland"
+    "name": "Online Meetup: The Future of Angular"
+  },
+  {
+    "date": {
+      "start": "2023-02-02"
+    },
+    "name": "Angular Zurich Meetup"
+  },
+  {
+    "date": {
+      "start": "2023-02-08"
+    },
+    "name": "JSWorld"
+  },
+  {
+    "date": {
+      "start": "2023-02-23"
+    },
+    "name": "Agent Conf"
+  },
+  {
+    "date": {
+      "start": "2023-05-18"
+    },
+    "name": "JSHeroes"
+  },
+  {
+    "date": {
+      "start": "2023-05-04"
+    },
+    "name": "Devoxx Greece"
+  },
+  {
+    "date": {
+      "start": "2023-06-14"
+    },
+    "name": "ng-conf"
   },
   {
     "date": {
       "start": "2023-11-08"
     },
-    "linkUrl": "http://js-poland.pl/",
-    "name": "JS Poland"
+    "name": "NGPoland"
+  },
+  {
+    "date": {
+      "start": "2023-11-09"
+    },
+    "name": "JSPoland"
   }
 ]
