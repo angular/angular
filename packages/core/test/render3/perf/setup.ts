@@ -50,7 +50,8 @@ export function setupTestHarness(
     embeddedViewContext: any = {}, consts: TAttributes[]|null = null,
     directiveRegistry: DirectiveDefList|null = null): TestHarness {
   // Create a root view with a container
-  const hostTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, consts);
+  const hostTView =
+      createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, consts, null);
   const tContainerNode = getOrCreateTNode(hostTView, 0, TNodeType.Container, null, null);
   const hostNode = renderer.createElement('div');
   const hostLView = createLView(
@@ -65,7 +66,7 @@ export function setupTestHarness(
   // create test embedded views
   const embeddedTView = createTView(
       TViewType.Embedded, null, templateFn, decls, vars, directiveRegistry, null, null, null,
-      consts);
+      consts, null);
   const viewTNode = createTNode(hostTView, null, TNodeType.Element, -1, null, null);
 
   function createEmbeddedLView(): LView {

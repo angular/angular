@@ -558,6 +558,44 @@ export function saveResolvedLocalsInData(
 }
 
 /**
+ * A method can returns a component ID from the component definition using a variant of DJB2 hash
+ * algorithm.
+ *
+ * TODO: remove this method once https://github.com/angular/angular/pull/48253 lands.
+ */
+function getComponentId(componentDef: Partial<ComponentDef<unknown>>): string {
+  let hash = 0;
+
+  // We cannot rely solely on the component selector as the same selector can be used in different
+  // modules.
+  // Example:
+  // https://github.com/angular/components/blob/d9f82c8f95309e77a6d82fd574c65871e91354c2/src/material/core/option/option.ts#L248
+  // https://github.com/angular/components/blob/285f46dc2b4c5b127d356cb7c4714b221f03ce50/src/material/legacy-core/option/option.ts#L32
+
+  const hashSelectors = [
+    componentDef.selectors,
+    componentDef.ngContentSelectors,
+    componentDef.hostVars,
+    componentDef.hostAttrs,
+    componentDef.consts,
+    componentDef.vars,
+    componentDef.decls,
+    componentDef.encapsulation,
+    componentDef.standalone,
+  ].join('|');
+
+  for (const char of hashSelectors) {
+    hash = Math.imul(31, hash) + char.charCodeAt(0) << 0;
+  }
+
+  // Force positive number hash.
+  // 2147483647 = equivalent of Integer.MAX_VALUE.
+  hash += 2147483647 + 1;
+
+  return `c${hash}`;
+}
+
+/**
  * Gets TView from a template function or creates a new TView
  * if it doesn't already exist.
  *
@@ -573,9 +611,11 @@ export function getOrCreateComponentTView(def: ComponentDef<any>): TView {
     // Declaration node here is null since this function is called when we dynamically create a
     // component and hence there is no declaration.
     const declTNode = null;
+    // TODO: replace with `def.id` once https://github.com/angular/angular/pull/48253 lands.
+    const componentId = getComponentId(def);
     return def.tView = createTView(
                TViewType.Component, declTNode, def.template, def.decls, def.vars, def.directiveDefs,
-               def.pipeDefs, def.viewQuery, def.schemas, def.consts);
+               def.pipeDefs, def.viewQuery, def.schemas, def.consts, componentId);
   }
 
   return tView;
@@ -599,7 +639,7 @@ export function createTView(
     type: TViewType, declTNode: TNode|null, templateFn: ComponentTemplate<any>|null, decls: number,
     vars: number, directives: DirectiveDefListOrFactory|null, pipes: PipeDefListOrFactory|null,
     viewQuery: ViewQueriesFunction<any>|null, schemas: SchemaMetadata[]|null,
-    constsOrFactory: TConstantsOrFactory|null): TView {
+    constsOrFactory: TConstantsOrFactory|null, ssrId: string|null): TView {
   ngDevMode && ngDevMode.tView++;
   const bindingStartIndex = HEADER_OFFSET + decls;
   // This length does not yet contain host bindings from child directives because at this point,
@@ -638,7 +678,8 @@ export function createTView(
     firstChild: null,
     schemas: schemas,
     consts: consts,
-    incompleteFirstPass: false
+    incompleteFirstPass: false,
+    ssrId,
   };
   if (ngDevMode) {
     // For performance reasons it is important that the tView retains the same shape during runtime.
