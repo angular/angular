@@ -8,14 +8,15 @@
 
 import {ApplicationRef} from '../application_ref';
 import {collectNativeNodes} from '../render3/collect_native_nodes';
+import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
-import {isLContainer} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HOST, LView, RENDERER, TView, TVIEW} from '../render3/interfaces/view';
+import {isLContainer, isRootView} from '../render3/interfaces/type_checks';
+import {HEADER_OFFSET, HOST, LView, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
-import {ELEMENT_CONTAINERS, SerializedView, TEMPLATES} from './interfaces';
+import {CONTAINERS, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE, TEMPLATES} from './interfaces';
 import {SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY} from './utils';
 
@@ -118,6 +119,52 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
 }
 
 /**
+ * Serializes the lContainer data into a list of Serializedview objects,
+ * that represent views within this lContainer.
+ *
+ * @param lContainer the lContainer we are serializing
+ * @param context the hydration context
+ * @returns an array of the `Serializedview` objects
+ */
+function serializeLContainer(
+    lContainer: LContainer, context: HydrationContext): SerializedContainerView[] {
+  const views: SerializedContainerView[] = [];
+
+  for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+    let childLView = lContainer[i] as LView;
+
+    // If this is a root view, get an LView for te underlying component,
+    // because it contains information about the view to serialize.
+    if (isRootView(childLView)) {
+      childLView = childLView[HEADER_OFFSET];
+    }
+    const childTView = childLView[TVIEW];
+
+    let template: string;
+    let numRootNodes = 0;
+    if (childTView.type === TViewType.Component) {
+      template = childTView.ssrId!;
+
+      // This is a component view, thus it has only 1 root node: the component
+      // host node itself (other nodes would be inside that host node).
+      numRootNodes = 1;
+    } else {
+      template = context.ssrIdRegistry.get(childTView);
+      numRootNodes = calcNumRootNodes(childTView, childLView, childTView.firstChild);
+    }
+
+    const view: SerializedContainerView = {
+      [TEMPLATE]: template,
+      [NUM_ROOT_NODES]: numRootNodes,
+      ...serializeLView(lContainer[i] as LView, context),
+    };
+
+    views.push(view);
+  }
+  return views;
+}
+
+/**
  * Serializes the lView data into a SerializedView object that will later be added
  * to the TransferState storage and referenced using the `ngh` attribute on a host
  * element.
@@ -148,7 +195,21 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         ngh[TEMPLATES][noOffsetIndex] = context.ssrIdRegistry.get(embeddedTView);
       }
 
-      // TODO: serialize views within this LContainer.
+      // Serialize views within this LContainer.
+      const hostNode = lView[i][HOST]!;  // host node of this container
+
+      // LView[i][HOST] can be of 2 different types:
+      // - either a DOM node
+      // - or an array that represents an LView of a component
+      if (Array.isArray(hostNode)) {
+        // This is a component, serialize info about it.
+        // TODO: we should *not* serialize if a component is opted-out
+        // (i.e. `ngSkipHydration` is applied).
+        const targetNode = unwrapRNode(hostNode as LView) as RElement;
+        annotateHostElementForHydration(targetNode, hostNode as LView, context);
+      }
+      ngh[CONTAINERS] ??= {};
+      ngh[CONTAINERS][noOffsetIndex] = serializeLContainer(lView[i], context);
     } else if (Array.isArray(lView[i])) {
       // This is a component, annotate the host node with an `ngh` attribute.
       const targetNode = unwrapRNode(lView[i][HOST]!);

@@ -8,11 +8,15 @@
 
 import {RNode} from '../render3/interfaces/renderer_dom';
 
-/* Serialized view key that holds information about <ng-container>s. */
+/**
+ * Keys within serialized view data structure to represent various
+ * parts. See the `SerializedView` interface below for additional information.
+ */
 export const ELEMENT_CONTAINERS = 'e';
-
-/* Serialized view key that holds information about templates. */
 export const TEMPLATES = 't';
+export const CONTAINERS = 'c';
+export const NUM_ROOT_NODES = 'r';
+export const TEMPLATE = 'i';  // as it's also an "id"
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -43,6 +47,37 @@ export interface SerializedView {
    * be used during hydration to identify that template.
    */
   [TEMPLATES]?: Record<number, string>;
+
+  /**
+   * Serialized information about view containers.
+   * Key-value pairs where a key is an index of the corresponding
+   * LContainer entry within an LView, and the value is a list
+   * of serialized information about views within this container.
+   */
+  [CONTAINERS]?: Record<number, SerializedContainerView[]>;
+}
+
+/**
+ * Serialized data structure that contains relevant hydration
+ * annotation information about a view that is a part of a
+ * ViewContainer collection.
+ */
+export interface SerializedContainerView extends SerializedView {
+  /**
+   * Unique id that represents a TView that was used to create
+   * a given instance of a view:
+   *  - TViewType.Embedded: a unique id generated during serialization on the server
+   *  - TViewType.Component: an id generated based on component properties
+   *                        (see `getComponentId` function for details)
+   */
+  [TEMPLATE]: string;
+
+  /**
+   * Number of root nodes that belong to this view.
+   * This information is needed to effectively traverse the DOM tree
+   * and identify segments that belong to different views.
+   */
+  [NUM_ROOT_NODES]: number;
 }
 
 /**
