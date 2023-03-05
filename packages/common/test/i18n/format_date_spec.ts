@@ -133,6 +133,16 @@ describe('Format date', () => {
         EEE: 'Mon',
         EEEE: 'Monday',
         EEEEEE: 'Mo',
+        q: '2',
+        qq: '02',
+        qqq: 'Q2',
+        qqqq: '2nd quarter',
+        qqqqq: '2',
+        Q: '2',
+        QQ: '02',
+        QQQ: 'Q2',
+        QQQQ: '2nd quarter',
+        QQQQQ: '2',
         h: '9',
         hh: '09',
         H: '9',
@@ -202,6 +212,16 @@ describe('Format date', () => {
         EEEE: 'Thursday',
         EEEEE: 'T',
         EEEEEE: 'Th',
+        q: '2',
+        qq: '02',
+        qqq: 'Q2',
+        qqqq: '2nd quarter',
+        qqqqq: '2',
+        Q: '2',
+        QQ: '02',
+        QQQ: 'Q2',
+        QQQQ: '2nd quarter',
+        QQQQQ: '2',
         h: '12',
         hh: '12',
         H: '0',
@@ -448,6 +468,24 @@ describe('Format date', () => {
     // https://github.com/angular/angular/issues/26922
     it('should support fullDate in finnish, which uses standalone week day', () => {
       expect(formatDate(date, 'fullDate', 'fi')).toMatch('maanantai 15. kesäkuuta 2015');
+    });
+
+    // https://github.com/angular/angular/issues/49175
+    it('should format date to a correct format quarter in various locales', () => {
+      expect(formatDate('2023-02-05', 'Q', 'en')).toEqual('1');
+      expect(formatDate('2022-04-21', 'QQ', 'fi')).toEqual('02');
+      expect(formatDate('2021-11-19', 'QQQ', 'hu')).toEqual('IV. n.év');
+      expect(formatDate('2020-08-11', 'QQQQ', 'de')).toEqual('3. Quartal');
+      expect(formatDate('2019-09-26', 'QQQQ', 'ar')).toEqual('الربع الثالث');
+    });
+
+    // https://github.com/angular/angular/issues/49175
+    it('should format date to a correct standalone quarter in various locales', () => {
+      expect(formatDate('2023-07-05', 'q', 'en')).toEqual('3');
+      expect(formatDate('2022-02-14', 'qq', 'fi')).toEqual('01');
+      expect(formatDate('2021-04-12', 'qqq', 'hu')).toEqual('2. n.év');
+      expect(formatDate('2020-10-11', 'qqqq', 'de')).toEqual('4. Quartal');
+      expect(formatDate('2019-05-01', 'qqqq', 'ar')).toEqual('الربع الثاني')
     });
   });
 });

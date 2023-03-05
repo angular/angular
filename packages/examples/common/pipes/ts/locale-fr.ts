@@ -7,13 +7,15 @@
  */
 
 // THIS CODE IS GENERATED - DO NOT MODIFY
-// See angular/tools/gulp-tasks/cldr/extract.js
 
 const u = undefined;
 
-function plural(n: number): number {
-  let i = Math.floor(Math.abs(n));
+function plural(val: number): number {
+  const n = val, i = Math.floor(Math.abs(val)), v = val.toString().replace(/^[^.]*\.?/, '').length,
+        e = parseInt(val.toString().replace(/^[^e]*(e([-+]?\d+))?/, '$2')) || 0;
+
   if (i === 0 || i === 1) return 1;
+  if (e === 0 && (!(i === 0) && (i % 1000000 === 0 && v === 0)) || !(e >= 0 && e <= 5)) return 4;
   return 5;
 }
 
@@ -39,12 +41,17 @@ export default [
     ]
   ],
   u,
+  [
+    ['1', '2', '3', '4'], ['T1', 'T2', 'T3', 'T4'],
+    ['1er trimestre', '2e trimestre', '3e trimestre', '4e trimestre']
+  ],
+  u,
   [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']],
   1,
   [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  ['{1} {0}', '{1} \'à\' {0}', u, u],
+  ['{1} {0}', '{1}, {0}', '{1} \'à\' {0}', u],
   [',', '\u202f', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
   'EUR',
@@ -56,6 +63,7 @@ export default [
     'BEF': ['FB'],
     'BMD': ['$BM', '$'],
     'BND': ['$BN', '$'],
+    'BYN': [u, 'р.'],
     'BZD': ['$BZ', '$'],
     'CAD': ['$CA', '$'],
     'CLP': ['$CL', '$'],
@@ -80,6 +88,7 @@ export default [
     'NAD': ['$NA', '$'],
     'NIO': [u, '$C'],
     'NZD': ['$NZ', '$'],
+    'PHP': [u, '₱'],
     'RHD': ['$RH'],
     'RON': [u, 'L'],
     'RWF': [u, 'FR'],

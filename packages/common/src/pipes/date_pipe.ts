@@ -125,6 +125,16 @@ export const DATE_PIPE_DEFAULT_OPTIONS =
  *  |                     | YY          | Numeric: 2 digits + zero padded                               | 02, 20, 01, 17, 73                                         |
  *  |                     | YYY         | Numeric: 3 digits + zero padded                               | 002, 020, 201, 2017, 20173                                 |
  *  |                     | YYYY        | Numeric: 4 digits or more + zero padded                       | 0002, 0020, 0201, 2017, 20173                              |
+ *  | Quarter             | Q           | Numeric: 1 digit                                              | 2                                                          |
+ *  |                     | QQ          | Numeric: 2 digits + zero padded                               | 02                                                        |
+ *  |                     | QQQ         | Abbreviated                                                   | Q2                                                    |
+ *  |                     | QQQQ        | Wide                                                          | 2nd quarter                                                          |
+ *  |                     | QQQQQ       | Narrow                                                        | 2
+ *  | Quarter standalone  | q           | Numeric: 1 digit                                              | 2                                                          |
+ *  |                     | qq          | Numeric: 2 digits + zero padded                               | 02                                                        |
+ *  |                     | qqq         | Abbreviated                                                   | Q2                                                    |
+ *  |                     | qqqq        | Wide                                                          | 2nd quarter                                                          |
+ *  |                     | qqqqq       | Narrow                                                        | 2
  *  | Month               | M           | Numeric: 1 digit                                              | 9, 12                                                      |
  *  |                     | MM          | Numeric: 2 digits + zero padded                               | 09, 12                                                     |
  *  |                     | MMM         | Abbreviated                                                   | Sep                                                        |

@@ -264,6 +264,28 @@ export function getLocaleDayNames(
 }
 
 /**
+ * Retrieves quarters of the year for the given locale, using the Gregorian calendar.
+ *
+ * @param locale A locale code for the locale format rules to use.
+ * @param formStyle The required grammatical form.
+ * @param width The required character width.
+ * @returns An array of localized name strings.
+ * For example,  `[1st quarter, 2nd quarter, ...]` for `en-US`.
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n-overview)
+ *
+ * @publicApi
+ */
+export function getLocaleQuarterNames(
+    locale: string, formStyle: FormStyle, width: TranslationWidth): ReadonlyArray<string> {
+  const data = ɵfindLocaleData(locale);
+  const quartersData = <string[][][]>[
+    data[ɵLocaleDataIndex.QuartersFormat], data[ɵLocaleDataIndex.QuartersStandalone]
+  ];
+  const quarters = getLastDefinedValue(quartersData, formStyle);
+  return getLastDefinedValue(quarters, width);
+}
+
+/**
  * Retrieves months of the year for the given locale, using the Gregorian calendar.
  *
  * @param locale A locale code for the locale format rules to use.
