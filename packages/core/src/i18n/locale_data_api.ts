@@ -127,6 +127,8 @@ export enum LocaleDataIndex {
   DaysStandalone,
   MonthsFormat,
   MonthsStandalone,
+  QuartersFormat,
+  QuartersStandalone,
   Eras,
   FirstDayOfWeek,
   WeekendRange,

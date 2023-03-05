@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormatWidth, FormStyle, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat, NumberSymbol, Time, TranslationWidth} from './locale_data_api';
+import {FormatWidth, FormStyle, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleQuarterNames, getLocaleTimeFormat, NumberSymbol, Time, TranslationWidth} from './locale_data_api';
 
 export const ISO8601_DATE_REGEX =
     /^(\d{4,})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
 //    1        2       3         4          5          6          7          8  9     10      11
 const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
 const DATE_FORMATS_SPLIT =
-    /((?:[^BEGHLMOSWYZabcdhmswyz']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|Y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|c{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
+    /((?:[^BEGHLMOSWYZabcdhmswyz']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|Y{1,4}|Q{1,5}|q{1,5}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|c{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
 
 enum ZoneWidth {
   Short,
@@ -24,6 +24,7 @@ enum ZoneWidth {
 
 enum DateType {
   FullYear,
+  Quarter,
   Month,
   Date,
   Hours,
@@ -37,6 +38,7 @@ enum TranslationType {
   DayPeriods,
   Days,
   Months,
+  Quarters,
   Eras
 }
 
@@ -262,6 +264,8 @@ function getDatePart(part: DateType, date: Date): number {
   switch (part) {
     case DateType.FullYear:
       return date.getFullYear();
+    case DateType.Quarter:
+      return Math.ceil((date.getMonth() + 1) / 3);
     case DateType.Month:
       return date.getMonth();
     case DateType.Date:
@@ -303,6 +307,9 @@ function getDateTranslation(
       return getLocaleMonthNames(locale, form, width)[date.getMonth()];
     case TranslationType.Days:
       return getLocaleDayNames(locale, form, width)[date.getDay()];
+    case TranslationType.Quarters:
+      const quarter = getDatePart(DateType.Quarter, date);
+      return getLocaleQuarterNames(locale, form, width)[quarter - 1];
     case TranslationType.DayPeriods:
       const currentHours = date.getHours();
       const currentMinutes = date.getMinutes();
@@ -445,7 +452,7 @@ const DATE_FORMATS: {[format: string]: DateFormatter} = {};
 // Based on CLDR formats:
 // See complete list: http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
 // See also explanations: http://cldr.unicode.org/translation/date-time
-// TODO(ocombe): support all missing cldr formats: U, Q, D, F, e, j, J, C, A, v, V, X, x
+// TODO(ocombe): support all missing cldr formats: U, D, F, e, j, J, C, A, v, V, X, x
 function getDateFormatter(format: string): DateFormatter|null {
   if (DATE_FORMATS[format]) {
     return DATE_FORMATS[format];
@@ -591,6 +598,46 @@ function getDateFormatter(format: string): DateFormatter|null {
       break;
     case 'EEEEEE':
       formatter = dateStrGetter(TranslationType.Days, TranslationWidth.Short);
+      break;
+
+    // Quarter of the Year (1-4), numeric
+    case 'Q':
+    case 'q':
+      formatter = dateGetter(DateType.Quarter, 1);
+      break;
+    // Quater of the Year (01-04), Zero-Padded, numeric
+    case 'QQ':
+    case 'qq':
+      formatter = dateGetter(DateType.Quarter, 2);
+      break;
+
+    // Quarter of the Year (Q1, ...), string, format
+    case 'QQQ':
+      formatter = dateStrGetter(TranslationType.Quarters, TranslationWidth.Abbreviated);
+      break;
+    // Quarter of the Year (1st quarter, ...), string, format
+    case 'QQQQ':
+      formatter = dateStrGetter(TranslationType.Quarters, TranslationWidth.Wide);
+      break;
+    // Quarter of the Year (1-4), string, format
+    case 'QQQQQ':
+      formatter = dateStrGetter(TranslationType.Quarters, TranslationWidth.Narrow);
+      break;
+
+    // Quarter of the Year (Q1, ...), string, standalone
+    case 'qqq':
+      formatter = dateStrGetter(
+          TranslationType.Quarters, TranslationWidth.Abbreviated, FormStyle.Standalone);
+      break;
+    // Quarter of the Year (1st quarter, ...), string, standalone
+    case 'qqqq':
+      formatter =
+          dateStrGetter(TranslationType.Quarters, TranslationWidth.Wide, FormStyle.Standalone);
+      break;
+    // Quarter of the Year (1-4), numeric, standalone
+    case 'qqqqq':
+      formatter =
+          dateStrGetter(TranslationType.Quarters, TranslationWidth.Narrow, FormStyle.Standalone);
       break;
 
     // Generic period of the day (am-pm)

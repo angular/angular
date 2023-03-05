@@ -135,12 +135,13 @@ function getWeekendRange(localeData: CldrLocaleData) {
 /**
  * Returns date-related translations for a locale
  * @returns [ dayPeriodsFormat, dayPeriodsStandalone, daysFormat, dayStandalone, monthsFormat,
- * monthsStandalone, eras ]
+ * monthsStandalone, quartersFormat, quartersStandalone, eras ]
  * each value: [ narrow, abbreviated, wide, short? ]
  */
 function getDateTimeTranslations(localeData: CldrLocaleData) {
   const dayNames = localeData.main(`dates/calendars/gregorian/days`);
   const monthNames = localeData.main(`dates/calendars/gregorian/months`);
+  const quarterNames = localeData.main(`dates/calendars/gregorian/quarters`);
   const erasNames = localeData.main(`dates/calendars/gregorian/eras`);
   const dayPeriods = getDayPeriodsAmPm(localeData);
 
@@ -177,6 +178,17 @@ function getDateTimeTranslations(localeData: CldrLocaleData) {
     Object.values(monthNames['stand-alone'].wide)
   ]);
 
+  const quartersFormat = removeDuplicates([
+    Object.values(quarterNames.format.narrow), Object.values(quarterNames.format.abbreviated),
+    Object.values(quarterNames.format.wide)
+  ]);
+
+  const quartersStandalone = removeDuplicates([
+    Object.values(quarterNames['stand-alone'].narrow),
+    Object.values(quarterNames['stand-alone'].abbreviated),
+    Object.values(quarterNames['stand-alone'].wide)
+  ]);
+
   const eras = removeDuplicates([
     [erasNames.eraNarrow['0'], erasNames.eraNarrow['1']],
     [erasNames.eraAbbr['0'], erasNames.eraAbbr['1']],
@@ -186,7 +198,8 @@ function getDateTimeTranslations(localeData: CldrLocaleData) {
   const dateTimeTranslations = [
     ...removeDuplicates([dayPeriodsFormat, dayPeriodsStandalone]),
     ...removeDuplicates([daysFormat, daysStandalone]),
-    ...removeDuplicates([monthsFormat, monthsStandalone]), eras
+    ...removeDuplicates([monthsFormat, monthsStandalone]),
+    ...removeDuplicates([quartersFormat, quartersStandalone]), eras
   ];
 
   return dateTimeTranslations;

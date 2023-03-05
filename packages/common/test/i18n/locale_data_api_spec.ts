@@ -13,7 +13,7 @@ import localeHe from '@angular/common/locales/he';
 import localeZh from '@angular/common/locales/zh';
 import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
-import {FormatWidth, FormStyle, getCurrencySymbol, getLocaleDateFormat, getLocaleDayNames, getLocaleDirection, getLocaleMonthNames, getNumberOfCurrencyDigits, TranslationWidth} from '../../src/i18n/locale_data_api';
+import {FormatWidth, FormStyle, getCurrencySymbol, getLocaleDateFormat, getLocaleDayNames, getLocaleDirection, getLocaleMonthNames, getLocaleQuarterNames, getNumberOfCurrencyDigits, TranslationWidth} from '../../src/i18n/locale_data_api';
 
 {
   describe('locale data api', () => {
@@ -160,6 +160,19 @@ import {FormatWidth, FormStyle, getCurrencySymbol, getLocaleDateFormat, getLocal
 
         expect(newMonth).toEqual(
             ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
+      });
+
+      it('should return the full wide list of quarter names after manipulations', () => {
+        const quarters =
+            Array.from(getLocaleQuarterNames('en-US', FormStyle.Format, TranslationWidth.Wide));
+        quarters.splice(2);
+        quarters.push('unexisting_quarter');
+
+        const newQuarters = getLocaleQuarterNames('en-US', FormStyle.Format, TranslationWidth.Wide);
+
+        expect(newQuarters.length).toBe(4);
+
+        expect(newQuarters).toEqual(['1st quarter', '2nd quarter', '3rd quarter', '4th quarter']);
       });
     });
   });
