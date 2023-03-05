@@ -66,12 +66,13 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 const rootLView = createLView(
-    null, createTView(TViewType.Root, null, null, 0, 0, null, null, null, null, null), {},
+    null, createTView(TViewType.Root, null, null, 0, 0, null, null, null, null, null, null), {},
     LViewFlags.IsRoot, null, null, null, null, null, null, null, null);
 
 const viewTNode = createTNode(null!, null, TNodeType.Element, -1, null, null);
 const embeddedTView = createTView(
-    TViewType.Embedded, null, testTemplate, 11, 0, null, null, null, null, [[3, 'click', 'input']]);
+    TViewType.Embedded, null, testTemplate, 11, 0, null, null, null, null, [[3, 'click', 'input']],
+    null);
 
 // create view once so we don't profile the first create pass
 createAndRenderLView(rootLView, embeddedTView, viewTNode);

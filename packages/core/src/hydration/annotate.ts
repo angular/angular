@@ -15,7 +15,7 @@ import {HEADER_OFFSET, HOST, LView, RENDERER, TView, TVIEW} from '../render3/int
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
-import {ELEMENT_CONTAINERS, SerializedView} from './interfaces';
+import {ELEMENT_CONTAINERS, SerializedView, TEMPLATES} from './interfaces';
 import {SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY} from './utils';
 
@@ -46,12 +46,32 @@ class SerializedViewCollection {
 }
 
 /**
+ * Registry that keeps track of unique TView ids throughout
+ * the entire serialization process. This is needed to uniquely
+ * identify dehydrated views at runtime: pick up dehydrated
+ * views that represent an instance of a view created based
+ * on a particular TView.
+ */
+class TViewSsrIdRegistry {
+  private registry = new WeakMap<TView, string>();
+  private currentId = 0;
+
+  get(tView: TView): string {
+    if (!this.registry.has(tView)) {
+      this.registry.set(tView, `t${this.currentId++}`);
+    }
+    return this.registry.get(tView)!;
+  }
+}
+
+/**
  * Describes a context available during the serialization
  * process. The context is used to share and collect information
  * during the serialization.
  */
 interface HydrationContext {
   serializedViewCollection: SerializedViewCollection;
+  ssrIdRegistry: TViewSsrIdRegistry;
 }
 
 /**
@@ -73,6 +93,7 @@ function calcNumRootNodes(tView: TView, lView: LView, tNode: TNode|null): number
  */
 export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const serializedViewCollection = new SerializedViewCollection();
+  const ssrIdRegistry = new TViewSsrIdRegistry();
   const viewRefs = appRef._views;
   for (const viewRef of viewRefs) {
     const lView = getComponentLViewForHydration(viewRef);
@@ -83,6 +104,7 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
       if (hostElement) {
         const context: HydrationContext = {
           serializedViewCollection,
+          ssrIdRegistry,
         };
         annotateHostElementForHydration(hostElement as HTMLElement, lView, context);
       }
@@ -119,8 +141,14 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       continue;
     }
     if (isLContainer(lView[i])) {
-      // TODO: serialization of LContainers will be added
-      // in followup PRs.
+      // Serialize information about a template.
+      const embeddedTView = tNode.tView;
+      if (embeddedTView !== null) {
+        ngh[TEMPLATES] ??= {};
+        ngh[TEMPLATES][noOffsetIndex] = context.ssrIdRegistry.get(embeddedTView);
+      }
+
+      // TODO: serialize views within this LContainer.
     } else if (Array.isArray(lView[i])) {
       // This is a component, annotate the host node with an `ngh` attribute.
       const targetNode = unwrapRNode(lView[i][HOST]!);

@@ -5,13 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {TEMPLATES} from '../../hydration/interfaces';
 import {assertFirstCreatePass} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNodeType} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TView, TViewType} from '../interfaces/view';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView, TViewType} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
 import {getLView, getTView, setCurrentTNode} from '../state';
 import {getConstant} from '../util/view_utils';
@@ -27,6 +28,12 @@ function templateFirstCreatePass(
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
   const tViewConsts = tView.consts;
+  let ssrId: string|null = null;
+  const hydrationInfo = lView[HYDRATION];
+  if (hydrationInfo) {
+    const noOffsetIndex = index - HEADER_OFFSET;
+    ssrId = (hydrationInfo && hydrationInfo.data[TEMPLATES]?.[noOffsetIndex]) || null;
+  }
   // TODO(pk): refactor getOrCreateTNode to have the "create" only version
   const tNode = getOrCreateTNode(
       tView, index, TNodeType.Container, tagName || null,
@@ -37,7 +44,7 @@ function templateFirstCreatePass(
 
   const embeddedTView = tNode.tView = createTView(
       TViewType.Embedded, tNode, templateFn, decls, vars, tView.directiveRegistry,
-      tView.pipeRegistry, null, tView.schemas, tViewConsts);
+      tView.pipeRegistry, null, tView.schemas, tViewConsts, ssrId);
 
   if (tView.queries !== null) {
     tView.queries.template(tView, tNode);

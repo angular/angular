@@ -782,6 +782,14 @@ export interface TView {
    * view. This means that the view is likely corrupted and we should try to recover it.
    */
   incompleteFirstPass: boolean;
+
+  /**
+   * Unique id of this TView for hydration purposes:
+   * - TViewType.Embedded: a unique id generated during serialization on the server
+   * - TViewType.Component: an id generated based on component properties
+   *                        (see `getComponentId` function for details)
+   */
+  ssrId: string|null;
 }
 
 /** Single hook callback function. */

@@ -75,13 +75,13 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 const rootLView = createLView(
-    null, createTView(TViewType.Root, null, null, 0, 0, null, null, null, null, null), {},
+    null, createTView(TViewType.Root, null, null, 0, 0, null, null, null, null, null, null), {},
     LViewFlags.IsRoot, null, null, null, null, null, null, null, null);
 
 const viewTNode = createTNode(null!, null, TNodeType.Element, -1, null, null);
 const embeddedTView = createTView(
     TViewType.Embedded, null, testTemplate, 21, 10, [Tooltip.ɵdir], null, null, null,
-    [['position', 'top', 3, 'tooltip']]);
+    [['position', 'top', 3, 'tooltip']], null);
 
 // create view once so we don't profile the first create pass
 createAndRenderLView(rootLView, embeddedTView, viewTNode);

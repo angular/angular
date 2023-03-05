@@ -38,7 +38,7 @@ import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/defini
 import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {Renderer, RendererFactory} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
-import {CONTEXT, HEADER_OFFSET, HYDRATION, INJECTOR, LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, INJECTOR, LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {createElementNode, setupStaticAttributes, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
@@ -178,7 +178,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
 
     // Create the root view. Uses empty TView and ContentTemplate.
-    const rootTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
+    const rootTView =
+        createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null, null);
     const rootLView = createLView(
         null, rootTView, null, rootFlags, null, null, rendererFactory, hostRenderer, sanitizer,
         rootViewInjector, null, null);

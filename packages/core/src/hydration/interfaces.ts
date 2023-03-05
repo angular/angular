@@ -8,8 +8,11 @@
 
 import {RNode} from '../render3/interfaces/renderer_dom';
 
-/* Represents a key in NghDom that holds information about <ng-container>s. */
+/* Serialized view key that holds information about <ng-container>s. */
 export const ELEMENT_CONTAINERS = 'e';
+
+/* Serialized view key that holds information about templates. */
+export const TEMPLATES = 't';
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -32,6 +35,14 @@ export interface SerializedView {
    * Serialized information about <ng-container>s.
    */
   [ELEMENT_CONTAINERS]?: SerializedElementContainers;
+
+  /**
+   * Serialized information about templates.
+   * Key-value pairs where a key is an index of the corresponding
+   * `template` instruction and the value is a unique id that can
+   * be used during hydration to identify that template.
+   */
+  [TEMPLATES]?: Record<number, string>;
 }
 
 /**
