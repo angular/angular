@@ -89,8 +89,8 @@ export function readConfiguration(
               typeof config.extends === 'string' ? [config.extends] : config.extends;
 
           // Call readAngularCompilerOptions recursively to merge NG Compiler options
-          // Reserve the array so the override overrides happen from right to left.
-          return extendsPaths.reverse().reduce((prevOptions, extendsPath) => {
+          // Reverse the array so the override overrides happen from right to left.
+          return [...extendsPaths].reverse().reduce((prevOptions, extendsPath) => {
             const extendedConfigPath = getExtendedConfigPath(
                 configFile,
                 extendsPath,
