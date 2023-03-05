@@ -8,7 +8,7 @@
 
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {DefaultIterableDiffer, TrackByFunction} from '@angular/core';
+import {TrackByFunction, ɵDefaultIterableDiffer as DefaultIterableDiffer} from '@angular/core';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {DevToolsNode} from 'protocol';
 import {BehaviorSubject, merge, Observable} from 'rxjs';

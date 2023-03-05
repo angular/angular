@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '@angular/core/src/change_detection/differs/default_iterable_differ';
-
+import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '../../../src/change_detection/change_detection';
 import {TestIterable} from '../../util/iterable';
 import {iterableChangesAsString, iterableDifferToString} from '../util';
 

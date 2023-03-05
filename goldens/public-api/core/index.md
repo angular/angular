@@ -424,37 +424,6 @@ export class DebugNode {
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
 
 // @public @deprecated (undocumented)
-export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
-    constructor(trackByFn?: TrackByFunction<V>);
-    // (undocumented)
-    check(collection: NgIterable<V>): boolean;
-    // (undocumented)
-    readonly collection: V[] | Iterable<V> | null;
-    // (undocumented)
-    diff(collection: NgIterable<V> | null | undefined): DefaultIterableDiffer<V> | null;
-    // (undocumented)
-    forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    // (undocumented)
-    forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
-    // (undocumented)
-    forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    // (undocumented)
-    forEachMovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    // (undocumented)
-    forEachOperation(fn: (item: IterableChangeRecord<V>, previousIndex: number | null, currentIndex: number | null) => void): void;
-    // (undocumented)
-    forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    // (undocumented)
-    forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    // (undocumented)
-    get isDirty(): boolean;
-    // (undocumented)
-    readonly length: number;
-    // (undocumented)
-    onDestroy(): void;
-}
-
-// @public @deprecated (undocumented)
 export const defineInjectable: typeof ɵɵdefineInjectable;
 
 // @public

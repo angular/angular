@@ -26,10 +26,6 @@ export class DefaultIterableDifferFactory implements IterableDifferFactory {
 
 const trackByIdentity = (index: number, item: any) => item;
 
-/**
- * @deprecated v4.0.0 - Should not be part of public API.
- * @publicApi
- */
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
   public readonly length: number = 0;
   // TODO(issue/24571): remove '!'.
