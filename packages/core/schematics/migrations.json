@@ -9,6 +9,11 @@
       "version": "16.0.0",
       "description": "In Angular version 15.2, the guard and resolver interfaces (CanActivate, Resolve, etc) were deprecated. This migration removes imports and 'implements' clauses that contain them.",
       "factory": "./migrations/guard-and-resolve-interfaces/bundle"
+    },
+    "migration-v16-default-iterable-differ": {
+      "version": "16.0.0",
+      "description": "Since Angular v16, `DefaultIterableDiffer` become private under `ɵDefaultIterableDiffer`",
+      "factory": "./migrations/default-iterable-differ/bundle"
     }
   }
 }

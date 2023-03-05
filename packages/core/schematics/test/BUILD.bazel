@@ -23,6 +23,8 @@ jasmine_node_test(
         "//packages/core/schematics/migrations/guard-and-resolve-interfaces:bundle",
         "//packages/core/schematics/migrations/remove-module-id",
         "//packages/core/schematics/migrations/remove-module-id:bundle",
+        "//packages/core/schematics/migrations/default-iterable-differ",
+        "//packages/core/schematics/migrations/default-iterable-differ:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration",
         "//packages/core/schematics/ng-generate/standalone-migration:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration:static_files",

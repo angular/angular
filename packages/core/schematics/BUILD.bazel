@@ -19,6 +19,7 @@ pkg_npm(
     deps = [
         "//packages/core/schematics/migrations/guard-and-resolve-interfaces:bundle",
         "//packages/core/schematics/migrations/remove-module-id:bundle",
+        "//packages/core/schematics/migrations/default-iterable-differ:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration:bundle",
     ],
 )

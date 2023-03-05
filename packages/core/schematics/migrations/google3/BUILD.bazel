@@ -6,6 +6,7 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
         "//packages/core/schematics/migrations/guard-and-resolve-interfaces",
+        "//packages/core/schematics/migrations/default-iterable-differ",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
@@ -31,10 +32,20 @@ esbuild(
     deps = [":google3"],
 )
 
+esbuild(
+    name = "default_iterable_differ_rule_cjs",
+    entry_point = ":defaultIterableDifferRule.ts",
+    format = "cjs",
+    output = "defaultIterableDifferCjsRule.js",
+    platform = "node",
+    deps = [":google3"],
+)
+
 filegroup(
     name = "google3_cjs",
     srcs = [
         ":guard_and_resolve_interfaces_cjs",
+        ":default_iterable_differ_rule_cjs",
         ":wait_for_async_rule_cjs",
     ],
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],
