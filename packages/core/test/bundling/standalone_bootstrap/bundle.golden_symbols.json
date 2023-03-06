@@ -606,9 +606,6 @@
     "name": "getCurrentTNodePlaceholderOk"
   },
   {
-    "name": "getDOM"
-  },
-  {
     "name": "getDeclarationTNode"
   },
   {
