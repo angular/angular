@@ -195,7 +195,7 @@ describe('perform_compile', () => {
        }));
      });
 
-  it('should merge tsconfig "angularCompilerOptions" when extends is an array', () => {
+  it('should merge tsconfig "angularCompilerOptions" when extends is aarray', () => {
     support.writeFiles({
       'tsconfig-level-1.json': `{
         "extends": [
@@ -240,6 +240,52 @@ describe('perform_compile', () => {
       annotationsAs: 'decorators',
       annotateForClosureCompiler: false,
       skipMetadataEmit: false,
+    }));
+  });
+
+  it(`should not deep merge objects. (Ex: 'paths' and 'extendedDiagnostics')`, () => {
+    support.writeFiles({
+      'tsconfig-level-1.json': `{
+          "extends": "./tsconfig-level-2.json",
+          "compilerOptions": {
+            "paths": {
+              "@angular/core": ["/*"]
+            }
+          },
+          "angularCompilerOptions": {
+            "extendedDiagnostics": {
+              "checks": {
+                "textAttributeNotBinding": "suppress"
+              }
+            }
+          }
+        }
+      `,
+      'tsconfig-level-2.json': `{
+          "compilerOptions": {
+            "strict": false,
+            "paths": {
+              "@angular/common": ["/*"]
+            }
+          },
+          "angularCompilerOptions": {
+            "skipMetadataEmit": true,
+            "extendedDiagnostics": {
+              "checks": {
+                "nullishCoalescingNotNullable": "suppress"
+              }
+            }
+          }
+        }
+      `,
+    });
+
+    const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+    expect(options).toEqual(jasmine.objectContaining({
+      strict: false,
+      skipMetadataEmit: true,
+      extendedDiagnostics: {checks: {textAttributeNotBinding: 'suppress'}},
+      paths: {'@angular/core': ['/*']}
     }));
   });
 });
