@@ -13,6 +13,16 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType, api: _ZonePrivate) => {
     return;
   }
 
+
+  // From jest 29 and jest-preset-angular v13, the module transform logic
+  // changed, and now jest-preset-angular use the use the tsconfig target
+  // other than the hardcoded one, https://github.com/thymikee/jest-preset-angular/issues/2010
+  // But jest-angular-preset doesn't introduce the @babel/plugin-transform-async-to-generator
+  // which is needed by angular since `async/await` still need to be transformed
+  // to promise for ES2017+ target.
+  // So for now, we disable to output the uncaught error console log for a temp solution,
+  // until jest-preset-angular find a proper solution.
+  (Zone as any)[api.symbol('ignoreConsoleErrorUncaughtError')] = true;
   jest['__zone_patch__'] = true;
 
   const ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'];
