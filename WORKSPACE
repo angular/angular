@@ -52,9 +52,9 @@ http_archive(
 # Fetch Aspect lib for utilities like write_source_files
 http_archive(
     name = "aspect_bazel_lib",
-    sha256 = "4b2e774387bae6242879820086b7b738d49bf3d0659522ea5d9363be01a27582",
-    strip_prefix = "bazel-lib-1.23.2",
-    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.23.2.tar.gz",
+    sha256 = "2518c757715d4f5fc7cc7e0a68742dd1155eaafc78fb9196b8a18e13a738cea2",
+    strip_prefix = "bazel-lib-1.28.0",
+    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.28.0.tar.gz",
 )
 
 # Setup the Node.js toolchain.
