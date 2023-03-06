@@ -18,7 +18,7 @@
     "jest": "^29.0",
     "jest-environment-jsdom": "^29.0.3",
     "jest-environment-node": "^29.0.3",
-    "mocha": "^10.0.0",
+    "mocha": "^10.2.0",
     "mock-require": "3.0.3",
     "promises-aplus-tests": "^2.1.2"
   },
