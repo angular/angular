@@ -72,20 +72,9 @@ export function patchPrototype(prototype: any, fnNames: string[]) {
   const source = prototype.constructor['name'];
   for (let i = 0; i < fnNames.length; i++) {
     const name = fnNames[i];
-    const delegate = prototype[name];
-    if (delegate) {
-      const prototypeDesc = ObjectGetOwnPropertyDescriptor(prototype, name);
-      if (!isPropertyWritable(prototypeDesc)) {
-        continue;
-      }
-      prototype[name] = ((delegate: Function) => {
-        const patched: any = function(this: unknown) {
-          return delegate.apply(this, bindArguments(<any>arguments, source + '.' + name));
-        };
-        attachOriginToPatched(patched, delegate);
-        return patched;
-      })(delegate);
-    }
+    patchMethod(prototype, name, (delegate) => (self, args) => {
+      return delegate.apply(self, bindArguments(<any>args, source + '.' + name));
+    });
   }
 }
 
@@ -278,8 +267,6 @@ export function patchOnProperties(obj: any, properties: string[]|null, prototype
   }
 }
 
-const originalInstanceKey = zoneSymbol('originalInstance');
-
 // wrap some native API on `window`
 export function patchClass(className: string) {
   const OriginalClass = _global[className];
@@ -287,65 +274,17 @@ export function patchClass(className: string) {
   // keep original class in global
   _global[zoneSymbol(className)] = OriginalClass;
 
-  _global[className] = function() {
+  patchFunctionProperty(_global, className, function() {
     const a = bindArguments(<any>arguments, className);
-    switch (a.length) {
-      case 0:
-        this[originalInstanceKey] = new OriginalClass();
-        break;
-      case 1:
-        this[originalInstanceKey] = new OriginalClass(a[0]);
-        break;
-      case 2:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1]);
-        break;
-      case 3:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1], a[2]);
-        break;
-      case 4:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1], a[2], a[3]);
-        break;
-      default:
-        throw new Error('Arg list too long.');
-    }
-  };
+    return new OriginalClass(...a);
+  });
+
+  _global[className].prototype = OriginalClass.prototype;
 
   // attach original delegate to patched function
   attachOriginToPatched(_global[className], OriginalClass);
 
-  const instance = new OriginalClass(function() {});
-
-  let prop;
-  for (prop in instance) {
-    // https://bugs.webkit.org/show_bug.cgi?id=44721
-    if (className === 'XMLHttpRequest' && prop === 'responseBlob') continue;
-    (function(prop) {
-      if (typeof instance[prop] === 'function') {
-        _global[className].prototype[prop] = function() {
-          return this[originalInstanceKey][prop].apply(this[originalInstanceKey], arguments);
-        };
-      } else {
-        ObjectDefineProperty(_global[className].prototype, prop, {
-          set: function(fn) {
-            if (typeof fn === 'function') {
-              this[originalInstanceKey][prop] = wrapWithCurrentZone(fn, className + '.' + prop);
-              // keep callback in wrapped function so we can
-              // use it in Function.prototype.toString to return
-              // the native one.
-              attachOriginToPatched(this[originalInstanceKey][prop], fn);
-            } else {
-              this[originalInstanceKey][prop] = fn;
-            }
-          },
-          get: function() {
-            return this[originalInstanceKey][prop];
-          }
-        });
-      }
-    }(prop));
-  }
-
-  for (prop in OriginalClass) {
+  for (let prop in OriginalClass) {
     if (prop !== 'prototype' && OriginalClass.hasOwnProperty(prop)) {
       _global[className][prop] = OriginalClass[prop];
     }
@@ -385,10 +324,13 @@ export function setShouldCopySymbolProperties(flag: boolean) {
 export function patchMethod(
     target: any, name: string,
     patchFn: (delegate: Function, delegateName: string, name: string) => (self: any, args: any[]) =>
-        any): Function|null {
+        any,
+    findPrototype = true): Function|null {
   let proto = target;
-  while (proto && !proto.hasOwnProperty(name)) {
-    proto = ObjectGetPrototypeOf(proto);
+  if (findPrototype) {
+    while (proto && !proto.hasOwnProperty(name)) {
+      proto = ObjectGetPrototypeOf(proto);
+    }
   }
   if (!proto && target[name]) {
     // somehow we did not find it, but we can see it. This happens on IE for Window properties.
@@ -398,22 +340,63 @@ export function patchMethod(
   const delegateName = zoneSymbol(name);
   let delegate: Function|null = null;
   if (proto && (!(delegate = proto[delegateName]) || !proto.hasOwnProperty(delegateName))) {
-    delegate = proto[delegateName] = proto[name];
+    delegate = proto[name];
+    Object.defineProperty(
+        proto, delegateName,
+        {configurable: true, enumerable: false, writable: true, value: delegate});
     // check whether proto[name] is writable
     // some property is readonly in safari, such as HtmlCanvasElement.prototype.toBlob
     const desc = proto && ObjectGetOwnPropertyDescriptor(proto, name);
     if (isPropertyWritable(desc)) {
       const patchDelegate = patchFn(delegate!, delegateName, name);
-      proto[name] = function() {
+      const namedPatchDelegate = function(this: unknown) {
         return patchDelegate(this, arguments as any);
       };
-      attachOriginToPatched(proto[name], delegate);
+      if (!patchFunctionProperty(proto, name, namedPatchDelegate)) {
+        proto[name] = function(this: unknown) {
+          return Zone.isPatchEnabled() ? patchDelegate(this, arguments as any) :
+                                         delegate!.apply(this, arguments);
+        };
+        attachOriginToPatched(proto[name], delegate);
+      }
       if (shouldCopySymbolProperties) {
         copySymbolProperties(delegate, proto[name]);
       }
     }
   }
   return delegate;
+}
+
+const UNSET_SYMBOL = zoneSymbol('unset_property_value');
+export function patchFunctionProperty(target: any, name: string, patchFn: Function) {
+  const desc = ObjectGetOwnPropertyDescriptor(target, name);
+  if (!desc || !desc.configurable || !isPropertyWritable(desc)) {
+    return false;
+  }
+  const override = zoneSymbol(`${name}_override`);
+  const original = target[name];
+  Object.defineProperty(
+      target, override,
+      {configurable: true, enumerable: false, writable: true, value: UNSET_SYMBOL});
+  Object.defineProperty(target, name, {
+    configurable: true,
+    enumerable: desc?.enumerable === false ? false : true,
+    get: function() {
+      return this[override] !== UNSET_SYMBOL ? this[override] :
+          Zone.isPatchEnabled()              ? patchFn :
+                                               original;
+    },
+    set: function(newFn: any) {
+      if ((Zone.isPatchEnabled() && newFn === patchFn) ||
+          ((!Zone.isPatchEnabled()) && newFn === original)) {
+        this[override] = UNSET_SYMBOL;
+      } else {
+        this[override] = newFn;
+      }
+    },
+  });
+  attachOriginToPatched(patchFn, original);
+  return true;
 }
 
 export interface MacroTaskMeta extends TaskData {

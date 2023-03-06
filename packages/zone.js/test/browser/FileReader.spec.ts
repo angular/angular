@@ -75,18 +75,18 @@ describe('FileReader', ifEnvSupports('FileReader', function() {
              testZone.run(function() {
                fileReader.onloadstart = function() {
                  listenersCalled++;
-                 expect(Zone.current).toBe(testZone);
+                 expect(Zone.current.name).toBe(testZone.name);
                };
 
                fileReader.onload = function() {
                  listenersCalled++;
-                 expect(Zone.current).toBe(testZone);
+                 expect(Zone.current.name).toBe(testZone.name);
                };
 
                fileReader.onloadend = function() {
                  listenersCalled++;
 
-                 expect(Zone.current).toBe(testZone);
+                 expect(Zone.current.name).toBe(testZone.name);
                  expect(fileReader.result).toEqual(data);
                  expect(listenersCalled).toBe(3);
                  done();

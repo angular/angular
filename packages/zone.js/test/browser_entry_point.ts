@@ -10,6 +10,7 @@ import '../lib/common/error-rewrite';
 // import 'core-js/features/map';
 // List all tests here:
 import './common_tests';
+import './browser/scoped-zone.spec';
 import './browser/browser.spec';
 import './browser/define-property.spec';
 import './browser/element.spec';

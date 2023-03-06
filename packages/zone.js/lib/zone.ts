@@ -310,6 +310,21 @@ interface ZoneType {
   root: Zone;
 
   /**
+   * Enables zone.js patch for the global async APIs.
+   */
+  enablePatch(): void;
+
+  /**
+   * Disables zone.js patch for the global async APIs.
+   */
+  disablePatch(): void;
+
+  /**
+   * Is zone.js patch for the global async APIs enabled.
+   */
+  isPatchEnabled(): boolean;
+
+  /**
    * load patch for specified native module, allow user to
    * define their own patch, user can use this API after loading zone.js
    */
@@ -343,7 +358,9 @@ interface _ZonePrivate {
   patchMethod:
       (target: any, name: string,
        patchFn: (delegate: Function, delegateName: string, name: string) =>
-           (self: any, args: any[]) => any) => Function | null;
+           (self: any, args: any[]) => any,
+       findPrototype?: boolean) => Function | null;
+  patchFunctionProperty(target: any, name: string, patchFn: Function): boolean;
   bindArguments: (args: any[], source: string) => any[];
   patchMacroTask:
       (obj: any, funcName: string, metaCreator: (self: any, args: any[]) => any) => void;
@@ -741,6 +758,18 @@ const Zone: ZoneType = (function(global: any) {
 
     static get currentTask(): Task|null {
       return _currentTask;
+    }
+
+    static enablePatch(): void {
+      _patchEnabled = true;
+    }
+
+    static disablePatch(): void {
+      _patchEnabled = false;
+    }
+
+    static isPatchEnabled(): boolean {
+      return _patchEnabled;
     }
 
     // tslint:disable-next-line:require-internal-with-underscore
@@ -1419,6 +1448,7 @@ const Zone: ZoneType = (function(global: any) {
     patchEventTarget: () => [],
     patchOnProperties: noop,
     patchMethod: () => noop,
+    patchFunctionProperty: () => true,
     bindArguments: () => [],
     patchThen: () => noop,
     patchMacroTask: () => noop,
@@ -1440,6 +1470,7 @@ const Zone: ZoneType = (function(global: any) {
   let _currentZoneFrame: _ZoneFrame = {parent: null, zone: new Zone(null, null)};
   let _currentTask: Task|null = null;
   let _numberOfNestedTaskFrames = 0;
+  let _patchEnabled = true;
 
   function noop() {}
 

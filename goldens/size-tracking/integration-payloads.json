@@ -2,8 +2,8 @@
   "cli-hello-world": {
     "uncompressed": {
       "runtime": 908,
-      "main": 125669,
-      "polyfills": 33792
+      "main": 126185,
+      "polyfills": 33465
     }
   },
   "cli-hello-world-ivy-minimal": {
@@ -26,30 +26,30 @@
   "cli-hello-world-lazy": {
     "uncompressed": {
       "runtime": 2734,
-      "main": 228996,
-      "polyfills": 33810,
+      "main": 229111,
+      "polyfills": 33483,
       "src_app_lazy_lazy_routes_ts": 487
     }
   },
   "forms": {
     "uncompressed": {
       "runtime": 888,
-      "main": 158000,
-      "polyfills": 33772
+      "main": 157945,
+      "polyfills": 33445
     }
   },
   "animations": {
     "uncompressed": {
       "runtime": 898,
-      "main": 157177,
-      "polyfills": 33782
+      "main": 157146,
+      "polyfills": 33455
     }
   },
   "standalone-bootstrap": {
     "uncompressed": {
       "runtime": 918,
-      "main": 85026,
-      "polyfills": 33802
+      "main": 84984,
+      "polyfills": 33475
     }
   },
   "hello_world__closure": {

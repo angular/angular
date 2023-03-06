@@ -81,7 +81,7 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
   }
   patchTargets = patchTargets.concat([
     'XMLHttpRequest', 'XMLHttpRequestEventTarget', 'IDBIndex', 'IDBRequest', 'IDBOpenDBRequest',
-    'IDBDatabase', 'IDBTransaction', 'IDBCursor', 'WebSocket'
+    'IDBDatabase', 'IDBTransaction', 'IDBCursor', 'WebSocket', 'FileReader', 'WebSocket'
   ]);
   for (let i = 0; i < patchTargets.length; i++) {
     const target = _global[patchTargets[i]];
