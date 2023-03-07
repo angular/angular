@@ -7,7 +7,9 @@
  */
 
 import {DOCUMENT, isPlatformServer, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, NgZone, OnDestroy, PLATFORM_ID, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, NgZone, OnDestroy, PLATFORM_ID, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation, ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 
 import {EventManager} from './events/event_manager';
 import {SharedStylesHost} from './shared_styles_host';
@@ -200,7 +202,10 @@ class DefaultDomRenderer2 implements Renderer2 {
     let el: any = typeof selectorOrNode === 'string' ? this.doc.querySelector(selectorOrNode) :
                                                        selectorOrNode;
     if (!el) {
-      throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
+      throw new RuntimeError(
+          RuntimeErrorCode.ROOT_NODE_NOT_FOUND,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              `The selector "${selectorOrNode}" did not match any elements`);
     }
     if (!preserveContent) {
       el.textContent = '';
@@ -324,10 +329,12 @@ class DefaultDomRenderer2 implements Renderer2 {
 const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
-    throw new Error(`Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
+    throw new RuntimeError(
+        RuntimeErrorCode.UNEXPECTED_SYNTHETIC_PROPERTY,
+        `Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
   - Either \`BrowserAnimationsModule\` or \`NoopAnimationsModule\` are imported in your application.
   - There is corresponding configuration for the animation named \`${
-        name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
+            name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
   }
 }
 
