@@ -924,7 +924,7 @@ View Engine was deprecated in version 9 and removed in version 13.
 ## view hierarchy
 
 A tree of related views that can be acted on as a unit.
-The root view referenced as the *host view* of a component.
+The root view is referenced as the *host view* of a component.
 A host view is the root of a tree of *embedded views*, collected in a `ViewContainerRef` view container attached to an anchor element in the hosting component.
 The view hierarchy is a key part of Angular [change detection][AioGuideGlossaryChangeDetection].
 
