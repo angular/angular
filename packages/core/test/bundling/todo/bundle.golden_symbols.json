@@ -762,6 +762,9 @@
     "name": "executeViewQueryFn"
   },
   {
+    "name": "extractDefListOrFactory"
+  },
+  {
     "name": "extractDirectiveDef"
   },
   {
@@ -853,6 +856,9 @@
   },
   {
     "name": "getNextLContainer"
+  },
+  {
+    "name": "getNgDirectiveDef"
   },
   {
     "name": "getNodeInjectable"
@@ -958,6 +964,9 @@
   },
   {
     "name": "incrementInitPhaseFlags"
+  },
+  {
+    "name": "initFeatures"
   },
   {
     "name": "initializeDirectives"
