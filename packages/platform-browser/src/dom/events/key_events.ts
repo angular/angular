@@ -78,9 +78,12 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
-    const outsideHandler = KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler);
+    const outsideHandler =
+        KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
 
-    return this.manager.addEventListener(element, parsedEvent['domEventName'], outsideHandler);
+    return this.manager.getZone().runOutsideAngular(() => {
+      return getDOM().onAndCancel(element, parsedEvent['domEventName'], outsideHandler);
+    });
   }
 
   /**
@@ -175,10 +178,10 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * @param zone The zone in which the event occurred.
    * @returns A callback function.
    */
-  static eventCallback(fullKey: string, handler: Function): Function {
+  static eventCallback(fullKey: string, handler: Function, zone: NgZone): Function {
     return (event: KeyboardEvent) => {
       if (KeyEventsPlugin.matchEventFullKeyCode(event, fullKey)) {
-        handler(event);
+        zone.runGuarded(() => handler(event));
       }
     };
   }
