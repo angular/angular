@@ -1125,6 +1125,9 @@
     "name": "executeViewQueryFn"
   },
   {
+    "name": "extractDefListOrFactory"
+  },
+  {
     "name": "extractDirectiveDef"
   },
   {
@@ -1269,6 +1272,9 @@
     "name": "getNextLContainer"
   },
   {
+    "name": "getNgDirectiveDef"
+  },
+  {
     "name": "getNgModuleDef"
   },
   {
@@ -1402,6 +1408,9 @@
   },
   {
     "name": "inheritedParamsDataResolve"
+  },
+  {
+    "name": "initFeatures"
   },
   {
     "name": "initializeDirectives"
