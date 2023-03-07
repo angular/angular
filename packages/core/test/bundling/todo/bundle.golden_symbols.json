@@ -855,6 +855,9 @@
     "name": "getNextLContainer"
   },
   {
+    "name": "getNgDirectiveDef"
+  },
+  {
     "name": "getNodeInjectable"
   },
   {

@@ -1278,6 +1278,9 @@
     "name": "getNextLContainer"
   },
   {
+    "name": "getNgDirectiveDef"
+  },
+  {
     "name": "getNgModuleDef"
   },
   {

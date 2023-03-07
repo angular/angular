@@ -42,7 +42,7 @@ export function isDirectiveHost(tNode: TNode): boolean {
 }
 
 export function isComponentDef<T>(def: DirectiveDef<T>): def is ComponentDef<T> {
-  return (def as ComponentDef<T>).template !== null;
+  return !!(def as ComponentDef<T>).template;
 }
 
 export function isRootView(target: LView): boolean {
