@@ -4262,7 +4262,7 @@ describe('animation tests', function() {
 
 
     function syntheticPropError(name: string, nameKind: string) {
-      return `Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
+      return `NG05105: Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
   - Either \`BrowserAnimationsModule\` or \`NoopAnimationsModule\` are imported in your application.
   - There is corresponding configuration for the animation named \`${
           name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`;
