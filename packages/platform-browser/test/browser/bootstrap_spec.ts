@@ -514,7 +514,8 @@ function bootstrap(
             bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);
         refPromise.then(null, (reason) => {
           expect(logger.res[0].join('#'))
-              .toContain('ERROR#Error: The selector "non-existent" did not match any elements');
+              .toContain(
+                  'ERROR#Error: NG05104: The selector "non-existent" did not match any elements');
           done();
           return null;
         });
@@ -555,7 +556,7 @@ function bootstrap(
                return compiler.compileModuleAsync(AsyncModule).then(factory => {
                  expect(() => factory.create(ref.injector))
                      .toThrowError(
-                         'Providers from the `BrowserModule` have already been loaded. ' +
+                         'NG05100: Providers from the `BrowserModule` have already been loaded. ' +
                          'If you need access to common directives such as NgIf and NgFor, ' +
                          'import the `CommonModule` instead.');
                });

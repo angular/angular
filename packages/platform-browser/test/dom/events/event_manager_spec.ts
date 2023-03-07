@@ -54,7 +54,7 @@ describe('EventManager', () => {
     const plugin = new FakeEventManagerPlugin(doc, ['dblclick']);
     const manager = new EventManager([plugin], new FakeNgZone());
     expect(() => manager.addEventListener(element, 'click', null!))
-        .toThrowError('No event manager plugin found for event click');
+        .toThrowError('NG05101: No event manager plugin found for event click');
   });
 
   it('events are caught when fired from a child', () => {

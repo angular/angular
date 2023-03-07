@@ -157,7 +157,7 @@ describe('bootstrapApplication for standalone components', () => {
        } catch (e: unknown) {
          expect(e).toBeInstanceOf(Error);
          expect((e as Error).message)
-             .toContain('Providers from the `BrowserModule` have already been loaded.');
+             .toContain('NG05100: Providers from the `BrowserModule` have already been loaded.');
        }
      }));
 
@@ -189,7 +189,7 @@ describe('bootstrapApplication for standalone components', () => {
        } catch (e: unknown) {
          expect(e).toBeInstanceOf(Error);
          expect((e as Error).message)
-             .toContain('Providers from the `BrowserModule` have already been loaded.');
+             .toContain('NG05100: Providers from the `BrowserModule` have already been loaded.');
        }
      }));
 

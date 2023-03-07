@@ -7,14 +7,19 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {GetTestability, Testability, TestabilityRegistry, ɵglobal as global} from '@angular/core';
+import {GetTestability, Testability, TestabilityRegistry, ɵglobal as global, ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 
 export class BrowserGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {
     global['getAngularTestability'] = (elem: any, findInAncestors: boolean = true) => {
       const testability = registry.findTestabilityInTree(elem, findInAncestors);
       if (testability == null) {
-        throw new Error('Could not find testability for element.');
+        throw new RuntimeError(
+            RuntimeErrorCode.TESTABILITY_NOT_FOUND,
+            (typeof ngDevMode === 'undefined' || ngDevMode) &&
+                'Could not find testability for element.');
       }
       return testability;
     };
