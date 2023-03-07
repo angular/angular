@@ -728,7 +728,6 @@ export class ApplicationRef {
   /** @internal */
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
   private _runningTick: boolean = false;
-  private _onMicrotaskEmptySubscription: Subscription;
   private _destroyed = false;
   private _destroyListeners: Array<() => void> = [];
   /** @internal */
@@ -766,18 +765,8 @@ export class ApplicationRef {
   }
 
   /** @internal */
-  constructor(
-      private _zone: NgZone,
-      private _injector: EnvironmentInjector,
-      private _exceptionHandler: ErrorHandler,
-  ) {
-    this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
-      next: () => {
-        this._zone.run(() => {
-          this.tick();
-        });
-      }
-    });
+  constructor(private _injector: EnvironmentInjector) {
+    inject(NgZoneChangeDetectionScheduler).initialize();
   }
 
   /**
@@ -1034,7 +1023,6 @@ export class ApplicationRef {
 
       // Destroy all registered views.
       this._views.slice().forEach((view) => view.destroy());
-      this._onMicrotaskEmptySubscription.unsubscribe();
     } finally {
       // Indicate that this instance is destroyed.
       this._destroyed = true;
@@ -1136,3 +1124,30 @@ const INTERNAL_APPLICATION_ERROR_HANDLER =
         return (e) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
       }
     });
+
+@Injectable({providedIn: 'root'})
+export class NgZoneChangeDetectionScheduler {
+  private readonly zone = inject(NgZone);
+  private readonly injector = inject(EnvironmentInjector);
+
+  // Lazy initialization to avoid circular DI since ApplicationRef initializes the scheduler.
+  // When Zoneless is the default, we can make the opt-in provider function have an
+  // ENVIRONMENT_INITIALIZER which initializes class instead of `ApplicationRef`.
+  private applicationRef?: ApplicationRef;
+  private _onMicrotaskEmptySubscription?: Subscription;
+
+  initialize(): void {
+    this._onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe({
+      next: () => {
+        this.zone.run(() => {
+          this.applicationRef ??= this.injector.get(ApplicationRef);
+          this.applicationRef.tick();
+        });
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this._onMicrotaskEmptySubscription?.unsubscribe();
+  }
+}
