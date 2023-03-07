@@ -733,6 +733,7 @@ export class ApplicationRef {
   private _destroyListeners: Array<() => void> = [];
   /** @internal */
   _views: InternalViewRef[] = [];
+  private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
 
   /**
    * Indicates whether this instance was destroyed.
@@ -977,7 +978,7 @@ export class ApplicationRef {
       }
     } catch (e) {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
-      this._zone.runOutsideAngular(() => this._exceptionHandler.handleError(e));
+      this.internalErrorHandler(e);
     } finally {
       this._runningTick = false;
     }
@@ -1116,3 +1117,22 @@ function _lastDefined<T>(args: T[]): T|undefined {
   }
   return undefined;
 }
+
+/**
+ * `InjectionToken` used to configure how to call the `ErrorHandler`.
+ *
+ * `NgZone` is provided by default today so the default (and only) implementation for this
+ * is calling `ErrorHandler.handleError` outside of the Angular zone.
+ *
+ * TODO: When NgZone is off by default, the default behavior should be to just call
+ * the `ErrorHandler.handleError` directly.
+ */
+const INTERNAL_APPLICATION_ERROR_HANDLER =
+    new InjectionToken<(e: any) => void>(NG_DEV_MODE ? 'internal error handler' : '', {
+      providedIn: 'root',
+      factory: () => {
+        const zone = inject(NgZone);
+        const userErrorHandler = inject(ErrorHandler);
+        return (e) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
+      }
+    });
