@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {merge, Observable, Observer, Subscription} from 'rxjs';
+import {share} from 'rxjs/operators';
+
+import {inject, InjectionToken} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
 import {global} from '../util/global';
+import {scheduleMicroTask} from '../util/microtask';
 import {noop} from '../util/noop';
 import {getNativeRequestAnimationFrame} from '../util/raf';
 
@@ -120,7 +125,6 @@ export class NgZone {
    * Notifies that an error has been delivered.
    */
   readonly onError: EventEmitter<any> = new EventEmitter(false);
-
 
   constructor({
     enableLongStackTrace = false,
@@ -481,13 +485,13 @@ function onLeave(zone: NgZonePrivate) {
  * to framework to perform rendering.
  */
 export class NoopNgZone implements NgZone {
-  readonly hasPendingMicrotasks: boolean = false;
-  readonly hasPendingMacrotasks: boolean = false;
-  readonly isStable: boolean = true;
-  readonly onUnstable: EventEmitter<any> = new EventEmitter();
-  readonly onMicrotaskEmpty: EventEmitter<any> = new EventEmitter();
-  readonly onStable: EventEmitter<any> = new EventEmitter();
-  readonly onError: EventEmitter<any> = new EventEmitter();
+  readonly hasPendingMicrotasks = false;
+  readonly hasPendingMacrotasks = false;
+  readonly isStable = true;
+  readonly onUnstable = new EventEmitter<any>();
+  readonly onMicrotaskEmpty = new EventEmitter<any>();
+  readonly onStable = new EventEmitter<any>();
+  readonly onError = new EventEmitter<any>();
 
   run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any): T {
     return fn.apply(applyThis, applyArgs);
@@ -505,3 +509,62 @@ export class NoopNgZone implements NgZone {
     return fn.apply(applyThis, applyArgs);
   }
 }
+
+/**
+ * Token used to drive ApplicationRef.isStable
+ *
+ * TODO: This should be moved entirely to NgZone (as a breaking change) so it can be tree-shakeable
+ * for `NoopNgZone` which is always just an `Observable` of `true`. Additionally, we should consider
+ * whether the property on `NgZone` should be `Observable` or `Signal`.
+ */
+export const IS_STABLE =
+    new InjectionToken<Observable<boolean>>(ngDevMode ? 'isStable Observable' : '', {
+      providedIn: 'root',
+      factory: () => {
+        const zone = inject(NgZone);
+        let _stable = true;
+        const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
+          _stable = zone.isStable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks;
+          zone.runOutsideAngular(() => {
+            observer.next(_stable);
+            observer.complete();
+          });
+        });
+
+        const isStable = new Observable<boolean>((observer: Observer<boolean>) => {
+          // Create the subscription to onStable outside the Angular Zone so that
+          // the callback is run outside the Angular Zone.
+          let stableSub: Subscription;
+          zone.runOutsideAngular(() => {
+            stableSub = zone.onStable.subscribe(() => {
+              NgZone.assertNotInAngularZone();
+
+              // Check whether there are no pending macro/micro tasks in the next tick
+              // to allow for NgZone to update the state.
+              scheduleMicroTask(() => {
+                if (!_stable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks) {
+                  _stable = true;
+                  observer.next(true);
+                }
+              });
+            });
+          });
+
+          const unstableSub: Subscription = zone.onUnstable.subscribe(() => {
+            NgZone.assertInAngularZone();
+            if (_stable) {
+              _stable = false;
+              zone.runOutsideAngular(() => {
+                observer.next(false);
+              });
+            }
+          });
+
+          return () => {
+            stableSub.unsubscribe();
+            unstableSub.unsubscribe();
+          };
+        });
+        return merge(isCurrentlyStable, isStable.pipe(share()));
+      }
+    });
