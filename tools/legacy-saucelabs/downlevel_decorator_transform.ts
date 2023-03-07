@@ -23,5 +23,5 @@ export function legacyCompilationDownlevelDecoratorTransform(program: ts.Program
   // Note: `isCore` is set to `true` since we also process the core package.
   return getDownlevelDecoratorsTransform(
       typeChecker, reflectionHost, [], /* isCore */ true,
-      /* enableClosureCompiler */ false, /* skipClassDecorators */ true);
+      /* enableClosureCompiler */ false);
 }

@@ -22,7 +22,6 @@ describe('downlevel decorator transform', () => {
   let context: MockAotContext;
   let diagnostics: ts.Diagnostic[];
   let isClosureEnabled: boolean;
-  let skipClassDecorators: boolean;
 
   beforeEach(() => {
     diagnostics = [];
@@ -34,7 +33,6 @@ describe('downlevel decorator transform', () => {
     });
     host = new MockCompilerHost(context);
     isClosureEnabled = false;
-    skipClassDecorators = false;
   });
 
   function transform(
@@ -61,7 +59,7 @@ describe('downlevel decorator transform', () => {
         ...preTransformers,
         getDownlevelDecoratorsTransform(
             program.getTypeChecker(), reflectionHost, diagnostics,
-            /* isCore */ false, isClosureEnabled, skipClassDecorators)
+            /* isCore */ false, isClosureEnabled)
       ]
     };
     let output: string|null = null;
@@ -97,13 +95,13 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-       MyService.decorators = [
-           { type: core_1.Injectable }
-       ];
        MyService.ctorParameters = () => [
            { type: ClassInject }
-       ];`);
-    expect(output).not.toContain('tslib');
+       ];
+       MyService = tslib_1.__decorate([
+        (0, core_1.Injectable)()
+       ], MyService);
+       `);
   });
 
   it('should downlevel decorators for @Directive decorated class', () => {
@@ -120,13 +118,13 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-           { type: core_1.Directive }
-       ];
        MyDir.ctorParameters = () => [
            { type: ClassInject }
-       ];`);
-    expect(output).not.toContain('tslib');
+       ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)()
+       ], MyDir);
+       `);
   });
 
   it('should downlevel decorators for @Component decorated class', () => {
@@ -143,13 +141,12 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-       MyComp.decorators = [
-         { type: core_1.Component, args: [{ template: 'hello' },] }
-       ];
        MyComp.ctorParameters = () => [
          { type: ClassInject }
-       ];`);
-    expect(output).not.toContain('tslib');
+       ];
+       MyComp = tslib_1.__decorate([
+        (0, core_1.Component)({ template: 'hello' })
+       ], MyComp);`);
   });
 
   it('should downlevel decorators for @Pipe decorated class', () => {
@@ -166,13 +163,13 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-       MyPipe.decorators = [
-         { type: core_1.Pipe, args: [{ selector: 'hello' },] }
-       ];
        MyPipe.ctorParameters = () => [
          { type: ClassInject }
-       ];`);
-    expect(output).not.toContain('tslib');
+       ];
+       MyPipe = tslib_1.__decorate([
+        (0, core_1.Pipe)({ selector: 'hello' })
+       ], MyPipe);
+       `);
   });
 
   it('should not downlevel non-Angular class decorators', () => {
@@ -243,10 +240,9 @@ describe('downlevel decorator transform', () => {
   // would be processed twice, where the downleveled class is revisited accidentally and
   // caused invalid generation of the `ctorParameters` static class member.
   it('should not duplicate constructor parameters for classes part of constructor body', () => {
-    // The bug with duplicated/invalid generation only surfaces when the actual class
+    // Note: the bug with duplicated/invalid generation only surfaces when the actual class
     // decorators are preserved and emitted by TypeScript itself. This setting is also
     // disabled within the CLI.
-    skipClassDecorators = true;
 
     const {output} = transform(`
        import {Injectable} from '@angular/core';
@@ -324,12 +320,13 @@ describe('downlevel decorator transform', () => {
     expect(diagnostics.length).toBe(0);
     expect(output).toContain('const other_file_1 = require("./other-file");');
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
        MyDir.ctorParameters = () => [
          { type: other_file_1.MyOtherClass }
        ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)(),
+        tslib_1.__metadata("design:paramtypes", [other_file_1.MyOtherClass])
+       ], MyDir);
      `);
   });
 
@@ -350,12 +347,12 @@ describe('downlevel decorator transform', () => {
     expect(diagnostics.length).toBe(0);
     expect(output).toContain('const other_file_1 = require("./other-file");');
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
        MyDir.ctorParameters = () => [
          { type: other_file_1.MyOtherClass }
        ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)()
+       ], MyDir);
      `);
     expect(dtsOutput).toContain('import');
   });
@@ -375,12 +372,12 @@ describe('downlevel decorator transform', () => {
     expect(diagnostics.length).toBe(0);
     expect(output).toContain('const externalFile = require("./other-file");');
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
        MyDir.ctorParameters = () => [
          { type: externalFile.MyOtherClass }
        ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)()
+       ], MyDir);
      `);
   });
 
@@ -401,12 +398,12 @@ describe('downlevel decorator transform', () => {
     expect(diagnostics.length).toBe(0);
     expect(output).toContain('var other;');
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
        MyDir.ctorParameters = () => [
          { type: other.OtherClass }
        ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)()
+       ], MyDir);
      `);
   });
 
@@ -422,12 +419,12 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
        MyDir.ctorParameters = () => [
          { type: Document, decorators: [{ type: core_1.Inject, args: [core_1.DOCUMENT,] }] }
        ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)()
+       ], MyDir);
      `);
   });
 
@@ -443,12 +440,12 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
        MyDir.ctorParameters = () => [
          { type: core_1.NgZone, decorators: [{ type: core_1.Optional }] }
        ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)()
+       ], MyDir);
      `);
   });
 
@@ -467,10 +464,9 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-       /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)()
+        ], MyDir);
      `);
     expect(output).toContain(dedent`
        /**
@@ -484,7 +480,6 @@ describe('downlevel decorator transform', () => {
          { type: ClassInject }
        ];
      `);
-    expect(output).not.toContain('tslib');
   });
 
   it('should not retain unused type imports due to decorator downleveling with ' +
@@ -496,19 +491,18 @@ describe('downlevel decorator transform', () => {
      `);
        const {output} = transform(
            `
-       import {Directive} from '@angular/core';
+       import {Directive, Inject} from '@angular/core';
        import {ErrorHandler, ClassInject} from './external';
 
-       @Directive()
        export class MyDir {
          private _errorHandler: ErrorHandler;
-         constructor(v: ClassInject) {}
+         constructor(@Inject(ClassInject) i: ClassInject) {}
        }
      `,
            {module: ts.ModuleKind.ES2015, emitDecoratorMetadata: true});
 
        expect(diagnostics.length).toBe(0);
-       expect(output).not.toContain('tslib');
+       expect(output).not.toContain('Directive');
        expect(output).not.toContain('ErrorHandler');
      });
 
@@ -521,19 +515,18 @@ describe('downlevel decorator transform', () => {
      `);
        const {output} = transform(
            `
-       import {Directive} from '@angular/core';
+       import {Directive, Inject} from '@angular/core';
        import {ErrorHandler, ClassInject} from './external';
 
-       @Directive()
        export class MyDir {
          private _errorHandler: ErrorHandler;
-         constructor(v: ClassInject) {}
+         constructor(@Inject(ClassInject) i: ClassInject) {}
        }
      `,
            {module: ts.ModuleKind.ES2015, emitDecoratorMetadata: false});
 
        expect(diagnostics.length).toBe(0);
-       expect(output).not.toContain('tslib');
+       expect(output).not.toContain('Directive');
        expect(output).not.toContain('ErrorHandler');
      });
 
@@ -558,15 +551,14 @@ describe('downlevel decorator transform', () => {
         {emitDecoratorMetadata: false});
 
     expect(diagnostics.length).toBe(0);
-    expect(output).not.toContain('tslib');
     expect(output).toContain(`external_1 = require("./external");`);
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
        MyDir.ctorParameters = () => [
          { type: external_1.Dep }
        ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)()
+       ], MyDir);
      `);
   });
 
@@ -582,12 +574,15 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
+       let MyDir = MyDir_1 = class MyDir {
+       constructor(parentDir) { }
+       };
        MyDir.ctorParameters = () => [
-         { type: MyDir, decorators: [{ type: core_1.Optional }, { type: core_1.SkipSelf }, { type: core_1.Inject, args: [MyDir,] }] }
+         { type: MyDir, decorators: [{ type: core_1.Optional }, { type: core_1.SkipSelf }, { type: core_1.Inject, args: [MyDir_1,] }] }
        ];
+       MyDir = MyDir_1 = tslib_1.__decorate([
+        (0, core_1.Directive)()
+       ], MyDir);
      `);
   });
 
@@ -633,15 +628,15 @@ describe('downlevel decorator transform', () => {
     expect(diagnostics.length).toBe(0);
     expect(output).not.toContain('external');
     expect(output).toContain(dedent`
-       MyDir.decorators = [
-         { type: core_1.Directive }
-       ];
        MyDir.ctorParameters = () => [
          { type: undefined, decorators: [{ type: core_1.Inject, args: ['$state',] }] },
          { type: undefined, decorators: [{ type: core_1.Inject, args: ['$overlay',] }] },
          { type: undefined, decorators: [{ type: core_1.Inject, args: ['$default',] }] },
          { type: undefined, decorators: [{ type: core_1.Inject, args: ['$keyCodes',] }] }
        ];
+       MyDir = tslib_1.__decorate([
+        (0, core_1.Directive)()
+       ], MyDir);
      `);
   });
 
@@ -693,13 +688,13 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-       MyComp.decorators = [
-         { type: core_1.Component, args: [{ template: 'hello' },] }
-       ];
        MyComp.ctorParameters = () => [
          { type: Values }
-       ];`);
-    expect(output).not.toContain('tslib');
+       ];
+       MyComp = tslib_1.__decorate([
+        (0, core_1.Component)({ template: 'hello' })
+       ], MyComp);
+       `);
   });
 
   it('should allow for type-only references to be removed with `emitDecoratorMetadata` from custom decorators',
@@ -728,97 +723,6 @@ describe('downlevel decorator transform', () => {
        expect(output).not.toContain('ExternalInterface');
        expect(output).toContain('metadata("design:returntype", Object)');
      });
-
-  describe('class decorators skipped', () => {
-    beforeEach(() => skipClassDecorators = true);
-
-    it('should not downlevel Angular class decorators', () => {
-      const {output} = transform(`
-         import {Injectable} from '@angular/core';
-
-         @Injectable()
-         export class MyService {}
-       `);
-
-      expect(diagnostics.length).toBe(0);
-      expect(output).not.toContain('MyService.decorators');
-      expect(output).toContain(dedent`
-         MyService = tslib_1.__decorate([
-           (0, core_1.Injectable)()
-         ], MyService);
-       `);
-    });
-
-    it('should downlevel constructor parameters', () => {
-      const {output} = transform(`
-         import {Injectable} from '@angular/core';
-
-         @Injectable()
-         export class InjectClass {}
-
-         @Injectable()
-         export class MyService {
-           constructor(dep: InjectClass) {}
-         }
-       `);
-
-      expect(diagnostics.length).toBe(0);
-      expect(output).not.toContain('MyService.decorators');
-      expect(output).toContain('MyService.ctorParameters');
-      expect(output).toContain(dedent`
-         MyService.ctorParameters = () => [
-           { type: InjectClass }
-         ];
-         MyService = tslib_1.__decorate([
-           (0, core_1.Injectable)()
-         ], MyService);
-       `);
-    });
-
-    it('should downlevel constructor parameter decorators', () => {
-      const {output} = transform(`
-         import {Injectable, Inject} from '@angular/core';
-
-         @Injectable()
-         export class InjectClass {}
-
-         @Injectable()
-         export class MyService {
-           constructor(@Inject('test') dep: InjectClass) {}
-         }
-       `);
-
-      expect(diagnostics.length).toBe(0);
-      expect(output).not.toContain('MyService.decorators');
-      expect(output).toContain('MyService.ctorParameters');
-      expect(output).toContain(dedent`
-         MyService.ctorParameters = () => [
-           { type: InjectClass, decorators: [{ type: core_1.Inject, args: ['test',] }] }
-         ];
-         MyService = tslib_1.__decorate([
-           (0, core_1.Injectable)()
-         ], MyService);
-       `);
-    });
-
-    it('should downlevel class member Angular decorators', () => {
-      const {output} = transform(`
-         import {Injectable, Input} from '@angular/core';
-
-         export class MyService {
-           @Input() disabled: boolean;
-         }
-       `);
-
-      expect(diagnostics.length).toBe(0);
-      expect(output).not.toContain('tslib');
-      expect(output).toContain(dedent`
-         MyService.propDecorators = {
-           disabled: [{ type: core_1.Input }]
-         };
-       `);
-    });
-  });
 
   describe('transforming multiple files', () => {
     it('should work correctly for multiple files that import distinct declarations', () => {
@@ -915,7 +819,7 @@ describe('downlevel decorator transform', () => {
       const transformers: ts.CustomTransformers = {
         before: [getDownlevelDecoratorsTransform(
             program.getTypeChecker(), reflectionHost, diagnostics,
-            /* isCore */ false, isClosureEnabled, skipClassDecorators)]
+            /* isCore */ false, isClosureEnabled)]
       };
       return {program, transformers};
     }
