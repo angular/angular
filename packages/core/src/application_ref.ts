@@ -8,13 +8,13 @@
 
 import './util/ng_jit_mode';
 
-import {merge, Observable, Observer, Subscription} from 'rxjs';
-import {share} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
 
 import {ApplicationInitStatus} from './application_init';
 import {PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
+import {inject} from './di';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
 import {Injector} from './di/injector';
@@ -42,9 +42,8 @@ import {createEnvironmentInjector, NgModuleFactory as R3NgModuleFactory} from '.
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
-import {scheduleMicroTask} from './util/microtask';
 import {stringify} from './util/stringify';
-import {NgZone, NoopNgZone} from './zone/ng_zone';
+import {IS_STABLE, NgZone, NoopNgZone} from './zone/ng_zone';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -636,7 +635,6 @@ function optionsReducer<T extends Object>(dst: T, objs: T|T[]): T {
  * A reference to an Angular application running on a page.
  *
  * @usageNotes
- *
  * {@a is-stable-examples}
  * ### isStable examples and caveats
  *
@@ -730,7 +728,6 @@ export class ApplicationRef {
   /** @internal */
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
   private _runningTick: boolean = false;
-  private _stable = true;
   private _onMicrotaskEmptySubscription: Subscription;
   private _destroyed = false;
   private _destroyListeners: Array<() => void> = [];
@@ -757,10 +754,8 @@ export class ApplicationRef {
 
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
-   *
-   * @see  [Usage notes](#is-stable-examples) for examples and caveats when using this API.
    */
-  public readonly isStable: Observable<boolean>;
+  public readonly isStable = inject(IS_STABLE);
 
   /**
    * The `EnvironmentInjector` used to create this application.
@@ -782,53 +777,6 @@ export class ApplicationRef {
         });
       }
     });
-
-    const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
-      this._stable = this._zone.isStable && !this._zone.hasPendingMacrotasks &&
-          !this._zone.hasPendingMicrotasks;
-      this._zone.runOutsideAngular(() => {
-        observer.next(this._stable);
-        observer.complete();
-      });
-    });
-
-    const isStable = new Observable<boolean>((observer: Observer<boolean>) => {
-      // Create the subscription to onStable outside the Angular Zone so that
-      // the callback is run outside the Angular Zone.
-      let stableSub: Subscription;
-      this._zone.runOutsideAngular(() => {
-        stableSub = this._zone.onStable.subscribe(() => {
-          NgZone.assertNotInAngularZone();
-
-          // Check whether there are no pending macro/micro tasks in the next tick
-          // to allow for NgZone to update the state.
-          scheduleMicroTask(() => {
-            if (!this._stable && !this._zone.hasPendingMacrotasks &&
-                !this._zone.hasPendingMicrotasks) {
-              this._stable = true;
-              observer.next(true);
-            }
-          });
-        });
-      });
-
-      const unstableSub: Subscription = this._zone.onUnstable.subscribe(() => {
-        NgZone.assertInAngularZone();
-        if (this._stable) {
-          this._stable = false;
-          this._zone.runOutsideAngular(() => {
-            observer.next(false);
-          });
-        }
-      });
-
-      return () => {
-        stableSub.unsubscribe();
-        unstableSub.unsubscribe();
-      };
-    });
-
-    this.isStable = merge(isCurrentlyStable, isStable.pipe(share()));
   }
 
   /**
