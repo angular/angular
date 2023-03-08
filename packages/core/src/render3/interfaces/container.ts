@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DehydratedContainerView} from '../../hydration/interfaces';
+
 import {TNode} from './node';
 import {RComment, RElement} from './renderer_dom';
 import {HOST, LView, NEXT, PARENT, T_HOST, TRANSPLANTED_VIEWS_TO_REFRESH} from './view';
@@ -44,6 +46,7 @@ export const HAS_TRANSPLANTED_VIEWS = 2;
 export const NATIVE = 7;
 export const VIEW_REFS = 8;
 export const MOVED_VIEWS = 9;
+export const DEHYDRATED_VIEWS = 10;
 
 
 /**
@@ -52,7 +55,7 @@ export const MOVED_VIEWS = 9;
  * which views are already in the DOM (and don't need to be re-added) and so we can
  * remove views from the DOM when they are no longer required.
  */
-export const CONTAINER_HEADER_OFFSET = 10;
+export const CONTAINER_HEADER_OFFSET = 11;
 
 /**
  * The state associated with a container.
@@ -130,6 +133,18 @@ export interface LContainer extends Array<any> {
    * doing so creates circular dependency.
    */
   [VIEW_REFS]: unknown[]|null;
+
+  /**
+   * Array of dehydrated views within this container.
+   *
+   * This information is used during the hydration process on the client.
+   * The hydration logic tries to find a matching dehydrated view, "claim" it
+   * and use this information to do further matching. After that this "claimed"
+   * view is removed from the list. The remaining "unclaimed" views are later
+   * on "garbage-collected", i.e. removed from the DOM once the hydration
+   * logic finishes.
+   */
+  [DEHYDRATED_VIEWS]: DehydratedContainerView[]|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
