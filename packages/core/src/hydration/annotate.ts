@@ -203,10 +203,10 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       // - or an array that represents an LView of a component
       if (Array.isArray(hostNode)) {
         // This is a component, serialize info about it.
-        // TODO: we should *not* serialize if a component is opted-out
-        // (i.e. `ngSkipHydration` is applied).
         const targetNode = unwrapRNode(hostNode as LView) as RElement;
-        annotateHostElementForHydration(targetNode, hostNode as LView, context);
+        if (!(targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
+          annotateHostElementForHydration(targetNode, hostNode as LView, context);
+        }
       }
       ngh[CONTAINERS] ??= {};
       ngh[CONTAINERS][noOffsetIndex] = serializeLContainer(lView[i], context);

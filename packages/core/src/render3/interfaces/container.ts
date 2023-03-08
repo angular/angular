@@ -121,8 +121,7 @@ export interface LContainer extends Array<any> {
   [T_HOST]: TNode;
 
   /** The comment element that serves as an anchor for this LContainer. */
-  readonly[NATIVE]:
-      RComment;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
+  [NATIVE]: RComment;
 
   /**
    * Array of `ViewRef`s used by any `ViewContainerRef`s that point to this container.

@@ -13,24 +13,12 @@ import {getNativeByTNode} from '../render3/util/view_utils';
 import {assertDefined} from '../util/assert';
 
 import {validateSiblingNodeExists} from './error_handling';
-import {DehydratedElementContainer, DehydratedView} from './interfaces';
+import {DehydratedView} from './interfaces';
+import {calcSerializedContainerSize, getSegmentHead} from './utils';
 
 /** Whether current TNode is a first node in an <ng-container>. */
 function isFirstElementInNgContainer(tNode: TNode): boolean {
   return !tNode.prev && tNode.parent?.type === TNodeType.ElementContainer;
-}
-
-/** Returns first element from a DOM segment that corresponds to this <ng-container>. */
-function getDehydratedNgContainer(
-    hydrationInfo: DehydratedView, tContainerNode: TNode): DehydratedElementContainer {
-  const noOffsetIndex = tContainerNode.index - HEADER_OFFSET;
-  const ngContainer = hydrationInfo.ngContainers?.[noOffsetIndex]!;
-  ngDevMode &&
-      assertDefined(
-          ngContainer,
-          'Unexpected state: no hydration info available for a given TNode, ' +
-              'which represents an element container.');
-  return ngContainer;
 }
 
 /**
@@ -58,15 +46,31 @@ export function locateNextRNode<T extends RNode>(
             previousTNode,
             'Unexpected state: current TNode does not have a connection ' +
                 'to the previous node or a parent node.');
-    const previousRElement = getNativeByTNode(previousTNode, lView);
     if (isFirstElementInNgContainer(tNode)) {
-      const ngContainer = getDehydratedNgContainer(hydrationInfo, tNode.parent!);
-      native = ngContainer.firstChild ?? null;
+      const noOffsetParentIndex = tNode.parent!.index - HEADER_OFFSET;
+      native = getSegmentHead(hydrationInfo, noOffsetParentIndex);
     } else {
+      let previousRElement = getNativeByTNode(previousTNode, lView);
       if (previousTNodeParent) {
         native = (previousRElement as RElement).firstChild;
       } else {
-        native = previousRElement.nextSibling;
+        // If the previous node is an element, but it also has container info,
+        // this means that we are processing a node like `<div #vcrTarget>`, which is
+        // represented in the DOM as `<div></div>...<!--container-->`.
+        // In this case, there are nodes *after* this element and we need to skip
+        // all of them to reach an element that we are looking for.
+        const previousSiblingIndex = previousTNode.index - HEADER_OFFSET;
+        const segmentHead = getSegmentHead(hydrationInfo, previousSiblingIndex);
+        if (previousTNode.type === TNodeType.Element && segmentHead) {
+          const numRootNodesToSkip =
+              calcSerializedContainerSize(hydrationInfo, previousSiblingIndex);
+          // `+1` stands for an anchor comment node after all the views in this container.
+          const nodesToSkip = numRootNodesToSkip + 1;
+          // First node after this segment.
+          native = siblingAfter(nodesToSkip, segmentHead);
+        } else {
+          native = previousRElement.nextSibling;
+        }
       }
     }
   }

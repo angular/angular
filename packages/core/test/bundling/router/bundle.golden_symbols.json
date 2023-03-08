@@ -825,6 +825,9 @@
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
+    "name": "_findMatchingDehydratedViewImpl"
+  },
+  {
     "name": "_getInsertInFrontOfRNodeWithI18n"
   },
   {
@@ -838,6 +841,9 @@
   },
   {
     "name": "_keyMap"
+  },
+  {
+    "name": "_locateOrCreateAnchorNode"
   },
   {
     "name": "_locateOrCreateElementNode"
@@ -1162,6 +1168,9 @@
   },
   {
     "name": "findAttrIndexInNode"
+  },
+  {
+    "name": "findMatchingDehydratedView"
   },
   {
     "name": "findNode"

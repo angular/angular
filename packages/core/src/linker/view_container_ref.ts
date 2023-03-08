@@ -8,18 +8,23 @@
 
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
+import {validateMatchingNode} from '../hydration/error_handling';
+import {CONTAINERS} from '../hydration/interfaces';
+import {isInSkipHydrationBlock} from '../hydration/skip_hydration';
+import {getSegmentHead, markRNodeAsClaimedByHydration} from '../hydration/utils';
+import {findMatchingDehydratedView, locateDehydratedViewsInContainer} from '../hydration/views';
 import {isType, Type} from '../interface/type';
 import {assertNodeInjector} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {getComponentDef} from '../render3/definition';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
 import {addToViewTree, createLContainer} from '../render3/instructions/shared';
-import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, VIEW_REFS} from '../render3/interfaces/container';
+import {CONTAINER_HEADER_OFFSET, DEHYDRATED_VIEWS, LContainer, NATIVE, VIEW_REFS} from '../render3/interfaces/container';
 import {NodeInjectorOffset} from '../render3/interfaces/injector';
-import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNodeType} from '../render3/interfaces/node';
-import {RComment, RElement} from '../render3/interfaces/renderer_dom';
+import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from '../render3/interfaces/node';
+import {RComment, RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
-import {LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
+import {HEADER_OFFSET, HYDRATION, LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
 import {addViewToContainer, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
@@ -34,6 +39,7 @@ import {createElementRef, ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
+
 /**
  * Represents a container where one or more views can be attached to a component.
  *
@@ -303,8 +309,9 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       injector = indexOrOptions.injector;
     }
 
-    const viewRef = templateRef.createEmbeddedView(context || <any>{}, injector);
-    this.insert(viewRef, index);
+    const hydrationInfo = findMatchingDehydratedView(this._lContainer, templateRef.ssrId);
+    const viewRef = templateRef.createEmbeddedViewImpl(context || <any>{}, injector, hydrationInfo);
+    this.insertImpl(viewRef, index, !!hydrationInfo);
     return viewRef;
   }
 
@@ -416,13 +423,20 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       }
     }
 
+    const componentDef = getComponentDef(componentFactory.componentType ?? {});
+    const dehydratedView = findMatchingDehydratedView(this._lContainer, componentDef?.id ?? null);
+    const rNode = dehydratedView?.firstChild ?? null;
     const componentRef =
-        componentFactory.create(contextInjector, projectableNodes, undefined, environmentInjector);
-    this.insert(componentRef.hostView, index);
+        componentFactory.create(contextInjector, projectableNodes, rNode, environmentInjector);
+    this.insertImpl(componentRef.hostView, index, !!dehydratedView);
     return componentRef;
   }
 
   override insert(viewRef: ViewRef, index?: number): ViewRef {
+    return this.insertImpl(viewRef, index, false);
+  }
+
+  private insertImpl(viewRef: ViewRef, index?: number, skipDomInsertion?: boolean): ViewRef {
     const lView = (viewRef as R3ViewRef<any>)._lView!;
     const tView = lView[TVIEW];
 
@@ -464,11 +478,13 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     insertView(tView, lView, lContainer, adjustedIdx);
 
     // Physical operation of adding the DOM nodes.
-    const beforeNode = getBeforeNodeForView(adjustedIdx, lContainer);
-    const renderer = lView[RENDERER];
-    const parentRNode = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
-    if (parentRNode !== null) {
-      addViewToContainer(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
+    if (!skipDomInsertion) {
+      const beforeNode = getBeforeNodeForView(adjustedIdx, lContainer);
+      const renderer = lView[RENDERER];
+      const parentRNode = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
+      if (parentRNode !== null) {
+        addViewToContainer(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
+      }
     }
 
     (viewRef as R3ViewRef<any>).attachToViewContainerRef();
@@ -538,8 +554,6 @@ function getOrCreateViewRefs(lContainer: LContainer): ViewRef[] {
 /**
  * Creates a ViewContainerRef and stores it on the injector.
  *
- * @param ViewContainerRefToken The ViewContainerRef type
- * @param ElementRefToken The ElementRef type
  * @param hostTNode The node that is requesting a ViewContainerRef
  * @param hostLView The view to which the node belongs
  * @returns The ViewContainerRef instance to use
@@ -555,33 +569,109 @@ export function createContainerRef(
     // If the host is a container, we don't need to create a new LContainer
     lContainer = slotValue;
   } else {
-    let commentNode: RComment;
-    // If the host is an element container, the native host element is guaranteed to be a
-    // comment and we can reuse that comment as anchor element for the new LContainer.
-    // The comment node in question is already part of the DOM structure so we don't need to append
-    // it again.
-    if (hostTNode.type & TNodeType.ElementContainer) {
-      commentNode = unwrapRNode(slotValue) as RComment;
-    } else {
-      // If the host is a regular element, we have to insert a comment node manually which will
-      // be used as an anchor when inserting elements. In this specific case we use low-level DOM
-      // manipulation to insert it.
-      const renderer = hostLView[RENDERER];
-      ngDevMode && ngDevMode.rendererCreateComment++;
-      commentNode = renderer.createComment(ngDevMode ? 'container' : '');
-
-      const hostNative = getNativeByTNode(hostTNode, hostLView)!;
-      const parentOfHostNative = nativeParentNode(renderer, hostNative);
-      nativeInsertBefore(
-          renderer, parentOfHostNative!, commentNode, nativeNextSibling(renderer, hostNative),
-          false);
-    }
-
-    hostLView[hostTNode.index] = lContainer =
-        createLContainer(slotValue, hostLView, commentNode, hostTNode);
-
+    // An LContainer anchor can not be `null`, but we set it here temporarily
+    // and update to the actual value later in this function (see
+    // `_locateOrCreateAnchorNode`).
+    lContainer = createLContainer(slotValue, hostLView, null!, hostTNode);
+    hostLView[hostTNode.index] = lContainer;
     addToViewTree(hostLView, lContainer);
   }
+  _locateOrCreateAnchorNode(lContainer, hostLView, hostTNode, slotValue);
 
   return new R3ViewContainerRef(lContainer, hostTNode, hostLView);
+}
+
+/**
+ * Creates and inserts a comment node that acts as an anchor for a view container.
+ *
+ * If the host is a regular element, we have to insert a comment node manually which will
+ * be used as an anchor when inserting elements. In this specific case we use low-level DOM
+ * manipulation to insert it.
+ */
+function insertAnchorNode(hostLView: LView, hostTNode: TNode): RComment {
+  const renderer = hostLView[RENDERER];
+  ngDevMode && ngDevMode.rendererCreateComment++;
+  const commentNode = renderer.createComment(ngDevMode ? 'container' : '');
+
+  const hostNative = getNativeByTNode(hostTNode, hostLView)!;
+  const parentOfHostNative = nativeParentNode(renderer, hostNative);
+  nativeInsertBefore(
+      renderer, parentOfHostNative!, commentNode, nativeNextSibling(renderer, hostNative), false);
+  return commentNode;
+}
+
+let _locateOrCreateAnchorNode = createAnchorNode;
+
+/**
+ * Regular creation mode: an anchor is created and
+ * assigned to the `lContainer[NATIVE]` slot.
+ */
+function createAnchorNode(
+    lContainer: LContainer, hostLView: LView, hostTNode: TNode, slotValue: any) {
+  // We already have a native element (anchor) set, return.
+  if (lContainer[NATIVE]) return;
+
+  let commentNode: RComment;
+  // If the host is an element container, the native host element is guaranteed to be a
+  // comment and we can reuse that comment as anchor element for the new LContainer.
+  // The comment node in question is already part of the DOM structure so we don't need to append
+  // it again.
+  if (hostTNode.type & TNodeType.ElementContainer) {
+    commentNode = unwrapRNode(slotValue) as RComment;
+  } else {
+    commentNode = insertAnchorNode(hostLView, hostTNode);
+  }
+  lContainer[NATIVE] = commentNode;
+}
+
+/**
+ * Hydration logic that looks up:
+ *  - an anchor node in the DOM and stores the node in `lContainer[NATIVE]`
+ *  - all dehydrated views in this container and puts them into `lContainer[DEHYDRATED_VIEWS]`
+ */
+function locateOrCreateAnchorNode(
+    lContainer: LContainer, hostLView: LView, hostTNode: TNode, slotValue: any) {
+  // We already have a native element (anchor) set and the process
+  // of finding dehydrated views happened (so the `lContainer[DEHYDRATED_VIEWS]`
+  // is not null), exit early.
+  if (lContainer[NATIVE] && lContainer[DEHYDRATED_VIEWS]) return;
+
+  const hydrationInfo = hostLView[HYDRATION];
+  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock(hostTNode);
+
+  // Regular creation mode.
+  if (isNodeCreationMode) {
+    return createAnchorNode(lContainer, hostLView, hostTNode, slotValue);
+  }
+
+  // Hydration mode, looking up an anchor node and dehydrated views in DOM.
+  const index = hostTNode.index - HEADER_OFFSET;
+  const currentRNode: RNode|null = getSegmentHead(hydrationInfo, index);
+
+  const serializedViews = hydrationInfo.data[CONTAINERS]?.[index];
+  ngDevMode &&
+      assertDefined(
+          serializedViews,
+          'Unexpected state: no hydration info available for a given TNode, ' +
+              'which represents a view container.');
+
+  const [commentNode, dehydratedViews] =
+      locateDehydratedViewsInContainer(currentRNode!, serializedViews!);
+
+  if (ngDevMode) {
+    validateMatchingNode(commentNode, Node.COMMENT_NODE, null, hostLView, hostTNode);
+    // Do not throw in case this node is already claimed (thus `false` as a second
+    // argument). If this container is created based on an `<ng-template>`, the comment
+    // node would be already claimed from the `template` instruction. If an element acts
+    // as an anchor (e.g. <div #vcRef>), a separate comment node would be created/located,
+    // so we need to claim it here.
+    markRNodeAsClaimedByHydration(commentNode, false);
+  }
+
+  lContainer[NATIVE] = commentNode as RComment;
+  lContainer[DEHYDRATED_VIEWS] = dehydratedViews;
+}
+
+export function enableLocateOrCreateContainerRefImpl() {
+  _locateOrCreateAnchorNode = locateOrCreateAnchorNode;
 }

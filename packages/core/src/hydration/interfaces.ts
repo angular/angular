@@ -81,19 +81,6 @@ export interface SerializedContainerView extends SerializedView {
 }
 
 /**
- * Represents a hydration-related element container structure
- * at runtime, which includes a reference to a first node in
- * a DOM segment that corresponds to a given element container.
- */
-export interface DehydratedElementContainer {
-  /**
-   * A reference to the first child in a DOM segment associated
-   * with a first child in a given <ng-container>.
-   */
-  firstChild: RNode|null;
-}
-
-/**
  * An object that contains hydration-related information serialized
  * on the server, as well as the necessary references to segments of
  * the DOM, to facilitate the hydration process for a given hydration
@@ -112,12 +99,10 @@ export interface DehydratedView {
   firstChild: RNode|null;
 
   /**
-   * Collection of <ng-container>s in a given view,
-   * used as a set of pointers to first children in each
-   * <ng-container>, so that those pointers are reused by
-   * subsequent instructions.
+   * Stores references to first nodes in DOM segments that
+   * represent either an <ng-container> or a view container.
    */
-  ngContainers?: {[index: number]: DehydratedElementContainer};
+  segmentHeads?: {[index: number]: RNode|null};
 }
 
 /**
