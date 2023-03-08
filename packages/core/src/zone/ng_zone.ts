@@ -520,51 +520,56 @@ export class NoopNgZone implements NgZone {
 export const IS_STABLE =
     new InjectionToken<Observable<boolean>>(ngDevMode ? 'isStable Observable' : '', {
       providedIn: 'root',
-      factory: () => {
-        const zone = inject(NgZone);
-        let _stable = true;
-        const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
-          _stable = zone.isStable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks;
-          zone.runOutsideAngular(() => {
-            observer.next(_stable);
-            observer.complete();
-          });
+      // TODO(atscott): Replace this with a suitable default like `new
+      // BehaviorSubject(true).asObservable`. Again, long term this won't exist on ApplicationRef at
+      // all but until we can remove it, we need a default value zoneless.
+      factory: isStableFactory,
+    });
+
+export function isStableFactory() {
+  const zone = inject(NgZone);
+  let _stable = true;
+  const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
+    _stable = zone.isStable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks;
+    zone.runOutsideAngular(() => {
+      observer.next(_stable);
+      observer.complete();
+    });
+  });
+
+  const isStable = new Observable<boolean>((observer: Observer<boolean>) => {
+    // Create the subscription to onStable outside the Angular Zone so that
+    // the callback is run outside the Angular Zone.
+    let stableSub: Subscription;
+    zone.runOutsideAngular(() => {
+      stableSub = zone.onStable.subscribe(() => {
+        NgZone.assertNotInAngularZone();
+
+        // Check whether there are no pending macro/micro tasks in the next tick
+        // to allow for NgZone to update the state.
+        scheduleMicroTask(() => {
+          if (!_stable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks) {
+            _stable = true;
+            observer.next(true);
+          }
         });
+      });
+    });
 
-        const isStable = new Observable<boolean>((observer: Observer<boolean>) => {
-          // Create the subscription to onStable outside the Angular Zone so that
-          // the callback is run outside the Angular Zone.
-          let stableSub: Subscription;
-          zone.runOutsideAngular(() => {
-            stableSub = zone.onStable.subscribe(() => {
-              NgZone.assertNotInAngularZone();
-
-              // Check whether there are no pending macro/micro tasks in the next tick
-              // to allow for NgZone to update the state.
-              scheduleMicroTask(() => {
-                if (!_stable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks) {
-                  _stable = true;
-                  observer.next(true);
-                }
-              });
-            });
-          });
-
-          const unstableSub: Subscription = zone.onUnstable.subscribe(() => {
-            NgZone.assertInAngularZone();
-            if (_stable) {
-              _stable = false;
-              zone.runOutsideAngular(() => {
-                observer.next(false);
-              });
-            }
-          });
-
-          return () => {
-            stableSub.unsubscribe();
-            unstableSub.unsubscribe();
-          };
+    const unstableSub: Subscription = zone.onUnstable.subscribe(() => {
+      NgZone.assertInAngularZone();
+      if (_stable) {
+        _stable = false;
+        zone.runOutsideAngular(() => {
+          observer.next(false);
         });
-        return merge(isCurrentlyStable, isStable.pipe(share()));
       }
     });
+
+    return () => {
+      stableSub.unsubscribe();
+      unstableSub.unsubscribe();
+    };
+  });
+  return merge(isCurrentlyStable, isStable.pipe(share()));
+}

@@ -8,7 +8,7 @@
 
 import {createInjectorWithoutInjectorInstances} from '../di/create_injector';
 import {Injector} from '../di/injector';
-import {EnvironmentProviders, Provider} from '../di/interface/provider';
+import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
 import {EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -32,7 +32,7 @@ import {maybeUnwrapFn} from './util/misc_utils';
  */
 export function createNgModule<T>(
     ngModule: Type<T>, parentInjector?: Injector): viewEngine_NgModuleRef<T> {
-  return new NgModuleRef<T>(ngModule, parentInjector ?? null);
+  return new NgModuleRef<T>(ngModule, parentInjector ?? null, []);
 }
 
 /**
@@ -59,7 +59,8 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   override readonly componentFactoryResolver: ComponentFactoryResolver =
       new ComponentFactoryResolver(this);
 
-  constructor(ngModuleType: Type<T>, public _parent: Injector|null) {
+  constructor(
+      ngModuleType: Type<T>, public _parent: Injector|null, additionalProviders: StaticProvider[]) {
     super();
     const ngModuleDef = getNgModuleDef(ngModuleType);
     ngDevMode &&
@@ -74,7 +75,8 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
                              {provide: viewEngine_NgModuleRef, useValue: this}, {
                                provide: viewEngine_ComponentFactoryResolver,
                                useValue: this.componentFactoryResolver
-                             }
+                             },
+                             ...additionalProviders
                            ],
                            stringify(ngModuleType), new Set(['environment'])) as R3Injector;
 
@@ -108,7 +110,13 @@ export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
   }
 
   override create(parentInjector: Injector|null): viewEngine_NgModuleRef<T> {
-    return new NgModuleRef(this.moduleType, parentInjector);
+    return this.createWithAdditionalProviders(parentInjector, []);
+  }
+
+  createWithAdditionalProviders(
+      parentInjector: Injector|null,
+      additionalProviders: StaticProvider[]): viewEngine_NgModuleRef<T> {
+    return new NgModuleRef(this.moduleType, parentInjector, additionalProviders);
   }
 }
 

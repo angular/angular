@@ -276,7 +276,13 @@
     "name": "INJECTOR_SCOPE"
   },
   {
+    "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
+  },
+  {
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
+  },
+  {
+    "name": "IS_STABLE"
   },
   {
     "name": "InjectFlags"
@@ -466,6 +472,9 @@
   },
   {
     "name": "NgZone"
+  },
+  {
+    "name": "NgZoneChangeDetectionScheduler"
   },
   {
     "name": "NoMatch"
@@ -1563,6 +1572,9 @@
     "name": "isScheduler"
   },
   {
+    "name": "isStableFactory"
+  },
+  {
     "name": "isTemplateNode"
   },
   {
@@ -1683,6 +1695,9 @@
     "name": "ngOnChangesSetInput"
   },
   {
+    "name": "ngZoneApplicationErrorHandlerFactory"
+  },
+  {
     "name": "noLeftoversInUrl"
   },
   {
@@ -1747,6 +1762,9 @@
   },
   {
     "name": "promise"
+  },
+  {
+    "name": "provideNgZoneChangeDetection"
   },
   {
     "name": "redirectIfUrlTree"

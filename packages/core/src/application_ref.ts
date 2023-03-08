@@ -14,7 +14,7 @@ import {ApplicationInitStatus} from './application_init';
 import {PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
-import {inject} from './di';
+import {ENVIRONMENT_INITIALIZER, inject} from './di';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
 import {Injector} from './di/injector';
@@ -43,7 +43,7 @@ import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3
 import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
 import {stringify} from './util/stringify';
-import {IS_STABLE, NgZone, NoopNgZone} from './zone/ng_zone';
+import {IS_STABLE, isStableFactory, NgZone, NoopNgZone} from './zone/ng_zone';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -216,7 +216,7 @@ export function internalCreateApplication(config: {
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.
     const allAppProviders = [
-      {provide: NgZone, useValue: ngZone},
+      provideNgZoneChangeDetection(ngZone),
       ...(appProviders || []),
     ];
 
@@ -448,15 +448,14 @@ export class PlatformRef {
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
     const ngZone = getNgZone(options?.ngZone, getNgZoneOptions(options));
-    const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     // Note: Create ngZoneInjector within ngZone.run so that all of the instantiated services are
     // created within the Angular zone
     // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
     // created outside of the Angular zone.
     return ngZone.run(() => {
-      const ngZoneInjector = Injector.create(
-          {providers: providers, parent: this.injector, name: moduleFactory.moduleType.name});
-      const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
+      const moduleRef =
+          <InternalNgModuleRef<M>>(moduleFactory as R3NgModuleFactory<M>)
+              .createWithAdditionalProviders(this.injector, provideNgZoneChangeDetection(ngZone));
       const exceptionHandler: ErrorHandler|null = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
         throw new RuntimeError(
@@ -765,9 +764,7 @@ export class ApplicationRef {
   }
 
   /** @internal */
-  constructor(private _injector: EnvironmentInjector) {
-    inject(NgZoneChangeDetectionScheduler).initialize();
-  }
+  constructor(private _injector: EnvironmentInjector) {}
 
   /**
    * Bootstrap a component onto the element identified by its selector or, optionally, to a
@@ -1111,36 +1108,37 @@ function _lastDefined<T>(args: T[]): T|undefined {
  *
  * `NgZone` is provided by default today so the default (and only) implementation for this
  * is calling `ErrorHandler.handleError` outside of the Angular zone.
- *
- * TODO: When NgZone is off by default, the default behavior should be to just call
- * the `ErrorHandler.handleError` directly.
  */
 const INTERNAL_APPLICATION_ERROR_HANDLER =
     new InjectionToken<(e: any) => void>(NG_DEV_MODE ? 'internal error handler' : '', {
       providedIn: 'root',
       factory: () => {
-        const zone = inject(NgZone);
         const userErrorHandler = inject(ErrorHandler);
-        return (e) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
+        return userErrorHandler.handleError.bind(this);
       }
     });
+
+function ngZoneApplicationErrorHandlerFactory() {
+  const zone = inject(NgZone);
+  const userErrorHandler = inject(ErrorHandler);
+  return (e: unknown) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
+}
 
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
-  private readonly injector = inject(EnvironmentInjector);
+  private readonly applicationRef = inject(ApplicationRef);
 
-  // Lazy initialization to avoid circular DI since ApplicationRef initializes the scheduler.
-  // When Zoneless is the default, we can make the opt-in provider function have an
-  // ENVIRONMENT_INITIALIZER which initializes class instead of `ApplicationRef`.
-  private applicationRef?: ApplicationRef;
   private _onMicrotaskEmptySubscription?: Subscription;
 
   initialize(): void {
+    if (this._onMicrotaskEmptySubscription) {
+      return;
+    }
+
     this._onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe({
       next: () => {
         this.zone.run(() => {
-          this.applicationRef ??= this.injector.get(ApplicationRef);
           this.applicationRef.tick();
         });
       }
@@ -1150,4 +1148,20 @@ export class NgZoneChangeDetectionScheduler {
   ngOnDestroy() {
     this._onMicrotaskEmptySubscription?.unsubscribe();
   }
+}
+
+export function provideNgZoneChangeDetection(ngZone: NgZone): StaticProvider[] {
+  return [
+    {provide: NgZone, useValue: ngZone},
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      multi: true,
+      useFactory: () => {
+        const ngZoneChangeDetectionScheduler = inject(NgZoneChangeDetectionScheduler);
+        return () => ngZoneChangeDetectionScheduler.initialize();
+      },
+    },
+    {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
+    {provide: IS_STABLE, useFactory: isStableFactory},
+  ];
 }
