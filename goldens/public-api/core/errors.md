@@ -27,8 +27,6 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DUPLICATE_DIRECTITVE = 309,
     // (undocumented)
-    ERROR_HANDLER_NOT_FOUND = 402,
-    // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
@@ -68,6 +66,8 @@ export const enum RuntimeErrorCode {
     MISSING_INJECTION_TOKEN = 208,
     // (undocumented)
     MISSING_LOCALE_DATA = 701,
+    // (undocumented)
+    MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP = 402,
     // (undocumented)
     MISSING_ZONEJS = 908,
     // (undocumented)

@@ -111,6 +111,9 @@
     "name": "INJECTOR_SCOPE"
   },
   {
+    "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
+  },
+  {
     "name": "InjectFlags"
   },
   {
@@ -153,6 +156,9 @@
     "name": "NG_COMP_DEF"
   },
   {
+    "name": "NG_DIR_DEF"
+  },
+  {
     "name": "NG_ELEMENT_ID"
   },
   {
@@ -172,6 +178,9 @@
   },
   {
     "name": "NG_MOD_DEF"
+  },
+  {
+    "name": "NG_PIPE_DEF"
   },
   {
     "name": "NG_PROV_DEF"
@@ -220,6 +229,9 @@
   },
   {
     "name": "NgZone"
+  },
+  {
+    "name": "NgZoneChangeDetectionScheduler"
   },
   {
     "name": "NodeInjector"
@@ -331,6 +343,9 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
   },
   {
     "name": "_DOM"
@@ -493,6 +508,9 @@
   },
   {
     "name": "forEachSingleProvider"
+  },
+  {
+    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -684,6 +702,9 @@
     "name": "isPromise2"
   },
   {
+    "name": "isStableFactory"
+  },
+  {
     "name": "isTypeProvider"
   },
   {
@@ -730,6 +751,9 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "ngZoneApplicationErrorHandlerFactory"
   },
   {
     "name": "noop"

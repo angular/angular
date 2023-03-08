@@ -437,7 +437,7 @@ function bootstrap(
       });
     });
 
-    it('should throw if no provider', done => {
+    it('should throw if no provider', async () => {
       const logger = new MockConsole();
       const errorHandler = new ErrorHandler();
       (errorHandler as any)._console = logger as any;
@@ -460,14 +460,9 @@ function bootstrap(
       class CustomModule {
       }
 
-      bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
+      await expectAsync(bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
         CustomModule
-      ]).then(null, (e: Error) => {
-        const errorMsg = `R3InjectorError(TestModule)[IDontExist -> IDontExist -> IDontExist]: \n`;
-        expect(e.message).toContain(errorMsg);
-        done();
-        return null;
-      });
+      ])).toBeRejected();
     });
 
     if (getDOM().supportsDOMEvents) {

@@ -147,6 +147,9 @@
     "name": "INJECTOR_SCOPE"
   },
   {
+    "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
+  },
+  {
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
@@ -265,6 +268,9 @@
   },
   {
     "name": "NgZone"
+  },
+  {
+    "name": "NgZoneChangeDetectionScheduler"
   },
   {
     "name": "NodeInjector"
@@ -394,6 +400,9 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
   },
   {
     "name": "_DOM"
@@ -789,6 +798,9 @@
     "name": "isPromise2"
   },
   {
+    "name": "isStableFactory"
+  },
+  {
     "name": "isTemplateNode"
   },
   {
@@ -846,6 +858,9 @@
     "name": "ngOnChangesSetInput"
   },
   {
+    "name": "ngZoneApplicationErrorHandlerFactory"
+  },
+  {
     "name": "nonNull"
   },
   {
@@ -871,6 +886,9 @@
   },
   {
     "name": "promise"
+  },
+  {
+    "name": "provideNgZoneChangeDetection"
   },
   {
     "name": "refCount"

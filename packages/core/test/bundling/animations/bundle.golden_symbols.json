@@ -261,6 +261,9 @@
     "name": "INJECTOR_SCOPE"
   },
   {
+    "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
+  },
+  {
     "name": "InjectFlags"
   },
   {
@@ -397,6 +400,9 @@
   },
   {
     "name": "NgZone"
+  },
+  {
+    "name": "NgZoneChangeDetectionScheduler"
   },
   {
     "name": "NodeInjector"
@@ -586,6 +592,9 @@
   },
   {
     "name": "WebAnimationsStyleNormalizer"
+  },
+  {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
   },
   {
     "name": "_CACHED_BODY"
@@ -885,6 +894,9 @@
     "name": "forEachSingleProvider"
   },
   {
+    "name": "formatRuntimeError"
+  },
+  {
     "name": "forwardRef"
   },
   {
@@ -1158,6 +1170,9 @@
     "name": "isPromise2"
   },
   {
+    "name": "isStableFactory"
+  },
+  {
     "name": "isTemplateNode"
   },
   {
@@ -1237,6 +1252,9 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "ngZoneApplicationErrorHandlerFactory"
   },
   {
     "name": "noSideEffects"
