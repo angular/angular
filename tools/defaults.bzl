@@ -443,7 +443,6 @@ def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kw
         "@npm//chokidar",
         "@npm//domino",
         "@npm//jasmine-core",
-        "@npm//reflect-metadata",
         "@npm//source-map-support",
         "@npm//tslib",
         "@npm//xhr2",

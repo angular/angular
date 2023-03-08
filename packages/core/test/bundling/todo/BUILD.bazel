@@ -9,7 +9,6 @@ ng_module(
     deps = [
         "//packages/common",
         "//packages/core",
-        "//packages/core/test/bundling/util:reflect_metadata",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
     ],
@@ -22,7 +21,6 @@ app_bundle(
         ":todo",
         "//packages/common",
         "//packages/core",
-        "//packages/core/test/bundling/util:reflect_metadata",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "@npm//rxjs",

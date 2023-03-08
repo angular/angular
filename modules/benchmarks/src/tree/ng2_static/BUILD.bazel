@@ -30,7 +30,6 @@ http_server(
     name = "devserver",
     srcs = [
         "index.html",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     deps = [
         ":app_bundle",

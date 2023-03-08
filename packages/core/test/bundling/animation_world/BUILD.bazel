@@ -7,7 +7,6 @@ ng_module(
     srcs = ["index.ts"],
     deps = [
         "//packages/core",
-        "//packages/core/test/bundling/util:reflect_metadata",
         "//packages/platform-browser",
     ],
 )

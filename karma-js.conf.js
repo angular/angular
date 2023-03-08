@@ -48,8 +48,6 @@ module.exports = function(config) {
         watched: false,
       },
 
-      'node_modules/reflect-metadata/Reflect.js',
-
       'dist/legacy-test-bundle.spec.js',
     ],
 

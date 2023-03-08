@@ -7,7 +7,6 @@ nodejs_binary(
     data = [
         "//packages/compiler-cli",
         "@npm//chokidar",
-        "@npm//reflect-metadata",
     ],
     entry_point = "//packages/compiler-cli:src/main.ts",
 )
@@ -17,7 +16,6 @@ nodejs_binary(
     data = [
         "//packages/compiler-cli",
         "@npm//chokidar",
-        "@npm//reflect-metadata",
     ],
     entry_point = "//packages/compiler-cli:src/extract_i18n.ts",
 )

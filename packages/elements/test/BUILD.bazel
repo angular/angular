@@ -32,7 +32,6 @@ filegroup(
     srcs = [
         # Required for browsers that do not natively support Custom Elements.
         "@npm//:node_modules/@webcomponents/custom-elements/custom-elements.min.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
         "//packages/zone.js/bundles:zone.umd.js",
         "//packages/zone.js/bundles:zone-testing.umd.js",
     ],

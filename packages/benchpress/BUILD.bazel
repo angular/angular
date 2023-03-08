@@ -14,7 +14,6 @@ ts_library(
         "//packages:types",
         "//packages/core",
         "@npm//@types/node",
-        "@npm//reflect-metadata",
     ],
 )
 
@@ -27,7 +26,6 @@ ng_package(
     ],
     externals = [
         "@angular/core",
-        "reflect-metadata",
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.

@@ -7,9 +7,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Must be imported first, because Angular decorators throw on load.
-import 'reflect-metadata';
-
 import {NodeJSFileSystem, setFileSystem} from '../ngtsc/file_system';
 import {mainXi18n} from '../extract_i18n';
 

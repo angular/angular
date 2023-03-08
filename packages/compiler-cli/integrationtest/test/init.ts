@@ -10,6 +10,3 @@
 // from built npm_package instead of source
 import 'zone.js/node';
 import 'zone.js/testing';
-// Only needed to satisfy the check in core/src/util/decorators.ts
-// TODO(alexeagle): maybe remove that check?
-require('reflect-metadata');

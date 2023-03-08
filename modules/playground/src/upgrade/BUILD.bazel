@@ -27,7 +27,6 @@ http_server(
     srcs = [
         "index.html",
         "@npm//:node_modules/angular-1.8/angular.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     deps = [
         ":app_bundle",
