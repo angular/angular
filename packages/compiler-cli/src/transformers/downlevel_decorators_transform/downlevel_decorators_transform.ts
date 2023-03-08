@@ -504,14 +504,10 @@ export function getDownlevelDecoratorsTransform(
       // return all decorators, but only ones that could be possible Angular decorators.
       const possibleAngularDecorators = host.getDecoratorsOfDeclaration(classDecl) || [];
 
-      let hasAngularDecorator = false;
-      for (const decorator of possibleAngularDecorators) {
-        // Keep track if we come across an Angular class decorator. This is used
-        // to determine whether constructor parameters should be captured or not.
-        if (isAngularDecorator(decorator, isCore)) {
-          hasAngularDecorator = true;
-        }
-      }
+      // Keep track if we come across an Angular class decorator. This is used
+      // to determine whether constructor parameters should be captured or not.
+      const hasAngularDecorator =
+          possibleAngularDecorators.some(d => isAngularDecorator(d, isCore));
 
       if (classParameters) {
         if (hasAngularDecorator || classParameters.some(p => !!p.decorators.length)) {
