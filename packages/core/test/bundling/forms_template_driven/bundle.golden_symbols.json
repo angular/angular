@@ -858,6 +858,9 @@
     "name": "executeViewQueryFn"
   },
   {
+    "name": "extractDefListOrFactory"
+  },
+  {
     "name": "extractDirectiveDef"
   },
   {
@@ -1090,6 +1093,9 @@
   },
   {
     "name": "inheritViewQuery"
+  },
+  {
+    "name": "initFeatures"
   },
   {
     "name": "initializeDirectives"

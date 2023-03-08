@@ -1143,6 +1143,9 @@
     "name": "executeViewQueryFn"
   },
   {
+    "name": "extractDefListOrFactory"
+  },
+  {
     "name": "extractDirectiveDef"
   },
   {
@@ -1414,6 +1417,9 @@
   },
   {
     "name": "inheritedParamsDataResolve"
+  },
+  {
+    "name": "initFeatures"
   },
   {
     "name": "initializeDirectives"

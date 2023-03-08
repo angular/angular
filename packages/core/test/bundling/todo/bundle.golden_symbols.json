@@ -762,6 +762,9 @@
     "name": "executeViewQueryFn"
   },
   {
+    "name": "extractDefListOrFactory"
+  },
+  {
     "name": "extractDirectiveDef"
   },
   {
@@ -961,6 +964,9 @@
   },
   {
     "name": "incrementInitPhaseFlags"
+  },
+  {
+    "name": "initFeatures"
   },
   {
     "name": "initializeDirectives"
