@@ -1,3 +1,50 @@
+<a name="16.0.0-next.2"></a>
+# 16.0.0-next.2 (2023-03-08)
+## Breaking Changes
+### common
+- Deprecated `XhrFactory` export from `@angular/common/http` has been removed. Use `XhrFactory` from `@angular/common` instead.
+### core
+- `zone.js` versions `0.11.x` and `0.12.x` are not longer supported.
+### platform-server
+- `renderModuleFactory` has been removed. Use `renderModule` instead.
+## Deprecations
+### platform-browser
+- `ApplicationConfig` has moved, please import `ApplicationConfig` from `@angular/core` instead.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c41a21658c](https://github.com/angular/angular/commit/c41a21658c9a56044b5d7f62cab4fcad5a5732c7) | refactor | remove deprecated `XhrFactory` export from `http` entrypoint ([#49251](https://github.com/angular/angular/pull/49251)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1407a9aeaf](https://github.com/angular/angular/commit/1407a9aeaf5edf33dfb9b52d7b2baaebef9b80ed) | feat | support multiple configuration files in `extends` ([#49125](https://github.com/angular/angular/pull/49125)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4e9531f777](https://github.com/angular/angular/commit/4e9531f7773e7bf0d3034a36c62f34f914e4a451) | feat | add `mergeApplicationConfig` method ([#49253](https://github.com/angular/angular/pull/49253)) |
+| [fdf61974d1](https://github.com/angular/angular/commit/fdf61974d1155b771d7d53c7bbc3bd2b0f6681cb) | feat | drop support for `zone.js` versions `<=0.12.0` ([#49331](https://github.com/angular/angular/pull/49331)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2fbaee3cbe](https://github.com/angular/angular/commit/2fbaee3cbe0dd24fc9c03a4c3d0e0117c26acb53) | fix | add protractor support if protractor imports are detected ([#49274](https://github.com/angular/angular/pull/49274)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3aa85a8087](https://github.com/angular/angular/commit/3aa85a8087643ce79da6d1aeae7b925bb76315a5) | refactor | move `ApplicationConfig` to core ([#49253](https://github.com/angular/angular/pull/49253)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b5278cc115](https://github.com/angular/angular/commit/b5278cc115ee6383a20783967b9e7da3f6184dcd) | feat | `renderApplication` now accepts a bootstrapping method ([#49248](https://github.com/angular/angular/pull/49248)) |
+| [17abe6dc96](https://github.com/angular/angular/commit/17abe6dc96a443de0c2f9575bb160042a031fed1) | refactor | remove deprecated `renderModuleFactory` ([#49247](https://github.com/angular/angular/pull/49247)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ea32c3289a](https://github.com/angular/angular/commit/ea32c3289ad773a821b3432fb8d4c36d0d9fbd9d) | feat | Expose information about the last successful `Navigation` ([#49235](https://github.com/angular/angular/pull/49235)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Dylan Hunn, Jessica Janiuk, JiaLiPassion, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Sai Kartheek Bommisetty and Vinit Neogi
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.2"></a>
 # 15.2.2 (2023-03-08)
 ### migrations
