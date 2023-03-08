@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {validateMatchingNode} from '../../hydration/error_handling';
+import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
-import {getNgContainerSize, markRNodeAsClaimedByHydration, storeNgContainerInfo} from '../../hydration/utils';
+import {getNgContainerSize, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
 import {assertEqual, assertIndexInRange, assertNumber} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -177,23 +177,25 @@ function locateOrCreateElementContainerNode(
 
   // Hydration mode, looking up existing elements in DOM.
   const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
+  ngDevMode && validateNodeExists(currentRNode);
+
   const ngContainerSize = getNgContainerSize(hydrationInfo, index) as number;
   ngDevMode &&
       assertNumber(
           ngContainerSize,
           'Unexpected state: hydrating an <ng-container>, ' +
               'but no hydration info is available.');
-  if (ngContainerSize > 0) {
-    storeNgContainerInfo(hydrationInfo, index, currentRNode);
-    comment = siblingAfter<RComment>(ngContainerSize, currentRNode)!;
-  } else {
-    // If <ng-container> has no nodes,
-    // the current node is an anchor (comment) node.
-    comment = currentRNode as RComment;
-  }
 
-  ngDevMode && validateMatchingNode(comment as Node, Node.COMMENT_NODE, null, lView, tNode);
-  ngDevMode && markRNodeAsClaimedByHydration(comment);
+  // If this container is non-empty, store the first node as a segment head,
+  // otherwise, this node is an anchor and segment head doesn't exist (thus `null`).
+  const segmentHead = ngContainerSize > 0 ? currentRNode : null;
+  setSegmentHead(hydrationInfo, index, segmentHead);
+  comment = siblingAfter<RComment>(ngContainerSize, currentRNode)!;
+
+  if (ngDevMode) {
+    validateMatchingNode(comment, Node.COMMENT_NODE, null, lView, tNode);
+    markRNodeAsClaimedByHydration(comment);
+  }
 
   return comment;
 }

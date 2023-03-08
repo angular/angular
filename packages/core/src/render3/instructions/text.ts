@@ -77,7 +77,7 @@ function locateOrCreateTextNodeImpl(
   // Hydration mode, looking up an existing element in DOM.
   const textNative = locateNextRNode(hydrationInfo, tView, lView, tNode) as RText;
 
-  ngDevMode && validateMatchingNode(textNative as Node, Node.TEXT_NODE, null, lView, tNode);
+  ngDevMode && validateMatchingNode(textNative, Node.TEXT_NODE, null, lView, tNode);
   ngDevMode && markRNodeAsClaimedByHydration(textNative);
 
   return textNative;

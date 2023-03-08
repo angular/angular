@@ -16,7 +16,7 @@ export const ELEMENT_CONTAINERS = 'e';
 export const TEMPLATES = 't';
 export const CONTAINERS = 'c';
 export const NUM_ROOT_NODES = 'r';
-export const TEMPLATE = 'i';  // as it's also an "id"
+export const TEMPLATE_ID = 'i';  // as it's also an "id"
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -70,7 +70,7 @@ export interface SerializedContainerView extends SerializedView {
    *  - TViewType.Component: an id generated based on component properties
    *                        (see `getComponentId` function for details)
    */
-  [TEMPLATE]: string;
+  [TEMPLATE_ID]: string;
 
   /**
    * Number of root nodes that belong to this view.
@@ -78,19 +78,6 @@ export interface SerializedContainerView extends SerializedView {
    * and identify segments that belong to different views.
    */
   [NUM_ROOT_NODES]: number;
-}
-
-/**
- * Represents a hydration-related element container structure
- * at runtime, which includes a reference to a first node in
- * a DOM segment that corresponds to a given element container.
- */
-export interface DehydratedElementContainer {
-  /**
-   * A reference to the first child in a DOM segment associated
-   * with a first child in a given <ng-container>.
-   */
-  firstChild: RNode|null;
 }
 
 /**
@@ -112,12 +99,10 @@ export interface DehydratedView {
   firstChild: RNode|null;
 
   /**
-   * Collection of <ng-container>s in a given view,
-   * used as a set of pointers to first children in each
-   * <ng-container>, so that those pointers are reused by
-   * subsequent instructions.
+   * Stores references to first nodes in DOM segments that
+   * represent either an <ng-container> or a view container.
    */
-  ngContainers?: {[index: number]: DehydratedElementContainer};
+  segmentHeads?: {[index: number]: RNode|null};
 }
 
 /**

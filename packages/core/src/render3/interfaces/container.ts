@@ -121,8 +121,7 @@ export interface LContainer extends Array<any> {
   [T_HOST]: TNode;
 
   /** The comment element that serves as an anchor for this LContainer. */
-  readonly[NATIVE]:
-      RComment;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
+  [NATIVE]: RComment;
 
   /**
    * Array of `ViewRef`s used by any `ViewContainerRef`s that point to this container.
@@ -139,9 +138,9 @@ export interface LContainer extends Array<any> {
    *
    * This information is used during the hydration process on the client.
    * The hydration logic tries to find a matching dehydrated view, "claim" it
-   * and use this information to do further matching. After that this "claimed"
-   * view is removed from the list. The remaining "unclaimed" views are later
-   * on "garbage-collected", i.e. removed from the DOM once the hydration
+   * and use this information to do further matching. After that, this "claimed"
+   * view is removed from the list. The remaining "unclaimed" views are
+   * "garbage-collected" later on, i.e. removed from the DOM once the hydration
    * logic finishes.
    */
   [DEHYDRATED_VIEWS]: DehydratedContainerView[]|null;

@@ -16,7 +16,7 @@ import {HEADER_OFFSET, HOST, LView, RENDERER, TView, TVIEW, TViewType} from '../
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
-import {CONTAINERS, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE, TEMPLATES} from './interfaces';
+import {CONTAINERS, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY} from './utils';
 
@@ -47,22 +47,24 @@ class SerializedViewCollection {
 }
 
 /**
- * Registry that keeps track of unique TView ids throughout
- * the entire serialization process. This is needed to uniquely
- * identify dehydrated views at runtime: pick up dehydrated
- * views that represent an instance of a view created based
- * on a particular TView.
+ * Global counter that is used to generate a unique id for TViews
+ * during the serialization process.
  */
-class TViewSsrIdRegistry {
-  private registry = new WeakMap<TView, string>();
-  private currentId = 0;
+let tViewSsrId = 0;
 
-  get(tView: TView): string {
-    if (!this.registry.has(tView)) {
-      this.registry.set(tView, `t${this.currentId++}`);
-    }
-    return this.registry.get(tView)!;
+/**
+ * Generates a unique id for a given TView and returns this id.
+ * The id is also stored on this instance of a TView and reused in
+ * subsequent calls.
+ *
+ * This id is needed to uniquely identify and pick up dehydrated views
+ * at runtime.
+ */
+function getSsrId(tView: TView): string {
+  if (!tView.ssrId) {
+    tView.ssrId = `t${tViewSsrId++}`;
   }
+  return tView.ssrId;
 }
 
 /**
@@ -72,7 +74,6 @@ class TViewSsrIdRegistry {
  */
 interface HydrationContext {
   serializedViewCollection: SerializedViewCollection;
-  ssrIdRegistry: TViewSsrIdRegistry;
 }
 
 /**
@@ -94,7 +95,6 @@ function calcNumRootNodes(tView: TView, lView: LView, tNode: TNode|null): number
  */
 export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const serializedViewCollection = new SerializedViewCollection();
-  const ssrIdRegistry = new TViewSsrIdRegistry();
   const viewRefs = appRef._views;
   for (const viewRef of viewRefs) {
     const lView = getComponentLViewForHydration(viewRef);
@@ -105,7 +105,6 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
       if (hostElement) {
         const context: HydrationContext = {
           serializedViewCollection,
-          ssrIdRegistry,
         };
         annotateHostElementForHydration(hostElement as HTMLElement, lView, context);
       }
@@ -119,12 +118,12 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
 }
 
 /**
- * Serializes the lContainer data into a list of Serializedview objects,
+ * Serializes the lContainer data into a list of SerializedView objects,
  * that represent views within this lContainer.
  *
  * @param lContainer the lContainer we are serializing
  * @param context the hydration context
- * @returns an array of the `Serializedview` objects
+ * @returns an array of the `SerializedView` objects
  */
 function serializeLContainer(
     lContainer: LContainer, context: HydrationContext): SerializedContainerView[] {
@@ -133,7 +132,7 @@ function serializeLContainer(
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     let childLView = lContainer[i] as LView;
 
-    // If this is a root view, get an LView for te underlying component,
+    // If this is a root view, get an LView for the underlying component,
     // because it contains information about the view to serialize.
     if (isRootView(childLView)) {
       childLView = childLView[HEADER_OFFSET];
@@ -149,12 +148,12 @@ function serializeLContainer(
       // host node itself (other nodes would be inside that host node).
       numRootNodes = 1;
     } else {
-      template = context.ssrIdRegistry.get(childTView);
+      template = getSsrId(childTView);
       numRootNodes = calcNumRootNodes(childTView, childLView, childTView.firstChild);
     }
 
     const view: SerializedContainerView = {
-      [TEMPLATE]: template,
+      [TEMPLATE_ID]: template,
       [NUM_ROOT_NODES]: numRootNodes,
       ...serializeLView(lContainer[i] as LView, context),
     };
@@ -192,7 +191,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       const embeddedTView = tNode.tView;
       if (embeddedTView !== null) {
         ngh[TEMPLATES] ??= {};
-        ngh[TEMPLATES][noOffsetIndex] = context.ssrIdRegistry.get(embeddedTView);
+        ngh[TEMPLATES][noOffsetIndex] = getSsrId(embeddedTView);
       }
 
       // Serialize views within this LContainer.
@@ -203,10 +202,10 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       // - or an array that represents an LView of a component
       if (Array.isArray(hostNode)) {
         // This is a component, serialize info about it.
-        // TODO: we should *not* serialize if a component is opted-out
-        // (i.e. `ngSkipHydration` is applied).
         const targetNode = unwrapRNode(hostNode as LView) as RElement;
-        annotateHostElementForHydration(targetNode, hostNode as LView, context);
+        if (!(targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
+          annotateHostElementForHydration(targetNode, hostNode as LView, context);
+        }
       }
       ngh[CONTAINERS] ??= {};
       ngh[CONTAINERS][noOffsetIndex] = serializeLContainer(lView[i], context);

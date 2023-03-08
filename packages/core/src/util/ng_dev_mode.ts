@@ -50,6 +50,7 @@ declare global {
     rendererCreateComment: number;
     hydratedNodes: number;
     hydratedComponents: number;
+    dehydratedViewsRemoved: number;
   }
 }
 
@@ -81,6 +82,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererCreateComment: 0,
     hydratedNodes: 0,
     hydratedComponents: 0,
+    dehydratedViewsRemoved: 0,
   };
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.

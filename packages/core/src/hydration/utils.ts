@@ -15,7 +15,7 @@ import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 
-import {DehydratedView, ELEMENT_CONTAINERS, SerializedView} from './interfaces';
+import {CONTAINERS, DehydratedContainerView, DehydratedView, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView} from './interfaces';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -153,12 +153,50 @@ export function isRNodeClaimedForHydration(node: RNode): boolean {
   return !!(node as ClaimedNode).__claimed;
 }
 
-export function storeNgContainerInfo(
-    hydrationInfo: DehydratedView, index: number, firstChild: RNode): void {
-  hydrationInfo.ngContainers ??= {};
-  hydrationInfo.ngContainers[index] = {firstChild};
+export function setSegmentHead(
+    hydrationInfo: DehydratedView, index: number, node: RNode|null): void {
+  hydrationInfo.segmentHeads ??= {};
+  hydrationInfo.segmentHeads[index] = node;
 }
 
+export function getSegmentHead(hydrationInfo: DehydratedView, index: number): RNode|null {
+  return hydrationInfo.segmentHeads?.[index] ?? null;
+}
+
+/**
+ * Returns the size of an <ng-container>, using either the information
+ * serialized in `ELEMENT_CONTAINERS` (element container size) or by
+ * computing the sum of root nodes in all dehydrated views in a given
+ * container (in case this `<ng-container>` was also used as a view
+ * container host node, e.g. <ng-container *ngIf>).
+ */
 export function getNgContainerSize(hydrationInfo: DehydratedView, index: number): number|null {
-  return hydrationInfo.data[ELEMENT_CONTAINERS]?.[index] ?? null;
+  const data = hydrationInfo.data;
+  let size = data[ELEMENT_CONTAINERS]?.[index] ?? null;
+  // If there is no serialized information available in the `ELEMENT_CONTAINERS` slot,
+  // check if we have info about view containers at this location (e.g.
+  // `<ng-container *ngIf>`) and use container size as a number of root nodes in this
+  // element container.
+  if (size === null && data[CONTAINERS]?.[index]) {
+    size = calcSerializedContainerSize(hydrationInfo, index);
+  }
+  return size;
+}
+
+export function getSerializedContainerViews(
+    hydrationInfo: DehydratedView, index: number): SerializedContainerView[]|null {
+  return hydrationInfo.data[CONTAINERS]?.[index] ?? null;
+}
+
+/**
+ * Computes the size of a serialized container (the number of root nodes)
+ * by calculating the sum of root nodes in all dehydrated views in this container.
+ */
+export function calcSerializedContainerSize(hydrationInfo: DehydratedView, index: number): number {
+  const views = getSerializedContainerViews(hydrationInfo, index) ?? [];
+  let numNodes = 0;
+  for (let view of views) {
+    numNodes += view[NUM_ROOT_NODES];
+  }
+  return numNodes;
 }
