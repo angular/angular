@@ -119,3 +119,14 @@ export interface DehydratedView {
    */
   ngContainers?: {[index: number]: DehydratedElementContainer};
 }
+
+/**
+ * An object that contains hydration-related information serialized
+ * on the server, as well as the necessary references to segments of
+ * the DOM, to facilitate the hydration process for a given view
+ * inside a view container (either an embedded view or a view created
+ * for a component).
+ */
+export interface DehydratedContainerView extends DehydratedView {
+  data: Readonly<SerializedContainerView>;
+}
