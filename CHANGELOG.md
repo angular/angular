@@ -1,3 +1,14 @@
+<a name="15.2.2"></a>
+# 15.2.2 (2023-03-08)
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6207d6f1f0](https://github.com/angular/angular/commit/6207d6f1f0771ff3b74379367e65af665ef0e51c) | fix | add protractor support if protractor imports are detected ([#49274](https://github.com/angular/angular/pull/49274)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Sai Kartheek Bommisetty and Vinit Neogi
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-next.1"></a>
 # 16.0.0-next.1 (2023-03-01)
 ## Breaking Changes
