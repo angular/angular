@@ -27,6 +27,9 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
+    "name": "BaseConsumer"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -688,6 +691,9 @@
   },
   {
     "name": "getNullInjector"
+  },
+  {
+    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"

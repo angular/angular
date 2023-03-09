@@ -11,10 +11,8 @@ import {assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
-import {isLContainer, isLView, isRootView} from '../interfaces/type_checks';
+import {isLContainer, isLView} from '../interfaces/type_checks';
 import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TView} from '../interfaces/view';
-
-import {getLViewParent} from './view_traversal_utils';
 
 
 
@@ -205,29 +203,4 @@ export function removeLViewOnDestroy(lView: LView, onDestroyCallback: () => void
   if (destroyCBIdx !== -1) {
     lView[ON_DESTROY_HOOKS].splice(destroyCBIdx, 1);
   }
-}
-
-/**
- * Marks current view and all ancestors dirty.
- *
- * Returns the root view because it is found as a byproduct of marking the view tree
- * dirty, and can be used by methods that consume markViewDirty() to easily schedule
- * change detection. Otherwise, such methods would need to traverse up the view tree
- * an additional time to get the root view and schedule a tick on it.
- *
- * @param lView The starting LView to mark dirty
- * @returns the root LView
- */
-export function markViewDirty(lView: LView): LView|null {
-  while (lView) {
-    lView[FLAGS] |= LViewFlags.Dirty;
-    const parent = getLViewParent(lView);
-    // Stop traversing up as soon as you find a root view that wasn't attached to any container
-    if (isRootView(lView) && !parent) {
-      return lView;
-    }
-    // continue otherwise
-    lView = parent!;
-  }
-  return null;
 }

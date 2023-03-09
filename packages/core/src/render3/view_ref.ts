@@ -13,12 +13,13 @@ import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 
 import {collectNativeNodes} from './collect_native_nodes';
+import {markViewDirty} from './instructions/mark_view_dirty';
 import {checkNoChangesInternal, detectChangesInternal} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
 import {destroyLView, detachView, renderDetachView} from './node_manipulation';
-import {markViewDirty, storeLViewOnDestroy} from './util/view_utils';
+import {storeLViewOnDestroy} from './util/view_utils';
 
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates

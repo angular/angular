@@ -51,6 +51,9 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
+    "name": "BaseConsumer"
+  },
+  {
     "name": "BaseRouteReuseStrategy"
   },
   {
@@ -1330,6 +1333,9 @@
   },
   {
     "name": "getOrCreateComponentTView"
+  },
+  {
+    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"

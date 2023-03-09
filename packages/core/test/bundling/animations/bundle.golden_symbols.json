@@ -99,6 +99,9 @@
     "name": "BaseAnimationRenderer"
   },
   {
+    "name": "BaseConsumer"
+  },
+  {
     "name": "BrowserAnimationBuilder"
   },
   {
@@ -1000,6 +1003,9 @@
   },
   {
     "name": "getOrCreateComponentTView"
+  },
+  {
+    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"

@@ -6,21 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Consumer, nextReactiveId, setActiveConsumer} from '../signals/src/graph';
-import {newWeakRef, WeakRef} from '../signals/src/weak_ref';
+import {BaseConsumer, setActiveConsumer} from '../signals/src/graph';
 import {assertDefined, assertEqual} from '../util/assert';
 
+import {markViewDirty} from './instructions/mark_view_dirty';
 import {ComponentTemplate, HostBindingsFunction, RenderFlags} from './interfaces/definition';
 import {LView, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER} from './interfaces/view';
-import {markViewDirty} from './util/view_utils';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
-export class ReactiveLViewConsumer implements Consumer {
-  readonly id = nextReactiveId();
-  readonly ref = newWeakRef(this);
-  readonly producers = new Map();
-  trackingVersion = 0;
+export class ReactiveLViewConsumer extends BaseConsumer {
   private _lView: LView|null = null;
 
   set lView(lView: LView) {
@@ -28,7 +23,7 @@ export class ReactiveLViewConsumer implements Consumer {
     this._lView = lView;
   }
 
-  notify() {
+  override notify() {
     NG_DEV_MODE &&
         assertDefined(
             this._lView,
@@ -55,7 +50,12 @@ export class ReactiveLViewConsumer implements Consumer {
   }
 }
 
-let currentConsumer = new ReactiveLViewConsumer();
+let currentConsumer: ReactiveLViewConsumer|null = null;
+
+function getOrCreateCurrentLViewConsumer() {
+  currentConsumer ??= new ReactiveLViewConsumer();
+  return currentConsumer;
+}
 
 /**
  * Create a new template consumer pointing at the specified LView.
@@ -65,7 +65,7 @@ let currentConsumer = new ReactiveLViewConsumer();
 export function getReactiveLViewConsumer(
     lView: LView, slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER):
     ReactiveLViewConsumer {
-  return lView[slot] ?? currentConsumer;
+  return lView[slot] ?? getOrCreateCurrentLViewConsumer();
 }
 
 /**
@@ -81,11 +81,12 @@ export function getReactiveLViewConsumer(
 export function commitLViewConsumerIfHasProducers(
     lView: LView,
     slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER): void {
-  if (currentConsumer.producers.size === 0) {
+  const consumer = getOrCreateCurrentLViewConsumer();
+  if (consumer.producers.size === 0) {
     return;
   }
 
   lView[slot] = currentConsumer;
-  currentConsumer.lView = lView;
+  consumer.lView = lView;
   currentConsumer = new ReactiveLViewConsumer();
 }

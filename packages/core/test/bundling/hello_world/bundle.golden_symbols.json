@@ -24,6 +24,9 @@
     "name": "BLOOM_MASK"
   },
   {
+    "name": "BaseConsumer"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -592,6 +595,9 @@
   },
   {
     "name": "getNullInjector"
+  },
+  {
+    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"

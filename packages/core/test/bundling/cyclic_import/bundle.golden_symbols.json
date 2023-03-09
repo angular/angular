@@ -36,6 +36,9 @@
     "name": "BROWSER_MODULE_PROVIDERS_MARKER"
   },
   {
+    "name": "BaseConsumer"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -763,6 +766,9 @@
   },
   {
     "name": "getOrCreateComponentTView"
+  },
+  {
+    "name": "getOrCreateCurrentLViewConsumer"
   },
   {
     "name": "getOrCreateInjectable"
