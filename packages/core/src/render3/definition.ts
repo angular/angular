@@ -312,8 +312,6 @@ export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<
       id: '',
     };
 
-    def.id = getComponentId(def);
-
     initFeatures(def);
     const dependencies = componentDefinition.dependencies;
     def.directiveDefs = extractDefListOrFactory(dependencies, /* pipeDef */ false);
