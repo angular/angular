@@ -13,7 +13,7 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {ApplicationRef, Component, destroyPlatform, getPlatform, HostListener, importProvidersFrom, Inject, inject as coreInject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, ViewEncapsulation} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {bootstrapApplication, BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, ServerModule} from '@angular/platform-server';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, provideServerSupport, renderModule, ServerModule} from '@angular/platform-server';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -206,7 +206,7 @@ const MyAsyncServerAppStandalone = createMyAsyncServerApp(true);
 const boostrapMyAsyncServerAppStandalone = () => bootstrapApplication(MyAsyncServerAppStandalone, {
   providers: [
     importProvidersFrom(BrowserModule.withServerTransition({appId: 'simple-cmp'})),
-    importProvidersFrom(ServerModule),
+    provideServerSupport(),
   ]
 });
 

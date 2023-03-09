@@ -60,6 +60,15 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
   {provide: EVENT_MANAGER_PLUGINS, multi: true, useClass: ServerEventManagerPlugin},
 ];
 
+export const PLATFORM_SERVER_PROVIDERS: Provider[] = [
+  TRANSFER_STATE_SERIALIZATION_PROVIDERS,
+  SERVER_RENDER_PROVIDERS,
+  SERVER_HTTP_PROVIDERS,
+  {provide: Testability, useValue: null},  // Keep for backwards-compatibility.
+  {provide: TESTABILITY, useValue: null},
+  {provide: ViewportScroller, useClass: NullViewportScroller},
+];
+
 /**
  * The ng module for the server.
  *
@@ -68,14 +77,7 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
 @NgModule({
   exports: [BrowserModule],
   imports: [HttpClientModule, NoopAnimationsModule],
-  providers: [
-    TRANSFER_STATE_SERIALIZATION_PROVIDERS,
-    SERVER_RENDER_PROVIDERS,
-    SERVER_HTTP_PROVIDERS,
-    {provide: Testability, useValue: null},  // Keep for backwards-compatibility.
-    {provide: TESTABILITY, useValue: null},
-    {provide: ViewportScroller, useClass: NullViewportScroller},
-  ],
+  providers: PLATFORM_SERVER_PROVIDERS,
 })
 export class ServerModule {
 }
