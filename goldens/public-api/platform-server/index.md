@@ -49,6 +49,9 @@ export class PlatformState {
 }
 
 // @public
+export function provideServerSupport(): EnvironmentProviders;
+
+// @public
 export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {
     document?: string | Document;
     url?: string;
