@@ -1051,6 +1051,12 @@ export class NgZone {
 }
 
 // @public
+export interface NgZoneOptions {
+    eventCoalescing?: boolean;
+    runCoalescing?: boolean;
+}
+
+// @public
 export const NO_ERRORS_SCHEMA: SchemaMetadata;
 
 // @public
@@ -1157,6 +1163,9 @@ export type Provider = TypeProvider | ValueProvider | ClassProvider | Constructo
 
 // @public
 export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
+
+// @public
+export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;
 
 // @public
 export interface Query {

@@ -291,9 +291,6 @@
     "name": "NoneEncapsulationDomRenderer"
   },
   {
-    "name": "NoopNgZone"
-  },
-  {
     "name": "NullInjector"
   },
   {
@@ -556,9 +553,6 @@
   },
   {
     "name": "createElementRef"
-  },
-  {
-    "name": "createEnvironmentInjector"
   },
   {
     "name": "createInjector"
@@ -930,7 +924,7 @@
     "name": "promise"
   },
   {
-    "name": "provideNgZoneChangeDetection"
+    "name": "provideZoneChangeDetection"
   },
   {
     "name": "refCount"

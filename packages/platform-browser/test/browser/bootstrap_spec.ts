@@ -8,8 +8,8 @@
 
 import {animate, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, inject as _inject, InjectionToken, Injector, LOCALE_ID, NgModule, NgModuleRef, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, TransferState, Type, VERSION} from '@angular/core';
-import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
+import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, inject as _inject, InjectionToken, Injector, LOCALE_ID, NgModule, NgModuleRef, NgZone, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, TransferState, Type, VERSION} from '@angular/core';
+import {ApplicationRef, destroyPlatform, provideZoneChangeDetection} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {inject, TestBed} from '@angular/core/testing';
@@ -385,6 +385,31 @@ function bootstrap(
           expect(el.innerText).toBe('Hello from AnimationCmp!');
         });
       });
+
+      it('initializes modules inside the NgZone when using `provideZoneChangeDetection`',
+         async () => {
+           let moduleInitialized = false;
+           @NgModule({})
+           class SomeModule {
+             constructor() {
+               expect(NgZone.isInAngularZone()).toBe(true);
+               moduleInitialized = true;
+             }
+           }
+           @Component({
+             template: '',
+             selector: 'hello-app',
+             imports: [SomeModule],
+             standalone: true,
+           })
+           class AnimationCmp {
+           }
+
+           await bootstrapApplication(AnimationCmp, {
+             providers: [provideZoneChangeDetection({eventCoalescing: true})],
+           });
+           expect(moduleInitialized).toBe(true);
+         });
     });
 
     it('should throw if bootstrapped Directive is not a Component', done => {
@@ -621,6 +646,15 @@ function bootstrap(
           done();
         }, done.fail);
       })();
+    });
+
+    it('should not allow provideZoneChangeDetection in bootstrapModule', async () => {
+      @NgModule({imports: [BrowserModule], providers: [provideZoneChangeDetection()]})
+      class SomeModule {
+      }
+
+      await expectAsync(platformBrowserDynamic().bootstrapModule(SomeModule))
+          .toBeRejectedWithError(/provideZoneChangeDetection.*BootstrapOptions/);
     });
 
     it('should register each application with the testability registry', async () => {
