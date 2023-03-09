@@ -1782,7 +1782,7 @@ export class HttpHeaderResponse extends HttpResponseBase {
 // @public
 export class HttpHeaders {
     constructor(headers?: string | {
-        [name: string]: string | string[];
+        [name: string]: string | number | (string | number)[];
     });
     append(name: string, value: string | string[]): HttpHeaders;
     delete(name: string, value?: string | string[]): HttpHeaders;
