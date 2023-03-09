@@ -21,15 +21,13 @@
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "concurrently": "3.4.0",
-    "google-closure-compiler": "file:../../node_modules/google-closure-compiler",
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor",
     "rollup": "file:../../node_modules/rollup",
     "tsickle": "file:../../node_modules/tsickle"
   },
   "scripts": {
-    "closure": "google-closure-compiler --flagfile closure.conf",
-    "build": "yarn ngc && yarn rollup -c rollup.config.mjs && yarn closure",
+    "build": "yarn ngc && yarn rollup -c rollup.config.mjs",
     "test": "yarn build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",
