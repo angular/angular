@@ -54,7 +54,7 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
         expect(() => headers.get('foo'))
             .toThrowError(
                 'Unexpected value of the `foo` header provided. ' +
-                'Expecting either a string or an array, but got: `null`.');
+                'Expecting either a string, a number or an array, but got: `null`.');
       });
 
       it('should throw an error when undefined is passed as header', () => {
@@ -64,7 +64,25 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
         expect(() => headers.get('bar'))
             .toThrowError(
                 'Unexpected value of the `bar` header provided. ' +
-                'Expecting either a string or an array, but got: `undefined`.');
+                'Expecting either a string, a number or an array, but got: `undefined`.');
+      });
+
+      it('should not throw an error when a number is passed as header', () => {
+        const headers = new HttpHeaders({'Content-Length': 100});
+        const value = headers.get('Content-Length');
+        expect(value).toEqual('100');
+      });
+
+      it('should not throw an error when a numerical array is passed as header', () => {
+        const headers = new HttpHeaders({'some-key': [123]});
+        const value = headers.get('some-key');
+        expect(value).toEqual('123');
+      });
+
+      it('should not throw an error when an array of strings is passed as header', () => {
+        const headers = new HttpHeaders({'some-key': ['myValue']});
+        const value = headers.get('some-key');
+        expect(value).toEqual('myValue');
       });
     });
 

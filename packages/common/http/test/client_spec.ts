@@ -224,7 +224,7 @@ import {toArray} from 'rxjs/operators';
         expect(() => backend.expectOne('/test').request.headers.has('random-header'))
             .toThrowError(
                 'Unexpected value of the `foo` header provided. ' +
-                'Expecting either a string or an array, but got: `null`.');
+                'Expecting either a string, a number or an array, but got: `null`.');
       });
     });
   });
