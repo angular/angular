@@ -2,7 +2,7 @@
   "cli-hello-world": {
     "uncompressed": {
       "runtime": 908,
-      "main": 126191,
+      "main": 126280,
       "polyfills": 33792
     }
   },
@@ -49,7 +49,7 @@
     "uncompressed": {
       "runtime": 918,
       "main": 85743,
-      "polyfills": 33945
+      "polyfills": 33802
     }
   },
   "hello_world__closure": {

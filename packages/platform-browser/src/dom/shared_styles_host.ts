@@ -158,9 +158,10 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
 
   private addStyleToHost(host: Node, style: string): void {
     const styleEl = this.getStyleElement(host, style);
-    host.appendChild(styleEl);
-    const styleRef = this.styleRef;
 
+    host.appendChild(styleEl);
+
+    const styleRef = this.styleRef;
     const styleElRef = styleRef.get(style);
     if (styleElRef) {
       styleElRef.push(styleEl);
