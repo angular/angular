@@ -14,7 +14,7 @@ import {ApplicationInitStatus} from './application_init';
 import {PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
-import {ENVIRONMENT_INITIALIZER, inject} from './di';
+import {ENVIRONMENT_INITIALIZER, inject, makeEnvironmentProviders} from './di';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
 import {Injector} from './di/injector';
@@ -211,23 +211,17 @@ export function internalCreateApplication(config: {
   // Create root application injector based on a set of providers configured at the platform
   // bootstrap level as well as providers passed to the bootstrap call by a user.
   const allAppProviders = [
-    provideNgZoneChangeDetection(new NgZone(getNgZoneOptions())),
+    provideZoneChangeDetection(),
     ...(appProviders || []),
   ];
   const adapter = new EnvironmentNgModuleRefAdapter({
     providers: allAppProviders,
     parent: platformInjector as EnvironmentInjector,
-    debugName: NG_DEV_MODE ? 'Environment Injector' : '',
+    debugName: (typeof ngDevMode === 'undefined' || ngDevMode) ? 'Environment Injector' : '',
     runEnvironmentInitializers: false,
   });
   const envInjector = adapter.injector;
   const ngZone = envInjector.get(NgZone);
-
-  // Ensure the application hasn't provided a different NgZone in its own providers
-  if (NG_DEV_MODE && envInjector.get(NG_ZONE_DEV_MODE) !== ngZone) {
-    // TODO: convert to runtime error
-    throw new Error('Providing `NgZone` directly in the providers is not supported.');
-  }
 
   return ngZone.run(() => {
     envInjector.resolveInjectorInitializers();
@@ -367,20 +361,11 @@ export function getPlatform(): PlatformRef|null {
 }
 
 /**
- * Provides additional options to the bootstrapping process.
- *
  * @publicApi
+ *
+ * @see provideZoneChangeDetection
  */
-export interface BootstrapOptions {
-  /**
-   * Optionally specify which `NgZone` should be used.
-   *
-   * - Provide your own `NgZone` instance.
-   * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
-   * - `noop` - Use `NoopNgZone` which does nothing.
-   */
-  ngZone?: NgZone|'zone.js'|'noop';
-
+export interface NgZoneOptions {
   /**
    * Optionally specify coalescing event change detections or not.
    * Consider the following case.
@@ -426,6 +411,22 @@ export interface BootstrapOptions {
 }
 
 /**
+ * Provides additional options to the bootstrapping process.
+ *
+ * @publicApi
+ */
+export interface BootstrapOptions extends NgZoneOptions {
+  /**
+   * Optionally specify which `NgZone` should be used.
+   *
+   * - Provide your own `NgZone` instance.
+   * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
+   * - `noop` - Use `NoopNgZone` which does nothing.
+   */
+  ngZone?: NgZone|'zone.js'|'noop';
+}
+
+/**
  * The Angular platform is the entry point for Angular on a web page.
  * Each page has exactly one platform. Services (such as reflection) which are common
  * to every Angular application running on the page are bound in its scope.
@@ -462,7 +463,16 @@ export class PlatformRef {
     // created outside of the Angular zone.
     return ngZone.run(() => {
       const moduleRef = createNgModuleRefWithProviders(
-          moduleFactory.moduleType, this.injector, provideNgZoneChangeDetection(ngZone));
+          moduleFactory.moduleType, this.injector,
+          internalProvideZoneChangeDetection(() => ngZone));
+
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+          moduleRef.injector.get(PROVIDED_NG_ZONE, null) !== null) {
+        throw new RuntimeError(
+            RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
+            '`bootstrapModule` does not support `provideZoneChangeDetection`. Use `BootstrapOptions` instead.');
+      }
+
       const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);
       if ((typeof ngDevMode === 'undefined' || ngDevMode) && exceptionHandler === null) {
         throw new RuntimeError(
@@ -582,7 +592,7 @@ export class PlatformRef {
 }
 
 // Set of options recognized by the NgZone.
-interface NgZoneOptions {
+interface InternalNgZoneOptions {
   enableLongStackTrace: boolean;
   shouldCoalesceEventChangeDetection: boolean;
   shouldCoalesceRunChangeDetection: boolean;
@@ -591,7 +601,7 @@ interface NgZoneOptions {
 // Transforms a set of `BootstrapOptions` (supported by the NgModule-based bootstrap APIs) ->
 // `NgZoneOptions` that are recognized by the NgZone constructor. Passing no options will result in
 // a set of default options returned.
-function getNgZoneOptions(options?: BootstrapOptions): NgZoneOptions {
+function getNgZoneOptions(options?: NgZoneOptions): InternalNgZoneOptions {
   return {
     enableLongStackTrace: typeof ngDevMode === 'undefined' ? false : !!ngDevMode,
     shouldCoalesceEventChangeDetection: options?.ngZoneEventCoalescing ?? false,
@@ -600,7 +610,7 @@ function getNgZoneOptions(options?: BootstrapOptions): NgZoneOptions {
 }
 
 function getNgZone(
-    ngZoneToUse: NgZone|'zone.js'|'noop' = 'zone.js', options: NgZoneOptions): NgZone {
+    ngZoneToUse: NgZone|'zone.js'|'noop' = 'zone.js', options: InternalNgZoneOptions): NgZone {
   if (ngZoneToUse === 'noop') {
     return new NoopNgZone();
   }
@@ -1157,15 +1167,15 @@ export class NgZoneChangeDetectionScheduler {
 }
 
 /**
- * Internal token used to provide verify that the NgZone in DI is the same as the one provided with
- * `provideNgZoneChangeDetection`.
+ * Internal token used to provide verify that `provideZoneChangeDetection` is not used
+ * with the bootstrapModule API.
  */
-const NG_ZONE_DEV_MODE = new InjectionToken<NgZone>(NG_DEV_MODE ? 'NG_ZONE token' : '');
+const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'provideZoneChangeDetection token' : '');
 
-export function provideNgZoneChangeDetection(ngZone: NgZone): StaticProvider[] {
+export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone): StaticProvider[] {
   return [
-    NG_DEV_MODE ? {provide: NG_ZONE_DEV_MODE, useValue: ngZone} : [],
-    {provide: NgZone, useValue: ngZone},
+    {provide: NgZone, useFactory: ngZoneFactory},
     {
       provide: ENVIRONMENT_INITIALIZER,
       multi: true,
@@ -1185,4 +1195,31 @@ export function provideNgZoneChangeDetection(ngZone: NgZone): StaticProvider[] {
     {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
     {provide: ZONE_IS_STABLE_OBSERVABLE, useFactory: isStableFactory},
   ];
+}
+
+/**
+ * Provides `NgZone`-based change detection for the application.
+ *
+ * `NgZone` is already provided in applications by default. This provider allows you to configure
+ * options like `ngZoneEventCoalescing` in the `NgZone`.
+ *
+ * @usageNotes
+ * ```typescript=
+ * bootstrapApplication(MyApp, {providers: [
+ *   provideZoneChangeDetection({ngZoneEventCoalescing: true}),
+ * ]});
+ * ```
+ *
+ * @publicApi
+ * @see bootstrapApplication
+ * @see NgZoneOptions
+ */
+export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
+  const zoneProviders =
+      internalProvideZoneChangeDetection(() => new NgZone(getNgZoneOptions(options)));
+  return makeEnvironmentProviders([
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: PROVIDED_NG_ZONE, useValue: true} :
+                                                      [],
+    zoneProviders,
+  ]);
 }

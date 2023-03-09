@@ -489,9 +489,6 @@
     "name": "NoneEncapsulationDomRenderer"
   },
   {
-    "name": "NoopNgZone"
-  },
-  {
     "name": "NullInjector"
   },
   {
@@ -1650,6 +1647,9 @@
     "name": "lookupTokenUsingNodeInjector"
   },
   {
+    "name": "makeEnvironmentProviders"
+  },
+  {
     "name": "makeRecord"
   },
   {
@@ -1791,7 +1791,7 @@
     "name": "promise"
   },
   {
-    "name": "provideNgZoneChangeDetection"
+    "name": "provideZoneChangeDetection"
   },
   {
     "name": "redirectIfUrlTree"
