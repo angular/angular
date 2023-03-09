@@ -693,6 +693,8 @@ function getComponentId(componentDef: ComponentDef<unknown>): string {
     // We cannot use 'componentDef.type.name' as the name of the symbol will change and will not
     // match in the server and browser bundles.
     Object.getOwnPropertyNames(componentDef.type.prototype),
+    !!componentDef.contentQueries,
+    !!componentDef.viewQuery,
   ].join('|');
 
   for (const char of hashSelectors) {
@@ -708,10 +710,7 @@ function getComponentId(componentDef: ComponentDef<unknown>): string {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (GENERATED_COMP_IDS.has(compId)) {
       const previousCompDefType = GENERATED_COMP_IDS.get(compId)!;
-      // We emit the warning only if `styles` is not empty as the id is only used for styles related
-      // operations. During testing, it common to have multiple components with the same selector
-      // that acts as a host.
-      if (previousCompDefType !== componentDef.type && componentDef.styles !== EMPTY_ARRAY) {
+      if (previousCompDefType !== componentDef.type) {
         // TODO: use `formatRuntimeError` to have an error code and we can later on create an error
         // guide to explain this further.
         console.warn(`Component ID generation collision detected. Components '${
