@@ -20,8 +20,6 @@ The method takes a resource URL and two additional parameters:
 | body      | The data to POST in the body of the request.                                                          |
 | options   | An object containing method options which, in this case, specify required headers. |
 
-The example catches errors as described in [HTTP client - Handle request errors](guide/http-client-request-errors.md).
-
 The `HeroesComponent` initiates the actual POST operation by subscribing to the `Observable` returned by this service method.
 
 <code-example header="app/heroes/heroes.component.ts (addHero)" path="http/src/app/heroes/heroes.component.ts" region="add-hero-subscribe"></code-example>
