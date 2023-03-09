@@ -115,7 +115,7 @@ export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
 
   createWithAdditionalProviders(
       parentInjector: Injector|null,
-      additionalProviders: StaticProvider[]): viewEngine_NgModuleRef<T> {
+      additionalProviders: StaticProvider[]): InternalNgModuleRef<T> {
     return new NgModuleRef(this.moduleType, parentInjector, additionalProviders);
   }
 }

@@ -454,23 +454,22 @@ export class PlatformRef {
     // created outside of the Angular zone.
     return ngZone.run(() => {
       const moduleRef =
-          <InternalNgModuleRef<M>>(moduleFactory as R3NgModuleFactory<M>)
-              .createWithAdditionalProviders(this.injector, [
-                {
-                  provide: ENVIRONMENT_INITIALIZER,
-                  multi: true,
-                  useFactory: () => {
-                    if (inject(ErrorHandler, {optional: true}) === null) {
-                      throw new RuntimeError(
-                          RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND,
-                          ngDevMode &&
-                              'No ErrorHandler. Is platform module (BrowserModule) included?');
-                    }
-                    return () => {};
-                  },
-                },
-                ...provideNgZoneChangeDetection(ngZone)
-              ]);
+          (moduleFactory as R3NgModuleFactory<M>).createWithAdditionalProviders(this.injector, [
+            {
+              provide: ENVIRONMENT_INITIALIZER,
+              multi: true,
+              useFactory: () => {
+                if (inject(ErrorHandler, {optional: true}) === null) {
+                  throw new RuntimeError(
+                      RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND,
+                      NG_DEV_MODE &&
+                          'No ErrorHandler. Is platform module (BrowserModule) included?');
+                }
+                return () => {};
+              },
+            },
+            ...provideNgZoneChangeDetection(ngZone)
+          ]);
       const exceptionHandler = moduleRef.injector.get(ErrorHandler);
       ngZone.runOutsideAngular(() => {
         const subscription = ngZone.onError.subscribe({
