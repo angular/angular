@@ -15,7 +15,7 @@ export class ServerStylesHost extends SharedStylesHost {
   private head: any = null;
   private _styleNodes = new Set<HTMLElement>();
 
-  constructor(@Inject(DOCUMENT) private doc: any, @Inject(APP_ID) private appId: string) {
+  constructor(@Inject(DOCUMENT) doc: any, @Inject(APP_ID) private appId: string) {
     super();
     this.head = doc.getElementsByTagName('head')[0];
   }
@@ -25,7 +25,7 @@ export class ServerStylesHost extends SharedStylesHost {
     const el = adapter.createElement('style');
     el.textContent = style;
     if (!!this.appId) {
-      el.setAttribute('ng-transition', this.appId);
+      el.setAttribute('ng-app', this.appId);
     }
     this.head.appendChild(el);
     this._styleNodes.add(el);
