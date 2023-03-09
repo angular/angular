@@ -38,7 +38,7 @@ import {isStandalone} from './render3/definition';
 import {assertStandaloneComponentType} from './render3/errors';
 import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
-import {createEnvironmentInjector, createNgModuleRefWithProviders, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
+import {createEnvironmentInjector, createNgModuleRefWithProviders, EnvironmentNgModuleRefAdapter, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {setThrowInvalidWriteToSignalError} from './signals/src/errors';
 import {TESTABILITY} from './testability/testability';
@@ -223,19 +223,29 @@ export function internalCreateApplication(config: {
 
   const platformInjector = createOrReusePlatformInjector(platformProviders as StaticProvider[]);
 
-  const ngZone = getNgZone('zone.js', getNgZoneOptions());
+  // Create root application injector based on a set of providers configured at the platform
+  // bootstrap level as well as providers passed to the bootstrap call by a user.
+  const allAppProviders = [
+    provideNgZoneChangeDetection(new NgZone(getNgZoneOptions())),
+    ...(appProviders || []),
+  ];
+  const adapter = new EnvironmentNgModuleRefAdapter({
+    providers: allAppProviders,
+    parent: platformInjector as EnvironmentInjector,
+    debugName: NG_DEV_MODE ? 'Environment Injector' : '',
+    runEnvironmentInitializers: false,
+  });
+  const envInjector = adapter.injector;
+  const ngZone = envInjector.get(NgZone);
+
+  // Ensure the application hasn't provided a different NgZone in its own providers
+  if (NG_DEV_MODE && envInjector.get(NG_ZONE_DEV_MODE) !== ngZone) {
+    // TODO: convert to runtime error
+    throw new Error('Providing `NgZone` directly in the providers is not supported.');
+  }
 
   return ngZone.run(() => {
-    // Create root application injector based on a set of providers configured at the platform
-    // bootstrap level as well as providers passed to the bootstrap call by a user.
-    const allAppProviders = [
-      provideNgZoneChangeDetection(ngZone),
-      ...(appProviders || []),
-    ];
-
-    const envInjector = createEnvironmentInjector(
-        allAppProviders, platformInjector as EnvironmentInjector, 'Environment Injector');
-
+    envInjector.resolveInjectorInitializers();
     const exceptionHandler: ErrorHandler|null = envInjector.get(ErrorHandler, null);
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && !exceptionHandler) {
       throw new RuntimeError(
@@ -1161,8 +1171,15 @@ export class NgZoneChangeDetectionScheduler {
   }
 }
 
+/**
+ * Internal token used to provide verify that the NgZone in DI is the same as the one provided with
+ * `provideNgZoneChangeDetection`.
+ */
+const NG_ZONE_DEV_MODE = new InjectionToken<NgZone>(NG_DEV_MODE ? 'NG_ZONE token' : '');
+
 export function provideNgZoneChangeDetection(ngZone: NgZone): StaticProvider[] {
   return [
+    NG_DEV_MODE ? {provide: NG_ZONE_DEV_MODE, useValue: ngZone} : [],
     {provide: NgZone, useValue: ngZone},
     {
       provide: ENVIRONMENT_INITIALIZER,
