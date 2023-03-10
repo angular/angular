@@ -107,8 +107,15 @@ For example, `document`, the node available through `ElementRef`, and many third
 Likewise, if you interact with other libraries that manipulate the DOM, you likely won't have the same automatic sanitization as with Angular interpolations.
 Avoid directly interacting with the DOM and instead use Angular templates where possible.
 
-For cases where this is unavoidable, use the built-in Angular sanitization functions.
-Sanitize untrusted values with the [DomSanitizer.sanitize](api/platform-browser/DomSanitizer#sanitize) method and the appropriate `SecurityContext`.
+For cases where this is unavoidable, use the built-in Angular sanitization functions which return corresponding safe value types which can then be used in the template.
+
+*   `sanitizeHtml`
+*   `sanitizeScript`
+*   `sanitizeStyle`
+*   `sanitizeUrl`
+*   `sanitizeResourceUrl`
+
+If you want to perform the sanitization and retrieve the sanitized value directly use the [DomSanitizer.sanitize](api/platform-browser/DomSanitizer#sanitize) method and the appropriate `SecurityContext`.
 That function also accepts values that were marked as trusted using the `bypassSecurityTrust` &hellip; functions, and does not sanitize them, as [described below](#bypass-security-apis).
 
 <a id="bypass-security-apis"></a>

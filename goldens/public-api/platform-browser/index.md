@@ -78,6 +78,11 @@ export abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustStyle(value: string): SafeStyle;
     abstract bypassSecurityTrustUrl(value: string): SafeUrl;
     abstract sanitize(context: SecurityContext, value: SafeValue | string | null): string | null;
+    abstract sanitizeHtml(value: string): SafeHtml | null;
+    abstract sanitizeResourceUrl(value: string): SafeResourceUrl | null;
+    abstract sanitizeScript(value: string): SafeScript | null;
+    abstract sanitizeStyle(value: string): SafeStyle | null;
+    abstract sanitizeUrl(value: string): SafeUrl | null;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<DomSanitizer, never>;
     // (undocumented)
