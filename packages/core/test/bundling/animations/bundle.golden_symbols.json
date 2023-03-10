@@ -264,9 +264,6 @@
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
-    "name": "IS_STABLE"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -597,6 +594,9 @@
     "name": "WebAnimationsStyleNormalizer"
   },
   {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
+  },
+  {
     "name": "_CACHED_BODY"
   },
   {
@@ -892,6 +892,9 @@
   },
   {
     "name": "forEachSingleProvider"
+  },
+  {
+    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -1309,9 +1312,6 @@
   },
   {
     "name": "promise"
-  },
-  {
-    "name": "provideNgZoneChangeDetection"
   },
   {
     "name": "refCount"

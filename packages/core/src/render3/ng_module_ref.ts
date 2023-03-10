@@ -110,14 +110,14 @@ export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
   }
 
   override create(parentInjector: Injector|null): viewEngine_NgModuleRef<T> {
-    return this.createWithAdditionalProviders(parentInjector, []);
+    return new NgModuleRef(this.moduleType, parentInjector, []);
   }
+}
 
-  createWithAdditionalProviders(
-      parentInjector: Injector|null,
-      additionalProviders: StaticProvider[]): InternalNgModuleRef<T> {
-    return new NgModuleRef(this.moduleType, parentInjector, additionalProviders);
-  }
+export function createNgModuleRefWithProviders<T>(
+    moduleType: Type<T>, parentInjector: Injector|null,
+    additionalProviders: StaticProvider[]): InternalNgModuleRef<T> {
+  return new NgModuleRef(moduleType, parentInjector, additionalProviders);
 }
 
 class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {

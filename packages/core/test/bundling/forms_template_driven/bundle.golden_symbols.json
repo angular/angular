@@ -225,9 +225,6 @@
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
-    "name": "IS_STABLE"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -597,6 +594,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
+  },
+  {
     "name": "_DOM"
   },
   {
@@ -886,6 +886,9 @@
   },
   {
     "name": "formDirectiveProvider"
+  },
+  {
+    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -1408,9 +1411,6 @@
   },
   {
     "name": "promise"
-  },
-  {
-    "name": "provideNgZoneChangeDetection"
   },
   {
     "name": "providerToFactory"

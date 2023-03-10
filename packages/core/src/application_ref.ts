@@ -38,12 +38,12 @@ import {isStandalone} from './render3/definition';
 import {assertStandaloneComponentType} from './render3/errors';
 import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
-import {createEnvironmentInjector, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
+import {createEnvironmentInjector, createNgModuleRefWithProviders, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
 import {stringify} from './util/stringify';
-import {IS_STABLE, isStableFactory, NgZone, NoopNgZone} from './zone/ng_zone';
+import {isStableFactory, NgZone, NoopNgZone, ZONE_IS_STABLE_OBSERVABLE} from './zone/ng_zone';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -226,7 +226,7 @@ export function internalCreateApplication(config: {
     const exceptionHandler: ErrorHandler|null = envInjector.get(ErrorHandler, null);
     if (NG_DEV_MODE && !exceptionHandler) {
       throw new RuntimeError(
-          RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND,
+          RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
           'No `ErrorHandler` found in the Dependency Injection tree.');
     }
 
@@ -453,28 +453,18 @@ export class PlatformRef {
     // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
     // created outside of the Angular zone.
     return ngZone.run(() => {
-      const moduleRef =
-          (moduleFactory as R3NgModuleFactory<M>).createWithAdditionalProviders(this.injector, [
-            {
-              provide: ENVIRONMENT_INITIALIZER,
-              multi: true,
-              useFactory: () => {
-                if (inject(ErrorHandler, {optional: true}) === null) {
-                  throw new RuntimeError(
-                      RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND,
-                      NG_DEV_MODE &&
-                          'No ErrorHandler. Is platform module (BrowserModule) included?');
-                }
-                return () => {};
-              },
-            },
-            ...provideNgZoneChangeDetection(ngZone)
-          ]);
-      const exceptionHandler = moduleRef.injector.get(ErrorHandler);
+      const moduleRef = createNgModuleRefWithProviders(
+          moduleFactory.moduleType, this.injector, provideNgZoneChangeDetection(ngZone));
+      const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);
+      if (NG_DEV_MODE && exceptionHandler === null) {
+        throw new RuntimeError(
+            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+            'No ErrorHandler. Is platform module (BrowserModule) included?');
+      }
       ngZone.runOutsideAngular(() => {
         const subscription = ngZone.onError.subscribe({
           next: (error: any) => {
-            exceptionHandler.handleError(error);
+            exceptionHandler!.handleError(error);
           }
         });
         moduleRef.onDestroy(() => {
@@ -482,7 +472,7 @@ export class PlatformRef {
           subscription.unsubscribe();
         });
       });
-      return _callAndReportToErrorHandler(exceptionHandler, ngZone, () => {
+      return _callAndReportToErrorHandler(exceptionHandler!, ngZone, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         initStatus.runInitializers();
         return initStatus.donePromise.then(() => {
@@ -763,17 +753,15 @@ export class ApplicationRef {
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable = inject(IS_STABLE);
+  public readonly isStable = inject(ZONE_IS_STABLE_OBSERVABLE);
 
+  private readonly _injector = inject(EnvironmentInjector);
   /**
    * The `EnvironmentInjector` used to create this application.
    */
   get injector(): EnvironmentInjector {
     return this._injector;
   }
-
-  /** @internal */
-  constructor(private _injector: EnvironmentInjector) {}
 
   /**
    * Bootstrap a component onto the element identified by its selector or, optionally, to a
@@ -1166,11 +1154,17 @@ export function provideNgZoneChangeDetection(ngZone: NgZone): StaticProvider[] {
       provide: ENVIRONMENT_INITIALIZER,
       multi: true,
       useFactory: () => {
-        const ngZoneChangeDetectionScheduler = inject(NgZoneChangeDetectionScheduler);
-        return () => ngZoneChangeDetectionScheduler.initialize();
+        const ngZoneChangeDetectionScheduler =
+            inject(NgZoneChangeDetectionScheduler, {optional: true});
+        if (NG_DEV_MODE && ngZoneChangeDetectionScheduler === null) {
+          throw new RuntimeError(
+              RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+              'No NgZoneChangeDetectionScheduler found in the Dependency Injection tree.');
+        }
+        return () => ngZoneChangeDetectionScheduler!.initialize();
       },
     },
     {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
-    {provide: IS_STABLE, useFactory: isStableFactory},
+    {provide: ZONE_IS_STABLE_OBSERVABLE, useFactory: isStableFactory},
   ];
 }

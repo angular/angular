@@ -153,9 +153,6 @@
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
-    "name": "IS_STABLE"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -403,6 +400,9 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
   },
   {
     "name": "_DOM"

@@ -517,7 +517,7 @@ export class NoopNgZone implements NgZone {
  * for `NoopNgZone` which is always just an `Observable` of `true`. Additionally, we should consider
  * whether the property on `NgZone` should be `Observable` or `Signal`.
  */
-export const IS_STABLE =
+export const ZONE_IS_STABLE_OBSERVABLE =
     new InjectionToken<Observable<boolean>>(ngDevMode ? 'isStable Observable' : '', {
       providedIn: 'root',
       // TODO(atscott): Replace this with a suitable default like `new

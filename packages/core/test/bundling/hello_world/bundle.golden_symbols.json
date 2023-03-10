@@ -114,9 +114,6 @@
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
-    "name": "IS_STABLE"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -159,6 +156,9 @@
     "name": "NG_COMP_DEF"
   },
   {
+    "name": "NG_DIR_DEF"
+  },
+  {
     "name": "NG_ELEMENT_ID"
   },
   {
@@ -178,6 +178,9 @@
   },
   {
     "name": "NG_MOD_DEF"
+  },
+  {
+    "name": "NG_PIPE_DEF"
   },
   {
     "name": "NG_PROV_DEF"
@@ -342,6 +345,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
+  },
+  {
     "name": "_DOM"
   },
   {
@@ -502,6 +508,9 @@
   },
   {
     "name": "forEachSingleProvider"
+  },
+  {
+    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -778,9 +787,6 @@
   },
   {
     "name": "promise"
-  },
-  {
-    "name": "provideNgZoneChangeDetection"
   },
   {
     "name": "refCount"
