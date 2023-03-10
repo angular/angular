@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpClientModule} from '@angular/common/http';
-import {EnvironmentProviders, importProvidersFrom, makeEnvironmentProviders} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {EnvironmentProviders, makeEnvironmentProviders} from '@angular/core';
+import {provideNoopAnimations} from '@angular/platform-browser/animations';
 
 import {PLATFORM_SERVER_PROVIDERS} from './server';
 
@@ -30,9 +29,8 @@ import {PLATFORM_SERVER_PROVIDERS} from './server';
  */
 export function provideServerSupport(): EnvironmentProviders {
   return makeEnvironmentProviders([
-    importProvidersFrom(BrowserModule),
-    importProvidersFrom(HttpClientModule),
-    importProvidersFrom(NoopAnimationsModule),
+    provideHttpClient(withInterceptorsFromDi()),
+    provideNoopAnimations(),
     ...PLATFORM_SERVER_PROVIDERS,
   ]);
 }
