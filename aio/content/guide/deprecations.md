@@ -36,6 +36,7 @@ v12 - v15
 v13 - v16
 v14 - v17
 v15 - v18
+v16 - v19
 -->
 
 ### Deprecated features that can be removed in v11 or later
@@ -115,6 +116,12 @@ v15 - v18
 | `@angular/router`                   | [Router CanLoad guards](#router-can-load)                                                 | v15.1         | v17         |
 | `@angular/router`                   | [class and `InjectionToken` guards and resolvers](#router-class-and-injection-token-guards)                | v15.2         | v17         |
 
+### Deprecated features that can be removed in v18 or later
+
+| Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
+|:---                                 |:---                                                                                                        |:---           |:---               |
+| `@angular/core` | `EnvironmentInjector.runInContext` | v16 | v18 |
+
 ### Deprecated features with no planned removal version
 
 | Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
@@ -170,6 +177,7 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 | [`CompilerOptions.useJit and CompilerOptions.missingTranslation config options`](api/core/CompilerOptions) | none                                                                                                                                                              | v13                   | Since Ivy, those config options are unused, passing them has no effect.                                                                                                                                                                                            |
 | [`providedIn`](api/core/Injectable#providedIn) with NgModule | Prefer `'root'` providers, or use NgModule `providers` if scoping to an NgModule is necessary | v15 | none |
 | [`providedIn: 'any'`](api/core/Injectable#providedIn) | none | v15 | This option has confusing semantics and nearly zero usage. |
+| [`EnvironmentInjector.runInContext`](api/core/EnvironmentInjector#runInContext) | `runInInjectionContext`  | v16 | `runInInjectionContext` is a more flexible operation which supports element injectors as well |
 
 <a id="testing"></a>
 
@@ -377,7 +385,7 @@ be converted to functions by instead using `inject` to get dependencies.
 For testing a function `canActivate` guard, using `TestBed` and `TestBed.runInInjectionContext` is recommended.
 Test mocks and stubs can be provided through DI with `{provide: X, useValue: StubX}`.
 Functional guards can also be written in a way that's either testable with
-`runInContext` or by passing mock implementations of dependencies.
+`runInInjectionContext` or by passing mock implementations of dependencies.
 For example:
 
 ```

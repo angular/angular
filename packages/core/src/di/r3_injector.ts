@@ -118,6 +118,7 @@ export abstract class EnvironmentInjector implements Injector {
    *
    * @param fn the closure to be run in the context of this injector
    * @returns the return value of the function, if any
+   * @deprecated use the standalone function `runInInjectionContext` instead
    */
   abstract runInContext<ReturnT>(fn: () => ReturnT): ReturnT;
 
@@ -327,7 +328,7 @@ export class R3Injector extends EnvironmentInjector {
     return `R3Injector[${tokens.join(', ')}]`;
   }
 
-  private assertNotDestroyed(): void {
+  assertNotDestroyed(): void {
     if (this._destroyed) {
       throw new RuntimeError(
           RuntimeErrorCode.INJECTOR_ALREADY_DESTROYED,
