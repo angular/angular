@@ -948,9 +948,6 @@
     "name": "getComponentDef"
   },
   {
-    "name": "getComponentId"
-  },
-  {
     "name": "getComponentLViewByIndex"
   },
   {
