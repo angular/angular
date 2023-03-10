@@ -134,10 +134,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#8b704424f48e7c06aa249ae5eabbf95fb34519ec":
-  version "0.0.0-425e41bca51db38d01fe0a395a125e4189cc6d8f"
-  uid "8b704424f48e7c06aa249ae5eabbf95fb34519ec"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#8b704424f48e7c06aa249ae5eabbf95fb34519ec"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#789ce23bb8f63294e28756dae703bf997c8fb7c5":
+  version "0.0.0-a9312d38d24c94636b7e135b58828c5732eb5212"
+  uid "789ce23bb8f63294e28756dae703bf997c8fb7c5"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#789ce23bb8f63294e28756dae703bf997c8fb7c5"
   dependencies:
     "@angular-devkit/build-angular" "16.0.0-next.3"
     "@angular/benchpress" "0.3.0"
@@ -268,10 +268,10 @@
     "@material/typography" "15.0.0-canary.684e33d25.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#acba051d3c8bf13083b2c5b032583198f4e4dac7":
-  version "0.0.0-425e41bca51db38d01fe0a395a125e4189cc6d8f"
-  uid acba051d3c8bf13083b2c5b032583198f4e4dac7
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#acba051d3c8bf13083b2c5b032583198f4e4dac7"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#6c097ef5901b39a14841463f5854f40c1a1a0690":
+  version "0.0.0-a9312d38d24c94636b7e135b58828c5732eb5212"
+  uid "6c097ef5901b39a14841463f5854f40c1a1a0690"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#6c097ef5901b39a14841463f5854f40c1a1a0690"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
