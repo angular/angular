@@ -32,6 +32,8 @@
             "styles": ["src/styles.css"],
             "scripts": [],
             "progress": false,
+            "optimization": false,
+            "buildOptimizer": false,
             "i18nMissingTranslation": "error"
           },
           "configurations": {
