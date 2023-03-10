@@ -33,7 +33,9 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "progress": false
+            "progress": false,
+            "buildOptimizer": false,
+            "optimization": false
           },
           "configurations": {
             "production": {
@@ -135,7 +137,8 @@
             "outputPath": "dist/cli-elements-universal/server",
             "main": "src/main.server.ts",
             "tsConfig": "tsconfig.server.json",
-            "progress": false
+            "progress": false,
+            "optimization": false
           },
           "configurations": {
             "production": {

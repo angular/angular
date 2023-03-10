@@ -29,6 +29,8 @@
               "src/styles.css"
             ],
             "scripts": [],
+            "optimization": false,
+            "buildOptimizer": false,
             "progress": false
           },
           "configurations": {
