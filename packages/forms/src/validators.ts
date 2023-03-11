@@ -158,7 +158,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static min(min: number): ValidatorFn {
+  static min(min: number, this?: void): ValidatorFn {
     return minValidator(min);
   }
 
@@ -182,7 +182,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static max(max: number): ValidatorFn {
+  static max(max: number, this?: void): ValidatorFn {
     return maxValidator(max);
   }
 
@@ -206,7 +206,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static required(control: AbstractControl): ValidationErrors|null {
+  static required(control: AbstractControl, this?: void): ValidationErrors|null {
     return requiredValidator(control);
   }
 
@@ -231,7 +231,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static requiredTrue(control: AbstractControl): ValidationErrors|null {
+  static requiredTrue(control: AbstractControl, this?: void): ValidationErrors|null {
     return requiredTrueValidator(control);
   }
 
@@ -271,7 +271,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static email(control: AbstractControl): ValidationErrors|null {
+  static email(control: AbstractControl, this?: void): ValidationErrors|null {
     return emailValidator(control);
   }
 
@@ -305,7 +305,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static minLength(minLength: number): ValidatorFn {
+  static minLength(minLength: number, this?: void): ValidatorFn {
     return minLengthValidator(minLength);
   }
 
@@ -336,7 +336,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static maxLength(maxLength: number): ValidatorFn {
+  static maxLength(maxLength: number, this?: void): ValidatorFn {
     return maxLengthValidator(maxLength);
   }
 
@@ -389,7 +389,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static pattern(pattern: string|RegExp): ValidatorFn {
+  static pattern(pattern: string|RegExp, this?: void): ValidatorFn {
     return patternValidator(pattern);
   }
 
@@ -400,7 +400,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static nullValidator(control: AbstractControl): ValidationErrors|null {
+  static nullValidator(control: AbstractControl, this?: void): ValidationErrors|null {
     return nullValidator(control);
   }
 
@@ -415,9 +415,9 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static compose(validators: null): null;
-  static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
-  static compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|null {
+  static compose(validators: null, this?: void): null;
+  static compose(validators: (ValidatorFn|null|undefined)[], this?: void): ValidatorFn|null;
+  static compose(validators: (ValidatorFn|null|undefined)[]|null, this?: void): ValidatorFn|null {
     return compose(validators);
   }
 
@@ -432,7 +432,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
+  static composeAsync(validators: (AsyncValidatorFn|null)[], this?: void): AsyncValidatorFn|null {
     return composeAsync(validators);
   }
 }
