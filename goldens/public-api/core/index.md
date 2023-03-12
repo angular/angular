@@ -1630,7 +1630,7 @@ export enum ViewEncapsulation {
 export abstract class ViewRef extends ChangeDetectorRef {
     abstract destroy(): void;
     abstract get destroyed(): boolean;
-    abstract onDestroy(callback: Function): any /** TODO #9100, replace by void in a major release*/;
+    abstract onDestroy(callback: Function): void;
 }
 
 // @public

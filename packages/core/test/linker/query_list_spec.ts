@@ -184,9 +184,9 @@ import {fakeAsync, tick} from '@angular/core/testing';
            }));
 
         it('should provides query list as an argument', fakeAsync(() => {
-             let recorded: any; /** TODO #9100, replace with QueryList when #48004 is merged */
+             let recorded!: QueryList<string>;
              queryList.changes.subscribe({
-               next: (v: any) => {
+               next: (v: QueryList<string>) => {
                  recorded = v;
                }
              });
