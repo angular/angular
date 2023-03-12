@@ -43,16 +43,16 @@ class HelloRootCmp2 {
 
 @Component({selector: 'hello-app', template: ''})
 class HelloRootCmp3 {
-  appBinding: any /** TODO #9100 */;
+  appBinding: string;
 
-  constructor(@Inject('appBinding') appBinding: any /** TODO #9100 */) {
+  constructor(@Inject('appBinding') appBinding: string) {
     this.appBinding = appBinding;
   }
 }
 
 @Component({selector: 'hello-app', template: ''})
 class HelloRootCmp4 {
-  appRef: any /** TODO #9100 */;
+  appRef: ApplicationRef;
 
   constructor(@Inject(ApplicationRef) appRef: ApplicationRef) {
     this.appRef = appRef;
@@ -113,8 +113,7 @@ function bootstrap(
 }
 
 {
-  let el: any /** TODO #9100 */, el2: any /** TODO #9100 */, testProviders: Provider[],
-      lightDom: any /** TODO #9100 */;
+  let el: HTMLElement, el2: HTMLElement, testProviders: Provider[], lightDom: HTMLElement;
 
   describe('bootstrap factory method', () => {
     if (isNode) {
@@ -756,13 +755,13 @@ function bootstrap(
            }
            platformBrowserDynamic().bootstrapModule(TestModuleA).then((ref) => {
              log.length = 0;
-             el.querySelectorAll('#button-a')[0].click();
+             (el.querySelectorAll<HTMLElement>('#button-a')[0]).click();
              expect(log).toContain('CompA:onClick');
              expect(log).toContain('CompA:ngDoCheck');
              expect(log).toContain('CompB:ngDoCheck');
 
              log.length = 0;
-             el2.querySelectorAll('#button-b')[0].click();
+             el2.querySelectorAll<HTMLElement>('#button-b')[0].click();
              expect(log).toContain('CompB:onClick');
              expect(log).toContain('CompA:ngDoCheck');
              expect(log).toContain('CompB:ngDoCheck');
@@ -777,13 +776,13 @@ function bootstrap(
         const refPromise2 = bootstrap(CompB);
         Promise.all([refPromise1, refPromise2]).then((refs) => {
           log.length = 0;
-          el.querySelectorAll('#button-a')[0].click();
+          el.querySelectorAll<HTMLElement>('#button-a')[0].click();
           expect(log).toContain('CompA:onClick');
           expect(log).toContain('CompA:ngDoCheck');
           expect(log).not.toContain('CompB:ngDoCheck');
 
           log.length = 0;
-          el2.querySelectorAll('#button-b')[0].click();
+          el2.querySelectorAll<HTMLElement>('#button-b')[0].click();
           expect(log).toContain('CompB:onClick');
           expect(log).toContain('CompB:ngDoCheck');
           expect(log).not.toContain('CompA:ngDoCheck');
