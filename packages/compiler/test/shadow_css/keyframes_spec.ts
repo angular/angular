@@ -526,4 +526,24 @@ describe('ShadowCss, keyframes and animations', () => {
         'animation: host-a_foo 0.5s alternate infinite cubic-bezier(.17, .67, .83, .67);');
     expect(result).toContain('animation: calc(2s / 2) host-a_calc;');
   });
+
+  it('should handle animations used inside media queries', () => {
+    const css = `
+      @media (width < 500px) {
+        p {
+          animation: 1s my-mobile-anim;
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference){div{animation:my-anim 1s 2s ease;}}
+
+      @keyframes my-mobile-anim {}
+      @keyframes my-anim {}
+    `;
+    const result = shim(css, 'host-a');
+    expect(result).toContain('@keyframes host-a_my-mobile-anim {}');
+    expect(result).toContain('animation: 1s host-a_my-mobile-anim;');
+    expect(result).toContain('@keyframes host-a_my-anim {}');
+    expect(result).toContain('animation:host-a_my-anim 1s 2s ease;');
+  });
 });
