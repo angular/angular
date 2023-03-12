@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 import {fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {CachedResourceLoader} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_cache';
-import {setTemplateCache} from '@angular/platform-browser-dynamic/test/resource_loader/resource_loader_cache_setter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 if (isBrowser) {
@@ -65,4 +64,8 @@ if (isBrowser) {
          expect(fixture.debugElement.children[0].nativeElement).toHaveText('Hello');
        }));
   });
+}
+
+function setTemplateCache(cache: {}|null): void {
+  (<any>window).$templateCache = cache;
 }

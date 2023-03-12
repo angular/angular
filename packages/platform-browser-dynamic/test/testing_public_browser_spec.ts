@@ -65,9 +65,9 @@ if (isBrowser) {
            }));
 
         it('should allow the use of fakeAsync',
-           fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
-             let value: any /** TODO #9100 */;
-             service.getAsyncValue().then(function(val: any /** TODO #9100 */) {
+           fakeAsync(inject([FancyService], (service: FancyService) => {
+             let value: string|undefined;
+             service.getAsyncValue().then(function(val: string) {
                value = val;
              });
              tick();
