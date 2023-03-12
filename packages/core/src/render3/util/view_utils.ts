@@ -53,8 +53,8 @@ export function unwrapLView(value: RNode|LView|LContainer): LView|null {
   while (Array.isArray(value)) {
     // This check is same as `isLView()` but we don't call at as we don't want to call
     // `Array.isArray()` twice and give JITer more work for inlining.
-    if (typeof value[TYPE] === 'object') return value as LView;
-    value = value[HOST] as any;
+    if (typeof value[TYPE] === 'object') return value;
+    value = value[HOST];
   }
   return null;
 }
@@ -80,8 +80,7 @@ export function getNativeByIndex(index: number, lView: LView): RNode {
 export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
   ngDevMode && assertTNodeForLView(tNode, lView);
   ngDevMode && assertIndexInRange(lView, tNode.index);
-  const node: RNode = unwrapRNode(lView[tNode.index]);
-  return node;
+  return unwrapRNode(lView[tNode.index]);
 }
 
 /**
@@ -96,8 +95,7 @@ export function getNativeByTNodeOrNull(tNode: TNode|null, lView: LView): RNode|n
   const index = tNode === null ? -1 : tNode.index;
   if (index !== -1) {
     ngDevMode && assertTNodeForLView(tNode!, lView);
-    const node: RNode|null = unwrapRNode(lView[index]);
-    return node;
+    return unwrapRNode(lView[index]);
   }
   return null;
 }
@@ -153,7 +151,7 @@ export function getConstant<T>(consts: TConstants|null, index: number|null|undef
 export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null {
   if (index === null || index === undefined) return null;
   ngDevMode && assertIndexInRange(consts!, index);
-  return consts![index] as unknown as T;
+  return consts![index] as T;
 }
 
 /**
@@ -161,7 +159,7 @@ export function getConstant<T>(consts: TConstants|null, index: number|null|undef
  * @param lView the LView on which the flags are reset
  */
 export function resetPreOrderHookFlags(lView: LView) {
-  lView[PREORDER_HOOK_FLAGS] = 0 as PreOrderHookFlags;
+  lView[PREORDER_HOOK_FLAGS] = PreOrderHookFlags.Default;
 }
 
 /**

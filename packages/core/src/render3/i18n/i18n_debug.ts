@@ -7,6 +7,7 @@
  */
 
 import {assertNumber, assertString} from '../../util/assert';
+import {EMPTY_ARRAY} from '../../util/empty';
 import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes} from '../interfaces/i18n';
 
 import {getInstructionFromIcuCreateOpCode, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode} from './i18n_util';
@@ -24,10 +25,11 @@ import {getInstructionFromIcuCreateOpCode, getParentFromIcuCreateOpCode, getRefF
  */
 export function i18nCreateOpCodesToString(
     this: I18nCreateOpCodes|void, opcodes?: I18nCreateOpCodes): string[] {
-  const createOpCodes: I18nCreateOpCodes = opcodes || (Array.isArray(this) ? this : [] as any);
+  const createOpCodes: I18nCreateOpCodes =
+      opcodes || (Array.isArray(this) ? this : EMPTY_ARRAY as I18nCreateOpCodes);
   let lines: string[] = [];
   for (let i = 0; i < createOpCodes.length; i++) {
-    const opCode = createOpCodes[i++] as any;
+    const opCode = createOpCodes[i++] as number;
     const text = createOpCodes[i] as string;
     const isComment = (opCode & I18nCreateOpCode.COMMENT) === I18nCreateOpCode.COMMENT;
     const appendNow =

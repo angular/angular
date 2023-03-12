@@ -124,7 +124,7 @@ function getMultipleMatchingPipesMessage(name: string) {
  */
 function getPipeNotFoundErrorMessage(name: string) {
   const lView = getLView();
-  const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
+  const declarationLView = lView[DECLARATION_COMPONENT_VIEW];
   const context = declarationLView[CONTEXT];
   const hostIsStandalone = isHostComponentStandalone(lView);
   const componentInfoMessage = context ? ` in the '${context.constructor.name}' component` : '';

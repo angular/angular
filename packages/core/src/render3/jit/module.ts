@@ -383,7 +383,7 @@ function getAnnotation<T>(type: any, name: string): T|null {
     if (!annotation) {
       const proto = Object.getPrototypeOf(decorator);
       if (proto.ngMetadataName == name) {
-        annotation = decorator as any;
+        annotation = decorator as T;
       } else if (decorator.type) {
         const proto = Object.getPrototypeOf(decorator.type);
         if (proto.ngMetadataName == name) {

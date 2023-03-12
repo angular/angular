@@ -62,7 +62,7 @@ export function getComponent<T>(element: Element): T|null {
     context.component = getComponentAtNodeIndex(context.nodeIndex, lView);
   }
 
-  return context.component as unknown as T;
+  return context.component as T;
 }
 
 
@@ -109,7 +109,7 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
   while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;
   }
-  return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as unknown as T;
+  return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as T;
 }
 
 /**
@@ -325,7 +325,7 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
  * @globalApi ng
  */
 export function getHostElement(componentOrDirective: {}): Element {
-  return getLContext(componentOrDirective)!.native as unknown as Element;
+  return getLContext(componentOrDirective)?.native as Element;
 }
 
 /**
@@ -410,7 +410,7 @@ export function getListeners(element: Element): Listener[] {
       const secondParam = tCleanup[i++];
       if (typeof firstParam === 'string') {
         const name: string = firstParam;
-        const listenerElement = unwrapRNode(lView[secondParam]) as any as Element;
+        const listenerElement = unwrapRNode(lView[secondParam]);
         const callback: (value: any) => any = lCleanup[tCleanup[i++]];
         const useCaptureOrIndx = tCleanup[i++];
         // if useCaptureOrIndx is boolean then report it as is.

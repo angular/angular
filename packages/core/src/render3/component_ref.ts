@@ -96,7 +96,7 @@ class ChainedInjector implements Injector {
         token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR, flags);
 
     if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
-        notFoundValue === (NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as unknown as T)) {
+        notFoundValue === (NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)) {
       // Return the value from the root element injector when
       // - it provides it
       //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)

@@ -32,7 +32,7 @@ type WritableDef = Writable<DirectiveDef<any>|ComponentDef<any>>;
 export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
   let shouldInheritFields = true;
-  const inheritanceChain: WritableDef[] = [definition];
+  const inheritanceChain = [definition];
 
   while (superType) {
     let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
@@ -101,7 +101,7 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
         for (let i = 0; i < features.length; i++) {
           const feature = features[i];
           if (feature && feature.ngInherit) {
-            (feature as DirectiveDefFeature)(definition);
+            feature(definition);
           }
           // If `InheritDefinitionFeature` is a part of the current `superDef`, it means that this
           // def already has all the necessary information inherited from its super class(es), so we

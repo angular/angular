@@ -60,11 +60,11 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
       private _cdRefInjectingView?: LView) {}
 
   get context(): T {
-    return this._lView[CONTEXT] as unknown as T;
+    return this._lView[CONTEXT] as T;
   }
 
   set context(value: T) {
-    this._lView[CONTEXT] = value as unknown as {};
+    this._lView[CONTEXT] = value;
   }
 
   get destroyed(): boolean {
@@ -271,7 +271,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
    * See {@link ChangeDetectorRef#detach} for more information.
    */
   detectChanges(): void {
-    detectChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
+    detectChangesInternal(this._lView[TVIEW], this._lView, this.context);
   }
 
   /**
@@ -282,7 +282,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
    */
   checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
+      checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context);
     }
   }
 

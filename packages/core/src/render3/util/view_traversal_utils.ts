@@ -22,7 +22,7 @@ import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT} from '../in
 export function getLViewParent(lView: LView): LView|null {
   ngDevMode && assertLView(lView);
   const parent = lView[PARENT];
-  return isLContainer(parent) ? parent[PARENT]! : parent;
+  return isLContainer(parent) ? parent[PARENT] : parent;
 }
 
 /**
@@ -33,9 +33,10 @@ export function getLViewParent(lView: LView): LView|null {
  */
 export function getRootView<T>(componentOrLView: LView|{}): LView<T> {
   ngDevMode && assertDefined(componentOrLView, 'component');
-  let lView = isLView(componentOrLView) ? componentOrLView : readPatchedLView(componentOrLView)!;
+  let lView: LView<unknown>|null =
+      isLView(componentOrLView) ? componentOrLView : readPatchedLView(componentOrLView)!;
   while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
-    lView = getLViewParent(lView)!;
+    lView = getLViewParent(lView);
   }
   ngDevMode && assertLView(lView);
   return lView as LView<T>;

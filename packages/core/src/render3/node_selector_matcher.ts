@@ -125,7 +125,7 @@ export function isNodeMatchingSelector(
       // it's a part of the current :not() selector, and we should keep skipping
       if (skipToNextSelector && isPositive(current)) continue;
       skipToNextSelector = false;
-      mode = (current as number) | (mode & SelectorFlags.NOT);
+      mode = current | (mode & SelectorFlags.NOT);
       continue;
     }
 

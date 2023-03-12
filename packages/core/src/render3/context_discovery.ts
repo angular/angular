@@ -65,7 +65,7 @@ export function getLContext(target: any): LContext|null {
         }
         directives = getDirectivesAtNodeIndex(nodeIndex, lView);
       } else {
-        nodeIndex = findViaNativeElement(lView, target as RElement);
+        nodeIndex = findViaNativeElement(lView, target);
         if (nodeIndex == -1) {
           return null;
         }
@@ -104,11 +104,11 @@ export function getLContext(target: any): LContext|null {
 
     // if the context is not found then we need to traverse upwards up the DOM
     // to find the nearest element that has already been monkey patched with data
-    let parent = rElement as any;
+    let parent: RNode|null = rElement;
     while (parent = parent.parentNode) {
       const parentContext = readPatchedData(parent);
       if (parentContext) {
-        const lView = Array.isArray(parentContext) ? parentContext as LView : parentContext.lView;
+        const lView = Array.isArray(parentContext) ? parentContext : parentContext.lView;
 
         // the edge of the app was also reached here through another means
         // (maybe because the DOM was changed manually).
@@ -127,7 +127,7 @@ export function getLContext(target: any): LContext|null {
       }
     }
   }
-  return (mpValue as LContext) || null;
+  return mpValue || null;
 }
 
 /**
@@ -151,12 +151,12 @@ export function getComponentViewByInstance(componentInstance: {}): LView {
     const contextLView: LView = patchedData;
     const nodeIndex = findViaComponent(contextLView, componentInstance);
     lView = getComponentLViewByIndex(nodeIndex, contextLView);
-    const context = createLContext(contextLView, nodeIndex, lView[HOST] as RElement);
+    const context = createLContext(contextLView, nodeIndex, lView[HOST]!);
     context.component = componentInstance;
     attachPatchData(componentInstance, context);
     attachPatchData(context.native, context);
   } else {
-    const context = patchedData as unknown as LContext;
+    const context = patchedData!;
     const contextLView = context.lView!;
     ngDevMode && assertLView(contextLView);
     lView = getComponentLViewByIndex(context.nodeIndex, contextLView);

@@ -232,7 +232,7 @@ class TQuery_ implements TQuery {
             tView, tNode, locateDirectiveOrProvider(tNode, tView, name, false, false));
       }
     } else {
-      if ((predicate as any) === ViewEngine_TemplateRef) {
+      if ((predicate) === ViewEngine_TemplateRef) {
         if (tNode.type & TNodeType.Container) {
           this.matchTNodeWithReadOption(tView, tNode, -1);
         }

@@ -73,7 +73,7 @@ export function assertCurrentTNodeIsParent(isParent: boolean) {
 
 export function assertHasParent(tNode: TNode|null) {
   assertDefined(tNode, 'currentTNode should exist!');
-  assertDefined(tNode!.parent, 'currentTNode should have a parent');
+  assertDefined(tNode.parent, 'currentTNode should have a parent');
 }
 
 export function assertLContainer(value: any): asserts value is LContainer {

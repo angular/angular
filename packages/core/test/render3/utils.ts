@@ -22,7 +22,7 @@ export function dedent(strings: TemplateStringsArray, ...values: any[]) {
   while (isBlank(lines[lines.length - 1])) {
     lines.pop();
   }
-  let minWhitespacePrefix = lines.reduce(
+  const minWhitespacePrefix = lines.reduce(
       (min, line) => Math.min(min, numOfWhiteSpaceLeadingChars(line)), Number.MAX_SAFE_INTEGER);
   return lines.map((line) => line.substring(minWhitespacePrefix)).join('\n');
 }

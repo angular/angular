@@ -53,7 +53,7 @@ export function loadIcuContainerVisitor() {
       ngDevMode && assertNumberInRange(currentCase, 0, tIcu.cases.length - 1);
       _removes = tIcu.remove[currentCase];
     } else {
-      _removes = EMPTY_ARRAY as any;
+      _removes = EMPTY_ARRAY as I18nRemoveOpCodes;
     }
   }
 

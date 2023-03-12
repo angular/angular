@@ -460,6 +460,7 @@ export const enum InitPhaseState {
 
 /** More flags associated with an LView (saved in LView[PREORDER_HOOK_FLAGS]) */
 export const enum PreOrderHookFlags {
+  Default = 0,
   /**
      The index of the next pre-order hook to be called in the hooks array, on the first 16
      bits

@@ -95,7 +95,7 @@ export function applyCreateOpCodes(
     insertInFrontOf: RElement|null): void {
   const renderer = lView[RENDERER];
   for (let i = 0; i < createOpCodes.length; i++) {
-    const opCode = createOpCodes[i++] as any;
+    const opCode = createOpCodes[i++] as number;
     const text = createOpCodes[i] as string;
     const isComment = (opCode & I18nCreateOpCode.COMMENT) === I18nCreateOpCode.COMMENT;
     const appendNow =

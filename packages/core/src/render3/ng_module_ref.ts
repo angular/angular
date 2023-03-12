@@ -70,15 +70,13 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
 
     this._bootstrapComponents = maybeUnwrapFn(ngModuleDef!.bootstrap);
     this._r3Injector = createInjectorWithoutInjectorInstances(
-                           ngModuleType, _parent,
-                           [
-                             {provide: viewEngine_NgModuleRef, useValue: this}, {
-                               provide: viewEngine_ComponentFactoryResolver,
-                               useValue: this.componentFactoryResolver
-                             },
-                             ...additionalProviders
-                           ],
-                           stringify(ngModuleType), new Set(['environment'])) as R3Injector;
+        ngModuleType, _parent,
+        [
+          {provide: viewEngine_NgModuleRef, useValue: this},
+          {provide: viewEngine_ComponentFactoryResolver, useValue: this.componentFactoryResolver},
+          ...additionalProviders
+        ],
+        stringify(ngModuleType), new Set(['environment']));
 
     // We need to resolve the injector types separately from the injector creation, because
     // the module might be trying to use this ref in its constructor for DI which will cause a

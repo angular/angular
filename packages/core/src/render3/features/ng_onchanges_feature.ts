@@ -66,9 +66,9 @@ function rememberChangeHistoryAndInvokeOnChangesHook(this: OnChanges) {
   const current = simpleChangesStore?.current;
 
   if (current) {
-    const previous = simpleChangesStore!.previous;
+    const previous = simpleChangesStore.previous;
     if (previous === EMPTY_OBJ) {
-      simpleChangesStore!.previous = current;
+      simpleChangesStore.previous = current;
     } else {
       // New changes are copied to the previous store, so that we don't lose history for inputs
       // which were not changed this time
@@ -76,7 +76,7 @@ function rememberChangeHistoryAndInvokeOnChangesHook(this: OnChanges) {
         previous[key] = current[key];
       }
     }
-    simpleChangesStore!.current = null;
+    simpleChangesStore.current = null;
     this.ngOnChanges(current);
   }
 }

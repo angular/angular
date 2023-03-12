@@ -36,9 +36,9 @@ export function registerPreOrderHooks(
     directiveIndex: number, directiveDef: DirectiveDef<any>, tView: TView): void {
   ngDevMode && assertFirstCreatePass(tView);
   const {ngOnChanges, ngOnInit, ngDoCheck} =
-      directiveDef.type.prototype as OnChanges & OnInit & DoCheck;
+      directiveDef.type.prototype as Partial<OnChanges&OnInit&DoCheck>;
 
-  if (ngOnChanges as Function | undefined) {
+  if (ngOnChanges) {
     const wrappedOnChanges = NgOnChangesFeatureImpl(directiveDef);
     (tView.preOrderHooks ??= []).push(directiveIndex, wrappedOnChanges);
     (tView.preOrderCheckHooks ??= []).push(directiveIndex, wrappedOnChanges);

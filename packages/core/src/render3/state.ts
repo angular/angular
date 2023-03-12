@@ -12,7 +12,7 @@ import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, as
 import {assertLViewOrUndefined, assertTNodeForLView, assertTNodeForTView} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode, TNodeType} from './interfaces/node';
-import {CONTEXT, DECLARATION_VIEW, HEADER_OFFSET, LView, OpaqueViewState, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, HEADER_OFFSET, HOST, LView, OpaqueViewState, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {getTNode} from './util/view_utils';
 
@@ -334,7 +334,7 @@ export function getTView(): TView {
  */
 export function ɵɵrestoreView<T = any>(viewToRestore: OpaqueViewState): T {
   instructionState.lFrame.contextLView = viewToRestore as any as LView;
-  return (viewToRestore as any as LView)[CONTEXT] as unknown as T;
+  return (viewToRestore as any as LView)[CONTEXT] as T;
 }
 
 
@@ -535,12 +535,12 @@ export function enterDI(lView: LView, tNode: TNode, flags: InjectFlags) {
   if (flags & InjectFlags.SkipSelf) {
     ngDevMode && assertTNodeForTView(tNode, lView[TVIEW]);
 
-    let parentTNode = tNode as TNode | null;
+    let parentTNode: TNode|null = tNode;
     let parentLView = lView;
 
     while (true) {
       ngDevMode && assertDefined(parentTNode, 'Parent TNode should be defined');
-      parentTNode = parentTNode!.parent as TNode | null;
+      parentTNode = parentTNode!.parent;
       if (parentTNode === null && !(flags & InjectFlags.Host)) {
         parentTNode = getDeclarationTNode(parentLView);
         if (parentTNode === null) break;
@@ -589,7 +589,7 @@ export function enterDI(lView: LView, tNode: TNode, flags: InjectFlags) {
  * @returns the previously active lView;
  */
 export function enterView(newView: LView): void {
-  ngDevMode && assertNotEqual(newView[0], newView[1] as any, '????');
+  ngDevMode && assertNotEqual(newView[HOST], newView[TVIEW], '????');
   ngDevMode && assertLViewOrUndefined(newView);
   const newLFrame = allocLFrame();
   if (ngDevMode) {
@@ -696,7 +696,7 @@ export function leaveView() {
 export function nextContextImpl<T = any>(level: number): T {
   const contextLView = instructionState.lFrame.contextLView =
       walkUpViews(level, instructionState.lFrame.contextLView!);
-  return contextLView[CONTEXT] as unknown as T;
+  return contextLView[CONTEXT] as T;
 }
 
 function walkUpViews(nestingLevel: number, currentView: LView): LView {

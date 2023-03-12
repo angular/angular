@@ -14,6 +14,7 @@ import {hasInSkipHydrationBlockFlag, hasSkipHydrationAttrOnRElement, SKIP_HYDRAT
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
+import {Writable} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
@@ -31,10 +32,11 @@ import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, HostBindingsFunction, HostDirectiveBindingMap, HostDirectiveDefs, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {NodeInjectorFactory} from '../interfaces/injector';
 import {getUniqueLViewId} from '../interfaces/lview_tracking';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
+import {TStylingRange} from '../interfaces/styling';
 import {isComponentDef, isComponentHost, isContentQueryHost} from '../interfaces/type_checks';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
@@ -114,7 +116,7 @@ export function createLView<T>(
   lView[T_HOST] = tHostNode;
   lView[ID] = getUniqueLViewId();
   lView[HYDRATION] = hydrationInfo;
-  lView[EMBEDDED_VIEW_INJECTOR as any] = embeddedViewInjector;
+  (lView as Writable<LView>)[EMBEDDED_VIEW_INJECTOR] = embeddedViewInjector;
 
   ngDevMode &&
       assertEqual(
@@ -280,7 +282,7 @@ export function executeTemplate<T>(
 
     const postHookType =
         isUpdatePhase ? ProfilerEvent.TemplateUpdateEnd : ProfilerEvent.TemplateCreateEnd;
-    profiler(postHookType, context as unknown as {});
+    profiler(postHookType, context as {});
   }
 }
 
@@ -620,8 +622,8 @@ export function createTNode(
     classes: null,
     classesWithoutHost: null,
     residualClasses: undefined,
-    classBindings: 0 as any,
-    styleBindings: 0 as any,
+    classBindings: 0 as TStylingRange,
+    styleBindings: 0 as TStylingRange,
   };
   if (ngDevMode) {
     // For performance reasons it is important that the tNode retains the same shape during runtime.
@@ -753,7 +755,7 @@ function mapPropName(name: string): string {
 export function elementPropertyInternal<T>(
     tView: TView, tNode: TNode, lView: LView, propName: string, value: T, renderer: Renderer,
     sanitizer: SanitizerFn|null|undefined, nativeOnly: boolean): void {
-  ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
+  ngDevMode && assertNotSame(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
   const element = getNativeByTNode(tNode, lView) as RElement | RComment;
   let inputData = tNode.inputs;
   let dataValue: PropertyAliasValue|undefined;
@@ -865,7 +867,7 @@ export function resolveDirectives(
 
 /** Initializes the data structures necessary for a list of directives to be instantiated. */
 export function initializeDirectives(
-    tView: TView, lView: LView<unknown>, tNode: TElementNode|TContainerNode|TElementContainerNode,
+    tView: TView, lView: LView, tNode: TElementNode|TContainerNode|TElementContainerNode,
     directives: DirectiveDef<unknown>[], exportsMap: {[key: string]: number;}|null,
     hostDirectiveDefs: HostDirectiveDefs|null) {
   ngDevMode && assertFirstCreatePass(tView);
@@ -950,7 +952,7 @@ export function registerHostBindingOpCodes(
   if (hostBindings) {
     let hostBindingOpCodes = tView.hostBindingOpCodes;
     if (hostBindingOpCodes === null) {
-      hostBindingOpCodes = tView.hostBindingOpCodes = [] as any as HostBindingOpCodes;
+      hostBindingOpCodes = tView.hostBindingOpCodes = [] as unknown as HostBindingOpCodes;
     }
     const elementIndx = ~tNode.index;
     if (lastSelectedElementIdx(hostBindingOpCodes) != elementIndx) {
@@ -1290,7 +1292,7 @@ export function setElementAttribute(
 function setInputsFromAttrs<T>(
     lView: LView, directiveIndex: number, instance: T, def: DirectiveDef<T>, tNode: TNode,
     initialInputData: InitialInputData): void {
-  const initialInputs: InitialInputs|null = initialInputData![directiveIndex];
+  const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
   if (initialInputs !== null) {
     for (let i = 0; i < initialInputs.length;) {
       const publicName = initialInputs[i++];
@@ -1585,9 +1587,9 @@ export function setInputsForProperty(
  */
 export function textBindingInternal(lView: LView, index: number, value: string): void {
   ngDevMode && assertString(value, 'Value should be a string');
-  ngDevMode && assertNotSame(value, NO_CHANGE as any, 'value should not be NO_CHANGE');
+  ngDevMode && assertNotSame(value, NO_CHANGE, 'value should not be NO_CHANGE');
   ngDevMode && assertIndexInRange(lView, index);
-  const element = getNativeByIndex(index, lView) as any as RText;
+  const element = getNativeByIndex(index, lView) as RText;
   ngDevMode && assertDefined(element, 'native element should exist');
   updateTextNode(lView[RENDERER], element, value);
 }

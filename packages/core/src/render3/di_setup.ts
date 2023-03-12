@@ -163,7 +163,7 @@ function resolveProvider(
       } else {
         // Cases 1.b and 2.b
         const indexInFactory = multiFactoryAdd(
-            lInjectablesBlueprint!
+            lInjectablesBlueprint
                 [isViewProvider ? existingViewProvidersFactoryIndex :
                                   existingProvidersFactoryIndex],
             providerFactory, !isViewProvider && isComponent);
@@ -203,7 +203,7 @@ function registerDestroyHooksIfSupported(
     if (ngOnDestroy) {
       const hooks = tView.destroyHooks || (tView.destroyHooks = []);
 
-      if (!providerIsTypeProvider && ((provider as ClassProvider)).multi) {
+      if (!providerIsTypeProvider && provider.multi) {
         ngDevMode &&
             assertDefined(
                 indexInFactory, 'indexInFactory when registering multi factory destroy hook');
@@ -287,7 +287,7 @@ function multiViewProvidersFactoryResolver(
  */
 function multiResolve(factories: Array<() => any>, result: any[]): any[] {
   for (let i = 0; i < factories.length; i++) {
-    const factory = factories[i]! as () => null;
+    const factory = factories[i];
     result.push(factory());
   }
   return result;

@@ -1038,7 +1038,7 @@ export function applyStyling(
       renderer.addClass(rNode, prop);
     }
   } else {
-    let flags = prop.indexOf('-') === -1 ? undefined : RendererStyleFlags2.DashCase as number;
+    let flags = prop.indexOf('-') === -1 ? undefined : RendererStyleFlags2.DashCase;
     if (value == null /** || value === undefined */) {
       ngDevMode && ngDevMode.rendererRemoveStyle++;
       renderer.removeStyle(rNode, prop, flags);

@@ -212,7 +212,7 @@ export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeI
   if (tNode.parent && tNode.parent.injectorIndex !== -1) {
     // If we have a parent `TNode` and there is an injector associated with it we are done, because
     // the parent injector is within the current `LView`.
-    return tNode.parent.injectorIndex as any;  // ViewOffset is 0
+    return tNode.parent.injectorIndex as RelativeInjectorLocation;  // ViewOffset is 0
   }
 
   // When parent injector location is computed it may be outside of the current view. (ie it could
@@ -241,7 +241,8 @@ export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeI
     if (parentTNode.injectorIndex !== -1) {
       // We found a NodeInjector which points to something.
       return (parentTNode.injectorIndex |
-              (declarationViewOffset << RelativeInjectorLocationFlags.ViewOffsetShift)) as any;
+              (declarationViewOffset << RelativeInjectorLocationFlags.ViewOffsetShift)) as
+          RelativeInjectorLocation;
     }
   }
   return NO_PARENT_INJECTOR;
@@ -716,7 +717,7 @@ export class NodeInjector implements Injector {
 
 /** Creates a `NodeInjector` for the current node. */
 export function createNodeInjector(): Injector {
-  return new NodeInjector(getCurrentTNode()! as TDirectiveHostNode, getLView()) as any;
+  return new NodeInjector(getCurrentTNode() as TDirectiveHostNode, getLView());
 }
 
 /**

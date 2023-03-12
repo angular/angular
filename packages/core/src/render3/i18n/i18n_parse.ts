@@ -85,8 +85,8 @@ export function i18nStartFirstCreatePass(
     tView: TView, parentTNodeIndex: number, lView: LView, index: number, message: string,
     subTemplateIndex: number) {
   const rootTNode = getCurrentParentTNode();
-  const createOpCodes: I18nCreateOpCodes = [] as any;
-  const updateOpCodes: I18nUpdateOpCodes = [] as any;
+  const createOpCodes = [] as unknown[] as I18nCreateOpCodes;
+  const updateOpCodes = [] as unknown[] as I18nUpdateOpCodes;
   const existingTNodeStack: TNode[][] = [[]];
   if (ngDevMode) {
     attachDebugGetter(createOpCodes, i18nCreateOpCodesToString);
@@ -245,7 +245,7 @@ function i18nStartFirstCreatePassProcessTextNode(
 export function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) {
   const previousElement = getCurrentTNode()!;
   const previousElementIndex = previousElement.index;
-  const updateOpCodes: I18nUpdateOpCodes = [] as any;
+  const updateOpCodes = [] as unknown[] as I18nUpdateOpCodes;
   if (ngDevMode) {
     attachDebugGetter(updateOpCodes, i18nUpdateOpCodesToString);
   }
@@ -588,9 +588,9 @@ export function i18nParseTextIntoPartsAndICU(pattern: string): (string|IcuExpres
 export function parseIcuCase(
     tView: TView, tIcu: TIcu, lView: LView, updateOpCodes: I18nUpdateOpCodes, parentIdx: number,
     caseName: string, unsafeCaseHtml: string, nestedIcus: IcuExpression[]): number {
-  const create: IcuCreateOpCodes = [] as any;
-  const remove: I18nRemoveOpCodes = [] as any;
-  const update: I18nUpdateOpCodes = [] as any;
+  const create = [] as unknown[] as IcuCreateOpCodes;
+  const remove = [] as unknown[] as I18nRemoveOpCodes;
+  const update = [] as unknown[] as I18nUpdateOpCodes;
   if (ngDevMode) {
     attachDebugGetter(create, icuCreateOpCodesToString);
     attachDebugGetter(remove, i18nRemoveOpCodesToString);

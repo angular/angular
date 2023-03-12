@@ -43,7 +43,8 @@ export function assertEqual<T>(actual: T, expected: T, msg: string) {
   }
 }
 
-export function assertNotEqual<T>(actual: T, expected: T, msg: string): asserts actual is T {
+// The function allows `any` for expected as sometimes type are not compatible
+export function assertNotEqual<T>(actual: T, expected: any, msg: string): asserts actual is T {
   if (!(actual != expected)) {
     throwError(msg, actual, expected, '!=');
   }
@@ -55,7 +56,8 @@ export function assertSame<T>(actual: T, expected: T, msg: string): asserts actu
   }
 }
 
-export function assertNotSame<T>(actual: T, expected: T, msg: string) {
+// The function allows `any` for expected as sometimes type are not compatible
+export function assertNotSame<T>(actual: T, expected: any, msg: string) {
   if (!(actual !== expected)) {
     throwError(msg, actual, expected, '!==');
   }

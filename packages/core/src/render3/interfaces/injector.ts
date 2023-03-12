@@ -64,17 +64,16 @@ export const enum NodeInjectorOffset {
  * The interfaces encodes number of parents `LView`s to traverse and index in the `LView`
  * pointing to the parent injector.
  */
-export interface RelativeInjectorLocation {
+export type RelativeInjectorLocation = number&{
   __brand__: 'RelativeInjectorLocationFlags';
-}
+};
 
 export const enum RelativeInjectorLocationFlags {
   InjectorIndexMask = 0b111111111111111,
   ViewOffsetShift = 16,
-  NO_PARENT = -1,
 }
 
-export const NO_PARENT_INJECTOR: RelativeInjectorLocation = -1 as any;
+export const NO_PARENT_INJECTOR = -1 as RelativeInjectorLocation;
 
 /**
  * Each injector is saved in 9 contiguous slots in `LView` and 9 contiguous slots in

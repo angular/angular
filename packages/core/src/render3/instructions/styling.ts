@@ -17,7 +17,7 @@ import {DirectiveDef} from '../interfaces/definition';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
+import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange, TStylingStatic} from '../interfaces/styling';
 import {LView, RENDERER, TData, TView} from '../interfaces/view';
 import {applyStyling} from '../node_manipulation';
 import {getCurrentDirectiveDef, getLView, getSelectedIndex, getTView, incrementBindingIndex} from '../state';
@@ -311,7 +311,7 @@ export function wrapInStaticStylingKey(
     // styling and there is no need to collect them again. We know that we are the first styling
     // instruction because the `TNode.*Bindings` points to 0 (nothing has been inserted yet).
     const isFirstStylingInstructionInTemplate =
-        (isClassBased ? tNode.classBindings : tNode.styleBindings) as any as number === 0;
+        (isClassBased ? tNode.classBindings : tNode.styleBindings) === 0;
     if (isFirstStylingInstructionInTemplate) {
       // It would be nice to be able to get the statics from `mergeAttrs`, however, at this point
       // they are already merged and it would not be possible to figure which property belongs where
@@ -538,10 +538,9 @@ function collectStylingFromTAttrs(
       } else {
         if (currentMarker === desiredMarker) {
           if (!Array.isArray(stylingKey)) {
-            stylingKey = stylingKey === undefined ? [] : ['', stylingKey] as any;
+            stylingKey = (stylingKey === undefined ? [] : ['', stylingKey]) as TStylingStatic;
           }
-          keyValueArraySet(
-              stylingKey as KeyValueArray<any>, item, isClassBased ? true : attrs[++i]);
+          keyValueArraySet(stylingKey, item, isClassBased ? true : attrs[++i]);
         }
       }
     }
@@ -581,8 +580,9 @@ export function toStylingKeyValueArray(
     keyValueArraySet: (keyValueArray: KeyValueArray<any>, key: string, value: any) => void,
     stringParser: (styleKeyValueArray: KeyValueArray<any>, text: string) => void,
     value: string|string[]|{[key: string]: any}|SafeValue|null|undefined): KeyValueArray<any> {
-  if (value == null /*|| value === undefined */ || value === '') return EMPTY_ARRAY as any;
-  const styleKeyValueArray: KeyValueArray<any> = [] as any;
+  if (value == null /*|| value === undefined */ || value === '')
+    return EMPTY_ARRAY as KeyValueArray<any>;
+  const styleKeyValueArray = [] as unknown[] as KeyValueArray<any>;
   const unwrappedValue = unwrapSafeValue(value) as string | string[] | {[key: string]: any};
   if (Array.isArray(unwrappedValue)) {
     for (let i = 0; i < unwrappedValue.length; i++) {
@@ -661,7 +661,7 @@ function updateStylingMap(
     isClassBased: boolean, bindingIndex: number) {
   if (oldKeyValueArray as KeyValueArray<any>| NO_CHANGE === NO_CHANGE) {
     // On first execution the oldKeyValueArray is NO_CHANGE => treat it as empty KeyValueArray.
-    oldKeyValueArray = EMPTY_ARRAY as any;
+    oldKeyValueArray = EMPTY_ARRAY as KeyValueArray<any>;
   }
   let oldIndex = 0;
   let newIndex = 0;

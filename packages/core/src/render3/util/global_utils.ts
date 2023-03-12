@@ -8,6 +8,7 @@
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
 import {setProfiler} from '../profiler';
+
 import {applyChanges} from './change_detection_utils';
 import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
 
@@ -74,7 +75,7 @@ export function publishGlobalUtil(name: string, fn: Function): void {
     // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
     // - we can't declare a closure extern as the namespace `ng` is already used within Google
     //   for typings for AngularJS (via `goog.provide('ng....')`).
-    const w = global as any as GlobalDevModeContainer;
+    const w = global as GlobalDevModeContainer;
     ngDevMode && assertDefined(fn, 'function not defined');
     if (w) {
       let container = w[GLOBAL_PUBLISH_EXPANDO_KEY];

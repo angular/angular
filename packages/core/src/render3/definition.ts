@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
-import {Mutable, Type} from '../interface/type';
+import {Type, Writable} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
@@ -303,14 +303,14 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
  * @codeGenApi
  */
 export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<T>):
-    Mutable<ComponentDef<any>, keyof ComponentDef<any>> {
+    ComponentDef<any> {
   return noSideEffects(() => {
     // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
     // See the `initNgDevMode` docstring for more information.
     (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
     const baseDef = getNgDirectiveDef(componentDefinition as DirectiveDefinition<T>);
-    const def: Mutable<ComponentDef<unknown>, keyof ComponentDef<unknown>> = {
+    const def: Writable<ComponentDef<unknown>> = {
       ...baseDef,
       decls: componentDefinition.decls,
       vars: componentDefinition.vars,
@@ -523,7 +523,7 @@ function invertObject<T>(
  * @codeGenApi
  */
 export function ɵɵdefineDirective<T>(directiveDefinition: DirectiveDefinition<T>):
-    Mutable<DirectiveDef<any>, keyof DirectiveDef<any>> {
+    DirectiveDef<any> {
   return noSideEffects(() => {
     const def = getNgDirectiveDef(directiveDefinition);
     initFeatures(def);
@@ -563,14 +563,14 @@ export function ɵɵdefinePipe<T>(pipeDef: {
    */
   standalone?: boolean;
 }): unknown {
-  return (<PipeDef<T>>{
+  return {
     type: pipeDef.type,
     name: pipeDef.name,
     factory: null,
     pure: pipeDef.pure !== false,
     standalone: pipeDef.standalone === true,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
-  });
+  };
 }
 
 /**
@@ -614,8 +614,7 @@ export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleD
   return ngModuleDef;
 }
 
-function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
-    Mutable<DirectiveDef<unknown>, keyof DirectiveDef<unknown>> {
+function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): DirectiveDef<unknown> {
   const declaredInputs: Record<string, string> = {};
 
   return {
@@ -643,8 +642,7 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
   };
 }
 
-function initFeatures(definition:|Mutable<DirectiveDef<unknown>, keyof DirectiveDef<unknown>>|
-                      Mutable<ComponentDef<unknown>, keyof ComponentDef<unknown>>): void {
+function initFeatures(definition: DirectiveDef<unknown>|ComponentDef<unknown>): void {
   definition.features?.forEach((fn) => fn(definition));
 }
 
