@@ -1598,7 +1598,7 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
     !this.queued && this._player.reset();
   }
 
-  setPosition(p: any): void {
+  setPosition(p: number): void {
     if (!this.queued) {
       this._player.setPosition(p);
     }

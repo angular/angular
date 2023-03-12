@@ -123,7 +123,7 @@ export interface AnimationPlayer {
     play(): void;
     reset(): void;
     restart(): void;
-    setPosition(position: any /** TODO #9100 */): void;
+    setPosition(position: number): void;
     readonly totalTime: number;
 }
 
