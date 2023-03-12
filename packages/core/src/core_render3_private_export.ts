@@ -251,7 +251,7 @@ export {
 } from './render3/jit/pipe';
 export {
   isNgModule as ɵisNgModule
-} from './render3/jit/util';
+} from './render3/util/module_utils';
 export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler';
 export {
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils

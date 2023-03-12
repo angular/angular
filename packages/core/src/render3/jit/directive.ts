@@ -18,15 +18,15 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {flatten} from '../../util/array_utils';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {initNgDevMode} from '../../util/ng_dev_mode';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
+import {getComponentDef, getDirectiveDef, getPipeDef} from '../definition';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentDef, ComponentType, DirectiveDefList, PipeDefList} from '../interfaces/definition';
+import {isModuleWithProviders, isNgModule} from '../util/module_utils';
 import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
 import {getJitOptions} from './jit_options';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
-import {isModuleWithProviders} from './util';
 
 /**
  * Keep track of the compilation depth to avoid reentrancy issues during JIT compilation. This
@@ -203,7 +203,7 @@ export function verifyStandaloneImport(depType: Type<unknown>, importingType: Ty
     }
   }
 
-  if (getNgModuleDef(depType) == null) {
+  if (!isNgModule(depType)) {
     const def = getComponentDef(depType) || getDirectiveDef(depType) || getPipeDef(depType);
     if (def != null) {
       // if a component, directive or pipe is imported make sure that it is standalone
@@ -256,7 +256,7 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
         }
         seen.add(dep);
 
-        if (!!getNgModuleDef(dep)) {
+        if (isNgModule(dep)) {
           const scope = transitiveScopesFor(dep);
           for (const dir of scope.exported.directives) {
             const def = getComponentDef(dir) || getDirectiveDef(dir);
@@ -288,7 +288,7 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
         }
         seen.add(dep);
 
-        if (!!getNgModuleDef(dep)) {
+        if (isNgModule(dep)) {
           const scope = transitiveScopesFor(dep);
           for (const pipe of scope.exported.pipes) {
             const def = getPipeDef(pipe);

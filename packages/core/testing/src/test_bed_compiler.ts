@@ -12,6 +12,7 @@ import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive,
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 import {ComponentDef, ComponentType} from '../../src/render3';
 import {generateStandaloneInDeclarationsError} from '../../src/render3/jit/module';
+import {isNgModule} from '../../src/render3/util/module_utils';
 
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
@@ -441,7 +442,7 @@ export class TestBedCompiler {
    * and all imported NgModules and standalone components recursively.
    */
   private applyProviderOverridesInScope(type: Type<any>): void {
-    const hasScope = isStandaloneComponent(type) || isNgModule(type);
+    const hasScope = isStandaloneComponent(type) || _isNgModule(type);
 
     // The function can be re-entered recursively while inspecting dependencies
     // of an NgModule or a standalone component. Exit early if we come across a
@@ -589,7 +590,7 @@ export class TestBedCompiler {
       for (const value of arr) {
         if (Array.isArray(value)) {
           queueTypesFromModulesArrayRecur(value);
-        } else if (hasNgModuleDef(value)) {
+        } else if (isNgModule(value)) {
           const def = value.ɵmod;
           if (processedDefs.has(def)) {
             continue;
@@ -617,7 +618,7 @@ export class TestBedCompiler {
             // (NgModule-based) Component, Directive and Pipes, so we handle
             // them separately and proceed with recursive process for standalone
             // Components and NgModules only.
-            if (isStandaloneComponent(dependency) || hasNgModuleDef(dependency)) {
+            if (isStandaloneComponent(dependency) || isNgModule(dependency)) {
               queueTypesFromModulesArrayRecur([dependency]);
             } else {
               this.queueType(dependency, null);
@@ -645,7 +646,7 @@ export class TestBedCompiler {
           // If the value is an array, just flatten it (by invoking this function recursively),
           // keeping "path" the same.
           calcAffectedModulesRecur(value, path);
-        } else if (hasNgModuleDef(value)) {
+        } else if (isNgModule(value)) {
           if (seenModules.has(value)) {
             // If we've seen this module before and it's included into "affected modules" list, mark
             // the whole path that leads to that module as affected, but do not descend into its
@@ -876,15 +877,12 @@ function isStandaloneComponent<T>(value: Type<T>): value is ComponentType<T> {
 function getComponentDef(value: ComponentType<unknown>): ComponentDef<unknown>;
 function getComponentDef(value: Type<unknown>): ComponentDef<unknown>|null;
 function getComponentDef(value: Type<unknown>): ComponentDef<unknown>|null {
-  return (value as any).ɵcmp ?? null;
+  return ((value as ComponentType<unknown>).ɵcmp as ComponentDef<unknown>) ?? null;
 }
 
-function hasNgModuleDef<T>(value: Type<T>): value is NgModuleType<T> {
-  return value.hasOwnProperty('ɵmod');
-}
-
-function isNgModule<T>(value: Type<T>): boolean {
-  return hasNgModuleDef(value);
+// Wrapper function to drop the type guard part
+function _isNgModule<T>(value: Type<T>): boolean {
+  return isNgModule(value);
 }
 
 function maybeUnwrapFn<T>(maybeFn: (() => T)|T): T {

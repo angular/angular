@@ -23,11 +23,11 @@ import {GENERATED_COMP_IDS, getComponentDef, getDirectiveDef, getNgModuleDef, ge
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {maybeUnwrapFn} from '../util/misc_utils';
+import {isModuleWithProviders, isNgModule} from '../util/module_utils';
 import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
 import {patchModuleCompilation} from './module_patch';
-import {isModuleWithProviders, isNgModule} from './util';
 
 interface ModuleQueueItem {
   moduleType: Type<any>;
@@ -427,7 +427,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
   return flatten(maybeUnwrapFn(ngModuleDef.exports).map((type) => {
     const ngModuleDef = getNgModuleDef(type);
     if (ngModuleDef) {
-      verifySemanticsOfNgModuleDef(type as any as NgModuleType, false);
+      verifySemanticsOfNgModuleDef(type as NgModuleType, false);
       return computeCombinedExports(type);
     } else {
       return type;
