@@ -58,7 +58,7 @@ describe('providers', () => {
 
       static ɵprov = ɵɵdefineInjectable({
         token: GreeterInj,
-        factory: () => new GreeterInj(ɵɵinject(GreeterProvider as any)),
+        factory: () => new GreeterInj(ɵɵinject(GreeterProvider)),
       });
     }
 
@@ -1178,7 +1178,7 @@ describe('providers', () => {
       expect(fixture.nativeElement.innerHTML).toEqual('<my-cmp><p></p></my-cmp>');
 
       const myCmp = fixture.nativeElement.querySelector('my-cmp');
-      const injector = getInjector(myCmp as any);
+      const injector = getInjector(myCmp);
       expect(injector.get(Number)).toEqual(123);
       expect(injector.get(String)).toEqual('From my component');
       expect(injector.get(Some).location).toEqual('From app component');

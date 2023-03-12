@@ -62,7 +62,7 @@ function numOfWhiteSpaceLeadingChars(text: string): number {
  */
 export function matchDebug<T>(expected: T): any {
   const matcher = function() {};
-  let actual: any = matchDebug;
+  let actual = matchDebug;
 
   matcher.asymmetricMatch = function(objectWithDebug: any, matchersUtil: jasmine.MatchersUtil) {
     return matchersUtil.equals(actual = objectWithDebug.debug, expected);
@@ -85,7 +85,7 @@ export function buildFailureMessage(
 }
 
 function listPropertyDifferences(
-    diffs: string[], path: string, actual: any, expected: any, depth: number,
+    diffs: string[], path: string, actual: unknown, expected: unknown, depth: number,
     pp: (value: any) => string) {
   if (actual === expected) return;
   if (typeof actual !== typeof expected) {
@@ -106,9 +106,9 @@ function listPropertyDifferences(
     }
   } else if (
       depth && expected && typeof expected === 'object' && actual && typeof actual === 'object') {
-    new Set(Object.keys(expected).concat(Object.keys(actual))).forEach((key) => {
-      const actualItem = actual[key];
-      const expectedItem = expected[key];
+    new Set([...Object.keys(expected), ...(Object.keys(actual))]).forEach((key) => {
+      const actualItem = (actual as any)[key];
+      const expectedItem = (expected as any)[key];
       listPropertyDifferences(diffs, path + '.' + key, actualItem, expectedItem, depth - 1, pp);
     });
   } else {

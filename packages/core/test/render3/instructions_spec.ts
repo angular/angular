@@ -112,7 +112,7 @@ describe('instructions', () => {
         consts: [['id', 'test', 'title', 'Hello']]
       });
 
-      const div = (t.host as HTMLElement).querySelector('div')!;
+      const div = t.host.querySelector('div')!;
       expect(div.id).toEqual('test');
       expect(div.title).toEqual('Hello');
       expect(ngDevMode).toEqual(jasmine.objectContaining({

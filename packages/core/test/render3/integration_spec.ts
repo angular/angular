@@ -8,10 +8,11 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, Directive, HostBinding} from '@angular/core';
+import {LContext} from '@angular/core/src/render3/interfaces/context';
 import {TestBed} from '@angular/core/testing';
 
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
-import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
+import {CONTEXT, HEADER_OFFSET, LView} from '../../src/render3/interfaces/view';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
 
@@ -28,9 +29,9 @@ describe('element discovery', () => {
     const fixture = TestBed.createComponent(StructuredComp);
     fixture.detectChanges();
 
-    const host = fixture.nativeElement;
-    const parent = host.querySelector('div') as any;
-    const child = host.querySelector('p') as any;
+    const host: HTMLElement = fixture.nativeElement;
+    const parent = host.querySelector('div');
+    const child = host.querySelector('p');
 
     expect(readPatchedData(parent)).toBeTruthy();
     expect(readPatchedData(child)).toBeFalsy();
@@ -65,8 +66,8 @@ describe('element discovery', () => {
     const fixture = TestBed.createComponent(ParentComp);
     fixture.detectChanges();
 
-    const host = fixture.nativeElement;
-    const child = host.querySelector('child-comp') as any;
+    const host: HTMLElement = fixture.nativeElement;
+    const child = host.querySelector('child-comp');
     expect(readPatchedData(child)).toBeTruthy();
 
     const [kid1, kid2, kid3] = Array.from(host.querySelectorAll('child-comp > *'));
@@ -156,12 +157,12 @@ describe('element discovery', () => {
     const fixture = TestBed.createComponent(StructuredComp);
     fixture.detectChanges();
 
-    const section = fixture.nativeElement.querySelector('section')! as any;
-    const result1 = readPatchedData(section);
+    const section = fixture.nativeElement.querySelector('section');
+    const result1 = readPatchedData(section) as LView;
     expect(Array.isArray(result1)).toBeTruthy();
 
     const context = getLContext(section)!;
-    const result2 = readPatchedData(section) as any;
+    const result2 = readPatchedData(section) as LContext;
     expect(Array.isArray(result2)).toBeFalsy();
 
     expect(result2).toBe(context);
@@ -185,14 +186,16 @@ describe('element discovery', () => {
        const fixture = TestBed.createComponent(StructuredComp);
        fixture.detectChanges();
 
-       const section = fixture.nativeElement.querySelector('section')! as any;
+       const host: HTMLElement = fixture.nativeElement;
+
+       const section = host.querySelector('section');
        expect(readPatchedData(section)).toBeTruthy();
 
-       const p = fixture.nativeElement.querySelector('p')! as any;
+       const p = host.querySelector('p')!;
        expect(readPatchedData(p)).toBeFalsy();
 
-       const pContext = getLContext(p)!;
-       expect(pContext.native).toBe(p);
+       const pContext = getLContext(p);
+       expect(pContext?.native).toBe(p);
        expect(readPatchedData(p)).toBe(pContext);
      });
 
@@ -211,8 +214,10 @@ describe('element discovery', () => {
        const fixture = TestBed.createComponent(StructuredComp);
        fixture.detectChanges();
 
-       const section = fixture.nativeElement.querySelector('section')! as any;
-       const result1 = readPatchedData(section) as any;
+       const host: HTMLElement = fixture.nativeElement;
+
+       const section = host.querySelector('section')!;
+       const result1 = readPatchedData(section) as LView;
        expect(Array.isArray(result1)).toBeTruthy();
 
        const elementResult = result1[HEADER_OFFSET];  // first element
@@ -275,14 +280,14 @@ describe('element discovery', () => {
        const fixture = TestBed.createComponent(ParentComp);
        fixture.detectChanges();
 
-       const host = fixture.nativeElement;
-       const textNode = host.firstChild as any;
-       const section = host.querySelector('section')! as any;
-       const projectorComp = host.querySelector('projector-comp')! as any;
-       const header = host.querySelector('header')! as any;
-       const h1 = host.querySelector('h1')! as any;
-       const p = host.querySelector('p')! as any;
-       const pText = p.firstChild as any;
+       const host: HTMLElement = fixture.nativeElement;
+       const textNode = host.firstChild;
+       const section = host.querySelector('section')!;
+       const projectorComp = host.querySelector('projector-comp')!;
+       const header = host.querySelector('header')!;
+       const h1 = host.querySelector('h1')!;
+       const p = host.querySelector('p')!;
+       const pText = p.firstChild;
        const projectedTextNode = p.nextSibling;
 
        expect(projectorComp.children).toContain(header);
@@ -336,7 +341,8 @@ describe('element discovery', () => {
        const fixture = TestBed.createComponent(StructuredComp);
        fixture.detectChanges();
 
-       const section = fixture.nativeElement.querySelector('section')! as any;
+       const host: HTMLElement = fixture.nativeElement;
+       const section = host.querySelector('section')!;
        const manuallyCreatedElement = document.createElement('div');
        section.appendChild(manuallyCreatedElement);
 
@@ -359,10 +365,10 @@ describe('element discovery', () => {
     const hostElm = fixture.nativeElement;
     const component = fixture.componentInstance;
 
-    const componentLView = readPatchedData(component);
+    const componentLView = readPatchedData(component) as LView;
     expect(Array.isArray(componentLView)).toBeTruthy();
 
-    const hostLView = readPatchedData(hostElm) as any;
+    const hostLView = readPatchedData(hostElm) as LView;
     expect(hostLView).toBe(componentLView);
 
     const context1 = getLContext(hostElm)!;
@@ -426,9 +432,9 @@ describe('element discovery', () => {
        const fixture = TestBed.createComponent(StructuredComp);
        fixture.detectChanges();
 
-       const hostElm = fixture.nativeElement;
-       const div1 = hostElm.querySelector('div:first-child')! as any;
-       const div2 = hostElm.querySelector('div:last-child')! as any;
+       const hostElm: HTMLElement = fixture.nativeElement;
+       const div1 = hostElm.querySelector('div:first-child')!;
+       const div2 = hostElm.querySelector('div:last-child')!;
        const context = getLContext(hostElm)!;
        const componentView = context.lView![context.nodeIndex];
 
@@ -454,15 +460,15 @@ describe('element discovery', () => {
 
        expect(d1Context.nodeIndex).toEqual(HEADER_OFFSET);
        expect(d1Context.native).toBe(div1);
-       expect(d1Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
+       expect(d1Context.directives!).toEqual([myDir1Instance, myDir2Instance]);
 
        expect(d2Context.nodeIndex).toEqual(HEADER_OFFSET);
        expect(d2Context.native).toBe(div1);
-       expect(d2Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
+       expect(d2Context.directives!).toEqual([myDir1Instance, myDir2Instance]);
 
        expect(d3Context.nodeIndex).toEqual(HEADER_OFFSET + 1);
        expect(d3Context.native).toBe(div2);
-       expect(d3Context.directives as any[]).toEqual([myDir3Instance]);
+       expect(d3Context.directives!).toEqual([myDir3Instance]);
      });
 
   it('should monkey-patch the exact same context instance of the DOM node, component and any directives on the same element',
@@ -518,7 +524,8 @@ describe('element discovery', () => {
        const fixture = TestBed.createComponent(ParentComp);
        fixture.detectChanges();
 
-       const childCompHostElm = fixture.nativeElement.querySelector('child-comp')! as any;
+       const host: HTMLElement = fixture.nativeElement;
+       const childCompHostElm = host.querySelector('child-comp')!;
 
        const lView = readPatchedData(childCompHostElm);
        expect(Array.isArray(lView)).toBeTruthy();
@@ -589,8 +596,8 @@ describe('element discovery', () => {
        const fixture = TestBed.createComponent(ParentComp);
        fixture.detectChanges();
 
-       const host = fixture.nativeElement;
-       const child = host.querySelector('child-comp') as any;
+       const host: HTMLElement = fixture.nativeElement;
+       const child = host.querySelector('child-comp');
        expect(readPatchedData(child)).toBeTruthy();
 
        const context = getLContext(child)!;

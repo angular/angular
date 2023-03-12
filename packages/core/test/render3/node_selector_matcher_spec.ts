@@ -20,8 +20,8 @@ describe('css selector matching', () => {
   function isMatching(
       tagName: string, attrsOrTNode: TAttributes|TNode|null, selector: CssSelector): boolean {
     const tNode = (!attrsOrTNode || Array.isArray(attrsOrTNode)) ?
-        createTNode(null!, null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
-        (attrsOrTNode as TNode);
+        createTNode(null!, null, TNodeType.Element, 0, tagName, attrsOrTNode!) :
+        attrsOrTNode;
     return isNodeMatchingSelector(tNode, selector, true);
   }
 
@@ -565,7 +565,7 @@ describe('stringifyCSSSelectorList', () => {
 });
 
 describe('extractAttrsAndClassesFromSelector', () => {
-  const cases = [
+  const cases: Array<[(string | number)[], string[], string[]]> = [
     [
       ['div', '', ''],
       [],
@@ -606,8 +606,8 @@ describe('extractAttrsAndClassesFromSelector', () => {
   cases.forEach(([selector, attrs, classes]) => {
     it(`should process ${JSON.stringify(selector)} selector`, () => {
       const extracted = extractAttrsAndClassesFromSelector(selector);
-      expect(extracted.attrs).toEqual(attrs as string[]);
-      expect(extracted.classes).toEqual(classes as string[]);
+      expect(extracted.attrs).toEqual(attrs);
+      expect(extracted.classes).toEqual(classes);
     });
   });
 });

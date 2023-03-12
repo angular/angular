@@ -64,7 +64,7 @@ export class ViewFixture {
     this.createFn = create;
     this.updateFn = update;
 
-    const document = ((typeof global == 'object' && global || window) as any).document;
+    const document = (typeof global == 'object' && global || window).document;
     const rendererFactory = getRendererFactory2(document);
 
     const hostRenderer = rendererFactory.createRenderer(null, null);
@@ -96,8 +96,7 @@ export class ViewFixture {
         TViewType.Component, null, template, decls || 0, vars || 0,
         directives ? toDefs(directives, dir => extractDirectiveDef(dir)!) : null, null, null, null,
         consts || null, null);
-    const hostTNode =
-        createTNode(hostTView, null, TNodeType.Element, 0, 'host-element', null) as TElementNode;
+    const hostTNode = createTNode(hostTView, null, TNodeType.Element, 0, 'host-element', null);
     // Store TNode at the first slot right after the header part
     hostTView.data[HEADER_OFFSET] = hostTNode;
     this.lView = createLView(

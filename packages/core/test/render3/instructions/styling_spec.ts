@@ -378,40 +378,38 @@ describe('styling', () => {
   describe('toStylingArray', () => {
     describe('falsy', () => {
       it('should return empty KeyValueArray', () => {
-        expect(toStylingKeyValueArray(keyValueArraySet, null!, '')).toEqual([] as any);
-        expect(toStylingKeyValueArray(keyValueArraySet, null!, null)).toEqual([] as any);
-        expect(toStylingKeyValueArray(keyValueArraySet, null!, undefined)).toEqual([] as any);
-        expect(toStylingKeyValueArray(keyValueArraySet, null!, [])).toEqual([] as any);
-        expect(toStylingKeyValueArray(keyValueArraySet, null!, {})).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, '')).toEqual([]);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, null)).toEqual([]);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, undefined)).toEqual([]);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, [])).toEqual([]);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, {})).toEqual([]);
       });
       describe('string', () => {
         it('should parse classes', () => {
-          expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, '  '))
-              .toEqual([] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, '  ')).toEqual([]);
           expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, ' X A ')).toEqual([
             'A', true, 'X', true
-          ] as any);
+          ]);
         });
         it('should parse styles', () => {
-          expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, '  '))
-              .toEqual([] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, '  ')).toEqual([]);
           expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, 'B:b;A:a')).toEqual([
             'A', 'a', 'B', 'b'
-          ] as any);
+          ]);
         });
       });
       describe('array', () => {
         it('should parse', () => {
           expect(toStylingKeyValueArray(keyValueArraySet, null!, ['X', 'A'])).toEqual([
             'A', true, 'X', true
-          ] as any);
+          ]);
         });
       });
       describe('object', () => {
         it('should parse', () => {
           expect(toStylingKeyValueArray(keyValueArraySet, null!, {X: 'x', A: 'a'})).toEqual([
             'A', 'a', 'X', 'x'
-          ] as any);
+          ]);
         });
       });
     });

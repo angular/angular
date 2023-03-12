@@ -26,7 +26,7 @@ export class SimpleDomEventsPlugin extends EventManagerPlugin {
   }
 
   override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    let callback: EventListener = handler as EventListener;
+    let callback = handler as EventListener;
     element.addEventListener(eventName, callback, false);
     return () => this.removeEventListener(element, eventName, callback);
   }

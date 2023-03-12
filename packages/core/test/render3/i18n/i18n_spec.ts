@@ -130,7 +130,7 @@ describe('Runtime i18n', () => {
         ɵɵelementEnd();
       }, nbConsts, HEADER_OFFSET + index);
 
-      expect((opCodes as any).update.debug).toEqual([`if (mask & 0b1) { (lView[${
+      expect((opCodes as TI18n).update.debug).toEqual([`if (mask & 0b1) { (lView[${
           HEADER_OFFSET + 2}] as Text).textContent = \`Hello \${lView[i-1]}!\`; }`]);
 
       expect(opCodes).toEqual({
@@ -486,7 +486,7 @@ describe('Runtime i18n', () => {
       const arr = ['�*1:1��#2:1�', '�#4:1�', '�6:1�', '�/#2:1��/*1:1�'];
       const str = `[${arr.join('|')}]`;
 
-      const cases = [
+      const cases: [string, Record<string, string|string[]>, string][] = [
         // empty string
         ['', {}, ''],
 
@@ -557,7 +557,7 @@ describe('Runtime i18n', () => {
         ],
       ];
       cases.forEach(([input, replacements, output]) => {
-        expect(ɵɵi18nPostprocess(input as string, replacements as any)).toEqual(output as string);
+        expect(ɵɵi18nPostprocess(input, replacements)).toEqual(output);
       });
     });
 

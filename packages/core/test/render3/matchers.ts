@@ -243,14 +243,14 @@ export function matchI18nMutableOpCodes(expectedMutableOpCodes: string[]):
   matcher.asymmetricMatch = function(actual: any, matchersUtil: jasmine.MatchersUtil) {
     _actual = actual;
     if (!Array.isArray(actual)) return false;
-    const debug = (actual as I18nDebug).debug as undefined | string[];
+    const debug = (actual as I18nDebug).debug;
     if (expectedMutableOpCodes && (!matchersUtil.equals(debug, expectedMutableOpCodes))) {
       return false;
     }
     return true;
   };
   matcher.jasmineToString = function() {
-    const debug = (_actual as I18nDebug).debug as undefined | string[];
+    const debug = (_actual as I18nDebug).debug;
     return `[${JSON.stringify(debug)} != ${expectedMutableOpCodes}]`;
   };
 

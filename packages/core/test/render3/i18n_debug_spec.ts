@@ -23,7 +23,7 @@ describe('i18n debug', () => {
         -4,
         ' post',
         1 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text,
-      ] as unknown as I18nUpdateOpCodes))
+      ] as I18nUpdateOpCodes))
           .toEqual(
               ['if (mask & 0b11) { (lView[1] as Text).textContent = `pre ${lView[i-4]} post`; }']);
     });
@@ -47,7 +47,7 @@ describe('i18n debug', () => {
         ' in ',  -3,
         ' post', 1 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr,
         'title', sanitizeFn,
-      ] as unknown as I18nUpdateOpCodes))
+      ] as I18nUpdateOpCodes))
           .toEqual([
             'if (mask & 0b1) { (lView[1] as Element).setAttribute(\'title\', `pre ${lView[i-4]} in ${lView[i-3]} post`); }',
             `if (mask & 0b10) { (lView[1] as Element).setAttribute('title', (${
@@ -58,14 +58,14 @@ describe('i18n debug', () => {
     it('should print icuSwitch opCode', () => {
       expect(i18nUpdateOpCodesToString(
                  [0b100, 2, -5, 12 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch] as
-                 unknown as I18nUpdateOpCodes))
+                 I18nUpdateOpCodes))
           .toEqual(['if (mask & 0b100) { icuSwitchCase(12, `${lView[i-5]}`); }']);
     });
 
     it('should print icuUpdate opCode', () => {
       expect(i18nUpdateOpCodesToString(
                  [0b1000, 1, 13 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate] as
-                 unknown as I18nUpdateOpCodes))
+                 I18nUpdateOpCodes))
           .toEqual(['if (mask & 0b1000) { icuUpdateCase(13); }']);
     });
   });
@@ -80,7 +80,7 @@ describe('i18n debug', () => {
         'xyz', 0,
         1 << IcuCreateOpCode.SHIFT_PARENT | 0 << IcuCreateOpCode.SHIFT_REF |
             IcuCreateOpCode.AppendChild
-      ] as unknown as I18nCreateOpCodes))
+      ] as I18nCreateOpCodes))
           .toEqual([
             'lView[0] = document.createTextNode("xyz")',
             '(lView[1] as Element).appendChild(lView[0])'
@@ -93,7 +93,7 @@ describe('i18n debug', () => {
         ELEMENT_MARKER, 'xyz', 0,
         1 << IcuCreateOpCode.SHIFT_PARENT | 0 << IcuCreateOpCode.SHIFT_REF |
             IcuCreateOpCode.AppendChild
-      ] as unknown as I18nCreateOpCodes))
+      ] as I18nCreateOpCodes))
           .toEqual([
             'lView[0] = document.createElement("xyz")',
             '(lView[1] as Element).appendChild(lView[0])'
@@ -105,7 +105,7 @@ describe('i18n debug', () => {
         ICU_MARKER, 'xyz', 0,
         1 << IcuCreateOpCode.SHIFT_PARENT | 0 << IcuCreateOpCode.SHIFT_REF |
             IcuCreateOpCode.AppendChild
-      ] as unknown as I18nCreateOpCodes))
+      ] as I18nCreateOpCodes))
           .toEqual([
             'lView[0] = document.createComment("xyz")',
             '(lView[1] as Element).appendChild(lView[0])'
@@ -113,9 +113,7 @@ describe('i18n debug', () => {
     });
 
     it('should print Remove', () => {
-      expect(i18nRemoveOpCodesToString([123] as unknown as I18nRemoveOpCodes)).toEqual([
-        'remove(lView[123])'
-      ]);
+      expect(i18nRemoveOpCodesToString([123] as I18nRemoveOpCodes)).toEqual(['remove(lView[123])']);
     });
 
     it('should print Attr', () => {
@@ -126,7 +124,7 @@ describe('i18n debug', () => {
     });
 
     it('should print RemoveNestedIcu', () => {
-      expect(i18nRemoveOpCodesToString([~123] as unknown as I18nRemoveOpCodes)).toEqual([
+      expect(i18nRemoveOpCodesToString([~123] as I18nRemoveOpCodes)).toEqual([
         'removeNestedICU(123)'
       ]);
     });
@@ -144,7 +142,7 @@ describe('i18n debug', () => {
         12 << I18nCreateOpCode.SHIFT | I18nCreateOpCode.COMMENT, 'comment at 12',              //
         13 << I18nCreateOpCode.SHIFT | I18nCreateOpCode.COMMENT | I18nCreateOpCode.APPEND_EAGERLY,
         'comment at 13, append',  //
-      ] as unknown as I18nCreateOpCodes))
+      ] as I18nCreateOpCodes))
           .toEqual([
             'lView[10] = document.createText("text at 10");',
             'lView[11] = document.createText("text at 11, append");',
