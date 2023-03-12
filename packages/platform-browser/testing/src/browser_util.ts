@@ -37,7 +37,7 @@ function getAttributeMap(element: any): Map<string, string> {
 }
 
 const _selfClosingTags = ['br', 'hr', 'input'];
-export function stringifyElement(el: any /** TODO #9100 */): string {
+export function stringifyElement(el: Element): string {
   let result = '';
   if (getDOM().isElementNode(el)) {
     const tagName = el.tagName.toLowerCase();
