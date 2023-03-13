@@ -59,11 +59,11 @@ export function locateNextRNode<T extends RNode>(
         // represented in the DOM as `<div></div>...<!--container-->`.
         // In this case, there are nodes *after* this element and we need to skip
         // all of them to reach an element that we are looking for.
-        const previousSiblingIndex = previousTNode.index - HEADER_OFFSET;
-        const segmentHead = getSegmentHead(hydrationInfo, previousSiblingIndex);
+        const noOffsetPrevSiblingIndex = previousTNode.index - HEADER_OFFSET;
+        const segmentHead = getSegmentHead(hydrationInfo, noOffsetPrevSiblingIndex);
         if (previousTNode.type === TNodeType.Element && segmentHead) {
           const numRootNodesToSkip =
-              calcSerializedContainerSize(hydrationInfo, previousSiblingIndex);
+              calcSerializedContainerSize(hydrationInfo, noOffsetPrevSiblingIndex);
           // `+1` stands for an anchor comment node after all the views in this container.
           const nodesToSkip = numRootNodesToSkip + 1;
           // First node after this segment.
@@ -83,7 +83,7 @@ export function locateNextRNode<T extends RNode>(
 export function siblingAfter<T extends RNode>(skip: number, from: RNode): T|null {
   let currentNode = from;
   for (let i = 0; i < skip; i++) {
-    ngDevMode && validateSiblingNodeExists(currentNode as Node);
+    ngDevMode && validateSiblingNodeExists(currentNode);
     currentNode = currentNode.nextSibling!;
   }
   return currentNode as T;

@@ -138,9 +138,9 @@ export interface LContainer extends Array<any> {
    *
    * This information is used during the hydration process on the client.
    * The hydration logic tries to find a matching dehydrated view, "claim" it
-   * and use this information to do further matching. After that this "claimed"
-   * view is removed from the list. The remaining "unclaimed" views are later
-   * on "garbage-collected", i.e. removed from the DOM once the hydration
+   * and use this information to do further matching. After that, this "claimed"
+   * view is removed from the list. The remaining "unclaimed" views are
+   * "garbage-collected" later on, i.e. removed from the DOM once the hydration
    * logic finishes.
    */
   [DEHYDRATED_VIEWS]: DehydratedContainerView[]|null;

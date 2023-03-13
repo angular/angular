@@ -28,8 +28,9 @@ export function validateMatchingNode(
 /**
  * Verifies whether next sibling node exists.
  */
-export function validateSiblingNodeExists(node: RNode): void {
-  if (!node.nextSibling) {
+export function validateSiblingNodeExists(node: RNode|null): void {
+  validateNodeExists(node);
+  if (!(node as RNode).nextSibling) {
     // TODO: improve error message and use RuntimeError instead.
     throw new Error(`Unexpected state: insufficient number of sibling nodes.`);
   }

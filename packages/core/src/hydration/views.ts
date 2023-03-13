@@ -9,7 +9,8 @@
 import {DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
 import {RNode} from '../render3/interfaces/renderer_dom';
 
-import {DehydratedContainerView, NUM_ROOT_NODES, SerializedContainerView, TEMPLATE} from './interfaces';
+import {removeDehydratedViews} from './cleanup';
+import {DehydratedContainerView, NUM_ROOT_NODES, SerializedContainerView, TEMPLATE_ID} from './interfaces';
 import {siblingAfter} from './node_lookup_utils';
 
 
@@ -51,25 +52,36 @@ export function locateDehydratedViewsInContainer(
 let _findMatchingDehydratedViewImpl: typeof findMatchingDehydratedViewImpl =
     (lContainer: LContainer, template: string|null) => null;
 
+/**
+ * Retrieves the next dehydrated view from the LContainer and verifies that
+ * it matches a given template id (from the TView that was used to create this
+ * instance of a view). If the id doesn't match, that means that we are in an
+ * unexpected state and can not complete the reconciliation process. Thus,
+ * all dehydrated views from this LContainer are removed (including corresponding
+ * DOM nodes) and the rendering is performed as if there were no dehydrated views
+ * in this container.
+ */
 function findMatchingDehydratedViewImpl(
     lContainer: LContainer, template: string|null): DehydratedContainerView|null {
-  if (!lContainer || !template || !lContainer[DEHYDRATED_VIEWS]) {
+  const views = lContainer[DEHYDRATED_VIEWS] ?? [];
+  if (!template || views.length === 0) {
     return null;
   }
-  let view: DehydratedContainerView|null = null;
-  // Does the target container have any dehydrated views?
-  const views = lContainer[DEHYDRATED_VIEWS];
-  if (views.length > 0) {
-    const viewIndex = views.findIndex(view => view.data[TEMPLATE] === template);
-
-    if (viewIndex > -1) {
-      view = views[viewIndex];
-
-      // Drop this view from the list of de-hydrated ones.
-      views.splice(viewIndex, 1);
-    }
+  const view = views[0];
+  // Verify whether the first dehydrated view in the container matches
+  // the template id passed to this function (that originated from a TView
+  // that was used to create an instance of an embedded or component views.
+  if (view.data[TEMPLATE_ID] === template) {
+    // If the template id matches - extract the first view and return it.
+    return views.shift()!;
+  } else {
+    // Otherwise, we are at the state when reconciliation can not be completed,
+    // thus we remove all dehydrated views within this container (remove them
+    // from internal data structures as well as delete associated elements from
+    // the DOM tree).
+    removeDehydratedViews(lContainer);
+    return null;
   }
-  return view;
 }
 
 export function enableFindMatchingDehydratedViewImpl() {

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, DOCUMENT, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
-import {APP_ID, ApplicationRef, Component, ComponentRef, destroyPlatform, ElementRef, getPlatform, inject, Input, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
+import {APP_ID, ApplicationRef, Component, ComponentRef, destroyPlatform, ElementRef, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 
@@ -84,8 +84,9 @@ function verifyClientAndSSRContentsMatch(ssrContents: string, clientAppRootEleme
  * with a special monkey-patched flag (which is added in dev mode
  * only). It skips any nodes with the skip hydration attribute.
  */
-function verifyAllNodesClaimedForHydration(el: HTMLElement) {
-  if ((el.nodeType === Node.ELEMENT_NODE && el.hasAttribute(SKIP_HYDRATION_ATTR_NAME_LOWER_CASE)))
+function verifyAllNodesClaimedForHydration(el: HTMLElement, exceptions: HTMLElement[] = []) {
+  if ((el.nodeType === Node.ELEMENT_NODE && el.hasAttribute(SKIP_HYDRATION_ATTR_NAME_LOWER_CASE)) ||
+      exceptions.includes(el))
     return;
 
   if (!(el as any).__claimed) {
@@ -93,7 +94,7 @@ function verifyAllNodesClaimedForHydration(el: HTMLElement) {
   }
   let current = el.firstChild;
   while (current) {
-    verifyAllNodesClaimedForHydration(current as HTMLElement);
+    verifyAllNodesClaimedForHydration(current as HTMLElement, exceptions);
     current = current.nextSibling;
   }
 }
@@ -1107,6 +1108,75 @@ describe('platform-server integration', () => {
             verifyAllNodesClaimedForHydration(clientRootNode);
             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
           });
+
+          it('should re-create the views from the ViewContainerRef ' +
+                 'if there is a mismatch in template ids between the current view ' +
+                 '(that is being created) and the first dehydrated view in the list',
+             async () => {
+               @Component({
+                 standalone: true,
+                 selector: 'app',
+                 template: `
+                    <ng-template #tmplH1>
+                      <h1>Content of H1</h1>
+                    </ng-template>
+                    <ng-template #tmplH2>
+                      <h2>Content of H2</h2>
+                    </ng-template>
+                    <ng-template #tmplH3>
+                      <h3>Content of H3</h3>
+                    </ng-template>
+                    <p>Pre-container content</p>
+                    <ng-container #target></ng-container>
+                    <div>Post-container content</div>
+                  `,
+               })
+               class SimpleComponent {
+                 @ViewChild('target', {read: ViewContainerRef}) vcr!: ViewContainerRef;
+                 @ViewChild('tmplH1', {read: TemplateRef}) tmplH1!: TemplateRef<unknown>;
+                 @ViewChild('tmplH2', {read: TemplateRef}) tmplH2!: TemplateRef<unknown>;
+                 @ViewChild('tmplH3', {read: TemplateRef}) tmplH3!: TemplateRef<unknown>;
+
+                 isServer = isPlatformServer(inject(PLATFORM_ID));
+
+                 ngAfterViewInit() {
+                   const viewRefH1 = this.vcr.createEmbeddedView(this.tmplH1);
+                   const viewRefH2 = this.vcr.createEmbeddedView(this.tmplH2);
+                   const viewRefH3 = this.vcr.createEmbeddedView(this.tmplH3);
+                   viewRefH1.detectChanges();
+                   viewRefH2.detectChanges();
+                   viewRefH3.detectChanges();
+
+                   // Move the last view in front of the first one.
+                   this.vcr.move(viewRefH3, 0);
+                 }
+               }
+
+               const html = await ssr(SimpleComponent);
+               const ssrContents = getAppContents(html);
+
+               expect(ssrContents).toContain('<app ngh');
+
+               resetTViewsFor(SimpleComponent);
+
+               const appRef = await hydrate(html, SimpleComponent);
+               const compRef = getComponentRef<SimpleComponent>(appRef);
+               appRef.tick();
+
+               // We expect that all 3 dehydrated views would be removed
+               // (each dehydrated view represents a real embedded view),
+               // since we can not hydrate them in order (views were
+               // moved in a container).
+               expect((ngDevMode as any).dehydratedViewsRemoved).toBe(3);
+
+               const clientRootNode = compRef.location.nativeElement;
+               const h1 = clientRootNode.querySelector('h1');
+               const h2 = clientRootNode.querySelector('h2');
+               const h3 = clientRootNode.querySelector('h3');
+               const exceptions = [h1, h2, h3];
+               verifyAllNodesClaimedForHydration(clientRootNode, exceptions);
+               verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+             });
         });
 
         describe('<ng-template>', () => {

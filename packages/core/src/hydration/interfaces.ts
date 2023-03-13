@@ -16,7 +16,7 @@ export const ELEMENT_CONTAINERS = 'e';
 export const TEMPLATES = 't';
 export const CONTAINERS = 'c';
 export const NUM_ROOT_NODES = 'r';
-export const TEMPLATE = 'i';  // as it's also an "id"
+export const TEMPLATE_ID = 'i';  // as it's also an "id"
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -70,7 +70,7 @@ export interface SerializedContainerView extends SerializedView {
    *  - TViewType.Component: an id generated based on component properties
    *                        (see `getComponentId` function for details)
    */
-  [TEMPLATE]: string;
+  [TEMPLATE_ID]: string;
 
   /**
    * Number of root nodes that belong to this view.
