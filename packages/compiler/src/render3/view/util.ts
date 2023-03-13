@@ -163,31 +163,32 @@ export function asLiteral(value: any): o.Expression {
   return o.literal(value, o.INFERRED_TYPE);
 }
 
-export function conditionallyCreateMapObjectLiteral(
-    keys: {[key: string]: string|string[]}, keepDeclared?: boolean): o.Expression|null {
-  if (Object.getOwnPropertyNames(keys).length > 0) {
-    return mapToExpression(keys, keepDeclared);
-  }
-  return null;
-}
+export function conditionallyCreateMapObjectLiteral(map: Record<string, string|{
+                                                      classPropertyName: string;
+                                                      bindingPropertyName: string;
+                                                    }>, keepDeclared?: boolean): o.Expression|null {
+  const keys = Object.getOwnPropertyNames(map);
 
-function mapToExpression(
-    map: {[key: string]: string|string[]}, keepDeclared?: boolean): o.Expression {
-  return o.literalMap(Object.getOwnPropertyNames(map).map(key => {
+  if (keys.length === 0) {
+    return null;
+  }
+
+  return o.literalMap(keys.map(key => {
     // canonical syntax: `dirProp: publicProp`
     const value = map[key];
     let declaredName: string;
     let publicName: string;
     let minifiedName: string;
     let needsDeclaredName: boolean;
-    if (Array.isArray(value)) {
-      [publicName, declaredName] = value;
-      minifiedName = key;
-      needsDeclaredName = publicName !== declaredName;
-    } else {
+    if (typeof value === 'string') {
       minifiedName = declaredName = key;
       publicName = value;
       needsDeclaredName = false;
+    } else {
+      minifiedName = key;
+      declaredName = value.classPropertyName;
+      publicName = value.bindingPropertyName;
+      needsDeclaredName = publicName !== declaredName;
     }
     return {
       key: minifiedName,

@@ -414,7 +414,7 @@ function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
                           o.NONE_TYPE;
 }
 
-export function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
+function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
@@ -423,10 +423,22 @@ export function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type
     typeWithParameters(meta.type.type, meta.typeArgumentCount),
     selectorForType !== null ? stringAsType(selectorForType) : o.NONE_TYPE,
     meta.exportAs !== null ? stringArrayAsType(meta.exportAs) : o.NONE_TYPE,
-    o.expressionType(stringMapAsLiteralExpression(meta.inputs)),
+    o.expressionType(getInputsTypeExpression(meta)),
     o.expressionType(stringMapAsLiteralExpression(meta.outputs)),
     stringArrayAsType(meta.queries.map(q => q.propertyName)),
   ];
+}
+
+function getInputsTypeExpression(meta: R3DirectiveMetadata): o.Expression {
+  // TODO(required-inputs): expand this to generate the new object literal syntax.
+  return o.literalMap(Object.keys(meta.inputs).map(key => {
+    const value = meta.inputs[key];
+    return {
+      key,
+      value: o.literal(typeof value === 'string' ? value : value.bindingPropertyName),
+      quoted: true
+    };
+  }));
 }
 
 /**

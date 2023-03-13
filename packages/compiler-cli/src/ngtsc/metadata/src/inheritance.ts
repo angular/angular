@@ -9,7 +9,7 @@
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader} from './api';
+import {DirectiveMeta, InputMapping, MetadataReader} from './api';
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 /**
@@ -35,7 +35,7 @@ export function flattenInheritedDirectiveMetadata(
   const restrictedInputFields = new Set<ClassPropertyName>();
   const stringLiteralInputFields = new Set<ClassPropertyName>();
   let isDynamic = false;
-  let inputs = ClassPropertyMapping.empty();
+  let inputs = ClassPropertyMapping.empty<InputMapping>();
   let outputs = ClassPropertyMapping.empty();
   let isStructural: boolean = false;
 

@@ -11,9 +11,9 @@ import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, MatchSource, MetadataReader, MetadataReaderWithIndex, MetaKind, NgModuleIndex, NgModuleMeta, PipeMeta} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, InputMapping, MatchSource, MetadataReaderWithIndex, MetaKind, NgModuleIndex} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -233,7 +233,12 @@ export interface TestDirective extends Partial<Pick<
   name: string;
   file?: AbsoluteFsPath;
   type: 'directive';
-  inputs?: {[fieldName: string]: string};
+  inputs?: {
+    [fieldName: string]:
+        string|{
+          classPropertyName: string, bindingPropertyName: string, required: boolean
+        }
+  };
   outputs?: {[fieldName: string]: string};
   coercedInputFields?: string[];
   restrictedInputFields?: string[];
@@ -649,7 +654,7 @@ function getDirectiveMetaFromDeclaration(
     exportAs: decl.exportAs || null,
     selector: decl.selector || null,
     hasNgTemplateContextGuard: decl.hasNgTemplateContextGuard || false,
-    inputs: ClassPropertyMapping.fromMappedObject(decl.inputs || {}),
+    inputs: ClassPropertyMapping.fromMappedObject<InputMapping>(decl.inputs || {}),
     isComponent: decl.isComponent || false,
     ngTemplateGuards: decl.ngTemplateGuards || [],
     coercedInputFields: new Set<string>(decl.coercedInputFields || []),
@@ -699,7 +704,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         name: decl.name,
         selector: decl.selector,
         queries: [],
-        inputs: ClassPropertyMapping.fromMappedObject(decl.inputs || {}),
+        inputs: ClassPropertyMapping.fromMappedObject<InputMapping>(decl.inputs || {}),
         outputs: ClassPropertyMapping.fromMappedObject(decl.outputs || {}),
         isComponent: decl.isComponent ?? false,
         exportAs: decl.exportAs ?? null,
@@ -727,8 +732,8 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
                     hostDecl.directive.name)),
                 origin: sf,
                 isForwardReference: false,
-                inputs: hostDecl.directive.inputs || {},
-                outputs: hostDecl.directive.outputs || {},
+                inputs: hostDecl.inputs || {},
+                outputs: hostDecl.outputs || {},
               };
             }),
       });

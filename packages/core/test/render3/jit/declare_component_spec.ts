@@ -525,23 +525,25 @@ function expectComponentDef(
   };
 
   expect(actual.type).toBe(TestClass);
-  expect(actual.selectors).toEqual(expectation.selectors);
-  expect(actual.template).toEqual(expectation.template);
-  expect(actual.inputs).toEqual(expectation.inputs);
-  expect(actual.declaredInputs).toEqual(expectation.declaredInputs);
-  expect(actual.outputs).toEqual(expectation.outputs);
-  expect(actual.features).toEqual(expectation.features);
-  expect(actual.hostAttrs).toEqual(expectation.hostAttrs);
-  expect(actual.hostBindings).toEqual(expectation.hostBindings);
-  expect(actual.hostVars).toEqual(expectation.hostVars);
-  expect(actual.contentQueries).toEqual(expectation.contentQueries);
-  expect(actual.viewQuery).toEqual(expectation.viewQuery);
-  expect(actual.exportAs).toEqual(expectation.exportAs);
-  expect(actual.providersResolver).toEqual(expectation.providersResolver);
-  expect(actual.encapsulation).toEqual(expectation.encapsulation);
-  expect(actual.onPush).toEqual(expectation.onPush);
-  expect(actual.styles).toEqual(expectation.styles);
-  expect(actual.data).toEqual(expectation.data);
+  expect(actual.selectors).withContext('selectors').toEqual(expectation.selectors);
+  expect(actual.template).withContext('template').toEqual(expectation.template);
+  expect(actual.inputs).withContext('inputs').toEqual(expectation.inputs);
+  expect(actual.declaredInputs).withContext('declaredInputs').toEqual(expectation.declaredInputs);
+  expect(actual.outputs).withContext('outputs').toEqual(expectation.outputs);
+  expect(actual.features).withContext('features').toEqual(expectation.features);
+  expect(actual.hostAttrs).withContext('hostAttrs').toEqual(expectation.hostAttrs);
+  expect(actual.hostBindings).withContext('hostBindings').toEqual(expectation.hostBindings);
+  expect(actual.hostVars).withContext('hostVars').toEqual(expectation.hostVars);
+  expect(actual.contentQueries).withContext('contentQueries').toEqual(expectation.contentQueries);
+  expect(actual.viewQuery).withContext('viewQuery').toEqual(expectation.viewQuery);
+  expect(actual.exportAs).withContext('exportAs').toEqual(expectation.exportAs);
+  expect(actual.providersResolver)
+      .withContext('providersResolver')
+      .toEqual(expectation.providersResolver);
+  expect(actual.encapsulation).withContext('encapsulation').toEqual(expectation.encapsulation);
+  expect(actual.onPush).withContext('onPush').toEqual(expectation.onPush);
+  expect(actual.styles).withContext('styles').toEqual(expectation.styles);
+  expect(actual.data).withContext('data').toEqual(expectation.data);
 
   const convertNullToEmptyArray = <T extends Type<any>[]|null>(arr: T): T =>
       arr ?? ([] as unknown as T);

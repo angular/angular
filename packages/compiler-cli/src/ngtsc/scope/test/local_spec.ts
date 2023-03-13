@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
-import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MatchSource, MetadataRegistry, MetaKind, PipeMeta} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, MatchSource, MetadataRegistry, MetaKind, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {LocalModuleScope, ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';

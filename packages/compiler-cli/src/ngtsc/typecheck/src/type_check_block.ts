@@ -659,9 +659,9 @@ class TcbDirectiveCtorOp extends TcbOp {
     }
 
     // Add unset directive inputs for each of the remaining unset fields.
-    for (const [fieldName] of this.dir.inputs) {
-      if (!genericInputs.has(fieldName)) {
-        genericInputs.set(fieldName, {type: 'unset', field: fieldName});
+    for (const {classPropertyName} of this.dir.inputs) {
+      if (!genericInputs.has(classPropertyName)) {
+        genericInputs.set(classPropertyName, {type: 'unset', field: classPropertyName});
       }
     }
 

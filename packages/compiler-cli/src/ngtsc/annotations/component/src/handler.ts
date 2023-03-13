@@ -27,7 +27,7 @@ import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
 import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, validateHostDirectives, wrapFunctionExpressionsInParens,} from '../../common';
-import {extractDirectiveMetadata, parseFieldArrayValue} from '../../directive';
+import {extractDirectiveMetadata, parseFieldStringArrayValue} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
@@ -36,7 +36,6 @@ import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResour
 import {ComponentSymbol} from './symbol';
 import {animationTriggerResolver, collectAnimationNames, validateAndFlattenComponentImports} from './util';
 
-const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
 
 /**
@@ -153,7 +152,7 @@ export class ComponentDecoratorHandler implements
     // Extract inline styles, process, and cache for use in synchronous analyze phase
     let inlineStyles;
     if (component.has('styles')) {
-      const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
+      const litStyles = parseFieldStringArrayValue(component, 'styles', this.evaluator);
       if (litStyles === null) {
         this.preanalyzeStylesCache.set(node, null);
       } else {
@@ -403,7 +402,7 @@ export class ComponentDecoratorHandler implements
       }
 
       if (component.has('styles')) {
-        const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
+        const litStyles = parseFieldStringArrayValue(component, 'styles', this.evaluator);
         if (litStyles !== null) {
           inlineStyles = [...litStyles];
           styles.push(...litStyles);

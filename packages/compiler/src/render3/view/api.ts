@@ -85,11 +85,12 @@ export interface R3DirectiveMetadata {
     usesOnChanges: boolean;
   };
 
+  // TODO(required-inputs): add `required` to the `inputs` interface.
   /**
    * A mapping of inputs from class property names to binding property names, or to a tuple of
    * binding property name and class property name if the names are different.
    */
-  inputs: {[field: string]: string|[string, string]};
+  inputs: {[field: string]: {classPropertyName: string, bindingPropertyName: string}};
 
   /**
    * A mapping of outputs from class property names to binding property names, or to a tuple of

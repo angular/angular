@@ -281,18 +281,20 @@ function expectDirectiveDef(
   };
 
   expect(actual.type).toBe(TestClass);
-  expect(actual.selectors).toEqual(expectation.selectors);
-  expect(actual.inputs).toEqual(expectation.inputs);
-  expect(actual.declaredInputs).toEqual(expectation.declaredInputs);
-  expect(actual.outputs).toEqual(expectation.outputs);
-  expect(actual.features).toEqual(expectation.features);
-  expect(actual.hostAttrs).toEqual(expectation.hostAttrs);
-  expect(actual.hostBindings).toEqual(expectation.hostBindings);
-  expect(actual.hostVars).toEqual(expectation.hostVars);
-  expect(actual.contentQueries).toEqual(expectation.contentQueries);
-  expect(actual.viewQuery).toEqual(expectation.viewQuery);
-  expect(actual.exportAs).toEqual(expectation.exportAs);
-  expect(actual.providersResolver).toEqual(expectation.providersResolver);
+  expect(actual.selectors).withContext('selectors').toEqual(expectation.selectors);
+  expect(actual.inputs).withContext('inputs').toEqual(expectation.inputs);
+  expect(actual.declaredInputs).withContext('declaredInputs').toEqual(expectation.declaredInputs);
+  expect(actual.outputs).withContext('outputs').toEqual(expectation.outputs);
+  expect(actual.features).withContext('features').toEqual(expectation.features);
+  expect(actual.hostAttrs).withContext('hostAttrs').toEqual(expectation.hostAttrs);
+  expect(actual.hostBindings).withContext('hostBindings').toEqual(expectation.hostBindings);
+  expect(actual.hostVars).withContext('hostVars').toEqual(expectation.hostVars);
+  expect(actual.contentQueries).withContext('contentQueries').toEqual(expectation.contentQueries);
+  expect(actual.viewQuery).withContext('viewQuery').toEqual(expectation.viewQuery);
+  expect(actual.exportAs).withContext('exportAs').toEqual(expectation.exportAs);
+  expect(actual.providersResolver)
+      .withContext('providersResolver')
+      .toEqual(expectation.providersResolver);
 }
 
 class TestClass {}
