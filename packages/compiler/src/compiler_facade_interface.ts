@@ -79,8 +79,9 @@ export type StringMap = {
   [key: string]: string;
 };
 
-export type StringMapWithRename = {
-  [key: string]: string|[string, string];
+export type InputMap = {
+  // TODO(required-inputs): add required field
+  [key: string]: {bindingPropertyName: string, classPropertyName: string};
 };
 
 export type Provider = unknown;

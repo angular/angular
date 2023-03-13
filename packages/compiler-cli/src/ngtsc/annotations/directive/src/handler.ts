@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../../imports';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, HostDirectiveMeta, MatchSource, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, HostDirectiveMeta, InputMapping, MatchSource, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
@@ -37,7 +37,7 @@ export interface DirectiveHandlerData {
   meta: R3DirectiveMetadata;
   classMetadata: R3ClassMetadata|null;
   providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
-  inputs: ClassPropertyMapping;
+  inputs: ClassPropertyMapping<InputMapping>;
   outputs: ClassPropertyMapping;
   isPoisoned: boolean;
   isStructural: boolean;

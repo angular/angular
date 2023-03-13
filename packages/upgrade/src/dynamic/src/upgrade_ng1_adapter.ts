@@ -221,9 +221,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
 
   ngOnChanges(changes: SimpleChanges) {
     const ng1Changes: any = {};
-    Object.keys(changes).forEach(name => {
-      const change: SimpleChange = changes[name];
-      const propertyMapName = getInputPropertyMapName(name);
+    Object.keys(changes).forEach(propertyMapName => {
+      const change: SimpleChange = changes[propertyMapName];
       this.setComponentProperty(propertyMapName, change.currentValue);
       ng1Changes[this.propertyMap[propertyMapName]] = change;
     });
