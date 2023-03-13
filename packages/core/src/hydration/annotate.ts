@@ -18,7 +18,7 @@ import {TransferState} from '../transfer_state';
 
 import {CONTAINERS, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
-import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY} from './utils';
+import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, TextNodeMarker} from './utils';
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
@@ -74,6 +74,7 @@ function getSsrId(tView: TView): string {
  */
 interface HydrationContext {
   serializedViewCollection: SerializedViewCollection;
+  corruptedTextNodes: Map<HTMLElement, TextNodeMarker>;
 }
 
 /**
@@ -95,6 +96,7 @@ function calcNumRootNodes(tView: TView, lView: LView, tNode: TNode|null): number
  */
 export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const serializedViewCollection = new SerializedViewCollection();
+  const corruptedTextNodes = new Map<HTMLElement, TextNodeMarker>();
   const viewRefs = appRef._views;
   for (const viewRef of viewRefs) {
     const lView = getComponentLViewForHydration(viewRef);
@@ -105,8 +107,10 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
       if (hostElement) {
         const context: HydrationContext = {
           serializedViewCollection,
+          corruptedTextNodes,
         };
         annotateHostElementForHydration(hostElement as HTMLElement, lView, context);
+        insertCorruptedTextNodeMarkers(corruptedTextNodes, doc);
       }
     }
   }
@@ -223,6 +227,26 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         // those nodes to reach a corresponding anchor node (comment node).
         ngh[ELEMENT_CONTAINERS] ??= {};
         ngh[ELEMENT_CONTAINERS][noOffsetIndex] = calcNumRootNodes(tView, lView, tNode.child);
+      } else {
+        // Handle case where text nodes can be lost after DOM serialization:
+        //     When there is an *empty text node* in DOM: in this case, this
+        //     node would not make it into the serialized string and as a result,
+        //     this node wouldn't be created in a browser. This would result in
+        //     a mismatch during the hydration, where the runtime logic would expect
+        //     a text node to be present in live DOM, but no text node would exist.
+        //     Example: `<span>{{ name }}</span>` when the `name` is an empty string.
+        //     This would result in `<span></span>` string after serialization and
+        //     in a browser only the `span` element would be created. To resolve that,
+        //     an extra comment node is appended in place of an empty text node and
+        //     that special comment node is replaced with an empty text node *before*
+        //     hydration.
+
+        if (tNode.type & TNodeType.Text) {
+          const rNode = unwrapRNode(lView[i]) as HTMLElement;
+          if (rNode.textContent?.replace(/\s/gm, '') === '') {
+            context.corruptedTextNodes.set(rNode, TextNodeMarker.EmptyNode);
+          }
+        }
       }
     }
   }
@@ -242,4 +266,20 @@ function annotateHostElementForHydration(
   const index = context.serializedViewCollection.add(ngh);
   const renderer = lView[RENDERER];
   renderer.setAttribute(element, NGH_ATTR_NAME, index.toString());
+}
+
+/**
+ * Physically inserts the comment nodes to ensure empty text nodes and adjacent
+ * text node separators are preserved after server serialization of the DOM.
+ * These get swapped back for empty text nodes or separators once hydration happens
+ * on the client.
+ *
+ * @param corruptedTextNodes The Map of text nodes to be replaced with comments
+ * @param doc The document
+ */
+function insertCorruptedTextNodeMarkers(
+    corruptedTextNodes: Map<HTMLElement, string>, doc: Document) {
+  for (let [textNode, marker] of corruptedTextNodes) {
+    textNode.after(doc.createComment(marker));
+  }
 }

@@ -9,13 +9,14 @@
 
 import {Injector} from '../di/injector';
 import {ViewRef} from '../linker/view_ref';
+import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {isRootView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 
-import {CONTAINERS, DehydratedContainerView, DehydratedView, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView} from './interfaces';
+import {CONTAINERS, DehydratedView, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView} from './interfaces';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -34,6 +35,18 @@ export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_T
  * state that contains the necessary hydration info for this component.
  */
 export const NGH_ATTR_NAME = 'ngh';
+
+export const enum TextNodeMarker {
+
+  /**
+   * The contents of the text comment added to nodes that would otherwise be
+   * empty when serialized by the server and passed to the client. The empty
+   * node is lost when the browser parses it otherwise. This comment node will
+   * be replaced during hydration in the client to restore the lost empty text
+   * node.
+   */
+  EmptyNode = 'ngetn',
+}
 
 /**
  * Reference to a function that reads `ngh` attribute value from a given RNode
@@ -88,7 +101,7 @@ export function retrieveHydrationInfoImpl(rNode: RElement, injector: Injector): 
 }
 
 /**
- * Sets the implementation for the `retrieveNghInfo` function.
+ * Sets the implementation for the `retrieveHydrationInfo` function.
  */
 export function enableRetrieveHydrationInfoImpl() {
   _retrieveHydrationInfoImpl = retrieveHydrationInfoImpl;
@@ -121,6 +134,44 @@ export function getComponentLViewForHydration(viewRef: ViewRef): LView|null {
     lView = lView[HEADER_OFFSET];
   }
   return lView;
+}
+
+function getTextNodeContent(node: Node): string|undefined {
+  return node.textContent?.replace(/\s/gm, '');
+}
+
+/**
+ * Restores text nodes into the DOM that were lost during SSR
+ * serialization. The hydration process replaces empty text nodes and text
+ * nodes that are immediately adjacent to other text nodes with comment nodes
+ * that this method filters on to restore those missing nodes that the
+ * hydration process is expecting to be present.
+ *
+ * @param node The app's root HTML Element
+ */
+export function processTextNodeMarkersBeforeHydration(node: HTMLElement) {
+  const doc = getDocument();
+  const commenNodestIterator = doc.createNodeIterator(node, NodeFilter.SHOW_COMMENT, {
+    acceptNode(node) {
+      const content = getTextNodeContent(node);
+      const isTextNodeMarker = content === TextNodeMarker.EmptyNode;
+      return isTextNodeMarker ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  let currentNode: Comment;
+  // We cannot modify the DOM while using the commentIterator,
+  // because it throws off the iterator state.
+  // So we collect all marker nodes first and then follow up with
+  // applying the changes to the DOM: inserting an empty node.
+  const nodes = [];
+  while (currentNode = commenNodestIterator.nextNode() as Comment) {
+    nodes.push(currentNode);
+  }
+  for (let node of nodes) {
+    if (node.textContent === TextNodeMarker.EmptyNode) {
+      node.replaceWith(doc.createTextNode(''));
+    }
+  }
 }
 
 /**
