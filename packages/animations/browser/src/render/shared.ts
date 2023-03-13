@@ -194,6 +194,19 @@ export function validateWebAnimatableStyleProperty(prop: string): boolean {
   return ANIMATABLE_PROP_SET.has(prop);
 }
 
+export function getNonAnimatablePropsWarning(triggerName: string, props: string[]): string {
+  return (
+    `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
+    ' not animatable properties: ' +
+    props.join(', ') +
+    '\n' +
+    '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)' +
+    '\n\n' +
+    'You can disable this warning by setting disableAnimatableDevWarnings to true in the BrowserAnimations ngModule, or fine tune' +
+    " the check by adding properties in the transition's allowedProps option"
+  );
+}
+
 export function getBodyNode(): any | null {
   if (typeof document != 'undefined') {
     return document.body;

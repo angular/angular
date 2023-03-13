@@ -7,6 +7,7 @@
  */
 import {animate, animateChild, animation, AnimationEvent, AnimationMetadata, AnimationOptions, AUTO_STYLE, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, NoopAnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
+import {getNonAnimatablePropsWarning} from '@angular/animations/browser/src/render/shared';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {AnimationTransitionOptions} from '@angular/animations/src/animation_metadata';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild, ViewContainerRef} from '@angular/core';
@@ -4500,13 +4501,4 @@ function assertHasParent(element: any, yes: boolean) {
 
 function buildParams(params: {[name: string]: any}): AnimationOptions {
   return {params};
-}
-
-function getNonAnimatablePropsWarning(triggerName: string, props: string[]): string {
-  return `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
-      ' not animatable properties: ' + props.join(', ') + '\n' +
-      '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)' +
-      '\n\n' +
-      'You can disable this warning by setting disableAnimatableDevWarnings to true in the BrowserAnimations ngModule, or fine tune' +
-      ' the check by adding properties in the transition\'s allowedProps option';
 }

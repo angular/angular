@@ -8,7 +8,7 @@
 import {AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {getOrSetDefaultValue} from '../render/shared';
+import {getNonAnimatablePropsWarning, getOrSetDefaultValue} from '../render/shared';
 import {interpolateParams} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
@@ -215,16 +215,7 @@ function checkNonAnimatableInTimelines(
   });
 
   if (invalidNonAnimatableProps.size > 0) {
-    console.warn(
-      `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
-        ' not animatable properties: ' +
-        Array.from(invalidNonAnimatableProps).join(', ') +
-        '\n' +
-        '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)' +
-        '\n\n' +
-        'You can disable this warning by setting disableAnimatableDevWarnings to true in the BrowserAnimations ngModule, or fine tune' +
-        " the check by adding properties in the transition's allowedProps option",
-    );
+    console.warn(getNonAnimatablePropsWarning(triggerName, Array.from(invalidNonAnimatableProps)));
   }
 }
 
