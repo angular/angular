@@ -1,3 +1,14 @@
+<a name="14.3.0"></a>
+# 14.3.0 (2023-03-13)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [37bbc61cfe](https://github.com/angular/angular/commit/37bbc61cfeca1531a80393636c096ce452a67d27) | feat | Backport NgOptimizedImage to Angular 14. |
+## Special Thanks
+Alex Castle, Joey Perrott and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-next.2"></a>
 # 16.0.0-next.2 (2023-03-08)
 ## Breaking Changes
