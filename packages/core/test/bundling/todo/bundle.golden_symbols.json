@@ -354,6 +354,9 @@
     "name": "PRESERVE_HOST_CONTENT"
   },
   {
+    "name": "PRESERVE_HOST_CONTENT_DEFAULT"
+  },
+  {
     "name": "PlatformRef"
   },
   {
@@ -535,6 +538,9 @@
   },
   {
     "name": "__forward_ref__"
+  },
+  {
+    "name": "_applyRootElementTransformImpl"
   },
   {
     "name": "_currentInjector"

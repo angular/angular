@@ -12,6 +12,7 @@ import {inject} from '../di/injector_compatibility';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';
 import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructions/element_container';
+import {enableApplyRootElementTransformImpl} from '../render3/instructions/shared';
 import {enableLocateOrCreateContainerAnchorImpl} from '../render3/instructions/template';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
 
@@ -47,6 +48,7 @@ function enableHydrationRuntimeSupport() {
     enableLocateOrCreateContainerAnchorImpl();
     enableLocateOrCreateContainerRefImpl();
     enableFindMatchingDehydratedViewImpl();
+    enableApplyRootElementTransformImpl();
   }
 }
 

@@ -11,7 +11,7 @@ import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedView} from '../../hydration/interfaces';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
-import {retrieveHydrationInfo} from '../../hydration/utils';
+import {processTextNodeMarkersBeforeHydration, retrieveHydrationInfo} from '../../hydration/utils';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
@@ -663,7 +663,7 @@ function createViewBlueprint(bindingStartIndex: number, initialViewLength: numbe
 /**
  * Locates the host native element, used for bootstrapping existing nodes into rendering pipeline.
  *
- * @param rendererFactory Factory function to create renderer instance.
+ * @param renderer the renderer used to locate the element.
  * @param elementOrSelector Render element or CSS selector to locate the element.
  * @param encapsulation View Encapsulation defined for component that requests host element.
  * @param injector Root view injector instance.
@@ -672,17 +672,57 @@ export function locateHostElement(
     renderer: Renderer, elementOrSelector: RElement|string, encapsulation: ViewEncapsulation,
     injector: Injector): RElement {
   // Note: we use default value for the `PRESERVE_HOST_CONTENT` here even though it's a
-  // tree-shakable one (providedIn:'root'). This code path can be triggered during dynamic component
-  // creation (after calling ViewContainerRef.createComponent) when an injector instance can be
-  // provided. The injector instance might be disconnected from the main DI tree, thus the
-  // `PRESERVE_HOST_CONTENT` woild not be able to instantiate. In this case, the default value will
-  // be used.
+  // tree-shakable one (providedIn:'root'). This code path can be triggered during dynamic
+  // component creation (after calling ViewContainerRef.createComponent) when an injector
+  // instance can be provided. The injector instance might be disconnected from the main DI
+  // tree, thus the `PRESERVE_HOST_CONTENT` woild not be able to instantiate. In this case, the
+  // default value will be used.
   const preserveHostContent = injector.get(PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT);
 
   // When using native Shadow DOM, do not clear host element to allow native slot
   // projection.
   const preserveContent = preserveHostContent || encapsulation === ViewEncapsulation.ShadowDom;
-  return renderer.selectRootElement(elementOrSelector, preserveContent);
+  const rootElement = renderer.selectRootElement(elementOrSelector, preserveContent);
+  applyRootElementTransform(rootElement as HTMLElement);
+  return rootElement;
+}
+
+/**
+ * Applies any root element transformations that are needed. If hydration is enabled,
+ * this will process corrupted text nodes.
+ *
+ * @param rootElement the app root HTML Element
+ */
+export function applyRootElementTransform(rootElement: HTMLElement) {
+  _applyRootElementTransformImpl(rootElement as HTMLElement);
+}
+
+/**
+ * Reference to a function that applies transformations to the root HTML element
+ * of an app. When hydration is enabled, this processes any corrupt text nodes
+ * so they are properly hydratable on the client.
+ *
+ * @param rootElement the app root HTML Element
+ */
+let _applyRootElementTransformImpl: typeof applyRootElementTransformImpl =
+    (rootElement: HTMLElement) => null;
+
+/**
+ * Processes text node markers before hydration begins. This replaces any special comment
+ * nodes that were added prior to serialization are swapped out to restore proper text
+ * nodes before hydration.
+ *
+ * @param rootElement the app root HTML Element
+ */
+export function applyRootElementTransformImpl(rootElement: HTMLElement) {
+  processTextNodeMarkersBeforeHydration(rootElement);
+}
+
+/**
+ * Sets the implementation for the `applyRootElementInfo` function.
+ */
+export function enableApplyRootElementTransformImpl() {
+  _applyRootElementTransformImpl = applyRootElementTransformImpl;
 }
 
 /**
@@ -697,9 +737,9 @@ export function storeCleanupWithContext(
   const lCleanup = getOrCreateLViewCleanup(lView);
 
   // Historically the `storeCleanupWithContext` was used to register both framework-level and
-  // user-defined cleanup callbacks, but over time those two types of cleanups were separated. This
-  // dev mode checks assures that user-level cleanup callbacks are _not_ stored in data structures
-  // reserved for framework-specific hooks.
+  // user-defined cleanup callbacks, but over time those two types of cleanups were separated.
+  // This dev mode checks assures that user-level cleanup callbacks are _not_ stored in data
+  // structures reserved for framework-specific hooks.
   ngDevMode &&
       assertDefined(
           context, 'Cleanup context is mandatory when registering framework-level destroy hooks');
