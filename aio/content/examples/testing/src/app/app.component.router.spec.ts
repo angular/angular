@@ -1,29 +1,22 @@
 // For more examples:
 //   https://github.com/angular/angular/blob/main/packages/router/test/integration.spec.ts
 
-import { waitForAsync, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {Location} from '@angular/common';
+import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
+import {DebugElement, Type} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {provideRouter, Router, RouterLink, RouterModule} from '@angular/router';
 
-import { asyncData } from '../testing';
+import {asyncData, click} from '../testing';
 
-import { RouterTestingModule } from '@angular/router/testing';
-import { SpyLocation } from '@angular/common/testing';
-
-import { Router, RouterLink } from '@angular/router';
-
-import { By } from '@angular/platform-browser';
-import { DebugElement, Type } from '@angular/core';
-import { Location } from '@angular/common';
-
-import { click } from '../testing';
-
-import { routes } from './app-routing.module';
-import { AppModule } from './app.module';
-import { AppComponent } from './app.component';
-import { AboutComponent } from './about/about.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-
-import { HeroService, TestHeroService } from './model/testing/test-hero.service';
-import { TwainService } from './twain/twain.service';
+import {AboutComponent} from './about/about.component';
+import {routes} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {AppModule} from './app.module';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {HeroService, TestHeroService} from './model/testing/test-hero.service';
+import {TwainService} from './twain/twain.service';
 
 let comp: AppComponent;
 let fixture: ComponentFixture<AppComponent>;
@@ -31,15 +24,15 @@ let page: Page;
 let router: Router;
 let location: SpyLocation;
 
-describe('AppComponent & RouterTestingModule', () => {
+describe('AppComponent & router testing', () => {
   beforeEach(waitForAsync(() => {
     TestBed
         .configureTestingModule({
           imports: [
             AppModule,
-            RouterTestingModule.withRoutes(routes),
+            RouterModule.forRoot(routes),
           ],
-          providers: [{provide: HeroService, useClass: TestHeroService}]
+          providers: [{provide: HeroService, useClass: TestHeroService}, provideLocationMocks()]
         })
         .compileComponents();
   }));
@@ -64,7 +57,6 @@ describe('AppComponent & RouterTestingModule', () => {
   it('should navigate to "About" w/ browser location URL change', fakeAsync(() => {
        createComponent();
        location.simulateHashChange('/about');
-       // location.go('/about'); // also works ... except, perhaps, in Stackblitz
        advance();
        expectPathToBe('/about');
        expectElementOf(AboutComponent);
@@ -82,8 +74,8 @@ describe('AppComponent & RouterTestingModule', () => {
 
 ///////////////
 
-import { HeroModule } from './hero/hero.module';  // should be lazy loaded
-import { HeroListComponent } from './hero/hero-list.component';
+import {HeroModule} from './hero/hero.module';  // should be lazy loaded
+import {HeroListComponent} from './hero/hero-list.component';
 
 ///////// Can't get lazy loaded Heroes to work yet
 xdescribe('AppComponent & Lazy Loading (not working yet)', () => {
@@ -92,8 +84,10 @@ xdescribe('AppComponent & Lazy Loading (not working yet)', () => {
         .configureTestingModule({
           imports: [
             AppModule,
-            RouterTestingModule.withRoutes(routes),
           ],
+          providers: [
+            provideRouter(routes),
+          ]
         })
         .compileComponents();
   }));
@@ -170,15 +164,11 @@ class Page {
 }
 
 function expectPathToBe(path: string, expectationFailOutput?: any) {
-  expect(location.path())
-  .withContext(expectationFailOutput || 'location.path()')
-  .toEqual(path);
+  expect(location.path()).withContext(expectationFailOutput || 'location.path()').toEqual(path);
 }
 
 function expectElementOf(type: Type<any>): any {
   const el = fixture.debugElement.query(By.directive(type));
-  expect(el)
-    .withContext(`expected an element for ${type.name}`)
-    .toBeTruthy();
+  expect(el).withContext(`expected an element for ${type.name}`).toBeTruthy();
   return el;
 }

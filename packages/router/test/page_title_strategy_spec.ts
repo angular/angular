@@ -176,7 +176,7 @@ export class RootCmp {
 
 @NgModule({
   declarations: [BlankCmp],
-  imports: [RouterModule],
+  imports: [RouterModule.forRoot([])],
 })
 export class TestModule {
 }
