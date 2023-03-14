@@ -267,14 +267,6 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 This section lists all deprecated features, which includes template syntax, configuration options, and any other deprecations not listed in the [Deprecated APIs](#deprecated-apis) section.
 It also includes deprecated API usage scenarios or API combinations, to augment the information above.
 
-<a id="bazelbuilder"></a>
-
-### Bazel builder and schematics
-
-Bazel builder and schematics were introduced in Angular Labs to let users try out Bazel without having to manage Bazel version and BUILD files.
-This feature has been deprecated.
-For more information, please refer to the [migration doc](https://github.com/angular/angular/blob/main/packages/bazel/docs/BAZEL_SCHEMATICS.md).
-
 <a id="wtf"></a>
 
 ### Web Tracing Framework integration
