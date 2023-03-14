@@ -10,19 +10,19 @@ Before working with the `HttpClientModule`, you should have a basic understandin
 *   Usage of the HTTP protocol
 *   Angular application-design fundamentals, as described in [Angular Concepts](guide/architecture)
 *   Observable techniques and operators.
-    See the [Observables](guide/observables) guide.
+    See the [Observables guide](guide/observables).
 
 ## HTTP client service features
 
 The HTTP client service offers the following major features.
 
-*   The ability to request data from a server
-*   Streamlined error handling
-*   Testing-requests features
-*   Request and response
+*   The ability to request [typed response objects](guide/http-request-data-from-server)
+*   Streamlined [error handling](guide/http-handle-request-errors)
+*   [Testability](guide/http-test-requests) features
+*   Request and response [interception](guide/http-intercept-requests-and-responses)
 
 ## What's next
 
-* Setup for server communication
+* [Setup for server communication](guide/http-server-communication)
 
-@reviewed 2023-03-02
+@reviewed 2023-03-14
