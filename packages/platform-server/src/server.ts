@@ -10,7 +10,7 @@ import {ɵAnimationEngine} from '@angular/animations/browser';
 import {DOCUMENT, PlatformLocation, ViewportScroller, ɵgetDOM as getDOM, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {createPlatformFactory, Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, StaticProvider, Testability, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS, ɵsetDocument, ɵTESTABILITY as TESTABILITY} from '@angular/core';
-import {BrowserModule, EVENT_MANAGER_PLUGINS, ɵSharedStylesHost as SharedStylesHost} from '@angular/platform-browser';
+import {BrowserModule, EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
 import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
@@ -20,7 +20,6 @@ import {ServerPlatformLocation} from './location';
 import {PlatformState} from './platform_state';
 import {ServerEventManagerPlugin} from './server_events';
 import {ServerRendererFactory2} from './server_renderer';
-import {ServerStylesHost} from './styles_host';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {TRANSFER_STATE_SERIALIZATION_PROVIDERS} from './transfer_state';
 
@@ -55,8 +54,6 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
     useFactory: instantiateServerRendererFactory,
     deps: [ServerRendererFactory2, ɵAnimationEngine, NgZone]
   },
-  ServerStylesHost,
-  {provide: SharedStylesHost, useExisting: ServerStylesHost},
   {provide: EVENT_MANAGER_PLUGINS, multi: true, useClass: ServerEventManagerPlugin},
 ];
 

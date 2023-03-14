@@ -140,7 +140,6 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     if (styleEl?.parentNode === host) {
       // `styleNodesInDOM` cannot be undefined due to the above `styleNodesInDOM?.get`.
       styleNodesInDOM!.delete(style);
-      styleEl.removeAttribute('ng-app');
 
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         // This attribute is solely used for debugging purposes.
@@ -150,6 +149,7 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
       return styleEl;
     } else {
       const styleEl = this.doc.createElement('style');
+      styleEl.setAttribute('ng-app', this.appId);
       styleEl.textContent = style;
 
       return styleEl;
