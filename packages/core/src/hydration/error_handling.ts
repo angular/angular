@@ -42,3 +42,23 @@ export function validateNodeExists(node: RNode|null): void {
     throw new Error(`Hydration expected an element to be present at this location.`);
   }
 }
+
+export function nodeNotFoundError(lView: LView, tNode: TNode): Error {
+  // TODO: improve error message and use RuntimeError instead.
+  return new Error('During serialization, Angular was unable to find an element in the DOM');
+}
+
+export function nodeNotFoundAtPathError(host: Node, path: string): Error {
+  // TODO: improve error message and use RuntimeError instead.
+  return new Error('During hydration Angular was unable to locate a node');
+}
+
+export function unsupportedProjectionOfDomNodes(): Error {
+  // TODO: improve error message and use RuntimeError instead.
+  return new Error(
+      'During serialization, Angular detected DOM nodes ' +
+      'that were created outside of Angular context and provided as projectable nodes ' +
+      '(likely via `ViewContainerRef.createComponent` or `createComponent` APIs). ' +
+      'Hydration is not supported for such cases, consider refactoring the code to avoid ' +
+      'this pattern or using `ngSkipHydration` on the host element of the component.');
+}
