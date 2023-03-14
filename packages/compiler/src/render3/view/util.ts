@@ -10,7 +10,6 @@ import {ConstantPool} from '../../constant_pool';
 import {Interpolation} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
-import {splitAtColon} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {ForwardRefHandling} from '../util';
@@ -163,10 +162,11 @@ export function asLiteral(value: any): o.Expression {
   return o.literal(value, o.INFERRED_TYPE);
 }
 
-export function conditionallyCreateMapObjectLiteral(map: Record<string, string|{
-                                                      classPropertyName: string;
-                                                      bindingPropertyName: string;
-                                                    }>, keepDeclared?: boolean): o.Expression|null {
+export function conditionallyCreateDirectiveBindingLiteral(
+    map: Record<string, string|{
+      classPropertyName: string;
+      bindingPropertyName: string;
+    }>, keepDeclared?: boolean): o.Expression|null {
   const keys = Object.getOwnPropertyNames(map);
 
   if (keys.length === 0) {
@@ -174,14 +174,15 @@ export function conditionallyCreateMapObjectLiteral(map: Record<string, string|{
   }
 
   return o.literalMap(keys.map(key => {
-    // canonical syntax: `dirProp: publicProp`
     const value = map[key];
     let declaredName: string;
     let publicName: string;
     let minifiedName: string;
     let needsDeclaredName: boolean;
     if (typeof value === 'string') {
-      minifiedName = declaredName = key;
+      // canonical syntax: `dirProp: publicProp`
+      declaredName = key;
+      minifiedName = key;
       publicName = value;
       needsDeclaredName = false;
     } else {

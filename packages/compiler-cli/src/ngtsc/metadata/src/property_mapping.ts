@@ -163,7 +163,6 @@ export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> imple
     return obj;
   }
 
-  // TODO: rename this method?
   /**
    * Convert this mapping to a primitive JS object which maps each class property either to itself
    * (for cases where the binding property name is the same) or to an array which contains both
@@ -184,7 +183,7 @@ export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> imple
    * property names (and are useful for destructuring).
    */
   * [Symbol.iterator](): IterableIterator<T> {
-    for (const [_classPropertyName, inputOrOutput] of this.forwardMap.entries()) {
+    for (const inputOrOutput of this.forwardMap.values()) {
       yield inputOrOutput;
     }
   }

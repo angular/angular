@@ -595,12 +595,12 @@ function parseInputFields(
     evaluator: PartialEvaluator): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
 
-  parseDecoratedFields(inputMembers, evaluator, (fieldName, options, decorator) => {
+  parseDecoratedFields(inputMembers, evaluator, (classPropertyName, options, decorator) => {
     let bindingPropertyName: string;
 
     // TODO(required-inputs): parse object-based config.
     if (options === null) {
-      bindingPropertyName = fieldName;
+      bindingPropertyName = classPropertyName;
     } else if (typeof options === 'string') {
       bindingPropertyName = options;
     } else {
@@ -610,11 +610,7 @@ function parseInputFields(
           `@${decorator.name} decorator argument must resolve to a string`);
     }
 
-    inputs[fieldName] = {
-      bindingPropertyName: bindingPropertyName ?? fieldName,
-      classPropertyName: fieldName,
-      required: false
-    };
+    inputs[classPropertyName] = {bindingPropertyName, classPropertyName, required: false};
   });
 
   return inputs;

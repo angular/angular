@@ -24,7 +24,7 @@ import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3Co
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
-import {asLiteral, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
+import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
 
 
 // This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
@@ -69,10 +69,10 @@ function baseDirectiveFields(
           meta.name, definitionMap));
 
   // e.g 'inputs: {a: 'a'}`
-  definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
+  definitionMap.set('inputs', conditionallyCreateDirectiveBindingLiteral(meta.inputs, true));
 
   // e.g 'outputs: {a: 'a'}`
-  definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
+  definitionMap.set('outputs', conditionallyCreateDirectiveBindingLiteral(meta.outputs));
 
   if (meta.exportAs !== null) {
     definitionMap.set('exportAs', o.literalArr(meta.exportAs.map(e => o.literal(e))));
@@ -432,12 +432,7 @@ function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
 function getInputsTypeExpression(meta: R3DirectiveMetadata): o.Expression {
   // TODO(required-inputs): expand this to generate the new object literal syntax.
   return o.literalMap(Object.keys(meta.inputs).map(key => {
-    const value = meta.inputs[key];
-    return {
-      key,
-      value: o.literal(typeof value === 'string' ? value : value.bindingPropertyName),
-      quoted: true
-    };
+    return {key, value: o.literal(meta.inputs[key].bindingPropertyName), quoted: true};
   }));
 }
 

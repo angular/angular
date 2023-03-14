@@ -677,8 +677,8 @@ function inputsMappingToInputMetadata(inputs: Record<string, string|[string, str
 function parseInputsArray(values: (string|{name: string, alias?: string})[]) {
   return values.reduce((results, value) => {
     if (typeof value === 'string') {
-      const [bindingPropertyName, fieldName] = parseMappingString(value);
-      results[fieldName] = {bindingPropertyName, classPropertyName: fieldName};
+      const [bindingPropertyName, classPropertyName] = parseMappingString(value);
+      results[classPropertyName] = {bindingPropertyName, classPropertyName};
     } else {
       // TODO(required-inputs): pass required flag
       results[value.name] = {
