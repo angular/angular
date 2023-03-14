@@ -9,13 +9,10 @@
 import {InjectionToken} from './di/injection_token';
 
 /**
- * A [DI token](guide/glossary#di-token "DI token definition") representing a unique string ID, used
+ * A [DI token](guide/glossary#di-token "DI token definition") representing a string ID, used
  * primarily for prefixing application attributes and CSS styles when
  * {@link ViewEncapsulation#Emulated ViewEncapsulation.Emulated} is being used.
  *
- * BY default, the value is randomly generated and assigned to the application by Angular.
- * To provide a custom ID value, use a DI provider <!-- TODO: provider --> to configure
- * the root {@link Injector} that uses this token.
  * The token is needed in cases when multiple applications are bootstrapped on a page
  * (for example, using `bootstrapApplication` calls). In this case, ensure that those applications
  * have different `APP_ID` value setup. For example:
@@ -23,21 +20,21 @@ import {InjectionToken} from './di/injection_token';
  * ```
  * bootstrapApplication(ComponentA, {
  *   providers: [
- *     {provide: APP_ID, useValue: 'app-a'},
+ *     { provide: APP_ID, useValue: 'app-a' },
  *     // ... other providers ...
  *   ]
  * });
  *
  * bootstrapApplication(ComponentB, {
  *   providers: [
- *     {provide: APP_ID, useValue: 'app-b'},
+ *     { provide: APP_ID, useValue: 'app-b' },
  *     // ... other providers ...
  *   ]
  * });
  * ```
  *
- * By default, when there is only 1 application bootstrapped, you don't need to provide the `APP_ID`
- * token (the `ng` will be used as an app ID).
+ * By default, when there is only one application bootstrapped, you don't need to provide the
+ * `APP_ID` token (the `ng` will be used as an app ID).
  *
  * @publicApi
  */
