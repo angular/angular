@@ -123,6 +123,9 @@
     "name": "ControlContainer"
   },
   {
+    "name": "DEFAULT_APP_ID"
+  },
+  {
     "name": "DEFAULT_VALUE_ACCESSOR"
   },
   {

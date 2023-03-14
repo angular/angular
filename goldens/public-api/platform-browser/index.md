@@ -35,6 +35,7 @@ export function bootstrapApplication(rootComponent: Type<unknown>, options?: App
 // @public
 export class BrowserModule {
     constructor(providersAlreadyPresent: boolean | null);
+    // @deprecated
     static withServerTransition(params: {
         appId: string;
     }): ModuleWithProviders<BrowserModule>;
