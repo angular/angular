@@ -669,9 +669,6 @@
     "name": "_processI18nInsertBefore"
   },
   {
-    "name": "_randomChar"
-  },
-  {
     "name": "_retrieveHydrationInfoImpl"
   },
   {
