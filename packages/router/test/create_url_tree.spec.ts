@@ -17,7 +17,6 @@ import {RouterModule} from '../src/router_module';
 import {ActivatedRoute, ActivatedRouteSnapshot} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
-import {RouterTestingModule} from '../testing';
 
 describe('createUrlTree', async () => {
   const serializer = new DefaultUrlSerializer();
@@ -546,7 +545,7 @@ describe('createUrlTreeFromSnapshot', async () => {
          children: [{path: 'innerRoute', component: ChildComponent}]
        }];
 
-       TestBed.configureTestingModule({imports: [RouterTestingModule.withRoutes(routes)]});
+       TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
        const router = TestBed.inject(Router);
        const fixture = TestBed.createComponent(RootCmp);
 
@@ -602,7 +601,7 @@ describe('createUrlTreeFromSnapshot', async () => {
          },
        ];
 
-       TestBed.configureTestingModule({imports: [RouterTestingModule.withRoutes(routes)]});
+       TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
        const router = TestBed.inject(Router);
        const fixture = TestBed.createComponent(RootCmp);
 

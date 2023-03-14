@@ -9,9 +9,8 @@
 import {CommonModule, NgForOf} from '@angular/common';
 import {Component, Input, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {provideRouter, Router, RouterOutlet} from '@angular/router/src';
-import {withComponentInputBinding} from '@angular/router/src/provide_router';
-import {RouterTestingHarness, RouterTestingModule} from '@angular/router/testing';
+import {provideRouter, Router, RouterModule, RouterOutlet, withComponentInputBinding} from '@angular/router/src';
+import {RouterTestingHarness} from '@angular/router/testing';
 
 
 describe('router outlet name', () => {
@@ -32,10 +31,8 @@ describe('router outlet name', () => {
        class PopupCmp {
        }
 
-       TestBed.configureTestingModule({
-         imports:
-             [RouterTestingModule.withRoutes([{path: '', outlet: 'popup', component: PopupCmp}])]
-       });
+       TestBed.configureTestingModule(
+           {imports: [RouterModule.forRoot([{path: '', outlet: 'popup', component: PopupCmp}])]});
        const router = TestBed.inject(Router);
        const fixture = createRoot(router, RootCmp);
        expect(fixture.nativeElement.innerHTML).toContain('popup component');
@@ -66,7 +63,7 @@ describe('router outlet name', () => {
        }
 
        TestBed.configureTestingModule({
-         imports: [RouterTestingModule.withRoutes([
+         imports: [RouterModule.forRoot([
            {path: '', outlet: 'greeting', component: GreetingCmp},
            {path: '', outlet: 'farewell', component: FarewellCmp},
          ])]
@@ -124,7 +121,7 @@ describe('router outlet name', () => {
        }
 
        TestBed.configureTestingModule({
-         imports: [RouterTestingModule.withRoutes([
+         imports: [RouterModule.forRoot([
            {path: '1', outlet: 'outlet1', component: Cmp1},
            {path: '2', outlet: 'outlet2', component: Cmp2},
            {path: '3', outlet: 'outlet3', component: Cmp3},
@@ -172,7 +169,7 @@ describe('router outlet name', () => {
        }
 
        TestBed.configureTestingModule({
-         imports: [RouterTestingModule.withRoutes([
+         imports: [RouterModule.forRoot([
            {path: 'parent', component: ParentCmp, children: [{path: 'child', component: ChildCmp}]}
          ])]
        });

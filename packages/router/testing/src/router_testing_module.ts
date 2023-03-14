@@ -28,7 +28,7 @@ function throwInvalidConfigError(parameter: string): never {
  * Router setup factory function used for testing.
  *
  * @publicApi
- * @deprecated Use `provideRouter` or `RouterTestingModule` instead.
+ * @deprecated Use `provideRouter` or `RouterModule` instead.
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -101,7 +101,7 @@ export function setupTestingRouter(
  * beforeEach(() => {
  *   TestBed.configureTestingModule({
  *     imports: [
- *       RouterTestingModule.withRoutes(
+ *       RouterModule.forRoot(
  *         [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}]
  *       )
  *     ]

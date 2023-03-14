@@ -486,7 +486,7 @@ describe('Integration', () => {
 
       @NgModule({
         declarations: [Parent, NamedOutletHost, Child1, Child2, Child3],
-        imports: [RouterModule]
+        imports: [RouterModule.forRoot([])]
       })
       class TestModule {
       }
@@ -670,7 +670,7 @@ describe('Integration', () => {
 
        @NgModule({
          declarations: [OnPushOutlet, NeedCdCmp],
-         imports: [RouterModule],
+         imports: [RouterModule.forRoot([])],
        })
        class TestModule {
        }
@@ -6084,7 +6084,7 @@ describe('Integration', () => {
       class LoadedModule {
       }
 
-      @NgModule({declarations: [EagerParentComponent], imports: [RouterModule]})
+      @NgModule({declarations: [EagerParentComponent], imports: [RouterModule.forRoot([])]})
       class TestModule {
       }
 
