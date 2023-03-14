@@ -719,7 +719,7 @@ export function applyRootElementTransformImpl(rootElement: HTMLElement) {
 }
 
 /**
- * Sets the implementation for the `applyRootElementInfo` function.
+ * Sets the implementation for the `applyRootElementTransform` function.
  */
 export function enableApplyRootElementTransformImpl() {
   _applyRootElementTransformImpl = applyRootElementTransformImpl;

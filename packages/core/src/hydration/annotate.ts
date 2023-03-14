@@ -228,8 +228,8 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         ngh[ELEMENT_CONTAINERS] ??= {};
         ngh[ELEMENT_CONTAINERS][noOffsetIndex] = calcNumRootNodes(tView, lView, tNode.child);
       } else {
-        // Handle case where text nodes can be lost after DOM serialization:
-        //     When there is an *empty text node* in DOM: in this case, this
+        // Handle cases where text nodes can be lost after DOM serialization:
+        //  1. When there is an *empty text node* in DOM: in this case, this
         //     node would not make it into the serialized string and as a result,
         //     this node wouldn't be created in a browser. This would result in
         //     a mismatch during the hydration, where the runtime logic would expect
@@ -240,11 +240,26 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         //     an extra comment node is appended in place of an empty text node and
         //     that special comment node is replaced with an empty text node *before*
         //     hydration.
-
+        //  2. When there are 2 consecutive text nodes present in the DOM.
+        //     Example: `<div>Hello <ng-container *ngIf="true">world</ng-container></div>`.
+        //     In this scenario, the live DOM would look like this:
+        //       <div>#text('Hello ') #text('world') #comment('container')</div>
+        //     Serialized string would look like this: `<div>Hello world<!--container--></div>`.
+        //     The live DOM in a browser after that would be:
+        //       <div>#text('Hello world') #comment('container')</div>
+        //     Notice how 2 text nodes are now "merged" into one. This would cause hydration
+        //     logic to fail, since it'd expect 2 text nodes being present, not one.
+        //     To fix this, we insert a special comment node in between those text nodes, so
+        //     serialized representation is: `<div>Hello <!--ngtns-->world<!--container--></div>`.
+        //     This forces browser to create 2 text nodes separated by a comment node.
+        //     Before running a hydration process, this special comment node is removed, so the
+        //     live DOM has exactly the same state as it was before serialization.
         if (tNode.type & TNodeType.Text) {
           const rNode = unwrapRNode(lView[i]) as HTMLElement;
           if (rNode.textContent?.replace(/\s/gm, '') === '') {
             context.corruptedTextNodes.set(rNode, TextNodeMarker.EmptyNode);
+          } else if (rNode.nextSibling?.nodeType === Node.TEXT_NODE) {
+            context.corruptedTextNodes.set(rNode, TextNodeMarker.Separator);
           }
         }
       }
@@ -279,7 +294,7 @@ function annotateHostElementForHydration(
  */
 function insertCorruptedTextNodeMarkers(
     corruptedTextNodes: Map<HTMLElement, string>, doc: Document) {
-  for (let [textNode, marker] of corruptedTextNodes) {
+  for (const [textNode, marker] of corruptedTextNodes) {
     textNode.after(doc.createComment(marker));
   }
 }
