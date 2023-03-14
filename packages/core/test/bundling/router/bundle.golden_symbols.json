@@ -141,6 +141,9 @@
     "name": "CreateUrlTreeUsingSnapshot"
   },
   {
+    "name": "DEFAULT_APP_ID"
+  },
+  {
     "name": "DEFAULT_LOCALE_ID"
   },
   {

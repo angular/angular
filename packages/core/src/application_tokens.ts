@@ -16,31 +16,38 @@ import {InjectionToken} from './di/injection_token';
  * BY default, the value is randomly generated and assigned to the application by Angular.
  * To provide a custom ID value, use a DI provider <!-- TODO: provider --> to configure
  * the root {@link Injector} that uses this token.
+ * The token is needed in cases when multiple applications are bootstrapped on a page
+ * (for example, using `bootstrapApplication` calls). In this case, ensure that those applications
+ * have different `APP_ID` value setup. For example:
+ *
+ * ```
+ * bootstrapApplication(ComponentA, {
+ *   providers: [
+ *     {provide: APP_ID, useValue: 'app-a'},
+ *     // ... other providers ...
+ *   ]
+ * });
+ *
+ * bootstrapApplication(ComponentB, {
+ *   providers: [
+ *     {provide: APP_ID, useValue: 'app-b'},
+ *     // ... other providers ...
+ *   ]
+ * });
+ * ```
+ *
+ * By default, when there is only 1 application bootstrapped, you don't need to provide the `APP_ID`
+ * token (the `ng` will be used as an app ID).
  *
  * @publicApi
  */
 export const APP_ID = new InjectionToken<string>('AppId', {
   providedIn: 'root',
-  factory: _appIdRandomProviderFactory,
+  factory: () => DEFAULT_APP_ID,
 });
 
-export function _appIdRandomProviderFactory() {
-  return `${_randomChar()}${_randomChar()}${_randomChar()}`;
-}
-
-/**
- * Providers that generate a random `APP_ID_TOKEN`.
- * @publicApi
- */
-export const APP_ID_RANDOM_PROVIDER = {
-  provide: APP_ID,
-  useFactory: _appIdRandomProviderFactory,
-  deps: <any[]>[],
-};
-
-function _randomChar(): string {
-  return String.fromCharCode(97 + Math.floor(Math.random() * 25));
-}
+/** Default value of the `APP_ID` token. */
+const DEFAULT_APP_ID = 'ng';
 
 /**
  * A function that is executed when a platform is initialized.

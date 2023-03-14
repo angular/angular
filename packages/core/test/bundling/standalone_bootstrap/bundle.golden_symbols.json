@@ -69,6 +69,9 @@
     "name": "ConnectableSubscriber"
   },
   {
+    "name": "DEFAULT_APP_ID"
+  },
+  {
     "name": "DEFAULT_LOCALE_ID"
   },
   {

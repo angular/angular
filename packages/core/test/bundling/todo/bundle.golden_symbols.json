@@ -84,6 +84,9 @@
     "name": "ConnectableSubscriber"
   },
   {
+    "name": "DEFAULT_APP_ID"
+  },
+  {
     "name": "DI_DECORATOR_FLAG"
   },
   {

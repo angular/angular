@@ -159,6 +159,9 @@
     "name": "DASH_CASE_REGEXP"
   },
   {
+    "name": "DEFAULT_APP_ID"
+  },
+  {
     "name": "DEFAULT_NOOP_PREVIOUS_NODE"
   },
   {
