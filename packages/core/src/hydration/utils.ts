@@ -46,6 +46,15 @@ export const enum TextNodeMarker {
    * node.
    */
   EmptyNode = 'ngetn',
+
+  /**
+   * The contents of the text comment added in the case of adjacent text nodes.
+   * When adjacent text nodes are serialized by the server and sent to the
+   * client, the browser loses reference to the amount of nodes and assumes
+   * just one text node. This separator is replaced during hydration to restore
+   * the proper separation and amount of text nodes that should be present.
+   */
+  Separator = 'ngtns',
 }
 
 /**
@@ -141,7 +150,7 @@ function getTextNodeContent(node: Node): string|undefined {
 }
 
 /**
- * Restores text nodes into the DOM that were lost during SSR
+ * Restores text nodes and separators into the DOM that were lost during SSR
  * serialization. The hydration process replaces empty text nodes and text
  * nodes that are immediately adjacent to other text nodes with comment nodes
  * that this method filters on to restore those missing nodes that the
@@ -151,10 +160,11 @@ function getTextNodeContent(node: Node): string|undefined {
  */
 export function processTextNodeMarkersBeforeHydration(node: HTMLElement) {
   const doc = getDocument();
-  const commenNodestIterator = doc.createNodeIterator(node, NodeFilter.SHOW_COMMENT, {
+  const commentNodesIterator = doc.createNodeIterator(node, NodeFilter.SHOW_COMMENT, {
     acceptNode(node) {
       const content = getTextNodeContent(node);
-      const isTextNodeMarker = content === TextNodeMarker.EmptyNode;
+      const isTextNodeMarker =
+          content === TextNodeMarker.EmptyNode || content === TextNodeMarker.Separator;
       return isTextNodeMarker ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     }
   });
@@ -162,14 +172,17 @@ export function processTextNodeMarkersBeforeHydration(node: HTMLElement) {
   // We cannot modify the DOM while using the commentIterator,
   // because it throws off the iterator state.
   // So we collect all marker nodes first and then follow up with
-  // applying the changes to the DOM: inserting an empty node.
+  // applying the changes to the DOM: either inserting an empty node
+  // or just removing the marker if it was used as a separator.
   const nodes = [];
-  while (currentNode = commenNodestIterator.nextNode() as Comment) {
+  while (currentNode = commentNodesIterator.nextNode() as Comment) {
     nodes.push(currentNode);
   }
-  for (let node of nodes) {
+  for (const node of nodes) {
     if (node.textContent === TextNodeMarker.EmptyNode) {
       node.replaceWith(doc.createTextNode(''));
+    } else {
+      node.remove();
     }
   }
 }
