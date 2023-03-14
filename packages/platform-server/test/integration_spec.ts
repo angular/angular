@@ -10,7 +10,7 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, Component, destroyPlatform, getPlatform, HostListener, importProvidersFrom, Inject, inject as coreInject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, ViewEncapsulation} from '@angular/core';
+import {ApplicationRef, Component, destroyPlatform, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, ViewEncapsulation} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {bootstrapApplication, BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, provideServerSupport, renderModule, ServerModule} from '@angular/platform-server';
@@ -95,8 +95,7 @@ const RenderHookProviders = [
 
 @NgModule({
   bootstrap: [MyServerApp],
-  imports:
-      [MyServerAppModule, BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  imports: [MyServerAppModule, BrowserModule, ServerModule],
   providers: [...RenderHookProviders],
 })
 class RenderHookModule {
@@ -110,8 +109,7 @@ const MultiRenderHookProviders = [
 
 @NgModule({
   bootstrap: [MyServerApp],
-  imports:
-      [MyServerAppModule, BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  imports: [MyServerAppModule, BrowserModule, ServerModule],
   providers: [...MultiRenderHookProviders],
 })
 class MultiRenderHookModule {
@@ -128,8 +126,7 @@ const AsyncRenderHookProviders = [
 
 @NgModule({
   bootstrap: [MyServerApp],
-  imports:
-      [MyServerAppModule, BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  imports: [MyServerAppModule, BrowserModule, ServerModule],
   providers: [...AsyncRenderHookProviders],
 })
 class AsyncRenderHookModule {
@@ -148,8 +145,7 @@ const AsyncMultiRenderHookProviders = [
 
 @NgModule({
   bootstrap: [MyServerApp],
-  imports:
-      [MyServerAppModule, BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  imports: [MyServerAppModule, BrowserModule, ServerModule],
   providers: [...AsyncMultiRenderHookProviders],
 })
 class AsyncMultiRenderHookModule {
@@ -205,14 +201,13 @@ const MyAsyncServerAppStandalone = createMyAsyncServerApp(true);
 
 const boostrapMyAsyncServerAppStandalone = () => bootstrapApplication(MyAsyncServerAppStandalone, {
   providers: [
-    importProvidersFrom(BrowserModule.withServerTransition({appId: 'simple-cmp'})),
     provideServerSupport(),
   ]
 });
 
 @NgModule({
   declarations: [MyAsyncServerApp],
-  imports: [BrowserModule.withServerTransition({appId: 'async-server'}), ServerModule],
+  imports: [BrowserModule, ServerModule],
   bootstrap: [MyAsyncServerApp]
 })
 class AsyncServerModule {
@@ -234,7 +229,7 @@ const SVGComponentStandalone = createSVGComponent(true);
 
 @NgModule({
   declarations: [SVGComponent],
-  imports: [BrowserModule.withServerTransition({appId: 'svg-server'}), ServerModule],
+  imports: [BrowserModule, ServerModule],
   bootstrap: [SVGComponent]
 })
 class SVGServerModule {
@@ -276,7 +271,7 @@ const MyAnimationAppStandalone = createMyAnimationApp(true);
 
 @NgModule({
   declarations: [MyAnimationApp],
-  imports: [BrowserModule.withServerTransition({appId: 'anim-server'}), ServerModule],
+  imports: [BrowserModule, ServerModule],
   bootstrap: [MyAnimationApp]
 })
 class AnimationServerModule {
@@ -297,11 +292,8 @@ function createMyStylesApp(standalone: boolean) {
 const MyStylesApp = createMyStylesApp(false);
 const MyStylesAppStandalone = createMyStylesApp(true);
 
-@NgModule({
-  declarations: [MyStylesApp],
-  imports: [BrowserModule.withServerTransition({appId: 'example-styles'}), ServerModule],
-  bootstrap: [MyStylesApp]
-})
+@NgModule(
+    {declarations: [MyStylesApp], imports: [BrowserModule, ServerModule], bootstrap: [MyStylesApp]})
 class ExampleStylesModule {
 }
 
@@ -326,7 +318,7 @@ const MyTransferStateAppStandalone = createMyTransferStateApp(true);
 
 @NgModule({
   declarations: [MyTransferStateApp],
-  imports: [BrowserModule.withServerTransition({appId: 'transfer-state-app'}), ServerModule],
+  imports: [BrowserModule, ServerModule],
   bootstrap: [MyTransferStateApp]
 })
 class MyTransferStateModule {
@@ -384,7 +376,7 @@ const ShadowDomEncapsulationAppStandalone = createShadowDomEncapsulationApp(true
 
 @NgModule({
   declarations: [ShadowDomEncapsulationApp],
-  imports: [BrowserModule.withServerTransition({appId: 'test'}), ServerModule],
+  imports: [BrowserModule, ServerModule],
   bootstrap: [ShadowDomEncapsulationApp]
 })
 class ShadowDomExampleModule {
@@ -417,7 +409,7 @@ const [MyHostComponentStandalone, _] = createFalseAttributesComponents(true);
 @NgModule({
   declarations: [MyHostComponent, MyChildComponent],
   bootstrap: [MyHostComponent],
-  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'false-attributes'})]
+  imports: [ServerModule, BrowserModule]
 })
 class FalseAttributesModule {
 }
@@ -440,7 +432,7 @@ const MyInputComponentStandalone = createMyInputComponent(true);
 @NgModule({
   declarations: [MyInputComponent],
   bootstrap: [MyInputComponent],
-  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'name-attributes'})]
+  imports: [ServerModule, BrowserModule]
 })
 class NameModule {
 }
@@ -463,7 +455,7 @@ const HTMLTypesAppStandalone = createHTMLTypesApp(true);
 
 @NgModule({
   declarations: [HTMLTypesApp],
-  imports: [BrowserModule.withServerTransition({appId: 'inner-html'}), ServerModule],
+  imports: [BrowserModule, ServerModule],
   bootstrap: [HTMLTypesApp]
 })
 class HTMLTypesModule {
@@ -487,7 +479,7 @@ const MyHiddenComponentStandalone = createMyHiddenComponent(true);
 @NgModule({
   declarations: [MyHiddenComponent],
   bootstrap: [MyHiddenComponent],
-  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'hidden-attributes'})]
+  imports: [ServerModule, BrowserModule]
 })
 class HiddenModule {
 }
@@ -575,7 +567,7 @@ describe('platform-server integration', () => {
          const styles: any[] = head.children as any;
          expect(styles.length).toBe(1);
          expect(styles[0].textContent).toContain('color: red');
-         expect(styles[0].getAttribute('ng-app')).toBe('example-styles');
+         expect(styles[0].getAttribute('ng-app')).toBe('ng');
        });
      }));
 
@@ -842,12 +834,11 @@ describe('platform-server integration', () => {
            }];
            const bootstrap = isStandalone ?
                renderApplication(
-                   MyStylesAppStandalone,
-                   {...options, platformProviders: providers, appId: 'example-styles'}) :
+                   MyStylesAppStandalone, {...options, platformProviders: providers, appId: 'ng'}) :
                renderModule(ExampleStylesModule, {...options, extraProviders: providers});
            bootstrap.then(output => {
              expect(output).toMatch(
-                 /<app _nghost-example-styles-c\d+="" ng-version="0.0.0-PLACEHOLDER" ng-server-context="ssg">/);
+                 /<app _nghost-ng-c\d+="" ng-version="0.0.0-PLACEHOLDER" ng-server-context="ssg">/);
              called = true;
            });
          }));
@@ -877,13 +868,12 @@ describe('platform-server integration', () => {
          waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(
-                   MyTransferStateAppStandalone, {...options, appId: 'transfer-state-app'}) :
+               renderApplication(MyTransferStateAppStandalone, {...options, appId: 'ng'}) :
                renderModule(MyTransferStateModule, {...options});
            bootstrap.then(output => {
              const expectedOutput =
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other"><div>Works!</div></app>' +
-                 '<script id="transfer-state-app-state" type="application/json">{&q;some-key&q;:&q;some-value&q;}</script></body></html>';
+                 '<script id="ng-state" type="application/json">{&q;some-key&q;:&q;some-value&q;}</script></body></html>';
              expect(output).toEqual(expectedOutput);
              called = true;
            });

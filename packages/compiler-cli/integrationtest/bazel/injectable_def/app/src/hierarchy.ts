@@ -36,7 +36,7 @@ export class ChildComponent {
 
 @NgModule({
   imports: [
-    BrowserModule.withServerTransition({appId: 'hierarchy-app'}),
+    BrowserModule,
     ServerModule,
   ],
   declarations: [AppComponent, ChildComponent],
