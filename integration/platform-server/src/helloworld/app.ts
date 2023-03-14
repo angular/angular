@@ -14,7 +14,7 @@ import {HelloWorldComponent} from './hello-world.component';
 @NgModule({
   declarations: [HelloWorldComponent],
   bootstrap: [HelloWorldComponent],
-  imports: [BrowserModule.withServerTransition({appId: 'hlw'})],
+  imports: [BrowserModule],
 })
 export class HelloWorldModule {
 }

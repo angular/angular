@@ -15,7 +15,7 @@ describe('Hello world E2E Tests', function() {
     // Load the page without waiting for Angular since it is not bootstrapped automatically.
     browser.driver.get(browser.baseUrl + 'helloworld');
 
-    const style = browser.driver.findElement(by.css('style[ng-app="hlw"]'));
+    const style = browser.driver.findElement(by.css('style[ng-app="ng"]'));
     expect(style.getText()).not.toBeNull();
 
     // Test the contents from the server.
@@ -28,7 +28,7 @@ describe('Hello world E2E Tests', function() {
     expect(element(by.css('div')).getText()).toEqual('Hello world!');
 
     // Make sure the server styles get reused by the client.
-    expect(element(by.css('style[ng-app="hlw"]')).isPresent()).toBeFalsy();
+    expect(element(by.css('style[ng-app="ng"]')).isPresent()).toBeFalsy();
     expect(element(by.css('style[ng-style-reused]')).isPresent()).toBeTruthy()
     expect(element(by.css('style')).getText()).toBe('');
 
