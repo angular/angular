@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
-import {APP_ID, ApplicationRef, Component, ComponentRef, destroyPlatform, ElementRef, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 
@@ -1764,6 +1764,577 @@ describe('platform-server integration', () => {
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
+    });
+
+    describe('content projection', () => {
+      it('should project plain text', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <main>
+              <ng-content></ng-content>
+            </main>
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              Projected content is just a plain text.
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should project plain text and HTML elements', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <main>
+              <ng-content></ng-content>
+            </main>
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              Projected content is a plain text.
+              <b>Also the content has some tags</b>
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should support re-projection of contents', async () => {
+        @Component({
+          standalone: true,
+          selector: 'reprojector-cmp',
+          template: `
+            <main>
+              <ng-content></ng-content>
+            </main>
+          `,
+        })
+        class ReprojectorCmp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          imports: [ReprojectorCmp],
+          template: `
+            <reprojector-cmp>
+              <b>Before</b>
+              <ng-content></ng-content>
+              <i>After</i>
+            </reprojector-cmp>
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              Projected content is a plain text.
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp, ReprojectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should project contents into different slots', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <div>
+              Header slot: <ng-content select="header"></ng-content>
+              Main slot: <ng-content select="main"></ng-content>
+              Footer slot: <ng-content select="footer"></ng-content>
+              <ng-content></ng-content> <!-- everything else -->
+            </div>
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <!-- contents is intentionally randomly ordered -->
+              <h1>H1</h1>
+              <footer>Footer</footer>
+              <header>Header</header>
+              <main>Main</main>
+              <h2>H2</h2>
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      // FIXME(akushnir): this is a special use-case that will be covered in a followup PR.
+      // This would require some extra logic to detect if some nodes were "dropped" during the
+      // content projection operation.
+      xit('should support partial projection (when some nodes are not projected)', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <div>
+              Header slot: <ng-content select="header"></ng-content>
+              Main slot: <ng-content select="main"></ng-content>
+              Footer slot: <ng-content select="footer"></ng-content>
+              <!-- no "default" projection bucket -->
+            </div>
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <!-- contents is intentionally randomly ordered -->
+              <h1>This node is not projected.</h1>
+              <footer>Footer</footer>
+              <header>Header</header>
+              <main>Main</main>
+              <h2>This node is not projected as well.</h2>
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should project contents with *ngIf\'s', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <main>
+              <ng-content></ng-content>
+            </main>
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp, CommonModule],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <h1 *ngIf="visible">Header with an ngIf condition.</h1>
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+          visible = true;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should project contents with *ngFor', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <main>
+              <ng-content></ng-content>
+            </main>
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp, CommonModule],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <h1 *ngFor="let item of items">Item {{ item }}</h1>
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+          items = [1, 2, 3];
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should support projecting contents outside of a current host element', async () => {
+        @Component({
+          standalone: true,
+          selector: 'dynamic-cmp',
+          template: `<div #target></div>`,
+        })
+        class DynamicComponent {
+          @ViewChild('target', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+
+          createView(tmplRef: TemplateRef<unknown>) {
+            this.vcRef.createEmbeddedView(tmplRef);
+          }
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <ng-template #ref>
+              <ng-content></ng-content>
+            </ng-template>
+          `,
+        })
+        class ProjectorCmp {
+          @ViewChild('ref', {read: TemplateRef}) tmplRef!: TemplateRef<unknown>;
+
+          appRef = inject(ApplicationRef);
+          environmentInjector = inject(EnvironmentInjector);
+          doc = inject(DOCUMENT) as Document;
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+
+          ngAfterViewInit() {
+            // Create a host DOM node outside of the main app's host node
+            // to emulate a situation where a host node already exists
+            // on a page.
+            let hostElement: Element;
+            if (this.isServer) {
+              hostElement = this.doc.createElement('portal-app');
+              this.doc.body.insertBefore(hostElement, this.doc.body.firstChild);
+            } else {
+              hostElement = this.doc.querySelector('portal-app')!;
+            }
+
+            const cmp = createComponent(
+                DynamicComponent, {hostElement, environmentInjector: this.environmentInjector});
+            cmp.changeDetectorRef.detectChanges();
+            cmp.instance.createView(this.tmplRef);
+            this.appRef.attachView(cmp.hostView);
+          }
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp, CommonModule],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <header>Header</header>
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+          visible = true;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        const portalRootNode = clientRootNode.ownerDocument.body.firstChild;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyAllNodesClaimedForHydration(portalRootNode.firstChild);
+        const clientContents = stripUtilAttributes(portalRootNode.outerHTML, false) +
+            stripUtilAttributes(clientRootNode.outerHTML, false);
+        expect(clientContents)
+            .toBe(
+                stripUtilAttributes(stripTransferDataScript(ssrContents), false),
+                'Client and server contents mismatch');
+      });
+
+      it('should handle projected containers inside other containers', async () => {
+        @Component({
+          standalone: true,
+          selector: 'child-comp',
+          template: '<ng-content />',
+        })
+        class ChildComp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'root-comp',
+          template: '<ng-content />',
+        })
+        class RootComp {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [CommonModule, RootComp, ChildComp],
+          template: `
+            <root-comp>
+              <ng-container *ngFor="let item of items; last as last">
+                <child-comp *ngIf="!last">{{ item }}|</child-comp>
+              </ng-container>
+            </root-comp>
+          `
+        })
+        class MyApp {
+          items: number[] = [1, 2, 3];
+        }
+
+        const html = await ssr(MyApp);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(MyApp, RootComp, ChildComp);
+
+        const appRef = await hydrate(html, MyApp);
+        const compRef = getComponentRef<MyApp>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should throw an error when projecting DOM nodes via ViewContainerRef.createComponent API',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'dynamic',
+             template: `
+              <ng-content />
+              <ng-content />
+            `,
+           })
+           class DynamicComponent {
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [NgIf, NgFor],
+             template: `
+              <div #target></div>
+              <main>Hi! This is the main content.</main>
+            `,
+           })
+           class SimpleComponent {
+             @ViewChild('target', {read: ViewContainerRef}) vcr!: ViewContainerRef;
+
+             ngAfterViewInit() {
+               const div = document.createElement('div');
+               const p = document.createElement('p');
+               const span = document.createElement('span');
+               const b = document.createElement('b');
+               // In this test we create DOM nodes outside of Angular context
+               // (i.e. not using Angular APIs) and try to content-project them.
+               // This is an unsupported pattern and we expect an exception.
+               const compRef = this.vcr.createComponent(
+                   DynamicComponent, {projectableNodes: [[div, p], [span, b]]});
+               compRef.changeDetectorRef.detectChanges();
+             }
+           }
+
+           try {
+             await ssr(SimpleComponent);
+           } catch (error: unknown) {
+             expect((error as Error).toString())
+                 .toContain(
+                     'During serialization, Angular detected DOM nodes that ' +
+                     'were created outside of Angular context');
+           }
+         });
+
+      it('should throw an error when projecting DOM nodes via createComponent function call',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'dynamic',
+             template: `
+              <ng-content />
+              <ng-content />
+            `,
+           })
+           class DynamicComponent {
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [NgIf, NgFor],
+             template: `
+              <div #target></div>
+              <main>Hi! This is the main content.</main>
+            `,
+           })
+           class SimpleComponent {
+             @ViewChild('target', {read: ViewContainerRef}) vcr!: ViewContainerRef;
+             envInjector = inject(EnvironmentInjector);
+
+             ngAfterViewInit() {
+               const div = document.createElement('div');
+               const p = document.createElement('p');
+               const span = document.createElement('span');
+               const b = document.createElement('b');
+               // In this test we create DOM nodes outside of Angular context
+               // (i.e. not using Angular APIs) and try to content-project them.
+               // This is an unsupported pattern and we expect an exception.
+               const compRef = createComponent(DynamicComponent, {
+                 environmentInjector: this.envInjector,
+                 projectableNodes: [[div, p], [span, b]]
+               });
+               compRef.changeDetectorRef.detectChanges();
+             }
+           }
+
+           try {
+             await ssr(SimpleComponent);
+           } catch (error: unknown) {
+             expect((error as Error).toString())
+                 .toContain(
+                     'During serialization, Angular detected DOM nodes that ' +
+                     'were created outside of Angular context');
+           }
+         });
     });
   });
 });
