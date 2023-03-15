@@ -334,13 +334,13 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     if (propMetadata.hasOwnProperty(field)) {
       propMetadata[field].forEach(ann => {
         if (isInput(ann)) {
-          // TODO(required-inputs): pass required flag
           inputsFromType[field] = {
-            bindingPropertyName: ann.bindingPropertyName || field,
-            classPropertyName: field
+            bindingPropertyName: ann.alias || field,
+            classPropertyName: field,
+            required: ann.required || false
           };
         } else if (isOutput(ann)) {
-          outputsFromType[field] = ann.bindingPropertyName || field;
+          outputsFromType[field] = ann.alias || field;
         }
       });
     }
@@ -668,22 +668,22 @@ function inputsMappingToInputMetadata(inputs: Record<string, string|[string, str
   return Object.keys(inputs).reduce((result, key) => {
     const value = inputs[key];
     result[key] = typeof value === 'string' ?
-        {bindingPropertyName: value, classPropertyName: value} :
-        {bindingPropertyName: value[0], classPropertyName: value[1]};
+        {bindingPropertyName: value, classPropertyName: value, required: false} :
+        {bindingPropertyName: value[0], classPropertyName: value[1], required: false};
     return result;
   }, {} as InputMap);
 }
 
-function parseInputsArray(values: (string|{name: string, alias?: string})[]) {
+function parseInputsArray(values: (string|{name: string, alias?: string, required?: boolean})[]) {
   return values.reduce((results, value) => {
     if (typeof value === 'string') {
       const [bindingPropertyName, classPropertyName] = parseMappingString(value);
-      results[classPropertyName] = {bindingPropertyName, classPropertyName};
+      results[classPropertyName] = {bindingPropertyName, classPropertyName, required: false};
     } else {
-      // TODO(required-inputs): pass required flag
       results[value.name] = {
         bindingPropertyName: value.alias || value.name,
-        classPropertyName: value.name
+        classPropertyName: value.name,
+        required: value.required || false
       };
     }
     return results;
@@ -692,13 +692,13 @@ function parseInputsArray(values: (string|{name: string, alias?: string})[]) {
 
 function parseMappingStringArray(values: string[]): Record<string, string> {
   return values.reduce((results, value) => {
-    const [publicName, fieldName] = parseMappingString(value);
-    results[fieldName] = publicName;
+    const [alias, fieldName] = parseMappingString(value);
+    results[fieldName] = alias;
     return results;
   }, {} as Record<string, string>);
 }
 
-function parseMappingString(value: string): [publicName: string, fieldName: string] {
+function parseMappingString(value: string): [alias: string, fieldName: string] {
   // Either the value is 'field' or 'field: property'. In the first case, `property` will
   // be undefined, in which case the field name should also be used as the property name.
   const [fieldName, bindingPropertyName] = value.split(':', 2).map(str => str.trim());

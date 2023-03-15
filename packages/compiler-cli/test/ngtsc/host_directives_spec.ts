@@ -24,6 +24,10 @@ runInEachFileSystem(() => {
       env.tsconfig({strictTemplates: true});
     });
 
+    function extractMessage(diag: ts.Diagnostic) {
+      return typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
+    }
+
     it('should generate a basic hostDirectives definition', () => {
       env.write('test.ts', `
         import {Directive, Component} from '@angular/core';
@@ -283,7 +287,7 @@ runInEachFileSystem(() => {
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveA, never, never, ' +
-              '{ "value": "value"; }, {}, never, never, true, never>;');
+              '{ "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never>;');
     });
 
     it('should generate a definition if the host directives are imported from other files', () => {
@@ -428,12 +432,71 @@ runInEachFileSystem(() => {
               'never, never, false, [{ directive: typeof i1.ExternalDir; inputs: {}; outputs: {}; }]>;');
     });
 
-    describe('validations', () => {
-      function extractMessage(diag: ts.Diagnostic) {
-        return typeof diag.messageText === 'string' ? diag.messageText :
-                                                      diag.messageText.messageText;
-      }
+    it('should produce a template diagnostic if a required input from a host directive is missing',
+       () => {
+         env.write('test.ts', `
+            import {Directive, Component, Input} from '@angular/core';
 
+            @Directive({standalone: true})
+            export class HostDir {
+              @Input({alias: 'inputAlias', required: true})
+              input: any;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}],
+              standalone: true
+            })
+            export class Dir {}
+
+            @Component({
+              template: '<div dir></div>',
+              standalone: true,
+              imports: [Dir]
+            })
+            class App {}
+          `);
+
+         const messages = env.driveDiagnostics().map(extractMessage);
+
+         expect(messages).toEqual(
+             [`Required input 'customAlias' from directive HostDir must be specified.`]);
+       });
+
+    it('should not produce a template diagnostic if a required input from a host directive is bound',
+       () => {
+         env.write('test.ts', `
+            import {Directive, Component, Input} from '@angular/core';
+
+            @Directive({standalone: true})
+            export class HostDir {
+              @Input({alias: 'inputAlias', required: true})
+              input: any;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}],
+              standalone: true
+            })
+            export class Dir {}
+
+            @Component({
+              template: '<div dir [customAlias]="value"></div>',
+              standalone: true,
+              imports: [Dir]
+            })
+            class App {
+              value = 123;
+            }
+          `);
+
+         const messages = env.driveDiagnostics().map(extractMessage);
+         expect(messages).toEqual([]);
+       });
+
+    describe('validations', () => {
       it('should produce a diagnostic if a host directive is not standalone', () => {
         env.write('test.ts', `
           import {Directive, Component, NgModule} from '@angular/core';
@@ -775,6 +838,110 @@ runInEachFileSystem(() => {
         `);
 
            const messages = env.driveDiagnostics().map(extractMessage);
+           expect(messages).toEqual([]);
+         });
+
+      it('should produce a diagnostic if a required input is not exposed on the host', () => {
+        env.write('test.ts', `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir-a]',
+            standalone: true
+          })
+          export class HostDir {
+            @Input({required: true}) input: any;
+          }
+
+          @Component({
+            selector: 'my-comp',
+            template: '',
+            hostDirectives: [HostDir]
+          })
+          export class MyComp {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+
+        expect(messages).toEqual(
+            [`Required input 'input' from host directive HostDir must be exposed.`]);
+      });
+
+      it('should use the public name when producing diagnostics about missing required inputs',
+         () => {
+           env.write('test.ts', `
+              import {Directive, Component, Input} from '@angular/core';
+
+              @Directive({
+                selector: '[dir-a]',
+                standalone: true
+              })
+              export class HostDir {
+                @Input({required: true, alias: 'inputAlias'}) input: any;
+              }
+
+              @Component({
+                selector: 'my-comp',
+                template: '',
+                hostDirectives: [HostDir]
+              })
+              export class MyComp {}
+            `);
+
+           const messages = env.driveDiagnostics().map(extractMessage);
+
+           expect(messages).toEqual(
+               [`Required input 'inputAlias' from host directive HostDir must be exposed.`]);
+         });
+
+      it('should not produce required input diagnostic when exposed through alias', () => {
+        env.write('test.ts', `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir-a]',
+            standalone: true
+          })
+          export class HostDir {
+            @Input({required: true, alias: 'inputAlias'}) input: any;
+          }
+
+          @Component({
+            selector: 'my-comp',
+            template: '',
+            hostDirectives: [{directive: HostDir, inputs: ['inputAlias']}]
+          })
+          export class MyComp {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+
+        expect(messages).toEqual([]);
+      });
+
+      it('should not produce required input diagnostic when exposed through alias to another alias',
+         () => {
+           env.write('test.ts', `
+              import {Directive, Component, Input} from '@angular/core';
+
+              @Directive({
+                selector: '[dir-a]',
+                standalone: true
+              })
+              export class HostDir {
+                @Input({required: true, alias: 'inputAlias'}) input: any;
+              }
+
+              @Component({
+                selector: 'my-comp',
+                template: '',
+                hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}]
+              })
+              export class MyComp {}
+            `);
+
+           const messages = env.driveDiagnostics().map(extractMessage);
+
            expect(messages).toEqual([]);
          });
     });

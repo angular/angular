@@ -1153,7 +1153,7 @@ function allTests(os: string) {
 
       const dtsContents = env.getContents('test.d.ts');
       const expectedDirectiveDeclaration =
-          `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": "input"; }, {}, never, never, false, never>;`;
+          `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, false, never>;`;
       expect(dtsContents).toContain(expectedDirectiveDeclaration);
     });
 
@@ -2115,22 +2115,36 @@ function allTests(os: string) {
         });
       });
 
-      ['inputs', 'outputs'].forEach(field => {
-        it(`should throw error if @Directive.${field} has wrong type`, () => {
-          env.tsconfig({});
-          env.write('test.ts', `
-            import {Directive} from '@angular/core';
+      it(`should throw error if @Directive.inputs has wrong type`, () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Directive} from '@angular/core';
 
-            @Directive({
-              selector: 'test-dir',
-              ${field}: 'invalid-field-type',
-            })
-            export class TestDir {}
-          `);
-          verifyThrownError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE,
-              `Failed to resolve @Directive.${field} to a string array`);
-        });
+          @Directive({
+            selector: 'test-dir',
+            inputs: 'invalid-field-type',
+          })
+          export class TestDir {}
+        `);
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE,
+            `Failed to resolve @Directive.inputs to an array Value is of type 'string'.`);
+      });
+
+      it(`should throw error if @Directive.outputs has wrong type`, () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'test-dir',
+            outputs: 'invalid-field-type',
+          })
+          export class TestDir {}
+        `);
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE,
+            `Failed to resolve @Directive.outputs to a string array`);
       });
 
       ['ContentChild', 'ContentChildren'].forEach(decorator => {
@@ -5462,6 +5476,70 @@ function allTests(os: string) {
       expect(trim(jsContents)).toContain(trim(inputsAndOutputs));
     });
 
+    it('should generate the correct declaration for class members decorated with @Input', () => {
+      env.write('test.ts', `
+        import {Directive, Input} from '@angular/core';
+
+        @Directive({selector: '[dir]'})
+        export class TestDir {
+          @Input() noArgs: any;
+          @Input('aliasedStringArg') stringArg: any;
+          @Input({required: true}) requiredNoAlias: any;
+          @Input({alias: 'aliasedRequiredWithAlias', required: true}) requiredWithAlias: any;
+        }
+      `);
+
+      env.driveMain();
+
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(dtsContents)
+          .toContain(
+              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
+              '{ "noArgs": { "alias": "noArgs"; "required": false; }; "stringArg": ' +
+              '{ "alias": "aliasedStringArg"; "required": false; }; "requiredNoAlias": ' +
+              '{ "alias": "requiredNoAlias"; "required": true; }; "requiredWithAlias": ' +
+              '{ "alias": "aliasedRequiredWithAlias"; "required": true; }; }, {}, never, never, false, never>;');
+    });
+
+    it('should generate the correct declaration for directives using the `inputs` array', () => {
+      env.write('test.ts', `
+        import {Directive, Input} from '@angular/core';
+
+        @Directive({
+          selector: '[dir]',
+          inputs: [
+            'plain',
+            'withAlias: aliasedWithAlias',
+            {name: 'plainLiteral'},
+            {name: 'aliasedLiteral', alias: 'alisedLiteralAlias'},
+            {name: 'requiredLiteral', required: true},
+            {name: 'requiredAlisedLiteral', alias: 'requiredAlisedLiteralAlias', required: true}
+          ]
+        })
+        export class TestDir {
+          plainLiteral: any;
+          aliasedLiteral: any;
+          requiredLiteral: any;
+          requiredAlisedLiteral: any;
+        }
+      `);
+
+      env.driveMain();
+
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(dtsContents)
+          .toContain(
+              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
+              '{ "plain": { "alias": "plain"; "required": false; }; ' +
+              '"withAlias": { "alias": "aliasedWithAlias"; "required": false; }; ' +
+              '"plainLiteral": { "alias": "plainLiteral"; "required": false; }; ' +
+              '"aliasedLiteral": { "alias": "alisedLiteralAlias"; "required": false; }; ' +
+              '"requiredLiteral": { "alias": "requiredLiteral"; "required": true; }; ' +
+              '"requiredAlisedLiteral": { "alias": "requiredAlisedLiteralAlias"; "required": true; }; }, {}, never, never, false, never>;');
+    });
+
     describe('NgModule invalid import/export errors', () => {
       function verifyThrownError(errorCode: ErrorCode, errorMessage: string) {
         const errors = env.driveDiagnostics();
@@ -6906,6 +6984,66 @@ function allTests(os: string) {
            expect(diags[0].messageText).toContain('Dir');
            expect(diags[0].messageText).toContain('Base');
          });
+
+      it('should produce a diagnostic if an inherited required input is not bound', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive()
+          export class BaseDir {
+            @Input({required: true}) input: any;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true
+          })
+          export class Dir extends BaseDir {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+            standalone: true,
+            imports: [Dir]
+          })
+          export class Cmp {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Required input 'input' from directive Dir must be specified.`);
+      });
+
+      it('should not produce a diagnostic if an inherited required input is bound', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive()
+          export class BaseDir {
+            @Input({required: true}) input: any;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true
+          })
+          export class Dir extends BaseDir {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div dir [input]="value"></div>',
+            standalone: true,
+            imports: [Dir]
+          })
+          export class Cmp {
+            value = 123;
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('inline resources', () => {

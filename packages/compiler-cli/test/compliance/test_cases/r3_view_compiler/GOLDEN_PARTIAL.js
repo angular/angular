@@ -58,7 +58,7 @@ export declare class TodoComponent {
     data: any[];
     myTitle: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TodoComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TodoComponent, "todo", never, { "data": "data"; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TodoComponent, "todo", never, { "data": { "alias": "data"; "required": false; }; }, {}, never, never, false, never>;
 }
 export declare class TodoModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<TodoModule, never>;
