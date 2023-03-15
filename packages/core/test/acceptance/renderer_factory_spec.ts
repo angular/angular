@@ -15,7 +15,7 @@ import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
-import {EventManager, ɵDomSharedStylesHost} from '@angular/platform-browser';
+import {EventManager, ɵSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ServerRendererFactory2} from '@angular/platform-server/src/server_renderer';
@@ -323,7 +323,7 @@ function getRendererFactory2(document: any): RendererFactory2 {
   const eventManager = new EventManager([], fakeNgZone);
   const appId = 'app-id';
   const rendererFactory = new ServerRendererFactory2(
-      eventManager, fakeNgZone, document, new ɵDomSharedStylesHost(document, appId), appId);
+      eventManager, fakeNgZone, document, new ɵSharedStylesHost(document, appId), appId);
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
     const renderer = origCreateRenderer.call(this, element, type);

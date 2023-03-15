@@ -12,7 +12,7 @@ import {APP_ID, ApplicationConfig as ApplicationConfigFromCore, ApplicationModul
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from './browser/testability';
 import {BrowserXhr} from './browser/xhr';
-import {DomRendererFactory2, REMOVE_STYLES_ON_COMPONENT_DESTROY} from './dom/dom_renderer';
+import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
@@ -204,13 +204,10 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
     multi: true,
     deps: [DOCUMENT, NgZone, PLATFORM_ID]
   },
-  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]}, {
-    provide: DomRendererFactory2,
-    useClass: DomRendererFactory2,
-    deps: [EventManager, DomSharedStylesHost, APP_ID, REMOVE_STYLES_ON_COMPONENT_DESTROY]
-  },
+  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
+  DomRendererFactory2, SharedStylesHost, EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
-  {provide: SharedStylesHost, useExisting: DomSharedStylesHost}, DomSharedStylesHost, EventManager,
+  {provide: DomSharedStylesHost, useExisting: SharedStylesHost},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
   NG_DEV_MODE ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} : []
 ];

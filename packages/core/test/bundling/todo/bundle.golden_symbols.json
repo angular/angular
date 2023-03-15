@@ -849,6 +849,9 @@
     "name": "getFactoryDef"
   },
   {
+    "name": "getFactoryOf"
+  },
+  {
     "name": "getFirstLContainer"
   },
   {
@@ -1063,6 +1066,9 @@
   },
   {
     "name": "isEnvironmentProviders"
+  },
+  {
+    "name": "isForwardRef"
   },
   {
     "name": "isFunction"

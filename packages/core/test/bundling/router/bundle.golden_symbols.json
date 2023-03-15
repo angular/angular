@@ -2076,6 +2076,9 @@
     "name": "ɵɵelementStart"
   },
   {
+    "name": "ɵɵgetInheritedFactory"
+  },
+  {
     "name": "ɵɵinject"
   },
   {
