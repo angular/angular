@@ -182,7 +182,7 @@ export declare class DirectiveB {
 export declare class DirectiveA {
     value: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<DirectiveA, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<DirectiveA, never, never, { "value": "value"; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DirectiveA, never, never, { "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
@@ -240,7 +240,7 @@ export declare class HostDir {
     opened: EventEmitter<unknown>;
     closed: EventEmitter<unknown>;
     static ɵfac: i0.ɵɵFactoryDeclaration<HostDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, never, never, { "value": "value"; "color": "color"; }, { "opened": "opened"; "closed": "closed"; }, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, never, never, { "value": { "alias": "value"; "required": false; }; "color": { "alias": "color"; "required": false; }; }, { "opened": "opened"; "closed": "closed"; }, never, never, true, never>;
 }
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
@@ -306,7 +306,7 @@ export declare class HostDir {
     opened: EventEmitter<unknown>;
     closed: EventEmitter<unknown>;
     static ɵfac: i0.ɵɵFactoryDeclaration<HostDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, never, never, { "value": "valueAlias"; "color": "colorAlias"; }, { "opened": "openedAlias"; "closed": "closedAlias"; }, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, never, never, { "value": { "alias": "valueAlias"; "required": false; }; "color": { "alias": "colorAlias"; "required": false; }; }, { "opened": "openedAlias"; "closed": "closedAlias"; }, never, never, true, never>;
 }
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
