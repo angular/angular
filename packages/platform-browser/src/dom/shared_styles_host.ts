@@ -17,13 +17,13 @@ export class SharedStylesHost implements OnDestroy {
     usage: number
   }
   > ();
-  private hostNodes = new Set<Node>();
-  private styleNodesInDOM: Map<string, HTMLStyleElement>|null;
-  private platformIsServer: boolean;
+  private readonly hostNodes = new Set<Node>();
+  private readonly styleNodesInDOM: Map<string, HTMLStyleElement>|null;
+  private readonly platformIsServer: boolean;
 
   constructor(
       @Inject(DOCUMENT) private readonly doc: Document, @Inject(APP_ID) private appId: string,
-      @Inject(PLATFORM_ID) platformId: object = {}) {
+      @Inject(PLATFORM_ID) readonly platformId: object = {}) {
     this.styleNodesInDOM = this.collectServerRenderedStyles();
     this.resetHostNodes();
     this.platformIsServer = isPlatformServer(platformId);
