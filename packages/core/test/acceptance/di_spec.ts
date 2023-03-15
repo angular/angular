@@ -7,7 +7,8 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgModuleRef, NgZone, Optional, Output, Pipe, PipeTransform, Provider, runInInjectionContext, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
+import {assertInInjectionContext, Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgModuleRef, NgZone, Optional, Output, Pipe, PipeTransform, Provider, runInInjectionContext, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
+import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -3807,6 +3808,39 @@ describe('di', () => {
       const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
       injector.destroy();
       expect(() => runInInjectionContext(injector, () => {})).toThrow();
+    });
+  });
+
+  describe('assertInInjectionContext', () => {
+    function placeholder() {}
+
+    it('should throw if not in an injection context', () => {
+      expect(() => assertInInjectionContext(placeholder))
+          .toThrowMatching(
+              (e: Error) => e instanceof RuntimeError &&
+                  e.code === RuntimeErrorCode.MISSING_INJECTION_CONTEXT);
+    });
+
+    it('should not throw if in an EnvironmentInjector context', () => {
+      expect(() => {
+        TestBed.runInInjectionContext(() => {
+          assertInInjectionContext(placeholder);
+        });
+      }).not.toThrow();
+    });
+
+
+    it('should not throw if in an element injector context', () => {
+      expect(() => {
+        @Component({template: ''})
+        class EmptyCmp {
+        }
+
+        const fixture = TestBed.createComponent(EmptyCmp);
+        runInInjectionContext(fixture.componentRef.injector, () => {
+          assertInInjectionContext(placeholder);
+        });
+      }).not.toThrow();
     });
   });
 

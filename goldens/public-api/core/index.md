@@ -99,6 +99,9 @@ export class ApplicationRef {
 export function asNativeElements(debugEls: DebugElement[]): any;
 
 // @public
+export function assertInInjectionContext(debugFn: Function): void;
+
+// @public
 export function assertPlatform(requiredToken: any): PlatformRef;
 
 // @public
