@@ -65,6 +65,12 @@ describe('@angular/core ng_package', () => {
               esm: './esm2022/core.mjs',
               default: './fesm2022/core.mjs'
             },
+            './rxjs-interop': {
+              types: './rxjs-interop/index.d.ts',
+              esm2022: './esm2022/rxjs-interop/rxjs-interop.mjs',
+              esm: './esm2022/rxjs-interop/rxjs-interop.mjs',
+              default: './fesm2022/rxjs-interop.mjs'
+            },
             './testing': {
               types: './testing/index.d.ts',
               esm2022: './esm2022/testing/testing.mjs',
