@@ -256,7 +256,7 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
 export interface R3InputMetadata {
   classPropertyName: string;
   bindingPropertyName: string;
-  // TODO(required-inputs): add `required` property.
+  required: boolean;
 }
 
 export enum R3TemplateDependencyKind {

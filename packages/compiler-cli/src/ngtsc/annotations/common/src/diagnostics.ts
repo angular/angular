@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {Reference} from '../../../imports';
-import {DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectiveMeta, MetadataReader} from '../../../metadata';
+import {ClassPropertyName, DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectiveMeta, MetadataReader} from '../../../metadata';
 import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../../reflection';
 import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
@@ -185,8 +185,14 @@ export function validateHostDirectives(
           `Host directive ${hostMeta.name} cannot be a component`));
     }
 
-    validateHostDirectiveMappings('input', current, hostMeta, origin, diagnostics);
-    validateHostDirectiveMappings('output', current, hostMeta, origin, diagnostics);
+    const requiredInputNames = Array.from(hostMeta.inputs)
+                                   .filter(input => input.required)
+                                   .map(input => input.classPropertyName);
+
+    validateHostDirectiveMappings(
+        'input', current, hostMeta, origin, diagnostics,
+        requiredInputNames.length > 0 ? new Set(requiredInputNames) : null);
+    validateHostDirectiveMappings('output', current, hostMeta, origin, diagnostics, null);
   }
 
   return diagnostics;
@@ -194,20 +200,30 @@ export function validateHostDirectives(
 
 function validateHostDirectiveMappings(
     bindingType: 'input'|'output', hostDirectiveMeta: HostDirectiveMeta, meta: DirectiveMeta,
-    origin: ts.Expression, diagnostics: ts.DiagnosticWithLocation[]) {
+    origin: ts.Expression, diagnostics: ts.DiagnosticWithLocation[],
+    requiredBindings: Set<ClassPropertyName>|null) {
   const className = meta.name;
   const hostDirectiveMappings =
       bindingType === 'input' ? hostDirectiveMeta.inputs : hostDirectiveMeta.outputs;
   const existingBindings = bindingType === 'input' ? meta.inputs : meta.outputs;
+  const exposedRequiredBindings = new Set<string>();
 
   for (const publicName in hostDirectiveMappings) {
     if (hostDirectiveMappings.hasOwnProperty(publicName)) {
-      if (!existingBindings.hasBindingPropertyName(publicName)) {
+      const bindings = existingBindings.getByBindingPropertyName(publicName);
+
+      if (bindings === null) {
         diagnostics.push(makeDiagnostic(
             ErrorCode.HOST_DIRECTIVE_UNDEFINED_BINDING,
             hostDirectiveMeta.directive.getOriginForDiagnostics(origin),
             `Directive ${className} does not have an ${bindingType} with a public name of ${
                 publicName}.`));
+      } else if (requiredBindings !== null) {
+        for (const field of bindings) {
+          if (requiredBindings.has(field.classPropertyName)) {
+            exposedRequiredBindings.add(field.classPropertyName);
+          }
+        }
       }
 
       const remappedPublicName = hostDirectiveMappings[publicName];
@@ -226,6 +242,26 @@ function validateHostDirectiveMappings(
         }
       }
     }
+  }
+
+  if (requiredBindings !== null && requiredBindings.size !== exposedRequiredBindings.size) {
+    const missingBindings: string[] = [];
+
+    for (const publicName of requiredBindings) {
+      if (!exposedRequiredBindings.has(publicName)) {
+        const name = existingBindings.getByClassPropertyName(publicName);
+
+        if (name) {
+          missingBindings.push(`'${name.bindingPropertyName}'`);
+        }
+      }
+    }
+
+    diagnostics.push(makeDiagnostic(
+        ErrorCode.HOST_DIRECTIVE_MISSING_REQUIRED_BINDING,
+        hostDirectiveMeta.directive.getOriginForDiagnostics(origin),
+        `Required ${bindingType}${missingBindings.length === 1 ? '' : 's'} ${
+            missingBindings.join(', ')} from host directive ${className} must be exposed.`));
   }
 }
 

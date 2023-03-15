@@ -73,7 +73,7 @@ export class HostDirectivesResolver {
    */
   private filterMappings<T, M extends InputOrOutput>(
       source: ClassPropertyMapping<M>, allowedProperties: Record<string, string>|null,
-      valueResolver: (binding: string, classPropertyName: string) => T): Record<string, T> {
+      valueResolver: (bindingName: string, binding: M) => T): Record<string, T> {
     const result: Record<string, T> = {};
 
     if (allowedProperties !== null) {
@@ -84,7 +84,7 @@ export class HostDirectivesResolver {
           if (bindings !== null) {
             for (const binding of bindings) {
               result[binding.classPropertyName] =
-                  valueResolver(allowedProperties[publicName], binding.classPropertyName);
+                  valueResolver(allowedProperties[publicName], binding);
             }
           }
         }
@@ -95,9 +95,12 @@ export class HostDirectivesResolver {
   }
 }
 
-function resolveInput(bindingName: string, classPropertyName: string): InputMapping {
-  // TODO(required-inputs): resolve the required value
-  return {bindingPropertyName: bindingName, classPropertyName, required: false};
+function resolveInput(bindingName: string, binding: InputMapping): InputMapping {
+  return {
+    bindingPropertyName: bindingName,
+    classPropertyName: binding.classPropertyName,
+    required: binding.required
+  };
 }
 
 function resolveOutput(bindingName: string): string {
