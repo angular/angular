@@ -35,7 +35,7 @@ Updating the property without changing object identity has no effect.
 
 </div>
 
-If there are multiple bindings to the same class name, Angular uses [styling precedence](guide/style-precedence) to determine which binding to use.
+If there are multiple bindings to the same class name, Angular uses [styling precedence](guide/style-precedence) to determine which binding to use. These rules specify an order for which class-related bindings have priority.
 
 The following table summarizes class binding syntax.
 
@@ -82,7 +82,7 @@ Updating the property without changing object identity has no effect.
 
 <code-example path="attribute-binding/src/app/single-and-multiple-style-binding.component.ts" header="nav-bar.component.ts"></code-example>
 
-If there are multiple bindings to the same style attribute, Angular uses [styling precedence](guide/style-precedence) to determine which binding to use.
+If there are multiple bindings to the same style attribute, Angular uses [styling precedence](guide/style-precedence) to determine which binding to use. These rules specify an order for which style-related bindings have priority.
 
 The following table summarizes style binding syntax.
 
@@ -93,14 +93,9 @@ The following table summarizes style binding syntax.
 | Multi-style binding             | `[style]="styleExpression"` | `string`                                                                   | `"width: 100px; height: 100px"`     |
 | Multi-style binding             | `[style]="styleExpression"` | <code>Record&lt;string, string &verbar; undefined &verbar; null&gt;</code> | `{width: '100px', height: '100px'}` |
 
-{@a styling-precedence}
-## Styling precedence
-
-A single HTML element can have its CSS class list and style values bound to multiple sources (for example, host bindings from multiple directives).
-
 ## What’s next
 
 * [Component styles](https://angular.io/guide/component-styles)
 * [Introduction to Angular animations](https://angular.io/guide/animations)
 
-@reviewed 2022-05-09
+@reviewed 2023-03-15

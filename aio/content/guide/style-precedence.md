@@ -12,7 +12,7 @@ This styling precedence is as follows, from the most specific with the highest p
     | Map binding      | <code-example format="html" hideCopy language="html"> &lt;div [class]="classExpression"&gt; </code-example> <code-example format="html" hideCopy language="html"> &lt;div [style]="styleExpression"&gt; </code-example> |
     | Static value     | <code-example format="html" hideCopy language="html"> &lt;div class="foo"&gt; </code-example> <code-example format="html" hideCopy language="html"> &lt;div style="color: blue"&gt; </code-example>                     |
 
-1.  Directive host bindings are less specific because you can use directives in multiple locations, so they have a lower precedence than template bindings.
+1.  Directive host bindings are less specific because you can use directives in multiple locations, so they have lower precedence than template bindings.
 
     | Binding type     | Examples |
     |:---              |:---     |
