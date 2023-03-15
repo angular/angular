@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, destroyPlatform, EventEmitter, Injector, Input, NgModule, Output, Renderer2, ViewEncapsulation} from '@angular/core';
+import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
