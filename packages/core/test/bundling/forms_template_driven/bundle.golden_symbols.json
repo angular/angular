@@ -156,6 +156,9 @@
     "name": "DomRendererFactory2"
   },
   {
+    "name": "DomSharedStylesHost"
+  },
+  {
     "name": "EMPTY_ARRAY"
   },
   {
