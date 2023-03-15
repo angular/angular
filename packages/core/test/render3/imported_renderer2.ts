@@ -10,7 +10,7 @@ import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animat
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {NgZone, RendererFactory2, RendererType2} from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
-import {EventManager, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
+import {EventManager, ɵDomRendererFactory2, ɵSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
@@ -39,8 +39,8 @@ export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
   const appId = 'appid';
-  const rendererFactory = new ɵDomRendererFactory2(
-      eventManager, new ɵDomSharedStylesHost(document, appId), appId, true);
+  const rendererFactory =
+      new ɵDomRendererFactory2(eventManager, new ɵSharedStylesHost(document, appId), appId, true);
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
     const renderer = origCreateRenderer.call(this, element, type);
