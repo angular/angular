@@ -6,16 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {ChangeDetectorRef, Component, EventEmitter} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {of, Subscribable, Unsubscribable} from 'rxjs';
 
 {
   describe('AsyncPipe', () => {
+    let pipe: AsyncPipe;
+    let ref: ChangeDetectorRef&jasmine.SpyObj<ChangeDetectorRef>;
+
     function getChangeDetectorRefSpy() {
       return jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck', 'detectChanges']);
     }
+
+    beforeEach(() => {
+      ref = getChangeDetectorRefSpy();
+      pipe = new AsyncPipe(ref);
+    });
+
+    afterEach(() => {
+      pipe.ngOnDestroy();  // Close all subscriptions.
+    });
 
     describe('Observable', () => {
       // only expose methods from the Subscribable interface, to ensure that
@@ -33,15 +45,11 @@ import {of, Subscribable, Unsubscribable} from 'rxjs';
 
       let emitter: EventEmitter<any>;
       let subscribable: Subscribable<any>;
-      let pipe: AsyncPipe;
-      let ref: ChangeDetectorRef&jasmine.SpyObj<ChangeDetectorRef>;
       const message = {};
 
       beforeEach(() => {
         emitter = new EventEmitter();
         subscribable = wrapSubscribable(emitter);
-        ref = getChangeDetectorRefSpy();
-        pipe = new AsyncPipe(ref);
       });
 
       describe('transform', () => {
@@ -128,8 +136,6 @@ import {of, Subscribable, Unsubscribable} from 'rxjs';
 
     describe('Subscribable', () => {
       it('should infer the type from the subscribable', () => {
-        const ref = getChangeDetectorRefSpy();
-        const pipe = new AsyncPipe(ref);
         const emitter = new EventEmitter<{name: 'T'}>();
         // The following line will fail to compile if the type cannot be inferred.
         const name = pipe.transform(emitter)?.name;
@@ -138,11 +144,9 @@ import {of, Subscribable, Unsubscribable} from 'rxjs';
 
     describe('Promise', () => {
       const message = {};
-      let pipe: AsyncPipe;
       let resolve: (result: any) => void;
       let reject: (error: any) => void;
       let promise: Promise<any>;
-      let ref: any;
       // adds longer timers for passing tests in IE
       const timer = 10;
 
@@ -151,8 +155,6 @@ import {of, Subscribable, Unsubscribable} from 'rxjs';
           resolve = res;
           reject = rej;
         });
-        ref = getChangeDetectorRefSpy();
-        pipe = new AsyncPipe(ref);
       });
 
       describe('transform', () => {
@@ -243,21 +245,18 @@ import {of, Subscribable, Unsubscribable} from 'rxjs';
 
     describe('null', () => {
       it('should return null when given null', () => {
-        const pipe = new AsyncPipe(null as any);
         expect(pipe.transform(null)).toEqual(null);
       });
     });
 
     describe('undefined', () => {
       it('should return null when given undefined', () => {
-        const pipe = new AsyncPipe(null as any);
         expect(pipe.transform(undefined)).toEqual(null);
       });
     });
 
     describe('other types', () => {
       it('should throw when given an invalid object', () => {
-        const pipe = new AsyncPipe(null as any);
         expect(() => pipe.transform('some bogus object' as any)).toThrowError();
       });
     });
