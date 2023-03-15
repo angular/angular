@@ -171,3 +171,11 @@ export class SharedStylesHost implements OnDestroy {
     hostNodes.add(this.doc.head);
   }
 }
+
+/**
+ * Interm G3 workaround for usages of private `DomSharedStylesHost`.
+ * TODO(alanagius): delete once all usages in G3 are removed.
+ */
+@Injectable()
+export class DomSharedStylesHost extends SharedStylesHost {
+}

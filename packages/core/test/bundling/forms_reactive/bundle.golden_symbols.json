@@ -150,6 +150,9 @@
     "name": "DomRendererFactory2"
   },
   {
+    "name": "DomSharedStylesHost"
+  },
+  {
     "name": "EMAIL_REGEXP"
   },
   {

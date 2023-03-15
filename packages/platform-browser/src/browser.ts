@@ -12,11 +12,11 @@ import {APP_ID, ApplicationConfig as ApplicationConfigFromCore, ApplicationModul
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from './browser/testability';
 import {BrowserXhr} from './browser/xhr';
-import {DomRendererFactory2, REMOVE_STYLES_ON_COMPONENT_DESTROY} from './dom/dom_renderer';
+import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
-import {SharedStylesHost} from './dom/shared_styles_host';
+import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
@@ -207,6 +207,7 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
   DomRendererFactory2, SharedStylesHost, EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
+  {provide: DomSharedStylesHost, useExisting: SharedStylesHost},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
   NG_DEV_MODE ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} : []
 ];
