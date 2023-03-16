@@ -19,14 +19,11 @@ export class SharedStylesHost implements OnDestroy {
   > ();
   private readonly hostNodes = new Set<Node>();
   private readonly styleNodesInDOM: Map<string, HTMLStyleElement>|null;
-  private readonly platformIsServer: boolean;
 
   constructor(
-      @Inject(DOCUMENT) private readonly doc: Document, @Inject(APP_ID) private appId: string,
-      @Inject(PLATFORM_ID) readonly platformId: object = {}) {
+      @Inject(DOCUMENT) private readonly doc: Document, @Inject(APP_ID) private appId: string) {
     this.styleNodesInDOM = this.collectServerRenderedStyles();
     this.resetHostNodes();
-    this.platformIsServer = isPlatformServer(platformId);
   }
 
   addStyles(styles: string[]): void {
@@ -139,13 +136,7 @@ export class SharedStylesHost implements OnDestroy {
     } else {
       const styleEl = this.doc.createElement('style');
       styleEl.textContent = style;
-
-      if (this.platformIsServer) {
-        // This `ng-app` attribute is only required when server rendering for style re-using
-        // purposes.
-        styleEl.setAttribute('ng-app', this.appId);
-      }
-
+      styleEl.setAttribute('ng-app', this.appId);
       return styleEl;
     }
   }
