@@ -20,6 +20,8 @@ The method takes a resource URL and two additional parameters:
 | body      | The data to POST in the body of the request.                                                          |
 | options   | An object containing method options which, in this case, specify required headers. |
 
+The example catches errors as [described above](guide/http-handle-request-errors#error-details).
+
 The `HeroesComponent` initiates the actual POST operation by subscribing to the `Observable` returned by this service method.
 
 <code-example header="app/heroes/heroes.component.ts (addHero)" path="http/src/app/heroes/heroes.component.ts" region="add-hero-subscribe"></code-example>
@@ -57,7 +59,7 @@ The following `HeroesService` example, like the POST example, replaces a resourc
 
 <code-example header="app/heroes/heroes.service.ts (updateHero)" path="http/src/app/heroes/heroes.service.ts" region="updateHero"></code-example>
 
-As for any of the HTTP methods that return an observable, the caller, `HeroesComponent.update()` must `subscribe()` to the observable returned from the `HttpClient.put()` in order to initiate the request.
+As for any of the HTTP methods that return an observable, the caller, `HeroesComponent.update()` [must `subscribe()`](guide/http-request-data-from-server#always-subscribe "Why you must always subscribe.") to the observable returned from the `HttpClient.put()` in order to initiate the request.
 
 ## Add and updating headers
 
@@ -82,4 +84,4 @@ The following example shows how, when an old token expires, you can update the a
 
 <a id="url-params"></a>
 
-@reviewed 2023-03-02
+@reviewed 2023-03-16
