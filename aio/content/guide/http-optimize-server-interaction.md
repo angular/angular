@@ -37,6 +37,12 @@ Rather than forward every `searchText` value directly to the injected `PackageSe
 The code sets `packages$` to this re-composed `Observable` of search results.
 The template subscribes to `packages$` with the [AsyncPipe](api/common/AsyncPipe) and displays search results as they arrive.
 
+<div class="alert is-helpful">
+
+See [Using interceptors to request multiple values](guide/http-interceptor-use-cases#cache-refresh) for more about the `withRefresh` option.
+
+</div>
+
 ## Using the `switchMap()` operator
 
 The `switchMap()` operator takes a function argument that returns an `Observable`.
