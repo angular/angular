@@ -4,7 +4,9 @@
 
 ```ts
 
+import { DestroyRef } from '@angular/core';
 import { Injector } from '@angular/core';
+import { MonoTypeOperatorFunction } from 'rxjs';
 import { Observable } from 'rxjs';
 import { Signal } from '@angular/core';
 
@@ -21,6 +23,9 @@ export function fromSignal<T>(source: Signal<T>, options?: FromSignalOptions): O
 export interface FromSignalOptions {
     injector?: Injector;
 }
+
+// @public
+export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperatorFunction<T>;
 
 // (No @packageDocumentation comment for this package)
 
