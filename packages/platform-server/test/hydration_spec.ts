@@ -10,6 +10,7 @@ import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf
 import {APP_ID, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
+import {first} from 'rxjs/operators';
 
 import {renderApplication} from '../src/utils';
 
@@ -77,6 +78,15 @@ function convertHtmlToDom(html: string, doc: Document): HTMLElement {
 
 function stripTransferDataScript(input: string): string {
   return input.replace(/<script (.*?)<\/script>/s, '');
+}
+
+function stripExcessiveSpaces(html: string): string {
+  return html.replace(/\s+/g, ' ');
+}
+
+/** Returns a Promise that resolves when the ApplicationRef becomes stable. */
+function whenStable(appRef: ApplicationRef): Promise<unknown> {
+  return appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
 }
 
 function verifyClientAndSSRContentsMatch(ssrContents: string, clientAppRootElement: HTMLElement) {
@@ -618,6 +628,36 @@ describe('platform-server integration', () => {
             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
           });
 
+          it('should work with empty containers on ng-container nodes', async () => {
+            @Component({
+              standalone: true,
+              selector: 'app',
+              imports: [NgIf],
+              template: `
+                This is an empty container:
+                <ng-container *ngIf="false" />
+                <div>Post-container element</div>
+              `,
+            })
+            class SimpleComponent {
+            }
+
+            const html = await ssr(SimpleComponent);
+            const ssrContents = getAppContents(html);
+
+            expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+            resetTViewsFor(SimpleComponent);
+
+            const appRef = await hydrate(html, SimpleComponent);
+            const compRef = getComponentRef<SimpleComponent>(appRef);
+            appRef.tick();
+
+            const clientRootNode = compRef.location.nativeElement;
+            verifyAllNodesClaimedForHydration(clientRootNode);
+            verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+          });
+
           it('should work with *ngIf on element nodes', async () => {
             @Component({
               standalone: true,
@@ -641,6 +681,29 @@ describe('platform-server integration', () => {
             const compRef = getComponentRef<SimpleComponent>(appRef);
             appRef.tick();
 
+            const clientRootNode = compRef.location.nativeElement;
+            verifyAllNodesClaimedForHydration(clientRootNode);
+            verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+          });
+
+          it('should work with empty containers on element nodes', async () => {
+            @Component({
+              standalone: true,
+              selector: 'app',
+              imports: [NgIf],
+              template: `
+                <h1 *ngIf="false">Hello world!</h1>
+              `,
+            })
+            class SimpleComponent {
+            }
+            const html = await ssr(SimpleComponent);
+            const ssrContents = getAppContents(html);
+            expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+            resetTViewsFor(SimpleComponent);
+            const appRef = await hydrate(html, SimpleComponent);
+            const compRef = getComponentRef<SimpleComponent>(appRef);
+            appRef.tick();
             const clientRootNode = compRef.location.nativeElement;
             verifyAllNodesClaimedForHydration(clientRootNode);
             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
@@ -1121,6 +1184,9 @@ describe('platform-server integration', () => {
                  'if there is a mismatch in template ids between the current view ' +
                  '(that is being created) and the first dehydrated view in the list',
              async () => {
+               // Reset the relevant counter.
+               (ngDevMode as any).dehydratedViewsRemoved = 0;
+
                @Component({
                  standalone: true,
                  selector: 'app',
@@ -1763,6 +1829,270 @@ describe('platform-server integration', () => {
         const clientRootNode = compRef.location.nativeElement;
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+    });
+
+    describe('post-hydration cleanup', () => {
+      it('should cleanup unclaimed views in a component (when using elements)', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NgIf],
+          template: `
+            <b *ngIf="isServer">This is a SERVER-ONLY content</b>
+            <i *ngIf="!isServer">This is a CLIENT-ONLY content</i>
+          `,
+        })
+        class SimpleComponent {
+          // This flag is intentionally different between the client
+          // and the server: we use it to test the logic to cleanup
+          // dehydrated views.
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+        }
+
+        const html = await ssr(SimpleComponent);
+        let ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
+
+        // In the SSR output we expect to see SERVER content, but not CLIENT.
+        expect(ssrContents).not.toContain('<i>This is a CLIENT-ONLY content</i>');
+        expect(ssrContents).toContain('<b>This is a SERVER-ONLY content</b>');
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        await whenStable(appRef);
+
+        const clientContents =
+            stripExcessiveSpaces(stripUtilAttributes(clientRootNode.outerHTML, false));
+
+        // After the cleanup, we expect to see CLIENT content, but not SERVER.
+        expect(clientContents).toContain('<i>This is a CLIENT-ONLY content</i>');
+        expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
+      });
+
+      it('should cleanup unclaimed views in a component (when using <ng-container>s)', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NgIf],
+          template: `
+            <ng-container *ngIf="isServer">This is a SERVER-ONLY content</ng-container>
+            <ng-container *ngIf="!isServer">This is a CLIENT-ONLY content</ng-container>
+          `,
+        })
+        class SimpleComponent {
+          // This flag is intentionally different between the client
+          // and the server: we use it to test the logic to cleanup
+          // dehydrated views.
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+        }
+
+        const html = await ssr(SimpleComponent);
+        let ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
+
+        // In the SSR output we expect to see SERVER content, but not CLIENT.
+        expect(ssrContents).not.toContain('This is a CLIENT-ONLY content<!--ng-container-->');
+        expect(ssrContents).toContain('This is a SERVER-ONLY content<!--ng-container-->');
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        await whenStable(appRef);
+
+        const clientContents =
+            stripExcessiveSpaces(stripUtilAttributes(clientRootNode.outerHTML, false));
+
+        // After the cleanup, we expect to see CLIENT content, but not SERVER.
+        expect(clientContents).toContain('This is a CLIENT-ONLY content<!--ng-container-->');
+        expect(clientContents).not.toContain('This is a SERVER-ONLY content<!--ng-container-->');
+      });
+
+      it('should cleanup within inner containers', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NgIf],
+          template: `
+            <ng-container *ngIf="true">
+              <b *ngIf="isServer">This is a SERVER-ONLY content</b>
+              Outside of the container (must be retained).
+            </ng-container>
+            <i *ngIf="!isServer">This is a CLIENT-ONLY content</i>
+          `,
+        })
+        class SimpleComponent {
+          // This flag is intentionally different between the client
+          // and the server: we use it to test the logic to cleanup
+          // dehydrated views.
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+        }
+
+        const html = await ssr(SimpleComponent);
+        let ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
+
+        // In the SSR output we expect to see SERVER content, but not CLIENT.
+        expect(ssrContents).not.toContain('<i>This is a CLIENT-ONLY content</i>');
+        expect(ssrContents).toContain('<b>This is a SERVER-ONLY content</b>');
+        expect(ssrContents).toContain('Outside of the container (must be retained).');
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        await whenStable(appRef);
+
+        const clientContents =
+            stripExcessiveSpaces(stripUtilAttributes(clientRootNode.outerHTML, false));
+
+        // After the cleanup, we expect to see CLIENT content, but not SERVER.
+        expect(clientContents).toContain('<i>This is a CLIENT-ONLY content</i>');
+        expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
+
+        // This line must be preserved (it's outside of the dehydrated container).
+        expect(clientContents).toContain('Outside of the container (must be retained).');
+      });
+
+      it('should reconcile *ngFor-generated views', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NgIf, NgFor],
+          template: `
+            <div>
+              <span *ngFor="let item of items">
+                {{ item }}
+                <b *ngIf="item > 15">is bigger than 15!</b>
+              </span>
+              <main>Hi! This is the main content.</main>
+            </div>
+          `,
+        })
+        class SimpleComponent {
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+          // Note: this is needed to test cleanup/reconciliation logic.
+          items = this.isServer ? [10, 20, 100, 200] : [30, 5, 50];
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        await whenStable(appRef);
+
+        // Post-cleanup should *not* contain dehydrated views.
+        const postCleanupContents = stripExcessiveSpaces(clientRootNode.outerHTML);
+        expect(postCleanupContents)
+            .not.toContain(
+                '<span> 5 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "false" }--></span>');
+        expect(postCleanupContents)
+            .toContain(
+                '<span> 30 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "true" }--></span>');
+        expect(postCleanupContents)
+            .toContain('<span> 5 <!--bindings={ "ng-reflect-ng-if": "false" }--></span>');
+        expect(postCleanupContents)
+            .toContain(
+                '<span> 50 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "true" }--></span>');
+      });
+
+      it('should cleanup dehydrated views within dynamically created components', async () => {
+        @Component({
+          standalone: true,
+          imports: [CommonModule],
+          selector: 'dynamic',
+          template: `
+            <span>This is a content of a dynamic component.</span>
+            <b *ngIf="isServer">This is a SERVER-ONLY content</b>
+            <i *ngIf="!isServer">This is a CLIENT-ONLY content</i>
+            <ng-container *ngIf="isServer">
+              This is also a SERVER-ONLY content, but inside ng-container.
+              <b>With some extra tags</b> and some text inside.
+            </ng-container>
+          `,
+        })
+        class DynamicComponent {
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NgIf, NgFor],
+          template: `
+            <div #target></div>
+            <main>Hi! This is the main content.</main>
+          `,
+        })
+        class SimpleComponent {
+          @ViewChild('target', {read: ViewContainerRef}) vcr!: ViewContainerRef;
+
+          ngAfterViewInit() {
+            const compRef = this.vcr.createComponent(DynamicComponent);
+            compRef.changeDetectorRef.detectChanges();
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        let ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, DynamicComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
+
+        // We expect to see SERVER content, but not CLIENT.
+        expect(ssrContents).not.toContain('<i>This is a CLIENT-ONLY content</i>');
+        expect(ssrContents).toContain('<b>This is a SERVER-ONLY content</b>');
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        await whenStable(appRef);
+
+        const clientContents =
+            stripExcessiveSpaces(stripUtilAttributes(clientRootNode.outerHTML, false));
+
+        // After the cleanup, we expect to see CLIENT content, but not SERVER.
+        expect(clientContents).toContain('<i>This is a CLIENT-ONLY content</i>');
+        expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
       });
     });
 
