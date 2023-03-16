@@ -120,8 +120,7 @@ export class ActivatedRoute {
   _queryParamMap?: Observable<ParamMap>;
 
   /** An Observable of the resolved route title */
-  readonly title: Observable<string|undefined> =
-      this.data?.pipe(map((d: Data) => d[RouteTitleKey])) ?? of(undefined);
+  readonly title: Observable<string|undefined>;
 
   /** @internal */
   constructor(
@@ -140,6 +139,7 @@ export class ActivatedRoute {
       /** The component of the route, a constant. */
       public component: Type<any>|null, futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
+    this.title = this.data?.pipe(map((d: Data) => d[RouteTitleKey])) ?? of(undefined);
   }
 
   /** The configuration used to match this route. */

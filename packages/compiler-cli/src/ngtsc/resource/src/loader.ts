@@ -24,12 +24,16 @@ const RESOURCE_MARKER_TS = RESOURCE_MARKER + '.ts';
 export class AdapterResourceLoader implements ResourceLoader {
   private cache = new Map<string, string>();
   private fetching = new Map<string, Promise<void>>();
-  private lookupResolutionHost = createLookupResolutionHost(this.adapter);
+  private lookupResolutionHost: RequiredDelegations<ts.ModuleResolutionHost>;
 
-  canPreload = !!this.adapter.readResource;
-  canPreprocess = !!this.adapter.transformResource;
+  canPreload: boolean;
+  canPreprocess: boolean;
 
-  constructor(private adapter: NgCompilerAdapter, private options: ts.CompilerOptions) {}
+  constructor(private adapter: NgCompilerAdapter, private options: ts.CompilerOptions) {
+    this.lookupResolutionHost = createLookupResolutionHost(this.adapter);
+    this.canPreload = !!this.adapter.readResource;
+    this.canPreprocess = !!this.adapter.transformResource;
+  }
 
   /**
    * Resolve the url of a resource relative to the file that contains the reference to it.
