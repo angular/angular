@@ -8,3 +8,4 @@
 
 export {fromObservable} from './from_observable';
 export {fromSignal, FromSignalOptions} from './from_signal';
+export {takeUntilDestroyed} from './take_until_destroyed';
