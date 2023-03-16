@@ -186,10 +186,7 @@ function locateOrCreateElementContainerNode(
           'Unexpected state: hydrating an <ng-container>, ' +
               'but no hydration info is available.');
 
-  // If this container is non-empty, store the first node as a segment head,
-  // otherwise, this node is an anchor and segment head doesn't exist (thus `null`).
-  const segmentHead = ngContainerSize > 0 ? currentRNode : null;
-  setSegmentHead(hydrationInfo, index, segmentHead);
+  setSegmentHead(hydrationInfo, index, currentRNode);
   comment = siblingAfter<RComment>(ngContainerSize, currentRNode)!;
 
   if (ngDevMode) {
