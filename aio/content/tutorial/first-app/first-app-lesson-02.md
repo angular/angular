@@ -61,7 +61,7 @@ In the **Terminal** pane of your IDE:
 
     </code-example>
 
-1.  Run this command to build and serve the your app.
+1.  Run this command to build and serve your app.
 
     <code-example format="shell" language="shell">
 
@@ -84,7 +84,7 @@ In the **Edit** pane of your IDE:
 1.  Open `app.component.ts` in the editor.
 1.  In `app.component.ts`, import `HomeComponent` by adding this line to the file level imports.
 
-    <code-example header="Add to src/app/app.component.ts" path="first-app-lesson-02/src/app/app.component.ts" region="import-home"></code-example>
+    <code-example header="Import HomeComponent in src/app/app.component.ts" path="first-app-lesson-02/src/app/app.component.ts" region="import-home"></code-example>
 
 1.  In `app.component.ts`, in `@Component`, update the `imports` array property and add `HomeComponent`.
 
@@ -123,7 +123,7 @@ In the **Edit** pane of your IDE:
     <code-example header="Replace in src/app/home/home.component.css" path="first-app-lesson-02/src/app/home/home.component.css"></code-example>
 
 1.  Confirm that the app builds without error.
-    You should see filter query box and button in your app and they should be styled.
+    You should find the filter query box and button in your app and they should be styled.
     Correct any errors before you continue to the next step.
 
 <section class="lightbox">
