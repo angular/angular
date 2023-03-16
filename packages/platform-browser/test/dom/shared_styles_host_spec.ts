@@ -25,20 +25,20 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     it('should add existing styles to new hosts', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
-      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+      expect(someHost.innerHTML).toEqual('<style ng-app-id="app-id">a {};</style>');
     });
 
     it('should add new styles to hosts', () => {
       ssh.addHost(someHost);
       ssh.addStyles(['a {};']);
-      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+      expect(someHost.innerHTML).toEqual('<style ng-app-id="app-id">a {};</style>');
     });
 
     it('should add styles only once to hosts', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
       ssh.addStyles(['a {};']);
-      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+      expect(someHost.innerHTML).toEqual('<style ng-app-id="app-id">a {};</style>');
     });
 
     it('should use the document head as default host', () => {
@@ -49,7 +49,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     it('should remove style nodes on destroy', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
-      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+      expect(someHost.innerHTML).toEqual('<style ng-app-id="app-id">a {};</style>');
 
       ssh.ngOnDestroy();
       expect(someHost.innerHTML).toEqual('');
