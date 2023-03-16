@@ -9,7 +9,7 @@
 import {Adapter} from './adapter';
 import {CacheState, Debuggable, DebugIdleState, DebugState, DebugVersion, NormalizedUrl, UpdateCacheStatus, UpdateSource} from './api';
 import {AppVersion} from './app-version';
-import {Database} from './database';
+import {Database, Table} from './database';
 import {CacheTable} from './db-cache';
 import {DebugHandler} from './debug';
 import {errorToString} from './error';
@@ -101,7 +101,7 @@ export class Driver implements Debuggable, UpdateSource {
    */
   private loggedInvalidOnlyIfCachedRequest: boolean = false;
 
-  private ngswStatePath = this.adapter.parseUrl('ngsw/state', this.scope.registration.scope).path;
+  private ngswStatePath: string;
 
   /**
    * A scheduler which manages a queue of tasks that need to be executed when the SW is
@@ -112,10 +112,13 @@ export class Driver implements Debuggable, UpdateSource {
   debugger: DebugHandler;
 
   // A promise resolving to the control DB table.
-  private controlTable = this.db.open('control');
+  private controlTable: Promise<Table>;
 
   constructor(
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter, private db: Database) {
+    this.controlTable = this.db.open('control');
+    this.ngswStatePath = this.adapter.parseUrl('ngsw/state', this.scope.registration.scope).path;
+
     // Set up all the event handlers that the SW needs.
 
     // The install event is triggered when the service worker is first installed.

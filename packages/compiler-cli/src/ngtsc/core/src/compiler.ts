@@ -1265,8 +1265,12 @@ class ReferenceGraphAdapter implements ReferencesRegistry {
 }
 
 class NotifyingProgramDriverWrapper implements ProgramDriver {
+  getSourceFileVersion: ProgramDriver['getSourceFileVersion'];
+
   constructor(
-      private delegate: ProgramDriver, private notifyNewProgram: (program: ts.Program) => void) {}
+      private delegate: ProgramDriver, private notifyNewProgram: (program: ts.Program) => void) {
+    this.getSourceFileVersion = this.delegate.getSourceFileVersion?.bind(this);
+  }
 
   get supportsInlineOperations() {
     return this.delegate.supportsInlineOperations;
@@ -1280,8 +1284,6 @@ class NotifyingProgramDriverWrapper implements ProgramDriver {
     this.delegate.updateFiles(contents, updateMode);
     this.notifyNewProgram(this.delegate.getProgram());
   }
-
-  getSourceFileVersion = this.delegate.getSourceFileVersion?.bind(this);
 }
 
 function versionMapFromProgram(
