@@ -65,6 +65,10 @@ ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
 sed('-i', 'private rootDirsRelative;', 'rootDirsRelative(fileName: string): string;',
     'node_modules/@bazel/concatjs/internal/tsc_wrapped/compiler_host.d.ts');
 
+// Add support for ES2022 in ts_library
+sed('-i', '"es2020", "esnext"', '"es2020", "es2022", "esnext"',
+    'node_modules/@bazel/concatjs/internal/build_defs.bzl');
+
 log('\n# patch: delete d.ts files referring to rxjs-compat');
 // more info in https://github.com/angular/angular/pull/33786
 rm('-rf', [
