@@ -556,7 +556,7 @@ describe('platform-server integration', () => {
        });
      }));
 
-  it('adds styles with ng-app attribute', waitForAsync(() => {
+  it('adds styles with ng-app-id attribute', waitForAsync(() => {
        const platform = platformDynamicServer([{
          provide: INITIAL_CONFIG,
          useValue: {document: '<html><head></head><body><app></app></body></html>'}
@@ -567,7 +567,7 @@ describe('platform-server integration', () => {
          const styles: any[] = head.children as any;
          expect(styles.length).toBe(1);
          expect(styles[0].textContent).toContain('color: red');
-         expect(styles[0].getAttribute('ng-app')).toBe('ng');
+         expect(styles[0].getAttribute('ng-app-id')).toBe('ng');
        });
      }));
 

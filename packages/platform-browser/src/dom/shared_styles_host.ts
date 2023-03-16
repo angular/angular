@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, isPlatformServer} from '@angular/common';
-import {APP_ID, Inject, Injectable, OnDestroy, PLATFORM_ID} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {APP_ID, Inject, Injectable, OnDestroy} from '@angular/core';
+
+/** The style elements attribute name used to set value of `APP_ID` token. */
+const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
 
 @Injectable()
 export class SharedStylesHost implements OnDestroy {
@@ -19,14 +22,12 @@ export class SharedStylesHost implements OnDestroy {
   > ();
   private readonly hostNodes = new Set<Node>();
   private readonly styleNodesInDOM: Map<string, HTMLStyleElement>|null;
-  private readonly platformIsServer: boolean;
 
   constructor(
-      @Inject(DOCUMENT) private readonly doc: Document, @Inject(APP_ID) private appId: string,
-      @Inject(PLATFORM_ID) readonly platformId: object = {}) {
+      @Inject(DOCUMENT) private readonly doc: Document,
+      @Inject(APP_ID) private readonly appId: string) {
     this.styleNodesInDOM = this.collectServerRenderedStyles();
     this.resetHostNodes();
-    this.platformIsServer = isPlatformServer(platformId);
   }
 
   addStyles(styles: string[]): void {
@@ -92,8 +93,8 @@ export class SharedStylesHost implements OnDestroy {
   }
 
   private collectServerRenderedStyles(): Map<string, HTMLStyleElement>|null {
-    const styles =
-        this.doc.head?.querySelectorAll<HTMLStyleElement>(`style[ng-app="${this.appId}"]`);
+    const styles = this.doc.head?.querySelectorAll<HTMLStyleElement>(
+        `style[${APP_ID_ATTRIBUTE_NAME}="${this.appId}"]`);
 
     if (styles?.length) {
       const styleMap = new Map<string, HTMLStyleElement>();
@@ -139,12 +140,7 @@ export class SharedStylesHost implements OnDestroy {
     } else {
       const styleEl = this.doc.createElement('style');
       styleEl.textContent = style;
-
-      if (this.platformIsServer) {
-        // This `ng-app` attribute is only required when server rendering for style re-using
-        // purposes.
-        styleEl.setAttribute('ng-app', this.appId);
-      }
+      styleEl.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
 
       return styleEl;
     }
