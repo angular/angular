@@ -1,3 +1,86 @@
+<a name="16.0.0-next.3"></a>
+# 16.0.0-next.3 (2023-03-16)
+## Breaking Changes
+### core
+- The `APP_ID` token value is no longer randomly generated. If you are bootstrapping multiple application on the same page you will need to set to provide the `APP_ID` yourself.
+  
+  ```ts
+  bootstrapApplication(ComponentA, {
+    providers: [
+     { provide: APP_ID, useValue: 'app-a' },
+     // ... other providers ...
+    ]
+  });
+  ```
+### router
+- `ComponentFactoryResolver` has been removed from Router APIs.
+  Component factories are not required to create an instance of a component
+  dynamically. Passing a factory resolver via resolver argument is no longer needed
+  and code can instead use `ViewContainerRef.createComponent` without the
+  factory resolver.
+## Deprecations
+### core
+- `EnvironmentInjector.runInContext` is now deprecated, with
+  `runInInjectionContext` functioning as a direct replacement:
+  
+  ```typescript
+  // Previous method version (deprecated):
+  envInjector.runInContext(fn);
+  // New standalone function:
+  runInInjectionContext(envInjector, fn);
+  ```
+### platform-browser
+- `BrowserModule.withServerTransition` has been deprecated. `APP_ID` should be used instead to set the application ID.
+  NB: Unless, you render multiple Angular applications on the same page, setting an application ID is not necessary.
+  
+  Before:
+  ```ts
+  imports: [
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    ...
+  ]
+  ```
+  
+  After:
+  ```ts
+  imports: [
+    BrowserModule,
+    { provide: APP_ID, useValue: 'serverApp' },
+    ...
+  ],
+  ```
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1a6ca68154](https://github.com/angular/angular/commit/1a6ca68154dd73bac4b8d2e094d97952f60b3e30) | feat | add support for compile-time required inputs ([#49304](https://github.com/angular/angular/pull/49304)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0814f20594](https://github.com/angular/angular/commit/0814f2059406dff9cefdd8b210756b6fdcba15b1) | feat | introduce `runInInjectionContext` and deprecate prior version ([#49396](https://github.com/angular/angular/pull/49396)) |
+| [0e5f9ba6f4](https://github.com/angular/angular/commit/0e5f9ba6f427a79a0b741c1780cd2ff72cc3100a) | fix | generate consistent component IDs ([#48253](https://github.com/angular/angular/pull/48253)) |
+| [82d6fbb109](https://github.com/angular/angular/commit/82d6fbb109491607bd2e4feaa35c3dace79e4576) | refactor | generate a static application ID ([#49422](https://github.com/angular/angular/pull/49422)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [630af63fae](https://github.com/angular/angular/commit/630af63fae2e279e88805aecf01db58be6dfbafb) | feat | deprecate `withServerTransition` call ([#49422](https://github.com/angular/angular/pull/49422)) |
+| [9165ff2517](https://github.com/angular/angular/commit/9165ff2517448b43bb910001816108702088e93e) | fix | reuse server generated component styles ([#48253](https://github.com/angular/angular/pull/48253)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [056d68002f](https://github.com/angular/angular/commit/056d68002fbe6024b486bb7220bc77f8f9a07707) | feat | add `provideServerSupport` function to provide server capabilities to an application ([#49380](https://github.com/angular/angular/pull/49380)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c0b1b7becf](https://github.com/angular/angular/commit/c0b1b7becf65d5f21018a1794aafe9bbfbd5ce05) | fix | Remove deprecated ComponentFactoryResolver from APIs ([#49239](https://github.com/angular/angular/pull/49239)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5e7fc259ea](https://github.com/angular/angular/commit/5e7fc259ead62ee9b4f8a9a77a455065b6a8e2d8) | feat | add function to provide service worker ([#48247](https://github.com/angular/angular/pull/48247)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Esteban Gehring, Jessica Janiuk, JiaLiPassion, Julien Saguet, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner and Virginia Dooley
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.3"></a>
 # 15.2.3 (2023-03-16)
 ## Special Thanks
