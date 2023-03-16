@@ -1,3 +1,10 @@
+<a name="15.2.3"></a>
+# 15.2.3 (2023-03-16)
+## Special Thanks
+Alan Agius, Esteban Gehring, Matthieu Riegler and Virginia Dooley
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.2"></a>
 # 15.2.2 (2023-03-08)
 ### migrations
