@@ -179,23 +179,12 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
 
       const stringValue = readStringType(member.type);
 
-      // Before v16 the inputs map has the type of `{[field: string]: string}`.
-      // After v16 it has the type of `{[field: string]: {alias: string, required: boolean}}`.
+      // TODO(required-inputs): handle object literal case.
       if (stringValue != null) {
         inputsMap[member.name.text] = {
           bindingPropertyName: stringValue,
           classPropertyName: member.name.text,
           required: false
-        };
-      } else {
-        const config = readMapType(member.type, innerValue => {
-                         return readStringType(innerValue) ?? readBooleanType(innerValue);
-                       }) as {alias: string, required: boolean};
-
-        inputsMap[member.name.text] = {
-          classPropertyName: member.name.text,
-          bindingPropertyName: config.alias,
-          required: config.required
         };
       }
     }
