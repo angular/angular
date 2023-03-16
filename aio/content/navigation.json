@@ -833,6 +833,11 @@
               "tooltip": "Create the app's HomeComponent"
             },
             {
+              "url": "tutorial/first-app/first-app-lesson-03",
+              "title": "Create housing location component",
+              "tooltip": "Create the app's HousingLocation"
+            },
+            {
               "url": "tutorial/first-app/first-app-lesson-04",
               "title": "Angular interfaces",
               "tooltip": "Add an Angular interface to your app"
