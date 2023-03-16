@@ -32,15 +32,17 @@ export interface PendingChange {
 /** Tracks changes that have to be made for specific files. */
 export class ChangeTracker {
   private readonly _changes = new Map<ts.SourceFile, PendingChange[]>();
-  private readonly _importManager = new ImportManager(
-      currentFile => ({
-        addNewImport: (start, text) => this.insertText(currentFile, start, text),
-        updateExistingImport: (namedBindings, text) =>
-            this.replaceText(currentFile, namedBindings.getStart(), namedBindings.getWidth(), text),
-      }),
-      this._printer);
+  private readonly _importManager: ImportManager;
 
-  constructor(private _printer: ts.Printer, private _importRemapper?: ImportRemapper) {}
+  constructor(private _printer: ts.Printer, private _importRemapper?: ImportRemapper) {
+    this._importManager = new ImportManager(
+        currentFile => ({
+          addNewImport: (start, text) => this.insertText(currentFile, start, text),
+          updateExistingImport: (namedBindings, text) => this.replaceText(
+              currentFile, namedBindings.getStart(), namedBindings.getWidth(), text),
+        }),
+        this._printer);
+  }
 
   /**
    * Tracks the insertion of some text.

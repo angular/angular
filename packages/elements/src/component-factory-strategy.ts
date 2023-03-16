@@ -81,17 +81,21 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * fired.
    * (This helps detect the first change of an input, even if it is explicitly set to `undefined`.)
    */
-  private readonly unchangedInputs =
-      new Set<string>(this.componentFactory.inputs.map(({propName}) => propName));
+  private readonly unchangedInputs: Set<string>;
 
   /** Service for setting zone context. */
-  private readonly ngZone = this.injector.get<NgZone>(NgZone);
+  private readonly ngZone: NgZone;
 
   /** The zone the element was created in or `null` if Zone.js is not loaded. */
-  private readonly elementZone =
-      (typeof Zone === 'undefined') ? null : this.ngZone.run(() => Zone.current);
+  private readonly elementZone: Zone|null;
 
-  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {}
+
+  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {
+    this.unchangedInputs =
+        new Set<string>(this.componentFactory.inputs.map(({propName}) => propName));
+    this.ngZone = this.injector.get<NgZone>(NgZone);
+    this.elementZone = (typeof Zone === 'undefined') ? null : this.ngZone.run(() => Zone.current);
+  }
 
   /**
    * Initializes a new component if one has not yet been created and cancels any scheduled
