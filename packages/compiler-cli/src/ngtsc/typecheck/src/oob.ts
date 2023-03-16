@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingPipe, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {BindingPipe, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstReference, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
@@ -81,11 +81,6 @@ export interface OutOfBandDiagnosticRecorder {
   splitTwoWayBinding(
       templateId: TemplateId, input: TmplAstBoundAttribute, output: TmplAstBoundEvent,
       inputConsumer: ClassDeclaration, outputConsumer: ClassDeclaration|TmplAstElement): void;
-
-  /** Reports required inputs that haven't been bound. */
-  missingRequiredInputs(
-      templateId: TemplateId, element: TmplAstElement|TmplAstTemplate, directiveName: string,
-      isComponent: boolean, inputAliases: string[]): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -271,18 +266,6 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     this._diagnostics.push(makeTemplateDiagnostic(
         templateId, mapping, input.keySpan, ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.SPLIT_TWO_WAY_BINDING), errorMsg, relatedMessages));
-  }
-
-  missingRequiredInputs(
-      templateId: TemplateId, element: TmplAstElement|TmplAstTemplate, directiveName: string,
-      isComponent: boolean, inputAliases: string[]): void {
-    const message = `Required input${inputAliases.length === 1 ? '' : 's'} ${
-        inputAliases.map(n => `'${n}'`).join(', ')} from ${
-        isComponent ? 'component' : 'directive'} ${directiveName} must be specified.`;
-
-    this._diagnostics.push(makeTemplateDiagnostic(
-        templateId, this.resolver.getSourceMapping(templateId), element.startSourceSpan,
-        ts.DiagnosticCategory.Error, ngErrorCode(ErrorCode.MISSING_REQUIRED_INPUTS), message));
   }
 }
 

@@ -376,7 +376,7 @@ import * as i0 from "@angular/core";
 export declare class MyComp {
     names: string[];
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, { "names": { "alias": "names"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, { "names": "names"; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     customName: string;
@@ -479,7 +479,7 @@ import * as i0 from "@angular/core";
 export declare class MyComp {
     names: string[];
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, { "names": { "alias": "names"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, { "names": "names"; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     n0: string;
@@ -564,7 +564,7 @@ export declare class ObjectComp {
         [key: string]: any;
     };
     static ɵfac: i0.ɵɵFactoryDeclaration<ObjectComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ObjectComp, "object-comp", never, { "config": { "alias": "config"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ObjectComp, "object-comp", never, { "config": "config"; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     name: string;
@@ -646,7 +646,7 @@ export declare class NestedComp {
         [key: string]: any;
     };
     static ɵfac: i0.ɵɵFactoryDeclaration<NestedComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<NestedComp, "nested-comp", never, { "config": { "alias": "config"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<NestedComp, "nested-comp", never, { "config": "config"; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     name: string;

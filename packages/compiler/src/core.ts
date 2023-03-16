@@ -31,12 +31,11 @@ export enum ChangeDetectionStrategy {
 }
 
 export interface Input {
-  alias?: string;
-  required?: boolean;
+  bindingPropertyName?: string;
 }
 
 export interface Output {
-  alias?: string;
+  bindingPropertyName?: string;
 }
 
 export interface HostBinding {

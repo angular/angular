@@ -567,39 +567,22 @@ function parseInputsArray(
   const inputs = {} as Record<string, InputMapping>;
   const inputsArray = evaluator.evaluate(inputsField);
 
+  // TODO(required-inputs): change the error wording here
   if (!Array.isArray(inputsArray)) {
     throw createValueHasWrongTypeError(
-        inputsField, inputsArray, `Failed to resolve @Directive.inputs to an array`);
+        inputsField, inputsArray, `Failed to resolve @Directive.inputs to a string array`);
   }
 
-  for (let i = 0; i < inputsArray.length; i++) {
-    const value = inputsArray[i];
-
+  for (const value of inputsArray) {
+    // TODO(required-inputs): parse object-based config.
     if (typeof value === 'string') {
       // If the value is a string, we treat it as a mapping string.
-      const [bindingPropertyName, classPropertyName] = parseMappingString(value);
-      inputs[classPropertyName] = {bindingPropertyName, classPropertyName, required: false};
-    } else if (value instanceof Map) {
-      // If it's a map, we treat it as a config object.
-      const name = value.get('name');
-      const alias = value.get('alias');
-      const required = value.get('required');
-
-      if (typeof name !== 'string') {
-        throw createValueHasWrongTypeError(
-            inputsField, name,
-            `Value at position ${i} of @Directive.inputs array must have a "name" property`);
-      }
-
-      inputs[name] = {
-        classPropertyName: name,
-        bindingPropertyName: typeof alias === 'string' ? alias : name,
-        required: required === true
-      };
+      const [bindingPropertyName, fieldName] = parseMappingString(value);
+      inputs[fieldName] = {bindingPropertyName, classPropertyName: fieldName, required: false};
     } else {
+      // TODO(required-inputs): change the error wording here
       throw createValueHasWrongTypeError(
-          inputsField, value,
-          `@Directive.inputs array can only contain strings or object literals`);
+          inputsField, value, `Failed to resolve @Directive.inputs to a string array`);
     }
   }
 
@@ -614,23 +597,20 @@ function parseInputFields(
 
   parseDecoratedFields(inputMembers, evaluator, (classPropertyName, options, decorator) => {
     let bindingPropertyName: string;
-    let required = false;
 
+    // TODO(required-inputs): parse object-based config.
     if (options === null) {
       bindingPropertyName = classPropertyName;
     } else if (typeof options === 'string') {
       bindingPropertyName = options;
-    } else if (options instanceof Map) {
-      const aliasInConfig = options.get('alias');
-      bindingPropertyName = typeof aliasInConfig === 'string' ? aliasInConfig : classPropertyName;
-      required = options.get('required') === true;
     } else {
+      // TODO(required-inputs): change the error wording here
       throw createValueHasWrongTypeError(
           Decorator.nodeForError(decorator), options,
-          `@${decorator.name} decorator argument must resolve to a string or an object literal`);
+          `@${decorator.name} decorator argument must resolve to a string`);
     }
 
-    inputs[classPropertyName] = {bindingPropertyName, classPropertyName, required};
+    inputs[classPropertyName] = {bindingPropertyName, classPropertyName, required: false};
   });
 
   return inputs;
