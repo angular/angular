@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application_ref';
 import {PLATFORM_ID} from '../application_tokens';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, makeEnvironmentProviders} from '../di';
 import {inject} from '../di/injector_compatibility';
@@ -16,6 +17,7 @@ import {enableApplyRootElementTransformImpl} from '../render3/instructions/share
 import {enableLocateOrCreateContainerAnchorImpl} from '../render3/instructions/template';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
 
+import {cleanupDehydratedViews} from './cleanup';
 import {IS_HYDRATION_FEATURE_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
 import {enableRetrieveHydrationInfoImpl} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
@@ -129,6 +131,17 @@ export function provideHydrationSupport(): EnvironmentProviders {
       // environment. On a server, an application is rendered
       // from scratch, so the host content needs to be empty.
       useFactory: () => isBrowser(),
+    },
+    {
+      provide: APP_BOOTSTRAP_LISTENER,
+      useFactory: () => {
+        if (isBrowser()) {
+          const appRef = inject(ApplicationRef);
+          return () => cleanupDehydratedViews(appRef);
+        }
+        return () => {};  // noop
+      },
+      multi: true,
     }
   ]);
 }
