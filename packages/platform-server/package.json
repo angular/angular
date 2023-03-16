@@ -28,8 +28,7 @@
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
   "sideEffects": [
-    "./esm2020/init/**",
-    "./fesm2015/init.mjs",
-    "./fesm2020/init.mjs"
+    "./esm2022/init/**",
+    "./fesm2022/init.mjs"
   ]
 }
