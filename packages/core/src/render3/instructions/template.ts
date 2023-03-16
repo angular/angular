@@ -140,11 +140,8 @@ function locateOrCreateContainerAnchorImpl(
   const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
   ngDevMode && validateNodeExists(currentRNode);
 
+  setSegmentHead(hydrationInfo, index, currentRNode);
   const viewContainerSize = calcSerializedContainerSize(hydrationInfo, index);
-  // If this container is non-empty, store the first node as a segment head,
-  // otherwise, this node is an anchor and segment head doesn't exist (thus `null`).
-  const segmentHead = viewContainerSize > 0 ? currentRNode : null;
-  setSegmentHead(hydrationInfo, index, segmentHead);
   const comment = siblingAfter<RComment>(viewContainerSize, currentRNode)!;
 
   if (ngDevMode) {
