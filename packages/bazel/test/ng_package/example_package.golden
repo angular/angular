@@ -5,42 +5,33 @@ a11y
 arbitrary-npm-package-main.js
 arbitrary_bin.txt
 arbitrary_genfiles.txt
-esm2020
-  esm2020/a11y
-    esm2020/a11y/a11y.mjs
-    esm2020/a11y/index.mjs
-    esm2020/a11y/public-api.mjs
-  esm2020/example.mjs
-  esm2020/imports
-    esm2020/imports/imports.mjs
-    esm2020/imports/index.mjs
-    esm2020/imports/public-api.mjs
-    esm2020/imports/second.mjs
-  esm2020/index.mjs
-  esm2020/mymodule.mjs
-  esm2020/secondary
-    esm2020/secondary/index.mjs
-    esm2020/secondary/secondary.mjs
-    esm2020/secondary/secondarymodule.mjs
+esm2022
+  esm2022/a11y
+    esm2022/a11y/a11y.mjs
+    esm2022/a11y/index.mjs
+    esm2022/a11y/public-api.mjs
+  esm2022/example.mjs
+  esm2022/imports
+    esm2022/imports/imports.mjs
+    esm2022/imports/index.mjs
+    esm2022/imports/public-api.mjs
+    esm2022/imports/second.mjs
+  esm2022/index.mjs
+  esm2022/mymodule.mjs
+  esm2022/secondary
+    esm2022/secondary/index.mjs
+    esm2022/secondary/secondary.mjs
+    esm2022/secondary/secondarymodule.mjs
 extra-styles.css
-fesm2015
-  fesm2015/a11y.mjs
-  fesm2015/a11y.mjs.map
-  fesm2015/imports.mjs
-  fesm2015/imports.mjs.map
-  fesm2015/secondary.mjs
-  fesm2015/secondary.mjs.map
-  fesm2015/waffels.mjs
-  fesm2015/waffels.mjs.map
-fesm2020
-  fesm2020/a11y.mjs
-  fesm2020/a11y.mjs.map
-  fesm2020/imports.mjs
-  fesm2020/imports.mjs.map
-  fesm2020/secondary.mjs
-  fesm2020/secondary.mjs.map
-  fesm2020/waffels.mjs
-  fesm2020/waffels.mjs.map
+fesm2022
+  fesm2022/a11y.mjs
+  fesm2022/a11y.mjs.map
+  fesm2022/imports.mjs
+  fesm2022/imports.mjs.map
+  fesm2022/secondary.mjs
+  fesm2022/secondary.mjs.map
+  fesm2022/waffels.mjs
+  fesm2022/waffels.mjs.map
 imports
   imports/index.d.ts
 index.d.ts
@@ -109,7 +100,7 @@ World
 Hello
 
 
---- esm2020/a11y/a11y.mjs ---
+--- esm2022/a11y/a11y.mjs ---
 
 /**
  * Generated bundle index. Do not edit.
@@ -117,7 +108,7 @@ Hello
 export * from './index';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYTExeS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ExMXkvYTExeS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ==
 
---- esm2020/a11y/index.mjs ---
+--- esm2022/a11y/index.mjs ---
 
 /**
  * @license
@@ -129,7 +120,7 @@ export * from './index';
 export * from './public-api';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9hMTF5L2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7R0FNRztBQUVILGNBQWMsY0FBYyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBMTEMgQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vcHVibGljLWFwaSc7XG4iXX0=
 
---- esm2020/a11y/public-api.mjs ---
+--- esm2022/a11y/public-api.mjs ---
 
 /**
  * @license
@@ -141,18 +132,18 @@ export * from './public-api';
 import { NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 class A11yModule {
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
+    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: A11yModule }); }
+    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule }); }
 }
-A11yModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-A11yModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: A11yModule });
-A11yModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule });
 export { A11yModule };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule, decorators: [{
             type: NgModule,
             args: [{}]
         }] });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ExMXkvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDOztBQUV2QyxNQUNhLFVBQVU7O2tIQUFWLFVBQVU7bUhBQVYsVUFBVTttSEFBVixVQUFVO1NBQVYsVUFBVTtzR0FBVixVQUFVO2tCQUR0QixRQUFRO21CQUFDLEVBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIExMQyBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBBMTF5TW9kdWxlIHtcbn1cbiJdfQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ExMXkvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDOztBQUV2QyxNQUNhLFVBQVU7eUhBQVYsVUFBVTswSEFBVixVQUFVOzBIQUFWLFVBQVU7O1NBQVYsVUFBVTtzR0FBVixVQUFVO2tCQUR0QixRQUFRO21CQUFDLEVBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIExMQyBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBBMTF5TW9kdWxlIHtcbn1cbiJdfQ==
 
---- esm2020/example.mjs ---
+--- esm2022/example.mjs ---
 
 /**
  * Generated bundle index. Do not edit.
@@ -160,7 +151,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
 export * from './index';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2V4YW1wbGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0dBRUc7QUFFSCxjQUFjLFNBQVMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogR2VuZXJhdGVkIGJ1bmRsZSBpbmRleC4gRG8gbm90IGVkaXQuXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9pbmRleCc7XG4iXX0=
 
---- esm2020/imports/imports.mjs ---
+--- esm2022/imports/imports.mjs ---
 
 /**
  * Generated bundle index. Do not edit.
@@ -168,7 +159,7 @@ export * from './index';
 export * from './index';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW1wb3J0cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvaW1wb3J0cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ==
 
---- esm2020/imports/index.mjs ---
+--- esm2022/imports/index.mjs ---
 
 /**
  * @license
@@ -180,7 +171,7 @@ export * from './index';
 export * from './public-api';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbXBvcnRzL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7R0FNRztBQUVILGNBQWMsY0FBYyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBMTEMgQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vcHVibGljLWFwaSc7XG4iXX0=
 
---- esm2020/imports/public-api.mjs ---
+--- esm2022/imports/public-api.mjs ---
 
 /**
  * @license
@@ -197,17 +188,17 @@ class MyService {
     constructor(secondService) {
         this.secondService = secondService;
     }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, deps: [{ token: i1.MySecondService }], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, providedIn: 'root' }); }
 }
-MyService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, deps: [{ token: i1.MySecondService }], target: i0.ɵɵFactoryTarget.Injectable });
-MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, providedIn: 'root' });
 export { MyService };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, decorators: [{
             type: Injectable,
             args: [{ providedIn: 'root' }]
         }], ctorParameters: function () { return [{ type: i1.MySecondService }]; } });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsVUFBVSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBQ3pDLE9BQU8sRUFBQyxlQUFlLEVBQUMsTUFBTSxVQUFVLENBQUM7OztBQUV6QyxNQUNhLFNBQVM7SUFDcEIsWUFBbUIsYUFBOEI7UUFBOUIsa0JBQWEsR0FBYixhQUFhLENBQWlCO0lBQUcsQ0FBQzs7aUhBRDFDLFNBQVM7cUhBQVQsU0FBUyxjQURHLE1BQU07U0FDbEIsU0FBUztzR0FBVCxTQUFTO2tCQURyQixVQUFVO21CQUFDLEVBQUMsVUFBVSxFQUFFLE1BQU0sRUFBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgTExDIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge0luamVjdGFibGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHtNeVNlY29uZFNlcnZpY2V9IGZyb20gJy4vc2Vjb25kJztcblxuQEluamVjdGFibGUoe3Byb3ZpZGVkSW46ICdyb290J30pXG5leHBvcnQgY2xhc3MgTXlTZXJ2aWNlIHtcbiAgY29uc3RydWN0b3IocHVibGljIHNlY29uZFNlcnZpY2U6IE15U2Vjb25kU2VydmljZSkge31cbn1cbiJdfQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsVUFBVSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBQ3pDLE9BQU8sRUFBQyxlQUFlLEVBQUMsTUFBTSxVQUFVLENBQUM7OztBQUV6QyxNQUNhLFNBQVM7SUFDcEIsWUFBbUIsYUFBOEI7UUFBOUIsa0JBQWEsR0FBYixhQUFhLENBQWlCO0lBQUcsQ0FBQzt5SEFEMUMsU0FBUzs2SEFBVCxTQUFTLGNBREcsTUFBTTs7U0FDbEIsU0FBUztzR0FBVCxTQUFTO2tCQURyQixVQUFVO21CQUFDLEVBQUMsVUFBVSxFQUFFLE1BQU0sRUFBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgTExDIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge0luamVjdGFibGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHtNeVNlY29uZFNlcnZpY2V9IGZyb20gJy4vc2Vjb25kJztcblxuQEluamVjdGFibGUoe3Byb3ZpZGVkSW46ICdyb290J30pXG5leHBvcnQgY2xhc3MgTXlTZXJ2aWNlIHtcbiAgY29uc3RydWN0b3IocHVibGljIHNlY29uZFNlcnZpY2U6IE15U2Vjb25kU2VydmljZSkge31cbn1cbiJdfQ==
 
---- esm2020/imports/second.mjs ---
+--- esm2022/imports/second.mjs ---
 
 /**
  * @license
@@ -219,17 +210,17 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
 import { Injectable } from '@angular/core';
 import * as i0 from "@angular/core";
 class MySecondService {
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, deps: [], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, providedIn: 'root' }); }
 }
-MySecondService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-MySecondService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, providedIn: 'root' });
 export { MySecondService };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, decorators: [{
             type: Injectable,
             args: [{ providedIn: 'root' }]
         }] });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvaW1wb3J0cy9zZWNvbmQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7OztHQU1HO0FBRUgsT0FBTyxFQUFDLFVBQVUsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7QUFFekMsTUFDYSxlQUFlOzt1SEFBZixlQUFlOzJIQUFmLGVBQWUsY0FESCxNQUFNO1NBQ2xCLGVBQWU7c0dBQWYsZUFBZTtrQkFEM0IsVUFBVTttQkFBQyxFQUFDLFVBQVUsRUFBRSxNQUFNLEVBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIExMQyBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtJbmplY3RhYmxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQEluamVjdGFibGUoe3Byb3ZpZGVkSW46ICdyb290J30pXG5leHBvcnQgY2xhc3MgTXlTZWNvbmRTZXJ2aWNlIHtcbn1cbiJdfQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvaW1wb3J0cy9zZWNvbmQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7OztHQU1HO0FBRUgsT0FBTyxFQUFDLFVBQVUsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7QUFFekMsTUFDYSxlQUFlO3lIQUFmLGVBQWU7NkhBQWYsZUFBZSxjQURILE1BQU07O1NBQ2xCLGVBQWU7c0dBQWYsZUFBZTtrQkFEM0IsVUFBVTttQkFBQyxFQUFDLFVBQVUsRUFBRSxNQUFNLEVBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIExMQyBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtJbmplY3RhYmxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQEluamVjdGFibGUoe3Byb3ZpZGVkSW46ICdyb290J30pXG5leHBvcnQgY2xhc3MgTXlTZWNvbmRTZXJ2aWNlIHtcbn1cbiJdfQ==
 
---- esm2020/index.mjs ---
+--- esm2022/index.mjs ---
 
 /**
  * @license
@@ -241,7 +232,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
 export * from './mymodule';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxjQUFjLFlBQVksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgTExDIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL215bW9kdWxlJztcbiJdfQ==
 
---- esm2020/mymodule.mjs ---
+--- esm2022/mymodule.mjs ---
 
 /**
  * @license
@@ -253,18 +244,18 @@ export * from './mymodule';
 import { NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 class MyModule {
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
+    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: MyModule }); }
+    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule }); }
 }
-MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
-MyModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
 export { MyModule };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, decorators: [{
             type: NgModule,
             args: [{}]
         }] });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDOztBQUd2QyxNQUNhLFFBQVE7O2dIQUFSLFFBQVE7aUhBQVIsUUFBUTtpSEFBUixRQUFRO1NBQVIsUUFBUTtzR0FBUixRQUFRO2tCQURwQixRQUFRO21CQUFDLEVBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIExMQyBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5pbXBvcnQge2F9IGZyb20gJy4vc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBNeU1vZHVsZSB7XG59XG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDOztBQUd2QyxNQUNhLFFBQVE7eUhBQVIsUUFBUTswSEFBUixRQUFROzBIQUFSLFFBQVE7O1NBQVIsUUFBUTtzR0FBUixRQUFRO2tCQURwQixRQUFRO21CQUFDLEVBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIExMQyBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5pbXBvcnQge2F9IGZyb20gJy4vc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBNeU1vZHVsZSB7XG59XG4iXX0=
 
---- esm2020/secondary/index.mjs ---
+--- esm2022/secondary/index.mjs ---
 
 /**
  * @license
@@ -276,7 +267,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
 export * from './secondarymodule';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7OztHQU1HO0FBRUgsY0FBYyxtQkFBbUIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgTExDIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL3NlY29uZGFyeW1vZHVsZSc7XG4iXX0=
 
---- esm2020/secondary/secondary.mjs ---
+--- esm2022/secondary/secondary.mjs ---
 
 /**
  * Generated bundle index. Do not edit.
@@ -284,7 +275,7 @@ export * from './secondarymodule';
 export * from './index';
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ==
 
---- esm2020/secondary/secondarymodule.mjs ---
+--- esm2022/secondary/secondarymodule.mjs ---
 
 /**
  * @license
@@ -296,17 +287,17 @@ export * from './index';
 import { NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 class SecondaryModule {
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
+    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule }); }
+    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule }); }
 }
-SecondaryModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-SecondaryModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
-SecondaryModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
 export { SecondaryModule };
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, decorators: [{
             type: NgModule,
             args: [{}]
         }] });
 export const a = 1;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDOztBQUV2QyxNQUNhLGVBQWU7O3VIQUFmLGVBQWU7d0hBQWYsZUFBZTt3SEFBZixlQUFlO1NBQWYsZUFBZTtzR0FBZixlQUFlO2tCQUQzQixRQUFRO21CQUFDLEVBQUU7O0FBSVosTUFBTSxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgTExDIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIFNlY29uZGFyeU1vZHVsZSB7XG59XG5cbmV4cG9ydCBjb25zdCBhID0gMTtcbiJdfQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDOztBQUV2QyxNQUNhLGVBQWU7eUhBQWYsZUFBZTswSEFBZixlQUFlOzBIQUFmLGVBQWU7O1NBQWYsZUFBZTtzR0FBZixlQUFlO2tCQUQzQixRQUFRO21CQUFDLEVBQUU7O0FBSVosTUFBTSxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgTExDIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIFNlY29uZGFyeU1vZHVsZSB7XG59XG5cbmV4cG9ydCBjb25zdCBhID0gMTtcbiJdfQ==
 
 --- extra-styles.css ---
 
@@ -315,7 +306,7 @@ export const a = 1;
 }
 
 
---- fesm2015/a11y.mjs ---
+--- fesm2022/a11y.mjs ---
 
 /**
  * @license Angular v0.0.0
@@ -327,10 +318,10 @@ import * as i0 from '@angular/core';
 import { NgModule } from '@angular/core';
 
 class A11yModule {
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
+    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: A11yModule }); }
+    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule }); }
 }
-A11yModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-A11yModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: A11yModule });
-A11yModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule, decorators: [{
             type: NgModule,
             args: [{}]
@@ -344,7 +335,7 @@ export { A11yModule };
 //# sourceMappingURL=a11y.mjs.map
 
 
---- fesm2015/imports.mjs ---
+--- fesm2022/imports.mjs ---
 
 /**
  * @license Angular v0.0.0
@@ -356,9 +347,9 @@ import * as i0 from '@angular/core';
 import { Injectable } from '@angular/core';
 
 class MySecondService {
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, deps: [], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, providedIn: 'root' }); }
 }
-MySecondService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-MySecondService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, providedIn: 'root' });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, decorators: [{
             type: Injectable,
             args: [{ providedIn: 'root' }]
@@ -368,9 +359,9 @@ class MyService {
     constructor(secondService) {
         this.secondService = secondService;
     }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, deps: [{ token: MySecondService }], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, providedIn: 'root' }); }
 }
-MyService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, deps: [{ token: MySecondService }], target: i0.ɵɵFactoryTarget.Injectable });
-MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, providedIn: 'root' });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, decorators: [{
             type: Injectable,
             args: [{ providedIn: 'root' }]
@@ -384,7 +375,7 @@ export { MyService };
 //# sourceMappingURL=imports.mjs.map
 
 
---- fesm2015/secondary.mjs ---
+--- fesm2022/secondary.mjs ---
 
 /**
  * @license Angular v0.0.0
@@ -396,10 +387,10 @@ import * as i0 from '@angular/core';
 import { NgModule } from '@angular/core';
 
 class SecondaryModule {
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
+    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule }); }
+    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule }); }
 }
-SecondaryModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-SecondaryModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
-SecondaryModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, decorators: [{
             type: NgModule,
             args: [{}]
@@ -414,7 +405,7 @@ export { SecondaryModule, a };
 //# sourceMappingURL=secondary.mjs.map
 
 
---- fesm2015/waffels.mjs ---
+--- fesm2022/waffels.mjs ---
 
 /**
  * @license Angular v0.0.0
@@ -426,138 +417,10 @@ import * as i0 from '@angular/core';
 import { NgModule } from '@angular/core';
 
 class MyModule {
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
+    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: MyModule }); }
+    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule }); }
 }
-MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
-MyModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, decorators: [{
-            type: NgModule,
-            args: [{}]
-        }] });
-
-/**
- * Generated bundle index. Do not edit.
- */
-
-export { MyModule };
-//# sourceMappingURL=waffels.mjs.map
-
-
---- fesm2020/a11y.mjs ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2022 Google LLC. https://angular.io/
- * License: MIT
- */
-
-import * as i0 from '@angular/core';
-import { NgModule } from '@angular/core';
-
-class A11yModule {
-}
-A11yModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-A11yModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: A11yModule });
-A11yModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: A11yModule, decorators: [{
-            type: NgModule,
-            args: [{}]
-        }] });
-
-/**
- * Generated bundle index. Do not edit.
- */
-
-export { A11yModule };
-//# sourceMappingURL=a11y.mjs.map
-
-
---- fesm2020/imports.mjs ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2022 Google LLC. https://angular.io/
- * License: MIT
- */
-
-import * as i0 from '@angular/core';
-import { Injectable } from '@angular/core';
-
-class MySecondService {
-}
-MySecondService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-MySecondService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, providedIn: 'root' });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, decorators: [{
-            type: Injectable,
-            args: [{ providedIn: 'root' }]
-        }] });
-
-class MyService {
-    constructor(secondService) {
-        this.secondService = secondService;
-    }
-}
-MyService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, deps: [{ token: MySecondService }], target: i0.ɵɵFactoryTarget.Injectable });
-MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, providedIn: 'root' });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyService, decorators: [{
-            type: Injectable,
-            args: [{ providedIn: 'root' }]
-        }], ctorParameters: function () { return [{ type: MySecondService }]; } });
-
-/**
- * Generated bundle index. Do not edit.
- */
-
-export { MyService };
-//# sourceMappingURL=imports.mjs.map
-
-
---- fesm2020/secondary.mjs ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2022 Google LLC. https://angular.io/
- * License: MIT
- */
-
-import * as i0 from '@angular/core';
-import { NgModule } from '@angular/core';
-
-class SecondaryModule {
-}
-SecondaryModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-SecondaryModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
-SecondaryModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, decorators: [{
-            type: NgModule,
-            args: [{}]
-        }] });
-const a = 1;
-
-/**
- * Generated bundle index. Do not edit.
- */
-
-export { SecondaryModule, a };
-//# sourceMappingURL=secondary.mjs.map
-
-
---- fesm2020/waffels.mjs ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2022 Google LLC. https://angular.io/
- * License: MIT
- */
-
-import * as i0 from '@angular/core';
-import { NgModule } from '@angular/core';
-
-class MyModule {
-}
-MyModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
-MyModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, decorators: [{
             type: NgModule,
             args: [{}]
@@ -630,46 +493,34 @@ export { }
     ".": {
       "sass": "./_index.scss",
       "types": "./index.d.ts",
-      "esm2020": "./esm2020/example.mjs",
-      "es2020": "./fesm2020/waffels.mjs",
-      "es2015": "./fesm2015/waffels.mjs",
-      "node": "./fesm2015/waffels.mjs",
-      "default": "./fesm2020/waffels.mjs"
+      "esm2022": "./esm2022/example.mjs",
+      "esm": "./esm2022/example.mjs",
+      "default": "./fesm2022/waffels.mjs"
     },
     "./package.json": {
       "default": "./package.json"
     },
     "./a11y": {
       "types": "./a11y/index.d.ts",
-      "esm2020": "./esm2020/a11y/a11y.mjs",
-      "es2020": "./fesm2020/a11y.mjs",
-      "es2015": "./fesm2015/a11y.mjs",
-      "node": "./fesm2015/a11y.mjs",
-      "default": "./fesm2020/a11y.mjs"
+      "esm2022": "./esm2022/a11y/a11y.mjs",
+      "esm": "./esm2022/a11y/a11y.mjs",
+      "default": "./fesm2022/a11y.mjs"
     },
     "./imports": {
       "types": "./imports/index.d.ts",
-      "esm2020": "./esm2020/imports/imports.mjs",
-      "es2020": "./fesm2020/imports.mjs",
-      "es2015": "./fesm2015/imports.mjs",
-      "node": "./fesm2015/imports.mjs",
-      "default": "./fesm2020/imports.mjs"
+      "esm2022": "./esm2022/imports/imports.mjs",
+      "esm": "./esm2022/imports/imports.mjs",
+      "default": "./fesm2022/imports.mjs"
     },
     "./secondary": {
       "types": "./secondary/index.d.ts",
-      "esm2020": "./esm2020/secondary/secondary.mjs",
-      "es2020": "./fesm2020/secondary.mjs",
-      "es2015": "./fesm2015/secondary.mjs",
-      "node": "./fesm2015/secondary.mjs",
-      "default": "./fesm2020/secondary.mjs"
+      "esm2022": "./esm2022/secondary/secondary.mjs",
+      "esm": "./esm2022/secondary/secondary.mjs",
+      "default": "./fesm2022/secondary.mjs"
     }
   },
-  "fesm2020": "./fesm2020/waffels.mjs",
-  "fesm2015": "./fesm2015/waffels.mjs",
-  "esm2020": "./esm2020/example.mjs",
+  "module": "./fesm2022/waffels.mjs",
   "typings": "./index.d.ts",
-  "module": "./fesm2015/waffels.mjs",
-  "es2020": "./fesm2020/waffels.mjs",
   "type": "module"
 }
 
