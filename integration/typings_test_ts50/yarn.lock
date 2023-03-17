@@ -11,85 +11,82 @@
     "@jridgewell/trace-mapping" "^0.3.9"
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     "@babel/core" "7.19.3"
     "@jridgewell/sourcemap-codec" "^1.4.14"
     chokidar "^3.0.0"
     convert-source-map "^1.5.1"
-    dependency-graph "^0.11.0"
-    magic-string "^0.27.0"
     reflect-metadata "^0.1.2"
     semver "^7.0.0"
     tslib "^2.3.0"
     yargs "^17.2.1"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/elements@file:../../dist/packages-dist/elements":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/localize@file:../../dist/packages-dist/localize":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     "@babel/core" "7.19.3"
     glob "8.1.0"
     yargs "^17.2.1"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/platform-server@file:../../dist/packages-dist/platform-server":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
-    domino "^2.1.2"
     tslib "^2.3.0"
     xhr2 "^0.2.0"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/service-worker@file:../../dist/packages-dist/service-worker":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/upgrade@file:../../dist/packages-dist/upgrade":
-  version "15.2.0-next.4"
+  version "16.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
@@ -333,7 +330,7 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/set-array/-/set-array-1.1.2.tgz#7c6cf998d6d20b914c0a55a91ae928ff25965e72"
   integrity sha512-xnkseuNADM0gt2bs+BvhO0p78Mk762YnZdsuzFV018NoG1Sj1SCQvpSqa7XUaTam5vAGasABV9qXASMKnFMwMw==
 
-"@jridgewell/sourcemap-codec@^1.4.10", "@jridgewell/sourcemap-codec@^1.4.13", "@jridgewell/sourcemap-codec@^1.4.14":
+"@jridgewell/sourcemap-codec@^1.4.10", "@jridgewell/sourcemap-codec@^1.4.14":
   version "1.4.14"
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.4.14.tgz#add4c98d341472a289190b424efbdb096991bb24"
   integrity sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==
@@ -486,16 +483,6 @@ debug@^4.1.0:
   dependencies:
     ms "2.1.2"
 
-dependency-graph@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/dependency-graph/-/dependency-graph-0.11.0.tgz#ac0ce7ed68a54da22165a85e97a01d53f5eb2e27"
-  integrity sha512-JeMq7fEshyepOWDfcfHK06N3MhyPhz++vtqWhMT5O9A3K42rdsEDpfdVqjaqaAhsw6a+ZqeDvQVtD0hFHQWrzg==
-
-domino@^2.1.2:
-  version "2.1.6"
-  resolved "https://registry.yarnpkg.com/domino/-/domino-2.1.6.tgz#fe4ace4310526e5e7b9d12c7de01b7f485a57ffe"
-  integrity sha512-3VdM/SXBZX2omc9JF9nOPCtDaYQ67BGp5CoLpIQlO2KCAPETs8TcDHacF26jXadGbvUteZzRTeos2fhID5+ucQ==
-
 electron-to-chromium@^1.4.284:
   version "1.4.301"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.301.tgz#175d9fa1509a5b062752c6db321051e610fe2eae"
@@ -642,13 +629,6 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-magic-string@^0.27.0:
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.27.0.tgz#e4a3413b4bab6d98d2becffd48b4a257effdbbf3"
-  integrity sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==
-  dependencies:
-    "@jridgewell/sourcemap-codec" "^1.4.13"
-
 minimatch@^5.0.1:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.0.tgz#1717b464f4971b144f6aabe8f2d0b8e4511e09c7"
@@ -772,10 +752,10 @@ tslib@^2.3.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
-typescript@5.0.0-beta:
-  version "5.0.0-beta"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.0-beta.tgz#791fa95411d6ff64ee77d677ed1e6f32a2eaabaf"
-  integrity sha512-+SSabbSXG5mtF+QGdV9uXXt9Saq1cSyI6hSG7znhaLoquleJpnmfkwSxFngK9c2fWWi1W/263TuzXQOsIcdjjA==
+typescript@5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.2.tgz#891e1a90c5189d8506af64b9ef929fca99ba1ee5"
+  integrity sha512-wVORMBGO/FAs/++blGNeAVdbNKtIh1rbBL2EyQ1+J9lClJ93KiiKe8PmFIVdXhHcyv44SL9oglmfeSsndo0jRw==
 
 update-browserslist-db@^1.0.10:
   version "1.0.10"
