@@ -833,8 +833,11 @@ function isStylingValuePresent(value: any): boolean {
  * @param suffix
  */
 function normalizeSuffix(value: any, suffix: string|undefined|null): string|null|undefined|boolean {
-  if (value == null /** || value === undefined */) {
+  if (value == null || value === '') {
     // do nothing
+    // Do not add the suffix if the value is going to be empty.
+    // As it produce invalid CSS, which the browsers will automatically omit but Domino will not.
+    // Example: `"left": "px;"` instead of `"left": ""`.
   } else if (typeof suffix === 'string') {
     value = value + suffix;
   } else if (typeof value === 'object') {
