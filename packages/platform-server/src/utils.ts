@@ -176,8 +176,7 @@ export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, o
   url?: string,
   platformProviders?: Provider[],
 }): Promise<string> {
-  const {document, url, platformProviders} = options;
-  const platform = _getPlatform(platformDynamicServer, {document, url, platformProviders});
+  const platform = _getPlatform(platformDynamicServer, options);
 
   return _render(platform, bootstrap());
 }
