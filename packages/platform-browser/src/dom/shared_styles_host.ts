@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
-import {APP_ID, CSP_NONCE, Inject, Injectable, OnDestroy, Optional} from '@angular/core';
+import {DOCUMENT, isPlatformServer} from '@angular/common';
+import {APP_ID, CSP_NONCE, Inject, Injectable, OnDestroy, Optional, PLATFORM_ID} from '@angular/core';
 
 /** The style elements attribute name used to set value of `APP_ID` token. */
 const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
@@ -22,12 +22,15 @@ export class SharedStylesHost implements OnDestroy {
   > ();
   private readonly hostNodes = new Set<Node>();
   private readonly styleNodesInDOM: Map<string, HTMLStyleElement>|null;
+  private readonly platformIsServer: boolean;
 
   constructor(
       @Inject(DOCUMENT) private readonly doc: Document,
       @Inject(APP_ID) private readonly appId: string,
-      @Inject(CSP_NONCE) @Optional() private nonce?: string|null) {
+      @Inject(CSP_NONCE) @Optional() private nonce?: string|null,
+      @Inject(PLATFORM_ID) readonly platformId: object = {}) {
     this.styleNodesInDOM = this.collectServerRenderedStyles();
+    this.platformIsServer = isPlatformServer(platformId);
     this.resetHostNodes();
   }
 
@@ -132,6 +135,8 @@ export class SharedStylesHost implements OnDestroy {
       // `styleNodesInDOM` cannot be undefined due to the above `styleNodesInDOM?.get`.
       styleNodesInDOM!.delete(style);
 
+      styleEl.removeAttribute(APP_ID_ATTRIBUTE_NAME);
+
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         // This attribute is solely used for debugging purposes.
         styleEl.setAttribute('ng-style-reused', '');
@@ -147,7 +152,11 @@ export class SharedStylesHost implements OnDestroy {
       }
 
       styleEl.textContent = style;
-      styleEl.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
+
+      if (this.platformIsServer) {
+        styleEl.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
+      }
+
       return styleEl;
     }
   }
