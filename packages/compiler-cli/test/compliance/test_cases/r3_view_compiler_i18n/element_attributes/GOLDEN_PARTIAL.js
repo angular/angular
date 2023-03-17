@@ -555,7 +555,7 @@ export declare class DivDir {
     al: any;
     arl: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<DivDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<DivDir, "div", never, { "al": "aria-label"; "arl": "aria-roledescription"; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DivDir, "div", never, { "al": { "alias": "aria-label"; "required": false; }; "arl": { "alias": "aria-roledescription"; "required": false; }; }, {}, never, never, false, never>;
 }
 export declare class MyComponent {
     valueA: any;

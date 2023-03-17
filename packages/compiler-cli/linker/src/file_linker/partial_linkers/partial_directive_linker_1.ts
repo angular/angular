@@ -82,9 +82,9 @@ export function toR3DirectiveMeta<TExpression>(
  */
 function toInputMapping<TExpression>(
     value: AstValue<string|[string, string], TExpression>,
-    key: string): {bindingPropertyName: string, classPropertyName: string} {
+    key: string): {bindingPropertyName: string, classPropertyName: string, required: boolean} {
   if (value.isString()) {
-    return {bindingPropertyName: value.getString(), classPropertyName: key};
+    return {bindingPropertyName: value.getString(), classPropertyName: key, required: false};
   }
 
   const values = value.getArray().map(innerValue => innerValue.getString());
@@ -93,7 +93,7 @@ function toInputMapping<TExpression>(
         value.expression,
         'Unsupported input, expected a string or an array containing exactly two strings');
   }
-  return {bindingPropertyName: values[0], classPropertyName: values[1]};
+  return {bindingPropertyName: values[0], classPropertyName: values[1], required: false};
 }
 
 /**

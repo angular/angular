@@ -215,7 +215,7 @@ export declare class SomeComp {
     prop: any;
     otherProp: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": { "alias": "prop"; "required": false; }; "otherProp": { "alias": "otherProp"; "required": false; }; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
@@ -273,7 +273,7 @@ export declare class SomeComp {
     prop: any;
     otherProp: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": { "alias": "prop"; "required": false; }; "otherProp": { "alias": "otherProp"; "required": false; }; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;

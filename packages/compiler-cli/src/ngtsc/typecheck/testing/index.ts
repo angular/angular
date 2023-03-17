@@ -710,10 +710,10 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         exportAs: decl.exportAs ?? null,
         ngTemplateGuards: decl.ngTemplateGuards ?? [],
         hasNgTemplateContextGuard: decl.hasNgTemplateContextGuard ?? false,
-        coercedInputFields: new Set(decl.coercedInputFields ?? []),
-        restrictedInputFields: new Set(decl.restrictedInputFields ?? []),
-        stringLiteralInputFields: new Set(decl.stringLiteralInputFields ?? []),
-        undeclaredInputFields: new Set(decl.undeclaredInputFields ?? []),
+        coercedInputFields: new Set<string>(decl.coercedInputFields ?? []),
+        restrictedInputFields: new Set<string>(decl.restrictedInputFields ?? []),
+        stringLiteralInputFields: new Set<string>(decl.stringLiteralInputFields ?? []),
+        undeclaredInputFields: new Set<string>(decl.undeclaredInputFields ?? []),
         isGeneric: decl.isGeneric ?? false,
         isPoisoned: false,
         isStructural: false,
@@ -787,4 +787,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   requiresInlineTypeConstructors(): void {}
   suboptimalTypeInference(): void {}
   splitTwoWayBinding(): void {}
+  missingRequiredInputs(): void {}
 }
