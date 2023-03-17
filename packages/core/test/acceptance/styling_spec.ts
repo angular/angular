@@ -123,14 +123,15 @@ describe('styling', () => {
 
       const div = fixture.nativeElement.querySelector('div');
       expect(getSortedClassName(div)).toEqual('HOST_STATIC_1 HOST_STATIC_2 STATIC');
-      expect(getSortedStyle(div)).toEqual('color: blue; font-family: c2;');
+      // Chrome will remove quotes but Firefox and Domino do not.
+      expect(getSortedStyle(div)).toMatch(/color: blue; font-family: "?c2"?;/);
     });
 
     it('should support hostBindings inheritance', () => {
       @Component({template: `<div my-host-bindings class="STATIC" style="color: blue;"></div>`})
       class Cmp {
       }
-      @Directive({host: {'class': 'SUPER_STATIC', 'style': 'font-family: "super"; width: "1px";'}})
+      @Directive({host: {'class': 'SUPER_STATIC', 'style': 'font-family: "super";'}})
       class SuperDir {
       }
       @Directive({
@@ -149,7 +150,29 @@ describe('styling', () => {
       // Browsers keep the '"' around the font name, but Domino removes it some we do search and
       // replace. Yes we could do `replace(/"/g, '')` but that fails on android.
       expect(getSortedStyle(div).replace('"', '').replace('"', ''))
-          .toEqual('color: blue; font-family: host font; width: 1px;');
+          .toEqual('color: blue; font-family: host font;');
+    });
+
+    it('should apply style properties that require quote wrapping', () => {
+      @Component({
+        selector: 'test-style-quoting',
+        template: `
+          <div style="content: &quot;foo&quot;"></div>
+          <div style='content: "foo"'></div>
+          <div style="content: 'foo'"></div>
+        `
+      })
+      class Cmp {
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      const divElements = fixture.nativeElement.querySelectorAll('div');
+      expect(getSortedStyle(divElements[0])).toBe('content: "foo";');
+      expect(getSortedStyle(divElements[1])).toBe('content: "foo";');
+      expect(getSortedStyle(divElements[2])).toMatch(/content: ["']foo["'];/);
     });
 
     it('should apply template classes in correct order', () => {
