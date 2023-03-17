@@ -75,6 +75,9 @@
     "name": "CONTAINER_HEADER_OFFSET"
   },
   {
+    "name": "CSP_NONCE"
+  },
+  {
     "name": "CanActivate"
   },
   {
@@ -151,6 +154,9 @@
   },
   {
     "name": "DI_DECORATOR_FLAG"
+  },
+  {
+    "name": "DOCUMENT"
   },
   {
     "name": "DOCUMENT2"

@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {APP_ID, Inject, Injectable, OnDestroy} from '@angular/core';
+import {APP_ID, CSP_NONCE, Inject, Injectable, OnDestroy, Optional} from '@angular/core';
 
 /** The style elements attribute name used to set value of `APP_ID` token. */
 const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
@@ -25,7 +25,8 @@ export class SharedStylesHost implements OnDestroy {
 
   constructor(
       @Inject(DOCUMENT) private readonly doc: Document,
-      @Inject(APP_ID) private readonly appId: string) {
+      @Inject(APP_ID) private readonly appId: string,
+      @Inject(CSP_NONCE) @Optional() private nonce?: string|null) {
     this.styleNodesInDOM = this.collectServerRenderedStyles();
     this.resetHostNodes();
   }
@@ -139,9 +140,14 @@ export class SharedStylesHost implements OnDestroy {
       return styleEl;
     } else {
       const styleEl = this.doc.createElement('style');
+
+      if (this.nonce) {
+        // Uses a keyed write to avoid issues with property minification.
+        styleEl['nonce'] = this.nonce;
+      }
+
       styleEl.textContent = style;
       styleEl.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
-
       return styleEl;
     }
   }
