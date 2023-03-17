@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, InjectionToken, OnDestroy, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, OnDestroy, Optional, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {SharedStylesHost} from './shared_styles_host';
@@ -91,7 +91,8 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
   constructor(
       private eventManager: EventManager, private sharedStylesHost: SharedStylesHost,
       @Inject(APP_ID) private appId: string,
-      @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestory: boolean) {
+      @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestory: boolean,
+      @Inject(CSP_NONCE) @Optional() private nonce?: string|null) {
     this.defaultRenderer = new DefaultDomRenderer2(eventManager);
   }
 
@@ -128,7 +129,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
               eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestory);
           break;
         case ViewEncapsulation.ShadowDom:
-          return new ShadowDomRenderer(eventManager, sharedStylesHost, element, type);
+          return new ShadowDomRenderer(eventManager, sharedStylesHost, element, type, this.nonce);
         default:
           renderer = new NoneEncapsulationDomRenderer(
               eventManager, sharedStylesHost, type, removeStylesOnCompDestory);
@@ -316,7 +317,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
   constructor(
       eventManager: EventManager, private sharedStylesHost: SharedStylesHost, private hostEl: any,
-      component: RendererType2) {
+      component: RendererType2, nonce?: string|null) {
     super(eventManager);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
@@ -325,6 +326,12 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
     for (const style of styles) {
       const styleEl = document.createElement('style');
+
+      if (nonce) {
+        // Uses a keyed write to avoid issues with property minification.
+        styleEl['nonce'] = nonce;
+      }
+
       styleEl.textContent = style;
       this.shadowRoot.appendChild(styleEl);
     }

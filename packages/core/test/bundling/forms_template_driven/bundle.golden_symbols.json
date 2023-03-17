@@ -84,6 +84,9 @@
     "name": "CONTAINER_HEADER_OFFSET"
   },
   {
+    "name": "CSP_NONCE"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -130,6 +133,9 @@
   },
   {
     "name": "DI_DECORATOR_FLAG"
+  },
+  {
+    "name": "DOCUMENT"
   },
   {
     "name": "DOCUMENT2"
