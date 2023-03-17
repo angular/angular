@@ -126,13 +126,16 @@ export class ActivateRoutes {
       this.deactivateRouteAndItsChildren(children[childOutlet], contexts);
     }
 
-    if (context && context.outlet) {
-      // Destroy the component
-      context.outlet.deactivate();
-      // Destroy the contexts for all the outlets that were in the component
-      context.children.onOutletDeactivated();
+    if (context) {
+      if (context.outlet) {
+        // Destroy the component
+        context.outlet.deactivate();
+        // Destroy the contexts for all the outlets that were in the component
+        context.children.onOutletDeactivated();
+      }
       // Clear the information about the attached component on the context but keep the reference to
-      // the outlet.
+      // the outlet. Clear even if outlet was not yet activated to avoid activating later with old
+      // info
       context.attachRef = null;
       context.route = null;
     }

@@ -149,6 +149,47 @@ describe('router outlet name', () => {
        advance(fixture);
        expect(fixture.nativeElement.innerHTML).toMatch('.*component 3.*component 2.*component 1');
      }));
+
+  it('should not activate if route is changed', fakeAsync(() => {
+       @Component({
+         standalone: true,
+         template: '<div *ngIf="initDone"><router-outlet></router-outlet></div>',
+         imports: [RouterOutlet, CommonModule],
+       })
+       class ParentCmp {
+         initDone = false;
+         constructor() {
+           setTimeout(() => this.initDone = true, 1000);
+         }
+       }
+
+       @Component({
+         template: 'child component',
+         standalone: true,
+       })
+       class ChildCmp {
+       }
+
+       TestBed.configureTestingModule({
+         imports: [RouterTestingModule.withRoutes([
+           {path: 'parent', component: ParentCmp, children: [{path: 'child', component: ChildCmp}]}
+         ])]
+       });
+       const router = TestBed.inject(Router);
+       const fixture = createRoot(router, ParentCmp);
+
+       advance(fixture, 250);
+       router.navigate(['parent/child']);
+       advance(fixture, 250);
+       // Not contain because initDone is still false
+       expect(fixture.nativeElement.innerHTML).not.toContain('child component');
+
+       advance(fixture, 1500);
+       router.navigate(['parent']);
+       advance(fixture, 1500);
+       // Not contain because route was changed back to parent
+       expect(fixture.nativeElement.innerHTML).not.toContain('child component');
+     }));
 });
 
 function advance(fixture: ComponentFixture<unknown>, millis?: number): void {
