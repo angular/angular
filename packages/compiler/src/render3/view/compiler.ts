@@ -430,16 +430,9 @@ function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
 }
 
 function getInputsTypeExpression(meta: R3DirectiveMetadata): o.Expression {
+  // TODO(required-inputs): expand this to generate the new object literal syntax.
   return o.literalMap(Object.keys(meta.inputs).map(key => {
-    const value = meta.inputs[key];
-    return {
-      key,
-      value: o.literalMap([
-        {key: 'alias', value: o.literal(value.bindingPropertyName), quoted: true},
-        {key: 'required', value: o.literal(value.required), quoted: true}
-      ]),
-      quoted: true
-    };
+    return {key, value: o.literal(meta.inputs[key].bindingPropertyName), quoted: true};
   }));
 }
 

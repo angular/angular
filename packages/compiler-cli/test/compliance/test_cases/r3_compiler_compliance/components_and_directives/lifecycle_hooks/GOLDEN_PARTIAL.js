@@ -257,7 +257,7 @@ export declare class LifecycleComp {
     ngAfterViewChecked(): void;
     ngOnDestroy(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<LifecycleComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<LifecycleComp, "lifecycle-comp", never, { "nameMin": { "alias": "name"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<LifecycleComp, "lifecycle-comp", never, { "nameMin": "name"; }, {}, never, never, false, never>;
 }
 export declare class SimpleLayout {
     name1: string;

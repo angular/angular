@@ -459,11 +459,7 @@ export interface Directive {
         inputs?: string[];
         outputs?: string[];
     })[];
-    inputs?: ({
-        name: string;
-        alias?: string;
-        required?: boolean;
-    } | string)[];
+    inputs?: string[];
     jit?: true;
     outputs?: string[];
     providers?: Provider[];
@@ -801,8 +797,7 @@ export interface InjectorType<T> extends Type<T> {
 
 // @public
 export interface Input {
-    alias?: string;
-    required?: boolean;
+    bindingPropertyName?: string;
 }
 
 // @public (undocumented)
@@ -810,9 +805,9 @@ export const Input: InputDecorator;
 
 // @public (undocumented)
 export interface InputDecorator {
-    (arg?: string | Input): any;
+    (bindingPropertyName?: string): any;
     // (undocumented)
-    new (arg?: string | Input): any;
+    new (bindingPropertyName?: string): any;
 }
 
 // @public
@@ -1066,7 +1061,7 @@ export interface OptionalDecorator {
 
 // @public
 export interface Output {
-    alias?: string;
+    bindingPropertyName?: string;
 }
 
 // @public (undocumented)
@@ -1074,9 +1069,9 @@ export const Output: OutputDecorator;
 
 // @public
 export interface OutputDecorator {
-    (alias?: string): any;
+    (bindingPropertyName?: string): any;
     // (undocumented)
-    new (alias?: string): any;
+    new (bindingPropertyName?: string): any;
 }
 
 // @public
