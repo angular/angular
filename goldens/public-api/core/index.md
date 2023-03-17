@@ -1512,6 +1512,8 @@ export interface TypeDecorator {
     <T extends Type<any>>(type: T): T;
     // (undocumented)
     (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
+    // (undocumented)
+    (target: unknown, context: unknown): void;
 }
 
 // @public
