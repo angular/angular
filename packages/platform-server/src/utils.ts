@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, EnvironmentProviders, importProvidersFrom, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵgetComponentDef as getComponentDef, ɵinternalCreateApplication as internalCreateApplication, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
 import {first} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
-import {platformDynamicServer, ServerModule} from './server';
+import {platformDynamicServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 
 interface PlatformOptions {
@@ -176,74 +175,8 @@ export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, o
   document?: string|Document,
   url?: string,
   platformProviders?: Provider[],
-}): Promise<string>;
-/**
- * Bootstraps an instance of an Angular application and renders it to a string.
- *
- * Note: the root component passed into this function *must* be a standalone one (should have
- * the `standalone: true` flag in the `@Component` decorator config).
- *
- * ```typescript
- * @Component({
- *   standalone: true,
- *   template: 'Hello world!'
- * })
- * class RootComponent {}
- *
- * const output: string = await renderApplication(RootComponent, {appId: 'server-app'});
- * ```
- *
- * @param rootComponent A reference to a Standalone Component that should be rendered.
- * @param options Additional configuration for the render operation:
- *  - `appId` - a string identifier of this application. The appId is used to prefix all
- *              server-generated stylings and state keys of the application in TransferState
- *              use-cases.
- *  - `document` - the document of the page to render, either as an HTML string or
- *                 as a reference to the `document` instance.
- *  - `url` - the URL for the current render request.
- *  - `providers` - set of application level providers for the current render request.
- *  - `platformProviders` - the platform level providers for the current render request.
- *
- * @returns A Promise, that returns serialized (to a string) rendered page, once resolved.
- *
- * @publicApi
- * @developerPreview
- */
-export function renderApplication<T>(rootComponent: Type<T>, options: {
-  /** @deprecated use `APP_ID` token to set the application ID. */
-  appId: string,
-  document?: string|Document,
-  url?: string,
-  providers?: Array<Provider|EnvironmentProviders>,
-  platformProviders?: Provider[],
-}): Promise<string>;
-export function renderApplication<T>(
-    rootComponentOrBootstrapFn: Type<T>|(() => Promise<ApplicationRef>), options: {
-      appId?: string,
-      document?: string|Document,
-      url?: string,
-      providers?: Array<Provider|EnvironmentProviders>,
-      platformProviders?: Provider[],
-    }): Promise<string> {
-  const {document, url, platformProviders, appId = ''} = options;
-  const platform = _getPlatform(platformDynamicServer, {document, url, platformProviders});
+}): Promise<string> {
+  const platform = _getPlatform(platformDynamicServer, options);
 
-  if (isBootstrapFn(rootComponentOrBootstrapFn)) {
-    return _render(platform, rootComponentOrBootstrapFn());
-  }
-
-  const appProviders = [
-    importProvidersFrom(BrowserModule.withServerTransition({appId})),
-    importProvidersFrom(ServerModule),
-    ...(options.providers ?? []),
-  ];
-
-  return _render(
-      platform,
-      internalCreateApplication({rootComponent: rootComponentOrBootstrapFn, appProviders}));
-}
-
-function isBootstrapFn(value: unknown): value is() => Promise<ApplicationRef> {
-  // We can differentiate between a component and a bootstrap function by reading `cmp`:
-  return typeof value === 'function' && !getComponentDef(value);
+  return _render(platform, bootstrap());
 }

@@ -59,15 +59,6 @@ export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, o
 }): Promise<string>;
 
 // @public
-export function renderApplication<T>(rootComponent: Type<T>, options: {
-    appId: string;
-    document?: string | Document;
-    url?: string;
-    providers?: Array<Provider | EnvironmentProviders>;
-    platformProviders?: Provider[];
-}): Promise<string>;
-
-// @public
 export function renderModule<T>(moduleType: Type<T>, options: {
     document?: string | Document;
     url?: string;

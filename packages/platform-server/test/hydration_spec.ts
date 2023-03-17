@@ -9,11 +9,14 @@
 import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
-import {APP_ID, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument, ɵunescapeTransferStateContent as unescapeTransferStateContent} from '@angular/core';
+import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {getComponentDef} from '@angular/core/src/render3/definition';
+import {unescapeTransferStateContent} from '@angular/core/src/transfer_state';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
+import {provideServerSupport} from '../public_api';
 import {renderApplication} from '../src/utils';
 
 /**
@@ -143,8 +146,6 @@ describe('platform-server integration', () => {
   afterAll(() => destroyPlatform());
 
   describe('hydration', () => {
-    const appId = 'simple-cmp';
-
     let doc: Document;
 
     beforeEach(() => {
@@ -168,13 +169,14 @@ describe('platform-server integration', () => {
       const defaultHtml = '<html><head></head><body><app></app></body></html>';
       const providers = [
         ...(envProviders ?? []),
-        {provide: APP_ID, useValue: appId},
+        provideServerSupport(),
         provideHydrationSupport(),
       ];
-      return renderApplication(component, {
+
+      const bootstrap = () => bootstrapApplication(component, {providers});
+
+      return renderApplication(bootstrap, {
         document: doc ?? defaultHtml,
-        appId,
-        providers,
       });
     }
 
@@ -204,10 +206,10 @@ describe('platform-server integration', () => {
 
       const providers = [
         ...(envProviders ?? []),
-        {provide: APP_ID, useValue: appId},
         {provide: DOCUMENT, useFactory: _document, deps: []},
         provideHydrationSupport(),
       ];
+
       return bootstrapApplication(component, {providers});
     }
 
