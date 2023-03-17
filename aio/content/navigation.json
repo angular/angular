@@ -426,9 +426,85 @@
           "tooltip": "Getting started with the CLI's esbuild-based build system."
         },
         {
-          "url": "guide/http",
           "title": "HTTP client",
-          "tooltip": "Use HTTP to talk to a remote server."
+          "tooltip": "Use HTTP to talk to a remote server.",
+          "children": [
+            {
+              "url": "guide/understanding-communicating-with-http",
+              "title": "Understanding HTTP",
+              "tooltip": "Understanding communicating with backend services using HTTP"
+            },
+            {
+              "url": "guide/http-setup-server-communication",
+              "title": "Setup for server communication",
+              "tooltip": "Setup a server communication for HTTP"
+            },
+            {
+              "url": "guide/http-server-communication",
+              "title": "Communicating with backend services",
+              "tooltip": "Understanding communicating with backend services using HTTP"
+            },
+            {
+              "url": "guide/http-request-data-from-server",
+              "title": "Request data from a server",
+              "tooltip": "Learn how to request data from the server via the HTTP client"
+            },
+            {
+              "url": "guide/http-make-jsonp-request",
+              "title": "Make a JSONP request",
+              "tooltip": "Make a cross-origin request via JSONP"
+            },
+            {
+              "url": "guide/http-handle-request-errors",
+              "title": "Handle request errors",
+              "tooltip": "Error handling"
+            },
+            {
+              "url": "guide/http-send-data-to-server",
+              "title": "Send data to a server",
+              "tooltip": "Learn how to send data to a server via the HTTP client"
+            },
+            {
+              "url": "guide/http-configure-http-url-parameters",
+              "title": "Configure URL parameters",
+              "tooltip": "Learn how to configure parameters of the URL when sending requests over HTTP"
+            },
+            {
+              "url": "guide/http-intercept-requests-and-responses",
+              "title": "Intercept requests and responses",
+              "tooltip": "Learn how to use HTTP interceptors to transform requests and responses"
+            },
+            {
+              "url": "guide/http-interceptor-use-cases",
+              "title": "Interceptor use-cases",
+              "tooltip": "Learn when to use HTTP interceptors"
+            },
+            {
+              "url": "guide/http-pass-metadata-to-interceptors",
+              "title": "Pass metadata to interceptors",
+              "tooltip": "Learn how to pass metadata to interceptors"
+            },
+            {
+              "url": "guide/http-track-show-request-progress",
+              "title": "Track and show request progress",
+              "tooltip": "Learn how to track and show progress when sending HTTP requests"
+            },
+            {
+              "url": "guide/http-optimize-server-interaction",
+              "title": "Optimize server communication",
+              "tooltip": "Learn how to use debouncing to optimize server interaction"
+            },
+            {
+              "url": "guide/http-security-xsrf-protection",
+              "title": "Cross-Site Request Forgery (XSRF) protection",
+              "tooltip": "Learn how to secure your website against Cross-Site Request Forgery"
+            },
+            {
+              "url": "guide/http-test-requests",
+              "title": "Test requests",
+              "tooltip": "Learn how to test logic that uses the HTTP client"
+            }
+          ]
         },
         {
           "url": "guide/hydration",
