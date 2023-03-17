@@ -75,12 +75,13 @@ export type ResourceLoader = {
   get(url: string): Promise<string>|string;
 };
 
+export type StringMap = {
+  [key: string]: string;
+};
+
 export type InputMap = {
-  [key: string]: {
-    bindingPropertyName: string,
-    classPropertyName: string,
-    required: boolean,
-  };
+  // TODO(required-inputs): add required field
+  [key: string]: {bindingPropertyName: string, classPropertyName: string};
 };
 
 export type Provider = unknown;
@@ -165,7 +166,7 @@ export interface R3DirectiveMetadataFacade {
   host: {[key: string]: string};
   propMetadata: {[key: string]: OpaqueValue[]};
   lifecycle: {usesOnChanges: boolean;};
-  inputs: (string|{name: string, alias?: string, required?: boolean})[];
+  inputs: string[];
   outputs: string[];
   usesInheritance: boolean;
   exportAs: string[]|null;

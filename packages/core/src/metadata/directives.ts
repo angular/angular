@@ -148,19 +148,13 @@ export interface Directive {
    * Enumerates the set of data-bound input properties for a directive
    *
    * Angular automatically updates input properties during change detection.
-   * The `inputs` property accepts either strings or object literals that configure the directive
-   * properties that should be exposed as inputs.
+   * The `inputs` property defines a set of `directiveProperty` to `bindingProperty`
+   * configuration:
    *
-   * When an object literal is passed in, the `name` property indicates which property on the
-   * class the input should write to, while the `alias` determines the name under
-   * which the input will be available in template bindings. The `required` property indicates that
-   * the input is required which will trigger a compile-time error if it isn't passed in when the
-   * directive is used.
+   * - `directiveProperty` specifies the component property where the value is written.
+   * - `bindingProperty` specifies the DOM property where the value is read from.
    *
-   * When a string is passed into the `inputs` array, it can have a format of `'name'` or
-   * `'name: alias'` where `name` is the property on the class that the directive should write
-   * to, while the `alias` determines the name under which the input will be available in
-   * template bindings. String-based input definitions are assumed to be optional.
+   * When `bindingProperty` is not provided, it is assumed to be equal to `directiveProperty`.
    *
    * @usageNotes
    *
@@ -169,7 +163,7 @@ export interface Directive {
    * ```typescript
    * @Component({
    *   selector: 'bank-account',
-   *   inputs: ['bankName', {name: 'id', alias: 'account-id'}],
+   *   inputs: ['bankName', 'id: account-id'],
    *   template: `
    *     Bank Name: {{bankName}}
    *     Account Id: {{id}}
@@ -182,7 +176,7 @@ export interface Directive {
    * ```
    *
    */
-  inputs?: ({name: string, alias?: string, required?: boolean}|string)[];
+  inputs?: string[];
 
   /**
    * Enumerates the set of event-bound output properties.
@@ -190,11 +184,11 @@ export interface Directive {
    * When an output property emits an event, an event handler attached to that event
    * in the template is invoked.
    *
-   * The `outputs` property defines a set of `directiveProperty` to `alias`
+   * The `outputs` property defines a set of `directiveProperty` to `bindingProperty`
    * configuration:
    *
    * - `directiveProperty` specifies the component property that emits events.
-   * - `alias` specifies the DOM property the event handler is attached to.
+   * - `bindingProperty` specifies the DOM property the event handler is attached to.
    *
    * @usageNotes
    *
@@ -793,8 +787,8 @@ export interface InputDecorator {
    *
    * @see [Input and Output properties](guide/inputs-outputs)
    */
-  (arg?: string|Input): any;
-  new(arg?: string|Input): any;
+  (bindingPropertyName?: string): any;
+  new(bindingPropertyName?: string): any;
 }
 
 /**
@@ -806,12 +800,7 @@ export interface Input {
   /**
    * The name of the DOM property to which the input property is bound.
    */
-  alias?: string;
-
-  /**
-   * Whether the input is required for the directive to function.
-   */
-  required?: boolean;
+  bindingPropertyName?: string;
 }
 
 /**
@@ -819,12 +808,7 @@ export interface Input {
  * @publicApi
  */
 export const Input: InputDecorator =
-    makePropDecorator('Input', (arg?: string|{alias?: string, required?: boolean}) => {
-      if (!arg) {
-        return {};
-      }
-      return typeof arg === 'string' ? {alias: arg} : arg;
-    });
+    makePropDecorator('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
 /**
  * Type of the Output decorator / constructor function.
@@ -848,8 +832,8 @@ export interface OutputDecorator {
    * @see [Input and Output properties](guide/inputs-outputs)
    *
    */
-  (alias?: string): any;
-  new(alias?: string): any;
+  (bindingPropertyName?: string): any;
+  new(bindingPropertyName?: string): any;
 }
 
 /**
@@ -861,14 +845,15 @@ export interface Output {
   /**
    * The name of the DOM property to which the output property is bound.
    */
-  alias?: string;
+  bindingPropertyName?: string;
 }
 
 /**
  * @Annotation
  * @publicApi
  */
-export const Output: OutputDecorator = makePropDecorator('Output', (alias?: string) => ({alias}));
+export const Output: OutputDecorator =
+    makePropDecorator('Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
 
 

@@ -39,7 +39,7 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": { "alias": "forOf"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -133,7 +133,7 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": { "alias": "forOf"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -227,7 +227,7 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": { "alias": "forOf"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -347,6 +347,6 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": { "alias": "forOf"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never, never, false, never>;
 }
 
