@@ -856,6 +856,245 @@ class TestComponent {
     });
   });
 
+  describe('required inputs', () => {
+    it('should produce a diagnostic when a single required input is missing', () => {
+      const messages = diagnose(
+          `<div dir></div>`, `
+            class Dir {
+              input: any;
+            }
+            class TestComponent {}
+          `,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {
+              input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+            },
+          }]);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 1): Required input 'input' from directive Dir must be specified.`
+      ]);
+    });
+
+    it('should produce a diagnostic when a multiple required inputs are missing', () => {
+      const messages = diagnose(
+          `<div dir otherDir></div>`, `
+            class Dir {
+              input: any;
+              otherInput: any;
+            }
+            class OtherDir {
+              otherDirInput: any;
+            }
+            class TestComponent {}
+          `,
+          [
+            {
+              type: 'directive',
+              name: 'Dir',
+              selector: '[dir]',
+              inputs: {
+                input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+                otherInput: {
+                  classPropertyName: 'otherInput',
+                  bindingPropertyName: 'otherInput',
+                  required: true
+                }
+              }
+            },
+            {
+              type: 'directive',
+              name: 'OtherDir',
+              selector: '[otherDir]',
+              inputs: {
+                otherDirInput: {
+                  classPropertyName: 'otherDirInput',
+                  bindingPropertyName: 'otherDirInput',
+                  required: true
+                }
+              },
+            }
+          ]);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 1): Required inputs 'input', 'otherInput' from directive Dir must be specified.`,
+        `TestComponent.html(1, 1): Required input 'otherDirInput' from directive OtherDir must be specified.`,
+      ]);
+    });
+
+    it('should report the public name of a missing required input', () => {
+      const messages = diagnose(
+          `<div dir></div>`, `
+            class Dir {
+              input: any;
+            }
+            class TestComponent {}
+          `,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {
+              input: {classPropertyName: 'input', bindingPropertyName: 'inputAlias', required: true}
+            }
+          }]);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 1): Required input 'inputAlias' from directive Dir must be specified.`
+      ]);
+    });
+
+    it('should not produce a diagnostic if a required input is used in a binding', () => {
+      const messages = diagnose(
+          `<div dir [input]="foo"></div>`, `
+            class Dir {
+              input: any;
+            }
+            class TestComponent {
+              foo: any;
+            }
+          `,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {
+              input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+            }
+          }]);
+
+      expect(messages).toEqual([]);
+    });
+
+    it('should not produce a diagnostic if a required input is used in a binding through an alias',
+       () => {
+         const messages = diagnose(
+             `<div dir [inputAlias]="foo"></div>`, `
+                class Dir {
+                  input: any;
+                }
+                class TestComponent {
+                  foo: any;
+                }
+              `,
+             [{
+               type: 'directive',
+               name: 'Dir',
+               selector: '[dir]',
+               inputs: {
+                 input: {
+                   classPropertyName: 'input',
+                   bindingPropertyName: 'inputAlias',
+                   required: true
+                 },
+               },
+             }]);
+
+         expect(messages).toEqual([]);
+       });
+
+    it('should not produce a diagnostic if a required input is used in a static binding', () => {
+      const messages = diagnose(
+          `<div dir input="hello"></div>`, `
+            class Dir {
+              input: any;
+            }
+            class TestComponent {}
+          `,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {
+              input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+            }
+          }]);
+
+      expect(messages).toEqual([]);
+    });
+
+    it('should not produce a diagnostic if a required input is used in a two-way binding', () => {
+      const messages = diagnose(
+          `<div dir [(input)]="foo"></div>`, `
+            class Dir {
+              input: any;
+              inputChange: any;
+            }
+            class TestComponent {
+              foo: any;
+            }
+          `,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {
+              input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+            },
+            outputs: {inputChange: 'inputChange'},
+          }]);
+
+      expect(messages).toEqual([]);
+    });
+
+    it('should not produce a diagnostic for a required input that is the same the directive selector',
+       () => {
+         const messages = diagnose(
+             `<div dir></div>`, `
+                  class Dir {
+                    dir: any;
+                  }
+                  class TestComponent {}
+                `,
+             [{
+               type: 'directive',
+               name: 'Dir',
+               selector: '[dir]',
+               inputs: {dir: {classPropertyName: 'dir', bindingPropertyName: 'dir', required: true}}
+             }]);
+
+         expect(messages).toEqual([]);
+       });
+
+    it('should produce a diagnostic when a required input from a host directive is missing', () => {
+      const messages = diagnose(
+          `<div dir></div>`, `
+              class Dir {}
+              class HostDir {
+                input: any;
+              }
+              class TestComponent {}`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            hostDirectives: [{
+              directive: {
+                type: 'directive',
+                name: 'HostDir',
+                selector: '',
+                inputs: {
+                  input: {
+                    classPropertyName: 'input',
+                    bindingPropertyName: 'hostAlias',
+                    required: true
+                  },
+                },
+                isStandalone: true,
+              },
+              inputs: ['hostAlias: customAlias']
+            }]
+          }]);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 1): Required input 'customAlias' from directive HostDir must be specified.`
+      ]);
+    });
+  });
+
   // https://github.com/angular/angular/issues/43970
   describe('template parse failures', () => {
     afterEach(resetParseTemplateAsSourceFileForTest);
