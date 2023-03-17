@@ -10,7 +10,7 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, Component, destroyPlatform, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, ViewEncapsulation} from '@angular/core';
+import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, mergeApplicationConfig, NgModule, NgZone, PLATFORM_ID, Provider, Type, ViewEncapsulation} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {bootstrapApplication, BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, provideServerSupport, renderModule, ServerModule} from '@angular/platform-server';
@@ -18,6 +18,18 @@ import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
 import {renderApplication, SERVER_CONTEXT} from '../src/utils';
+
+const APP_CONFIG: ApplicationConfig = {
+  providers: [
+    provideServerSupport(),
+  ]
+};
+
+function getStandaloneBoostrapFn(
+    component: Type<unknown>, providers: Array<Provider|EnvironmentProviders> = []): () =>
+    Promise<ApplicationRef> {
+  return () => bootstrapApplication(component, mergeApplicationConfig(APP_CONFIG, {providers}));
+}
 
 function createMyServerApp(standalone: boolean) {
   @Component({
@@ -197,13 +209,7 @@ function createMyAsyncServerApp(standalone: boolean) {
 }
 
 const MyAsyncServerApp = createMyAsyncServerApp(false);
-const MyAsyncServerAppStandalone = createMyAsyncServerApp(true);
-
-const boostrapMyAsyncServerAppStandalone = () => bootstrapApplication(MyAsyncServerAppStandalone, {
-  providers: [
-    provideServerSupport(),
-  ]
-});
+const MyAsyncServerAppStandalone = getStandaloneBoostrapFn(createMyAsyncServerApp(true));
 
 @NgModule({
   declarations: [MyAsyncServerApp],
@@ -225,7 +231,7 @@ function createSVGComponent(standalone: boolean) {
 }
 
 const SVGComponent = createSVGComponent(false);
-const SVGComponentStandalone = createSVGComponent(true);
+const SVGComponentStandalone = getStandaloneBoostrapFn(createSVGComponent(true));
 
 @NgModule({
   declarations: [SVGComponent],
@@ -267,7 +273,7 @@ function createMyAnimationApp(standalone: boolean) {
 }
 
 const MyAnimationApp = createMyAnimationApp(false);
-const MyAnimationAppStandalone = createMyAnimationApp(true);
+const MyAnimationAppStandalone = getStandaloneBoostrapFn(createMyAnimationApp(true));
 
 @NgModule({
   declarations: [MyAnimationApp],
@@ -290,7 +296,7 @@ function createMyStylesApp(standalone: boolean) {
 }
 
 const MyStylesApp = createMyStylesApp(false);
-const MyStylesAppStandalone = createMyStylesApp(true);
+const MyStylesAppStandalone = getStandaloneBoostrapFn(createMyStylesApp(true));
 
 @NgModule(
     {declarations: [MyStylesApp], imports: [BrowserModule, ServerModule], bootstrap: [MyStylesApp]})
@@ -313,7 +319,7 @@ function createMyTransferStateApp(standalone: boolean) {
 }
 
 const MyTransferStateApp = createMyTransferStateApp(false);
-const MyTransferStateAppStandalone = createMyTransferStateApp(true);
+const MyTransferStateAppStandalone = getStandaloneBoostrapFn(createMyTransferStateApp(true));
 
 
 @NgModule({
@@ -372,7 +378,8 @@ function createShadowDomEncapsulationApp(standalone: boolean) {
 }
 
 const ShadowDomEncapsulationApp = createShadowDomEncapsulationApp(false);
-const ShadowDomEncapsulationAppStandalone = createShadowDomEncapsulationApp(true);
+const ShadowDomEncapsulationAppStandalone =
+    getStandaloneBoostrapFn(createShadowDomEncapsulationApp(true));
 
 @NgModule({
   declarations: [ShadowDomEncapsulationApp],
@@ -404,7 +411,7 @@ function createFalseAttributesComponents(standalone: boolean) {
 }
 
 const [MyHostComponent, MyChildComponent] = createFalseAttributesComponents(false);
-const [MyHostComponentStandalone, _] = createFalseAttributesComponents(true);
+const MyHostComponentStandalone = getStandaloneBoostrapFn(createFalseAttributesComponents(true)[0]);
 
 @NgModule({
   declarations: [MyHostComponent, MyChildComponent],
@@ -427,7 +434,7 @@ function createMyInputComponent(standalone: boolean) {
 }
 
 const MyInputComponent = createMyInputComponent(false);
-const MyInputComponentStandalone = createMyInputComponent(true);
+const MyInputComponentStandalone = getStandaloneBoostrapFn(createMyInputComponent(true));
 
 @NgModule({
   declarations: [MyInputComponent],
@@ -451,7 +458,7 @@ function createHTMLTypesApp(standalone: boolean) {
 }
 
 const HTMLTypesApp = createHTMLTypesApp(false);
-const HTMLTypesAppStandalone = createHTMLTypesApp(true);
+const HTMLTypesAppStandalone = getStandaloneBoostrapFn(createHTMLTypesApp(true));
 
 @NgModule({
   declarations: [HTMLTypesApp],
@@ -474,7 +481,7 @@ function createMyHiddenComponent(standalone: boolean) {
 }
 
 const MyHiddenComponent = createMyHiddenComponent(false);
-const MyHiddenComponentStandalone = createMyHiddenComponent(true);
+const MyHiddenComponentStandalone = getStandaloneBoostrapFn(createMyHiddenComponent(true));
 
 @NgModule({
   declarations: [MyHiddenComponent],
@@ -701,49 +708,13 @@ describe('platform-server integration', () => {
              });
        }));
 
-    it(`using renderApplication with boostrapping function call works`, waitForAsync(() => {
-         const document = TestBed.inject(DOCUMENT);
-
-         // Append root element based on the app selector.
-         const rootEl = document.createElement('app');
-         document.body.appendChild(rootEl);
-
-         // Append a special marker to verify that we use a correct instance
-         // of the document for rendering.
-         const markerEl = document.createComment('test marker');
-         document.body.appendChild(markerEl);
-
-         const platformProviders = [{
-           provide: SERVER_CONTEXT,
-           useValue: 'ssr',
-         }];
-
-         const render =
-             renderApplication(boostrapMyAsyncServerAppStandalone, {document, platformProviders});
-
-         render
-             .then(output => {
-               expect(output).toBe(
-                   '<html><head><title>fakeTitle</title></head>' +
-                   '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="ssr">' +
-                   'Works!<h1 textcontent="fine">fine</h1></app>' +
-                   '<!--test marker--></body></html>');
-               called = true;
-             })
-             .finally(() => {
-               rootEl.remove();
-               markerEl.remove();
-             });
-       }));
-
     // Run the set of tests with regular and standalone components.
     [true, false].forEach((isStandalone: boolean) => {
       it(`using ${isStandalone ? 'renderApplication' : 'renderModule'} should work`,
          waitForAsync(() => {
            const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(MyAsyncServerAppStandalone, {...options, appId: 'simple-cmp'}) :
-               renderModule(AsyncServerModule, options);
+           const bootstrap = isStandalone ? renderApplication(MyAsyncServerAppStandalone, options) :
+                                            renderModule(AsyncServerModule, options);
            bootstrap.then(output => {
              expect(output).toBe(expectedOutput);
              called = true;
@@ -766,7 +737,7 @@ describe('platform-server integration', () => {
 
            const options = {document};
            const bootstrap = isStandalone ?
-               renderApplication(MyAsyncServerAppStandalone, {document, appId: 'simple-cmp'}) :
+               renderApplication(MyAsyncServerAppStandalone, {document}) :
                renderModule(AsyncServerModule, options);
            bootstrap
                .then(output => {
@@ -786,7 +757,7 @@ describe('platform-server integration', () => {
       it('works with SVG elements', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(SVGComponentStandalone, {...options, appId: 'simple-cmp'}) :
+               renderApplication(SVGComponentStandalone, {...options}) :
                renderModule(SVGServerModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
@@ -798,9 +769,8 @@ describe('platform-server integration', () => {
 
       it('works with animation', waitForAsync(() => {
            const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(MyAnimationAppStandalone, {...options, appId: 'simple-cmp'}) :
-               renderModule(AnimationServerModule, options);
+           const bootstrap = isStandalone ? renderApplication(MyAnimationAppStandalone, options) :
+                                            renderModule(AnimationServerModule, options);
            bootstrap.then(output => {
              expect(output).toContain('Works!');
              expect(output).toContain('ng-trigger-myAnimation');
@@ -814,8 +784,7 @@ describe('platform-server integration', () => {
       it('should handle ViewEncapsulation.ShadowDom', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(
-                   ShadowDomEncapsulationAppStandalone, {...options, appId: 'simple-cmp'}) :
+               renderApplication(ShadowDomEncapsulationAppStandalone, options) :
                renderModule(ShadowDomExampleModule, options);
            bootstrap.then(output => {
              expect(output).not.toBe('');
@@ -834,7 +803,7 @@ describe('platform-server integration', () => {
            }];
            const bootstrap = isStandalone ?
                renderApplication(
-                   MyStylesAppStandalone, {...options, platformProviders: providers, appId: 'ng'}) :
+                   MyStylesAppStandalone, {...options, platformProviders: providers}) :
                renderModule(ExampleStylesModule, {...options, extraProviders: providers});
            bootstrap.then(output => {
              expect(output).toMatch(
@@ -853,8 +822,7 @@ describe('platform-server integration', () => {
            }];
            const bootstrap = isStandalone ?
                renderApplication(
-                   MyStylesAppStandalone,
-                   {...options, platformProviders: providers, appId: 'example-styles'}) :
+                   MyStylesAppStandalone, {...options, platformProviders: providers}) :
                renderModule(ExampleStylesModule, {...options, extraProviders: providers});
            bootstrap.then(output => {
              // All symbols other than [a-zA-Z0-9\-] are removed
@@ -868,8 +836,8 @@ describe('platform-server integration', () => {
          waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(MyTransferStateAppStandalone, {...options, appId: 'ng'}) :
-               renderModule(MyTransferStateModule, {...options});
+               renderApplication(MyTransferStateAppStandalone, options) :
+               renderModule(MyTransferStateModule, options);
            bootstrap.then(output => {
              const expectedOutput =
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other"><div>Works!</div></app>' +
@@ -890,8 +858,7 @@ describe('platform-server integration', () => {
            }];
            const bootstrap = isStandalone ?
                renderApplication(
-                   MyStylesAppStandalone,
-                   {...options, platformProviders: providers, appId: 'example-styles'}) :
+                   MyStylesAppStandalone, {...options, platformProviders: providers}) :
                renderModule(ExampleStylesModule, {...options, extraProviders: providers});
            bootstrap.then(output => {
              // All symbols other than [a-zA-Z0-9\-] are removed,
@@ -903,9 +870,8 @@ describe('platform-server integration', () => {
 
       it('should handle false values on attributes', waitForAsync(() => {
            const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(MyHostComponentStandalone, {...options, appId: 'example-app'}) :
-               renderModule(FalseAttributesModule, options);
+           const bootstrap = isStandalone ? renderApplication(MyHostComponentStandalone, options) :
+                                            renderModule(FalseAttributesModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
@@ -916,9 +882,8 @@ describe('platform-server integration', () => {
 
       it('should handle element property "name"', waitForAsync(() => {
            const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(MyInputComponentStandalone, {...options, appId: 'example-app'}) :
-               renderModule(NameModule, options);
+           const bootstrap = isStandalone ? renderApplication(MyInputComponentStandalone, options) :
+                                            renderModule(NameModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
@@ -933,9 +898,8 @@ describe('platform-server integration', () => {
            (global as any).Node = undefined;
            (global as any).Document = undefined;
            const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(HTMLTypesAppStandalone, {...options, appId: 'example-app'}) :
-               renderModule(HTMLTypesModule, options);
+           const bootstrap = isStandalone ? renderApplication(HTMLTypesAppStandalone, options) :
+                                            renderModule(HTMLTypesModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
@@ -947,7 +911,7 @@ describe('platform-server integration', () => {
       it('should handle element property "hidden"', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(MyHiddenComponentStandalone, {...options, appId: 'example-app'}) :
+               renderApplication(MyHiddenComponentStandalone, options) :
                renderModule(HiddenModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
@@ -961,8 +925,7 @@ describe('platform-server integration', () => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
                renderApplication(
-                   MyServerAppStandalone,
-                   {...options, appId: 'example-app', providers: [...RenderHookProviders]}) :
+                   getStandaloneBoostrapFn(MyServerAppStandalone, RenderHookProviders), options) :
                renderModule(RenderHookModule, options);
            bootstrap.then(output => {
              // title should be added by the render hook.
@@ -978,8 +941,8 @@ describe('platform-server integration', () => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
                renderApplication(
-                   MyServerAppStandalone,
-                   {...options, appId: 'example-app', providers: [...MultiRenderHookProviders]}) :
+                   getStandaloneBoostrapFn(MyServerAppStandalone, MultiRenderHookProviders),
+                   options) :
                renderModule(MultiRenderHookModule, options);
            bootstrap.then(output => {
              // title should be added by the render hook.
@@ -995,8 +958,8 @@ describe('platform-server integration', () => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
                renderApplication(
-                   MyServerAppStandalone,
-                   {...options, appId: 'example-app', providers: [...AsyncRenderHookProviders]}) :
+                   getStandaloneBoostrapFn(MyServerAppStandalone, AsyncRenderHookProviders),
+                   options) :
                renderModule(AsyncRenderHookModule, options);
            bootstrap.then(output => {
              // title should be added by the render hook.
@@ -1010,12 +973,11 @@ describe('platform-server integration', () => {
       it('should call multiple async and sync render hooks', waitForAsync(() => {
            const consoleSpy = spyOn(console, 'warn');
            const options = {document: doc};
-           const bootstrap = isStandalone ? renderApplication(MyServerAppStandalone, {
-             ...options,
-             appId: 'example-app',
-             providers: [...AsyncMultiRenderHookProviders]
-           }) :
-                                            renderModule(AsyncMultiRenderHookModule, options);
+           const bootstrap = isStandalone ?
+               renderApplication(
+                   getStandaloneBoostrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
+                   options) :
+               renderModule(AsyncMultiRenderHookModule, options);
            bootstrap.then(output => {
              // title should be added by the render hook.
              expect(output).toBe(
