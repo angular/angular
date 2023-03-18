@@ -476,7 +476,9 @@ describe('Driver', () => {
     await driver.initialized;
 
     const client = scope.clients.getMock('default')!;
-    expect(client.messages).toEqual([]);
+    expect(client.messages).toEqual([
+      {type: 'HASH_UPDATE', hash: manifestHash},
+    ]);
 
     scope.updateServerState(serverUpdate);
     expect(await driver.checkForUpdate()).toEqual(true);
@@ -487,6 +489,7 @@ describe('Driver', () => {
     serverUpdate.assertNoOtherRequests();
 
     expect(client.messages).toEqual([
+      {type: 'HASH_UPDATE', hash: manifestHash},
       {
         type: 'VERSION_DETECTED',
         version: {hash: manifestUpdateHash, appData: {version: 'update'}},
@@ -529,7 +532,7 @@ describe('Driver', () => {
     await driver.initialized;
 
     const client = scope.clients.getMock('default')!;
-    expect(client.messages).toEqual([]);
+    expect(client.messages).toEqual([{type: 'HASH_UPDATE', hash: manifestHash}]);
 
     scope.updateServerState(serverUpdate);
     expect(await driver.checkForUpdate()).toEqual(true);
@@ -537,6 +540,7 @@ describe('Driver', () => {
     await driver.updateClient(client as any as Client);
 
     expect(client.messages).toEqual([
+      {type: 'HASH_UPDATE', hash: manifestHash},
       {type: 'VERSION_DETECTED', version: {hash: manifestUpdateHash, appData: {version: 'update'}}},
       {
         type: 'VERSION_READY',
@@ -652,6 +656,10 @@ describe('Driver', () => {
 
     expect(client.messages).toEqual([
       {
+        type: 'HASH_UPDATE',
+        hash: manifestHash,
+      },
+      {
         type: 'VERSION_DETECTED',
         version: {hash: manifestUpdateHash, appData: {version: 'update'}},
       },
@@ -680,6 +688,7 @@ describe('Driver', () => {
        serverUpdate.clearRequests();
 
        expect(client.messages).toEqual([
+         {type: 'HASH_UPDATE', hash: manifestHash},
          {
            type: 'NO_NEW_VERSION_DETECTED',
            version: {hash: manifestHash, appData: {version: 'original'}},
@@ -788,15 +797,17 @@ describe('Driver', () => {
       title: 'This is a test',
       options: {title: 'This is a test', body: 'Test body'},
     }]);
-    expect(scope.clients.getMock('default')!.messages).toEqual([{
-      type: 'PUSH',
-      data: {
-        notification: {
-          title: 'This is a test',
-          body: 'Test body',
+    expect(scope.clients.getMock('default')!.messages).toEqual([
+      {type: 'HASH_UPDATE', hash: manifestHash}, {
+        type: 'PUSH',
+        data: {
+          notification: {
+            title: 'This is a test',
+            body: 'Test body',
+          },
         },
-      },
-    }]);
+      }
+    ]);
   });
 
   describe('notification click events', () => {
@@ -805,7 +816,7 @@ describe('Driver', () => {
       await driver.initialized;
       await scope.handleClick(
           {title: 'This is a test with action', body: 'Test body with action'}, 'button');
-      const message = scope.clients.getMock('default')!.messages[0];
+      const message = scope.clients.getMock('default')!.messages[1];
 
       expect(message.type).toEqual('NOTIFICATION_CLICK');
       expect(message.data.action).toEqual('button');
@@ -820,7 +831,7 @@ describe('Driver', () => {
         title: 'This is a test without action',
         body: 'Test body without action',
       });
-      const message = scope.clients.getMock('default')!.messages[0];
+      const message = scope.clients.getMock('default')!.messages[1];
 
       expect(message.type).toEqual('NOTIFICATION_CLICK');
       expect(message.data.action).toBe('');

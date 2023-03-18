@@ -137,6 +137,10 @@ export interface PushEvent {
 
 export type IncomingEvent = UpdateActivatedEvent|UnrecoverableStateEvent|VersionEvent;
 
+export type HashUpdateEvent = {
+  type: 'HASH_UPDATE'; hash: string;
+};
+
 export interface TypedEvent {
   type: string;
 }

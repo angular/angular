@@ -7,11 +7,14 @@
  */
 
 import {Injectable} from '@angular/core';
-import {NEVER, Observable} from 'rxjs';
+import {BehaviorSubject, merge, NEVER, Observable, ReplaySubject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionEvent, VersionReadyEvent} from './low_level';
+import {ERR_SW_NOT_SUPPORTED, HashUpdateEvent, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionEvent, VersionReadyEvent} from './low_level';
 
+export type Writable<T> = {
+  -readonly[K in keyof T]: T[K];
+};
 
 
 /**
@@ -64,6 +67,12 @@ export class SwUpdate {
   readonly unrecoverable: Observable<UnrecoverableStateEvent>;
 
   /**
+   * Emits a new value each time the hash of the manifest changes.
+   * When the `latest` hash is different from the `current`, it represents an available version
+   */
+  readonly hashes: Observable<{latest: string, current: string}>;
+
+  /**
    * True if the Service Worker is enabled (supported by the browser and enabled via
    * `ServiceWorkerModule`).
    */
@@ -77,6 +86,7 @@ export class SwUpdate {
       this.available = NEVER;
       this.activated = NEVER;
       this.unrecoverable = NEVER;
+      this.hashes = NEVER;
       return;
     }
     this.versionUpdates = this.sw.eventsOfType<VersionEvent>([
@@ -94,6 +104,14 @@ export class SwUpdate {
             })));
     this.activated = this.sw.eventsOfType<UpdateActivatedEvent>('UPDATE_ACTIVATED');
     this.unrecoverable = this.sw.eventsOfType<UnrecoverableStateEvent>('UNRECOVERABLE_STATE');
+
+    this.hashes = new ReplaySubject(1);
+    merge(
+        this.sw.eventsOfType<HashUpdateEvent>('HASH_UPDATE')
+            .pipe(map(({hash}) => ({latest: hash, current: hash}))),
+        this.sw.eventsOfType<VersionReadyEvent>('VERSION_READY')
+            .pipe(map(evt => ({latest: evt.latestVersion.hash, current: evt.currentVersion.hash}))))
+        .subscribe((hashes) => (this.hashes as BehaviorSubject<any>).next(hashes));
   }
 
   /**

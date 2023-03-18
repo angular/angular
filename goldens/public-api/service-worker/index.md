@@ -72,6 +72,10 @@ export class SwUpdate {
     // @deprecated
     readonly available: Observable<UpdateAvailableEvent>;
     checkForUpdate(): Promise<boolean>;
+    readonly hashes: Observable<{
+        latest: string;
+        current: string;
+    }>;
     get isEnabled(): boolean;
     readonly unrecoverable: Observable<UnrecoverableStateEvent>;
     readonly versionUpdates: Observable<VersionEvent>;

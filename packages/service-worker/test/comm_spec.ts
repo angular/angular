@@ -13,6 +13,7 @@ import {ngswCommChannelFactory, SwRegistrationOptions} from '@angular/service-wo
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
 import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '@angular/service-worker/testing/mock';
+import {take} from 'rxjs/operators';
 
 {
   describe('ServiceWorker library', () => {
@@ -517,6 +518,29 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         });
         expect(() => TestBed.inject(SwUpdate)).not.toThrow();
       });
+
+      it('get hashes', async () => {
+        mock.sendMessage({type: 'HASH_UPDATE', hash: 'X'});
+
+        const hashes1 = await update.hashes.pipe(take(1)).toPromise();
+        expect(hashes1.current).toEqual('X');
+        expect(hashes1.latest).toEqual('X');
+
+        mock.sendMessage({
+          type: 'VERSION_READY',
+          currentVersion: {
+            hash: 'A',
+          },
+          latestVersion: {
+            hash: 'B',
+          },
+        });
+
+        const hashes2 = await update.hashes.pipe(take(1)).toPromise();
+        expect(hashes2.current).toEqual('A');
+        expect(hashes2.latest).toEqual('B');
+      });
+
       describe('with no SW', () => {
         beforeEach(() => {
           comm = new NgswCommChannel(undefined);

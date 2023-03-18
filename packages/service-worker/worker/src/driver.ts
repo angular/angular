@@ -615,6 +615,9 @@ export class Driver implements Debuggable, UpdateSource {
     // Set the latest version.
     this.latestHash = latest.latest;
 
+    // notify all clients of the latest hash
+    await this.broadcast({type: 'HASH_UPDATE', hash: this.latestHash});
+
     // Finally, assert that the latest version is in fact loaded.
     if (!this.versions.has(latest.latest)) {
       throw new Error(
