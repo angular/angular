@@ -910,5 +910,39 @@ describe('standalone components, directives, and pipes', () => {
 
       expect(isStandalone(Module)).toBeFalse();
     });
+
+    it('should render a recursive cycle of standalone components', () => {
+      @Component({
+        selector: 'cmp-a',
+        standalone: true,
+        template: '<ng-template [ngIf]="false"><cmp-c></cmp-c></ng-template>A',
+        imports: [forwardRef(() => StandaloneCmpC)],
+      })
+      class StandaloneCmpA {
+      }
+
+      @Component({
+        selector: 'cmp-b',
+        standalone: true,
+        template: '(<cmp-a></cmp-a>)B',
+        imports: [StandaloneCmpA],
+      })
+      class StandaloneCmpB {
+      }
+
+      @Component({
+        selector: 'cmp-c',
+        standalone: true,
+        template: '(<cmp-b></cmp-b>)C',
+        imports: [StandaloneCmpB],
+      })
+      class StandaloneCmpC {
+      }
+
+      TestBed.configureTestingModule({imports: [StandaloneCmpC]});
+      const fixture = TestBed.createComponent(StandaloneCmpC);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('((A)B)C');
+    });
   });
 });
