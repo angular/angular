@@ -18,7 +18,7 @@ import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {notYetSupportedI18nBlockError, unsupportedProjectionOfDomNodes} from './error_handling';
-import {CONTAINERS, ELEMENT_CONTAINERS, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
+import {CONTAINERS, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {calcPathForNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, TextNodeMarker} from './utils';
@@ -225,6 +225,24 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
     // a corresponding slot in TNode data structure. If that's the case, just
     // skip this slot and move to the next one.
     if (!tNode) {
+      continue;
+    }
+
+    // Check if a native node that represents a given TNode is disconnected from the DOM tree.
+    // Such nodes must be excluded from the hydration (since the hydration won't be able to
+    // find them), so the TNode ids are collected and used at runtime to skip the hydration.
+    //
+    // This situation may happen during the content projection, when some nodes don't make it
+    // into one of the content projection slots (for example, when there is no default
+    // <ng-content /> slot in projector component's template).
+    //
+    // Note: we leverage the fact that we have this information available in the DOM emulation
+    // layer (in Domino) for now. Longer-term solution should not rely on the DOM emulation and
+    // only use internal data structures and state to compute this information.
+    if (!(tNode.type & TNodeType.Projection) && !!lView[i] &&
+        !(unwrapRNode(lView[i]) as Node).isConnected) {
+      ngh[DISCONNECTED_NODES] ??= [];
+      ngh[DISCONNECTED_NODES].push(noOffsetIndex);
       continue;
     }
     if (Array.isArray(tNode.projection)) {

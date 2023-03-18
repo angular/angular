@@ -9,7 +9,7 @@
 import {invalidSkipHydrationHost, validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {hasNgSkipHydrationAttr} from '../../hydration/skip_hydration';
-import {getSerializedContainerViews, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
+import {getSerializedContainerViews, isDisconnectedNode, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -203,7 +203,8 @@ function locateOrCreateElementNodeImpl(
     tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string,
     index: number): RElement {
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock();
+  const isNodeCreationMode =
+      !hydrationInfo || isInSkipHydrationBlock() || isDisconnectedNode(hydrationInfo, index);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
