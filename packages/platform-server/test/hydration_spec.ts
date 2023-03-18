@@ -2542,57 +2542,202 @@ describe('platform-server integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
 
-      // FIXME(akushnir): this is a special use-case that will be covered in a followup PR.
-      // This would require some extra logic to detect if some nodes were "dropped" during the
-      // content projection operation.
-      xit('should support partial projection (when some nodes are not projected)', async () => {
-        @Component({
-          standalone: true,
-          selector: 'projector-cmp',
-          template: `
-            <div>
-              Header slot: <ng-content select="header"></ng-content>
-              Main slot: <ng-content select="main"></ng-content>
-              Footer slot: <ng-content select="footer"></ng-content>
-              <!-- no "default" projection bucket -->
-            </div>
-          `,
-        })
-        class ProjectorCmp {
-        }
+      describe('partial projection', () => {
+        it('should support cases when some element nodes are not projected', async () => {
+          @Component({
+            standalone: true,
+            selector: 'projector-cmp',
+            template: `
+              <div>
+                Header slot: <ng-content select="header" />
+                Main slot: <ng-content select="main" />
+                Footer slot: <ng-content select="footer" />
+                <!-- no "default" projection bucket -->
+              </div>
+            `,
+          })
+          class ProjectorCmp {
+          }
 
-        @Component({
-          standalone: true,
-          imports: [ProjectorCmp],
-          selector: 'app',
-          template: `
-            <projector-cmp>
-              <!-- contents is intentionally randomly ordered -->
-              <h1>This node is not projected.</h1>
-              <footer>Footer</footer>
-              <header>Header</header>
-              <main>Main</main>
-              <h2>This node is not projected as well.</h2>
-            </projector-cmp>
-          `,
-        })
-        class SimpleComponent {
-        }
+          @Component({
+            standalone: true,
+            imports: [ProjectorCmp],
+            selector: 'app',
+            template: `
+              <projector-cmp>
+                <!-- contents is randomly ordered for testing -->
+                <h1>This node is not projected.</h1>
+                <footer>Footer</footer>
+                <header>Header</header>
+                <main>Main</main>
+                <h2>This node is not projected as well.</h2>
+              </projector-cmp>
+            `,
+          })
+          class SimpleComponent {
+          }
 
-        const html = await ssr(SimpleComponent);
-        const ssrContents = getAppContents(html);
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
 
-        expect(ssrContents).toContain('<app ngh');
+          expect(ssrContents).toContain('<app ngh');
 
-        resetTViewsFor(SimpleComponent, ProjectorCmp);
+          resetTViewsFor(SimpleComponent, ProjectorCmp);
 
-        const appRef = await hydrate(html, SimpleComponent);
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
 
-        const clientRootNode = compRef.location.nativeElement;
-        verifyAllNodesClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should support cases when view containers are not projected', async () => {
+          @Component({
+            standalone: true,
+            selector: 'projector-cmp',
+            template: `No content projection slots.`,
+          })
+          class ProjectorCmp {
+          }
+
+          @Component({
+            standalone: true,
+            imports: [ProjectorCmp],
+            selector: 'app',
+            template: `
+              <projector-cmp>
+                <ng-container *ngIf="true">
+                  <h1>This node is not projected.</h1>
+                  <h2>This node is not projected as well.</h2>
+                </ng-container>
+              </projector-cmp>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should support cases when component nodes are not projected', async () => {
+          @Component({
+            standalone: true,
+            selector: 'projector-cmp',
+            template: `No content projection slots.`,
+          })
+          class ProjectorCmp {
+          }
+
+          @Component({
+            standalone: true,
+            selector: 'nested',
+            template: 'This is a nested component.',
+          })
+          class NestedComponent {
+          }
+
+
+          @Component({
+            standalone: true,
+            imports: [ProjectorCmp, NestedComponent],
+            selector: 'app',
+            template: `
+              <projector-cmp>
+                <nested>
+                  <h1>This node is not projected.</h1>
+                  <h2>This node is not projected as well.</h2>
+                </nested>
+              </projector-cmp>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent, ProjectorCmp, NestedComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should support cases when component nodes are not projected in nested components',
+           async () => {
+             @Component({
+               standalone: true,
+               selector: 'projector-cmp',
+               template: `
+                <main>
+                  <ng-content />
+                </main>
+              `,
+             })
+             class ProjectorCmp {
+             }
+
+             @Component({
+               standalone: true,
+               selector: 'nested',
+               template: 'No content projection slots.',
+             })
+             class NestedComponent {
+             }
+
+
+             @Component({
+               standalone: true,
+               imports: [ProjectorCmp, NestedComponent],
+               selector: 'app',
+               template: `
+                <projector-cmp>
+                  <nested>
+                    <h1>This node is not projected.</h1>
+                    <h2>This node is not projected as well.</h2>
+                  </nested>
+                </projector-cmp>
+              `,
+             })
+             class SimpleComponent {
+             }
+
+             const html = await ssr(SimpleComponent);
+             const ssrContents = getAppContents(html);
+
+             expect(ssrContents).toContain('<app ngh');
+
+             resetTViewsFor(SimpleComponent, ProjectorCmp, NestedComponent);
+
+             const appRef = await hydrate(html, SimpleComponent);
+             const compRef = getComponentRef<SimpleComponent>(appRef);
+             appRef.tick();
+
+             const clientRootNode = compRef.location.nativeElement;
+             verifyAllNodesClaimedForHydration(clientRootNode);
+             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+           });
       });
 
       it('should project contents with *ngIf\'s', async () => {

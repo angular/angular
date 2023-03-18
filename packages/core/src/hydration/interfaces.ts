@@ -35,6 +35,7 @@ export const MULTIPLIER = 'x';
 export const NUM_ROOT_NODES = 'r';
 export const TEMPLATE_ID = 'i';  // as it's also an "id"
 export const NODES = 'n';
+export const DISCONNECTED_NODES = 'd';
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -81,6 +82,16 @@ export interface SerializedView {
    * the location of this node (as a set of navigation instructions).
    */
   [NODES]?: Record<number, string>;
+
+  /**
+   * A list of ids which represents a set of nodes disconnected
+   * from the DOM tree at the serialization time, but otherwise
+   * present in the internal data structures.
+   *
+   * This information is used to avoid triggering the hydration
+   * logic for such nodes and instead use a regular "creation mode".
+   */
+  [DISCONNECTED_NODES]?: number[];
 }
 
 /**
@@ -136,6 +147,19 @@ export interface DehydratedView {
    * represent either an <ng-container> or a view container.
    */
   segmentHeads?: {[index: number]: RNode|null};
+
+  /**
+   * An instance of a Set that represents nodes disconnected from
+   * the DOM tree at the serialization time, but otherwise present
+   * in the internal data structures.
+   *
+   * The Set is based on the `SerializedView[DISCONNECTED_NODES]` data
+   * and is needed to have constant-time lookups.
+   *
+   * If the value is `null`, it means that there were no disconnected
+   * nodes detected in this view at serialization time.
+   */
+  disconnectedNodes?: Set<number>|null;
 }
 
 /**

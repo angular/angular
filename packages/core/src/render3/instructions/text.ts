@@ -7,7 +7,7 @@
  */
 import {validateMatchingNode} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
-import {markRNodeAsClaimedByHydration} from '../../hydration/utils';
+import {isDisconnectedNode, markRNodeAsClaimedByHydration} from '../../hydration/utils';
 import {assertEqual, assertIndexInRange} from '../../util/assert';
 import {TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RText} from '../interfaces/renderer_dom';
@@ -42,7 +42,7 @@ export function ɵɵtext(index: number, value: string = ''): void {
       getOrCreateTNode(tView, adjustedIndex, TNodeType.Text, value, null) :
       tView.data[adjustedIndex] as TElementNode;
 
-  const textNative = _locateOrCreateTextNode(tView, lView, tNode, value);
+  const textNative = _locateOrCreateTextNode(tView, lView, tNode, value, index);
   lView[adjustedIndex] = textNative;
 
   if (wasLastNodeCreated()) {
@@ -54,7 +54,7 @@ export function ɵɵtext(index: number, value: string = ''): void {
 }
 
 let _locateOrCreateTextNode: typeof locateOrCreateTextNodeImpl =
-    (tView: TView, lView: LView, tNode: TNode, value: string) => {
+    (tView: TView, lView: LView, tNode: TNode, value: string, index: number) => {
       lastNodeWasCreated(true);
       return createTextNode(lView[RENDERER], value);
     };
@@ -64,9 +64,10 @@ let _locateOrCreateTextNode: typeof locateOrCreateTextNodeImpl =
  * in addition to the regular creation mode of text nodes.
  */
 function locateOrCreateTextNodeImpl(
-    tView: TView, lView: LView, tNode: TNode, value: string): RText {
+    tView: TView, lView: LView, tNode: TNode, value: string, index: number): RText {
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock();
+  const isNodeCreationMode =
+      !hydrationInfo || isInSkipHydrationBlock() || isDisconnectedNode(hydrationInfo, index);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
