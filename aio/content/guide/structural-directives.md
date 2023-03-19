@@ -59,7 +59,7 @@ named `$implicit`.
 
 Angular sets `let-hero` to the value of the context's `$implicit` property, which `NgFor` has initialized with the hero for the current iteration.
 
-For more information, see the [NgFor API](api/common/NgForOf "API: NgFor") and [NgForOf API](api/common/NgForOf) documentation.
+For more information, see the [NgFor API](api/common/NgFor "API: NgFor") and [NgForOf API](api/common/NgForOf) documentation.
 
 <div class="alert is-helpful">
 
