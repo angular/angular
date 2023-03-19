@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
-import {APP_ID, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument, ɵunescapeTransferStateContent as unescapeTransferStateContent} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
@@ -126,6 +126,11 @@ function resetTViewsFor(...types: Type<unknown>[]) {
   for (const type of types) {
     getComponentDef(type)!.tView = null;
   }
+}
+
+function getHydrationInfoFromTransferState(input: string): {} {
+  const rawContents = input.match(/<script[^>]+>(.*?)<\/script>/)![1];
+  return unescapeTransferStateContent(rawContents);
 }
 
 describe('platform-server integration', () => {
@@ -807,6 +812,11 @@ describe('platform-server integration', () => {
 
             expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
 
+            // Check whether serialized hydration info has a multiplier
+            // (which avoids repeated views serialization).
+            const hydrationInfo = getHydrationInfoFromTransferState(ssrContents);
+            expect(hydrationInfo).toContain('"x":3');
+
             resetTViewsFor(SimpleComponent);
 
             const appRef = await hydrate(html, SimpleComponent);
@@ -824,11 +834,11 @@ describe('platform-server integration', () => {
               selector: 'app',
               imports: [NgIf, NgFor],
               template: `
-              <div *ngFor="let item of items">
-                <h1 *ngIf="true">Item #{{ item }}</h1>
-              </div>
-              <div>Post-container element</div>
-            `,
+                <div *ngFor="let item of items">
+                  <h1 *ngIf="true">Item #{{ item }}</h1>
+                </div>
+                <div>Post-container element</div>
+              `,
             })
             class SimpleComponent {
               items = [1, 2, 3];
@@ -838,6 +848,11 @@ describe('platform-server integration', () => {
             const ssrContents = getAppContents(html);
 
             expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+            // Check whether serialized hydration info has a multiplier
+            // (which avoids repeated views serialization).
+            const hydrationInfo = getHydrationInfoFromTransferState(ssrContents);
+            expect(hydrationInfo).toContain('"x":3');
 
             resetTViewsFor(SimpleComponent);
 
@@ -880,7 +895,53 @@ describe('platform-server integration', () => {
 
             expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
 
+            // Check whether serialized hydration info has a multiplier
+            // (which avoids repeated views serialization).
+            const hydrationInfo = getHydrationInfoFromTransferState(ssrContents);
+            expect(hydrationInfo).toContain('"x":3');
+
             resetTViewsFor(SimpleComponent, NestedComponent);
+
+            const appRef = await hydrate(html, SimpleComponent);
+            const compRef = getComponentRef<SimpleComponent>(appRef);
+            appRef.tick();
+
+            const clientRootNode = compRef.location.nativeElement;
+            verifyAllNodesClaimedForHydration(clientRootNode);
+            verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+          });
+
+          it('should support compact serialization for *ngFor', async () => {
+            @Component({
+              standalone: true,
+              selector: 'app',
+              imports: [NgIf, NgFor],
+              template: `
+                <div *ngFor="let number of numbers">
+                  Number {{ number }}
+                  <ng-container *ngIf="number >= 0 && number < 5">is in [0, 5) range.</ng-container>
+                  <ng-container *ngIf="number >= 5 && number < 8">is in [5, 8) range.</ng-container>
+                  <ng-container *ngIf="number >= 8 && number < 10">is in [8, 10) range.</ng-container>
+                </div>
+              `,
+            })
+            class SimpleComponent {
+              numbers = [...Array(10).keys()];  // [0..9]
+            }
+
+            const html = await ssr(SimpleComponent);
+            const ssrContents = getAppContents(html);
+
+            expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+            // Check whether serialized hydration info has multipliers
+            // (which avoids repeated views serialization).
+            const hydrationInfo = getHydrationInfoFromTransferState(ssrContents);
+            expect(hydrationInfo).toContain('"x":5');  // [0, 5) range, 5 views
+            expect(hydrationInfo).toContain('"x":3');  // [5, 8) range, 3 views
+            expect(hydrationInfo).toContain('"x":2');  // [8, 10) range, 2 views
+
+            resetTViewsFor(SimpleComponent);
 
             const appRef = await hydrate(html, SimpleComponent);
             const compRef = getComponentRef<SimpleComponent>(appRef);
