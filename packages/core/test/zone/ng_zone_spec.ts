@@ -820,6 +820,20 @@ function commonTests() {
            done();
          }, resultTimer);
        });
+
+    it('should throw error when call zone.run() in onStable subscriber', () => {
+      let x = 0;
+      const sub = _zone.onStable.subscribe(() => {
+        if (x > 0) {
+          fail('should not be here');
+        }
+        _zone.run(() => {
+          x++;
+        });
+      });
+      runNgZoneNoLog(() => {});
+      sub.unsubscribe();
+    });
   });
 
   describe('exceptions', () => {

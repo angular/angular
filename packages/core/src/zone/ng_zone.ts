@@ -324,27 +324,11 @@ interface NgZonePrivate extends NgZone {
 }
 
 function checkStable(zone: NgZonePrivate) {
-  // TODO: @JiaLiPassion, should check zone.isCheckStableRunning to prevent
-  // re-entry. The case is:
-  //
-  // @Component({...})
-  // export class AppComponent {
-  // constructor(private ngZone: NgZone) {
-  //   this.ngZone.onStable.subscribe(() => {
-  //     this.ngZone.run(() => console.log('stable'););
-  //   });
-  // }
-  //
-  // The onStable subscriber run another function inside ngZone
-  // which causes `checkStable()` re-entry.
-  // But this fix causes some issues in g3, so this fix will be
-  // launched in another PR.
   if (zone._nesting == 0 && !zone.hasPendingMicrotasks && !zone.isStable) {
     try {
       zone._nesting++;
       zone.onMicrotaskEmpty.emit(null);
     } finally {
-      zone._nesting--;
       if (!zone.hasPendingMicrotasks) {
         try {
           zone.runOutsideAngular(() => zone.onStable.emit(null));
@@ -352,6 +336,7 @@ function checkStable(zone: NgZonePrivate) {
           zone.isStable = true;
         }
       }
+      zone._nesting--;
     }
   }
 }
