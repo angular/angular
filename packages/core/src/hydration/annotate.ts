@@ -17,7 +17,7 @@ import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
-import {CONTAINERS, ELEMENT_CONTAINERS, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
+import {CONTAINERS, ELEMENT_CONTAINERS, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {calcPathForNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, TextNodeMarker} from './utils';
@@ -134,6 +134,7 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
 function serializeLContainer(
     lContainer: LContainer, context: HydrationContext): SerializedContainerView[] {
   const views: SerializedContainerView[] = [];
+  let lastViewAsString: string = '';
 
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     let childLView = lContainer[i] as LView;
@@ -164,7 +165,19 @@ function serializeLContainer(
       ...serializeLView(lContainer[i] as LView, context),
     };
 
-    views.push(view);
+    // Check if the previous view has the same shape (for example, it was
+    // produced by the *ngFor), in which case bump the counter on the previous
+    // view instead of including the same information again.
+    const currentViewAsString = JSON.stringify(view);
+    if (views.length > 0 && currentViewAsString === lastViewAsString) {
+      const previousView = views[views.length - 1];
+      previousView[MULTIPLIER] ??= 1;
+      previousView[MULTIPLIER]++;
+    } else {
+      // Record this view as most recently added.
+      lastViewAsString = currentViewAsString;
+      views.push(view);
+    }
   }
   return views;
 }

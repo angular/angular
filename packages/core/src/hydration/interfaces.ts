@@ -31,6 +31,7 @@ export enum NodeNavigationStep {
 export const ELEMENT_CONTAINERS = 'e';
 export const TEMPLATES = 't';
 export const CONTAINERS = 'c';
+export const MULTIPLIER = 'x';
 export const NUM_ROOT_NODES = 'r';
 export const TEMPLATE_ID = 'i';  // as it's also an "id"
 export const NODES = 'n';
@@ -103,6 +104,13 @@ export interface SerializedContainerView extends SerializedView {
    * and identify segments that belong to different views.
    */
   [NUM_ROOT_NODES]: number;
+
+  /**
+   * Number of times this view is repeated.
+   * This is used to avoid serializing and sending the same hydration
+   * information about similar views (for example, produced by *ngFor).
+   */
+  [MULTIPLIER]?: number;
 }
 
 /**

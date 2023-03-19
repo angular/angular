@@ -16,7 +16,7 @@ import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 
-import {CONTAINERS, DehydratedView, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView} from './interfaces';
+import {CONTAINERS, DehydratedView, ELEMENT_CONTAINERS, MULTIPLIER, NUM_ROOT_NODES, SerializedContainerView, SerializedView} from './interfaces';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -260,7 +260,7 @@ export function calcSerializedContainerSize(hydrationInfo: DehydratedView, index
   const views = getSerializedContainerViews(hydrationInfo, index) ?? [];
   let numNodes = 0;
   for (let view of views) {
-    numNodes += view[NUM_ROOT_NODES];
+    numNodes += view[NUM_ROOT_NODES] * (view[MULTIPLIER] ?? 1);
   }
   return numNodes;
 }
