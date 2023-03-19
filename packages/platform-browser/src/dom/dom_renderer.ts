@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, InjectionToken, OnDestroy, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, OnDestroy, Optional, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
-import {DomSharedStylesHost} from './shared_styles_host';
+import {SharedStylesHost} from './shared_styles_host';
 
 export const NAMESPACE_URIS: {[ns: string]: string} = {
   'svg': 'http://www.w3.org/2000/svg',
@@ -89,9 +89,10 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
   private defaultRenderer: Renderer2;
 
   constructor(
-      private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
+      private eventManager: EventManager, private sharedStylesHost: SharedStylesHost,
       @Inject(APP_ID) private appId: string,
-      @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestory: boolean) {
+      @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestory: boolean,
+      @Inject(CSP_NONCE) @Optional() private nonce?: string|null) {
     this.defaultRenderer = new DefaultDomRenderer2(eventManager);
   }
 
@@ -128,7 +129,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
               eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestory);
           break;
         case ViewEncapsulation.ShadowDom:
-          return new ShadowDomRenderer(eventManager, sharedStylesHost, element, type);
+          return new ShadowDomRenderer(eventManager, sharedStylesHost, element, type, this.nonce);
         default:
           renderer = new NoneEncapsulationDomRenderer(
               eventManager, sharedStylesHost, type, removeStylesOnCompDestory);
@@ -315,8 +316,8 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   private shadowRoot: any;
 
   constructor(
-      eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private hostEl: any, component: RendererType2) {
+      eventManager: EventManager, private sharedStylesHost: SharedStylesHost, private hostEl: any,
+      component: RendererType2, nonce?: string|null) {
     super(eventManager);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
@@ -325,6 +326,12 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
     for (const style of styles) {
       const styleEl = document.createElement('style');
+
+      if (nonce) {
+        // Uses a keyed write to avoid issues with property minification.
+        styleEl['nonce'] = nonce;
+      }
+
       styleEl.textContent = style;
       this.shadowRoot.appendChild(styleEl);
     }
@@ -359,7 +366,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
 
   constructor(
       eventManager: EventManager,
-      private readonly sharedStylesHost: DomSharedStylesHost,
+      private readonly sharedStylesHost: SharedStylesHost,
       component: RendererType2,
       private removeStylesOnCompDestory: boolean,
       compId = component.id,
@@ -391,7 +398,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
   private hostAttr: string;
 
   constructor(
-      eventManager: EventManager, sharedStylesHost: DomSharedStylesHost, component: RendererType2,
+      eventManager: EventManager, sharedStylesHost: SharedStylesHost, component: RendererType2,
       appId: string, removeStylesOnCompDestory: boolean) {
     const compId = appId + '-' + component.id;
     super(eventManager, sharedStylesHost, component, removeStylesOnCompDestory, compId);

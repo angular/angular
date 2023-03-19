@@ -12,7 +12,7 @@ import {OwningModule, Reference} from '../../imports';
 import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
-import {DirectiveMeta, DirectiveTypeCheckMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
+import {DirectiveMeta, DirectiveTypeCheckMeta, InputMapping, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 export function extractReferencesFromType(
@@ -112,7 +112,7 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
  * making this metadata invariant to changes of inherited classes.
  */
 export function extractDirectiveTypeCheckMeta(
-    node: ClassDeclaration, inputs: ClassPropertyMapping,
+    node: ClassDeclaration, inputs: ClassPropertyMapping<InputMapping>,
     reflector: ReflectionHost): DirectiveTypeCheckMeta {
   const members = reflector.getMembersOfClass(node);
   const staticMembers = members.filter(member => member.isStatic);

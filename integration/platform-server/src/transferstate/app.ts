@@ -15,7 +15,7 @@ import {TransferStateComponent} from './transfer-state.component';
   declarations: [TransferStateComponent],
   bootstrap: [TransferStateComponent],
   imports: [
-    BrowserModule.withServerTransition({appId: 'ts'}),
+    BrowserModule,
   ],
 })
 export class TransferStateModule {

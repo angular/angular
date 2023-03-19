@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactoryResolver} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -135,7 +134,6 @@ export class ActivateRoutes {
       // Clear the information about the attached component on the context but keep the reference to
       // the outlet.
       context.attachRef = null;
-      context.resolver = null;
       context.route = null;
     }
   }
@@ -193,10 +191,8 @@ export class ActivateRoutes {
           this.activateChildRoutes(futureNode, null, context.children);
         } else {
           const injector = getClosestRouteInjector(future.snapshot);
-          const cmpFactoryResolver = injector?.get(ComponentFactoryResolver) ?? null;
           context.attachRef = null;
           context.route = future;
-          context.resolver = cmpFactoryResolver;
           context.injector = injector;
           if (context.outlet) {
             // Activate the outlet when it has already been instantiated

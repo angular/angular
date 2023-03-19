@@ -66,7 +66,8 @@ export class ViewFixture {
 
     const hostRenderer = rendererFactory.createRenderer(null, null);
     this.host = hostRenderer.createElement('host-element') as HTMLElement;
-    const hostTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
+    const hostTView =
+        createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null, null);
     const hostLView = createLView(
         null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
         rendererFactory, hostRenderer, sanitizer || null, null, null, null);
@@ -87,7 +88,7 @@ export class ViewFixture {
     this.tView = createTView(
         TViewType.Component, null, template, decls || 0, vars || 0,
         directives ? toDefs(directives, dir => extractDirectiveDef(dir)!) : null, null, null, null,
-        consts || null);
+        consts || null, null);
     const hostTNode =
         createTNode(hostTView, null, TNodeType.Element, 0, 'host-element', null) as TElementNode;
     this.lView = createLView(

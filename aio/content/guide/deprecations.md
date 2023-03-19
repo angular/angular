@@ -36,6 +36,7 @@ v12 - v15
 v13 - v16
 v14 - v17
 v15 - v18
+v16 - v19
 -->
 
 ### Deprecated features that can be removed in v11 or later
@@ -97,11 +98,9 @@ v15 - v18
 | `@angular/platform-browser-dynamic` | [`JitCompilerFactory`](#platform-browser-dynamic)                                                          | v13           | v16         |
 | `@angular/platform-browser-dynamic` | [`RESOURCE_CACHE_PROVIDER`](#platform-browser-dynamic)                                                     | v13           | v16         |
 | `@angular/platform-server`          | [`ServerTransferStateModule`](#platform-server)                                                            | v14           | v16         |
-| `@angular/router`                   | [`relativeLinkResolution`](#relativeLinkResolution)                                                        | v14           | v16         |
-| `@angular/router`                   | [`resolver` argument in `RouterOutletContract.activateWith`](#router)                                      | v14           | v16         |
-| `@angular/router`                   | [`resolver` field of the `OutletContext` class](#router)                                                   | v14           | v16         |
 | `@angular/service-worker`           | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated)                                              | v13           | v16         |
 | `@angular/service-worker`           | [`SwUpdate#available`](api/service-worker/SwUpdate#available)                                              | v13           | v16         |
+| `@angular/platform-browser`         | [`BrowserModule.withServerTransition`](api/platform-browser/BrowserModule#withservertransition)                                                          | v16           | v18         |
 
 ### Deprecated features that can be removed in v17 or later
 
@@ -114,6 +113,12 @@ v15 - v18
 | `@angular/router`                   | [Router writeable properties](#router-writable-properties)                                                 | v15.1         | v17         |
 | `@angular/router`                   | [Router CanLoad guards](#router-can-load)                                                 | v15.1         | v17         |
 | `@angular/router`                   | [class and `InjectionToken` guards and resolvers](#router-class-and-injection-token-guards)                | v15.2         | v17         |
+
+### Deprecated features that can be removed in v18 or later
+
+| Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
+|:---                                 |:---                                                                                                        |:---           |:---               |
+| `@angular/core` | `EnvironmentInjector.runInContext` | v16 | v18 |
 
 ### Deprecated features with no planned removal version
 
@@ -170,6 +175,7 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 | [`CompilerOptions.useJit and CompilerOptions.missingTranslation config options`](api/core/CompilerOptions) | none                                                                                                                                                              | v13                   | Since Ivy, those config options are unused, passing them has no effect.                                                                                                                                                                                            |
 | [`providedIn`](api/core/Injectable#providedIn) with NgModule | Prefer `'root'` providers, or use NgModule `providers` if scoping to an NgModule is necessary | v15 | none |
 | [`providedIn: 'any'`](api/core/Injectable#providedIn) | none | v15 | This option has confusing semantics and nearly zero usage. |
+| [`EnvironmentInjector.runInContext`](api/core/EnvironmentInjector#runInContext) | `runInInjectionContext`  | v16 | `runInInjectionContext` is a more flexible operation which supports element injectors as well |
 
 <a id="testing"></a>
 
@@ -186,8 +192,6 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 
 | API                                        | Replacement                       | Deprecation announced | Details |
 |:---                                        |:---                               |:---                   |:---     |
-| [`resolver` argument in `RouterOutletContract.activateWith`](api/router/RouterOutletContract#activatewith) | No replacement needed | v14                   | Component factories are not required to create an instance of a component dynamically. Passing a factory resolver via `resolver` argument is no longer needed. |
-| [`resolver` field of the `OutletContext` class](api/router/OutletContext#resolver) | No replacement needed | v14                   | Component factories are not required to create an instance of a component dynamically. Passing a factory resolver via `resolver` class field is no longer needed. |
 | [`RouterLinkWithHref` directive](api/router/RouterLinkWithHref) | Use `RouterLink` instead. | v15                   | The `RouterLinkWithHref` directive code was merged into `RouterLink`. Now the `RouterLink` directive can be used for all elements that have `routerLink` attribute. |
 | [`provideRoutes` function](api/router/provideRoutes) | Use `ROUTES` `InjectionToken` instead. | v15                   | The `provideRoutes` helper function is minimally useful and can be unintentionally used instead of `provideRouter` due to similar spelling. |
 | [`setupTestingRouter` function](api/router/testing/setupTestingRouter) | Use `provideRouter` or `RouterTestingModule` instead. | v15.1                   | The `setupTestingRouter` function is not necessary. The `Router` is initialized based on the DI configuration in tests as it would be in production. |
@@ -201,6 +205,7 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 | API                                                              | Replacement                                        | Deprecation announced | Details |
 |:---                                                              |:---                                                |:---                   |:---     |
 | [`BrowserTransferStateModule`](api/platform-browser/BrowserTransferStateModule) | No replacement needed.  | v14.1                   | The `TransferState` class is available for injection without importing additional modules on the client side of a server-rendered application. |
+| [`BrowserModule.withServerTransition`](api/platform-browser/BrowserModule#withservertransition) | No replacement needed.  | v16.0                   | The `APP_ID`token should be used instead to set the application ID. |
 
 <a id="platform-browser-dynamic"></a>
 
@@ -377,7 +382,7 @@ be converted to functions by instead using `inject` to get dependencies.
 For testing a function `canActivate` guard, using `TestBed` and `TestBed.runInInjectionContext` is recommended.
 Test mocks and stubs can be provided through DI with `{provide: X, useValue: StubX}`.
 Functional guards can also be written in a way that's either testable with
-`runInContext` or by passing mock implementations of dependencies.
+`runInInjectionContext` or by passing mock implementations of dependencies.
 For example:
 
 ```
@@ -456,14 +461,6 @@ in the lifecycle of a navigation. A `CanMatch` guard which returns false will pr
 matched at all and also prevent loading the children of the `Route`. `CanMatch` guards can accomplish the same
 goals as `CanLoad` but with the addition of allowing the navigation to match other routes when they reject
 (such as a wildcard route). There is no need to have both types of guards in the API surface.
-
-<a id="relativeLinkResolution"></a>
-
-The `relativeLinkResolution` option is deprecated and being removed.
-In version 11, the default behavior was changed to the correct one.
-After `relativeLinkResolution` is removed, the correct behavior is always used without an option to use the broken behavior.
-
-A dev mode warning was added in v14 to warn if a created `UrlTree` relies on the `relativeLinkResolution: 'legacy'` option.
 
 <a id="loadChildren"></a>
 

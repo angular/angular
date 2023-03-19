@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {validateMatchingNode} from '../../hydration/error_handling';
+import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {hasNgSkipHydrationAttr} from '../../hydration/skip_hydration';
-import {markRNodeAsClaimedByHydration} from '../../hydration/utils';
+import {getSerializedContainerViews, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -90,7 +90,7 @@ export function ɵɵelementStart(
       elementStartFirstCreatePass(adjustedIndex, tView, lView, name, attrsIndex, localRefsIndex) :
       tView.data[adjustedIndex] as TElementNode;
 
-  const native = _locateOrCreateElementNode(tView, lView, tNode, renderer, name);
+  const native = _locateOrCreateElementNode(tView, lView, tNode, renderer, name, index);
   lView[adjustedIndex] = native;
 
   const hasDirectives = isDirectiveHost(tNode);
@@ -190,7 +190,7 @@ export function ɵɵelement(
 }
 
 let _locateOrCreateElementNode: typeof locateOrCreateElementNodeImpl =
-    (tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string) => {
+    (tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string, index: number) => {
       lastNodeWasCreated(true);
       return createElementNode(renderer, name, getNamespace());
     };
@@ -200,7 +200,8 @@ let _locateOrCreateElementNode: typeof locateOrCreateElementNodeImpl =
  * in addition to the regular creation mode of element nodes.
  */
 function locateOrCreateElementNodeImpl(
-    tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string): RElement {
+    tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string,
+    index: number): RElement {
   const hydrationInfo = lView[HYDRATION];
   const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock();
   lastNodeWasCreated(isNodeCreationMode);
@@ -212,9 +213,20 @@ function locateOrCreateElementNodeImpl(
 
   // Hydration mode, looking up an existing element in DOM.
   const native = locateNextRNode<RElement>(hydrationInfo, tView, lView, tNode)!;
-  ngDevMode &&
-      validateMatchingNode(native as unknown as Node, Node.ELEMENT_NODE, name, lView, tNode);
+  ngDevMode && validateMatchingNode(native, Node.ELEMENT_NODE, name, lView, tNode);
   ngDevMode && markRNodeAsClaimedByHydration(native);
+
+  // This element might also be an anchor of a view container.
+  if (getSerializedContainerViews(hydrationInfo, index)) {
+    // Important note: this element acts as an anchor, but it's **not** a part
+    // of the embedded view, so we start the segment **after** this element, taking
+    // a reference to the next sibling. For example, the following template:
+    // `<div #vcrTarget>` is represented in the DOM as `<div></div>...<!--container-->`,
+    // so while processing a `<div>` instruction, point to the next sibling as a
+    // start of a segment.
+    ngDevMode && validateNodeExists(native.nextSibling);
+    setSegmentHead(hydrationInfo, index, native.nextSibling);
+  }
 
   // Checks if the skip hydration attribute is present during hydration so we know to
   // skip attempting to hydrate this block.

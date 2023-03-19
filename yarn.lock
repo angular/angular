@@ -134,10 +134,9 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#8b704424f48e7c06aa249ae5eabbf95fb34519ec":
-  version "0.0.0-425e41bca51db38d01fe0a395a125e4189cc6d8f"
-  uid "8b704424f48e7c06aa249ae5eabbf95fb34519ec"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#8b704424f48e7c06aa249ae5eabbf95fb34519ec"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#789ce23bb8f63294e28756dae703bf997c8fb7c5":
+  version "0.0.0-a9312d38d24c94636b7e135b58828c5732eb5212"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#789ce23bb8f63294e28756dae703bf997c8fb7c5"
   dependencies:
     "@angular-devkit/build-angular" "16.0.0-next.3"
     "@angular/benchpress" "0.3.0"
@@ -268,10 +267,9 @@
     "@material/typography" "15.0.0-canary.684e33d25.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#acba051d3c8bf13083b2c5b032583198f4e4dac7":
-  version "0.0.0-425e41bca51db38d01fe0a395a125e4189cc6d8f"
-  uid acba051d3c8bf13083b2c5b032583198f4e4dac7
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#acba051d3c8bf13083b2c5b032583198f4e4dac7"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#6c097ef5901b39a14841463f5854f40c1a1a0690":
+  version "0.0.0-a9312d38d24c94636b7e135b58828c5732eb5212"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#6c097ef5901b39a14841463f5854f40c1a1a0690"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
@@ -15955,10 +15953,10 @@ typescript@3.2.4:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.4.tgz#c585cb952912263d915b462726ce244ba510ef3d"
   integrity sha512-0RNDbSdEokBeEAkgNbxJ+BLwSManFy9TeXz8uW+48j/xhEXv1ePME60olyzw2XzUqUBNAYFeJadIqAgNqIACwg==
 
-typescript@5.0.0-beta:
-  version "5.0.0-beta"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.0-beta.tgz#791fa95411d6ff64ee77d677ed1e6f32a2eaabaf"
-  integrity sha512-+SSabbSXG5mtF+QGdV9uXXt9Saq1cSyI6hSG7znhaLoquleJpnmfkwSxFngK9c2fWWi1W/263TuzXQOsIcdjjA==
+typescript@5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.2.tgz#891e1a90c5189d8506af64b9ef929fca99ba1ee5"
+  integrity sha512-wVORMBGO/FAs/++blGNeAVdbNKtIh1rbBL2EyQ1+J9lClJ93KiiKe8PmFIVdXhHcyv44SL9oglmfeSsndo0jRw==
 
 typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7:
   version "3.9.10"

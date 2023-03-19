@@ -8,8 +8,15 @@
 
 import {RNode} from '../render3/interfaces/renderer_dom';
 
-/* Represents a key in NghDom that holds information about <ng-container>s. */
+/**
+ * Keys within serialized view data structure to represent various
+ * parts. See the `SerializedView` interface below for additional information.
+ */
 export const ELEMENT_CONTAINERS = 'e';
+export const TEMPLATES = 't';
+export const CONTAINERS = 'c';
+export const NUM_ROOT_NODES = 'r';
+export const TEMPLATE_ID = 'i';  // as it's also an "id"
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -32,19 +39,45 @@ export interface SerializedView {
    * Serialized information about <ng-container>s.
    */
   [ELEMENT_CONTAINERS]?: SerializedElementContainers;
+
+  /**
+   * Serialized information about templates.
+   * Key-value pairs where a key is an index of the corresponding
+   * `template` instruction and the value is a unique id that can
+   * be used during hydration to identify that template.
+   */
+  [TEMPLATES]?: Record<number, string>;
+
+  /**
+   * Serialized information about view containers.
+   * Key-value pairs where a key is an index of the corresponding
+   * LContainer entry within an LView, and the value is a list
+   * of serialized information about views within this container.
+   */
+  [CONTAINERS]?: Record<number, SerializedContainerView[]>;
 }
 
 /**
- * Represents a hydration-related element container structure
- * at runtime, which includes a reference to a first node in
- * a DOM segment that corresponds to a given element container.
+ * Serialized data structure that contains relevant hydration
+ * annotation information about a view that is a part of a
+ * ViewContainer collection.
  */
-export interface DehydratedElementContainer {
+export interface SerializedContainerView extends SerializedView {
   /**
-   * A reference to the first child in a DOM segment associated
-   * with a first child in a given <ng-container>.
+   * Unique id that represents a TView that was used to create
+   * a given instance of a view:
+   *  - TViewType.Embedded: a unique id generated during serialization on the server
+   *  - TViewType.Component: an id generated based on component properties
+   *                        (see `getComponentId` function for details)
    */
-  firstChild: RNode|null;
+  [TEMPLATE_ID]: string;
+
+  /**
+   * Number of root nodes that belong to this view.
+   * This information is needed to effectively traverse the DOM tree
+   * and identify segments that belong to different views.
+   */
+  [NUM_ROOT_NODES]: number;
 }
 
 /**
@@ -66,10 +99,19 @@ export interface DehydratedView {
   firstChild: RNode|null;
 
   /**
-   * Collection of <ng-container>s in a given view,
-   * used as a set of pointers to first children in each
-   * <ng-container>, so that those pointers are reused by
-   * subsequent instructions.
+   * Stores references to first nodes in DOM segments that
+   * represent either an <ng-container> or a view container.
    */
-  ngContainers?: {[index: number]: DehydratedElementContainer};
+  segmentHeads?: {[index: number]: RNode|null};
+}
+
+/**
+ * An object that contains hydration-related information serialized
+ * on the server, as well as the necessary references to segments of
+ * the DOM, to facilitate the hydration process for a given view
+ * inside a view container (either an embedded view or a view created
+ * for a component).
+ */
+export interface DehydratedContainerView extends DehydratedView {
+  data: Readonly<SerializedContainerView>;
 }

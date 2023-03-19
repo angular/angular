@@ -8,16 +8,17 @@
 
 import {ApplicationRef} from '../application_ref';
 import {collectNativeNodes} from '../render3/collect_native_nodes';
+import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
-import {isLContainer} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HOST, LView, RENDERER, TView, TVIEW} from '../render3/interfaces/view';
+import {isLContainer, isRootView} from '../render3/interfaces/type_checks';
+import {HEADER_OFFSET, HOST, LView, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
-import {ELEMENT_CONTAINERS, SerializedView} from './interfaces';
+import {CONTAINERS, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
-import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY} from './utils';
+import {getComponentLViewForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, TextNodeMarker} from './utils';
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
@@ -46,12 +47,34 @@ class SerializedViewCollection {
 }
 
 /**
+ * Global counter that is used to generate a unique id for TViews
+ * during the serialization process.
+ */
+let tViewSsrId = 0;
+
+/**
+ * Generates a unique id for a given TView and returns this id.
+ * The id is also stored on this instance of a TView and reused in
+ * subsequent calls.
+ *
+ * This id is needed to uniquely identify and pick up dehydrated views
+ * at runtime.
+ */
+function getSsrId(tView: TView): string {
+  if (!tView.ssrId) {
+    tView.ssrId = `t${tViewSsrId++}`;
+  }
+  return tView.ssrId;
+}
+
+/**
  * Describes a context available during the serialization
  * process. The context is used to share and collect information
  * during the serialization.
  */
 interface HydrationContext {
   serializedViewCollection: SerializedViewCollection;
+  corruptedTextNodes: Map<HTMLElement, TextNodeMarker>;
 }
 
 /**
@@ -73,6 +96,7 @@ function calcNumRootNodes(tView: TView, lView: LView, tNode: TNode|null): number
  */
 export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const serializedViewCollection = new SerializedViewCollection();
+  const corruptedTextNodes = new Map<HTMLElement, TextNodeMarker>();
   const viewRefs = appRef._views;
   for (const viewRef of viewRefs) {
     const lView = getComponentLViewForHydration(viewRef);
@@ -83,8 +107,10 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
       if (hostElement) {
         const context: HydrationContext = {
           serializedViewCollection,
+          corruptedTextNodes,
         };
         annotateHostElementForHydration(hostElement as HTMLElement, lView, context);
+        insertCorruptedTextNodeMarkers(corruptedTextNodes, doc);
       }
     }
   }
@@ -93,6 +119,52 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
     const transferState = appRef.injector.get(TransferState);
     transferState.set(NGH_DATA_KEY, allSerializedViews);
   }
+}
+
+/**
+ * Serializes the lContainer data into a list of SerializedView objects,
+ * that represent views within this lContainer.
+ *
+ * @param lContainer the lContainer we are serializing
+ * @param context the hydration context
+ * @returns an array of the `SerializedView` objects
+ */
+function serializeLContainer(
+    lContainer: LContainer, context: HydrationContext): SerializedContainerView[] {
+  const views: SerializedContainerView[] = [];
+
+  for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+    let childLView = lContainer[i] as LView;
+
+    // If this is a root view, get an LView for the underlying component,
+    // because it contains information about the view to serialize.
+    if (isRootView(childLView)) {
+      childLView = childLView[HEADER_OFFSET];
+    }
+    const childTView = childLView[TVIEW];
+
+    let template: string;
+    let numRootNodes = 0;
+    if (childTView.type === TViewType.Component) {
+      template = childTView.ssrId!;
+
+      // This is a component view, thus it has only 1 root node: the component
+      // host node itself (other nodes would be inside that host node).
+      numRootNodes = 1;
+    } else {
+      template = getSsrId(childTView);
+      numRootNodes = calcNumRootNodes(childTView, childLView, childTView.firstChild);
+    }
+
+    const view: SerializedContainerView = {
+      [TEMPLATE_ID]: template,
+      [NUM_ROOT_NODES]: numRootNodes,
+      ...serializeLView(lContainer[i] as LView, context),
+    };
+
+    views.push(view);
+  }
+  return views;
 }
 
 /**
@@ -119,8 +191,28 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       continue;
     }
     if (isLContainer(lView[i])) {
-      // TODO: serialization of LContainers will be added
-      // in followup PRs.
+      // Serialize information about a template.
+      const embeddedTView = tNode.tView;
+      if (embeddedTView !== null) {
+        ngh[TEMPLATES] ??= {};
+        ngh[TEMPLATES][noOffsetIndex] = getSsrId(embeddedTView);
+      }
+
+      // Serialize views within this LContainer.
+      const hostNode = lView[i][HOST]!;  // host node of this container
+
+      // LView[i][HOST] can be of 2 different types:
+      // - either a DOM node
+      // - or an array that represents an LView of a component
+      if (Array.isArray(hostNode)) {
+        // This is a component, serialize info about it.
+        const targetNode = unwrapRNode(hostNode as LView) as RElement;
+        if (!(targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
+          annotateHostElementForHydration(targetNode, hostNode as LView, context);
+        }
+      }
+      ngh[CONTAINERS] ??= {};
+      ngh[CONTAINERS][noOffsetIndex] = serializeLContainer(lView[i], context);
     } else if (Array.isArray(lView[i])) {
       // This is a component, annotate the host node with an `ngh` attribute.
       const targetNode = unwrapRNode(lView[i][HOST]!);
@@ -135,6 +227,41 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         // those nodes to reach a corresponding anchor node (comment node).
         ngh[ELEMENT_CONTAINERS] ??= {};
         ngh[ELEMENT_CONTAINERS][noOffsetIndex] = calcNumRootNodes(tView, lView, tNode.child);
+      } else {
+        // Handle cases where text nodes can be lost after DOM serialization:
+        //  1. When there is an *empty text node* in DOM: in this case, this
+        //     node would not make it into the serialized string and as a result,
+        //     this node wouldn't be created in a browser. This would result in
+        //     a mismatch during the hydration, where the runtime logic would expect
+        //     a text node to be present in live DOM, but no text node would exist.
+        //     Example: `<span>{{ name }}</span>` when the `name` is an empty string.
+        //     This would result in `<span></span>` string after serialization and
+        //     in a browser only the `span` element would be created. To resolve that,
+        //     an extra comment node is appended in place of an empty text node and
+        //     that special comment node is replaced with an empty text node *before*
+        //     hydration.
+        //  2. When there are 2 consecutive text nodes present in the DOM.
+        //     Example: `<div>Hello <ng-container *ngIf="true">world</ng-container></div>`.
+        //     In this scenario, the live DOM would look like this:
+        //       <div>#text('Hello ') #text('world') #comment('container')</div>
+        //     Serialized string would look like this: `<div>Hello world<!--container--></div>`.
+        //     The live DOM in a browser after that would be:
+        //       <div>#text('Hello world') #comment('container')</div>
+        //     Notice how 2 text nodes are now "merged" into one. This would cause hydration
+        //     logic to fail, since it'd expect 2 text nodes being present, not one.
+        //     To fix this, we insert a special comment node in between those text nodes, so
+        //     serialized representation is: `<div>Hello <!--ngtns-->world<!--container--></div>`.
+        //     This forces browser to create 2 text nodes separated by a comment node.
+        //     Before running a hydration process, this special comment node is removed, so the
+        //     live DOM has exactly the same state as it was before serialization.
+        if (tNode.type & TNodeType.Text) {
+          const rNode = unwrapRNode(lView[i]) as HTMLElement;
+          if (rNode.textContent?.replace(/\s/gm, '') === '') {
+            context.corruptedTextNodes.set(rNode, TextNodeMarker.EmptyNode);
+          } else if (rNode.nextSibling?.nodeType === Node.TEXT_NODE) {
+            context.corruptedTextNodes.set(rNode, TextNodeMarker.Separator);
+          }
+        }
       }
     }
   }
@@ -154,4 +281,20 @@ function annotateHostElementForHydration(
   const index = context.serializedViewCollection.add(ngh);
   const renderer = lView[RENDERER];
   renderer.setAttribute(element, NGH_ATTR_NAME, index.toString());
+}
+
+/**
+ * Physically inserts the comment nodes to ensure empty text nodes and adjacent
+ * text node separators are preserved after server serialization of the DOM.
+ * These get swapped back for empty text nodes or separators once hydration happens
+ * on the client.
+ *
+ * @param corruptedTextNodes The Map of text nodes to be replaced with comments
+ * @param doc The document
+ */
+function insertCorruptedTextNodeMarkers(
+    corruptedTextNodes: Map<HTMLElement, string>, doc: Document) {
+  for (const [textNode, marker] of corruptedTextNodes) {
+    textNode.after(doc.createComment(marker));
+  }
 }

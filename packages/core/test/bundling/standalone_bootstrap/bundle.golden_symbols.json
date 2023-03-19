@@ -42,6 +42,9 @@
     "name": "CONTAINER_HEADER_OFFSET"
   },
   {
+    "name": "CSP_NONCE"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -69,10 +72,16 @@
     "name": "ConnectableSubscriber"
   },
   {
+    "name": "DEFAULT_APP_ID"
+  },
+  {
     "name": "DEFAULT_LOCALE_ID"
   },
   {
     "name": "DI_DECORATOR_FLAG"
+  },
+  {
+    "name": "DOCUMENT"
   },
   {
     "name": "DOCUMENT2"
@@ -145,6 +154,9 @@
   },
   {
     "name": "INJECTOR_SCOPE"
+  },
+  {
+    "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
@@ -267,6 +279,9 @@
     "name": "NgZone"
   },
   {
+    "name": "NgZoneChangeDetectionScheduler"
+  },
+  {
     "name": "NodeInjector"
   },
   {
@@ -298,6 +313,9 @@
   },
   {
     "name": "PRESERVE_HOST_CONTENT"
+  },
+  {
+    "name": "PRESERVE_HOST_CONTENT_DEFAULT"
   },
   {
     "name": "R3Injector"
@@ -396,6 +414,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
+  },
+  {
     "name": "_DOM"
   },
   {
@@ -403,6 +424,9 @@
   },
   {
     "name": "__forward_ref__"
+  },
+  {
+    "name": "_applyRootElementTransformImpl"
   },
   {
     "name": "_currentInjector"
@@ -433,9 +457,6 @@
   },
   {
     "name": "_processI18nInsertBefore"
-  },
-  {
-    "name": "_randomChar"
   },
   {
     "name": "_retrieveHydrationInfoImpl"
@@ -603,9 +624,6 @@
     "name": "getComponentDef"
   },
   {
-    "name": "getComponentId"
-  },
-  {
     "name": "getComponentLViewByIndex"
   },
   {
@@ -625,6 +643,9 @@
   },
   {
     "name": "getFactoryDef"
+  },
+  {
+    "name": "getFactoryOf"
   },
   {
     "name": "getFirstLContainer"
@@ -765,6 +786,9 @@
     "name": "isEnvironmentProviders"
   },
   {
+    "name": "isForwardRef"
+  },
+  {
     "name": "isFunction"
   },
   {
@@ -787,6 +811,9 @@
   },
   {
     "name": "isPromise2"
+  },
+  {
+    "name": "isStableFactory"
   },
   {
     "name": "isTemplateNode"
@@ -846,6 +873,12 @@
     "name": "ngOnChangesSetInput"
   },
   {
+    "name": "ngZoneApplicationErrorHandlerFactory"
+  },
+  {
+    "name": "noSideEffects"
+  },
+  {
     "name": "nonNull"
   },
   {
@@ -871,6 +904,9 @@
   },
   {
     "name": "promise"
+  },
+  {
+    "name": "provideNgZoneChangeDetection"
   },
   {
     "name": "refCount"

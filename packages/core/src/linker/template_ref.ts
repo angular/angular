@@ -7,6 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
+import {DehydratedContainerView} from '../hydration/interfaces';
 import {assertLContainer} from '../render3/assert';
 import {createLView, renderView} from '../render3/instructions/shared';
 import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
@@ -61,6 +62,27 @@ export abstract class TemplateRef<C> {
   abstract createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
 
   /**
+   * Implementation of the `createEmbeddedView` function.
+   *
+   * This implementation is internal and allows framework code
+   * to invoke it with extra parameters (e.g. for hydration) without
+   * affecting public API.
+   *
+   * @internal
+   */
+  abstract createEmbeddedViewImpl(
+      context: C, injector?: Injector,
+      hydrationInfo?: DehydratedContainerView|null): EmbeddedViewRef<C>;
+
+  /**
+   * Returns an `ssrId` associated with a TView, which was used to
+   * create this instance of the `TemplateRef`.
+   *
+   * @internal
+   */
+  abstract get ssrId(): string|null;
+
+  /**
    * @internal
    * @nocollapse
    */
@@ -78,11 +100,30 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
     super();
   }
 
+  /**
+   * Returns an `ssrId` associated with a TView, which was used to
+   * create this instance of the `TemplateRef`.
+   *
+   * @internal
+   */
+  override get ssrId(): string|null {
+    return this._declarationTContainer.tView?.ssrId || null;
+  }
+
   override createEmbeddedView(context: T, injector?: Injector): EmbeddedViewRef<T> {
+    return this.createEmbeddedViewImpl(context, injector, null);
+  }
+
+  /**
+   * @internal
+   */
+  override createEmbeddedViewImpl(
+      context: T, injector?: Injector,
+      hydrationInfo?: DehydratedContainerView|null): EmbeddedViewRef<T> {
     const embeddedTView = this._declarationTContainer.tView as TView;
     const embeddedLView = createLView(
         this._declarationLView, embeddedTView, context, LViewFlags.CheckAlways, null,
-        embeddedTView.declTNode, null, null, null, null, injector || null, null);
+        embeddedTView.declTNode, null, null, null, null, injector || null, hydrationInfo || null);
 
     const declarationLContainer = this._declarationLView[this._declarationTContainer.index];
     ngDevMode && assertLContainer(declarationLContainer);

@@ -25,6 +25,8 @@
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.css"],
             "scripts": [],
+            "optimization": false,
+            "buildOptimizer": false,
             "progress": false
           },
           "configurations": {

@@ -7,7 +7,6 @@
 import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { Compiler } from '@angular/core';
-import { ComponentFactoryResolver } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { EnvironmentInjector } from '@angular/core';
@@ -540,8 +539,6 @@ export class OutletContext {
     injector: EnvironmentInjector | null;
     // (undocumented)
     outlet: RouterOutletContract | null;
-    // @deprecated (undocumented)
-    resolver: ComponentFactoryResolver | null;
     // (undocumented)
     route: ActivatedRoute | null;
 }
@@ -874,7 +871,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     activateEvents: EventEmitter<any>;
     // (undocumented)
-    activateWith(activatedRoute: ActivatedRoute, resolverOrInjector?: ComponentFactoryResolver | EnvironmentInjector | null): void;
+    activateWith(activatedRoute: ActivatedRoute, environmentInjector?: EnvironmentInjector | null): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
     attachEvents: EventEmitter<unknown>;
     // (undocumented)
@@ -906,8 +903,6 @@ export interface RouterOutletContract {
     activatedRouteData: Data;
     activateEvents?: EventEmitter<unknown>;
     activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector | null): void;
-    // @deprecated
-    activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
     attachEvents?: EventEmitter<unknown>;
     component: Object | null;

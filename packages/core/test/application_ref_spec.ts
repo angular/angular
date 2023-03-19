@@ -427,9 +427,7 @@ class SomeComponent {
 
            return defaultPlatform.bootstrapModule(EmptyModule)
                .then(() => fail('expecting error'), (error) => {
-                 expect(error.message)
-                     .toEqual(
-                         'NG0402: No ErrorHandler. Is platform module (BrowserModule) included?');
+                 expect(error.message).toMatch(/NG0402/);
                });
          }));
 

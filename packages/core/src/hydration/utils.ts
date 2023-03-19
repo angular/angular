@@ -9,13 +9,14 @@
 
 import {Injector} from '../di/injector';
 import {ViewRef} from '../linker/view_ref';
+import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {isRootView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 
-import {DehydratedView, ELEMENT_CONTAINERS, SerializedView} from './interfaces';
+import {CONTAINERS, DehydratedView, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView} from './interfaces';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -34,6 +35,27 @@ export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_T
  * state that contains the necessary hydration info for this component.
  */
 export const NGH_ATTR_NAME = 'ngh';
+
+export const enum TextNodeMarker {
+
+  /**
+   * The contents of the text comment added to nodes that would otherwise be
+   * empty when serialized by the server and passed to the client. The empty
+   * node is lost when the browser parses it otherwise. This comment node will
+   * be replaced during hydration in the client to restore the lost empty text
+   * node.
+   */
+  EmptyNode = 'ngetn',
+
+  /**
+   * The contents of the text comment added in the case of adjacent text nodes.
+   * When adjacent text nodes are serialized by the server and sent to the
+   * client, the browser loses reference to the amount of nodes and assumes
+   * just one text node. This separator is replaced during hydration to restore
+   * the proper separation and amount of text nodes that should be present.
+   */
+  Separator = 'ngtns',
+}
 
 /**
  * Reference to a function that reads `ngh` attribute value from a given RNode
@@ -88,7 +110,7 @@ export function retrieveHydrationInfoImpl(rNode: RElement, injector: Injector): 
 }
 
 /**
- * Sets the implementation for the `retrieveNghInfo` function.
+ * Sets the implementation for the `retrieveHydrationInfo` function.
  */
 export function enableRetrieveHydrationInfoImpl() {
   _retrieveHydrationInfoImpl = retrieveHydrationInfoImpl;
@@ -123,6 +145,48 @@ export function getComponentLViewForHydration(viewRef: ViewRef): LView|null {
   return lView;
 }
 
+function getTextNodeContent(node: Node): string|undefined {
+  return node.textContent?.replace(/\s/gm, '');
+}
+
+/**
+ * Restores text nodes and separators into the DOM that were lost during SSR
+ * serialization. The hydration process replaces empty text nodes and text
+ * nodes that are immediately adjacent to other text nodes with comment nodes
+ * that this method filters on to restore those missing nodes that the
+ * hydration process is expecting to be present.
+ *
+ * @param node The app's root HTML Element
+ */
+export function processTextNodeMarkersBeforeHydration(node: HTMLElement) {
+  const doc = getDocument();
+  const commentNodesIterator = doc.createNodeIterator(node, NodeFilter.SHOW_COMMENT, {
+    acceptNode(node) {
+      const content = getTextNodeContent(node);
+      const isTextNodeMarker =
+          content === TextNodeMarker.EmptyNode || content === TextNodeMarker.Separator;
+      return isTextNodeMarker ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  let currentNode: Comment;
+  // We cannot modify the DOM while using the commentIterator,
+  // because it throws off the iterator state.
+  // So we collect all marker nodes first and then follow up with
+  // applying the changes to the DOM: either inserting an empty node
+  // or just removing the marker if it was used as a separator.
+  const nodes = [];
+  while (currentNode = commentNodesIterator.nextNode() as Comment) {
+    nodes.push(currentNode);
+  }
+  for (const node of nodes) {
+    if (node.textContent === TextNodeMarker.EmptyNode) {
+      node.replaceWith(doc.createTextNode(''));
+    } else {
+      node.remove();
+    }
+  }
+}
+
 /**
  * Internal type that represents a claimed node.
  * Only used in dev mode.
@@ -153,12 +217,50 @@ export function isRNodeClaimedForHydration(node: RNode): boolean {
   return !!(node as ClaimedNode).__claimed;
 }
 
-export function storeNgContainerInfo(
-    hydrationInfo: DehydratedView, index: number, firstChild: RNode): void {
-  hydrationInfo.ngContainers ??= {};
-  hydrationInfo.ngContainers[index] = {firstChild};
+export function setSegmentHead(
+    hydrationInfo: DehydratedView, index: number, node: RNode|null): void {
+  hydrationInfo.segmentHeads ??= {};
+  hydrationInfo.segmentHeads[index] = node;
 }
 
+export function getSegmentHead(hydrationInfo: DehydratedView, index: number): RNode|null {
+  return hydrationInfo.segmentHeads?.[index] ?? null;
+}
+
+/**
+ * Returns the size of an <ng-container>, using either the information
+ * serialized in `ELEMENT_CONTAINERS` (element container size) or by
+ * computing the sum of root nodes in all dehydrated views in a given
+ * container (in case this `<ng-container>` was also used as a view
+ * container host node, e.g. <ng-container *ngIf>).
+ */
 export function getNgContainerSize(hydrationInfo: DehydratedView, index: number): number|null {
-  return hydrationInfo.data[ELEMENT_CONTAINERS]?.[index] ?? null;
+  const data = hydrationInfo.data;
+  let size = data[ELEMENT_CONTAINERS]?.[index] ?? null;
+  // If there is no serialized information available in the `ELEMENT_CONTAINERS` slot,
+  // check if we have info about view containers at this location (e.g.
+  // `<ng-container *ngIf>`) and use container size as a number of root nodes in this
+  // element container.
+  if (size === null && data[CONTAINERS]?.[index]) {
+    size = calcSerializedContainerSize(hydrationInfo, index);
+  }
+  return size;
+}
+
+export function getSerializedContainerViews(
+    hydrationInfo: DehydratedView, index: number): SerializedContainerView[]|null {
+  return hydrationInfo.data[CONTAINERS]?.[index] ?? null;
+}
+
+/**
+ * Computes the size of a serialized container (the number of root nodes)
+ * by calculating the sum of root nodes in all dehydrated views in this container.
+ */
+export function calcSerializedContainerSize(hydrationInfo: DehydratedView, index: number): number {
+  const views = getSerializedContainerViews(hydrationInfo, index) ?? [];
+  let numNodes = 0;
+  for (let view of views) {
+    numNodes += view[NUM_ROOT_NODES];
+  }
+  return numNodes;
 }

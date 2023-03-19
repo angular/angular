@@ -75,6 +75,9 @@
     "name": "CONTAINER_HEADER_OFFSET"
   },
   {
+    "name": "CSP_NONCE"
+  },
+  {
     "name": "CanActivate"
   },
   {
@@ -141,6 +144,9 @@
     "name": "CreateUrlTreeUsingSnapshot"
   },
   {
+    "name": "DEFAULT_APP_ID"
+  },
+  {
     "name": "DEFAULT_LOCALE_ID"
   },
   {
@@ -148,6 +154,9 @@
   },
   {
     "name": "DI_DECORATOR_FLAG"
+  },
+  {
+    "name": "DOCUMENT"
   },
   {
     "name": "DOCUMENT2"
@@ -274,6 +283,9 @@
   },
   {
     "name": "INJECTOR_SCOPE"
+  },
+  {
+    "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
@@ -468,6 +480,9 @@
     "name": "NgZone"
   },
   {
+    "name": "NgZoneChangeDetectionScheduler"
+  },
+  {
     "name": "NoMatch"
   },
   {
@@ -511,6 +526,9 @@
   },
   {
     "name": "PRESERVE_HOST_CONTENT"
+  },
+  {
+    "name": "PRESERVE_HOST_CONTENT_DEFAULT"
   },
   {
     "name": "PRIMARY_OUTLET"
@@ -801,6 +819,9 @@
     "name": "XSS_SECURITY_URL"
   },
   {
+    "name": "ZONE_IS_STABLE_OBSERVABLE"
+  },
+  {
     "name": "_DOM"
   },
   {
@@ -810,10 +831,16 @@
     "name": "__forward_ref__"
   },
   {
+    "name": "_applyRootElementTransformImpl"
+  },
+  {
     "name": "_currentInjector"
   },
   {
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
+    "name": "_findMatchingDehydratedViewImpl"
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"
@@ -831,6 +858,9 @@
     "name": "_keyMap"
   },
   {
+    "name": "_locateOrCreateAnchorNode"
+  },
+  {
     "name": "_locateOrCreateElementNode"
   },
   {
@@ -841,9 +871,6 @@
   },
   {
     "name": "_processI18nInsertBefore"
-  },
-  {
-    "name": "_randomChar"
   },
   {
     "name": "_retrieveHydrationInfoImpl"
@@ -1155,6 +1182,9 @@
     "name": "findAttrIndexInNode"
   },
   {
+    "name": "findMatchingDehydratedView"
+  },
+  {
     "name": "findNode"
   },
   {
@@ -1210,9 +1240,6 @@
   },
   {
     "name": "getComponentDef"
-  },
-  {
-    "name": "getComponentId"
   },
   {
     "name": "getComponentLViewByIndex"
@@ -1563,6 +1590,9 @@
     "name": "isScheduler"
   },
   {
+    "name": "isStableFactory"
+  },
+  {
     "name": "isTemplateNode"
   },
   {
@@ -1683,6 +1713,9 @@
     "name": "ngOnChangesSetInput"
   },
   {
+    "name": "ngZoneApplicationErrorHandlerFactory"
+  },
+  {
     "name": "noLeftoversInUrl"
   },
   {
@@ -1747,6 +1780,9 @@
   },
   {
     "name": "promise"
+  },
+  {
+    "name": "provideNgZoneChangeDetection"
   },
   {
     "name": "redirectIfUrlTree"
@@ -2044,6 +2080,9 @@
   },
   {
     "name": "ɵɵelementStart"
+  },
+  {
+    "name": "ɵɵgetInheritedFactory"
   },
   {
     "name": "ɵɵinject"

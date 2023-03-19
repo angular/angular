@@ -7,7 +7,7 @@
  */
 import {PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {APP_ID, createPlatformFactory, NgModule, NgZone, PLATFORM_INITIALIZER, platformCore, StaticProvider} from '@angular/core';
+import {APP_ID, createPlatformFactory, NgModule, PLATFORM_INITIALIZER, platformCore, StaticProvider, ɵprovideNgZoneChangeDetection as provideNgZoneChangeDetection} from '@angular/core';
 import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
 import {BrowserDetection, createNgZone} from './browser_util';
@@ -37,7 +37,7 @@ export const platformBrowserTesting =
   exports: [BrowserModule],
   providers: [
     {provide: APP_ID, useValue: 'a'},
-    {provide: NgZone, useFactory: createNgZone},
+    provideNgZoneChangeDetection(createNgZone()),
     {provide: PlatformLocation, useClass: MockPlatformLocation},
   ]
 })

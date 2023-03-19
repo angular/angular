@@ -14,7 +14,7 @@ export class TestApp {}
   bootstrap: [TestApp],
   imports: [
     Lib2Module,
-    BrowserModule.withServerTransition({appId: 'appId'}),
+    BrowserModule,
     ServerModule,
   ],
 })

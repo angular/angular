@@ -7,7 +7,7 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, InputMap, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
 import {compileInjectable} from './injectable_compiler_2';
@@ -325,17 +325,20 @@ function convertQueryPredicate(predicate: OpaqueValue|string[]): MaybeForwardRef
 }
 
 function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3DirectiveMetadata {
-  const inputsFromMetadata = parseInputOutputs(facade.inputs || []);
-  const outputsFromMetadata = parseInputOutputs(facade.outputs || []);
+  const inputsFromMetadata = parseInputsArray(facade.inputs || []);
+  const outputsFromMetadata = parseMappingStringArray(facade.outputs || []);
   const propMetadata = facade.propMetadata;
-  const inputsFromType: StringMapWithRename = {};
-  const outputsFromType: StringMap = {};
+  const inputsFromType: InputMap = {};
+  const outputsFromType: Record<string, string> = {};
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
       propMetadata[field].forEach(ann => {
         if (isInput(ann)) {
-          inputsFromType[field] =
-              ann.bindingPropertyName ? [ann.bindingPropertyName, field] : field;
+          // TODO(required-inputs): pass required flag
+          inputsFromType[field] = {
+            bindingPropertyName: ann.bindingPropertyName || field,
+            classPropertyName: field
+          };
         } else if (isOutput(ann)) {
           outputsFromType[field] = ann.bindingPropertyName || field;
         }
@@ -369,7 +372,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     typeSourceSpan,
     internalType: new WrappedNodeExpr(declaration.type),
     selector: declaration.selector ?? null,
-    inputs: declaration.inputs ?? {},
+    inputs: declaration.inputs ? inputsMappingToInputMetadata(declaration.inputs) : {},
     outputs: declaration.outputs ?? {},
     host: convertHostDeclarationToMetadata(declaration.host),
     queries: (declaration.queries ?? []).map(convertQueryDeclarationToMetadata),
@@ -414,8 +417,8 @@ function convertHostDirectivesToMetadata(
           {
             directive: wrapReference(hostDirective.directive),
             isForwardReference: false,
-            inputs: hostDirective.inputs ? parseInputOutputs(hostDirective.inputs) : null,
-            outputs: hostDirective.outputs ? parseInputOutputs(hostDirective.outputs) : null,
+            inputs: hostDirective.inputs ? parseMappingStringArray(hostDirective.inputs) : null,
+            outputs: hostDirective.outputs ? parseMappingStringArray(hostDirective.outputs) : null,
           };
     });
   }
@@ -661,12 +664,45 @@ function isOutput(value: any): value is Output {
   return value.ngMetadataName === 'Output';
 }
 
-function parseInputOutputs(values: string[]): StringMap {
+function inputsMappingToInputMetadata(inputs: Record<string, string|[string, string]>) {
+  return Object.keys(inputs).reduce((result, key) => {
+    const value = inputs[key];
+    result[key] = typeof value === 'string' ?
+        {bindingPropertyName: value, classPropertyName: value} :
+        {bindingPropertyName: value[0], classPropertyName: value[1]};
+    return result;
+  }, {} as InputMap);
+}
+
+function parseInputsArray(values: (string|{name: string, alias?: string})[]) {
   return values.reduce((results, value) => {
-    const [field, property] = value.split(':', 2).map(str => str.trim());
-    results[field] = property || field;
+    if (typeof value === 'string') {
+      const [bindingPropertyName, classPropertyName] = parseMappingString(value);
+      results[classPropertyName] = {bindingPropertyName, classPropertyName};
+    } else {
+      // TODO(required-inputs): pass required flag
+      results[value.name] = {
+        bindingPropertyName: value.alias || value.name,
+        classPropertyName: value.name
+      };
+    }
     return results;
-  }, {} as StringMap);
+  }, {} as InputMap);
+}
+
+function parseMappingStringArray(values: string[]): Record<string, string> {
+  return values.reduce((results, value) => {
+    const [publicName, fieldName] = parseMappingString(value);
+    results[fieldName] = publicName;
+    return results;
+  }, {} as Record<string, string>);
+}
+
+function parseMappingString(value: string): [publicName: string, fieldName: string] {
+  // Either the value is 'field' or 'field: property'. In the first case, `property` will
+  // be undefined, in which case the field name should also be used as the property name.
+  const [fieldName, bindingPropertyName] = value.split(':', 2).map(str => str.trim());
+  return [bindingPropertyName ?? fieldName, fieldName];
 }
 
 function convertDeclarePipeFacadeToMetadata(declaration: R3DeclarePipeFacade): R3PipeMetadata {

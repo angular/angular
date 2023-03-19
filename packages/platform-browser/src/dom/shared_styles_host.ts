@@ -6,12 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
-import {APP_ID, Inject, Injectable, OnDestroy} from '@angular/core';
+import {DOCUMENT, isPlatformServer} from '@angular/common';
+import {APP_ID, CSP_NONCE, Inject, Injectable, OnDestroy, Optional, PLATFORM_ID} from '@angular/core';
+
+/** The style elements attribute name used to set value of `APP_ID` token. */
+const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
 
 @Injectable()
 export class SharedStylesHost implements OnDestroy {
-  private readonly usageCount = new Map<string /** Style string */, number /** Usage count */>();
+  // Maps all registered host nodes to a list of style nodes that have been added to the host node.
+  private readonly styleRef = new Map < string /** Style string */, {
+    elements: HTMLStyleElement[];
+    usage: number
+  }
+  > ();
+  private readonly hostNodes = new Set<Node>();
+  private readonly styleNodesInDOM: Map<string, HTMLStyleElement>|null;
+  private readonly platformIsServer: boolean;
+
+  constructor(
+      @Inject(DOCUMENT) private readonly doc: Document,
+      @Inject(APP_ID) private readonly appId: string,
+      @Inject(CSP_NONCE) @Optional() private nonce?: string|null,
+      @Inject(PLATFORM_ID) readonly platformId: object = {}) {
+    this.styleNodesInDOM = this.collectServerRenderedStyles();
+    this.platformIsServer = isPlatformServer(platformId);
+    this.resetHostNodes();
+  }
 
   addStyles(styles: string[]): void {
     for (const style of styles) {
@@ -27,80 +48,24 @@ export class SharedStylesHost implements OnDestroy {
     for (const style of styles) {
       const usageCount = this.changeUsageCount(style, -1);
 
-      if (usageCount === 0) {
+      if (usageCount <= 0) {
         this.onStyleRemoved(style);
       }
     }
   }
 
-  onStyleRemoved(style: string): void {}
-
-  onStyleAdded(style: string): void {}
-
-  getAllStyles(): IterableIterator<string> {
-    return this.usageCount.keys();
-  }
-
-  private changeUsageCount(style: string, delta: number): number {
-    const map = this.usageCount;
-    let usage = map.get(style) ?? 0;
-    usage += delta;
-
-    if (usage > 0) {
-      map.set(style, usage);
-    } else {
-      map.delete(style);
+  ngOnDestroy(): void {
+    const styleNodesInDOM = this.styleNodesInDOM;
+    if (styleNodesInDOM) {
+      styleNodesInDOM.forEach((node) => node.remove());
+      styleNodesInDOM.clear();
     }
 
-    return usage;
-  }
-
-  ngOnDestroy(): void {
     for (const style of this.getAllStyles()) {
       this.onStyleRemoved(style);
     }
 
-    this.usageCount.clear();
-  }
-}
-
-@Injectable()
-export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
-  // Maps all registered host nodes to a list of style nodes that have been added to the host node.
-  private readonly styleRef = new Map<string, HTMLStyleElement[]>();
-  private hostNodes = new Set<Node>();
-  private styleNodesInDOM: Map<string, HTMLStyleElement>|null;
-
-  constructor(
-      @Inject(DOCUMENT) private readonly doc: Document, @Inject(APP_ID) private appId: string) {
-    super();
-    this.styleNodesInDOM = this.collectServerRenderedStyles();
     this.resetHostNodes();
-  }
-
-  override onStyleAdded(style: string): void {
-    for (const host of this.hostNodes) {
-      this.addStyleToHost(host, style);
-    }
-  }
-
-  override onStyleRemoved(style: string): void {
-    const styleRef = this.styleRef;
-    const styleElements = styleRef.get(style);
-    styleElements?.forEach(node => node.remove());
-    styleRef.delete(style);
-  }
-
-  override ngOnDestroy(): void {
-    super.ngOnDestroy();
-    this.styleRef.clear();
-    this.resetHostNodes();
-
-    const styleNodesInDOM = this.styleNodesInDOM;
-    if (styleNodesInDOM) {
-      styleNodesInDOM.forEach(node => node.remove());
-      styleNodesInDOM.clear();
-    }
   }
 
   addHost(hostNode: Node): void {
@@ -115,14 +80,30 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     this.hostNodes.delete(hostNode);
   }
 
+  private getAllStyles(): IterableIterator<string> {
+    return this.styleRef.keys();
+  }
+
+  private onStyleAdded(style: string): void {
+    for (const host of this.hostNodes) {
+      this.addStyleToHost(host, style);
+    }
+  }
+
+  private onStyleRemoved(style: string): void {
+    const styleRef = this.styleRef;
+    styleRef.get(style)?.elements?.forEach((node) => node.remove());
+    styleRef.delete(style);
+  }
+
   private collectServerRenderedStyles(): Map<string, HTMLStyleElement>|null {
-    const styles =
-        this.doc.head?.querySelectorAll<HTMLStyleElement>(`style[ng-app="${this.appId}"]`);
+    const styles = this.doc.head?.querySelectorAll<HTMLStyleElement>(
+        `style[${APP_ID_ATTRIBUTE_NAME}="${this.appId}"]`);
 
     if (styles?.length) {
       const styleMap = new Map<string, HTMLStyleElement>();
 
-      styles.forEach(style => {
+      styles.forEach((style) => {
         if (style.textContent != null) {
           styleMap.set(style.textContent, style);
         }
@@ -134,13 +115,27 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     return null;
   }
 
+  private changeUsageCount(style: string, delta: number): number {
+    const map = this.styleRef;
+    if (map.has(style)) {
+      const styleRefValue = map.get(style)!;
+      styleRefValue.usage += delta;
+
+      return styleRefValue.usage;
+    }
+
+    map.set(style, {usage: delta, elements: []});
+    return delta;
+  }
+
   private getStyleElement(host: Node, style: string): HTMLStyleElement {
     const styleNodesInDOM = this.styleNodesInDOM;
     const styleEl = styleNodesInDOM?.get(style);
     if (styleEl?.parentNode === host) {
       // `styleNodesInDOM` cannot be undefined due to the above `styleNodesInDOM?.get`.
       styleNodesInDOM!.delete(style);
-      styleEl.removeAttribute('ng-app');
+
+      styleEl.removeAttribute(APP_ID_ATTRIBUTE_NAME);
 
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         // This attribute is solely used for debugging purposes.
@@ -150,7 +145,17 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
       return styleEl;
     } else {
       const styleEl = this.doc.createElement('style');
+
+      if (this.nonce) {
+        // Uses a keyed write to avoid issues with property minification.
+        styleEl['nonce'] = this.nonce;
+      }
+
       styleEl.textContent = style;
+
+      if (this.platformIsServer) {
+        styleEl.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
+      }
 
       return styleEl;
     }
@@ -162,11 +167,11 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     host.appendChild(styleEl);
 
     const styleRef = this.styleRef;
-    const styleElRef = styleRef.get(style);
+    const styleElRef = styleRef.get(style)?.elements;
     if (styleElRef) {
       styleElRef.push(styleEl);
     } else {
-      styleRef.set(style, [styleEl]);
+      styleRef.set(style, {elements: [styleEl], usage: 1});
     }
   }
 
@@ -176,4 +181,12 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     // Re-add the head element back since this is the default host.
     hostNodes.add(this.doc.head);
   }
+}
+
+/**
+ * Interm G3 workaround for usages of private `DomSharedStylesHost`.
+ * TODO(alanagius): delete once all usages in G3 are removed.
+ */
+@Injectable()
+export class DomSharedStylesHost extends SharedStylesHost {
 }

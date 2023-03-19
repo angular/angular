@@ -40,7 +40,7 @@ The `next` object represents the next interceptor in the chain of interceptors.
 The final `next` in the chain is the `HttpClient` backend handler that sends the request to the server and receives the server's response.
 
 Most interceptors call `next.handle()` so that the request flows through to the next interceptor and, eventually, the backend handler.
-An interceptor *could* skip calling `next.handle()`, short-circuit the chain, and return its own `Observable` with an artificial server response.
+An interceptor *could* skip calling `next.handle()`, short-circuit the chain, and [return its own `Observable`](guide/http-interceptor-use-cases#caching) with an artificial server response.
 
 This is a common middleware pattern found in frameworks such as Express.js.
 
@@ -186,4 +186,4 @@ newReq = req.clone({ body: null }); // clear the body
 
 </code-example>
 
-@reviewed 2023-02-27
+@reviewed 2023-03-16

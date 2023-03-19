@@ -37,7 +37,7 @@ export function enterViewWithOneDiv() {
   const vars = 60;  // Space for directive expando,  template, component + 3 directives if we assume
                     // that each consume 10 slots.
   const tView = createTView(
-      TViewType.Component, null, emptyTemplate, consts, vars, null, null, null, null, null);
+      TViewType.Component, null, emptyTemplate, consts, vars, null, null, null, null, null, null);
   // Just assume that the expando starts after 10 initial bindings.
   tView.expandoStartIndex = HEADER_OFFSET + 10;
   const tNode = tView.firstChild = createTNode(tView, null!, TNodeType.Element, 0, 'div', null);

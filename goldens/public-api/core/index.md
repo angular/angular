@@ -346,6 +346,9 @@ export function createPlatform(injector: Injector): PlatformRef;
 export function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;
 
 // @public
+export const CSP_NONCE: InjectionToken<string | null>;
+
+// @public
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
 // @public (undocumented)
@@ -528,6 +531,7 @@ export abstract class EnvironmentInjector implements Injector {
     abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     // @deprecated (undocumented)
     abstract get(token: any, notFoundValue?: any): any;
+    // @deprecated
     abstract runInContext<ReturnT>(fn: () => ReturnT): ReturnT;
 }
 
@@ -1283,6 +1287,9 @@ export interface ResolvedReflectiveProvider {
 
 // @public
 export function resolveForwardRef<T>(type: T): T;
+
+// @public
+export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT;
 
 // @public
 export abstract class Sanitizer {

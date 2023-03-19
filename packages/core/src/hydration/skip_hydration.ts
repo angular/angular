@@ -7,6 +7,7 @@
  */
 
 import {TNode} from '../render3/interfaces/node';
+import {LView} from '../render3/interfaces/view';
 
 /**
  * The name of an attribute that can be added to the hydration boundary node
@@ -31,6 +32,22 @@ export function hasNgSkipHydrationAttr(tNode: TNode): boolean {
     if (typeof value === 'string' && value.toLowerCase() === SKIP_HYDRATION_ATTR_NAME_LOWER_CASE) {
       return true;
     }
+  }
+  return false;
+}
+
+/**
+ * Helper function that determines if a given node is within a skip hydration block
+ * by navigating up the TNode tree to see if any parent nodes have skip hydration
+ * attribute.
+ */
+export function isInSkipHydrationBlock(tNode: TNode): boolean {
+  let currentTNode: TNode|null = tNode.parent;
+  while (currentTNode) {
+    if (hasNgSkipHydrationAttr(currentTNode)) {
+      return true;
+    }
+    currentTNode = currentTNode.parent;
   }
   return false;
 }
