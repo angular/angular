@@ -536,14 +536,14 @@ export function patternValidator(pattern: string|RegExp): ValidatorFn {
   let regex: RegExp;
   let regexStr: string;
   if (typeof pattern === 'string') {
+    const hasStartBoundary = pattern.charAt(0) === '^';
+    const hasEndBoundary = pattern.charAt(pattern.length - 1) === '$';
     regexStr = '';
-
-    if (pattern.charAt(0) !== '^') regexStr += '^';
-
-    regexStr += pattern;
-
-    if (pattern.charAt(pattern.length - 1) !== '$') regexStr += '$';
-
+    if (!hasStartBoundary || !hasEndBoundary) {
+      regexStr = `${!hasStartBoundary ? '^' : ''}(?:${pattern})${!hasEndBoundary ? '$' : ''}`;
+    } else {
+      regexStr = pattern;
+    }
     regex = new RegExp(regexStr);
   } else {
     regexStr = pattern.toString();

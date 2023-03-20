@@ -356,7 +356,7 @@ describe('Validators', () => {
 
     it('should error on failure to match string', () => {
       expect(Validators.pattern('[a-zA-Z ]*')(new FormControl('aaa0'))).toEqual({
-        'pattern': {'requiredPattern': '^[a-zA-Z ]*$', 'actualValue': 'aaa0'}
+        'pattern': {'requiredPattern': '^(?:[a-zA-Z ]*)$', 'actualValue': 'aaa0'}
       });
     });
 
@@ -389,6 +389,12 @@ describe('Validators', () => {
 
     it('should work with pattern string not containing any boundary symbols',
        () => expect(Validators.pattern('[aA]*')(new FormControl('aaAA'))).toBeNull());
+
+    it('should work with pattern string requiring parenthesis', () => {
+      expect(Validators.pattern('A|B')(new FormControl('Aaaa'))).toEqual({
+        'pattern': {'requiredPattern': '^(?:A|B)$', 'actualValue': 'Aaaa'}
+      });
+    });
   });
 
   describe('compose', () => {
