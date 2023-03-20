@@ -14,5 +14,5 @@ export {DomRendererFactory2 as ɵDomRendererFactory2, NAMESPACE_URIS as ɵNAMESP
 export {DomEventsPlugin as ɵDomEventsPlugin} from './dom/events/dom_events';
 export {HammerGesturesPlugin as ɵHammerGesturesPlugin} from './dom/events/hammer_gestures';
 export {KeyEventsPlugin as ɵKeyEventsPlugin} from './dom/events/key_events';
-export {DomSharedStylesHost as ɵDomSharedStylesHost, SharedStylesHost as ɵSharedStylesHost} from './dom/shared_styles_host';
+export {SharedStylesHost as ɵSharedStylesHost} from './dom/shared_styles_host';
 export {DomSanitizerImpl as ɵDomSanitizerImpl} from './security/dom_sanitization_service';

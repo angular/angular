@@ -117,9 +117,6 @@
     "name": "DomRendererFactory2"
   },
   {
-    "name": "DomSharedStylesHost"
-  },
-  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -855,9 +852,6 @@
     "name": "getFactoryDef"
   },
   {
-    "name": "getFactoryOf"
-  },
-  {
     "name": "getFirstLContainer"
   },
   {
@@ -1072,9 +1066,6 @@
   },
   {
     "name": "isEnvironmentProviders"
-  },
-  {
-    "name": "isForwardRef"
   },
   {
     "name": "isFunction"
