@@ -8,7 +8,7 @@
 
 import {Descriptor, NestedProp, PropType} from 'protocol';
 
-import {getKeys} from './object-utils';
+import {getDescriptor, getKeys} from './object-utils';
 
 // todo(aleksanderbodurri) pull this out of this file
 const METADATA_PROPERTY_NAME = '__ngContext__';
@@ -125,34 +125,34 @@ const isEditable = (instance: any, propName: string|number, propData: TerminalTy
   if (typeof propName === 'symbol') {
     return false;
   }
-  const descriptor = Object.getOwnPropertyDescriptor(instance, propName as string);
+  const descriptor = getDescriptor(instance, propName as string);
+
   if (descriptor?.writable === false) {
     return false;
   }
-  if (!descriptor?.set && descriptor && !('value' in descriptor)) {
+
+  if ((descriptor?.set || descriptor?.get) && !('value' in descriptor)) {
     return false;
   }
-  if (descriptor?.set && !descriptor?.get && !('value' in descriptor)) {
-    return false;
-  }
+
   return shallowPropTypeToTreeMetaData[propData.type].editable;
 };
 
-const hasValue = (obj: {}, prop: string|number) => {
-  const descriptor = Object.getOwnPropertyDescriptor(obj, prop);
-  if (!descriptor?.get && descriptor?.set && typeof descriptor?.value === 'undefined') {
-    return false;
+const IsGetterOrSetter = (obj: {}, prop: string|number): boolean => {
+  const descriptor = getDescriptor(obj, prop as string);
+
+  if ((descriptor?.set || descriptor?.get) && !('value' in descriptor)) {
+    return true;
   }
-  return true;
+  return false;
 };
 
 const getPreview =
     (instance: {}, propName: string|number, propData: TerminalType|CompositeType) => {
-      return hasValue(instance, propName) ? typeToDescriptorPreview[propData.type](propData.prop) :
-                                            SETTER_FIELD_PREVIEW;
+      return !IsGetterOrSetter(instance, propName) ?
+          typeToDescriptorPreview[propData.type](propData.prop) :
+          typeToDescriptorPreview[PropType.Function]({name: ''});
     };
-
-const SETTER_FIELD_PREVIEW = '[setter]';
 
 export const createShallowSerializedDescriptor =
     (instance: any, propName: string|number, propData: TerminalType): Descriptor => {

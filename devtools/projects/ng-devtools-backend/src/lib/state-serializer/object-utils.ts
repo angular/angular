@@ -16,5 +16,28 @@ export const getKeys = (obj: {}): string[] => {
   if (!obj) {
     return [];
   }
-  return Object.getOwnPropertyNames(obj);
+  const properties = Object.getOwnPropertyNames(obj);
+
+  const prototypeMembers = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(obj));
+
+  const gettersAndSetters = Object.keys(prototypeMembers).filter(methodName => {
+    if (methodName === '__proto__') {
+      return false;
+    }
+    const targetMethod = prototypeMembers[methodName];
+
+    return !!targetMethod.get || !!targetMethod.set;
+  })
+
+  return properties.concat(gettersAndSetters);
 };
+
+/**
+ * This helper function covers the common scenario as well as the getters and setters
+ * @param instance The target object
+ * @param propName The string representation of the target property name
+ * @returns The Descriptor object of the property
+ */
+export const getDescriptor = (instance: any, propName: string) =>
+    Object.getOwnPropertyDescriptor(instance, propName) ||
+    Object.getOwnPropertyDescriptor(Object.getPrototypeOf(instance), propName);
