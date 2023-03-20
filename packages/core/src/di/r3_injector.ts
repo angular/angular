@@ -127,7 +127,7 @@ export abstract class EnvironmentInjector implements Injector {
   /**
    * @internal
    */
-  abstract onDestroy(callback: () => void): void;
+  abstract onDestroy(callback: () => void): () => void;
 }
 
 export class R3Injector extends EnvironmentInjector {
@@ -211,8 +211,9 @@ export class R3Injector extends EnvironmentInjector {
     }
   }
 
-  override onDestroy(callback: () => void): void {
+  override onDestroy(callback: () => void): () => void {
     this._onDestroyHooks.push(callback);
+    return () => this.removeOnDestroy(callback);
   }
 
   override runInContext<ReturnT>(fn: () => ReturnT): ReturnT {
@@ -396,6 +397,13 @@ export class R3Injector extends EnvironmentInjector {
       return providedIn === 'any' || (this.scopes.has(providedIn));
     } else {
       return this.injectorDefTypes.has(providedIn);
+    }
+  }
+
+  private removeOnDestroy(callback: () => void): void {
+    const destroyCBIdx = this._onDestroyHooks.indexOf(callback);
+    if (destroyCBIdx !== -1) {
+      this._onDestroyHooks.splice(destroyCBIdx, 1);
     }
   }
 }

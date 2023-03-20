@@ -192,3 +192,15 @@ export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void)
   }
   lView[ON_DESTROY_HOOKS].push(onDestroyCallback);
 }
+
+/**
+ * Removes previously registered LView-specific destroy callback.
+ */
+export function removeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
+  if (lView[ON_DESTROY_HOOKS] === null) return;
+
+  const destroyCBIdx = lView[ON_DESTROY_HOOKS].indexOf(onDestroyCallback);
+  if (destroyCBIdx !== -1) {
+    lView[ON_DESTROY_HOOKS].splice(destroyCBIdx, 1);
+  }
+}
