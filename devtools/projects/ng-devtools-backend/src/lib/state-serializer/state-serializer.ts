@@ -44,6 +44,8 @@ const getPropType = (prop: any): PropType => {
   if (type === 'object') {
     if (Array.isArray(prop)) {
       return PropType.Array;
+    } else if (prop instanceof Set) {
+      return PropType.Set;
     } else if (Object.prototype.toString.call(prop) === '[object Date]') {
       return PropType.Date;
     } else if (prop instanceof Node) {

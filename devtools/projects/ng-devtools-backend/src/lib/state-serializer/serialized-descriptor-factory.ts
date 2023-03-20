@@ -13,13 +13,15 @@ import {getKeys} from './object-utils';
 // todo(aleksanderbodurri) pull this out of this file
 const METADATA_PROPERTY_NAME = '__ngContext__';
 
+type NestedType = PropType.Array|PropType.Object;
+
 export interface CompositeType {
-  type: Extract<PropType, PropType.Array|PropType.Object>;
+  type: Extract<PropType, NestedType>;
   prop: any;
 }
 
 export interface TerminalType {
-  type: Exclude<PropType, PropType.Array|PropType.Object>;
+  type: Exclude<PropType, NestedType>;
   prop: any;
 }
 
@@ -43,6 +45,7 @@ const serializable: {[key in PropType]: boolean} = {
   [PropType.Undefined]: true,
   [PropType.Unknown]: true,
   [PropType.Array]: false,
+  [PropType.Set]: false,
   [PropType.BigInt]: false,
   [PropType.Function]: false,
   [PropType.HTMLNode]: false,
@@ -52,6 +55,7 @@ const serializable: {[key in PropType]: boolean} = {
 
 const typeToDescriptorPreview: Formatter<string> = {
   [PropType.Array]: (prop: any) => `Array(${prop.length})`,
+  [PropType.Set]: (prop: any) => `Set(${prop.size})`,
   [PropType.BigInt]: (prop: any) => truncate(prop.toString()),
   [PropType.Boolean]: (prop: any) => truncate(prop.toString()),
   [PropType.String]: (prop: any) => `"${prop}"`,
@@ -74,52 +78,57 @@ const typeToDescriptorPreview: Formatter<string> = {
 type Key = string|number;
 const ignoreList: Set<Key> = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 
-const shallowPropTypeToTreeMetaData = {
-  [PropType.String]: {
-    editable: true,
-    expandable: false,
-  },
-  [PropType.BigInt]: {
-    editable: false,
-    expandable: false,
-  },
-  [PropType.Boolean]: {
-    editable: true,
-    expandable: false,
-  },
-  [PropType.Number]: {
-    editable: true,
-    expandable: false,
-  },
-  [PropType.Date]: {
-    editable: false,
-    expandable: false,
-  },
-  [PropType.Null]: {
-    editable: true,
-    expandable: false,
-  },
-  [PropType.Undefined]: {
-    editable: true,
-    expandable: false,
-  },
-  [PropType.Symbol]: {
-    editable: false,
-    expandable: false,
-  },
-  [PropType.Function]: {
-    editable: false,
-    expandable: false,
-  },
-  [PropType.HTMLNode]: {
-    editable: false,
-    expandable: false,
-  },
-  [PropType.Unknown]: {
-    editable: false,
-    expandable: false,
-  },
-};
+const shallowPropTypeToTreeMetaData:
+    Record<Exclude<PropType, NestedType>, {editable: boolean, expandable: boolean}> = {
+      [PropType.String]: {
+        editable: true,
+        expandable: false,
+      },
+      [PropType.BigInt]: {
+        editable: false,
+        expandable: false,
+      },
+      [PropType.Boolean]: {
+        editable: true,
+        expandable: false,
+      },
+      [PropType.Number]: {
+        editable: true,
+        expandable: false,
+      },
+      [PropType.Date]: {
+        editable: false,
+        expandable: false,
+      },
+      [PropType.Null]: {
+        editable: true,
+        expandable: false,
+      },
+      [PropType.Undefined]: {
+        editable: true,
+        expandable: false,
+      },
+      [PropType.Symbol]: {
+        editable: false,
+        expandable: false,
+      },
+      [PropType.Function]: {
+        editable: false,
+        expandable: false,
+      },
+      [PropType.HTMLNode]: {
+        editable: false,
+        expandable: false,
+      },
+      [PropType.Unknown]: {
+        editable: false,
+        expandable: false,
+      },
+      [PropType.Set]: {
+        editable: false,
+        expandable: false,
+      },
+    };
 
 const isEditable = (instance: any, propName: string|number, propData: TerminalType) => {
   if (typeof propName === 'symbol') {
