@@ -6,29 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Consumer} from './graph';
 import {Watch} from './watch';
 
 /**
- * A global reactive effect, which can be manually scheduled or destroyed.
+ * A global reactive effect, which can be manually destroyed.
  *
  * @developerPreview
  */
-export interface Effect {
-  /**
-   * Schedule the effect for manual execution, if it's not already.
-   */
-  schedule(): void;
-
+export interface EffectRef {
   /**
    * Shut down the effect, removing it from any upcoming scheduled executions.
    */
   destroy(): void;
-
-  /**
-   * Direct access to the effect's `Consumer` for advanced use cases.
-   */
-  readonly consumer: Consumer;
 }
 
 /**
@@ -36,7 +25,7 @@ export interface Effect {
  *
  * @developerPreview
  */
-export function effect(effectFn: () => void): Effect {
+export function effect(effectFn: () => void): EffectRef {
   const watch = new Watch(effectFn, queueWatch);
   globalWatches.add(watch);
 
@@ -44,8 +33,6 @@ export function effect(effectFn: () => void): Effect {
   watch.notify();
 
   return {
-    consumer: watch,
-    schedule: watch.notify.bind(watch),
     destroy: () => {
       queuedWatches.delete(watch);
       globalWatches.delete(watch);
