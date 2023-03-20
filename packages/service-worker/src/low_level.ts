@@ -12,41 +12,6 @@ import {filter, map, publish, switchMap, take, tap} from 'rxjs/operators';
 export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 
 /**
- * An event emitted when a new version of the app is available.
- *
- * @see {@link guide/service-worker-communications Service worker communication guide}
- *
- * @deprecated
- * This event is only emitted by the deprecated {@link SwUpdate#available}.
- * Use the {@link VersionReadyEvent} instead, which is emitted by {@link SwUpdate#versionUpdates}.
- * See {@link SwUpdate#available} docs for an example.
- *
- * @publicApi
- */
-export interface UpdateAvailableEvent {
-  type: 'UPDATE_AVAILABLE';
-  current: {hash: string, appData?: Object};
-  available: {hash: string, appData?: Object};
-}
-
-/**
- * An event emitted when a new version of the app has been downloaded and activated.
- *
- * @see {@link guide/service-worker-communications Service worker communication guide}
- *
- * @deprecated
- * This event is only emitted by the deprecated {@link SwUpdate#activated}.
- * Use the return value of {@link SwUpdate#activateUpdate} instead.
- *
- * @publicApi
- */
-export interface UpdateActivatedEvent {
-  type: 'UPDATE_ACTIVATED';
-  previous?: {hash: string, appData?: Object};
-  current: {hash: string, appData?: Object};
-}
-
-/**
  * An event emitted when the service worker has checked the version of the app on the server and it
  * didn't find a new version that it doesn't have already downloaded.
  *
@@ -135,7 +100,7 @@ export interface PushEvent {
   data: any;
 }
 
-export type IncomingEvent = UpdateActivatedEvent|UnrecoverableStateEvent|VersionEvent;
+export type IncomingEvent = UnrecoverableStateEvent|VersionEvent;
 
 export interface TypedEvent {
   type: string;
