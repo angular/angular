@@ -8,7 +8,7 @@
 
 import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
 import {ConsumerId, Edge, nextReactiveId, Producer, producerAccessed, producerNotifyConsumers} from './graph';
-import {WeakRef} from './weak_ref';
+import {newWeakRef, WeakRef} from './weak_ref';
 
 /**
  * A `Signal` with a value that can be mutated via a setter interface.
@@ -41,7 +41,7 @@ class SettableSignalImpl<T> implements Producer {
   constructor(private value: T, private equal: ValueEqualityFn<T>) {}
 
   readonly id = nextReactiveId();
-  readonly ref = new WeakRef(this);
+  readonly ref = newWeakRef(this);
   readonly consumers = new Map<ConsumerId, Edge>();
   valueVersion = 0;
 
