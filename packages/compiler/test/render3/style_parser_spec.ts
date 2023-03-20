@@ -31,6 +31,11 @@ describe('style parsing', () => {
     expect(result).toEqual(['width', '333px', 'height', '666px', 'opacity', '0.5']);
   });
 
+  it('should not mess up with quoted strings that contain [:;] values', () => {
+    const result = parseStyle('content: "foo; man: guy"; width: 100px');
+    expect(result).toEqual(['content', '"foo; man: guy"', 'width', '100px']);
+  });
+
   it('should not mess up with quoted strings that contain inner quote values', () => {
     const quoteStr = '"one \'two\' three \"four\" five"';
     const result = parseStyle(`content: ${quoteStr}; width: 123px`);
