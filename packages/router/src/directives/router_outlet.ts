@@ -317,10 +317,17 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
     const injector = new OutletInjector(activatedRoute, childContexts, location.injector);
 
+    const routeConfig = activatedRoute.routeConfig;
+    // If a route has any lazy-loading behavior, annotate corersponding views
+    // as "lazy", so that they are retained during the post-hydration cleanup
+    // and hydrated later once the code is loaded.
+    const wasLazyLoaded = !!routeConfig?.loadComponent || !!routeConfig?.loadChildren;
+
     this.activated = location.createComponent(component, {
       index: location.length,
       injector,
-      environmentInjector: environmentInjector ?? this.environmentInjector
+      environmentInjector: environmentInjector ?? this.environmentInjector,
+      wasLazyLoaded,
     });
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.

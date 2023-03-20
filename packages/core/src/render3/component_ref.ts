@@ -140,6 +140,23 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       environmentInjector?: NgModuleRef<any>|EnvironmentInjector|
       undefined): AbstractComponentRef<T> {
+    return this.createImpl(
+        injector, projectableNodes, rootSelectorOrNode, environmentInjector, false);
+  }
+
+  /**
+   * Create function implementation.
+   *
+   * This implementation is internal and allows framework code
+   * to invoke it with extra parameters (e.g. for hydration) without
+   * affecting public API.
+   *
+   * @internal
+   */
+  override createImpl(
+      injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
+      environmentInjector?: NgModuleRef<any>|EnvironmentInjector|undefined,
+      wasLazyLoaded?: boolean): AbstractComponentRef<T> {
     environmentInjector = environmentInjector || this.ngModule;
 
     let realEnvironmentInjector = environmentInjector instanceof EnvironmentInjector ?
@@ -211,7 +228,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       const hostTNode = createRootComponentTNode(rootLView, hostRNode);
       const componentView = createRootComponentView(
           hostTNode, hostRNode, rootComponentDef, rootDirectives, rootLView, rendererFactory,
-          hostRenderer);
+          hostRenderer, null, wasLazyLoaded);
 
       tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
 
@@ -330,13 +347,14 @@ function createRootComponentTNode(lView: LView, rNode: RNode): TElementNode {
  * @param rendererFactory Factory to be used for creating child renderers.
  * @param hostRenderer The current renderer
  * @param sanitizer The sanitizer, if provided
+ * @param wasLazyLoaded Whether the component was lazy loaded
  *
  * @returns Component view created
  */
 function createRootComponentView(
     tNode: TElementNode, hostRNode: RElement|null, rootComponentDef: ComponentDef<any>,
     rootDirectives: DirectiveDef<any>[], rootView: LView, rendererFactory: RendererFactory,
-    hostRenderer: Renderer, sanitizer?: Sanitizer|null): LView {
+    hostRenderer: Renderer, sanitizer?: Sanitizer|null, wasLazyLoaded?: boolean): LView {
   const tView = rootView[TVIEW];
   applyRootComponentStyling(rootDirectives, tNode, hostRNode, hostRenderer);
 
@@ -346,10 +364,13 @@ function createRootComponentView(
   if (hostRNode !== null) {
     hydrationInfo = retrieveHydrationInfo(hostRNode, rootView[INJECTOR]!);
   }
+  let flags = rootComponentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways;
+  if (wasLazyLoaded) {
+    flags |= LViewFlags.WasLazyLoaded;
+  }
   const viewRenderer = rendererFactory.createRenderer(hostRNode, rootComponentDef);
   const componentView = createLView(
-      rootView, getOrCreateComponentTView(rootComponentDef), null,
-      rootComponentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[tNode.index],
+      rootView, getOrCreateComponentTView(rootComponentDef), null, flags, rootView[tNode.index],
       tNode, rendererFactory, viewRenderer, sanitizer || null, null, null, hydrationInfo);
 
   if (tView.firstCreatePass) {

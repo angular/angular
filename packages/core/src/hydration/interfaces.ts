@@ -35,6 +35,7 @@ export const MULTIPLIER = 'x';
 export const NUM_ROOT_NODES = 'r';
 export const TEMPLATE_ID = 'i';  // as it's also an "id"
 export const NODES = 'n';
+export const LAZY = 'l';
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -111,6 +112,14 @@ export interface SerializedContainerView extends SerializedView {
    * information about similar views (for example, produced by *ngFor).
    */
   [MULTIPLIER]?: number;
+
+  /**
+   * A flag that indicates that the view was created lazily, thus the post-hydration
+   * cleanup needs to retain the view. Examples: components created as a result of
+   * lazy-loading of a route or components created via `ViewContainerRef.createComponent`,
+   * after loading component code using dynamic imports.
+   */
+  [LAZY]?: number;  // we use `1` as a flag, thus type is a number
 }
 
 /**

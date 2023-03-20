@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, Injector, NgModuleRef, NgZone, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EnvironmentInjector, Injector, NgModuleRef, NgZone, SimpleChange, SimpleChanges, Type} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 
@@ -485,6 +485,13 @@ export class FakeComponentFactory<T extends Type<any>> extends ComponentFactory<
   override create(
       injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
       ngModule?: NgModuleRef<any>): ComponentRef<any> {
+    return this.createImpl(injector, projectableNodes, rootSelectorOrNode, ngModule);
+  }
+
+  createImpl(
+      injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
+      environmentInjector?: EnvironmentInjector|NgModuleRef<any>|undefined,
+      wasLazyLoaded?: boolean|undefined): ComponentRef<T> {
     return this.componentRef;
   }
 }

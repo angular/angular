@@ -373,33 +373,41 @@ export const enum LViewFlags {
   /** Whether this view has default change detection strategy (checks always) or onPush */
   CheckAlways = 0b00000010000,
 
+  /**
+   * Whether this view was created after lazy-loading a component.
+   * This information is needed for hydration, to retain dehydrated
+   * view after initial rendering pass. Otherwise, such a view would
+   * be removed up by the post-hydration cleanup operation.
+   */
+  WasLazyLoaded = 0b00000100000,
+
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b00000100000,
+  Dirty = 0b000001000000,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b000001000000,
+  Attached = 0b000010000000,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b000010000000,
+  Destroyed = 0b000100000000,
 
   /** Whether or not this view is the root view */
-  IsRoot = 0b000100000000,
+  IsRoot = 0b001000000000,
 
   /**
    * Whether this moved LView was needs to be refreshed at the insertion location because the
    * declaration was dirty.
    */
-  RefreshTransplantedView = 0b001000000000,
+  RefreshTransplantedView = 0b0010000000000,
 
   /** Indicates that the view **or any of its ancestors** have an embedded view injector. */
-  HasEmbeddedViewInjector = 0b0010000000000,
+  HasEmbeddedViewInjector = 0b0100000000000,
 
   /**
    * Index of the current init phase on last 21 bits
    */
-  IndexWithinInitPhaseIncrementer = 0b0100000000000,
-  IndexWithinInitPhaseShift = 11,
-  IndexWithinInitPhaseReset = 0b0011111111111,
+  IndexWithinInitPhaseIncrementer = 0b01000000000000,
+  IndexWithinInitPhaseShift = 12,
+  IndexWithinInitPhaseReset = 0b00111111111111,
 }
 
 /**

@@ -117,4 +117,18 @@ export abstract class ComponentFactory<C> {
   abstract create(
       injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
       environmentInjector?: EnvironmentInjector|NgModuleRef<any>): ComponentRef<C>;
+
+  /**
+   * Create function implementation.
+   *
+   * This implementation is internal and allows framework code
+   * to invoke it with extra parameters (e.g. for hydration) without
+   * affecting public API.
+   *
+   * @internal
+   */
+  abstract createImpl(
+      injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
+      environmentInjector?: EnvironmentInjector|NgModuleRef<any>,
+      wasLazyLoaded?: boolean): ComponentRef<C>;
 }

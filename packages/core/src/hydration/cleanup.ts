@@ -15,10 +15,9 @@ import {RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TVIEW} from '../render3/interfaces/view';
 import {nativeRemoveNode} from '../render3/node_manipulation';
-import {EMPTY_ARRAY} from '../util/empty';
 
 import {validateSiblingNodeExists} from './error_handling';
-import {DehydratedContainerView, NUM_ROOT_NODES} from './interfaces';
+import {DehydratedContainerView, LAZY, NUM_ROOT_NODES} from './interfaces';
 import {getComponentLViewForHydration} from './utils';
 
 /**
@@ -30,15 +29,18 @@ export function removeDehydratedViews(lContainer: LContainer) {
   const views = lContainer[DEHYDRATED_VIEWS] ?? [];
   const parentLView = lContainer[PARENT];
   const renderer = parentLView[RENDERER];
+  const retainedViews: DehydratedContainerView[] = [];
   for (const view of views) {
-    removeDehydratedView(view, renderer);
-    ngDevMode && ngDevMode.dehydratedViewsRemoved++;
+    if (view.data[LAZY]) {
+      // Retain dehydrated views marked as "lazy",
+      // such views migth be hydrated much later in the process.
+      retainedViews.push(view);
+    } else {
+      removeDehydratedView(view, renderer);
+      ngDevMode && ngDevMode.dehydratedViewsRemoved++;
+    }
   }
-  // Reset the value to an empty array to indicate that no
-  // further processing of dehydrated views is needed for
-  // this view container (i.e. do not trigger the lookup process
-  // once again in case a `ViewContainerRef` is created later).
-  lContainer[DEHYDRATED_VIEWS] = EMPTY_ARRAY;
+  lContainer[DEHYDRATED_VIEWS] = retainedViews;
 }
 
 /**
