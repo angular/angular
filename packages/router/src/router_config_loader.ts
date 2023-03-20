@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, EnvironmentInjector, Injectable, InjectFlags, InjectionToken, Injector, NgModuleFactory, Type} from '@angular/core';
+import {Compiler, EnvironmentInjector, inject, Injectable, InjectFlags, InjectionToken, Injector, NgModuleFactory, Type} from '@angular/core';
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
 import {finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
-import {deprecatedLoadChildrenString} from './deprecated_load_children';
 import {DefaultExport, LoadChildren, LoadChildrenCallback, LoadedRouterConfig, Route, Routes} from './models';
 import {wrapIntoObservable} from './utils/collection';
 import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
@@ -38,11 +37,7 @@ export class RouterConfigLoader {
   private childrenLoaders = new WeakMap<Route, Observable<LoadedRouterConfig>>();
   onLoadStartListener?: (r: Route) => void;
   onLoadEndListener?: (r: Route) => void;
-
-  constructor(
-      private injector: Injector,
-      private compiler: Compiler,
-  ) {}
+  private readonly compiler = inject(Compiler);
 
   loadComponent(route: Route): Observable<Type<unknown>> {
     if (this.componentLoaders.get(route)) {
@@ -124,10 +119,6 @@ export class RouterConfigLoader {
 
   private loadModuleFactoryOrRoutes(loadChildren: LoadChildren):
       Observable<NgModuleFactory<any>|Routes> {
-    const deprecatedResult = deprecatedLoadChildrenString(this.injector, loadChildren);
-    if (deprecatedResult) {
-      return deprecatedResult;
-    }
     return wrapIntoObservable((loadChildren as LoadChildrenCallback)())
         .pipe(
             map(maybeUnwrapDefaultExport),
