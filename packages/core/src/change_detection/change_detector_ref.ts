@@ -13,7 +13,7 @@ import {isComponentHost} from '../render3/interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getComponentLViewByIndex} from '../render3/util/view_utils';
-import {ViewRef as R3_ViewRef} from '../render3/view_ref';
+import {ViewRef} from '../render3/view_ref';
 
 /**
  * Base class that provides change detection functionality.
@@ -146,12 +146,12 @@ function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ChangeDetec
     // The LView represents the location where the component is declared.
     // Instead we want the LView for the component View and so we need to look it up.
     const componentView = getComponentLViewByIndex(tNode.index, lView);  // look down
-    return new R3_ViewRef(componentView, componentView);
+    return new ViewRef(componentView, componentView);
   } else if (tNode.type & (TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Icu)) {
     // The LView represents the location where the injection is requested from.
     // We need to locate the containing LView (in case where the `lView` is an embedded view)
     const hostComponentView = lView[DECLARATION_COMPONENT_VIEW];  // look up
-    return new R3_ViewRef(hostComponentView, lView);
+    return new ViewRef(hostComponentView, lView);
   }
   return null!;
 }
