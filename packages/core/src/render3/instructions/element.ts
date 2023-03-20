@@ -241,7 +241,7 @@ function locateOrCreateElementNodeImpl(
     } else if (ngDevMode) {
       // If this is not a component host, throw an error.
       // Hydration can be skipped on per-component basis only.
-      throw invalidSkipHydrationHost();
+      throw invalidSkipHydrationHost(native);
     }
   }
   return native;

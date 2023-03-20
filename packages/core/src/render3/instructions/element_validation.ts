@@ -229,7 +229,7 @@ export function reportUnknownPropertyError(message: string) {
  *
  * @param lView An `LView` that represents a current component that is being rendered.
  */
-function getDeclarationComponentDef(lView: LView): ComponentDef<unknown>|null {
+export function getDeclarationComponentDef(lView: LView): ComponentDef<unknown>|null {
   !ngDevMode && throwError('Must never be called in production mode');
 
   const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;

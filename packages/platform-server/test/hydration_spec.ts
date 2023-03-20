@@ -9,7 +9,7 @@
 import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
-import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {unescapeTransferStateContent} from '@angular/core/src/transfer_state';
 import {TestBed} from '@angular/core/testing';
@@ -136,6 +136,18 @@ function resetTViewsFor(...types: Type<unknown>[]) {
 function getHydrationInfoFromTransferState(input: string): {} {
   const rawContents = input.match(/<script[^>]+>(.*?)<\/script>/)![1];
   return unescapeTransferStateContent(rawContents);
+}
+
+function withNoopErrorHandler() {
+  class NoopErrorHandler extends ErrorHandler {
+    override handleError(error: any): void {
+      // noop
+    }
+  }
+  return [{
+    provide: ErrorHandler,
+    useClass: NoopErrorHandler,
+  }];
 }
 
 describe('platform-server integration', () => {
@@ -1422,8 +1434,32 @@ describe('platform-server integration', () => {
         try {
           await ssr(SimpleComponent);
         } catch (e: unknown) {
-          expect((e as Error).toString())
+          const errorMessage = (e as Error).toString();
+          expect(errorMessage)
               .toContain('Hydration for nodes marked with `i18n` is not yet supported.');
+          expect(errorMessage).toContain('<div>…</div>  <-- AT THIS LOCATION');
+        }
+      });
+
+      it('should throw an error when trying to serialize i18n section with ngIf', async () => {
+        @Component({
+          standalone: true,
+          imports: [NgIf],
+          selector: 'app',
+          template: `
+            <div *ngIf="true" i18n>Hi!</div>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        try {
+          await ssr(SimpleComponent);
+        } catch (e: unknown) {
+          const errorMessage = (e as Error).toString();
+          expect(errorMessage)
+              .toContain('Hydration for nodes marked with `i18n` is not yet supported.');
+          expect(errorMessage).toContain('<div>…</div>  <-- AT THIS LOCATION');
         }
       });
 
@@ -1974,10 +2010,12 @@ describe('platform-server integration', () => {
            try {
              await ssr(SimpleComponent);
            } catch (e: unknown) {
-             expect((e as Error).toString())
+             const errorMessage = (e as Error).toString();
+             expect(errorMessage)
                  .toContain(
                      'The `ngSkipHydration` flag is applied ' +
                      'on a node that doesn\'t act as a component host');
+             expect(errorMessage).toContain('<div></div> <-- AT THIS LOCATION');
            }
          });
     });
@@ -2036,8 +2074,6 @@ describe('platform-server integration', () => {
         const html = await ssr(SimpleComponent);
         const ssrContents = getAppContents(html);
 
-        // TODO: properly assert `ngh` attribute value once the `ngh`
-        // format stabilizes, for now we just check that it's present.
         expect(ssrContents).toContain('<app ngh');
 
         resetTViewsFor(SimpleComponent);
@@ -2069,8 +2105,7 @@ describe('platform-server integration', () => {
 
         const html = await ssr(SimpleComponent);
         const ssrContents = getAppContents(html);
-        // TODO: properly assert `ngh` attribute value once the `ngh`
-        // format stabilizes, for now we just check that it's present.
+
         expect(ssrContents).toContain('<app ngh');
 
         resetTViewsFor(SimpleComponent);
@@ -3005,10 +3040,12 @@ describe('platform-server integration', () => {
            try {
              await ssr(SimpleComponent);
            } catch (error: unknown) {
-             expect((error as Error).toString())
+             const errorMessage = (error as Error).toString();
+             expect(errorMessage)
                  .toContain(
                      'During serialization, Angular detected DOM nodes that ' +
                      'were created outside of Angular context');
+             expect(errorMessage).toContain('<dynamic>…</dynamic>  <-- AT THIS LOCATION');
            }
          });
 
@@ -3057,12 +3094,490 @@ describe('platform-server integration', () => {
            try {
              await ssr(SimpleComponent);
            } catch (error: unknown) {
-             expect((error as Error).toString())
+             const errorMessage = (error as Error).toString();
+             expect(errorMessage)
                  .toContain(
                      'During serialization, Angular detected DOM nodes that ' +
                      'were created outside of Angular context');
+             expect(errorMessage).toContain('<dynamic>…</dynamic>  <-- AT THIS LOCATION');
            }
          });
+    });
+
+
+    describe('error handling', () => {
+      it('should handle text node mismatch', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+        <div id="abc">This is an original content</div>
+    `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const div = this.doc.querySelector('div');
+            div!.innerHTML = '<span title="Hi!">This is an extra span causing a problem!</span>';
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain(
+              'During hydration Angular expected a text node but found <span>');
+          expect(message).toContain('#text(This is an original content)  <-- AT THIS LOCATION');
+          expect(message).toContain('<span title="Hi!">…</span>  <-- AT THIS LOCATION');
+        });
+      });
+
+      it('should not crash when a node can not be found during hydration', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+        Some text.
+        <div id="abc">This is an original content</div>
+    `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          private isServer = isPlatformServer(inject(PLATFORM_ID));
+          ngAfterViewInit() {
+            if (this.isServer) {
+              const div = this.doc.querySelector('div');
+              div!.remove();
+            }
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain(
+              'During hydration Angular expected <div> but the node was not found');
+          expect(message).toContain('<div id="abc">…</div>  <-- AT THIS LOCATION');
+        });
+      });
+
+      // TODO(akushnir): we should only mark nodes within a content projection block as
+      // "disconnected" (avoid marking other disconnected nodes in a template)
+      xit('should handle element node mismatch', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+        <div id="abc">
+          <p>This is an original content</p>
+          <b>Bold text</b>
+          <i>Italic text</i>
+        </div>
+    `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('b');
+            const span = this.doc.createElement('span');
+            span.textContent = 'This is an eeeeevil span causing a problem!';
+            b?.parentNode?.replaceChild(span, b);
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain('During hydration Angular expected <b> but found <span>');
+          expect(message).toContain('<b>…</b>  <-- AT THIS LOCATION');
+          expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+        });
+      });
+
+      it('should handle <ng-container> node mismatch', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+        <b>Bold text</b>
+        <ng-container>
+          <p>This is an original content</p>
+        </ng-container>
+      `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const p = this.doc.querySelector('p');
+            const span = this.doc.createElement('span');
+            span.textContent = 'This is an eeeeevil span causing a problem!';
+            p?.parentNode?.insertBefore(span, p.nextSibling);
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain(
+              'During hydration Angular expected a comment node but found <span>');
+          expect(message).toContain('<!-- ng-container -->  <-- AT THIS LOCATION');
+          expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+        });
+      });
+
+      it('should handle <ng-container> node mismatch ' +
+             '(when it is wrapped into a non-container node)',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `
+          <div id="abc" class="wrapper">
+            <ng-container>
+              <p>This is an original content</p>
+            </ng-container>
+          </div>
+        `,
+           })
+           class SimpleComponent {
+             private doc = inject(DOCUMENT);
+             ngAfterViewInit() {
+               const p = this.doc.querySelector('p');
+               const span = this.doc.createElement('span');
+               span.textContent = 'This is an eeeeevil span causing a problem!';
+               p?.parentNode?.insertBefore(span, p.nextSibling);
+             }
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh');
+
+           resetTViewsFor(SimpleComponent);
+
+           await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+             const message = (err as Error).message;
+             expect(message).toContain(
+                 'During hydration Angular expected a comment node but found <span>');
+             expect(message).toContain('<!-- ng-container -->  <-- AT THIS LOCATION');
+             expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+           });
+         });
+
+      it('should handle <ng-template> node mismatch', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [CommonModule],
+          template: `
+          <b *ngIf="true">Bold text</b>
+          <i *ngIf="false">Italic text</i>
+        `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('b');
+            const firstCommentNode = b!.nextSibling;
+            const span = this.doc.createElement('span');
+            span.textContent = 'This is an eeeeevil span causing a problem!';
+            firstCommentNode?.parentNode?.insertBefore(span, firstCommentNode.nextSibling);
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain(
+              'During hydration Angular expected a comment node but found <span>');
+          expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
+          expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+        });
+      });
+
+      it('should handle node mismatches in nested components', async () => {
+        @Component({
+          standalone: true,
+          selector: 'nested-cmp',
+          imports: [CommonModule],
+          template: `
+          <b *ngIf="true">Bold text</b>
+          <i *ngIf="false">Italic text</i>
+        `,
+        })
+        class NestedComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('b');
+            const firstCommentNode = b!.nextSibling;
+            const span = this.doc.createElement('span');
+            span.textContent = 'This is an eeeeevil span causing a problem!';
+            firstCommentNode?.parentNode?.insertBefore(span, firstCommentNode.nextSibling);
+          }
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NestedComponent],
+          template: `<nested-cmp />`,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain(
+              'During hydration Angular expected a comment node but found <span>');
+          expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
+          expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+          expect(message).toContain('check the "NestedComponent" component');
+        });
+      });
+
+      it('should handle sibling count mismatch', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [CommonModule],
+          template: `
+          <ng-container *ngIf="true">
+            <b>Bold text</b>
+            <i>Italic text</i>
+          </ng-container>
+          <main>Main content</main>
+        `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            this.doc.querySelector('b')?.remove();
+            this.doc.querySelector('i')?.remove();
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain(
+              'During hydration Angular expected more sibling nodes to be present');
+          expect(message).toContain('<main>…</main>  <-- AT THIS LOCATION');
+        });
+      });
+
+      it('should handle ViewContainerRef node mismatch', async () => {
+        @Directive({
+          standalone: true,
+          selector: 'b',
+        })
+        class SimpleDir {
+          vcr = inject(ViewContainerRef);
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [CommonModule, SimpleDir],
+          template: `
+        <b>Bold text</b>
+      `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('b');
+            const firstCommentNode = b!.nextSibling;
+            const span = this.doc.createElement('span');
+            span.textContent = 'This is an eeeeevil span causing a problem!';
+            firstCommentNode?.parentNode?.insertBefore(span, firstCommentNode);
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain(
+              'During hydration Angular expected a comment node but found <span>');
+          expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
+          expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+        });
+      });
+
+      it('should handle a mismatch for a node that goes after a ViewContainerRef node',
+         async () => {
+           @Directive({
+             standalone: true,
+             selector: 'b',
+           })
+           class SimpleDir {
+             vcr = inject(ViewContainerRef);
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [CommonModule, SimpleDir],
+             template: `
+            <b>Bold text</b>
+            <i>Italic text</i>
+          `,
+           })
+           class SimpleComponent {
+             private doc = inject(DOCUMENT);
+             ngAfterViewInit() {
+               const b = this.doc.querySelector('b');
+               const span = this.doc.createElement('span');
+               span.textContent = 'This is an eeeeevil span causing a problem!';
+               b?.parentNode?.insertBefore(span, b.nextSibling);
+             }
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh');
+
+           resetTViewsFor(SimpleComponent);
+
+           await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+             const message = (err as Error).message;
+             expect(message).toContain(
+                 'During hydration Angular expected a comment node but found <span>');
+             expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
+             expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+           });
+         });
+
+      it('should handle a case when a node is not found (removed)', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: '<ng-content />',
+        })
+        class ProjectorComponent {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [CommonModule, ProjectorComponent],
+          template: `
+        <projector-cmp>
+          <b>Bold text</b>
+          <i>Italic text</i>
+        </projector-cmp>
+      `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterContentInit() {
+            this.doc.querySelector('b')?.remove();
+            this.doc.querySelector('i')?.remove();
+          }
+        }
+
+        ssr(SimpleComponent, undefined, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain(
+              'During serialization, Angular was unable to find an element in the DOM');
+          expect(message).toContain('<b>…</b>  <-- AT THIS LOCATION');
+        });
+      });
+
+      it('should handle a case when a node is not found (detached)', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: '<ng-content />',
+        })
+        class ProjectorComponent {
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [CommonModule, ProjectorComponent],
+          template: `
+        <projector-cmp>
+          <b>Bold text</b>
+        </projector-cmp>
+      `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+
+          constructor() {
+            if (!this.isServer) {
+              this.doc.querySelector('b')?.remove();
+            }
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        await hydrate(html, SimpleComponent, withNoopErrorHandler()).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain(
+              'During hydration Angular was unable to locate a node using the "firstChild" path, ' +
+              'starting from the <projector-cmp>…</projector-cmp> node');
+        });
+      });
     });
   });
 });

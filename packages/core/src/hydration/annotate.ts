@@ -268,7 +268,8 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
           // accessed via `document.querySelector`, etc) and may be in any state
           // (attached or detached from the DOM tree). As a result, we can not reliably
           // restore the state for such cases during hydration.
-          throw unsupportedProjectionOfDomNodes();
+
+          throw unsupportedProjectionOfDomNodes(unwrapRNode(lView[i]));
         }
       }
     }
@@ -306,7 +307,12 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       // Produce an error message which would also describe possible
       // solutions (switching back to the "destructive" hydration or
       // excluding a component from hydration via `ngSkipHydration`).
-      throw notYetSupportedI18nBlockError();
+      //
+      // TODO(akushnir): we should find a better way to get a hold of the node that has the `i18n`
+      // attribute on it. For now, we either refer to the host element of the component or to the
+      // previous element in the LView.
+      const targetNode = (i === HEADER_OFFSET) ? lView[HOST]! : unwrapRNode(lView[i - 1]);
+      throw notYetSupportedI18nBlockError(targetNode);
     } else {
       // <ng-container> case
       if (tNode.type & TNodeType.ElementContainer) {

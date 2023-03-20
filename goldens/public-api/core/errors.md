@@ -41,6 +41,14 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HOST_DIRECTIVE_UNRESOLVABLE = 307,
     // (undocumented)
+    HYDRATION_I18N_NOT_YET_SUPPORTED = 518,
+    // (undocumented)
+    HYDRATION_MISSING_NODE = 502,
+    // (undocumented)
+    HYDRATION_MISSING_SIBLINGS = 501,
+    // (undocumented)
+    HYDRATION_NODE_MISMATCH = 500,
+    // (undocumented)
     IMPORT_PROVIDERS_FROM_STANDALONE = 800,
     // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
@@ -58,6 +66,8 @@ export const enum RuntimeErrorCode {
     INVALID_INJECTION_TOKEN = 204,
     // (undocumented)
     INVALID_MULTI_PROVIDER = -209,
+    // (undocumented)
+    INVALID_SKIP_HYDRATION_HOST = 504,
     // (undocumented)
     MISSING_GENERATED_DEF = 906,
     // (undocumented)
@@ -106,6 +116,8 @@ export const enum RuntimeErrorCode {
     UNSAFE_VALUE_IN_RESOURCE_URL = 904,
     // (undocumented)
     UNSAFE_VALUE_IN_SCRIPT = 905,
+    // (undocumented)
+    UNSUPPORTED_PROJECTION_DOM_NODES = 503,
     // (undocumented)
     VIEW_ALREADY_ATTACHED = 902
 }
