@@ -192,9 +192,6 @@
     "name": "DomRendererFactory2"
   },
   {
-    "name": "DomSharedStylesHost"
-  },
-  {
     "name": "EMPTY"
   },
   {
@@ -2080,9 +2077,6 @@
   },
   {
     "name": "ɵɵelementStart"
-  },
-  {
-    "name": "ɵɵgetInheritedFactory"
   },
   {
     "name": "ɵɵinject"

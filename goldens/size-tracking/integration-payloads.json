@@ -2,7 +2,7 @@
   "cli-hello-world": {
     "uncompressed": {
       "runtime": 908,
-      "main": 129184,
+      "main": 128657,
       "polyfills": 33792
     }
   },
@@ -41,14 +41,14 @@
   "animations": {
     "uncompressed": {
       "runtime": 898,
-      "main": 159979,
+      "main": 159461,
       "polyfills": 33782
     }
   },
   "standalone-bootstrap": {
     "uncompressed": {
       "runtime": 918,
-      "main": 87601,
+      "main": 87081,
       "polyfills": 33802
     }
   },
