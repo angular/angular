@@ -1,16 +1,14 @@
 // #docplaster
 // #docregion
-import { pipe, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { retry } from 'rxjs/operators';
 
 export function backoff(maxTries: number, initialDelay: number) {
-    return pipe(
-      retry({
+    return retry({
         count: maxTries,
         delay: (error, retryCount) => timer(initialDelay * retryCount ** 2),
-      })
-    );
+      });
   }
 
 // #enddocregion
