@@ -660,7 +660,7 @@ function locateOrCreateAnchorNode(
       locateDehydratedViewsInContainer(currentRNode!, serializedViews!);
 
   if (ngDevMode) {
-    validateMatchingNode(commentNode, Node.COMMENT_NODE, null, hostLView, hostTNode);
+    validateMatchingNode(commentNode, Node.COMMENT_NODE, null, hostLView, hostTNode, true);
     // Do not throw in case this node is already claimed (thus `false` as a second
     // argument). If this container is created based on an `<ng-template>`, the comment
     // node would be already claimed from the `template` instruction. If an element acts

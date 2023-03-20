@@ -59,6 +59,15 @@ export const enum RuntimeErrorCode {
   APPLICATION_REF_ALREADY_DESTROYED = 406,
   RENDERER_NOT_FOUND = 407,
 
+  // Hydration Errors
+  HYDRATION_NODE_MISMATCH = 500,
+  HYDRATION_MISSING_SIBLINGS = 501,
+  HYDRATION_MISSING_NODE = 502,
+  UNSUPPORTED_PROJECTION_DOM_NODES = 503,
+  INVALID_SKIP_HYDRATION_HOST = 504,
+  // Temporary error code for hydration while i18n is not supported
+  HYDRATION_I18N_NOT_YET_SUPPORTED = 518,
+
   // Styling Errors
 
   // Declarations Errors
@@ -84,6 +93,7 @@ export const enum RuntimeErrorCode {
   UNEXPECTED_ZONE_STATE = 909,
   UNSAFE_IFRAME_ATTRS = -910,
 }
+
 
 /**
  * Class that represents a runtime error.
