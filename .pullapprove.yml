@@ -340,6 +340,7 @@ groups:
           'aio/content/guide/dependency-injection-navtree.md',
           'aio/content/guide/dependency-injection-providers.md',
           'aio/content/guide/lightweight-injection-tokens.md',
+          'aio/content/guide/image-directive.md',
           'aio/content/guide/displaying-data.md',
           'aio/content/examples/displaying-data/**',
           'aio/content/images/guide/displaying-data/**',
