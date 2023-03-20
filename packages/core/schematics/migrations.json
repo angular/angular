@@ -9,6 +9,11 @@
       "version": "15.0.0",
       "description": "In Angular version 15, the deprecated `relativeLinkResolution` config parameter of the Router is removed. This migration removes all `relativeLinkResolution` fields from the Router config objects.",
       "factory": "./migrations/relative-link-resolution/bundle"
+    },
+    "migration-v16-remove-module-id": {
+      "version": "16.0.0",
+      "description": "As of Angular v16, the `moduleId` property of `@Component` is deprecated as it no longer has any effect.",
+      "factory": "./migrations/remove-module-id/bundle"
     }
   }
 }

@@ -21,6 +21,8 @@ jasmine_node_test(
         "//packages/core/schematics:migrations.json",
         "//packages/core/schematics/migrations/relative-link-resolution",
         "//packages/core/schematics/migrations/relative-link-resolution:bundle",
+        "//packages/core/schematics/migrations/remove-module-id",
+        "//packages/core/schematics/migrations/remove-module-id:bundle",
         "//packages/core/schematics/migrations/router-link-with-href",
         "//packages/core/schematics/migrations/router-link-with-href:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration",

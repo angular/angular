@@ -10,6 +10,7 @@ import {Tree} from '@angular-devkit/schematics';
 import {dirname, relative, resolve} from 'path';
 import ts from 'typescript';
 
+import {extractDirectiveMetadata} from './directive_extractor';
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
 import {getAngularDecorators} from './ng_decorators';
 import {unwrapExpression} from './typescript/functions';
@@ -54,31 +55,8 @@ export class NgComponentTemplateVisitor {
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
-    const decorators = ts.getDecorators(node);
-
-    if (!decorators || !decorators.length) {
-      return;
-    }
-
-    const ngDecorators = getAngularDecorators(this.typeChecker, decorators);
-    const componentDecorator = ngDecorators.find(dec => dec.name === 'Component');
-
-    // In case no "@Component" decorator could be found on the current class, skip.
-    if (!componentDecorator) {
-      return;
-    }
-
-    const decoratorCall = componentDecorator.node.expression;
-
-    // In case the component decorator call is not valid, skip this class declaration.
-    if (decoratorCall.arguments.length !== 1) {
-      return;
-    }
-
-    const componentMetadata = unwrapExpression(decoratorCall.arguments[0]);
-
-    // Ensure that the component metadata is an object literal expression.
-    if (!ts.isObjectLiteralExpression(componentMetadata)) {
+    const metadata = extractDirectiveMetadata(this.typeChecker, node);
+    if (metadata === null || metadata.type !== 'component') {
       return;
     }
 
@@ -87,7 +65,7 @@ export class NgComponentTemplateVisitor {
 
     // Walk through all component metadata properties and determine the referenced
     // HTML templates (either external or inline)
-    componentMetadata.properties.forEach(property => {
+    metadata.node.properties.forEach(property => {
       if (!ts.isPropertyAssignment(property)) {
         return;
       }
