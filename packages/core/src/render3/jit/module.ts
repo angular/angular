@@ -239,7 +239,6 @@ function verifySemanticsOfNgModuleDef(
   ];
   exports.forEach(verifyExportsAreDeclaredOrReExported);
   declarations.forEach(decl => verifyDeclarationIsUnique(decl, allowDuplicateDeclarationsInRoot));
-  declarations.forEach(verifyComponentEntryComponentsIsPartOfNgModule);
 
   const ngModule = getAnnotation<NgModule>(moduleType, 'NgModule');
   if (ngModule) {
@@ -250,8 +249,6 @@ function verifySemanticsOfNgModuleDef(
         });
     ngModule.bootstrap && deepForEach(ngModule.bootstrap, verifyCorrectBootstrapType);
     ngModule.bootstrap && deepForEach(ngModule.bootstrap, verifyComponentIsPartOfNgModule);
-    ngModule.entryComponents &&
-        deepForEach(ngModule.entryComponents, verifyComponentIsPartOfNgModule);
   }
 
   // Throw Error if any errors were detected.
@@ -343,17 +340,6 @@ function verifySemanticsOfNgModuleDef(
           `The \`${stringifyForError(type)}\` class is a standalone component, which can ` +
           `not be used in the \`@NgModule.bootstrap\` array. Use the \`bootstrapApplication\` ` +
           `function for bootstrap instead.`);
-    }
-  }
-
-  function verifyComponentEntryComponentsIsPartOfNgModule(type: Type<any>) {
-    type = resolveForwardRef(type);
-    if (getComponentDef(type)) {
-      // We know we are component
-      const component = getAnnotation<Component>(type, 'Component');
-      if (component && component.entryComponents) {
-        deepForEach(component.entryComponents, verifyComponentIsPartOfNgModule);
-      }
     }
   }
 

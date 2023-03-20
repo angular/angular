@@ -8,9 +8,8 @@
 import './init';
 
 import {ComponentUsingThirdParty} from '../src/comp_using_3rdp';
-import {ComponentUsingFlatModule} from '../src/comp_using_flat_module';
 import {MainModule} from '../src/module';
-import {CompUsingLibModuleDirectiveAndPipe, CompUsingRootModuleDirectiveAndPipe, ServiceUsingLibModule, SOME_TOKEN, SomeLibModule, SomeService} from '../src/module_fixtures';
+import {CompUsingLibModuleDirectiveAndPipe, CompUsingRootModuleDirectiveAndPipe, ServiceUsingLibModule, SomeLibModule, SomeService} from '../src/module_fixtures';
 
 import {createComponent, createModule} from './util';
 
@@ -22,47 +21,7 @@ describe('NgModule', () => {
     expect(moduleRef.injector.get(SomeService) instanceof SomeService).toEqual(true);
   });
 
-  it('should support entryComponents components', () => {
-    const moduleRef = createModule();
-    const cf = moduleRef.componentFactoryResolver.resolveComponentFactory(
-        CompUsingRootModuleDirectiveAndPipe);
-    expect(cf.componentType).toBe(CompUsingRootModuleDirectiveAndPipe);
-    const compRef = cf.create(moduleRef.injector);
-    expect(compRef.instance instanceof CompUsingRootModuleDirectiveAndPipe).toEqual(true);
-  });
-
-  it('should support entryComponents via the ANALYZE_FOR_ENTRY_COMPONENTS provider and function providers in components',
-     () => {
-       const moduleRef = createModule();
-       const cf = moduleRef.componentFactoryResolver.resolveComponentFactory(
-           CompUsingRootModuleDirectiveAndPipe);
-       expect(cf.componentType).toBe(CompUsingRootModuleDirectiveAndPipe);
-       // check that the function call that created the provider for ANALYZE_FOR_ENTRY_COMPONENTS
-       // worked.
-       expect(moduleRef.injector.get(SOME_TOKEN)).toEqual([
-         {a: 'b', component: CompUsingLibModuleDirectiveAndPipe}
-       ]);
-     });
-
-  describe('flat modules', () => {
-    it('should support flat module entryComponents components', () => {
-      // https://github.com/angular/angular/issues/15221
-      const fixture = createComponent(ComponentUsingFlatModule);
-      const bundleComp = fixture.nativeElement.children;
-      expect(bundleComp[0].children[0].textContent).toEqual('flat module component');
-    });
-  });
-
   describe('third-party modules', () => {
-    // https://github.com/angular/angular/issues/11889
-    it('should support third party entryComponents components', () => {
-      const fixture = createComponent(ComponentUsingThirdParty);
-      const thirdPComps = fixture.nativeElement.children;
-      expect(thirdPComps[0].children[0].textContent).toEqual('3rdP-component');
-      expect(thirdPComps[1].children[0].textContent).toEqual(`other-3rdP-component
-multi-lines`);
-    });
-
     // https://github.com/angular/angular/issues/12428
     it('should support third party directives', () => {
       const fixture = createComponent(ComponentUsingThirdParty);

@@ -78,7 +78,6 @@ class:
 | `queries`           | `ɵdir`                |
 | `guards`            | not used              |
 | `viewQueries`       | `ɵcmp`                |
-| `entryComponents`   | not used              |
 | `changeDetection`   | `ɵcmp`                |
 | `template`          | `ɵcmp`                |
 | `componentViewType` | not used              |

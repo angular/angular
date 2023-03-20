@@ -34,7 +34,6 @@ import {TimelineModule} from './timeline/timeline.module';
     MatTooltipModule,
   ],
   exports: [ProfilerComponent],
-  entryComponents: [ProfilerImportDialogComponent],
 })
 export class ProfilerModule {
 }

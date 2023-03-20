@@ -265,7 +265,6 @@ groups:
           'aio/content/examples/dynamic-component-loader/**/{*,.*}',
           'aio/content/images/guide/dynamic-component-loader/**/{*,.*}',
           'aio/content/guide/example-apps-list.md',
-          'aio/content/guide/entry-components.md',
           'aio/content/guide/feature-modules.md',
           'aio/content/examples/feature-modules/**/{*,.*}',
           'aio/content/images/guide/feature-modules/**/{*,.*}',

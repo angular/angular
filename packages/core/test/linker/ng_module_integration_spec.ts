@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getModuleFactory, getNgModuleById, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, ɵɵdefineNgModule as defineNgModule} from '@angular/core';
+import {Compiler, Component, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getModuleFactory, getNgModuleById, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type} from '@angular/core';
 import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {NgModuleType} from '@angular/core/src/render3';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
@@ -317,108 +317,6 @@ describe('NgModule', () => {
          expect(moduleType).toBeTruthy();
          expect(moduleType).toBe(ChildModule as NgModuleType);
        });
-  });
-
-  describe('entryComponents', () => {
-    it('should create ComponentFactories in root modules', () => {
-      @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
-      class SomeModule {
-      }
-
-      const ngModule = createModule(SomeModule);
-      expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp)!.componentType)
-          .toBe(SomeComp);
-      expect(ngModule.injector.get(ComponentFactoryResolver)
-                 .resolveComponentFactory(SomeComp)
-                 .componentType)
-          .toBe(SomeComp);
-    });
-
-    it('should throw if we cannot find a module associated with a module-level entryComponent', () => {
-      @Component({template: ''})
-      class SomeCompWithEntryComponents {
-      }
-
-      @NgModule({declarations: [], entryComponents: [SomeCompWithEntryComponents]})
-      class SomeModule {
-      }
-
-      expect(() => createModule(SomeModule))
-          .toThrowError(
-              'Component SomeCompWithEntryComponents is not part of any NgModule or the module has not been imported into your module.');
-    });
-
-    it('should throw if we cannot find a module associated with a component-level entryComponent',
-       () => {
-         @Component({template: '', entryComponents: [SomeComp]})
-         class SomeCompWithEntryComponents {
-         }
-
-         @NgModule({declarations: [SomeCompWithEntryComponents]})
-         class SomeModule {
-         }
-
-         expect(() => createModule(SomeModule))
-             .toThrowError(
-                 'Component SomeComp is not part of any NgModule or the module has not been imported into your module.');
-       });
-
-    it('should create ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
-      @NgModule({
-        declarations: [SomeComp],
-        providers: [{
-          provide: ANALYZE_FOR_ENTRY_COMPONENTS,
-          multi: true,
-          useValue: [{a: 'b', component: SomeComp}]
-        }]
-      })
-      class SomeModule {
-      }
-
-      const ngModule = createModule(SomeModule);
-      expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp)!.componentType)
-          .toBe(SomeComp);
-      expect(ngModule.injector.get(ComponentFactoryResolver)
-                 .resolveComponentFactory(SomeComp)
-                 .componentType)
-          .toBe(SomeComp);
-    });
-
-    it('should create ComponentFactories in imported modules', () => {
-      @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
-      class SomeImportedModule {
-      }
-
-      @NgModule({imports: [SomeImportedModule]})
-      class SomeModule {
-      }
-
-      const ngModule = createModule(SomeModule);
-      expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp)!.componentType)
-          .toBe(SomeComp);
-      expect(ngModule.injector.get(ComponentFactoryResolver)
-                 .resolveComponentFactory(SomeComp)
-                 .componentType)
-          .toBe(SomeComp);
-    });
-
-    it('should create ComponentFactories if the component was imported', () => {
-      @NgModule({declarations: [SomeComp], exports: [SomeComp]})
-      class SomeImportedModule {
-      }
-
-      @NgModule({imports: [SomeImportedModule], entryComponents: [SomeComp]})
-      class SomeModule {
-      }
-
-      const ngModule = createModule(SomeModule);
-      expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp)!.componentType)
-          .toBe(SomeComp);
-      expect(ngModule.injector.get(ComponentFactoryResolver)
-                 .resolveComponentFactory(SomeComp)
-                 .componentType)
-          .toBe(SomeComp);
-    });
   });
 
   describe('bootstrap components', () => {

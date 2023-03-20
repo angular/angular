@@ -1029,11 +1029,6 @@
                   "tooltip": "Description of the different types of feature modules."
                 },
                 {
-                  "url": "guide/entry-components",
-                  "title": "Entry components",
-                  "tooltip": "All about entry components in Angular."
-                },
-                {
                   "url": "guide/feature-modules",
                   "title": "Feature modules",
                   "tooltip": "Create feature modules to organize your code."

@@ -14,7 +14,7 @@
 
 export {Attribute, AttributeDecorator} from './di/metadata_attr';
 export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from './interface/lifecycle_hooks';
-export {ANALYZE_FOR_ENTRY_COMPONENTS, ContentChild, ContentChildDecorator, ContentChildren, ContentChildrenDecorator, Query, ViewChild, ViewChildDecorator, ViewChildren, ViewChildrenDecorator} from './metadata/di';
+export {ContentChild, ContentChildDecorator, ContentChildren, ContentChildrenDecorator, Query, ViewChild, ViewChildDecorator, ViewChildren, ViewChildrenDecorator} from './metadata/di';
 export {Component, ComponentDecorator, Directive, DirectiveDecorator, HostBinding, HostBindingDecorator, HostListener, HostListenerDecorator, Input, InputDecorator, Output, OutputDecorator, Pipe, PipeDecorator} from './metadata/directives';
 export {DoBootstrap} from './metadata/do_boostrap';
 export {NgModule, NgModuleDecorator} from './metadata/ng_module';

@@ -603,15 +603,6 @@ export interface Component extends Directive {
   interpolation?: [string, string];
 
   /**
-   * A set of components that should be compiled along with
-   * this component. For each component listed here,
-   * Angular creates a {@link ComponentFactory} and stores it in the
-   * {@link ComponentFactoryResolver}.
-   * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
-   */
-  entryComponents?: Array<Type<any>|any[]>;
-
-  /**
    * True to preserve or false to remove potentially superfluous whitespace characters
    * from the compiled template. Whitespace characters are those matching the `\s`
    * character class in JavaScript regular expressions. Default is false, unless
