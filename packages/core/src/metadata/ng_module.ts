@@ -171,29 +171,7 @@ export interface NgModule {
   exports?: Array<Type<any>|any[]>;
 
   /**
-   * The set of components to compile when this NgModule is defined,
-   * so that they can be dynamically loaded into the view.
-   *
-   * For each component listed here, Angular creates a `ComponentFactory`
-   * and stores it in the `ComponentFactoryResolver`.
-   *
-   * Angular automatically adds components in the module's bootstrap
-   * and route definitions into the `entryComponents` list. Use this
-   * option to add components that are bootstrapped
-   * using one of the imperative techniques, such as `ViewContainerRef.createComponent()`.
-   *
-   * @see [Entry Components](guide/entry-components)
-   * @deprecated
-   * Since 9.0.0. With Ivy, this property is no longer necessary.
-   * (You may need to keep these if building a library that will be consumed by a View Engine
-   * application.)
-   */
-  entryComponents?: Array<Type<any>|any[]>;
-
-  /**
-   * The set of components that are bootstrapped when
-   * this module is bootstrapped. The components listed here
-   * are automatically added to `entryComponents`.
+   * The set of components that are bootstrapped when this module is bootstrapped.
    */
   bootstrap?: Array<Type<any>|any[]>;
 
@@ -234,7 +212,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * Decorator that marks the following class as an NgModule, and supplies
      * configuration metadata for it.
      *
-     * * The `declarations` and `entryComponents` options configure the compiler
+     * * The `declarations` option configures the compiler
      * with information about what belongs to the NgModule.
      * * The `providers` options configures the NgModule's injector to provide
      * dependencies the NgModule members.

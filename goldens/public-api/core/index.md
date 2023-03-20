@@ -34,9 +34,6 @@ export interface AfterViewInit {
     ngAfterViewInit(): void;
 }
 
-// @public @deprecated
-export const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
-
 // @public
 export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
 
@@ -190,8 +187,6 @@ export interface Component extends Directive {
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
-    // @deprecated
-    entryComponents?: Array<Type<any> | any[]>;
     imports?: (Type<any> | ReadonlyArray<any>)[];
     interpolation?: [string, string];
     moduleId?: string;
@@ -955,8 +950,6 @@ export type NgIterable<T> = Array<T> | Iterable<T>;
 export interface NgModule {
     bootstrap?: Array<Type<any> | any[]>;
     declarations?: Array<Type<any> | any[]>;
-    // @deprecated
-    entryComponents?: Array<Type<any> | any[]>;
     exports?: Array<Type<any> | any[]>;
     id?: string;
     imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;

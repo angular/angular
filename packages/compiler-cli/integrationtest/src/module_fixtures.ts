@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Directive, Injectable, InjectionToken, Input, NgModule, Pipe} from '@angular/core';
+import {Component, Directive, Injectable, InjectionToken, Input, NgModule, Pipe} from '@angular/core';
 
 @Injectable()
 export class SomeService {
@@ -51,17 +51,9 @@ export class CompUsingLibModuleDirectiveAndPipe {
 
 export const SOME_TOKEN = new InjectionToken('someToken');
 
-export function provideValueWithEntryComponents(value: any) {
-  return [
-    {provide: SOME_TOKEN, useValue: value},
-    {provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: value, multi: true},
-  ];
-}
-
 @NgModule({
   declarations: [SomeDirectiveInLibModule, SomePipeInLibModule, CompUsingLibModuleDirectiveAndPipe],
   exports: [CompUsingLibModuleDirectiveAndPipe],
-  entryComponents: [CompUsingLibModuleDirectiveAndPipe],
 })
 export class SomeLibModule {
   static withProviders() {
@@ -69,7 +61,6 @@ export class SomeLibModule {
       ngModule: SomeLibModule,
       providers: [
         ServiceUsingLibModule,
-        provideValueWithEntryComponents([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
       ]
     };
   }

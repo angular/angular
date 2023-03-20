@@ -57,7 +57,6 @@ For more information on the structure of an `@NgModule`, be sure to read [Bootst
 You may also be interested in the following:
 
 *   [Feature Modules](guide/feature-modules)
-*   [Entry Components](guide/entry-components)
 *   [Providers](guide/providers)
 *   [Types of NgModules](guide/module-types)
 

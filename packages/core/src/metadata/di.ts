@@ -11,45 +11,6 @@ import {ProviderToken} from '../di/provider_token';
 import {makePropDecorator} from '../util/decorators';
 
 /**
- * A DI token that you can use to create a virtual [provider](guide/glossary#provider)
- * that will populate the `entryComponents` field of components and NgModules
- * based on its `useValue` property value.
- * All components that are referenced in the `useValue` value (either directly
- * or in a nested array or map) are added to the `entryComponents` property.
- *
- * @usageNotes
- *
- * The following example shows how the router can populate the `entryComponents`
- * field of an NgModule based on a router configuration that refers
- * to components.
- *
- * ```typescript
- * // helper function inside the router
- * function provideRoutes(routes) {
- *   return [
- *     {provide: ROUTES, useValue: routes},
- *     {provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: routes, multi: true}
- *   ];
- * }
- *
- * // user code
- * let routes = [
- *   {path: '/root', component: RootComp},
- *   {path: '/teams', component: TeamsComp}
- * ];
- *
- * @NgModule({
- *   providers: [provideRoutes(routes)]
- * })
- * class ModuleWithRoutes {}
- * ```
- *
- * @publicApi
- * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
- */
-export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForEntryComponents');
-
-/**
  * Type of the `Attribute` decorator / constructor function.
  *
  * @publicApi

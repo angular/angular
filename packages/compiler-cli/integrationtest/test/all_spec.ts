@@ -11,7 +11,6 @@ require('source-map-support').install();
 import './init';
 import './animate_spec';
 import './basic_spec';
-import './entry_components_spec';
 import './i18n_spec';
 import './ng_module_spec';
 import './projection_spec';

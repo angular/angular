@@ -128,7 +128,7 @@ Don't export the following:
 
 *   Non-declarable objects such as services, functions, configurations, and entity models.
 *   Components that are only loaded dynamically by the router or by bootstrapping.
-    Such [entry components](guide/ngmodule-faq#q-entry-component-defined) can never be selected in another component's template.
+    Such components can never be selected in another component's template.
     While there's no harm in exporting them, there's also no benefit.
 
 *   Pure service modules that don't have public \(exported\) declarations.
@@ -407,28 +407,6 @@ Certain NgModules, such as `BrowserModule`, implement such a guard.
 Here is a custom constructor for an NgModule called `GreetingModule`.
 
 <code-example header="src/app/greeting/greeting.module.ts (Constructor)" path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor"></code-example>
-
-<a id="q-entry-component-defined"></a>
-
-## What is an `entry component`?
-
-An entry component is any component that Angular loads *imperatively* by type.
-
-A component loaded *declaratively* by way of its selector is *not* an entry component.
-
-Angular loads a component declaratively when using the component's selector to locate the element in the template.
-Angular then creates the HTML representation of the component and inserts it into the DOM at the selected element.
-These aren't entry components.
-
-The bootstrapped root `AppComponent` is an *entry component*.
-True, its selector matches an element tag in `index.html`.
-But `index.html` isn't a component template and the `AppComponent` selector doesn't match an element in any component template.
-
-Components in route definitions are also *entry components*.
-A route definition refers to a component by its *type*.
-The router ignores a routed component's selector, if it even has one, and loads the component dynamically into a `RouterOutlet`.
-
-For more information, see [Entry Components](guide/entry-components).
 
 ## What kinds of modules should I have and how should I use them?
 
