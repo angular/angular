@@ -26,6 +26,7 @@ ts_library(
         "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
+        "//packages/localize/init",
         "//packages/platform-browser",
         "//packages/platform-server",
         "//packages/private/testing",

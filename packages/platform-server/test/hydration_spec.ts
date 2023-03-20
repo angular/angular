@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import '@angular/localize/init';
+
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
 import {APP_ID, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument, ɵunescapeTransferStateContent as unescapeTransferStateContent} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
@@ -1398,6 +1400,138 @@ describe('platform-server integration', () => {
           });
         });
       });
+    });
+
+    // Note: hydration for i18n blocks is not *yet* supported, so the tests
+    // below verify that we throw error messages at appropriate times and
+    // allow to exclude components with i18n from hydration using `ngSkipHydration` flag.
+    describe('i18n', () => {
+      it('should throw an error when trying to serialize i18n section', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            <div i18n>Hi!</div>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        try {
+          await ssr(SimpleComponent);
+        } catch (e: unknown) {
+          expect((e as Error).toString())
+              .toContain('Hydration for nodes marked with `i18n` is not yet supported.');
+        }
+      });
+
+      it('should throw an error when trying to serialize i18n section (based on ng-container)',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `
+              <ng-container i18n>Hi!</ng-container>
+            `,
+           })
+           class SimpleComponent {
+           }
+
+           try {
+             await ssr(SimpleComponent);
+           } catch (e: unknown) {
+             expect((e as Error).toString())
+                 .toContain('Hydration for nodes marked with `i18n` is not yet supported.');
+           }
+         });
+
+      it('should throw an error when trying to serialize i18n section (with *ngIf)', async () => {
+        @Component({
+          standalone: true,
+          imports: [CommonModule],
+          selector: 'app',
+          template: `
+              <ng-container *ngIf="true" i18n>Hi!</ng-container>
+            `,
+        })
+        class SimpleComponent {
+        }
+
+        try {
+          await ssr(SimpleComponent);
+        } catch (e: unknown) {
+          expect((e as Error).toString())
+              .toContain('Hydration for nodes marked with `i18n` is not yet supported.');
+        }
+      });
+
+      it('should *not* throw when i18n attributes are used', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+              <div i18n-title title="Hello world">Hi!</div>
+            `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should *not* throw when i18n is used in nested component ' +
+             'excluded using `ngSkipHydration`',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'nested',
+             template: `
+                <div i18n>Hi!</div>
+              `,
+           })
+           class NestedComponent {
+           }
+
+           @Component({
+             standalone: true,
+             imports: [NestedComponent],
+             selector: 'app',
+             template: `
+               Nested component with i18n inside:
+               <nested ngSkipHydration />
+             `,
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh');
+
+           resetTViewsFor(SimpleComponent);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           verifyAllNodesClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
     });
 
     describe('ngSkipHydration', () => {

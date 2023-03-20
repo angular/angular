@@ -70,3 +70,12 @@ export function invalidSkipHydrationHost() {
       'that doesn\'t act as a component host. Hydration can be ' +
       'skipped only on per-component basis.');
 }
+
+export function notYetSupportedI18nBlockError() {
+  // TODO: improve error message and use RuntimeError instead.
+  return new Error(
+      'Hydration for nodes marked with `i18n` is not yet supported. ' +
+      'You can opt-out a component that uses `i18n` in a template using ' +
+      'the `ngSkipHydration` attribute or fall back to the previous ' +
+      'hydration logic (which re-creates the application structure).');
+}

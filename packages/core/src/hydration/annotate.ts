@@ -9,6 +9,7 @@
 import {ApplicationRef} from '../application_ref';
 import {collectNativeNodes} from '../render3/collect_native_nodes';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
+import {TI18n} from '../render3/interfaces/i18n';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
@@ -16,7 +17,7 @@ import {HEADER_OFFSET, HOST, LView, RENDERER, TView, TVIEW, TViewType} from '../
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
-import {unsupportedProjectionOfDomNodes} from './error_handling';
+import {notYetSupportedI18nBlockError, unsupportedProjectionOfDomNodes} from './error_handling';
 import {CONTAINERS, ELEMENT_CONTAINERS, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {calcPathForNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
@@ -194,6 +195,16 @@ function appendSerializedNodePath(ngh: SerializedView, tNode: TNode, lView: LVie
 }
 
 /**
+ * There is no special TNode type for an i18n block, so we verify
+ * whether the structure that we store at the `TView.data[idx]` position
+ * has the `TI18n` shape.
+ */
+function isTI18nNode(obj: unknown): boolean {
+  const tI18n = obj as TI18n;
+  return tI18n.hasOwnProperty('create') && tI18n.hasOwnProperty('update');
+}
+
+/**
  * Serializes the lView data into a SerializedView object that will later be added
  * to the TransferState storage and referenced using the `ngh` attribute on a host
  * element.
@@ -272,6 +283,12 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       if (!(targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
         annotateHostElementForHydration(targetNode as RElement, lView[i], context);
       }
+    } else if (isTI18nNode(tNode)) {
+      // Hydration for i18n nodes is not *yet* supported.
+      // Produce an error message which would also describe possible
+      // solutions (switching back to the "destructive" hydration or
+      // excluding a component from hydration via `ngSkipHydration`).
+      throw notYetSupportedI18nBlockError();
     } else {
       // <ng-container> case
       if (tNode.type & TNodeType.ElementContainer) {
