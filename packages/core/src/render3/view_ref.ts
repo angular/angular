@@ -21,8 +21,12 @@ import {destroyLView, detachView, renderDetachView} from './node_manipulation';
 import {storeLViewOnDestroy} from './util/view_utils';
 
 
+// Needed due to tsickle downleveling where multiple `implements` with classes creates
+// multiple @extends in Closure annotations, which is illegal. This workaround fixes
+// the multiple @extends by making the annotation @implements instead
+interface ChangeDetectorRefInterface extends ChangeDetectorRef {}
 
-export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDetectorRef {
+export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDetectorRefInterface {
   private _appRef: ViewRefTracker|null = null;
   private _attachedToViewContainer = false;
 
