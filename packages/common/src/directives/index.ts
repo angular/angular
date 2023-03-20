@@ -7,10 +7,12 @@
  */
 
 import {Provider} from '@angular/core';
+
 import {NgClass} from './ng_class';
 import {NgComponentOutlet} from './ng_component_outlet';
 import {NgForOf, NgForOfContext} from './ng_for_of';
 import {NgIf, NgIfContext} from './ng_if';
+import {NgOptimizedImage, NgOptimizedImageModule} from './ng_optimized_image/ng_optimized_image';
 import {NgPlural, NgPluralCase} from './ng_plural';
 import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
@@ -23,13 +25,15 @@ export {
   NgForOfContext,
   NgIf,
   NgIfContext,
+  NgOptimizedImage,
+  NgOptimizedImageModule,
   NgPlural,
   NgPluralCase,
   NgStyle,
   NgSwitch,
   NgSwitchCase,
   NgSwitchDefault,
-  NgTemplateOutlet,
+  NgTemplateOutlet
 };
 
 

@@ -1,0 +1,73 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {IMAGE_LOADER, ImageLoaderConfig, NgOptimizedImageModule} from '@angular/common';
+import {Component, NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
+
+const imageLoader = {
+  provide: IMAGE_LOADER,
+  useFactory: () => (config: ImageLoaderConfig) => config.src
+};
+
+@Component({
+  selector: 'oversized-image-passing',
+  providers: [imageLoader],
+  template: `
+      <!-- Image is rendered within threshold range-->
+      <div style="width: 500px; height: 500px">
+        <img ngSrc="/e2e/logo-500w.jpg" width="200" height="200" priority>
+      </div>
+      <!-- Image is rendered too small but ngSrcset set-->
+      <div style="width: 300px; height: 300px">
+        <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority
+            ngSrcset="100w, 200w">
+      </div>
+     `,
+})
+export class OversizedImagePassingComponent {
+}
+@NgModule({
+  declarations: [OversizedImagePassingComponent],
+  imports: [
+    NgOptimizedImageModule,
+    RouterModule.forChild([{
+      path: '',
+      component: OversizedImagePassingComponent,
+    }]),
+  ],
+})
+export class OversizedImagePassingModule {
+}
+
+
+@Component({
+  selector: 'oversized-image-failing',
+  providers: [imageLoader],
+  template: `
+      <!-- Image is rendered too small  -->
+      <div style="width: 300px; height: 300px">
+         <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority disableOptimizedSrcset>
+       </div>
+      `,
+})
+export class OversizedImageFailingComponent {
+}
+
+@NgModule({
+  declarations: [OversizedImageFailingComponent],
+  imports: [
+    NgOptimizedImageModule,
+    RouterModule.forChild([{
+      path: '',
+      component: OversizedImageFailingComponent,
+    }]),
+  ],
+})
+export class OversizedImageFailingModule {
+}
