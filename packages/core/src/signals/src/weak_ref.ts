@@ -9,15 +9,30 @@
 import {global} from '../../util/global';
 
 // `WeakRef` is not always defined in every TS environment where Angular is compiled. Instead,
-// alias it as a local export by reading it off of the global context.
+// read it off of the global context if available.
+// tslint:disable-next-line: no-toplevel-property-access
+let WeakRefImpl: WeakRefCtor|undefined = global['WeakRef'];
 
 export interface WeakRef<T extends object> {
   deref(): T|undefined;
+}
+
+export function newWeakRef<T extends object>(value: T): WeakRef<T> {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode && WeakRefImpl === undefined) {
+    throw new Error(`Angular requires a browser which supports the 'WeakRef' API`);
+  }
+  return new WeakRefImpl!(value);
 }
 
 export interface WeakRefCtor {
   new<T extends object>(value: T): WeakRef<T>;
 }
 
-// tslint:disable-next-line: no-toplevel-property-access
-export const WeakRef: WeakRefCtor = global['WeakRef'];
+/**
+ * Use an alternate implementation of `WeakRef` if a platform implementation isn't available.
+ */
+export function setAlternateWeakRefImpl(impl: WeakRefCtor) {
+  if (!WeakRefImpl) {
+    WeakRefImpl = impl;
+  }
+}

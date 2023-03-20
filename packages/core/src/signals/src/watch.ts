@@ -7,7 +7,7 @@
  */
 
 import {Consumer, consumerPollValueStatus, Edge, nextReactiveId, ProducerId, setActiveConsumer} from './graph';
-import {WeakRef} from './weak_ref';
+import {newWeakRef} from './weak_ref';
 
 /**
  * Watches a reactive expression and allows it to be scheduled to re-run
@@ -18,7 +18,7 @@ import {WeakRef} from './weak_ref';
  */
 export class Watch implements Consumer {
   readonly id = nextReactiveId();
-  readonly ref = new WeakRef(this);
+  readonly ref = newWeakRef(this);
   readonly producers = new Map<ProducerId, Edge>();
   trackingVersion = 0;
 

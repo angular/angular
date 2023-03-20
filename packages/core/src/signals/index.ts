@@ -13,3 +13,4 @@ export {setActiveConsumer} from './src/graph';
 export {SettableSignal, signal} from './src/signal';
 export {untracked} from './src/untracked';
 export {Watch} from './src/watch';
+export {setAlternateWeakRefImpl} from './src/weak_ref';
