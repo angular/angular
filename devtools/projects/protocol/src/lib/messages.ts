@@ -40,6 +40,7 @@ export enum PropType {
   Object,
   Date,
   Array,
+  Set,
   Unknown,
 }
 
