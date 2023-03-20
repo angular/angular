@@ -194,6 +194,7 @@ export interface Component extends Directive {
     entryComponents?: Array<Type<any> | any[]>;
     imports?: (Type<any> | ReadonlyArray<any>)[];
     interpolation?: [string, string];
+    // @deprecated
     moduleId?: string;
     preserveWhitespaces?: boolean;
     schemas?: SchemaMetadata[];

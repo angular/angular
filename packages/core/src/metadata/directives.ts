@@ -543,6 +543,7 @@ export interface Component extends Directive {
    * SystemJS exposes the `__moduleName` variable within each module.
    * In CommonJS, this can  be set to `module.id`.
    *
+   * @deprecated This option does not have any effect. Will be removed in Angular v17.
    */
   moduleId?: string;
 
