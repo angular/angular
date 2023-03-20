@@ -8,6 +8,7 @@
 
 import {PropType} from 'protocol';
 
+import {getDescriptor, getKeys} from './object-utils';
 import {deeplySerializeSelectedProperties} from './state-serializer';
 
 const QUERY_1_1 = [];
@@ -198,7 +199,7 @@ describe('deeplySerializeSelectedProperties', () => {
     });
   });
 
-  it('should work with getters', () => {
+  it('should work with getters with specified query', () => {
     const result = deeplySerializeSelectedProperties(
         {
           get foo(): any {
@@ -224,8 +225,8 @@ describe('deeplySerializeSelectedProperties', () => {
       foo: {
         type: PropType.Object,
         editable: false,
-        expandable: true,
-        preview: '{...}',
+        expandable: false,
+        preview: '(...)',
         value: {
           baz: {
             type: PropType.Object,
@@ -238,7 +239,39 @@ describe('deeplySerializeSelectedProperties', () => {
     });
   });
 
-  it('should getters should be readonly', () => {
+  it('should work with getters without specified query', () => {
+    const result = deeplySerializeSelectedProperties(
+        {
+          get foo(): any {
+            return {
+              baz: {
+                qux: {
+                  cos: 3,
+                },
+              },
+            };
+          },
+        },
+        []);
+    expect(result).toEqual({
+      foo: {
+        type: PropType.Object,
+        editable: false,
+        expandable: false,
+        preview: '(...)',
+        value: {
+          baz: {
+            type: PropType.Object,
+            editable: false,
+            expandable: true,
+            preview: '{...}',
+          },
+        },
+      },
+    });
+  });
+
+  it('both getters and setters should be readonly', () => {
     const result = deeplySerializeSelectedProperties(
         {
           get foo(): number {
@@ -250,21 +283,21 @@ describe('deeplySerializeSelectedProperties', () => {
           set bar(val: number) {},
         },
         []);
+
+    // Neither getter and setter is editable
     expect(result).toEqual({
       foo: {
         type: PropType.Number,
         expandable: false,
-        // Not editable because
-        // we don't have a getter.
         editable: false,
-        preview: '42',
+        preview: '(...)',
         value: 42,
       },
       bar: {
         type: PropType.Number,
         expandable: false,
-        editable: true,
-        preview: '42',
+        editable: false,
+        preview: '(...)',
         value: 42,
       },
     });
@@ -356,7 +389,7 @@ describe('deeplySerializeSelectedProperties', () => {
                 type: PropType.Number,
                 expandable: false,
                 editable: false,
-                preview: '42',
+                preview: '(...)',
                 value: 42,
               },
             },
@@ -366,12 +399,12 @@ describe('deeplySerializeSelectedProperties', () => {
     });
   });
 
-  it('should not show setters at all when associated getters or values are unavailable', () => {
+  it('both setter and getter would get a (...) as preview', () => {
     const result = deeplySerializeSelectedProperties(
         {
           set foo(_: any) {},
-          get bar(): number {
-            return 1;
+          get bar(): Object {
+            return {foo: 1};
           },
         },
         []);
@@ -380,14 +413,22 @@ describe('deeplySerializeSelectedProperties', () => {
         type: PropType.Undefined,
         editable: false,
         expandable: false,
-        preview: '[setter]',
+        preview: '(...)',
       },
       bar: {
-        type: PropType.Number,
+        type: PropType.Object,
         editable: false,
         expandable: false,
-        preview: '1',
-        value: 1,
+        preview: '(...)',
+        value: {
+          foo: {
+            type: PropType.Number,
+            expandable: false,
+            editable: true,
+            preview: '1',
+            value: 1,
+          },
+        },
       },
     });
   });
@@ -402,5 +443,74 @@ describe('deeplySerializeSelectedProperties', () => {
         preview: 'undefined',
       }
     });
+  });
+
+  it('getDescriptor should get the descriptors for both getters and setters correctly from the prototype',
+     () => {
+       const instance = {
+         __proto__: {
+           get foo(): number {
+             return 42;
+           },
+           set bar(newNum: number) {},
+           get baz(): number {
+             return 42;
+           },
+           set baz(newNum: number) {},
+         }
+       };
+
+       const descriptorFoo = getDescriptor(instance, 'foo');
+       expect(descriptorFoo).not.toBeNull();
+       expect(descriptorFoo!.get).not.toBeNull();
+       expect(descriptorFoo!.set).toBeUndefined();
+       expect(descriptorFoo!.value).toBeUndefined();
+       expect(descriptorFoo!.enumerable).toBe(true);
+       expect(descriptorFoo!.configurable).toBe(true);
+
+       const descriptorBar = getDescriptor(instance, 'bar');
+       expect(descriptorBar).not.toBeNull();
+       expect(descriptorBar!.get).toBeUndefined();
+       expect(descriptorBar!.set).not.toBeNull();
+       expect(descriptorBar!.value).toBeUndefined();
+       expect(descriptorBar!.enumerable).toBe(true);
+       expect(descriptorBar!.configurable).toBe(true);
+
+       const descriptorBaz = getDescriptor(instance, 'baz');
+       expect(descriptorBaz).not.toBeNull();
+       expect(descriptorBaz!.get).not.toBeNull();
+       expect(descriptorBaz!.set).not.toBeNull();
+       expect(descriptorBaz!.value).toBeUndefined();
+       expect(descriptorBaz!.enumerable).toBe(true);
+       expect(descriptorBaz!.configurable).toBe(true);
+     });
+
+  it('getKeys should all keys including getters and setters', () => {
+    const instance = {
+      baz: 2,
+      __proto__: {
+        get foo(): number {
+          return 42;
+        },
+        set foo(newNum: number) {},
+        set bar(newNum: number) {}
+      }
+    };
+
+    expect(getKeys(instance)).toEqual(['baz', 'foo', 'bar']);
+  });
+
+  it('getKeys would ignore getters and setters for "__proto__"', () => {
+    const instance = {
+      baz: 2,
+      __proto__: {
+        set __proto__(newObj: Object) {},
+        get __proto__(): Object {
+          return {};
+        }
+      }
+    };
+
+    expect(getKeys(instance)).toEqual(['baz']);
   });
 });
