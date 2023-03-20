@@ -64,7 +64,6 @@
 
 | Component configuration <br /> `@Component` extends `@Directive`, so the `@Directive` configuration applies to components as well                            | Details |
 |:---                                                                                                                                                          |:---     |
-| <code-example format="typescript" hideCopy language="typescript"> moduleId: module.id </code-example>                                                        | If set, the `templateUrl` and `styleUrl` are resolved relative to the component.        |
 | <code-example format="typescript" hideCopy language="typescript"> viewProviders: [MyService, { provide: &hellip; }] </code-example>                          | List of dependency injection providers scoped to this component's view.                 |
 | <code-example format="typescript" hideCopy language="typescript"> template: 'Hello {{name}}' &NewLine;templateUrl: 'my-component.html' </code-example>       | Inline template or external template URL of the component's view.                       |
 | <code-example format="typescript" hideCopy language="typescript"> styles: ['.primary {color: red}'] &NewLine;styleUrls: ['my-component.css'] </code-example> | List of inline CSS styles or external stylesheet URLs for styling the component's view. |

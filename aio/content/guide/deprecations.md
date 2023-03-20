@@ -109,6 +109,7 @@ v16 - v19
 | `@angular/common`                   | [`NgComponentOutlet.ngComponentOutletNgModuleFactory`](#common)                                            | v14           | v17         |
 | `@angular/common`                   | [`DatePipe` - `DATE_PIPE_DEFAULT_TIMEZONE`](api/common/DATE_PIPE_DEFAULT_TIMEZONE)                         | v15           | v17         |
 | `@angular/core`                     | NgModule and `'any'` options for [`providedIn`](#core)                                                     | v15           | v17         |
+| `@angular/core`                     | [`@Component.moduleId`](api/core/Component#moduleId) | v16 | v17 |
 | `@angular/router`                   | [`RouterLinkWithHref` directive](#router)                                                                  | v15           | v17         |
 | `@angular/router`                   | [Router writeable properties](#router-writable-properties)                                                 | v15.1         | v17         |
 | `@angular/router`                   | [Router CanLoad guards](#router-can-load)                                                 | v15.1         | v17         |
@@ -176,6 +177,8 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 | [`providedIn`](api/core/Injectable#providedIn) with NgModule | Prefer `'root'` providers, or use NgModule `providers` if scoping to an NgModule is necessary | v15 | none |
 | [`providedIn: 'any'`](api/core/Injectable#providedIn) | none | v15 | This option has confusing semantics and nearly zero usage. |
 | [`EnvironmentInjector.runInContext`](api/core/EnvironmentInjector#runInContext) | `runInInjectionContext`  | v16 | `runInInjectionContext` is a more flexible operation which supports element injectors as well |
+| [`@Component.moduleId`](api/core/Component#moduleId) | none | v16 |
+
 
 <a id="testing"></a>
 
