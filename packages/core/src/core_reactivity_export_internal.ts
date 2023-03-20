@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {computed, effect, Effect, isSignal, SettableSignal, Signal, signal, untracked, ValueEqualityFn} from './signals';
+export {computed, effect, EffectRef, isSignal, SettableSignal, Signal, signal, untracked, ValueEqualityFn} from './signals';
