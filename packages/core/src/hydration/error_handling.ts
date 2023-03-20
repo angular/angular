@@ -62,3 +62,11 @@ export function unsupportedProjectionOfDomNodes(): Error {
       'Hydration is not supported for such cases, consider refactoring the code to avoid ' +
       'this pattern or using `ngSkipHydration` on the host element of the component.');
 }
+
+export function invalidSkipHydrationHost() {
+  // TODO: improve error message and use RuntimeError instead.
+  return new Error(
+      'The `ngSkipHydration` flag is applied on a node ' +
+      'that doesn\'t act as a component host. Hydration can be ' +
+      'skipped only on per-component basis.');
+}
