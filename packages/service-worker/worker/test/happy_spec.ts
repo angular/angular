@@ -542,11 +542,6 @@ describe('Driver', () => {
         type: 'VERSION_READY',
         currentVersion: {hash: manifestHash, appData: {version: 'original'}},
         latestVersion: {hash: manifestUpdateHash, appData: {version: 'update'}},
-      },
-      {
-        type: 'UPDATE_ACTIVATED',
-        previous: {hash: manifestHash, appData: {version: 'original'}},
-        current: {hash: manifestUpdateHash, appData: {version: 'update'}},
       }
     ]);
 
@@ -659,11 +654,6 @@ describe('Driver', () => {
         type: 'VERSION_READY',
         currentVersion: {hash: manifestHash, appData: {version: 'original'}},
         latestVersion: {hash: manifestUpdateHash, appData: {version: 'update'}},
-      },
-      {
-        type: 'UPDATE_ACTIVATED',
-        previous: {hash: manifestHash, appData: {version: 'original'}},
-        current: {hash: manifestUpdateHash, appData: {version: 'update'}},
       }
     ]);
     serverUpdate.assertNoOtherRequests();

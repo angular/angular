@@ -73,7 +73,7 @@ More specifically:
 
 *   The browser does not download the service worker script and the `ngsw.json` manifest file
 *   Active attempts to interact with the service worker, such as calling `SwUpdate.checkForUpdate()`, return rejected promises
-*   The observable events of related services, such as `SwUpdate.available`, are not triggered
+*   The observable events of related services, such as `SwUpdate.versionUpdates`, are not triggered
 
 It is highly recommended that you ensure that your application works even without service worker support in the browser.
 Although an unsupported browser ignores service worker caching, it still reports errors if the application attempts to interact with the service worker.
