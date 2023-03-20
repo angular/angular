@@ -116,7 +116,7 @@ describe('ngsw + companion lib', () => {
     const update = new SwUpdate(comm);
     scope.updateServerState(serverUpdate);
 
-    const gotUpdateNotice = (async () => await obsToSinglePromise(update.available))();
+    const gotUpdateNotice = (async () => await obsToSinglePromise(update.versionUpdates))();
 
     await update.checkForUpdate();
     await gotUpdateNotice;
