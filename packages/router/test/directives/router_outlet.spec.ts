@@ -87,6 +87,79 @@ describe('router outlet name', () => {
        expect(fixture.nativeElement.innerHTML).not.toContain('hello');
      }));
 
+  it('should support componentClasses array binding', fakeAsync(() => {
+       @Component({
+         standalone: true,
+         template: `
+        <router-outlet [componentClasses]="componentClasses"></router-outlet>`,
+         imports: [RouterOutlet],
+       })
+       class RootCmp {
+         componentClasses = ['content-container'];
+       }
+
+       @Component({
+         template: 'popup component',
+         standalone: true,
+       })
+       class PopupCmp {
+       }
+
+       TestBed.configureTestingModule({
+         imports: [RouterTestingModule.withRoutes([{path: '', component: PopupCmp}])],
+       });
+       const router = TestBed.inject(Router);
+       const fixture = createRoot(router, RootCmp);
+       expect(fixture.nativeElement.innerHTML).toContain('class="content-container"');
+     }));
+
+  it('should support componentClasses function binding', fakeAsync(() => {
+       @Component({
+         standalone: true,
+         template: `
+        <router-outlet [componentClasses]="componentClasses"></router-outlet>`,
+         imports: [RouterOutlet],
+       })
+       class RootCmp {
+         componentClasses = ({withMenu}: {withMenu: boolean}) =>
+             withMenu ? ['content-container', 'with-menu'] : ['content-container']
+       }
+
+       @Component({
+         template: 'component with menu',
+         standalone: true,
+       })
+       class CmpWithMenu {
+         withMenu = true;
+       }
+
+       @Component({
+         template: 'component without menu',
+         standalone: true,
+       })
+       class CmpWithoutMenu {
+         withMenu = false;
+       }
+
+       TestBed.configureTestingModule({
+         imports: [RouterTestingModule.withRoutes([
+           {path: '1', component: CmpWithMenu},
+           {path: '2', component: CmpWithoutMenu},
+         ])],
+       });
+       const router = TestBed.inject(Router);
+       const fixture = createRoot(router, RootCmp);
+       router.navigate(['1']);
+       advance(fixture);
+       expect(fixture.nativeElement.innerHTML).toContain('content-container');
+       expect(fixture.nativeElement.innerHTML).toContain('with-menu');
+
+       router.navigate(['2']);
+       advance(fixture);
+       expect(fixture.nativeElement.innerHTML).toContain('content-container');
+       expect(fixture.nativeElement.innerHTML).not.toContain('with-menu');
+     }));
+
   it('should support outlets in ngFor', fakeAsync(() => {
        @Component({
          standalone: true,

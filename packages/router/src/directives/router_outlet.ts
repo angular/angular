@@ -165,6 +165,17 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    */
   @Input() name = PRIMARY_OUTLET;
 
+  /**
+   * The classes to be applied to the component host element when the component is
+   * attached/activated
+   *
+   * When set to a string array, all the classes represented by the strings in the array are applied
+   * to the host element.
+   * When set to a function, the attached/activated component is passed to the function, and all the
+   * classes represented by the stings in the returned string array are applied to the host element.
+   */
+  @Input() componentClasses: string[]|((component: Object) => string[]) = [];
+
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
   /**
@@ -201,6 +212,10 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       // register the new name
       this.initializeOutletWithName();
     }
+
+    if (changes['componentClasses']) {
+      this.setComponentClasses();
+    }
   }
 
   /** @nodoc */
@@ -213,6 +228,15 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
 
   private isTrackedInParentContexts(outletName: string) {
     return this.parentContexts.getContext(outletName)?.outlet === this;
+  }
+
+  private setComponentClasses() {
+    if (this.activated && this.componentClasses) {
+      const classes = Array.isArray(this.componentClasses) ?
+          this.componentClasses :
+          this.componentClasses(this.activated.instance);
+      if (classes.length > 0) this.activated.location.nativeElement.classList.add(...classes);
+    }
   }
 
   /** @nodoc */
@@ -289,6 +313,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    */
   attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute) {
     this.activated = ref;
+    this.setComponentClasses();
     this._activatedRoute = activatedRoute;
     this.location.insert(ref.hostView);
     this.attachEvents.emit(ref.instance);
@@ -322,6 +347,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       injector,
       environmentInjector: environmentInjector ?? this.environmentInjector
     });
+    this.setComponentClasses();
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
