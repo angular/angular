@@ -1159,7 +1159,8 @@ export function provideNgZoneChangeDetection(ngZone: NgZone): StaticProvider[] {
             ngZoneChangeDetectionScheduler === null) {
           throw new RuntimeError(
               RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-              'No NgZoneChangeDetectionScheduler found in the Dependency Injection tree.');
+              `A required Injectable was not found in the dependency injection tree. ` +
+                  'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.');
         }
         return () => ngZoneChangeDetectionScheduler!.initialize();
       },
