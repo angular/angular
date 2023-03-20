@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
-import {APP_ID, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument, ɵunescapeTransferStateContent as unescapeTransferStateContent} from '@angular/core';
+import {APP_ID, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵgetComponentDef as getComponentDef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument, ɵunescapeTransferStateContent as unescapeTransferStateContent} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
@@ -1787,6 +1787,62 @@ describe('platform-server integration', () => {
            const clientRootNode = compRef.location.nativeElement;
            verifyAllNodesClaimedForHydration(clientRootNode);
            verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
+
+      it('should throw when ngSkipHydration attribute is set on a node ' +
+             'which is not a component host',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `
+                <header ngSkipHydration>Header</header>
+                <footer ngSkipHydration>Footer</footer>
+              `,
+           })
+           class SimpleComponent {
+           }
+
+           try {
+             await ssr(SimpleComponent);
+           } catch (e: unknown) {
+             expect((e as Error).toString())
+                 .toContain(
+                     'The `ngSkipHydration` flag is applied ' +
+                     'on a node that doesn\'t act as a component host');
+           }
+         });
+
+      it('should throw when ngSkipHydration attribute is set on a node ' +
+             'which is not a component host (when using host bindings)',
+         async () => {
+           @Directive({
+             standalone: true,
+             selector: '[dir]',
+             host: {ngSkipHydration: 'true'},
+           })
+           class Dir {
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [Dir],
+             template: `
+                <div dir></div>
+              `,
+           })
+           class SimpleComponent {
+           }
+
+           try {
+             await ssr(SimpleComponent);
+           } catch (e: unknown) {
+             expect((e as Error).toString())
+                 .toContain(
+                     'The `ngSkipHydration` flag is applied ' +
+                     'on a node that doesn\'t act as a component host');
+           }
          });
     });
 
