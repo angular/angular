@@ -163,6 +163,12 @@
           "description": "Do not create \"spec.ts\" test files for the application."
         },
         {
+          "name": "standalone",
+          "type": "boolean",
+          "default": false,
+          "description": "Creates an application based upon the standalone API, without NgModules."
+        },
+        {
           "name": "strict",
           "type": "boolean",
           "default": true,
