@@ -1,0 +1,35 @@
+name: CI
+
+on: pull_request
+
+permissions: {}
+
+jobs:
+  lint:
+    name: Lint
+    defaults:
+      run:
+        shell: bash
+    if: ${{ contains(fromJSON('["synchronize", "opened", "reopened"]'), github.event.action) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # tag=v3.3.0
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          # TODO: determine the correct fetch depth for efficiency
+          fetch-depth: 100
+      - uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # tag=v3.3.1
+        with:
+          path: |
+            ~/.cache/yarn
+          key: v1-${{hashFiles('yarn.lock')}}
+      - run: yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - run: yarn -s tslint
+      - run: yarn -s --cwd aio lint
+      - run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
+      - run: yarn ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
+      - run: yarn -s ts-circular-deps:check
+      - run: yarn -s ng-dev pullapprove verify
+      - run: yarn -s ng-dev ngbot verify
+      - run: yarn -s check-tooling-setup
