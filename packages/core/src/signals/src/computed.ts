@@ -16,8 +16,8 @@ import {newWeakRef} from './weak_ref';
  * @developerPreview
  */
 export function computed<T>(
-    computation: () => T, equal: ValueEqualityFn<T> = defaultEquals): Signal<T> {
-  const node = new ComputedImpl(computation, equal);
+    computation: () => T, options?: {equal?: ValueEqualityFn<T>}): Signal<T> {
+  const node = new ComputedImpl(computation, options?.equal ?? defaultEquals);
   return createSignalFromFunction(node.signal.bind(node));
 }
 

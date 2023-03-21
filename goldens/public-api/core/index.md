@@ -270,7 +270,9 @@ export abstract class ComponentRef<C> {
 }
 
 // @public
-export function computed<T>(computation: () => T, equal?: ValueEqualityFn<T>): Signal<T>;
+export function computed<T>(computation: () => T, options?: {
+    equal?: ValueEqualityFn<T>;
+}): Signal<T>;
 
 // @public
 export interface ConstructorProvider extends ConstructorSansProvider {
@@ -1350,7 +1352,9 @@ export type Signal<T> = (() => T) & {
 };
 
 // @public
-export function signal<T>(initialValue: T, equal?: ValueEqualityFn<T>): WritableSignal<T>;
+export function signal<T>(initialValue: T, options?: {
+    equal?: ValueEqualityFn<T>;
+}): WritableSignal<T>;
 
 // @public
 export class SimpleChange {
