@@ -71,8 +71,9 @@ export interface SimpleChanges {
 }
 
 export type ɵɵNgModuleDeclaration<ModuleT, DeclarationsT, ImportsT, ExportsT> = unknown;
-export type ɵɵDirectiveDeclaration<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> =
-    unknown;
+export type ɵɵDirectiveDeclaration<
+    DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT, A = never, B = never,
+    HostDirectivesT = never> = unknown;
 export type ɵɵPipeDeclaration<PipeT, NameT> = unknown;
 
 export enum ViewEncapsulation {
