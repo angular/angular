@@ -1336,13 +1336,6 @@ export interface SelfDecorator {
 }
 
 // @public
-export interface SettableSignal<T> extends Signal<T> {
-    mutate(mutatorFn: (value: T) => void): void;
-    set(value: T): void;
-    update(updateFn: (value: T) => T): void;
-}
-
-// @public
 export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
@@ -1351,7 +1344,7 @@ export type Signal<T> = (() => T) & {
 };
 
 // @public
-export function signal<T>(initialValue: T, equal?: ValueEqualityFn<T>): SettableSignal<T>;
+export function signal<T>(initialValue: T, equal?: ValueEqualityFn<T>): WritableSignal<T>;
 
 // @public
 export class SimpleChange {
@@ -1584,6 +1577,13 @@ export abstract class ViewRef extends ChangeDetectorRef {
     abstract destroy(): void;
     abstract get destroyed(): boolean;
     abstract onDestroy(callback: Function): any /** TODO #9100, replace by void in a major release*/;
+}
+
+// @public
+export interface WritableSignal<T> extends Signal<T> {
+    mutate(mutatorFn: (value: T) => void): void;
+    set(value: T): void;
+    update(updateFn: (value: T) => T): void;
 }
 
 // @public

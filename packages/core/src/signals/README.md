@@ -10,9 +10,9 @@ Particular contexts (such as template expressions) can be _reactive_. In such co
 
 This context and getter function mechanism allows for signal dependencies of a context to be tracked _automatically_ and _implicitly_. Users do not need to declare arrays of dependencies, nor does the set of dependencies of a particular context need to remain static across executions.
 
-### Settable signals: `signal()`
+### Writable signals: `signal()`
 
-The `signal()` function produces a specific type of signal known as a `SettableSignal`. In addition to being a getter function, `SettableSignal`s have an additional API for changing the value of the signal (along with notifying any dependents of the change). These include the `.set` operation for replacing the signal value, `.update` for deriving a new value, and `.mutate` for performing internal mutation of the current value. These are exposed as functions on the signal getter itself.
+The `signal()` function produces a specific type of signal known as a `WritableSignal`. In addition to being a getter function, `WritableSignal`s have an additional API for changing the value of the signal (along with notifying any dependents of the change). These include the `.set` operation for replacing the signal value, `.update` for deriving a new value, and `.mutate` for performing internal mutation of the current value. These are exposed as functions on the signal getter itself.
 
 ```typescript
 const counter = signal(0);
