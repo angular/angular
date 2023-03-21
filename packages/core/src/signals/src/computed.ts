@@ -11,13 +11,25 @@ import {Consumer, ConsumerId, consumerPollValueStatus, Edge, nextReactiveId, Pro
 import {newWeakRef} from './weak_ref';
 
 /**
+ * Options passed to the `computed` creation function.
+ *
+ * @developerPreview
+ */
+export interface CreateComputedOptions<T> {
+  /**
+   * A comparison function which defines equality for computed values.
+   */
+  equal?: ValueEqualityFn<T>;
+}
+
+
+/**
  * Create a computed `Signal` which derives a reactive value from an expression.
  *
  * @developerPreview
  */
-export function computed<T>(
-    computation: () => T, equal: ValueEqualityFn<T> = defaultEquals): Signal<T> {
-  const node = new ComputedImpl(computation, equal);
+export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T> {
+  const node = new ComputedImpl(computation, options?.equal ?? defaultEquals);
   return createSignalFromFunction(node.signal.bind(node));
 }
 

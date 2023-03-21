@@ -37,7 +37,7 @@ describe('signals', () => {
   });
 
   it('should not update signal when new value is equal to the previous one', () => {
-    const state = signal('aaa', (a, b) => a.length === b.length);
+    const state = signal('aaa', {equal: (a, b) => a.length === b.length});
     expect(state()).toEqual('aaa');
 
     // set to a "different" value that is "equal" to the previous one
@@ -55,7 +55,7 @@ describe('signals', () => {
   });
 
   it('should not propagate change when the new signal value is equal to the previous one', () => {
-    const state = signal('aaa', (a, b) => a.length === b.length);
+    const state = signal('aaa', {equal: (a, b) => a.length === b.length});
     const upper = computed(() => state().toUpperCase());
 
     // set to a "different" value that is "equal" to the previous one

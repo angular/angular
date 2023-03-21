@@ -6,4 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {computed, effect, EffectRef, isSignal, Signal, signal, untracked, ValueEqualityFn, WritableSignal} from './signals';
+// clang-format off
+export {
+  computed,
+  CreateComputedOptions,
+  CreateSignalOptions,
+  effect,
+  EffectRef,
+  isSignal,
+  Signal,
+  signal,
+  untracked,
+  ValueEqualityFn,
+  WritableSignal,
+} from './signals';
+// clang-format on
