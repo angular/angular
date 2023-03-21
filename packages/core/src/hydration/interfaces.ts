@@ -8,22 +8,6 @@
 
 import {RNode} from '../render3/interfaces/renderer_dom';
 
-
-/** Encodes that the node lookup should start from the host node of this component. */
-export const REFERENCE_NODE_HOST = 'h';
-
-/** Encodes that the node lookup should start from the document body node. */
-export const REFERENCE_NODE_BODY = 'b';
-
-/**
- * Describes navigation steps that the runtime logic need to perform,
- * starting from a given (known) element.
- */
-export enum NodeNavigationStep {
-  FirstChild = 'f',
-  NextSibling = 'n',
-}
-
 /**
  * Keys within serialized view data structure to represent various
  * parts. See the `SerializedView` interface below for additional information.
@@ -33,7 +17,6 @@ export const TEMPLATES = 't';
 export const CONTAINERS = 'c';
 export const NUM_ROOT_NODES = 'r';
 export const TEMPLATE_ID = 'i';  // as it's also an "id"
-export const NODES = 'n';
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -72,14 +55,6 @@ export interface SerializedView {
    * of serialized information about views within this container.
    */
   [CONTAINERS]?: Record<number, SerializedContainerView[]>;
-
-  /**
-   * Serialized information about nodes in a template.
-   * Key-value pairs where a key is an index of the corresponding
-   * DOM node in an LView and the value is a path that describes
-   * the location of this node (as a set of navigation instructions).
-   */
-  [NODES]?: Record<number, string>;
 }
 
 /**
