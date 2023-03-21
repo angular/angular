@@ -17,6 +17,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_ngforof_let",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/optional_chain_not_nullable",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/skip_hydration_not_static",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/text_attribute_not_binding",
         "@npm//typescript",
