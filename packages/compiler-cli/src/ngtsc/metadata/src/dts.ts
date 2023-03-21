@@ -99,6 +99,7 @@ export class DtsMetadataReader implements MetadataReader {
     const inputs = ClassPropertyMapping.fromMappedObject(readInputsType(def.type.typeArguments[3]));
     const outputs = ClassPropertyMapping.fromMappedObject(
         readMapType(def.type.typeArguments[4], readStringType));
+
     const hostDirectives = def.type.typeArguments.length > 8 ?
         readHostDirectivesType(this.checker, def.type.typeArguments[8], ref.bestGuessOwningModule) :
         null;

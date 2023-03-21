@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
 import {InjectableClassRegistry} from '../../annotations/common';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
-import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngErrorCode} from '../../diagnostics';
+import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
@@ -831,8 +831,15 @@ export class NgCompiler {
         continue;
       }
 
-      diagnostics.push(
-          ...compilation.templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram));
+      try {
+        diagnostics.push(
+            ...compilation.templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram));
+      } catch (err) {
+        if (!(err instanceof FatalDiagnosticError)) {
+          throw err;
+        }
+        diagnostics.push(err.toDiagnostic());
+      }
     }
 
     const program = this.programDriver.getProgram();
@@ -849,7 +856,14 @@ export class NgCompiler {
     // Get the diagnostics.
     const diagnostics: ts.Diagnostic[] = [];
     if (!sf.isDeclarationFile && !this.adapter.isShim(sf)) {
-      diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf, optimizeFor));
+      try {
+        diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf, optimizeFor));
+      } catch (err) {
+        if (!(err instanceof FatalDiagnosticError)) {
+          throw err;
+        }
+        diagnostics.push(err.toDiagnostic());
+      }
     }
 
     const program = this.programDriver.getProgram();
