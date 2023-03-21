@@ -8,7 +8,7 @@
 
 import {LContainer, TYPE} from './container';
 import {ComponentDef, DirectiveDef} from './definition';
-import {TNode, TNodeFlags, TNodeType} from './node';
+import {TNode, TNodeFlags} from './node';
 import {RNode} from './renderer_dom';
 import {FLAGS, LView, LViewFlags} from './view';
 
@@ -47,8 +47,4 @@ export function isComponentDef<T>(def: DirectiveDef<T>): def is ComponentDef<T> 
 
 export function isRootView(target: LView): boolean {
   return (target[FLAGS] & LViewFlags.IsRoot) !== 0;
-}
-
-export function isProjectionTNode(tNode: TNode): boolean {
-  return (tNode.type & TNodeType.Projection) === TNodeType.Projection;
 }

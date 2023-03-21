@@ -731,7 +731,7 @@ export function appendChild(
  *
  * Native nodes are returned in the order in which those appear in the native tree (DOM).
  */
-export function getFirstNativeNode(lView: LView, tNode: TNode|null): RNode|null {
+function getFirstNativeNode(lView: LView, tNode: TNode|null): RNode|null {
   if (tNode !== null) {
     ngDevMode &&
         assertTNodeType(
