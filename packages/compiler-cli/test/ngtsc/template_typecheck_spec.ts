@@ -3072,6 +3072,49 @@ suppress
           `Argument of type 'string' is not assignable to parameter of type 'number'.`
         ]);
       });
+
+      it('generates diagnostic when the library does not export the host directive', () => {
+        env.tsconfig({
+          paths: {'post': ['dist/post']},
+          strictTemplates: true,
+          _enableTemplateTypeChecker: true,
+        });
+
+        // export post module and component but not the host directive. This is not valid. We won't
+        // be able to import the host directive for template type checking.
+        env.write('dist/post/index.d.ts', `
+      export { PostComponent, PostModule } from './lib/post.component';
+    `);
+
+        env.write('dist/post/lib/post.component.d.ts', `
+      import * as i0 from "@angular/core";
+      export declare class HostBindDirective {
+          static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindDirective, never, never, {}, {}, never, never, true, never>;
+      }
+      export declare class PostComponent {
+          static ɵcmp: i0.ɵɵComponentDeclaration<PostComponent, "lib-post", never, {}, {}, never, never, false, [{ directive: typeof HostBindDirective; inputs: {}; outputs: {}; }]>;
+      }
+      export declare class PostModule {
+          static ɵmod: i0.ɵɵNgModuleDeclaration<PostModule, [typeof PostComponent], never, [typeof PostComponent]>;
+          static ɵinj: i0.ɵɵInjectorDeclaration<PostModule>;
+      }
+      `);
+        env.write('test.ts', `
+      import {Component} from '@angular/core';
+      import {PostModule} from 'post';
+
+      @Component({
+        template: '<lib-post />',
+        imports: [PostModule],
+        standalone: true,
+      })
+      export class Main { }
+       `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+            .toContain('HostBindDirective');
+      });
     });
   });
 });

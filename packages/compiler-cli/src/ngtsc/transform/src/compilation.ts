@@ -654,8 +654,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
             trait.analysisDiagnostics !== null) {
           diagnostics.push(...trait.analysisDiagnostics);
         }
-        if (trait.state === TraitState.Resolved && trait.resolveDiagnostics !== null) {
-          diagnostics.push(...trait.resolveDiagnostics);
+        if (trait.state === TraitState.Resolved) {
+          diagnostics.push(...(trait.resolveDiagnostics ?? []));
         }
       }
     }
