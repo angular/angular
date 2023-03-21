@@ -266,7 +266,7 @@ export abstract class ComponentRef<C> {
 }
 
 // @public
-export function computed<T>(computation: () => T, equal?: ValueEqualityFn<T>): Signal<T>;
+export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T>;
 
 // @public
 export interface ConstructorProvider extends ConstructorSansProvider {
@@ -330,6 +330,11 @@ export function createComponent<C>(component: Type<C>, options: {
 }): ComponentRef<C>;
 
 // @public
+export interface CreateComputedOptions<T> {
+    equal?: ValueEqualityFn<T>;
+}
+
+// @public
 export function createEnvironmentInjector(providers: Array<Provider | EnvironmentProviders>, parent: EnvironmentInjector, debugName?: string | null): EnvironmentInjector;
 
 // @public
@@ -343,6 +348,11 @@ export function createPlatform(injector: Injector): PlatformRef;
 
 // @public
 export function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;
+
+// @public
+export interface CreateSignalOptions<T> {
+    equal?: ValueEqualityFn<T>;
+}
 
 // @public
 export const CSP_NONCE: InjectionToken<string | null>;
@@ -1344,7 +1354,7 @@ export type Signal<T> = (() => T) & {
 };
 
 // @public
-export function signal<T>(initialValue: T, equal?: ValueEqualityFn<T>): WritableSignal<T>;
+export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
 
 // @public
 export class SimpleChange {

@@ -91,13 +91,24 @@ class WritableSignalImpl<T> implements Producer {
 }
 
 /**
+ * Options passed to the `signal` creation function.
+ *
+ * @developerPreview
+ */
+export interface CreateSignalOptions<T> {
+  /**
+   * A comparison function which defines equality for signal values.
+   */
+  equal?: ValueEqualityFn<T>;
+}
+
+/**
  * Create a `Signal` that can be set or updated directly.
  *
  * @developerPreview
  */
-export function signal<T>(
-    initialValue: T, equal: ValueEqualityFn<T> = defaultEquals): WritableSignal<T> {
-  const signalNode = new WritableSignalImpl(initialValue, equal);
+export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
+  const signalNode = new WritableSignalImpl(initialValue, options?.equal ?? defaultEquals);
   // Casting here is required for g3.
   const signalFn = createSignalFromFunction(signalNode.signal.bind(signalNode), {
                      set: signalNode.set.bind(signalNode),
