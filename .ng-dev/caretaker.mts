@@ -14,7 +14,7 @@ export const caretaker: CaretakerConfig = {
     },
     {
       name: 'Initial Triage Queue',
-      query: `is:open no:milestone`,
+      query: `is:open no:milestone -draft:true`,
     },
   ],
   caretakerGroup: 'angular-caretaker',
