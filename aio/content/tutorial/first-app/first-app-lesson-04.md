@@ -1,14 +1,6 @@
-# First Angular app lesson 4 - Angular interfaces
+# First Angular app lesson 4 - Creating an interface
 
-<div class="callout is-important">
-
-<header>This topic is a work in progress</header>
-
-This topic is a first draft. It is complete, but it some or all content might change before its final draft.
-
-</div>
-
-This tutorial lesson demonstrates how to create an Angular interface and include it in a component of your app.
+This tutorial lesson demonstrates how to create an interface and include it in a component of your app.
 
 **Time required:** expect to spend about 10 minutes to complete this lesson.
 
@@ -32,14 +24,13 @@ If you have any trouble during this lesson, you can review the completed code fo
 
 ## Conceptual preview of interfaces
 
-Angular interfaces are custom data types for your app.
+[Interfaces](https://www.typescriptlang.org/docs/handbook/interfaces.html) are custom data types for your app.
 
 Angular uses TypeScript to take advantage of working in a strongly typed programming environment.
 Strong type checking reduces the likelihood of one element in your app sending incorrectly formatted data to another.
 Such type-mismatch errors are caught by the TypeScript compiler and many such errors can also be caught in your IDE.
 
-This lesson creates an interface for the first Angular app.
-The interface defines properties that represent data about a single house.
+In this lesson, you'll create an interface to define properties that represent data about a single housing location.
 
 ## Lesson steps
 
@@ -47,7 +38,7 @@ Perform these steps on the app code in your IDE.
 
 ### Step 1 - Create a new Angular interface
 
-This step creates a new, but empty, interface in your app.
+This step creates a new interface in your app.
 
 In the **Terminal** pane of your IDE:
 
@@ -71,15 +62,17 @@ This step adds the properties to the interface that your app needs to represent 
 
 1.  In the **Terminal** pane of your IDE, start the `ng serve` command, if it isn't already running, to build the app and serve it to `http://localhost:4200`.
 1.  In the **Edit** pane of your IDE, open the `src/app/housinglocation.ts` file.
-1.  In `housinglocation.ts`, replace the default content with the following code to make your new interface to look like this example.
+1.  In `housinglocation.ts`, replace the default content with the following code to make your new interface to match this example.
 
-    <code-example header="Update src/app/housinglocation.ts to look like this" path="first-app-lesson-04/src/app/housinglocation.ts"></code-example>
+    <code-example header="Update src/app/housinglocation.ts to match this code" path="first-app-lesson-04/src/app/housinglocation.ts"></code-example>
 
 1.  Save your changes and confirm the app does not display any errors. Correct any errors before you continue to the next step.
 
+At this point, you've defined an inteface that represents data about a housing location including an id, name, and location information.
+
 ### Step 3 - Create a test house for your app
 
-At this point, you have an interface, but you aren't using it yet.
+You have an interface, but you aren't using it yet.
 
 In this step, you create an instance of the interface and assign some sample data to it.
 You won't see this sample data appear in your app yet.
@@ -89,17 +82,24 @@ There are a few more lessons to complete before that happens.
 1.  In the **Edit** pane of your IDE, open `src/app/home/home.component.ts`.
 1.  In `src/app/home/home.component.ts`, add this import statement after the existing `import` statements so that `HomeComponent` can use the new interface.
 
-    <code-example header="Add to src/app/home/home.component.ts" path="first-app-lesson-04/src/app/home/home.component.ts" region="housing-location-import"></code-example>
+    <code-example header="Import HomeComponent in src/app/home/home.component.ts" path="first-app-lesson-04/src/app/home/home.component.ts" region="housing-location-import"></code-example>
 
 1.  In `src/app/home/home.component.ts`, replace the empty `export class HomeComponent {}` definition with this code to create a single instance of the new interface in the component.
 
-    <code-example header="Sample data to add to src/app/home/home.component.ts" path="first-app-lesson-04/src/app/home/home.component.ts" region="only-house"></code-example>
+    <code-example header="Add sample data to src/app/home/home.component.ts" path="first-app-lesson-04/src/app/home/home.component.ts" region="only-house"></code-example>
 
-1.  Confirm that your `home.component.ts` file looks like this example.
+1.  Confirm that your `home.component.ts` file matches like this example.
 
     <code-example header="src/app/home/home.component.ts" path="first-app-lesson-04/src/app/home/home.component.ts"></code-example>
 
-1.  Save your changes and confirm the app does not have any errors.
+    By adding the `housingLocation` property of type `HousingLocation` to the `HomeComponent` class, we're able to confirm that the data matches the description of the interface. If the data didn't satisfy the description of the if the IDE has enough information to give us helpful errors.
+
+1.  Save your changes and confirm the app does not have any errors. Open the browser and confirm that your application still displays the message "housing-location works!"
+
+    <section class="lightbox">
+    <img alt="browser frame of homes-app displaying logo, filter text input box and search button and the message 'housing-location works!" src="generated/images/guide/faa/homes-app-lesson-03-step-2.png">
+    </section>
+
 1.  Correct any errors before you continue to the next step.
 
 ## Lesson review
@@ -112,7 +112,8 @@ If you are having any trouble with this lesson, you can review the completed cod
 
 ## Next steps
 
-*  **(TODO) Link to lesson 5**
+* [Lesson 5 - Add an input parameter to the component](tutorial/first-app/first-app-lesson-05)
+
 
 ## More information
 
