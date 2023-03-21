@@ -17,6 +17,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     OPTIONAL_CHAIN_NOT_NULLABLE = "optionalChainNotNullable",
     // (undocumented)
+    SKIP_HYDRATION_NOT_STATIC = "skipHydrationNotStatic",
+    // (undocumented)
     SUFFIX_NOT_SUPPORTED = "suffixNotSupported",
     // (undocumented)
     TEXT_ATTRIBUTE_NOT_BINDING = "textAttributeNotBinding"

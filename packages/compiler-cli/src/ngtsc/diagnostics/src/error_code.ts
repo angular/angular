@@ -329,6 +329,20 @@ export enum ErrorCode {
    */
   OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
 
+
+  /**
+   * `ngSkipHydration` should not be a binding (it should be a static attribute).
+   *
+   * For example:
+   * ```
+   * <my-cmp [ngSkipHydration]="someTruthyVar" />
+   * ```
+   *
+   * `ngSkipHydration` cannot be a binding and can not have values other than "true" or an empty
+   * value
+   */
+  SKIP_HYDRATION_NOT_STATIC = 8108,
+
   /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
