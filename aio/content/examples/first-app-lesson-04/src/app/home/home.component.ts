@@ -28,16 +28,15 @@ import { HousingLocation } from '../housinglocation';
 
 // #docregion only-house
 export class HomeComponent {
-  private img_server = 'https://storage.googleapis.com/angular-tutorial-assets/first-app/';
-  onlyHouse: HousingLocation;
+  housingLocation: HousingLocation;
 
   constructor() {
-    this.onlyHouse = {
+    this.housingLocation = {
       id: 9999,
       name: 'Test Home',
       city: 'Test city',
       state: 'ST',
-      photo: this.img_server + 'house_0.png',
+      photo: 'assets/example-house.jpg',
       availableUnits: 99,
       wifi: true,
       laundry: false,
