@@ -12,11 +12,11 @@ import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreI
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {concat, EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
-import {CanActivateChildFn, CanActivateFn, CanMatch, CanMatchFn, Data, ResolveFn} from '../src/models';
+import {CanActivateChildFn, CanActivateFn, CanMatchFn, Data, ResolveFn} from '../src/models';
 import {provideRouter, withNavigationErrorHandler, withRouterConfig} from '../src/provide_router';
 import {wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
@@ -865,7 +865,7 @@ describe('Integration', () => {
 
   describe('"eager" urlUpdateStrategy', () => {
     @Injectable()
-    class AuthGuard implements CanActivate {
+    class AuthGuard {
       canActivateResult = true;
 
       canActivate() {
@@ -873,7 +873,7 @@ describe('Integration', () => {
       }
     }
     @Injectable()
-    class DelayedGuard implements CanActivate {
+    class DelayedGuard {
       canActivate() {
         return of('').pipe(delay(1000), mapTo(true));
       }
@@ -2055,7 +2055,7 @@ describe('Integration', () => {
 
 
   describe('data', () => {
-    class ResolveSix implements Resolve<number> {
+    class ResolveSix {
       resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number {
         return 6;
       }
@@ -3242,7 +3242,7 @@ describe('Integration', () => {
       });
 
       describe('should work when given a class', () => {
-        class AlwaysTrue implements CanActivate {
+        class AlwaysTrue {
           canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
             return true;
           }
@@ -4215,7 +4215,7 @@ describe('Integration', () => {
       describe('next state', () => {
         let log: string[];
 
-        class ClassWithNextState implements CanDeactivate<TeamCmp> {
+        class ClassWithNextState {
           canDeactivate(
               component: TeamCmp, currentRoute: ActivatedRouteSnapshot,
               currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): boolean {
@@ -4285,7 +4285,7 @@ describe('Integration', () => {
       });
 
       describe('should work when given a class', () => {
-        class AlwaysTrue implements CanDeactivate<TeamCmp> {
+        class AlwaysTrue {
           canDeactivate(): boolean {
             return true;
           }
@@ -4912,7 +4912,7 @@ describe('Integration', () => {
 
     describe('canMatch', () => {
       @Injectable({providedIn: 'root'})
-      class ConfigurableGuard implements CanMatch {
+      class ConfigurableGuard {
         result: Promise<boolean|UrlTree>|Observable<boolean|UrlTree>|boolean|UrlTree = false;
         canMatch() {
           return this.result;
@@ -5008,7 +5008,7 @@ describe('Integration', () => {
            class ChildLazyLoadedComponent {
            }
            @Injectable()
-           class LazyCanMatchFalse implements CanMatch {
+           class LazyCanMatchFalse {
              canMatch() {
                return false;
              }
@@ -5775,7 +5775,7 @@ describe('Integration', () => {
          }
 
          @Injectable()
-         class Resolver implements Resolve<Service> {
+         class Resolver {
            constructor(public service: Service) {}
            resolve() {
              return this.service;

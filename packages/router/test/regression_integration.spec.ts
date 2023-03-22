@@ -10,7 +10,7 @@ import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@a
 import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injectable, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {ChildrenOutletContexts, DefaultUrlSerializer, Resolve, Router, RouterOutlet, UrlSerializer, UrlTree} from '@angular/router';
+import {ChildrenOutletContexts, DefaultUrlSerializer, Router, RouterOutlet, UrlSerializer, UrlTree} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 import {delay, mapTo} from 'rxjs/operators';
@@ -284,7 +284,7 @@ describe('Integration', () => {
 
     beforeEach(fakeAsync(() => {
       @Injectable()
-      class DelayedResolve implements Resolve<{}> {
+      class DelayedResolve {
         resolve() {
           return of('').pipe(delay(1000), mapTo(true));
         }
