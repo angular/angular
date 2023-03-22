@@ -59,7 +59,7 @@ export default function(options: Options): Rule {
     context.logger.info('🎉 Automated migration step has finished! 🎉');
     context.logger.info(
         'IMPORTANT! Please verify manually that your application builds and behaves as expected.');
-    // TODO(crisbeto): log a link to the guide once it's published
+    context.logger.info(`See https://angular.io/guide/standalone-migration for more information.`);
   };
 }
 
