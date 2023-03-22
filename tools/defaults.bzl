@@ -103,8 +103,6 @@ def ts_library(
         deps = [],
         module_name = None,
         package_name = None,
-        devmode_target = "es2022",
-        prodmode_target = "es2022",
         **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@npm//tslib"]
@@ -124,6 +122,7 @@ def ts_library(
     if not package_name:
         package_name = _default_module_name(testonly)
 
+    default_target = "es2022"
     default_module = "esnext"
 
     _ts_library(
@@ -131,13 +130,13 @@ def ts_library(
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
-        devmode_target = devmode_target,
+        devmode_target = default_target,
         devmode_module = default_module,
         # For prodmode, the target is set to `ES2022`. `@bazel/typecript` sets `ES2015` by
         # default. Note that this should be in sync with the `ng_module` tsconfig generation.
         # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
         # https://github.com/bazelbuild/rules_nodejs/blob/9b36274dba34204625579463e3da054a9f42cb47/packages/typescript/internal/build_defs.bzl#L85.
-        prodmode_target = prodmode_target,
+        prodmode_target = default_target,
         prodmode_module = default_module,
         # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,
