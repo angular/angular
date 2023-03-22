@@ -32,81 +32,50 @@ import {ExtendedTsCompilerHost, NgCompilerAdapter, NgCompilerOptions, UnifiedMod
  */
 export class DelegatingCompilerHost implements
     Omit<RequiredDelegations<ExtendedTsCompilerHost>, 'getSourceFile'|'fileExists'> {
-  createHash;
-  directoryExists;
-  fileNameToModuleName;
-  getCancellationToken;
-  getCanonicalFileName;
-  getCurrentDirectory;
-  getDefaultLibFileName;
-  getDefaultLibLocation;
-  getDirectories;
-  getEnvironmentVariable;
-  getModifiedResourceFiles;
-  getNewLine;
-  getParsedCommandLine;
-  getSourceFileByPath;
-  readDirectory;
-  readFile;
-  readResource;
-  transformResource;
-  realpath;
-  resolveModuleNames;
-  resolveTypeReferenceDirectives;
-  resourceNameToFileName;
-  trace;
-  useCaseSensitiveFileNames;
-  writeFile;
-  getModuleResolutionCache;
-  hasInvalidatedResolutions;
-  resolveModuleNameLiterals;
-  resolveTypeReferenceDirectiveReferences;
-
-  constructor(protected delegate: ExtendedTsCompilerHost) {
-    // Excluded are 'getSourceFile' and 'fileExists', which are actually implemented by
-    // NgCompilerHost
-    // below.
-    this.createHash = this.delegateMethod('createHash');
-    this.directoryExists = this.delegateMethod('directoryExists');
-    this.fileNameToModuleName = this.delegateMethod('fileNameToModuleName');
-    this.getCancellationToken = this.delegateMethod('getCancellationToken');
-    this.getCanonicalFileName = this.delegateMethod('getCanonicalFileName');
-    this.getCurrentDirectory = this.delegateMethod('getCurrentDirectory');
-    this.getDefaultLibFileName = this.delegateMethod('getDefaultLibFileName');
-    this.getDefaultLibLocation = this.delegateMethod('getDefaultLibLocation');
-    this.getDirectories = this.delegateMethod('getDirectories');
-    this.getEnvironmentVariable = this.delegateMethod('getEnvironmentVariable');
-    this.getModifiedResourceFiles = this.delegateMethod('getModifiedResourceFiles');
-    this.getNewLine = this.delegateMethod('getNewLine');
-    this.getParsedCommandLine = this.delegateMethod('getParsedCommandLine');
-    this.getSourceFileByPath = this.delegateMethod('getSourceFileByPath');
-    this.readDirectory = this.delegateMethod('readDirectory');
-    this.readFile = this.delegateMethod('readFile');
-    this.readResource = this.delegateMethod('readResource');
-    this.transformResource = this.delegateMethod('transformResource');
-    this.realpath = this.delegateMethod('realpath');
-    this.resolveModuleNames = this.delegateMethod('resolveModuleNames');
-    this.resolveTypeReferenceDirectives = this.delegateMethod('resolveTypeReferenceDirectives');
-    this.resourceNameToFileName = this.delegateMethod('resourceNameToFileName');
-    this.trace = this.delegateMethod('trace');
-    this.useCaseSensitiveFileNames = this.delegateMethod('useCaseSensitiveFileNames');
-    this.writeFile = this.delegateMethod('writeFile');
-    this.getModuleResolutionCache = this.delegateMethod('getModuleResolutionCache');
-    this.hasInvalidatedResolutions = this.delegateMethod('hasInvalidatedResolutions');
-    // The following methods are required in TS 5.0+, but they don't exist in earlier versions.
-    // TODO(crisbeto): remove the `ts-ignore` when dropping support for TypeScript 4.9.
-    // @ts-ignore
-    this.resolveModuleNameLiterals = this.delegateMethod('resolveModuleNameLiterals');
-    this.resolveTypeReferenceDirectiveReferences =
-        // @ts-ignore
-        this.delegateMethod('resolveTypeReferenceDirectiveReferences');
-  }
+  constructor(protected delegate: ExtendedTsCompilerHost) {}
 
   private delegateMethod<M extends keyof ExtendedTsCompilerHost>(name: M):
       ExtendedTsCompilerHost[M] {
     return this.delegate[name] !== undefined ? (this.delegate[name] as any).bind(this.delegate) :
                                                undefined;
   }
+
+  // Excluded are 'getSourceFile' and 'fileExists', which are actually implemented by NgCompilerHost
+  // below.
+  createHash = this.delegateMethod('createHash');
+  directoryExists = this.delegateMethod('directoryExists');
+  fileNameToModuleName = this.delegateMethod('fileNameToModuleName');
+  getCancellationToken = this.delegateMethod('getCancellationToken');
+  getCanonicalFileName = this.delegateMethod('getCanonicalFileName');
+  getCurrentDirectory = this.delegateMethod('getCurrentDirectory');
+  getDefaultLibFileName = this.delegateMethod('getDefaultLibFileName');
+  getDefaultLibLocation = this.delegateMethod('getDefaultLibLocation');
+  getDirectories = this.delegateMethod('getDirectories');
+  getEnvironmentVariable = this.delegateMethod('getEnvironmentVariable');
+  getModifiedResourceFiles = this.delegateMethod('getModifiedResourceFiles');
+  getNewLine = this.delegateMethod('getNewLine');
+  getParsedCommandLine = this.delegateMethod('getParsedCommandLine');
+  getSourceFileByPath = this.delegateMethod('getSourceFileByPath');
+  readDirectory = this.delegateMethod('readDirectory');
+  readFile = this.delegateMethod('readFile');
+  readResource = this.delegateMethod('readResource');
+  transformResource = this.delegateMethod('transformResource');
+  realpath = this.delegateMethod('realpath');
+  resolveModuleNames = this.delegateMethod('resolveModuleNames');
+  resolveTypeReferenceDirectives = this.delegateMethod('resolveTypeReferenceDirectives');
+  resourceNameToFileName = this.delegateMethod('resourceNameToFileName');
+  trace = this.delegateMethod('trace');
+  useCaseSensitiveFileNames = this.delegateMethod('useCaseSensitiveFileNames');
+  writeFile = this.delegateMethod('writeFile');
+  getModuleResolutionCache = this.delegateMethod('getModuleResolutionCache');
+  hasInvalidatedResolutions = this.delegateMethod('hasInvalidatedResolutions');
+  // The following methods are required in TS 5.0+, but they don't exist in earlier versions.
+  // TODO(crisbeto): remove the `ts-ignore` when dropping support for TypeScript 4.9.
+  // @ts-ignore
+  resolveModuleNameLiterals = this.delegateMethod('resolveModuleNameLiterals');
+  resolveTypeReferenceDirectiveReferences =
+      // @ts-ignore
+      this.delegateMethod('resolveTypeReferenceDirectiveReferences');
 }
 
 /**

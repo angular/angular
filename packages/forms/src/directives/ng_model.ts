@@ -162,7 +162,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Tracks the name bound to the directive. If a parent form exists, it
    * uses this name as a key to retrieve this control's value.
    */
-  @Input() override name: string = '';
+  // TODO(issue/24571): remove '!'.
+  @Input() override name!: string;
 
   /**
    * @description

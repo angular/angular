@@ -22,11 +22,11 @@ export interface MessagePlaceholder {
 
 export class Message {
   sources: MessageSpan[];
-  id: string;
+  id: string = this.customId;
   /** The ids to use if there are no custom id and if `i18nLegacyMessageIdFormat` is not empty */
   legacyIds: string[] = [];
 
-  messageString: string;
+  messageString = serializeMessage(this.nodes);
 
   /**
    * @param nodes message AST
@@ -40,9 +40,6 @@ export class Message {
       public nodes: Node[], public placeholders: {[phName: string]: MessagePlaceholder},
       public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
       public description: string, public customId: string) {
-    this.id = this.customId;
-    this.messageString = serializeMessage(this.nodes);
-
     if (nodes.length) {
       this.sources = [{
         filePath: nodes[0].sourceSpan.start.file.url,

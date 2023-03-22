@@ -23,68 +23,43 @@ import {FileUpdate, MaybeSourceFileWithOriginalFile, NgOriginalFile, ProgramDriv
  */
 export class DelegatingCompilerHost implements
     Omit<RequiredDelegations<ts.CompilerHost>, 'getSourceFile'|'fileExists'|'writeFile'> {
-  createHash;
-  directoryExists;
-  getCancellationToken;
-  getCanonicalFileName;
-  getCurrentDirectory;
-  getDefaultLibFileName;
-  getDefaultLibLocation;
-  getDirectories;
-  getEnvironmentVariable;
-  getNewLine;
-  getParsedCommandLine;
-  getSourceFileByPath;
-  readDirectory;
-  readFile;
-  realpath;
-  resolveModuleNames;
-  resolveTypeReferenceDirectives;
-  trace;
-  useCaseSensitiveFileNames;
-  getModuleResolutionCache;
-  hasInvalidatedResolutions;
-  resolveModuleNameLiterals;
-  resolveTypeReferenceDirectiveReferences;
-
-  constructor(protected delegate: ts.CompilerHost) {
-    // Excluded are 'getSourceFile', 'fileExists' and 'writeFile', which are actually implemented by
-    // `TypeCheckProgramHost` below.
-
-    this.createHash = this.delegateMethod('createHash');
-    this.directoryExists = this.delegateMethod('directoryExists');
-    this.getCancellationToken = this.delegateMethod('getCancellationToken');
-    this.getCanonicalFileName = this.delegateMethod('getCanonicalFileName');
-    this.getCurrentDirectory = this.delegateMethod('getCurrentDirectory');
-    this.getDefaultLibFileName = this.delegateMethod('getDefaultLibFileName');
-    this.getDefaultLibLocation = this.delegateMethod('getDefaultLibLocation');
-    this.getDirectories = this.delegateMethod('getDirectories');
-    this.getEnvironmentVariable = this.delegateMethod('getEnvironmentVariable');
-    this.getNewLine = this.delegateMethod('getNewLine');
-    this.getParsedCommandLine = this.delegateMethod('getParsedCommandLine');
-    this.getSourceFileByPath = this.delegateMethod('getSourceFileByPath');
-    this.readDirectory = this.delegateMethod('readDirectory');
-    this.readFile = this.delegateMethod('readFile');
-    this.realpath = this.delegateMethod('realpath');
-    this.resolveModuleNames = this.delegateMethod('resolveModuleNames');
-    this.resolveTypeReferenceDirectives = this.delegateMethod('resolveTypeReferenceDirectives');
-    this.trace = this.delegateMethod('trace');
-    this.useCaseSensitiveFileNames = this.delegateMethod('useCaseSensitiveFileNames');
-    this.getModuleResolutionCache = this.delegateMethod('getModuleResolutionCache');
-    this.hasInvalidatedResolutions = this.delegateMethod('hasInvalidatedResolutions');
-    // The following methods are required in TS 5.0+, but they don't exist in earlier versions.
-    // TODO(crisbeto): remove the `ts-ignore` when dropping support for TypeScript 4.9.
-    // @ts-ignore
-    this.resolveModuleNameLiterals = this.delegateMethod('resolveModuleNameLiterals');
-    this.resolveTypeReferenceDirectiveReferences =
-        // @ts-ignore
-        this.delegateMethod('resolveTypeReferenceDirectiveReferences');
-  }
+  constructor(protected delegate: ts.CompilerHost) {}
 
   private delegateMethod<M extends keyof ts.CompilerHost>(name: M): ts.CompilerHost[M] {
     return this.delegate[name] !== undefined ? (this.delegate[name] as any).bind(this.delegate) :
                                                undefined;
   }
+
+  // Excluded are 'getSourceFile', 'fileExists' and 'writeFile', which are actually implemented by
+  // `TypeCheckProgramHost` below.
+  createHash = this.delegateMethod('createHash');
+  directoryExists = this.delegateMethod('directoryExists');
+  getCancellationToken = this.delegateMethod('getCancellationToken');
+  getCanonicalFileName = this.delegateMethod('getCanonicalFileName');
+  getCurrentDirectory = this.delegateMethod('getCurrentDirectory');
+  getDefaultLibFileName = this.delegateMethod('getDefaultLibFileName');
+  getDefaultLibLocation = this.delegateMethod('getDefaultLibLocation');
+  getDirectories = this.delegateMethod('getDirectories');
+  getEnvironmentVariable = this.delegateMethod('getEnvironmentVariable');
+  getNewLine = this.delegateMethod('getNewLine');
+  getParsedCommandLine = this.delegateMethod('getParsedCommandLine');
+  getSourceFileByPath = this.delegateMethod('getSourceFileByPath');
+  readDirectory = this.delegateMethod('readDirectory');
+  readFile = this.delegateMethod('readFile');
+  realpath = this.delegateMethod('realpath');
+  resolveModuleNames = this.delegateMethod('resolveModuleNames');
+  resolveTypeReferenceDirectives = this.delegateMethod('resolveTypeReferenceDirectives');
+  trace = this.delegateMethod('trace');
+  useCaseSensitiveFileNames = this.delegateMethod('useCaseSensitiveFileNames');
+  getModuleResolutionCache = this.delegateMethod('getModuleResolutionCache');
+  hasInvalidatedResolutions = this.delegateMethod('hasInvalidatedResolutions');
+  // The following methods are required in TS 5.0+, but they don't exist in earlier versions.
+  // TODO(crisbeto): remove the `ts-ignore` when dropping support for TypeScript 4.9.
+  // @ts-ignore
+  resolveModuleNameLiterals = this.delegateMethod('resolveModuleNameLiterals');
+  resolveTypeReferenceDirectiveReferences =
+      // @ts-ignore
+      this.delegateMethod('resolveTypeReferenceDirectiveReferences');
 }
 
 /**
@@ -106,13 +81,12 @@ class UpdatedProgramHost extends DelegatingCompilerHost {
    * order for those shims to be loaded, and then cleaned up afterwards. Thus the
    * `UpdatedProgramHost` has its own `ShimReferenceTagger` to perform this function.
    */
-  private shimTagger: ShimReferenceTagger;
+  private shimTagger = new ShimReferenceTagger(this.shimExtensionPrefixes);
 
   constructor(
       sfMap: Map<string, ts.SourceFile>, private originalProgram: ts.Program,
       delegate: ts.CompilerHost, private shimExtensionPrefixes: string[]) {
     super(delegate);
-    this.shimTagger = new ShimReferenceTagger(this.shimExtensionPrefixes);
     this.sfMap = sfMap;
   }
 
@@ -176,13 +150,11 @@ export class TsCreateProgramDriver implements ProgramDriver {
    */
   private sfMap = new Map<string, ts.SourceFile>();
 
-  private program: ts.Program;
+  private program: ts.Program = this.originalProgram;
 
   constructor(
       private originalProgram: ts.Program, private originalHost: ts.CompilerHost,
-      private options: ts.CompilerOptions, private shimExtensionPrefixes: string[]) {
-    this.program = this.originalProgram;
-  }
+      private options: ts.CompilerOptions, private shimExtensionPrefixes: string[]) {}
 
   readonly supportsInlineOperations = true;
 
