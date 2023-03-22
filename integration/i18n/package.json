@@ -7,11 +7,11 @@
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/elements": "file:../../dist/packages-dist/elements",
+    "@angular/localize": "file:../../dist/packages-dist/localize",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "file:../../node_modules/typescript",
     "tslib": "file:../../node_modules/tslib",
+    "typescript": "file:../../node_modules/typescript",
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
@@ -28,12 +28,12 @@
     "tsickle": "file:../../node_modules/tsickle"
   },
   "scripts": {
-    "closure": "google-closure-compiler --flagfile closure.conf",
     "build": "yarn ngc && yarn rollup -c rollup.config.mjs && yarn closure",
-    "test": "yarn build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
+    "closure": "google-closure-compiler --flagfile closure.conf",
+    "test": "yarn build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first && yarn test-locale-folder",
+    "test-locale-folder": "node test-locale-folder.js",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"
-  },
-  "private": true
+  }
 }
