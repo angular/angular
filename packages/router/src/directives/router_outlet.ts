@@ -315,7 +315,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const snapshot = activatedRoute.snapshot;
     const component = snapshot.component!;
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
-    const injector = new OutletInjector(activatedRoute, childContexts, location.injector);
+    const injector = createOutletInjector(activatedRoute, childContexts, location.injector);
 
     this.activated = location.createComponent(component, {
       index: location.length,
@@ -329,20 +329,13 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   }
 }
 
-class OutletInjector implements Injector {
-  constructor(
-      private route: ActivatedRoute, private childContexts: ChildrenOutletContexts,
-      private parent: Injector) {}
-
-  get(token: any, notFoundValue?: any): any {
-    if (token === ActivatedRoute) {
-      return this.route;
-    }
-
-    if (token === ChildrenOutletContexts) {
-      return this.childContexts;
-    }
-
-    return this.parent.get(token, notFoundValue);
-  }
+function createOutletInjector(
+    route: ActivatedRoute, childContexts: ChildrenOutletContexts, parent: Injector) {
+  return Injector.create({
+    providers: [
+      {provide: ActivatedRoute, useValue: route},
+      {provide: ChildrenOutletContexts, useValue: childContexts}
+    ],
+    parent
+  });
 }
