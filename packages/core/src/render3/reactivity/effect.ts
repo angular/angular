@@ -13,7 +13,7 @@ import {DestroyRef} from '../../linker/destroy_ref';
 import {Watch} from '../../signals';
 
 const globalWatches = new Set<Watch>();
-const queuedWatches = new Set<Watch>();
+const queuedWatches = new Map<Watch, Zone>();
 
 let watchQueuePromise: {promise: Promise<void>; resolveFn: () => void;}|null = null;
 
@@ -59,10 +59,12 @@ export interface CreateEffectOptions {
 export function effect(effectFn: () => void, options?: CreateEffectOptions): EffectRef {
   !options?.injector && assertInInjectionContext(effect);
 
+  const zone = Zone.current;
+  const watch = new Watch(effectFn, (watch) => queueWatch(watch, zone));
+
   const injector = options?.injector ?? inject(Injector);
   const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
 
-  const watch = new Watch(effectFn, queueWatch);
   globalWatches.add(watch);
 
   // Effects start dirty.
@@ -83,12 +85,12 @@ export function effect(effectFn: () => void, options?: CreateEffectOptions): Eff
   };
 }
 
-function queueWatch(watch: Watch): void {
+function queueWatch(watch: Watch, zone: Zone): void {
   if (queuedWatches.has(watch) || !globalWatches.has(watch)) {
     return;
   }
 
-  queuedWatches.add(watch);
+  queuedWatches.set(watch, zone);
 
   if (watchQueuePromise === null) {
     Promise.resolve().then(runWatchQueue);
@@ -106,9 +108,9 @@ function queueWatch(watch: Watch): void {
 }
 
 function runWatchQueue(): void {
-  for (const watch of queuedWatches) {
+  for (const [watch, zone] of queuedWatches) {
     queuedWatches.delete(watch);
-    watch.run();
+    zone.run(() => watch.run());
   }
 
   watchQueuePromise!.resolveFn();
