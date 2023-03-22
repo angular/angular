@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Consumer, consumerPollValueStatus, Edge, nextReactiveId, ProducerId, setActiveConsumer} from './graph';
-import {newWeakRef} from './weak_ref';
+import {ReactiveNode, setActiveConsumer} from './graph';
 
 /**
  * Watches a reactive expression and allows it to be scheduled to re-run
@@ -16,21 +15,26 @@ import {newWeakRef} from './weak_ref';
  * `Watch` doesn't run reactive expressions itself, but relies on a consumer-
  * provided scheduling operation to coordinate calling `Watch.run()`.
  */
-export class Watch implements Consumer {
-  readonly id = nextReactiveId();
-  readonly ref = newWeakRef(this);
-  readonly producers = new Map<ProducerId, Edge>();
-  trackingVersion = 0;
-
+export class Watch extends ReactiveNode {
   private dirty = false;
 
-  constructor(private watch: () => void, private schedule: (watch: Watch) => void) {}
+  constructor(private watch: () => void, private schedule: (watch: Watch) => void) {
+    super();
+  }
 
   notify(): void {
     if (!this.dirty) {
       this.schedule(this);
     }
     this.dirty = true;
+  }
+
+  protected override onConsumerDependencyMayHaveChanged(): void {
+    this.notify();
+  }
+
+  protected override onProducerUpdateValueVersion(): void {
+    // Watches are not producers.
   }
 
   /**
@@ -41,7 +45,7 @@ export class Watch implements Consumer {
    */
   run(): void {
     this.dirty = false;
-    if (this.trackingVersion !== 0 && !consumerPollValueStatus(this)) {
+    if (this.trackingVersion !== 0 && !this.consumerPollProducersForChange()) {
       return;
     }
 
