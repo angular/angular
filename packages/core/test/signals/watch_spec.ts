@@ -7,49 +7,41 @@
  */
 
 import {computed, signal} from '@angular/core/src/signals';
-import {effect, effectsDone as flush, resetEffects} from '@angular/core/src/signals/src/effect';
 
-describe('effects', () => {
+import {flushEffects, resetEffects, testingEffect} from './effect_util';
+
+describe('watchers', () => {
   afterEach(() => {
     resetEffects();
   });
 
-  it('should create and run once effect without dependencies', async () => {
+  it('should create and run once, even without dependencies', () => {
     let runs = 0;
 
-    const effectRef = effect(() => {
+    testingEffect(() => {
       runs++;
     });
 
-    await flush();
-    expect(runs).toEqual(1);
-
-    effectRef.destroy();
-    await flush();
+    flushEffects();
     expect(runs).toEqual(1);
   });
 
-  it('should schedule effects on dependencies (signal) change', async () => {
+  it('should schedule on dependencies (signal) change', () => {
     const count = signal(0);
     let runLog: number[] = [];
-    const effectRef = effect(() => {
+    const effectRef = testingEffect(() => {
       runLog.push(count());
     });
 
-    await flush();
+    flushEffects();
     expect(runLog).toEqual([0]);
 
     count.set(1);
-    await flush();
-    expect(runLog).toEqual([0, 1]);
-
-    effectRef.destroy();
-    count.set(2);
-    await flush();
+    flushEffects();
     expect(runLog).toEqual([0, 1]);
   });
 
-  it('should not schedule when a previous dependency changes', async () => {
+  it('should not schedule when a previous dependency changes', () => {
     const increment = (value: number) => value + 1;
     const countA = signal(0);
     const countB = signal(100);
@@ -57,54 +49,54 @@ describe('effects', () => {
 
 
     const runLog: number[] = [];
-    effect(() => {
+    testingEffect(() => {
       runLog.push(useCountA() ? countA() : countB());
     });
 
-    await flush();
+    flushEffects();
     expect(runLog).toEqual([0]);
 
     countB.update(increment);
-    await flush();
+    flushEffects();
     // No update expected: updated the wrong signal.
     expect(runLog).toEqual([0]);
 
     countA.update(increment);
-    await flush();
+    flushEffects();
     expect(runLog).toEqual([0, 1]);
 
     useCountA.set(false);
-    await flush();
+    flushEffects();
     expect(runLog).toEqual([0, 1, 101]);
 
     countA.update(increment);
-    await flush();
+    flushEffects();
     // No update expected: updated the wrong signal.
     expect(runLog).toEqual([0, 1, 101]);
   });
 
-  it('should not update dependencies of effects when dependencies don\'t change', async () => {
+  it('should not update dependencies when dependencies don\'t change', () => {
     const source = signal(0);
     const isEven = computed(() => source() % 2 === 0);
     let updateCounter = 0;
-    effect(() => {
+    testingEffect(() => {
       isEven();
       updateCounter++;
     });
 
-    await flush();
+    flushEffects();
     expect(updateCounter).toEqual(1);
 
     source.set(1);
-    await flush();
+    flushEffects();
     expect(updateCounter).toEqual(2);
 
     source.set(3);
-    await flush();
+    flushEffects();
     expect(updateCounter).toEqual(2);
 
     source.set(4);
-    await flush();
+    flushEffects();
     expect(updateCounter).toEqual(3);
   });
 });

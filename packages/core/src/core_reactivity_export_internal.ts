@@ -11,8 +11,6 @@ export {
   computed,
   CreateComputedOptions,
   CreateSignalOptions,
-  effect,
-  EffectRef,
   isSignal,
   Signal,
   signal,
@@ -20,4 +18,9 @@ export {
   ValueEqualityFn,
   WritableSignal,
 } from './signals';
-// clang-format on
+export {
+  CreateEffectOptions,
+  effect,
+  EffectRef,
+} from './render3/reactivity/effect';
+// clang-format on    

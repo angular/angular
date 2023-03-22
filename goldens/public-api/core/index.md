@@ -335,6 +335,12 @@ export interface CreateComputedOptions<T> {
 }
 
 // @public
+export interface CreateEffectOptions {
+    injector?: Injector;
+    manualCleanup?: boolean;
+}
+
+// @public
 export function createEnvironmentInjector(providers: Array<Provider | EnvironmentProviders>, parent: EnvironmentInjector, debugName?: string | null): EnvironmentInjector;
 
 // @public
@@ -504,7 +510,7 @@ export interface DoCheck {
 }
 
 // @public
-export function effect(effectFn: () => void): EffectRef;
+export function effect(effectFn: () => void, options?: CreateEffectOptions): EffectRef;
 
 // @public
 export interface EffectRef {

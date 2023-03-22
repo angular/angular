@@ -8,7 +8,6 @@
 
 export {isSignal, Signal, ValueEqualityFn} from './src/api';
 export {computed, CreateComputedOptions} from './src/computed';
-export {effect, EffectRef} from './src/effect';
 export {setActiveConsumer} from './src/graph';
 export {CreateSignalOptions, signal, WritableSignal} from './src/signal';
 export {untracked} from './src/untracked';
