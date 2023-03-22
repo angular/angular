@@ -47,12 +47,12 @@ describe('Guard and Resolve interfaces migration', () => {
 
     // We need to declare the Angular symbols we're testing for, otherwise type checking won't work.
     writeFile('/node_modules/@angular/router/index.d.ts', `
-export declare interface Resolve<T> { }
-export declare interface CanActivate { }
-export declare interface CanActivateChild { }
-export declare interface CanDeactivate<T> { }
-export declare interface CanLoad { }
-export declare interface CanMatch { }`);
+      export declare interface Resolve<T> { }
+      export declare interface CanActivate { }
+      export declare interface CanActivateChild { }
+      export declare interface CanDeactivate<T> { }
+      export declare interface CanLoad { }
+      export declare interface CanMatch { }`);
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);

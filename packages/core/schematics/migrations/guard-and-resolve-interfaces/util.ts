@@ -13,14 +13,15 @@ import {getImportOfIdentifier, getImportSpecifier, getImportSpecifiers, removeSy
 import {closestNode} from '../../utils/typescript/nodes';
 
 export const deprecatedInterfaces =
-    ['CanLoad', 'CanMatch', 'CanActivate', 'CanDeactivate', 'CanActivateChild', 'Resolve'];
+    new Set(['CanLoad', 'CanMatch', 'CanActivate', 'CanDeactivate', 'CanActivateChild', 'Resolve']);
 export const routerModule = '@angular/router';
 
 export type RewriteFn = (startPos: number, width: number, text: string) => void;
 
 export function migrateFile(
     sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker, rewriteFn: RewriteFn) {
-  const deprecatedImports = getImportSpecifiers(sourceFile, routerModule, deprecatedInterfaces);
+  const deprecatedImports =
+      getImportSpecifiers(sourceFile, routerModule, Array.from(deprecatedInterfaces));
   if (deprecatedImports.length === 0) {
     return;
   }
@@ -85,22 +86,11 @@ function findUsages(
       // Skip this node and all of its children; imports are a special case.
       return;
     }
-    if (ts.isIdentifier(node)) {
-      const originalHeritageClause = closestNode(node, ts.isHeritageClause);
-      if (originalHeritageClause !== null &&
-          deprecatedImports.some(importSpecifier => importSpecifier.name.text === node.text)) {
-        const importIdentifier = getImportOfIdentifier(typeChecker, node);
-        if (importIdentifier?.importModule === routerModule &&
-            deprecatedInterfaces.some(d => d === importIdentifier.name)) {
-          const heritageClauseToUpdate =
-              updatedImplements.get(originalHeritageClause) ?? originalHeritageClause;
-          const mostRecentUpdate = ts.factory.updateHeritageClause(
-              heritageClauseToUpdate, heritageClauseToUpdate.types.filter(current => {
-                return !ts.isExpressionWithTypeArguments(current) || current.expression !== node;
-              }));
-          updatedImplements.set(originalHeritageClause, mostRecentUpdate);
-        }
+    if ((ts.isInterfaceDeclaration(node) || ts.isClassLike(node)) && node.heritageClauses) {
+      for (const heritageClause of node.heritageClauses) {
+        visitHeritageClause(heritageClause, typeChecker, updatedImplements, deprecatedImports);
       }
+      ts.forEachChild(node, visitNode);
     } else if (ts.isTypeReferenceNode(node)) {
       visitTypeReference(
           node, typeChecker, changeTracker, sourceFile, updatedImports, deprecatedImports);
@@ -109,6 +99,30 @@ function findUsages(
     }
   };
   ts.forEachChild(sourceFile, visitNode);
+}
+
+function visitHeritageClause(
+    heritageClause: ts.HeritageClause, typeChecker: ts.TypeChecker,
+    updatedImplements: Map<ts.HeritageClause, ts.HeritageClause>,
+    deprecatedImports: ts.ImportSpecifier[]) {
+  const visitChildren = (node: ts.Node): void => {
+    if (ts.isIdentifier(node)) {
+      if (deprecatedImports.some(importSpecifier => importSpecifier.name.text === node.text)) {
+        const importIdentifier = getImportOfIdentifier(typeChecker, node);
+        if (importIdentifier?.importModule === routerModule &&
+            deprecatedInterfaces.has(importIdentifier.name)) {
+          const heritageClauseToUpdate = updatedImplements.get(heritageClause) ?? heritageClause;
+          const mostRecentUpdate = ts.factory.updateHeritageClause(
+              heritageClauseToUpdate, heritageClauseToUpdate.types.filter(current => {
+                return !ts.isExpressionWithTypeArguments(current) || current.expression !== node;
+              }));
+          updatedImplements.set(heritageClause, mostRecentUpdate);
+        }
+      }
+    }
+    ts.forEachChild(node, visitChildren);
+  };
+  ts.forEachChild(heritageClause, visitChildren);
 }
 
 function visitTypeReference(
@@ -120,7 +134,7 @@ function visitTypeReference(
         deprecatedImports.some(importSpecifier => importSpecifier.name.text === node.text)) {
       const importIdentifier = getImportOfIdentifier(typeChecker, node);
       if (importIdentifier?.importModule === routerModule &&
-          deprecatedInterfaces.some(d => d === importIdentifier.name)) {
+          deprecatedInterfaces.has(importIdentifier.name)) {
         const {name: interfaceName} = importIdentifier;
         const functionTypeName = `${interfaceName}Fn`;
         const classFunctionName =
