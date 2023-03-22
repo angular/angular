@@ -43,7 +43,7 @@ The following example shows a simplified version of the `@angular/core` package'
           index.d.ts &nbsp; <!-- // &lt;-- Bundled .d.ts for the primary entrypoint &commat;angular/core. -->
         </div>
         <div class='file'>
-          esm2022 &nbsp; <!-- // &lt;-- Tree of &commat;angular/core sources in unflattened ES2022 format. -->
+          esm2020 &nbsp; <!-- // &lt;-- Tree of &commat;angular/core sources in unflattened ES2020 format. -->
         </div>
         <div class='children'>
             <div class='file'>
@@ -56,11 +56,28 @@ The following example shows a simplified version of the `@angular/core` package'
               public_api.mjs
             </div>
             <div class='file'>
-              testing &nbsp; <!-- // &lt;-- Tree of the &commat;angular/core/testing entrypoint in unflattened ES2022 format. -->
+              testing &nbsp; <!-- // &lt;-- Tree of the &commat;angular/core/testing entrypoint in unflattened ES2020 format. -->
             </div>
         </div>
         <div class='file'>
-          fesm2022 &nbsp; <!-- // &lt;-- Code for all entrypoints in flattened \(FESM\) ES2022 format, along with sourcemaps. -->
+          fesm2015 &nbsp; <!-- // &lt;-- Code for all entrypoints in a flattened \(FESM\) ES2015 format, along with sourcemaps. -->
+        </div>
+        <div class='children'>
+            <div class='file'>
+              core.mjs
+            </div>
+            <div class='file'>
+              core.mjs.map
+            </div>
+            <div class='file'>
+              testing.mjs
+            </div>
+            <div class='file'>
+              testing.mjs.map
+            </div>
+        </div>
+        <div class='file'>
+          fesm2020 &nbsp; <!-- // &lt;-- Code for all entrypoints in flattened \(FESM\) ES2020 format, along with sourcemaps. -->
         </div>
         <div class='children'>
             <div class='file'>
@@ -94,9 +111,10 @@ This table describes the file layout under `node_modules/@angular/core` annotate
 | `README.md`                                                                                                                                               | Package README, used by npmjs web UI.                                                                                                                                                                          |
 | `package.json`                                                                                                                                            | Primary `package.json`, describing the package itself as well as all available entrypoints and code formats. This file contains the "exports" mapping used by runtimes and tools to perform module resolution. |
 | `index.d.ts`                                                                                                                                               | Bundled `.d.ts` for the primary entrypoint `@angular/core`.                                                                                                                                                    |
-| `esm2022/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `index.mjs` <br /> &nbsp;&nbsp;─ `public_api.mjs`                                         | Tree of `@angular/core` sources in unflattened ES2022 format.                                                                                                                                                  |
-| `esm2022/testing/`                                                                                                                                        | Tree of the `@angular/core/testing` entrypoint in unflattened ES2022 format.                                                                                                                                   |
-| `fesm2022/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `core.mjs.map` <br /> &nbsp;&nbsp;─ `testing.mjs` <br /> &nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in flattened \(FESM\) ES2022 format, along with source maps.                                                                                                                           |
+| `esm2020/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `index.mjs` <br /> &nbsp;&nbsp;─ `public_api.mjs`                                         | Tree of `@angular/core` sources in unflattened ES2020 format.                                                                                                                                                  |
+| `esm2020/testing/`                                                                                                                                        | Tree of the `@angular/core/testing` entrypoint in unflattened ES2020 format.                                                                                                                                   |
+| `fesm2015/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `core.mjs.map` <br /> &nbsp;&nbsp;─ `testing.mjs` <br /> &nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in a flattened \(FESM\) ES2015 format, along with source maps.                                                                                                                         |
+| `fesm2020/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `core.mjs.map` <br /> &nbsp;&nbsp;─ `testing.mjs` <br /> &nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in flattened \(FESM\) ES2020 format, along with source maps.                                                                                                                           |
 | `testing/`                                                                                                                                                | Directory representing the "testing" entrypoint.                                                                                                                                                               |
 | `testing/index.d.ts`                                                                                                                                    | Bundled `.d.ts` for the `@angular/core/testing` entrypoint.                                                                                                                                                     |
 
@@ -140,15 +158,19 @@ The `"exports"` field has the following structure:
   },
   ".": {
     "types": "./core.d.ts",
-    "esm": "./esm2022/core.mjs",
-    "esm2022": "./esm2022/core.mjs",
-    "default": "./fesm2022/core.mjs"
+    "esm2020": "./esm2020/core.mjs",
+    "es2020": "./fesm2020/core.mjs",
+    "es2015": "./fesm2015/core.mjs",
+    "node": "./fesm2015/core.mjs",
+    "default": "./fesm2020/core.mjs"
   },
   "./testing": {
     "types": "./testing/testing.d.ts",
-    "esm": "./esm2022/testing/testing.mjs",
-    "esm2022": "./esm2022/testing/testing.mjs",
-    "default": "./fesm2022/testing.mjs"
+    "esm2020": "./esm2020/testing/testing.mjs",
+    "es2020": "./fesm2020/testing.mjs",
+    "es2015": "./fesm2015/testing.mjs",
+    "node": "./fesm2015/testing.mjs",
+    "default": "./fesm2020/testing.mjs"
   }
 }
 
@@ -160,11 +182,19 @@ For each entrypoint, the available formats are:
 | Formats                   | Details |
 |:---                       |:---     |
 | Typings \(`.d.ts` files\) | `.d.ts` files are used by TypeScript when depending on a given package.                                                                                                           |
-| `es2022`                  | ES2022 code flattened into a single source file.                                                                                                                                  |
-| `esm2022`                 | ES2022 code in unflattened source files \(this format is included for experimentation - see [this discussion of defaults](#note-about-the-defaults-in-packagejson) for details\). |
-| `default`               | ES2022 code flattened into a single source.
+| `es2020`                  | ES2020 code flattened into a single source file.                                                                                                                                  |
+| `es2015`                  | ES2015 code flattened into a single source file.                                                                                                                                  |
+| `esm2020`                 | ES2020 code in unflattened source files \(this format is included for experimentation - see [this discussion of defaults](#note-about-the-defaults-in-packagejson) for details\). |
 
 Tooling that is aware of these keys may preferentially select a desirable code format from `"exports"`.
+The remaining 2 keys control the default behavior of tooling:
+
+*   `"node"` selects flattened ES2015 code when the package is loaded in Node.
+
+    This format is used due to the requirements of `zone.js`, which does not support native `async`/`await` ES2017 syntax.
+    Therefore, Node is instructed to use ES2015 code, where `async`/`await` structures have been downleveled into Promises.
+
+*   `"default"` selects flattened ES2020 code for all other consumers.
 
 Libraries may want to expose additional static files which are not captured by the exports of the JavaScript-based entry-points such as Sass mixins or pre-compiled CSS.
 
@@ -178,13 +208,25 @@ For `@angular/core` these are:
 <code-example language="javascript">
 
 {
-  "module": "./fesm2022/core.mjs",
+  "fesm2020": "./fesm2020/core.mjs",
+  "fesm2015": "./fesm2015/core.mjs",
+  "esm2020": "./esm2020/core.mjs",
   "typings": "./core.d.ts",
+  "module": "./fesm2015/core.mjs",
+  "es2020": "./fesm2020/core.mjs",
 }
 
 </code-example>
 
 As shown in the preceding code snippet, a module resolver can use these keys to load a specific code format.
+
+<div class="alert is-helpful">
+
+**NOTE**: <br />
+Instead of `"default"`, `"module"` selects the format both for Node as well as any tooling not configured to use a specific key.
+As with `"node"`, ES2015 code is selected due to the constraints of ZoneJS.
+
+</div>
 
 ### Side effects
 
@@ -281,9 +323,9 @@ The Angular compiler can generate index ES module files. Tools like Rollup can u
 FESM is a file format created by flattening all ES Modules accessible from an entrypoint into a single ES Module.
 It's formed by following all imports from a package and copying that code into a single file while preserving all public ES exports and removing all private imports.
 
-The abbreviated name, FESM, pronounced *phe-som*, can be followed by a number such as FESM2020.
+The abbreviated name, FESM, pronounced *phe-som*, can be followed by a number such as FESM5 or FESM2015.
 The number refers to the language level of the JavaScript inside the module.
-Accordingly a FESM2022 file would be ESM+ES2022 and include import/export statements and ES2022 source code.
+Accordingly a FESM5 file would be ESM+ES5 and include import/export statements and ES5 source code.
 
 To generate a flattened ES Module index file, use the following configuration options in your tsconfig.json file:
 
@@ -293,7 +335,7 @@ To generate a flattened ES Module index file, use the following configuration op
   "compilerOptions": {
     &hellip;
     "module": "esnext",
-    "target": "es2022",
+    "target": "es2020",
     &hellip;
   },
   "angularCompilerOptions": {
@@ -311,9 +353,9 @@ Once the index file \(for example, `my-ui-lib.js`\) is generated by ngc, bundler
 
 As of webpack v4, the flattening of ES modules optimization should not be necessary for webpack users. It should be possible to get better code-splitting without flattening of modules in webpack.
 In practice, size regressions can still be seen when using unflattened modules as input for webpack v4.
-This is why `module` and `es2022` package.json entries still point to FESM files.
-This issue is being investigated. It is expected to switch the `module` and `es2022` package.json entry points to unflattened files after the size regression issue is resolved.
-The APF currently includes unflattened ESM2022 code for the purpose of validating such a future change.
+This is why `module` and `es2020` package.json entries still point to FESM files.
+This issue is being investigated. It is expected to switch the `module` and `es2020` package.json entry points to unflattened files after the size regression issue is resolved.
+The APF currently includes unflattened ESM2020 code for the purpose of validating such a future change.
 
 ### "sideEffects" flag
 
@@ -328,9 +370,9 @@ The recommendation is for all packages to claim the side-effect free status by s
 
 More info: [webpack docs on side effects](https://github.com/webpack/webpack/tree/master/examples/side-effects)
 
-### ES2022 language level
+### ES2020 language level
 
-ES2022 Language level is now the default language level that is consumed by Angular CLI and other tooling.
+ES2020 Language level is now the default language level that is consumed by Angular CLI and other tooling.
 The Angular CLI down-levels the bundle to a language level that is supported by all targeted browsers at application build time.
 
 ### d.ts bundling / type definition flattening
@@ -398,7 +440,7 @@ Node.js has one that is well specified and widely used, TypeScript supports seve
 Specification of the module syntax that covers at minimum the syntax for the importing and exporting from a file.
 Common module formats are CommonJS \(CJS, typically used for Node.js applications\) or ECMAScript Modules \(ESM\).
 The module format indicates only the packaging of the individual modules, but not the JavaScript language features used to make up the module content.
-Because of this, the Angular team often uses the language level specifier as a suffix to the module format, \(for example, ESM+ES2022 specifies that the module is in ESM format and contains ES2022 code\).
+Because of this, the Angular team often uses the language level specifier as a suffix to the module format, \(for example, ESM+ES2015 specifies that the module is in ESM format and contains code down-leveled to ES2015\).
 
 #### Bundle
 
@@ -409,7 +451,7 @@ Common bundle formats are UMD and System.register.
 
 #### Language level
 
-The language of the code \(ES2022\).
+The language of the code \(ES2015 or ES2020\).
 Independent of the module format.
 
 #### Entry point
@@ -449,4 +491,4 @@ The bundled TypeScript definitions generated from [API Extractor](https://api-ex
 
 <!-- end links -->
 
-@reviewed 2023-03-06
+@reviewed 2022-02-28

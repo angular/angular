@@ -46,26 +46,28 @@ describe('@angular/common ng_package', () => {
       'upgrade.mjs',
       'upgrade.mjs.map',
     ];
-    expect(shx.ls('-R', 'fesm2022').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
+    expect(shx.ls('-R', 'fesm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
+    expect(shx.ls('-R', 'fesm2020').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
   });
 
   it('should have the correct source map paths', () => {
-    expect(shx.grep('sourceMappingURL', 'fesm2022/common.mjs'))
+    expect(shx.grep('sourceMappingURL', 'fesm2020/common.mjs'))
         .toMatch('//# sourceMappingURL=common.mjs.map');
-    expect(shx.grep('sourceMappingURL', 'fesm2022/http.mjs'))
+    expect(shx.grep('sourceMappingURL', 'fesm2020/http.mjs'))
         .toMatch('//# sourceMappingURL=http.mjs.map');
-    expect(shx.grep('sourceMappingURL', 'fesm2022/http/testing.mjs'))
+    expect(shx.grep('sourceMappingURL', 'fesm2020/http/testing.mjs'))
         .toMatch('//# sourceMappingURL=testing.mjs.map');
-    expect(shx.grep('sourceMappingURL', 'fesm2022/testing.mjs'))
+    expect(shx.grep('sourceMappingURL', 'fesm2020/testing.mjs'))
         .toMatch('//# sourceMappingURL=testing.mjs.map');
-    expect(shx.grep('sourceMappingURL', 'fesm2022/upgrade.mjs'))
+    expect(shx.grep('sourceMappingURL', 'fesm2020/upgrade.mjs'))
         .toMatch('//# sourceMappingURL=upgrade.mjs.map');
   });
 
   describe('should have module resolution properties in the package.json file for', () => {
     interface PackageJson {
       main: string;
-      es2022: string;
+      fesm2015: string;
+      es2020: string;
       module: string;
       typings: string;
       exports: object;
@@ -76,7 +78,11 @@ describe('@angular/common ng_package', () => {
           JSON.parse(fs.readFileSync('package.json', {encoding: 'utf-8'})) as PackageJson;
 
       expect(actual).toEqual(jasmine.objectContaining({
-        module: `./fesm2022/common.mjs`,
+        module: `./fesm2015/common.mjs`,
+        es2020: `./fesm2020/common.mjs`,
+        esm2020: `./esm2020/common.mjs`,
+        fesm2020: `./fesm2020/common.mjs`,
+        fesm2015: `./fesm2015/common.mjs`,
         typings: `./index.d.ts`,
         exports: matchesObjectWithOrder({
           './locales/global/*': {default: './locales/global/*.js'},
@@ -84,33 +90,43 @@ describe('@angular/common ng_package', () => {
           './package.json': {default: './package.json'},
           '.': {
             types: './index.d.ts',
-            esm2022: './esm2022/common.mjs',
-            esm: './esm2022/common.mjs',
-            default: './fesm2022/common.mjs'
+            esm2020: './esm2020/common.mjs',
+            es2020: './fesm2020/common.mjs',
+            es2015: './fesm2015/common.mjs',
+            node: './fesm2015/common.mjs',
+            default: './fesm2020/common.mjs'
           },
           './http': {
             types: './http/index.d.ts',
-            esm2022: './esm2022/http/http.mjs',
-            esm: './esm2022/http/http.mjs',
-            default: './fesm2022/http.mjs'
+            esm2020: './esm2020/http/http.mjs',
+            es2020: './fesm2020/http.mjs',
+            es2015: './fesm2015/http.mjs',
+            node: './fesm2015/http.mjs',
+            default: './fesm2020/http.mjs'
           },
           './http/testing': {
             types: './http/testing/index.d.ts',
-            esm2022: './esm2022/http/testing/testing.mjs',
-            esm: './esm2022/http/testing/testing.mjs',
-            default: './fesm2022/http/testing.mjs'
+            esm2020: './esm2020/http/testing/testing.mjs',
+            es2020: './fesm2020/http/testing.mjs',
+            es2015: './fesm2015/http/testing.mjs',
+            node: './fesm2015/http/testing.mjs',
+            default: './fesm2020/http/testing.mjs'
           },
           './testing': {
             types: './testing/index.d.ts',
-            esm2022: './esm2022/testing/testing.mjs',
-            esm: './esm2022/testing/testing.mjs',
-            default: './fesm2022/testing.mjs'
+            esm2020: './esm2020/testing/testing.mjs',
+            es2020: './fesm2020/testing.mjs',
+            es2015: './fesm2015/testing.mjs',
+            node: './fesm2015/testing.mjs',
+            default: './fesm2020/testing.mjs'
           },
           './upgrade': {
             types: './upgrade/index.d.ts',
-            esm2022: './esm2022/upgrade/upgrade.mjs',
-            esm: './esm2022/upgrade/upgrade.mjs',
-            default: './fesm2022/upgrade.mjs'
+            esm2020: './esm2020/upgrade/upgrade.mjs',
+            es2020: './fesm2020/upgrade.mjs',
+            es2015: './fesm2015/upgrade.mjs',
+            node: './fesm2015/upgrade.mjs',
+            default: './fesm2020/upgrade.mjs'
           }
         }),
       }));
