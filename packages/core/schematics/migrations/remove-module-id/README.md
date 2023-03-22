@@ -1,6 +1,6 @@
 ## RemoveModuleId migration
 
-As of Angular version 9, the `moduleId` property did no longer have any effect. This migration
+As of Angular version 9, the `moduleId` property has no effect. This migration
 removes the field from all `@Directive` or `@Component` decorators.
 
 #### Before
