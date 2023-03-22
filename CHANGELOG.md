@@ -1,3 +1,15 @@
+<a name="15.2.4"></a>
+# 15.2.4 (2023-03-22)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bae6b5ceb1](https://github.com/angular/angular/commit/bae6b5ceb16bd87c8146aa29564a8d29135a6f95) | fix | Allow `TestBed.configureTestingModule` to work with recursive cycle of standalone components. ([#49473](https://github.com/angular/angular/pull/49473)) |
+| [087f4412af](https://github.com/angular/angular/commit/087f4412afe9ccdefe7d63012af749b79f3e84d0) | fix | more accurate matching of classes during content projection ([#48888](https://github.com/angular/angular/pull/48888)) |
+## Special Thanks
+Aditya Srinivasan, Alex Rickabaugh, Andrew Scott, Kristiyan Kostadinov, Masaoki Kobayashi, Matthieu Riegler, Paul Gschwendtner, Peter Götz, Thomas Pischke, Virginia Dooley and avmaxim
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-next.3"></a>
 # 16.0.0-next.3 (2023-03-16)
 ## Breaking Changes
