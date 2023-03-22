@@ -3173,9 +3173,7 @@ describe('platform-server integration', () => {
         });
       });
 
-      // TODO(akushnir): we should only mark nodes within a content projection block as
-      // "disconnected" (avoid marking other disconnected nodes in a template)
-      xit('should handle element node mismatch', async () => {
+      it('should handle element node mismatch', async () => {
         @Component({
           standalone: true,
           selector: 'app',
