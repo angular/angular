@@ -32,7 +32,7 @@ export function computed<T>(computation: () => T, options?: CreateComputedOption
 
   // Casting here is required for g3, as TS inference behavior is slightly different between our
   // version/options and g3's.
-  return createSignalFromFunction(node.signal.bind(node)) as unknown as Signal<T>;
+  return createSignalFromFunction(node, node.signal.bind(node)) as unknown as Signal<T>;
 }
 
 /**
