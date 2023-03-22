@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
+import {createSignalFromFunction, DeepReadonly, defaultEquals, Signal, ValueEqualityFn} from './api';
 import {Consumer, ConsumerId, consumerPollValueStatus, Edge, nextReactiveId, Producer, producerAccessed, ProducerId, producerNotifyConsumers, setActiveConsumer} from './graph';
 import {newWeakRef} from './weak_ref';
 
@@ -18,7 +18,7 @@ import {newWeakRef} from './weak_ref';
 export function computed<T>(
     computation: () => T, options?: {equal?: ValueEqualityFn<T>}): Signal<T> {
   const node = new ComputedImpl(computation, options?.equal ?? defaultEquals);
-  return createSignalFromFunction(node.signal.bind(node));
+  return createSignalFromFunction(node.signal.bind(node)) as unknown as Signal<T>;
 }
 
 /**

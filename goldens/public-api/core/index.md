@@ -1353,7 +1353,7 @@ export interface SelfDecorator {
 export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
-export type Signal<T> = (() => T) & {
+export type Signal<T> = (() => DeepReadonly<T>) & {
     [SIGNAL]: true;
 };
 

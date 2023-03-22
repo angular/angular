@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
+import {createSignalFromFunction, DeepReadonly, defaultEquals, Signal, ValueEqualityFn} from './api';
 import {ConsumerId, Edge, nextReactiveId, Producer, producerAccessed, producerNotifyConsumers} from './graph';
 import {newWeakRef} from './weak_ref';
 
@@ -84,9 +84,9 @@ class WritableSignalImpl<T> implements Producer {
     producerNotifyConsumers(this);
   }
 
-  signal(): T {
+  signal(): DeepReadonly<T> {
     producerAccessed(this);
-    return this.value;
+    return this.value as unknown as DeepReadonly<T>;
   }
 }
 

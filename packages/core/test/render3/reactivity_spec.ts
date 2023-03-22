@@ -21,11 +21,10 @@ describe('effects', () => {
        class Cmp {
          constructor() {
            log.push('B');
+           effect(() => {
+             log.push('E');
+           });
          }
-
-         _ = effect(() => {
-           log.push('E');
-         });
 
          ngDoCheck() {
            log.push('C');
