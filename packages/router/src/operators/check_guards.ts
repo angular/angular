@@ -11,7 +11,7 @@ import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorF
 import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
-import {CanActivateChild, CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchFn, Route} from '../models';
+import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchFn, Route} from '../models';
 import {redirectingNavigationError} from '../navigation_canceling_error';
 import {NavigationTransition} from '../navigation_transition';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
@@ -138,8 +138,8 @@ function runCanActivateChild(
       const guardsMapped =
           d.guards.map((canActivateChild: CanActivateChildFn|ProviderToken<unknown>) => {
             const closestInjector = getClosestRouteInjector(d.node) ?? injector;
-            const guard =
-                getTokenOrFunctionIdentity<CanActivateChild>(canActivateChild, closestInjector);
+            const guard = getTokenOrFunctionIdentity<{canActivateChild: CanActivateChildFn}>(
+                canActivateChild, closestInjector);
             const guardVal = isCanActivateChild(guard) ?
                 guard.canActivateChild(futureARS, futureRSS) :
                 closestInjector.runInContext(

@@ -11,15 +11,15 @@ import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {Component, Injectable, NgModule, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {CanActivate, CanDeactivate, Resolve, Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '@angular/router';
-import {EMPTY, Observable, of} from 'rxjs';
+import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '@angular/router';
+import {EMPTY, of} from 'rxjs';
 
 import {provideRouter} from '../src/provide_router';
 import {isUrlTree} from '../src/url_tree';
 
 describe('`restoredState#ɵrouterPageId`', () => {
   @Injectable({providedIn: 'root'})
-  class MyCanDeactivateGuard implements CanDeactivate<unknown> {
+  class MyCanDeactivateGuard {
     allow: boolean = true;
     canDeactivate(): boolean {
       return this.allow;
@@ -27,7 +27,7 @@ describe('`restoredState#ɵrouterPageId`', () => {
   }
 
   @Injectable({providedIn: 'root'})
-  class ThrowingCanActivateGuard implements CanActivate {
+  class ThrowingCanActivateGuard {
     throw = false;
 
     constructor(private router: Router) {}
@@ -41,7 +41,7 @@ describe('`restoredState#ɵrouterPageId`', () => {
   }
 
   @Injectable({providedIn: 'root'})
-  class MyCanActivateGuard implements CanActivate {
+  class MyCanActivateGuard {
     allow: boolean = true;
     redirectTo: string|null|UrlTree = null;
 
@@ -57,7 +57,7 @@ describe('`restoredState#ɵrouterPageId`', () => {
     }
   }
   @Injectable({providedIn: 'root'})
-  class MyResolve implements Resolve<Observable<unknown>> {
+  class MyResolve {
     myresolve = of(2);
     resolve() {
       return this.myresolve;
