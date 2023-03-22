@@ -932,6 +932,10 @@ export class _ParseAST {
     if (!this.consumeOptionalCharacter(chars.$RBRACE)) {
       this.rbracesExpected++;
       do {
+        if (this.next.isCharacter(chars.$RBRACE)) {
+          break;
+        }
+
         const keyStart = this.inputIndex;
         const quoted = this.next.isString();
         const key = this.expectIdentifierOrKeywordOrString();
