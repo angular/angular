@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {ChangeTracker} from '../../utils/change_tracker';
-import {getImportOfIdentifier, getImportSpecifier, removeSymbolFromNamedImports, replaceImport} from '../../utils/typescript/imports';
+import {getImportOfIdentifier, getImportSpecifier, getImportSpecifiers, removeSymbolFromNamedImports, replaceImport} from '../../utils/typescript/imports';
 import {closestNode} from '../../utils/typescript/nodes';
 
 export const deprecatedInterfaces =
@@ -20,13 +20,18 @@ export type RewriteFn = (startPos: number, width: number, text: string) => void;
 
 export function migrateFile(
     sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker, rewriteFn: RewriteFn) {
+  const deprecatedImports = getImportSpecifiers(sourceFile, routerModule, deprecatedInterfaces);
+  if (deprecatedImports.length === 0) {
+    return;
+  }
   const changeTracker = new ChangeTracker(ts.createPrinter());
   // Map of original named imports to the most recent migrated node. We might update it multiple
   // times so we need to accumulate updates.
   const updatedImports = new Map<ts.NamedImports, ts.NamedImports>();
   const updatedImplements = new Map<ts.HeritageClause, ts.HeritageClause>();
 
-  findUsages(sourceFile, typeChecker, updatedImplements, updatedImports, changeTracker);
+  findUsages(
+      sourceFile, typeChecker, updatedImplements, updatedImports, changeTracker, deprecatedImports);
   findImports(sourceFile, updatedImports);
 
   for (const [originalNode, rewrittenNode] of updatedImports.entries()) {
@@ -73,18 +78,20 @@ function findImports(
 function findUsages(
     sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker,
     updatedImplements: Map<ts.HeritageClause, ts.HeritageClause>,
-    updatedImports: Map<ts.NamedImports, ts.NamedImports>, changeTracker: ChangeTracker): void {
+    updatedImports: Map<ts.NamedImports, ts.NamedImports>, changeTracker: ChangeTracker,
+    deprecatedImports: ts.ImportSpecifier[]): void {
   const visitNode = (node: ts.Node) => {
     if (ts.isImportSpecifier(node)) {
       // Skip this node and all of its children; imports are a special case.
       return;
     }
     if (ts.isIdentifier(node)) {
-      const importIdentifier = getImportOfIdentifier(typeChecker, node);
-      if (importIdentifier?.importModule === routerModule &&
-          deprecatedInterfaces.some(d => d === importIdentifier.name)) {
-        const originalHeritageClause = closestNode(node, ts.isHeritageClause);
-        if (originalHeritageClause !== null) {
+      const originalHeritageClause = closestNode(node, ts.isHeritageClause);
+      if (originalHeritageClause !== null &&
+          deprecatedImports.some(importSpecifier => importSpecifier.name.text === node.text)) {
+        const importIdentifier = getImportOfIdentifier(typeChecker, node);
+        if (importIdentifier?.importModule === routerModule &&
+            deprecatedInterfaces.some(d => d === importIdentifier.name)) {
           const heritageClauseToUpdate =
               updatedImplements.get(originalHeritageClause) ?? originalHeritageClause;
           const mostRecentUpdate = ts.factory.updateHeritageClause(
@@ -95,7 +102,8 @@ function findUsages(
         }
       }
     } else if (ts.isTypeReferenceNode(node)) {
-      visitTypeReference(node, typeChecker, changeTracker, sourceFile, updatedImports);
+      visitTypeReference(
+          node, typeChecker, changeTracker, sourceFile, updatedImports, deprecatedImports);
     } else {
       ts.forEachChild(node, visitNode);
     }
@@ -105,9 +113,11 @@ function findUsages(
 
 function visitTypeReference(
     typeReference: ts.TypeReferenceNode, typeChecker: ts.TypeChecker, changeTracker: ChangeTracker,
-    sourceFile: ts.SourceFile, updatedImports: Map<ts.NamedImports, ts.NamedImports>) {
+    sourceFile: ts.SourceFile, updatedImports: Map<ts.NamedImports, ts.NamedImports>,
+    deprecatedImports: ts.ImportSpecifier[]) {
   const visitTypeReferenceChildren = (node: ts.Node): void => {
-    if (ts.isIdentifier(node)) {
+    if (ts.isIdentifier(node) &&
+        deprecatedImports.some(importSpecifier => importSpecifier.name.text === node.text)) {
       const importIdentifier = getImportOfIdentifier(typeChecker, node);
       if (importIdentifier?.importModule === routerModule &&
           deprecatedInterfaces.some(d => d === importIdentifier.name)) {
