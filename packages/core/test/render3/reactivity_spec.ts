@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, effect, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, effect, NgZone} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
@@ -44,5 +44,32 @@ describe('effects', () => {
          // C: change detection runs after effect runs
          'C',
        ]);
+     }));
+
+  it('should run effects in the zone in which they get created',
+     withBody('<test-cmp></test-cmp>', async () => {
+       const log: string[] = [];
+       @Component({
+         selector: 'test-cmp',
+         standalone: true,
+         template: '',
+       })
+       class Cmp {
+         constructor(ngZone: NgZone) {
+           effect(() => {
+             log.push(Zone.current.name);
+           });
+
+           ngZone.runOutsideAngular(() => {
+             effect(() => {
+               log.push(Zone.current.name);
+             });
+           });
+         }
+       }
+
+       await bootstrapApplication(Cmp);
+
+       expect(log).not.toEqual(['angular', 'angular']);
      }));
 });
