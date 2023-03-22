@@ -55,7 +55,7 @@ export class AppVersion implements UpdateSource {
    * The normalized URL to the file that serves as the index page to satisfy navigation requests.
    * Usually this is `/index.html`.
    */
-  private indexUrl: NormalizedUrl;
+  private indexUrl = this.adapter.normalizeUrl(this.manifest.index);
 
   /**
    * Tracks whether the manifest has encountered any inconsistencies.
@@ -70,7 +70,6 @@ export class AppVersion implements UpdateSource {
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter, private database: Database,
       idle: IdleScheduler, private debugHandler: DebugHandler, readonly manifest: Manifest,
       readonly manifestHash: string) {
-    this.indexUrl = this.adapter.normalizeUrl(this.manifest.index);
     // The hashTable within the manifest is an Object - convert it to a Map for easier lookups.
     Object.keys(manifest.hashTable).forEach(url => {
       this.hashTable.set(adapter.normalizeUrl(url), manifest.hashTable[url]);

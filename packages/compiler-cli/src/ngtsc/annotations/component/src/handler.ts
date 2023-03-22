@@ -60,13 +60,7 @@ export class ComponentDecoratorHandler implements
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
-      private hostDirectivesResolver: HostDirectivesResolver) {
-    this.extractTemplateOptions = {
-      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-      i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
-      usePoisonedData: this.usePoisonedData,
-    };
-  }
+      private hostDirectivesResolver: HostDirectivesResolver) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -79,9 +73,10 @@ export class ComponentDecoratorHandler implements
   private preanalyzeTemplateCache = new Map<DeclarationNode, ParsedTemplateWithSource>();
   private preanalyzeStylesCache = new Map<DeclarationNode, string[]|null>();
 
-  private extractTemplateOptions: {
-    enableI18nLegacyMessageIdFormat: boolean; i18nNormalizeLineEndingsInICUs: boolean;
-    usePoisonedData: boolean;
+  private extractTemplateOptions = {
+    enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+    i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
+    usePoisonedData: this.usePoisonedData,
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
