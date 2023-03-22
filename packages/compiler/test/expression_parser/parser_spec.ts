@@ -116,6 +116,7 @@ describe('parser', () => {
         checkAction('{}');
         checkAction('{a: 1, "b": 2}[2]');
         checkAction('{}["a"]');
+        checkAction('{a: 1, b: 2,}', '{a: 1, b: 2}');
       });
 
       it('should only allow identifier, string, or keyword as map key', () => {
