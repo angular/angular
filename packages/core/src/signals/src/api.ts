@@ -23,7 +23,7 @@ const SIGNAL = Symbol('SIGNAL');
  *
  * @developerPreview
  */
-export type Signal<T> = (() => T)&{
+export type Signal<T> = (() => DeepReadonly<T>)&{
   [SIGNAL]: true;
 };
 
@@ -87,3 +87,18 @@ export function defaultEquals<T>(a: T, b: T) {
   // as objects (`typeof null === 'object'`).
   return (a === null || typeof a !== 'object') && Object.is(a, b);
 }
+
+// clang-format off
+/**
+ * Makes `T` read-only at the property level.
+ *
+ * Objects have their properties mapped to `DeepReadonly` types and arrays are converted to
+ * `ReadonlyArray`s of `DeepReadonly` values.
+ *
+ * @developerPreview
+ */
+export type DeepReadonly<T> = T extends(infer R)[] ? ReadonlyArray<DeepReadonly<R>> :
+    (T extends Function ? T :
+    (T extends object ? {readonly[P in keyof T]: DeepReadonly<T[P]>} :
+    T));
+// clang-format on
