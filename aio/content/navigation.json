@@ -864,6 +864,11 @@
               "tooltip": "Create an interface for your app"
             },
             {
+              "url": "tutorial/first-app/first-app-lesson-05",
+              "title": "Add inputs to components",
+              "tooltip": "Add inputs to components in your app"
+            },
+            {
               "url": "tutorial/first-app/first-app-lesson-09",
               "title": "Angular services",
               "tooltip": "Add an Angular service to your app"

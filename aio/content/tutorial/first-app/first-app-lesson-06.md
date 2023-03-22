@@ -1,0 +1,1 @@
+# Lesson 6 - Add a property binding to an component’s template
