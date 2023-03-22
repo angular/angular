@@ -12,7 +12,7 @@ import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/contain
 import {TI18n} from '../render3/interfaces/i18n';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
-import {isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
+import {isComponentHost, isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, HOST, LView, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
@@ -240,7 +240,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
     // layer (in Domino) for now. Longer-term solution should not rely on the DOM emulation and
     // only use internal data structures and state to compute this information.
     if (!(tNode.type & TNodeType.Projection) && !!lView[i] &&
-        !(unwrapRNode(lView[i]) as Node).isConnected) {
+        !(unwrapRNode(lView[i]) as Node).isConnected && isContentProjectedNode(tNode)) {
       ngh[DISCONNECTED_NODES] ??= [];
       ngh[DISCONNECTED_NODES].push(noOffsetIndex);
       continue;
@@ -412,4 +412,21 @@ function insertCorruptedTextNodeMarkers(
   for (const [textNode, marker] of corruptedTextNodes) {
     textNode.after(doc.createComment(marker));
   }
+}
+
+/**
+ * Detects whether a given TNode represents a node that
+ * is being content projected.
+ */
+function isContentProjectedNode(tNode: TNode): boolean {
+  let currentTNode = tNode;
+  while (currentTNode != null) {
+    // If we come across a component host node in parent nodes -
+    // this TNode is in the content projection section.
+    if (isComponentHost(currentTNode)) {
+      return true;
+    }
+    currentTNode = currentTNode.parent as TNode;
+  }
+  return false;
 }
