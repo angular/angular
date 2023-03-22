@@ -45,8 +45,6 @@ import {isPromise} from './util/lang';
 import {stringify} from './util/stringify';
 import {isStableFactory, NgZone, NoopNgZone, ZONE_IS_STABLE_OBSERVABLE} from './zone/ng_zone';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
-
 let _platformInjector: Injector|null = null;
 
 /**
@@ -204,7 +202,7 @@ export function internalCreateApplication(config: {
 }): Promise<ApplicationRef> {
   const {rootComponent, appProviders, platformProviders} = config;
 
-  if (NG_DEV_MODE && rootComponent !== undefined) {
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && rootComponent !== undefined) {
     assertStandaloneComponentType(rootComponent);
   }
 
@@ -224,7 +222,7 @@ export function internalCreateApplication(config: {
         allAppProviders, platformInjector as EnvironmentInjector, 'Environment Injector');
 
     const exceptionHandler: ErrorHandler|null = envInjector.get(ErrorHandler, null);
-    if (NG_DEV_MODE && !exceptionHandler) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !exceptionHandler) {
       throw new RuntimeError(
           RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
           'No `ErrorHandler` found in the Dependency Injection tree.');
@@ -456,7 +454,7 @@ export class PlatformRef {
       const moduleRef = createNgModuleRefWithProviders(
           moduleFactory.moduleType, this.injector, provideNgZoneChangeDetection(ngZone));
       const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);
-      if (NG_DEV_MODE && exceptionHandler === null) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && exceptionHandler === null) {
         throw new RuntimeError(
             RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
             'No ErrorHandler. Is platform module (BrowserModule) included?');
@@ -884,7 +882,7 @@ export class ApplicationRef {
    */
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):
       ComponentRef<C> {
-    NG_DEV_MODE && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     const isComponentFactory = componentOrFactory instanceof ComponentFactory;
     const initStatus = this._injector.get(ApplicationInitStatus);
 
@@ -895,7 +893,8 @@ export class ApplicationRef {
           (standalone ? '' :
                         ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
       throw new RuntimeError(
-          RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, NG_DEV_MODE && errorMessage);
+          RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && errorMessage);
     }
 
     let componentFactory: ComponentFactory<C>;
@@ -942,7 +941,7 @@ export class ApplicationRef {
    * detection pass during which all change detection must complete.
    */
   tick(): void {
-    NG_DEV_MODE && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     if (this._runningTick) {
       throw new RuntimeError(
           RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
@@ -973,7 +972,7 @@ export class ApplicationRef {
    * This will throw if the view is already attached to a ViewContainer.
    */
   attachView(viewRef: ViewRef): void {
-    NG_DEV_MODE && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     const view = (viewRef as InternalViewRef);
     this._views.push(view);
     view.attachToAppRef(this);
@@ -983,7 +982,7 @@ export class ApplicationRef {
    * Detaches a view from dirty checking again.
    */
   detachView(viewRef: ViewRef): void {
-    NG_DEV_MODE && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     const view = (viewRef as InternalViewRef);
     remove(this._views, view);
     view.detachFromAppRef();
@@ -1037,7 +1036,7 @@ export class ApplicationRef {
    * @internal
    */
   onDestroy(callback: () => void): VoidFunction {
-    NG_DEV_MODE && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     this._destroyListeners.push(callback);
     return () => remove(this._destroyListeners, callback);
   }
@@ -1076,7 +1075,7 @@ export class ApplicationRef {
   }
 
   private warnIfDestroyed() {
-    if (NG_DEV_MODE && this._destroyed) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && this._destroyed) {
       console.warn(formatRuntimeError(
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
           'This instance of the `ApplicationRef` has already been destroyed.'));
@@ -1106,8 +1105,8 @@ function _lastDefined<T>(args: T[]): T|undefined {
  * `NgZone` is provided by default today so the default (and only) implementation for this
  * is calling `ErrorHandler.handleError` outside of the Angular zone.
  */
-const INTERNAL_APPLICATION_ERROR_HANDLER =
-    new InjectionToken<(e: any) => void>(NG_DEV_MODE ? 'internal error handler' : '', {
+const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) => void>(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'internal error handler' : '', {
       providedIn: 'root',
       factory: () => {
         const userErrorHandler = inject(ErrorHandler);
@@ -1156,7 +1155,8 @@ export function provideNgZoneChangeDetection(ngZone: NgZone): StaticProvider[] {
       useFactory: () => {
         const ngZoneChangeDetectionScheduler =
             inject(NgZoneChangeDetectionScheduler, {optional: true});
-        if (NG_DEV_MODE && ngZoneChangeDetectionScheduler === null) {
+        if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+            ngZoneChangeDetectionScheduler === null) {
           throw new RuntimeError(
               RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
               'No NgZoneChangeDetectionScheduler found in the Dependency Injection tree.');

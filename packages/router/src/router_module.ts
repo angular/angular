@@ -25,7 +25,6 @@ import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
  * The directives defined in the `RouterModule`.
@@ -36,7 +35,8 @@ const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkActive, EmptyOutl
  * @docsNotRequired
  */
 export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
-    NG_DEV_MODE ? 'router duplicate forRoot guard' : 'ROUTER_FORROOT_GUARD');
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router duplicate forRoot guard' :
+                                                      'ROUTER_FORROOT_GUARD');
 
 // TODO(atscott): All of these except `ActivatedRoute` are `providedIn: 'root'`. They are only kept
 // here to avoid a breaking change whereby the provider order matters based on where the
@@ -51,7 +51,8 @@ export const ROUTER_PROVIDERS: Provider[] = [
   RouterConfigLoader,
   // Only used to warn when `provideRoutes` is used without `RouterModule` or `provideRouter`. Can
   // be removed when `provideRoutes` is removed.
-  NG_DEV_MODE ? {provide: ROUTER_IS_PROVIDED, useValue: true} : [],
+  (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: ROUTER_IS_PROVIDED, useValue: true} :
+                                                    [],
 ];
 
 export function routerNgProbeToken() {
@@ -109,7 +110,9 @@ export class RouterModule {
       ngModule: RouterModule,
       providers: [
         ROUTER_PROVIDERS,
-        NG_DEV_MODE ? (config?.enableTracing ? withDebugTracing().ɵproviders : []) : [],
+        (typeof ngDevMode === 'undefined' || ngDevMode) ?
+            (config?.enableTracing ? withDebugTracing().ɵproviders : []) :
+            [],
         {provide: ROUTES, multi: true, useValue: routes},
         {
           provide: ROUTER_FORROOT_GUARD,
@@ -185,7 +188,7 @@ function providePathLocationStrategy(): Provider {
 }
 
 export function provideForRootGuard(router: Router): any {
-  if (NG_DEV_MODE && router) {
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && router) {
     throw new RuntimeError(
         RuntimeErrorCode.FOR_ROOT_CALLED_TWICE,
         `The Router was provided more than once. This can happen if 'forRoot' is used outside of the root injector.` +
@@ -213,7 +216,7 @@ function provideInitialNavigation(config: Pick<ExtraOptions, 'initialNavigation'
  * @publicApi
  */
 export const ROUTER_INITIALIZER = new InjectionToken<(compRef: ComponentRef<any>) => void>(
-    NG_DEV_MODE ? 'Router Initializer' : '');
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'Router Initializer' : '');
 
 function provideRouterInitializer(): Provider[] {
   return [

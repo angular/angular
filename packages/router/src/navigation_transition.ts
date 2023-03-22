@@ -32,7 +32,6 @@ import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * @description
@@ -393,7 +392,7 @@ export class NavigationTransitions {
                            const onSameUrlNavigation =
                                t.extras.onSameUrlNavigation ?? router.onSameUrlNavigation;
                            if (!urlTransition && onSameUrlNavigation !== 'reload') {
-                             const reason = NG_DEV_MODE ?
+                             const reason = (typeof ngDevMode === 'undefined' || ngDevMode) ?
                                  `Navigation to ${
                                      t.rawUrl} was ignored because it is the same as the current Router URL.` :
                                  '';
@@ -494,7 +493,7 @@ export class NavigationTransitions {
                               * current "settled" URL. This way the next navigation will be coming
                               * from the current URL in the browser.
                               */
-                             const reason = NG_DEV_MODE ?
+                             const reason = (typeof ngDevMode === 'undefined' || ngDevMode) ?
                                  `Navigation was ignored because the UrlHandlingStrategy` +
                                      ` indicated neither the current URL ${
                                          router.rawUrlTree} nor target URL ${
@@ -576,7 +575,7 @@ export class NavigationTransitions {
                                              router.restoreHistory(t);
                                              this.cancelNavigationTransition(
                                                  t,
-                                                 NG_DEV_MODE ?
+                                                 (typeof ngDevMode === 'undefined' || ngDevMode) ?
                                                      `At least one route resolver didn't emit any value.` :
                                                      '',
                                                  NavigationCancellationCode.NoDataFromResolver);
@@ -677,7 +676,8 @@ export class NavigationTransitions {
                             * catch-all to make sure the NavigationCancel event is fired when a
                             * navigation gets cancelled but not caught by other means. */
                            if (!completed && !errored) {
-                             const cancelationReason = NG_DEV_MODE ?
+                             const cancelationReason =
+                                 (typeof ngDevMode === 'undefined' || ngDevMode) ?
                                  `Navigation ID ${
                                      overallTransitionState
                                          .id} is not equal to the current navigation id ${

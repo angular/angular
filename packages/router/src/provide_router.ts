@@ -23,7 +23,6 @@ import {ActivatedRoute} from './router_state';
 import {UrlSerializer} from './url_tree';
 import {afterNextNavigation} from './utils/navigations';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -64,7 +63,9 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   return makeEnvironmentProviders([
     {provide: ROUTES, multi: true, useValue: routes},
-    NG_DEV_MODE ? {provide: ROUTER_IS_PROVIDED, useValue: true} : [],
+    (typeof ngDevMode === 'undefined' || ngDevMode) ?
+        {provide: ROUTER_IS_PROVIDED, useValue: true} :
+        [],
     {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map(feature => feature.ɵproviders),
@@ -135,7 +136,7 @@ const routerIsProvidedDevModeCheck = {
 export function provideRoutes(routes: Routes): Provider[] {
   return [
     {provide: ROUTES, multi: true, useValue: routes},
-    NG_DEV_MODE ? routerIsProvidedDevModeCheck : [],
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? routerIsProvidedDevModeCheck : [],
   ];
 }
 
@@ -220,8 +221,8 @@ export function getBootstrapListener() {
  * `enabledBlocking`, the first navigation waits until bootstrapping is finished before continuing
  * to the activation phase.
  */
-const BOOTSTRAP_DONE =
-    new InjectionToken<Subject<void>>(NG_DEV_MODE ? 'bootstrap done indicator' : '', {
+const BOOTSTRAP_DONE = new InjectionToken<Subject<void>>(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'bootstrap done indicator' : '', {
       factory: () => {
         return new Subject<void>();
       }
@@ -251,7 +252,7 @@ const enum InitialNavigation {
 }
 
 const INITIAL_NAVIGATION = new InjectionToken<InitialNavigation>(
-    NG_DEV_MODE ? 'initial navigation' : '',
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'initial navigation' : '',
     {providedIn: 'root', factory: () => InitialNavigation.EnabledNonBlocking});
 
 /**
@@ -434,7 +435,7 @@ export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFe
  */
 export function withDebugTracing(): DebugTracingFeature {
   let providers: Provider[] = [];
-  if (NG_DEV_MODE) {
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
     providers = [{
       provide: ENVIRONMENT_INITIALIZER,
       multi: true,
@@ -456,7 +457,8 @@ export function withDebugTracing(): DebugTracingFeature {
   return routerFeature(RouterFeatureKind.DebugTracingFeature, providers);
 }
 
-const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(NG_DEV_MODE ? 'router preloader' : '');
+const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router preloader' : '');
 
 /**
  * A type alias that represents a feature which enables preloading in Router.

@@ -363,12 +363,6 @@
     "name": "NG_COMP_DEF"
   },
   {
-    "name": "NG_DEV_MODE2"
-  },
-  {
-    "name": "NG_DEV_MODE6"
-  },
-  {
     "name": "NG_DIR_DEF"
   },
   {
@@ -1197,9 +1191,6 @@
     "name": "forEachSingleProvider"
   },
   {
-    "name": "formatRuntimeError"
-  },
-  {
     "name": "forwardRef"
   },
   {
@@ -1936,9 +1927,6 @@
   },
   {
     "name": "stringifyCSSSelector"
-  },
-  {
-    "name": "stringifyForError"
   },
   {
     "name": "stripTrailingSlash"

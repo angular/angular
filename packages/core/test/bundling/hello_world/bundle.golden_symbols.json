@@ -156,9 +156,6 @@
     "name": "NG_COMP_DEF"
   },
   {
-    "name": "NG_DIR_DEF"
-  },
-  {
     "name": "NG_ELEMENT_ID"
   },
   {
@@ -178,9 +175,6 @@
   },
   {
     "name": "NG_MOD_DEF"
-  },
-  {
-    "name": "NG_PIPE_DEF"
   },
   {
     "name": "NG_PROV_DEF"
@@ -514,9 +508,6 @@
   },
   {
     "name": "forEachSingleProvider"
-  },
-  {
-    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"

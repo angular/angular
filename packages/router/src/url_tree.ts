@@ -12,7 +12,6 @@ import {RuntimeErrorCode} from './errors';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 import {equalArraysOrString, shallowEqual} from './utils/collection';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
  * A set of options which specify how to determine if a `UrlTree` is active, given the `UrlTree`
@@ -200,7 +199,7 @@ export class UrlTree {
       public queryParams: Params = {},
       /** The fragment of the URL */
       public fragment: string|null = null) {
-    if (NG_DEV_MODE) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (root.segments.length > 0) {
         throw new RuntimeError(
             RuntimeErrorCode.INVALID_ROOT_URL_SEGMENT,
@@ -610,7 +609,8 @@ class UrlParser {
     if (path === '' && this.peekStartsWith(';')) {
       throw new RuntimeError(
           RuntimeErrorCode.EMPTY_PATH_WITH_PARAMS,
-          NG_DEV_MODE && `Empty path url segment cannot have parameters: '${this.remaining}'.`);
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              `Empty path url segment cannot have parameters: '${this.remaining}'.`);
     }
 
     this.capture(path);
@@ -690,7 +690,8 @@ class UrlParser {
       // or the group was not closed
       if (next !== '/' && next !== ')' && next !== ';') {
         throw new RuntimeError(
-            RuntimeErrorCode.UNPARSABLE_URL, NG_DEV_MODE && `Cannot parse url '${this.url}'`);
+            RuntimeErrorCode.UNPARSABLE_URL,
+            (typeof ngDevMode === 'undefined' || ngDevMode) && `Cannot parse url '${this.url}'`);
       }
 
       let outletName: string = undefined!;
@@ -727,7 +728,8 @@ class UrlParser {
   private capture(str: string): void {
     if (!this.consumeOptional(str)) {
       throw new RuntimeError(
-          RuntimeErrorCode.UNEXPECTED_VALUE_IN_URL, NG_DEV_MODE && `Expected "${str}".`);
+          RuntimeErrorCode.UNEXPECTED_VALUE_IN_URL,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && `Expected "${str}".`);
     }
   }
 }

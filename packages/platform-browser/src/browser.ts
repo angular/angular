@@ -18,7 +18,6 @@ import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {SharedStylesHost} from './dom/shared_styles_host';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * Set of config options available during the application bootstrap operation.
@@ -175,8 +174,8 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
  * `BrowserModule` presence itself, since the standalone-based bootstrap just imports
  * `BrowserModule` providers without referencing the module itself.
  */
-const BROWSER_MODULE_PROVIDERS_MARKER =
-    new InjectionToken(NG_DEV_MODE ? 'BrowserModule Providers Marker' : '');
+const BROWSER_MODULE_PROVIDERS_MARKER = new InjectionToken(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'BrowserModule Providers Marker' : '');
 
 const TESTABILITY_PROVIDERS = [
   {
@@ -208,7 +207,9 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   DomRendererFactory2, SharedStylesHost, EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
-  NG_DEV_MODE ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} : []
+  (typeof ngDevMode === 'undefined' || ngDevMode) ?
+      {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} :
+      []
 ];
 
 /**
@@ -227,7 +228,7 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
 export class BrowserModule {
   constructor(@Optional() @SkipSelf() @Inject(BROWSER_MODULE_PROVIDERS_MARKER)
               providersAlreadyPresent: boolean|null) {
-    if (NG_DEV_MODE && providersAlreadyPresent) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && providersAlreadyPresent) {
       throw new Error(
           `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
           `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`);

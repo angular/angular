@@ -11,7 +11,6 @@ import {InjectionToken} from '@angular/core';
 import {OnSameUrlNavigation} from './models';
 import {UrlSerializer, UrlTree} from './url_tree';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * Error handler that is invoked when a navigation error occurs.
@@ -244,8 +243,8 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
  *
  * @publicApi
  */
-export const ROUTER_CONFIGURATION =
-    new InjectionToken<ExtraOptions>(NG_DEV_MODE ? 'router config' : '', {
+export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router config' : '', {
       providedIn: 'root',
       factory: () => ({}),
     });

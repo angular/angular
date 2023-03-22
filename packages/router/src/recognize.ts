@@ -21,7 +21,6 @@ import {isImmediateMatch, matchWithChecks, noLeftoversInUrl, split} from './util
 import {TreeNode} from './utils/tree';
 import {isEmptyError} from './utils/type_guards';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 class NoMatch {}
 
@@ -133,7 +132,7 @@ export class Recognizer {
               // multiple activated results for the same outlet. We should merge the children of
               // these results so the final return value is only one `TreeNode` per outlet.
               const mergedChildren = mergeEmptyPathMatches(children);
-              if (NG_DEV_MODE) {
+              if (typeof ngDevMode === 'undefined' || ngDevMode) {
                 // This should really never happen - we are only taking the first match for each
                 // outlet and merge the empty path matches.
                 checkOutletNameUniqueness(mergedChildren);
@@ -325,7 +324,8 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): v
       const c = n.value.url.map(s => s.toString()).join('/');
       throw new RuntimeError(
           RuntimeErrorCode.TWO_SEGMENTS_WITH_SAME_OUTLET,
-          NG_DEV_MODE && `Two segments cannot have the same outlet name: '${p}' and '${c}'.`);
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              `Two segments cannot have the same outlet name: '${p}' and '${c}'.`);
     }
     names[n.value.outlet] = n.value;
   });

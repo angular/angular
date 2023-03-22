@@ -15,7 +15,6 @@ import {wrapIntoObservable} from './utils/collection';
 import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
 
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * The [DI token](guide/glossary/#di-token) for a router configuration.
@@ -56,7 +55,8 @@ export class RouterConfigLoader {
                                  if (this.onLoadEndListener) {
                                    this.onLoadEndListener(route);
                                  }
-                                 NG_DEV_MODE && assertStandalone(route.path ?? '', component);
+                                 (typeof ngDevMode === 'undefined' || ngDevMode) &&
+                                     assertStandalone(route.path ?? '', component);
                                  route._loadedComponent = component;
                                }),
                                finalize(() => {
@@ -103,7 +103,8 @@ export class RouterConfigLoader {
             rawRoutes = injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional).flat();
           }
           const routes = rawRoutes.map(standardizeConfig);
-          NG_DEV_MODE && validateConfig(routes, route.path, requireStandaloneComponents);
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              validateConfig(routes, route.path, requireStandaloneComponents);
           return {routes, injector};
         }),
         finalize(() => {
