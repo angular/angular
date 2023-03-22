@@ -15,7 +15,6 @@ import {RuntimeErrorCode} from '../errors';
 import {FormArray, FormGroup} from '../forms';
 import {addValidators, composeAsyncValidators, composeValidators, hasValidator, removeValidators, toObservable} from '../validators';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * Reports that a control is valid, meaning that no errors exist in the input value.
@@ -141,11 +140,13 @@ export function assertControlPresent(parent: any, isGroup: boolean, key: string|
   const collection = isGroup ? Object.keys(controls) : controls;
   if (!collection.length) {
     throw new RuntimeError(
-        RuntimeErrorCode.NO_CONTROLS, NG_DEV_MODE ? noControlsError(isGroup) : '');
+        RuntimeErrorCode.NO_CONTROLS,
+        (typeof ngDevMode === 'undefined' || ngDevMode) ? noControlsError(isGroup) : '');
   }
   if (!controls[key]) {
     throw new RuntimeError(
-        RuntimeErrorCode.MISSING_CONTROL, NG_DEV_MODE ? missingControlError(isGroup, key) : '');
+        RuntimeErrorCode.MISSING_CONTROL,
+        (typeof ngDevMode === 'undefined' || ngDevMode) ? missingControlError(isGroup, key) : '');
   }
 }
 
@@ -154,7 +155,8 @@ export function assertAllValuesPresent(control: any, isGroup: boolean, value: an
     if (value[key] === undefined) {
       throw new RuntimeError(
           RuntimeErrorCode.MISSING_CONTROL_VALUE,
-          NG_DEV_MODE ? missingControlValueError(isGroup, key) : '');
+          (typeof ngDevMode === 'undefined' || ngDevMode) ? missingControlValueError(isGroup, key) :
+                                                            '');
     }
   });
 }

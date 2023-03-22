@@ -14,7 +14,6 @@ import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
  * An interface that defines the contract for developing a component outlet for the `Router`.
@@ -251,14 +250,16 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   get component(): Object {
     if (!this.activated)
       throw new RuntimeError(
-          RuntimeErrorCode.OUTLET_NOT_ACTIVATED, NG_DEV_MODE && 'Outlet is not activated');
+          RuntimeErrorCode.OUTLET_NOT_ACTIVATED,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && 'Outlet is not activated');
     return this.activated.instance;
   }
 
   get activatedRoute(): ActivatedRoute {
     if (!this.activated)
       throw new RuntimeError(
-          RuntimeErrorCode.OUTLET_NOT_ACTIVATED, NG_DEV_MODE && 'Outlet is not activated');
+          RuntimeErrorCode.OUTLET_NOT_ACTIVATED,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && 'Outlet is not activated');
     return this._activatedRoute as ActivatedRoute;
   }
 
@@ -275,7 +276,8 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   detach(): ComponentRef<any> {
     if (!this.activated)
       throw new RuntimeError(
-          RuntimeErrorCode.OUTLET_NOT_ACTIVATED, NG_DEV_MODE && 'Outlet is not activated');
+          RuntimeErrorCode.OUTLET_NOT_ACTIVATED,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && 'Outlet is not activated');
     this.location.detach();
     const cmp = this.activated;
     this.activated = null;
@@ -308,7 +310,8 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     if (this.isActivated) {
       throw new RuntimeError(
           RuntimeErrorCode.OUTLET_ALREADY_ACTIVATED,
-          NG_DEV_MODE && 'Cannot activate an already activated outlet');
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              'Cannot activate an already activated outlet');
     }
     this._activatedRoute = activatedRoute;
     const location = this.location;

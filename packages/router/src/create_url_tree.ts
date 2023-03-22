@@ -14,7 +14,6 @@ import {Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {last, shallowEqual} from './utils/collection';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
  * Creates a `UrlTree` relative to an `ActivatedRouteSnapshot`.
@@ -183,14 +182,16 @@ class Navigation {
     if (isAbsolute && commands.length > 0 && isMatrixParams(commands[0])) {
       throw new RuntimeError(
           RuntimeErrorCode.ROOT_SEGMENT_MATRIX_PARAMS,
-          NG_DEV_MODE && 'Root segment cannot have matrix parameters');
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              'Root segment cannot have matrix parameters');
     }
 
     const cmdWithOutlet = commands.find(isCommandWithOutlets);
     if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
       throw new RuntimeError(
           RuntimeErrorCode.MISPLACED_OUTLETS_COMMAND,
-          NG_DEV_MODE && '{outlets:{}} has to be the last command');
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              '{outlets:{}} has to be the last command');
     }
   }
 
@@ -287,7 +288,8 @@ function createPositionApplyingDoubleDots(
     g = g.parent!;
     if (!g) {
       throw new RuntimeError(
-          RuntimeErrorCode.INVALID_DOUBLE_DOTS, NG_DEV_MODE && 'Invalid number of \'../\'');
+          RuntimeErrorCode.INVALID_DOUBLE_DOTS,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && 'Invalid number of \'../\'');
     }
     ci = g.segments.length;
   }

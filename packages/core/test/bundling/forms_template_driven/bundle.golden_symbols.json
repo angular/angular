@@ -294,12 +294,6 @@
     "name": "NG_COMP_DEF"
   },
   {
-    "name": "NG_DEV_MODE4"
-  },
-  {
-    "name": "NG_DEV_MODE5"
-  },
-  {
     "name": "NG_DIR_DEF"
   },
   {
@@ -828,9 +822,6 @@
     "name": "defaultIterableDiffersFactory"
   },
   {
-    "name": "describeKey"
-  },
-  {
     "name": "destroyLView"
   },
   {
@@ -910,9 +901,6 @@
   },
   {
     "name": "formDirectiveProvider"
-  },
-  {
-    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -1252,9 +1240,6 @@
   },
   {
     "name": "isStylingValuePresent"
-  },
-  {
-    "name": "isSubscribable"
   },
   {
     "name": "isTemplateNode"

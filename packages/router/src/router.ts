@@ -26,7 +26,6 @@ import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSegmentGroup, UrlSeria
 import {standardizeConfig, validateConfig} from './utils/config';
 
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 function defaultErrorHandler(error: any): any {
   throw error;
@@ -441,7 +440,7 @@ export class Router {
    * ```
    */
   resetConfig(config: Routes): void {
-    NG_DEV_MODE && validateConfig(config);
+    (typeof ngDevMode === 'undefined' || ngDevMode) && validateConfig(config);
     this.config = config.map(standardizeConfig);
     this.navigated = false;
     this.lastSuccessfulId = -1;
@@ -581,7 +580,7 @@ export class Router {
   navigateByUrl(url: string|UrlTree, extras: NavigationBehaviorOptions = {
     skipLocationChange: false
   }): Promise<boolean> {
-    if (NG_DEV_MODE) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
         this.console.warn(
             `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
@@ -850,7 +849,8 @@ function validateCommands(commands: string[]): void {
     if (cmd == null) {
       throw new RuntimeError(
           RuntimeErrorCode.NULLISH_COMMAND,
-          NG_DEV_MODE && `The requested path contains ${cmd} segment at index ${i}`);
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              `The requested path contains ${cmd} segment at index ${i}`);
     }
   }
 }

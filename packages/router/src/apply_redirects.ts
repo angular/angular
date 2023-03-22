@@ -22,7 +22,6 @@ import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from
 import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
 import {isEmptyError} from './utils/type_guards';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;
@@ -47,13 +46,13 @@ function absoluteRedirect(newTree: UrlTree): Observable<any> {
 function namedOutletsRedirect(redirectTo: string): Observable<any> {
   return throwError(new RuntimeError(
       RuntimeErrorCode.NAMED_OUTLET_REDIRECT,
-      NG_DEV_MODE &&
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
           `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`));
 }
 
 function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
   return throwError(navigationCancelingError(
-      NG_DEV_MODE &&
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
           `Cannot load children because the guard of the route "path: '${
               route.path}'" returned false`,
       NavigationCancellationCode.GuardRejected));
@@ -129,7 +128,8 @@ class ApplyRedirects {
   private noMatchError(e: NoMatch): any {
     return new RuntimeError(
         RuntimeErrorCode.NO_MATCH,
-        NG_DEV_MODE && `Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            `Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
   }
 
   private createUrlTree(rootCandidate: UrlSegmentGroup, queryParams: Params, fragment: string|null):
@@ -439,7 +439,7 @@ class ApplyRedirects {
     if (!pos)
       throw new RuntimeError(
           RuntimeErrorCode.MISSING_REDIRECT,
-          NG_DEV_MODE &&
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
               `Cannot redirect to '${redirectTo}'. Cannot find '${redirectToUrlSegment.path}'.`);
     return pos;
   }
