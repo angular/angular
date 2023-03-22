@@ -16,9 +16,7 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "module": "esnext",
-    "target": "es2022",
-    // Keep the below in sync with ng_module.bzl
-    "useDefineForClassFields": false,
+    "target": "es2020",
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
