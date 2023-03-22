@@ -152,10 +152,7 @@ function removeArrayReferences(
     tracker: ChangeTracker): void {
   for (const [array, toRemove] of locations.getEntries()) {
     const newElements = filterRemovedElements(array.elements, toRemove);
-    tracker.replaceNode(
-        array,
-        ts.factory.updateArrayLiteralExpression(
-            array, ts.factory.createNodeArray(newElements, array.elements.hasTrailingComma)));
+    tracker.replaceNode(array, ts.factory.updateArrayLiteralExpression(array, newElements));
   }
 }
 
