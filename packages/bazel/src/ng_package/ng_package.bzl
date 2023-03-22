@@ -132,7 +132,8 @@ def _compute_node_modules_root(ctx):
 def _write_rollup_config(
         ctx,
         root_dir,
-        filename = "_%s.rollup.conf.js"):
+        filename = "_%s.rollup.conf.js",
+        downlevel_to_es2015 = False):
     """Generate a rollup config file.
 
     Args:
@@ -171,6 +172,7 @@ def _write_rollup_config(
             "TMPL_root_dir": root_dir,
             "TMPL_workspace_name": ctx.workspace_name,
             "TMPL_external": ", ".join(["'%s'" % e for e in externals]),
+            "TMPL_downlevel_to_es2015": "true" if downlevel_to_es2015 else "false",
         },
     )
 
@@ -246,13 +248,13 @@ def _filter_esm_files_to_include(files, owning_package):
 
     for file in files:
         # We skip all `.externs.js` files as those should not be shipped as part of
-        # the ESM2022 output. The externs are empty because `ngc-wrapped` disables
+        # the ESM2020 output. The externs are empty because `ngc-wrapped` disables
         # externs generation in prodmode for workspaces other than `google3`.
         if file.path.endswith("externs.js"):
             continue
 
         # We omit all non-JavaScript files. These are not required for the FESM bundle
-        # generation and are not expected to be put into the `esm2022` output.
+        # generation and are not expected to be put into the `esm2020` output.
         if not file.path.endswith(".js") and not file.path.endswith(".mjs"):
             continue
 
@@ -285,12 +287,13 @@ def _ng_package_impl(ctx):
 
     # These accumulators match the directory names where the files live in the
     # Angular package format.
-    fesm2022 = []
+    fesm2020 = []
+    fesm2015 = []
     type_files = []
 
     # List of unscoped direct and transitive ESM sources that are provided
     # by all entry-points.
-    unscoped_all_entry_point_esm2022 = []
+    unscoped_all_entry_point_esm2020 = []
 
     # We infer the entry points to be:
     # - ng_module rules in the deps (they have an "angular" provider)
@@ -318,18 +321,18 @@ def _ng_package_impl(ctx):
         # Whether this dependency is for the primary entry-point of the package.
         is_primary_entry_point = entry_point == ""
 
-        # Collect ESM2022 and type definition source files from the dependency, including
+        # Collect ESM2020 and type definition source files from the dependency, including
         # transitive sources which are not directly defined in the entry-point. This is
         # necessary to allow for entry-points to rely on sub-targets (as a perf improvement).
-        unscoped_esm2022_depset = dep[JSEcmaScriptModuleInfo].sources
+        unscoped_esm2020_depset = dep[JSEcmaScriptModuleInfo].sources
         unscoped_types_depset = dep[DeclarationInfo].transitive_declarations
 
         # Note: Using `to_list()` is expensive but we cannot get around this here as
         # we need to filter out generated files and need to be able to iterate through
-        # JavaScript files in order to capture the `esm2022/` in the APF, and to be able
+        # JavaScript files in order to capture the `esm2020/` in the APF, and to be able
         # to detect entry-point index files when no flat module metadata is available.
-        unscoped_esm2022 = unscoped_esm2022_depset.to_list()
-        unscoped_all_entry_point_esm2022.extend(unscoped_esm2022)
+        unscoped_esm2020 = unscoped_esm2020_depset.to_list()
+        unscoped_all_entry_point_esm2020.extend(unscoped_esm2020)
 
         # Extract the "module_name" from either "ts_library" or "ng_module". Both
         # set the "module_name" in the provider struct.
@@ -346,14 +349,14 @@ def _ng_package_impl(ctx):
             # the "ng_module" rule.
             ng_module_metadata = dep.angular.flat_module_metadata
             module_name = ng_module_metadata.module_name
-            es2022_entry_point = ng_module_metadata.flat_module_out_prodmode_file
+            es2020_entry_point = ng_module_metadata.flat_module_out_prodmode_file
             typings_entry_point = ng_module_metadata.typings_file
             guessed_paths = False
 
             _debug(
                 ctx.var,
                 "entry-point %s is built using a flat module bundle." % dep,
-                "using %s as main file of the entry-point" % es2022_entry_point,
+                "using %s as main file of the entry-point" % es2020_entry_point,
             )
         else:
             _debug(
@@ -370,12 +373,13 @@ def _ng_package_impl(ctx):
             # In case the dependency is built through the "ts_library" rule, or the "ng_module"
             # rule does not generate a flat module bundle, we determine the index file and
             # typings entry-point through the most reasonable defaults (i.e. "package/index").
-            es2022_entry_point = _find_matching_file(unscoped_esm2022, "%s/index.mjs" % entry_point_package)
+            es2020_entry_point = _find_matching_file(unscoped_esm2020, "%s/index.mjs" % entry_point_package)
             typings_entry_point = _find_matching_file(unscoped_types, "%s/index.d.ts" % entry_point_package)
             guessed_paths = True
 
         bundle_name = "%s.mjs" % (primary_bundle_name if is_primary_entry_point else entry_point)
-        fesm2022_file = ctx.actions.declare_file("fesm2022/%s" % bundle_name)
+        fesm2020_file = ctx.actions.declare_file("fesm2020/%s" % bundle_name)
+        fesm2015_file = ctx.actions.declare_file("fesm2015/%s" % bundle_name)
 
         # By default, we will bundle the typings entry-point, unless explicitly opted-out
         # through the `skip_type_bundling` rule attribute.
@@ -404,38 +408,52 @@ def _ng_package_impl(ctx):
         # can be later passed to the packager as a manifest.
         collected_entry_points.append(struct(
             module_name = module_name,
-            es2022_entry_point = es2022_entry_point,
-            fesm2022_file = fesm2022_file,
+            es2020_entry_point = es2020_entry_point,
+            fesm2020_file = fesm2020_file,
+            fesm2015_file = fesm2015_file,
             typings_file = typings_file,
             guessed_paths = guessed_paths,
         ))
 
-        # Note: For creating the bundles, we use all the ESM2022 sources that have been
+        # Note: For creating the bundles, we use all the ESM2020 sources that have been
         # collected from the dependencies. This allows for bundling of code that is not
         # necessarily part of the owning package (with respect to the `externals` attribute)
-        rollup_inputs = unscoped_esm2022_depset
-        esm2022_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2022.conf.js")
+        rollup_inputs = unscoped_esm2020_depset
+        esm2020_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2020.conf.js")
+        esm2015_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2015.conf.js", downlevel_to_es2015 = True)
 
-        fesm2022.extend(
+        fesm2020.extend(
             _run_rollup(
                 ctx,
-                "fesm2022",
-                esm2022_config,
-                es2022_entry_point,
+                "fesm2020",
+                esm2020_config,
+                es2020_entry_point,
                 rollup_inputs,
-                fesm2022_file,
+                fesm2020_file,
                 format = "esm",
             ),
         )
 
-    # Filter ESM2022 JavaScript inputs to files which are part of the owning package. The
+        fesm2015.extend(
+            _run_rollup(
+                ctx,
+                "fesm2015",
+                esm2015_config,
+                es2020_entry_point,
+                rollup_inputs,
+                fesm2015_file,
+                format = "esm",
+            ),
+        )
+
+    # Filter ESM2020 JavaScript inputs to files which are part of the owning package. The
     # packager should not copy external files into the package.
-    esm2022 = _filter_esm_files_to_include(unscoped_all_entry_point_esm2022, owning_package)
+    esm2020 = _filter_esm_files_to_include(unscoped_all_entry_point_esm2020, owning_package)
 
     packager_inputs = (
         static_files +
         type_files +
-        fesm2022 + esm2022
+        fesm2020 + esm2020 + fesm2015
     )
 
     packager_args = ctx.actions.args()
@@ -452,8 +470,9 @@ def _ng_package_impl(ctx):
         # The captured properties need to match the `EntryPointInfo` interface
         # in the packager executable tool.
         metadata_arg[m.module_name] = {
-            "index": _serialize_file(m.es2022_entry_point),
-            "fesm2022Bundle": _serialize_file(m.fesm2022_file),
+            "index": _serialize_file(m.es2020_entry_point),
+            "fesm2020Bundle": _serialize_file(m.fesm2020_file),
+            "fesm2015Bundle": _serialize_file(m.fesm2015_file),
             "typings": _serialize_file(m.typings_file),
             # If the paths for that entry-point were guessed (e.g. "ts_library" rule or
             # "ng_module" without flat module bundle), we pass this information to the packager.
@@ -475,8 +494,9 @@ def _ng_package_impl(ctx):
         # placeholder
         packager_args.add("")
 
-    packager_args.add(_serialize_files_for_arg(fesm2022))
-    packager_args.add(_serialize_files_for_arg(esm2022))
+    packager_args.add(_serialize_files_for_arg(fesm2020))
+    packager_args.add(_serialize_files_for_arg(esm2020))
+    packager_args.add(_serialize_files_for_arg(fesm2015))
     packager_args.add(_serialize_files_for_arg(static_files))
     packager_args.add(_serialize_files_for_arg(type_files))
 
@@ -520,7 +540,7 @@ _NG_PACKAGE_DEPS_ASPECTS = [ng_package_module_mappings_aspect, node_modules_aspe
 _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
     "srcs": attr.label_list(
         doc = """JavaScript source files from the workspace.
-        These can use ES2022 syntax and ES Modules (import/export)""",
+        These can use ES2020 syntax and ES Modules (import/export)""",
         cfg = partial_compilation_transition,
         allow_files = True,
     ),

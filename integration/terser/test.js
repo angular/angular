@@ -6,8 +6,8 @@ const Terser = require('terser');
 
 async function test() {
   const outputPath = resolve(__dirname, './core.min.js');
-  const pathToCoreFesm2020 = resolve(__dirname, './node_modules/@angular/core/fesm2022/core.mjs');
-  const coreFesm2022Content = readFileSync(pathToCoreFesm2020, 'utf8');
+  const pathToCoreFesm2020 = resolve(__dirname, './node_modules/@angular/core/fesm2020/core.mjs');
+  const coreFesm2020Content = readFileSync(pathToCoreFesm2020, 'utf8');
 
   const GLOBAL_DEFS_FOR_TERSER = (await import('@angular/compiler-cli')).GLOBAL_DEFS_FOR_TERSER;
 
@@ -18,7 +18,7 @@ async function test() {
       global_defs: GLOBAL_DEFS_FOR_TERSER
     }
   };
-  const result = await Terser.minify(coreFesm2022Content, terserOpts);
+  const result = await Terser.minify(coreFesm2020Content, terserOpts);
   writeFileSync(outputPath, result.code);
 
   for (const def of Object.keys(GLOBAL_DEFS_FOR_TERSER)) {
