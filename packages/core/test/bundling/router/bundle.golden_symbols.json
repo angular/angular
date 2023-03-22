@@ -48,9 +48,6 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
-    "name": "BaseConsumer"
-  },
-  {
     "name": "BaseRouteReuseStrategy"
   },
   {
@@ -568,6 +565,9 @@
   },
   {
     "name": "ReactiveLViewConsumer"
+  },
+  {
+    "name": "ReactiveNode"
   },
   {
     "name": "Recognizer"

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseConsumer, consumerPollValueStatus, setActiveConsumer} from './graph';
+import {ReactiveNode, setActiveConsumer} from './graph';
 
 /**
  * Watches a reactive expression and allows it to be scheduled to re-run
@@ -15,18 +15,26 @@ import {BaseConsumer, consumerPollValueStatus, setActiveConsumer} from './graph'
  * `Watch` doesn't run reactive expressions itself, but relies on a consumer-
  * provided scheduling operation to coordinate calling `Watch.run()`.
  */
-export class Watch extends BaseConsumer {
+export class Watch extends ReactiveNode {
   private dirty = false;
 
   constructor(private watch: () => void, private schedule: (watch: Watch) => void) {
     super();
   }
 
-  override notify(): void {
+  notify(): void {
     if (!this.dirty) {
       this.schedule(this);
     }
     this.dirty = true;
+  }
+
+  protected override onConsumerDependencyMayHaveChanged(): void {
+    this.notify();
+  }
+
+  protected override onProducerUpdateValueVersion(): void {
+    // Watches are not producers.
   }
 
   /**
@@ -37,7 +45,7 @@ export class Watch extends BaseConsumer {
    */
   run(): void {
     this.dirty = false;
-    if (this.trackingVersion !== 0 && !consumerPollValueStatus(this)) {
+    if (this.trackingVersion !== 0 && !this.consumerPollProducersForChange()) {
       return;
     }
 

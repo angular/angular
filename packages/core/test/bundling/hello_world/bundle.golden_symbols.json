@@ -24,9 +24,6 @@
     "name": "BLOOM_MASK"
   },
   {
-    "name": "BaseConsumer"
-  },
-  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -268,6 +265,9 @@
   },
   {
     "name": "ReactiveLViewConsumer"
+  },
+  {
+    "name": "ReactiveNode"
   },
   {
     "name": "RefCountOperator"

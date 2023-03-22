@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignalFromFunction, DeepReadonly, defaultEquals, Signal, ValueEqualityFn} from './api';
-import {Consumer, ConsumerId, consumerPollValueStatus, Edge, nextReactiveId, Producer, producerAccessed, ProducerId, producerNotifyConsumers, setActiveConsumer} from './graph';
-import {newWeakRef} from './weak_ref';
+import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
+import {ReactiveNode, setActiveConsumer} from './graph';
 
 /**
  * Options passed to the `computed` creation function.
@@ -59,9 +58,12 @@ const ERRORED: any = Symbol('ERRORED');
 /**
  * A computation, which derives a value from a declarative reactive expression.
  *
- * `Computed`s are both `Producer`s and `Consumer`s of reactivity.
+ * `Computed`s are both producers and consumers of reactivity.
  */
-class ComputedImpl<T> implements Producer, Consumer {
+class ComputedImpl<T> extends ReactiveNode {
+  constructor(private computation: () => T, private equal: (oldValue: T, newValue: T) => boolean) {
+    super();
+  }
   /**
    * Current value of the computation.
    *
@@ -84,16 +86,20 @@ class ComputedImpl<T> implements Producer, Consumer {
    */
   private stale = true;
 
-  readonly id = nextReactiveId();
-  readonly ref = newWeakRef(this);
-  readonly producers = new Map<ProducerId, Edge>();
-  readonly consumers = new Map<ConsumerId, Edge>();
-  trackingVersion = 0;
-  valueVersion = 0;
+  protected override onConsumerDependencyMayHaveChanged(): void {
+    if (this.stale) {
+      // We've already notified consumers that this value has potentially changed.
+      return;
+    }
 
-  constructor(private computation: () => T, private equal: (oldValue: T, newValue: T) => boolean) {}
+    // Record that the currently cached value may be stale.
+    this.stale = true;
 
-  checkForChangedValue(): void {
+    // Notify any consumers about the potential change.
+    this.producerMayHaveChanged();
+  }
+
+  protected override onProducerUpdateValueVersion(): void {
     if (!this.stale) {
       // The current value and its version are already up to date.
       return;
@@ -101,7 +107,8 @@ class ComputedImpl<T> implements Producer, Consumer {
 
     // The current value is stale. Check whether we need to produce a new one.
 
-    if (this.value !== UNSET && this.value !== COMPUTING && !consumerPollValueStatus(this)) {
+    if (this.value !== UNSET && this.value !== COMPUTING &&
+        !this.consumerPollProducersForChange()) {
       // Even though we were previously notified of a potential dependency update, all of
       // our dependencies report that they have not actually changed in value, so we can
       // resolve the stale state without needing to recompute the current value.
@@ -150,25 +157,12 @@ class ComputedImpl<T> implements Producer, Consumer {
     this.valueVersion++;
   }
 
-  notify(): void {
-    if (this.stale) {
-      // We've already notified consumers that this value has potentially changed.
-      return;
-    }
-
-    // Record that the currently cached value may be stale.
-    this.stale = true;
-
-    // Notify any consumers about the potential change.
-    producerNotifyConsumers(this);
-  }
-
   signal(): T {
     // Check if the value needs updating before returning it.
-    this.checkForChangedValue();
+    this.onProducerUpdateValueVersion();
 
     // Record that someone looked at this signal.
-    producerAccessed(this);
+    this.producerAccessed();
 
     if (this.value === ERRORED) {
       throw this.error;

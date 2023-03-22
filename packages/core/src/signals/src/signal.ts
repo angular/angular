@@ -7,8 +7,7 @@
  */
 
 import {createSignalFromFunction, DeepReadonly, defaultEquals, Signal, ValueEqualityFn} from './api';
-import {ConsumerId, Edge, nextReactiveId, Producer, producerAccessed, producerNotifyConsumers} from './graph';
-import {newWeakRef} from './weak_ref';
+import {ReactiveNode} from './graph';
 
 /**
  * A `Signal` with a value that can be mutated via a setter interface.
@@ -34,19 +33,17 @@ export interface WritableSignal<T> extends Signal<T> {
   mutate(mutatorFn: (value: T) => void): void;
 }
 
-/**
- * Backing type for a `WritableSignal`, a mutable reactive value.
- */
-class WritableSignalImpl<T> implements Producer {
-  constructor(private value: T, private equal: ValueEqualityFn<T>) {}
+class WritableSignalImpl<T> extends ReactiveNode {
+  constructor(private value: T, private equal: ValueEqualityFn<T>) {
+    super();
+  }
 
-  readonly id = nextReactiveId();
-  readonly ref = newWeakRef(this);
-  readonly consumers = new Map<ConsumerId, Edge>();
-  valueVersion = 0;
+  protected override onConsumerDependencyMayHaveChanged(): void {
+    // This never happens for writable signals as they're not consumers.
+  }
 
-  checkForChangedValue(): void {
-    // Writable signals can only change when set, so there's nothing to check here.
+  protected override onProducerUpdateValueVersion(): void {
+    // Writable signal value versions are always up to date.
   }
 
   /**
@@ -60,7 +57,7 @@ class WritableSignalImpl<T> implements Producer {
     if (!this.equal(this.value, newValue)) {
       this.value = newValue;
       this.valueVersion++;
-      producerNotifyConsumers(this);
+      this.producerMayHaveChanged();
     }
   }
 
@@ -81,11 +78,11 @@ class WritableSignalImpl<T> implements Producer {
     // Mutate bypasses equality checks as it's by definition changing the value.
     mutator(this.value);
     this.valueVersion++;
-    producerNotifyConsumers(this);
+    this.producerMayHaveChanged();
   }
 
   signal(): DeepReadonly<T> {
-    producerAccessed(this);
+    this.producerAccessed();
     return this.value as unknown as DeepReadonly<T>;
   }
 }
