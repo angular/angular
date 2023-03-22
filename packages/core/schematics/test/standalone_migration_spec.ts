@@ -1657,6 +1657,128 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should preserve the trailing comma when adding an `imports` array', async () => {
+    writeFile('module.ts', `
+      import {NgModule, Directive} from '@angular/core';
+
+      @Directive({selector: '[dir]'})
+      export class MyDir {}
+
+      @NgModule({
+        declarations: [MyDir],
+        exports: [MyDir],
+      })
+      export class Mod {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('module.ts'))).toContain(stripWhitespace(`
+      @NgModule({
+        imports: [MyDir],
+        exports: [MyDir],
+      })
+    `));
+  });
+
+  it('should preserve the trailing comma when adding to an existing `imports` array', async () => {
+    writeFile('module.ts', `
+      import {NgModule, Directive} from '@angular/core';
+      import {CommonModule} from '@angular/common';
+      import {RouterModule} from '@angular/router';
+
+      @Directive({selector: '[dir]'})
+      export class MyDir {}
+
+      @NgModule({
+        imports: [
+          CommonModule,
+          RouterModule,
+        ],
+        declarations: [MyDir],
+        exports: [MyDir],
+      })
+      export class Mod {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('module.ts'))).toContain(stripWhitespace(`
+      @NgModule({
+        imports: [
+          CommonModule,
+          RouterModule,
+          MyDir,
+        ],
+        exports: [MyDir],
+      })
+    `));
+  });
+
+  it('should preserve the trailing comma when marking a directive as standalone', async () => {
+    writeFile('module.ts', `
+      import {NgModule, Directive} from '@angular/core';
+
+      @Directive({
+        selector: '[dir]',
+        exportAs: 'dir',
+      })
+      export class MyDir {}
+
+      @NgModule({declarations: [MyDir]})
+      export class Mod {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('module.ts'))).toContain(stripWhitespace(`
+      @Directive({
+        selector: '[dir]',
+        exportAs: 'dir',
+        standalone: true,
+      })
+    `));
+  });
+
+  it('should add a trailing comma when generating an imports array in a component', async () => {
+    writeFile('module.ts', `
+      import {NgModule, Directive, Component} from '@angular/core';
+
+      @Directive({selector: '[dir-one]'})
+      export class DirOne {}
+
+      @Directive({selector: '[dir-two]'})
+      export class DirTwo {}
+
+      @Directive({selector: '[dir-three]'})
+      export class DirThree {}
+
+      @Component({
+        selector: 'my-comp',
+        template: '<div dir-one dir-two dir-three></div>',
+      })
+      export class MyComp {}
+
+      @NgModule({declarations: [DirOne, DirTwo, DirThree, MyComp]})
+      export class Mod {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('module.ts'))).toContain(stripWhitespace(`
+      @Component({
+        selector: 'my-comp',
+        template: '<div dir-one dir-two dir-three></div>',
+        standalone: true,
+        imports: [
+          DirOne,
+          DirTwo,
+          DirThree,
+        ],
+      })
+    `));
+  });
+
   it('should remove a module that only has imports and exports', async () => {
     writeFile('app.module.ts', `
       import {NgModule} from '@angular/core';
@@ -2410,6 +2532,43 @@ describe('standalone migration', () => {
 
       @NgModule({imports: [], declarations: [MyComp], exports: [MyComp]})
       export class AppModule {}
+    `));
+  });
+
+  it('should preserve the trailing comma when deleting a module', async () => {
+    const initialAppModule = `
+      import {NgModule, InjectionToken} from '@angular/core';
+      import {CommonModule} from '@angular/common';
+      import {RouterModule} from '@angular/router';
+
+      const token = new InjectionToken('token');
+
+      @NgModule()
+      export class ToDelete {}
+
+      @NgModule({
+        imports: [
+          CommonModule,
+          ToDelete,
+          RouterModule,
+        ],
+        providers: [{provide: token, useValue: 123}],
+      })
+      export class AppModule {}
+    `;
+
+    writeFile('app.module.ts', initialAppModule);
+
+    await runMigration('prune-ng-modules');
+
+    expect(stripWhitespace(tree.readContent('app.module.ts'))).toContain(stripWhitespace(`
+      @NgModule({
+        imports: [
+          CommonModule,
+          RouterModule,
+        ],
+        providers: [{provide: token, useValue: 123}],
+      })
     `));
   });
 

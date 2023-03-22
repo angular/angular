@@ -98,10 +98,15 @@ export function convertNgModuleDeclarationToStandalone(
           decl, allDeclarations, tracker, typeChecker, importRemapper);
 
       if (importsToAdd.length > 0) {
+        const hasTrailingComma = importsToAdd.length > 2 &&
+            !!extractMetadataLiteral(directiveMeta.decorator)?.properties.hasTrailingComma;
         decorator = addPropertyToAngularDecorator(
             decorator,
             ts.factory.createPropertyAssignment(
-                'imports', ts.factory.createArrayLiteralExpression(importsToAdd)));
+                'imports',
+                ts.factory.createArrayLiteralExpression(
+                    // Create a multi-line array when it has a trailing comma.
+                    ts.factory.createNodeArray(importsToAdd, hasTrailingComma), hasTrailingComma)));
       }
     }
 
@@ -215,6 +220,9 @@ function moveDeclarationsToImports(
   const declarationsToCopy: ts.Expression[] = [];
   const properties: ts.ObjectLiteralElementLike[] = [];
   const importsProp = findLiteralProperty(literal, 'imports');
+  const hasAnyArrayTrailingComma = literal.properties.some(
+      prop => ts.isPropertyAssignment(prop) && ts.isArrayLiteralExpression(prop.initializer) &&
+          prop.initializer.elements.hasTrailingComma);
 
   // Separate the declarations that we want to keep and ones we need to copy into the `imports`.
   if (ts.isPropertyAssignment(declarationsProp)) {
@@ -248,7 +256,9 @@ function moveDeclarationsToImports(
   // If there are no `imports`, create them with the declarations we want to copy.
   if (!importsProp && declarationsToCopy.length > 0) {
     properties.push(ts.factory.createPropertyAssignment(
-        'imports', ts.factory.createArrayLiteralExpression(declarationsToCopy)));
+        'imports',
+        ts.factory.createArrayLiteralExpression(ts.factory.createNodeArray(
+            declarationsToCopy, hasAnyArrayTrailingComma && declarationsToCopy.length > 2))));
   }
 
   for (const prop of literal.properties) {
@@ -260,8 +270,13 @@ function moveDeclarationsToImports(
     // If we have declarations to preserve, update the existing property, otherwise drop it.
     if (prop === declarationsProp) {
       if (declarationsToPreserve.length > 0) {
+        const hasTrailingComma = ts.isArrayLiteralExpression(prop.initializer) ?
+            prop.initializer.elements.hasTrailingComma :
+            hasAnyArrayTrailingComma;
         properties.push(ts.factory.updatePropertyAssignment(
-            prop, prop.name, ts.factory.createArrayLiteralExpression(declarationsToPreserve)));
+            prop, prop.name,
+            ts.factory.createArrayLiteralExpression(ts.factory.createNodeArray(
+                declarationsToPreserve, hasTrailingComma && declarationsToPreserve.length > 2))));
       }
       continue;
     }
@@ -273,10 +288,16 @@ function moveDeclarationsToImports(
 
       if (ts.isArrayLiteralExpression(prop.initializer)) {
         initializer = ts.factory.updateArrayLiteralExpression(
-            prop.initializer, [...prop.initializer.elements, ...declarationsToCopy]);
+            prop.initializer,
+            ts.factory.createNodeArray(
+                [...prop.initializer.elements, ...declarationsToCopy],
+                prop.initializer.elements.hasTrailingComma));
       } else {
-        initializer = ts.factory.createArrayLiteralExpression(
-            [ts.factory.createSpreadElement(prop.initializer), ...declarationsToCopy]);
+        initializer = ts.factory.createArrayLiteralExpression(ts.factory.createNodeArray(
+            [ts.factory.createSpreadElement(prop.initializer), ...declarationsToCopy],
+            // Expect the declarations to be greater than 1 since
+            // we have the pre-existing initializer already.
+            hasAnyArrayTrailingComma && declarationsToCopy.length > 1));
       }
 
       properties.push(ts.factory.updatePropertyAssignment(prop, prop.name, initializer));
@@ -288,7 +309,9 @@ function moveDeclarationsToImports(
   }
 
   tracker.replaceNode(
-      literal, ts.factory.updateObjectLiteralExpression(literal, properties),
+      literal,
+      ts.factory.updateObjectLiteralExpression(
+          literal, ts.factory.createNodeArray(properties, literal.properties.hasTrailingComma)),
       ts.EmitHint.Expression);
 }
 
@@ -313,10 +336,12 @@ function addPropertyToAngularDecorator(
   }
 
   let literalProperties: ts.ObjectLiteralElementLike[];
+  let hasTrailingComma = false;
 
   if (node.expression.arguments.length === 0) {
     literalProperties = [property];
   } else if (ts.isObjectLiteralExpression(node.expression.arguments[0])) {
+    hasTrailingComma = node.expression.arguments[0].properties.hasTrailingComma;
     literalProperties = [...node.expression.arguments[0].properties, property];
   } else {
     // Unsupported case (e.g. `@Component(SOME_CONST)`). Return the original node.
@@ -327,7 +352,9 @@ function addPropertyToAngularDecorator(
   // the latter ends up duplicating the node's leading comment.
   return ts.factory.createDecorator(ts.factory.createCallExpression(
       node.expression.expression, node.expression.typeArguments,
-      [ts.factory.createObjectLiteralExpression(literalProperties, literalProperties.length > 1)]));
+      [ts.factory.createObjectLiteralExpression(
+          ts.factory.createNodeArray(literalProperties, hasTrailingComma),
+          literalProperties.length > 1)]));
 }
 
 /** Checks if a node is a `PropertyAssignment` with a name. */
@@ -559,12 +586,16 @@ export function migrateTestDeclarations(
       }
 
       if (importsToAdd && importsToAdd.size > 0) {
+        const hasTrailingComma = importsToAdd.size > 2 &&
+            !!extractMetadataLiteral(decorator.node)?.properties.hasTrailingComma;
+        const importsArray = ts.factory.createNodeArray(Array.from(importsToAdd), hasTrailingComma);
+
         tracker.replaceNode(
             decorator.node,
             addPropertyToAngularDecorator(
                 newDecorator,
                 ts.factory.createPropertyAssignment(
-                    'imports', ts.factory.createArrayLiteralExpression(Array.from(importsToAdd)))));
+                    'imports', ts.factory.createArrayLiteralExpression(importsArray))));
       } else {
         tracker.replaceNode(decorator.node, newDecorator);
       }
