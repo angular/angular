@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseConsumer, setActiveConsumer} from '../signals/src/graph';
+import {ReactiveNode, setActiveConsumer} from '../signals/src/graph';
 import {assertDefined, assertEqual} from '../util/assert';
 
 import {markViewDirty} from './instructions/mark_view_dirty';
@@ -15,7 +15,7 @@ import {LView, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER} from 
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
-export class ReactiveLViewConsumer extends BaseConsumer {
+export class ReactiveLViewConsumer extends ReactiveNode {
   private _lView: LView|null = null;
 
   set lView(lView: LView) {
@@ -23,12 +23,20 @@ export class ReactiveLViewConsumer extends BaseConsumer {
     this._lView = lView;
   }
 
-  override notify() {
+  protected override onConsumerDependencyMayHaveChanged() {
     NG_DEV_MODE &&
         assertDefined(
             this._lView,
             'Updating a signal during template or host binding execution is not allowed.');
     markViewDirty(this._lView!);
+  }
+
+  protected override onProducerUpdateValueVersion(): void {
+    // This type doesn't implement the producer side of a `ReactiveNode`.
+  }
+
+  get hasReadASignal(): boolean {
+    return this.hasProducers;
   }
 
   runInContext(
@@ -82,7 +90,7 @@ export function commitLViewConsumerIfHasProducers(
     lView: LView,
     slot: typeof REACTIVE_TEMPLATE_CONSUMER|typeof REACTIVE_HOST_BINDING_CONSUMER): void {
   const consumer = getOrCreateCurrentLViewConsumer();
-  if (consumer.producers.size === 0) {
+  if (!consumer.hasReadASignal) {
     return;
   }
 

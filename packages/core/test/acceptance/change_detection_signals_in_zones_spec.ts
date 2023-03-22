@@ -10,7 +10,6 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {signal} from '../../src/signals';
-import {nextReactiveId} from '../../src/signals/src/graph';
 
 describe('CheckAlways components', () => {
   it('can read a signal', () => {

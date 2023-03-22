@@ -48,9 +48,6 @@
     "name": "BROWSER_MODULE_PROVIDERS_MARKER"
   },
   {
-    "name": "BaseConsumer"
-  },
-  {
     "name": "BaseControlValueAccessor"
   },
   {
@@ -481,6 +478,9 @@
   },
   {
     "name": "ReactiveLViewConsumer"
+  },
+  {
+    "name": "ReactiveNode"
   },
   {
     "name": "RefCountOperator"

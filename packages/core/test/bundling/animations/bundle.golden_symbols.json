@@ -99,9 +99,6 @@
     "name": "BaseAnimationRenderer"
   },
   {
-    "name": "BaseConsumer"
-  },
-  {
     "name": "BrowserAnimationBuilder"
   },
   {
@@ -472,6 +469,9 @@
   },
   {
     "name": "ReactiveLViewConsumer"
+  },
+  {
+    "name": "ReactiveNode"
   },
   {
     "name": "RefCountOperator"
