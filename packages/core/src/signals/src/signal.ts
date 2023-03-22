@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
+import {createSignalFromFunction, DeepReadonly, defaultEquals, Signal, ValueEqualityFn} from './api';
 import {ConsumerId, Edge, nextReactiveId, Producer, producerAccessed, producerNotifyConsumers} from './graph';
 import {newWeakRef} from './weak_ref';
 
@@ -84,9 +84,9 @@ class WritableSignalImpl<T> implements Producer {
     producerNotifyConsumers(this);
   }
 
-  signal(): T {
+  signal(): DeepReadonly<T> {
     producerAccessed(this);
-    return this.value;
+    return this.value as unknown as DeepReadonly<T>;
   }
 }
 
@@ -109,7 +109,8 @@ export interface CreateSignalOptions<T> {
  */
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
   const signalNode = new WritableSignalImpl(initialValue, options?.equal ?? defaultEquals);
-  // Casting here is required for g3.
+  // Casting here is required for g3, as TS inference behavior is slightly different between our
+  // version/options and g3's.
   const signalFn = createSignalFromFunction(signalNode.signal.bind(signalNode), {
                      set: signalNode.set.bind(signalNode),
                      update: signalNode.update.bind(signalNode),

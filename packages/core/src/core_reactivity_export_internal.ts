@@ -11,6 +11,7 @@ export {
   computed,
   CreateComputedOptions,
   CreateSignalOptions,
+  DeepReadonly,
   isSignal,
   Signal,
   signal,
