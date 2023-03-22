@@ -1159,9 +1159,15 @@
   },
   {
     "date": {
-      "start": "2023-05-18"
+      "start": "2023-03-24"
     },
-    "name": "JSHeroes"
+    "name": "ng-be"
+  },
+  {
+    "date": {
+      "start": "2023-04-25"
+    },
+    "name": "CityJS Brazil"
   },
   {
     "date": {
@@ -1171,9 +1177,57 @@
   },
   {
     "date": {
+      "start": "2023-05-18"
+    },
+    "name": "JSHeroes"
+  },
+  {
+    "date": {
+      "start": "2023-05-10"
+    },
+    "name": "Google I/O"
+  },
+  {
+    "date": {
+      "start": "2023-05-24"
+    },
+    "name": "Google I/O Connect: Miami"
+  },
+  {
+    "date": {
+      "start": "2023-06-01"
+    },
+    "name": "JSNation"
+  },
+  {
+    "date": {
+      "start": "2023-06-02"
+    },
+    "name": "JSConf India"
+  },
+  {
+    "date": {
       "start": "2023-06-14"
     },
     "name": "ng-conf"
+  },
+  {
+    "date": {
+      "start": "2023-06-21"
+    },
+    "name": "Google I/O Connect: Amsterdam"
+  },
+  {
+    "date": {
+      "start": "2023-06-28"
+    },
+    "name": "Google I/O Connect: Bengaluru"
+  },
+  {
+    "date": {
+      "start": "2023-09-08"
+    },
+    "name": "Google I/O Connect: Shanghai"
   },
   {
     "date": {
