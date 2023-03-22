@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ReactiveNode} from './graph';
+
 /**
  * Symbol used to tell `Signal`s apart from other functions.
  *
@@ -24,14 +26,14 @@ const SIGNAL = Symbol('SIGNAL');
  * @developerPreview
  */
 export type Signal<T> = (() => DeepReadonly<T>)&{
-  [SIGNAL]: true;
+  [SIGNAL]: unknown;
 };
 
 /**
  * Checks if the given `value` function is a reactive `Signal`.
  */
 export function isSignal(value: Function): value is Signal<unknown> {
-  return (value as Signal<unknown>)[SIGNAL] ?? false;
+  return (value as Signal<unknown>)[SIGNAL] !== undefined;
 }
 
 /**
@@ -39,7 +41,7 @@ export function isSignal(value: Function): value is Signal<unknown> {
  *
  * @param fn A zero-argument function which will be converted into a `Signal`.
  */
-export function createSignalFromFunction<T>(fn: () => T): Signal<T>;
+export function createSignalFromFunction<T>(node: ReactiveNode, fn: () => T): Signal<T>;
 
 /**
  * Converts `fn` into a marked signal function (where `isSignal(fn)` will be `true`), and
@@ -50,15 +52,15 @@ export function createSignalFromFunction<T>(fn: () => T): Signal<T>;
  *     desired interface for the `Signal`.
  */
 export function createSignalFromFunction<T, U extends Record<string, unknown>>(
-    fn: () => T, extraApi: U): Signal<T>&U;
+    node: ReactiveNode, fn: () => T, extraApi: U): Signal<T>&U;
 
 /**
  * Converts `fn` into a marked signal function (where `isSignal(fn)` will be `true`), and
  * potentially add some set of extra properties (passed as an object record `extraApi`).
  */
 export function createSignalFromFunction<T, U extends Record<string, unknown> = {}>(
-    fn: () => T, extraApi: U = ({} as U)): Signal<T>&U {
-  (fn as any)[SIGNAL] = true;
+    node: ReactiveNode, fn: () => T, extraApi: U = ({} as U)): Signal<T>&U {
+  (fn as any)[SIGNAL] = node;
   // Copy properties from `extraApi` to `fn` to complete the desired API of the `Signal`.
   return Object.assign(fn, extraApi) as (Signal<T>& U);
 }

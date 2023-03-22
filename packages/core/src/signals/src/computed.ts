@@ -17,7 +17,7 @@ import {ReactiveNode, setActiveConsumer} from './graph';
 export function computed<T>(
     computation: () => T, options?: {equal?: ValueEqualityFn<T>}): Signal<T> {
   const node = new ComputedImpl(computation, options?.equal ?? defaultEquals);
-  return createSignalFromFunction(node.signal.bind(node)) as unknown as Signal<T>;
+  return createSignalFromFunction(node, node.signal.bind(node)) as unknown as Signal<T>;
 }
 
 /**

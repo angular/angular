@@ -96,7 +96,7 @@ export function signal<T>(
     initialValue: T, options?: {equal?: ValueEqualityFn<T>}): WritableSignal<T> {
   const signalNode = new WritableSignalImpl(initialValue, options?.equal ?? defaultEquals);
   // Casting here is required for g3.
-  const signalFn = createSignalFromFunction(signalNode.signal.bind(signalNode), {
+  const signalFn = createSignalFromFunction(signalNode, signalNode.signal.bind(signalNode), {
                      set: signalNode.set.bind(signalNode),
                      update: signalNode.update.bind(signalNode),
                      mutate: signalNode.mutate.bind(signalNode),
