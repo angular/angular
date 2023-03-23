@@ -8,11 +8,11 @@
 
 import {PlatformLocation, XhrFactory} from '@angular/common';
 import {HttpBackend, HttpEvent, HttpHandler, HttpRequest, ɵHttpInterceptorHandler as HttpInterceptorHandler} from '@angular/common/http';
-import {EnvironmentInjector, inject, Injectable, Provider} from '@angular/core';
-import {Observable, Observer, Subscription} from 'rxjs';
+import {EnvironmentInjector, Inject, inject, Injectable, Provider} from '@angular/core';
+import {Observable} from 'rxjs';
 import * as xhr2 from 'xhr2';
 
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
+import {INITIAL_CONFIG} from './tokens';
 
 // @see https://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01#URI-syntax
 const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;
@@ -24,93 +24,20 @@ export class ServerXhr implements XhrFactory {
   }
 }
 
-export abstract class ZoneMacroTaskWrapper<S, R> {
-  wrap(request: S): Observable<R> {
-    return new Observable((observer: Observer<R>) => {
-      let task: Task = null!;
-      let scheduled: boolean = false;
-      let sub: Subscription|null = null;
-      let savedResult: any = null;
-      let savedError: any = null;
+// TODO(alanagius): this logic should be re-evauted and moved into `withTransferCache` in
+// `@angular/common/http` if still needed.
+@Injectable()
+export class ServerHttpInterceptorHandler extends HttpInterceptorHandler {
+  private readonly platformLocation = inject(PlatformLocation);
+  private readonly config = inject(INITIAL_CONFIG);
 
-      const scheduleTask = (_task: Task) => {
-        task = _task;
-        scheduled = true;
-
-        const delegate = this.delegate(request);
-        sub = delegate.subscribe(
-            res => savedResult = res,
-            err => {
-              if (!scheduled) {
-                throw new Error(
-                    'An http observable was completed twice. This shouldn\'t happen, please file a bug.');
-              }
-              savedError = err;
-              scheduled = false;
-              task.invoke();
-            },
-            () => {
-              if (!scheduled) {
-                throw new Error(
-                    'An http observable was completed twice. This shouldn\'t happen, please file a bug.');
-              }
-              scheduled = false;
-              task.invoke();
-            });
-      };
-
-      const cancelTask = (_task: Task) => {
-        if (!scheduled) {
-          return;
-        }
-        scheduled = false;
-        if (sub) {
-          sub.unsubscribe();
-          sub = null;
-        }
-      };
-
-      const onComplete = () => {
-        if (savedError !== null) {
-          observer.error(savedError);
-        } else {
-          observer.next(savedResult);
-          observer.complete();
-        }
-      };
-
-      // MockBackend for Http is synchronous, which means that if scheduleTask is by
-      // scheduleMacroTask, the request will hit MockBackend and the response will be
-      // sent, causing task.invoke() to be called.
-      const _task = Zone.current.scheduleMacroTask(
-          'ZoneMacroTaskWrapper.subscribe', onComplete, {}, () => null, cancelTask);
-      scheduleTask(_task);
-
-      return () => {
-        if (scheduled && task) {
-          task.zone.cancelTask(task);
-          scheduled = false;
-        }
-        if (sub) {
-          sub.unsubscribe();
-          sub = null;
-        }
-      };
-    });
+  constructor() {
+    const backend = inject(HttpBackend);
+    const injector = inject(EnvironmentInjector);
+    super(backend, injector);
   }
 
-  protected abstract delegate(request: S): Observable<R>;
-}
-
-export class ZoneClientBackend extends
-    ZoneMacroTaskWrapper<HttpRequest<any>, HttpEvent<any>> implements HttpBackend {
-  constructor(
-      private backend: HttpBackend, private platformLocation: PlatformLocation,
-      private config: PlatformConfig) {
-    super();
-  }
-
-  handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
+  override handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     const {href, protocol, hostname, port} = this.platformLocation;
     if (this.config.useAbsoluteUrl && !isAbsoluteUrl.test(request.url) &&
         isAbsoluteUrl.test(href)) {
@@ -118,27 +45,17 @@ export class ZoneClientBackend extends
       const urlPrefix = `${protocol}//${hostname}` + (port ? `:${port}` : '');
       const baseUrl = new URL(baseHref, urlPrefix);
       const url = new URL(request.url, baseUrl);
-      return this.wrap(request.clone({url: url.toString()}));
+      return super.handle(request.clone({url: url.toString()}));
     }
-    return this.wrap(request);
-  }
 
-  protected override delegate(request: HttpRequest<any>): Observable<HttpEvent<any>> {
-    return this.backend.handle(request);
+    return super.handle(request);
   }
-}
-
-export function zoneWrappedInterceptorHandler(
-    platformLocation: PlatformLocation, config: PlatformConfig) {
-  return new ZoneClientBackend(
-      new HttpInterceptorHandler(inject(HttpBackend), inject(EnvironmentInjector)),
-      platformLocation, config);
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
   {provide: XhrFactory, useClass: ServerXhr}, {
     provide: HttpHandler,
-    useFactory: zoneWrappedInterceptorHandler,
-    deps: [PlatformLocation, INITIAL_CONFIG]
+    useClass: ServerHttpInterceptorHandler,
+    deps: [PlatformLocation, INITIAL_CONFIG, HttpBackend, EnvironmentInjector]
   }
 ];
