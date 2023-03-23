@@ -25,9 +25,11 @@ export const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
 // @public
 export interface PlatformConfig {
+    // @deprecated
     baseUrl?: string;
     document?: string;
     url?: string;
+    // @deprecated
     useAbsoluteUrl?: boolean;
 }
 
