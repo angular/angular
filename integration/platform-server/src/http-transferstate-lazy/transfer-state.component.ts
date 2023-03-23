@@ -8,8 +8,7 @@
 
 import {isPlatformServer} from '@angular/common';
 import {HttpClient} from '@angular/common/http';
-import {Component, Inject, PLATFORM_ID} from '@angular/core';
-import {TransferState, makeStateKey} from '@angular/platform-browser';
+import {Component, Inject, PLATFORM_ID, TransferState, makeStateKey} from '@angular/core';
 
 const httpCacheKey = makeStateKey<string>('http');
 

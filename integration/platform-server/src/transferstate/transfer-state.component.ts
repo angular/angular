@@ -7,8 +7,7 @@
  */
 
 import {isPlatformServer} from '@angular/common';
-import {Component, Inject, PLATFORM_ID} from '@angular/core';
-import {StateKey, TransferState, makeStateKey} from '@angular/platform-browser';
+import {Component, Inject, PLATFORM_ID, TransferState, makeStateKey} from '@angular/core';
 
 const COUNTER_KEY = makeStateKey<number>('counter');
 

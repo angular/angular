@@ -939,6 +939,9 @@ export const LOCALE_ID: InjectionToken<string>;
 export function makeEnvironmentProviders(providers: (Provider | EnvironmentProviders)[]): EnvironmentProviders;
 
 // @public
+export function makeStateKey<T = void>(key: string): StateKey<T>;
+
+// @public
 export function mergeApplicationConfig(...configs: ApplicationConfig[]): ApplicationConfig;
 
 // @public
@@ -1400,6 +1403,12 @@ export interface SkipSelfDecorator {
 }
 
 // @public
+export type StateKey<T> = string & {
+    __not_a_string: never;
+    __value_type?: T;
+};
+
+// @public
 export interface StaticClassProvider extends StaticClassSansProvider {
     multi?: boolean;
     provide: any;
@@ -1457,6 +1466,19 @@ export class TestabilityRegistry {
 export interface TrackByFunction<T> {
     // (undocumented)
     <U extends T>(index: number, item: T & U): any;
+}
+
+// @public
+export class TransferState {
+    get<T>(key: StateKey<T>, defaultValue: T): T;
+    hasKey<T>(key: StateKey<T>): boolean;
+    get isEmpty(): boolean;
+    onSerialize<T>(key: StateKey<T>, callback: () => T): void;
+    remove<T>(key: StateKey<T>): void;
+    set<T>(key: StateKey<T>, value: T): void;
+    toJson(): string;
+    // (undocumented)
+    static ɵprov: unknown;
 }
 
 // @public

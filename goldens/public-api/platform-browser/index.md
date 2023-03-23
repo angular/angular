@@ -12,7 +12,7 @@ import { DebugNode } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
-import { ɵmakeStateKey as makeStateKey } from '@angular/core';
+import { makeStateKey as makeStateKey_2 } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
@@ -20,9 +20,9 @@ import { Predicate } from '@angular/core';
 import { Provider } from '@angular/core';
 import { Sanitizer } from '@angular/core';
 import { SecurityContext } from '@angular/core';
-import { ɵStateKey as StateKey } from '@angular/core';
+import { StateKey as StateKey_2 } from '@angular/core';
 import { StaticProvider } from '@angular/core';
-import { ɵTransferState as TransferState } from '@angular/core';
+import { TransferState as TransferState_2 } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
@@ -145,7 +145,8 @@ export class HammerModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<HammerModule, never, never, never>;
 }
 
-export { makeStateKey }
+// @public @deprecated
+export const makeStateKey: typeof makeStateKey_2;
 
 // @public
 export class Meta {
@@ -211,7 +212,8 @@ export interface SafeUrl extends SafeValue {
 export interface SafeValue {
 }
 
-export { StateKey }
+// @public @deprecated
+export type StateKey<T> = StateKey_2<T>;
 
 // @public
 export class Title {
@@ -224,7 +226,10 @@ export class Title {
     static ɵprov: i0.ɵɵInjectableDeclaration<Title>;
 }
 
-export { TransferState }
+// @public @deprecated
+export const TransferState: {
+    new (): TransferState_2;
+};
 
 // @public (undocumented)
 export const VERSION: Version;
