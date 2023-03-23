@@ -1339,23 +1339,6 @@ describe('platform-server integration', () => {
          });
     });
 
-    it('requests are macrotasks', waitForAsync(() => {
-         const platform = platformDynamicServer(
-             [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-         platform.bootstrapModule(HttpClientExampleModule).then(ref => {
-           const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
-           const http = ref.injector.get(HttpClient);
-           ref.injector.get(NgZone).run(() => {
-             http.get<string>('http://localhost/testing').subscribe((body: string) => {
-               expect(body).toEqual('success!');
-             });
-             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
-             mock.expectOne('http://localhost/testing').flush('success!');
-             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
-           });
-         });
-       }));
-
     it('can use HttpInterceptor that injects HttpClient', () => {
       const platform =
           platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);

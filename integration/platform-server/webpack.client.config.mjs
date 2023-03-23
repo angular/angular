@@ -13,6 +13,7 @@ export default {
   entry: {
     helloworld: './built/src/helloworld/client.js',
     transferstate: './built/src/transferstate/client.js',
+    httptransferstatelazy: './built/src/http-transferstate-lazy/client.js',
   },
   // Allow for better debugging of this integration test.
   optimization: {minimize: false},

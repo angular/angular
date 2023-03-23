@@ -7,7 +7,7 @@
  */
 
 import {XhrFactory} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -40,7 +40,9 @@ function getResponseUrl(xhr: any): string|null {
  * @publicApi
  */
 @Injectable()
-export class HttpXhrBackend implements HttpBackend {
+export class HttpXhrBackend implements HttpBackend, OnDestroy {
+  private macroTaskCanceller: VoidFunction|undefined;
+
   constructor(private xhrFactory: XhrFactory) {}
 
   /**
@@ -293,18 +295,34 @@ export class HttpXhrBackend implements HttpBackend {
         }
       }
 
+      /** Tear down logic to cancel the backround macrotask. */
+      const onLoadStart = () => {
+        this.macroTaskCanceller ??= createBackgroundMacroTask();
+      };
+      const onLoadEnd = () => {
+        this.macroTaskCanceller?.();
+      };
+
+      xhr.addEventListener('loadstart', onLoadStart);
+      xhr.addEventListener('loadend', onLoadEnd);
+
       // Fire the request, and notify the event stream that it was fired.
       xhr.send(reqBody!);
       observer.next({type: HttpEventType.Sent});
-
       // This is the return from the Observable function, which is the
       // request cancellation handler.
       return () => {
         // On a cancellation, remove all registered event listeners.
+        xhr.removeEventListener('loadstart', onLoadStart);
+        xhr.removeEventListener('loadend', onLoadEnd);
         xhr.removeEventListener('error', onError);
         xhr.removeEventListener('abort', onError);
         xhr.removeEventListener('load', onLoad);
         xhr.removeEventListener('timeout', onError);
+
+        //  Cancel the background macrotask.
+        this.macroTaskCanceller?.();
+
         if (req.reportProgress) {
           xhr.removeEventListener('progress', onDownProgress);
           if (reqBody !== null && xhr.upload) {
@@ -319,4 +337,26 @@ export class HttpXhrBackend implements HttpBackend {
       };
     });
   }
+
+  ngOnDestroy(): void {
+    this.macroTaskCanceller?.();
+  }
+}
+
+// Cannot use `Number.MAX_VALUE` as it does not fit into a 32-bit signed integer.
+const MAX_INT = 2147483647;
+
+/**
+ * A method that creates a background macrotask of up to Number.MAX_VALUE.
+ *
+ * This is so that Zone.js can intercept HTTP calls, this is important for server rendering,
+ * as the application is only rendered once the application is stabilized, meaning there are pending
+ * macro and micro tasks.
+ *
+ * @returns a callback method to cancel the macrotask.
+ */
+function createBackgroundMacroTask(): VoidFunction {
+  const timeout = setTimeout(() => void 0, MAX_INT);
+
+  return () => clearTimeout(timeout);
 }
