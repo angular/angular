@@ -20,7 +20,7 @@ For the example application that this page describes, see the <live-example name
 When structural directives are applied they generally are prefixed by an asterisk, `*`,  such as `*ngIf`. This convention is shorthand that Angular interprets and converts into a longer form.
 Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
 
-For example, let's take the following code which uses an `*ngIf` to displays the hero's name if `hero` exists:
+For example, let's take the following code which uses an `*ngIf` to display the hero's name if `hero` exists:
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (asterisk)" region="asterisk"></code-example>
 
