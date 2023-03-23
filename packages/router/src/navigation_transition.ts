@@ -645,6 +645,11 @@ export class NavigationTransitions {
                              this.rootContexts, router.routeReuseStrategy,
                              (evt: Event) => this.events.next(evt), this.inputBindingEnabled),
 
+                         // Ensure that if some observable used to drive the transition doesn't
+                         // complete, the navigation still finalizes This should never happen, but
+                         // this is done as a safety measure to avoid surfacing this error (#49567).
+                         take(1),
+
                          tap({
                            next: (t: NavigationTransition) => {
                              completed = true;

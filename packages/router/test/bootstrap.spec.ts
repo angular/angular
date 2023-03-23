@@ -257,6 +257,9 @@ describe('bootstrap', () => {
       const router = ref.injector.get(Router);
       const data = router.routerState.snapshot.root.firstChild!.data;
       expect(data['test']).toEqual('test-data');
+      // Also ensure that the navigation completed. The navigation transition clears the
+      // current navigation in its `finalize` operator.
+      expect(router.getCurrentNavigation()).toBeNull();
     });
     await Promise.all([bootstrapPromise, navigationEndPromise]);
   });
