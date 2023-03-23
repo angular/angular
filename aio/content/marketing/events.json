@@ -1159,15 +1159,45 @@
   },
   {
     "date": {
-      "start": "2023-05-18"
+      "start": "2023-03-24"
     },
-    "name": "JSHeroes"
+    "name": "ng-be"
+  },
+  {
+    "date": {
+      "start": "2023-04-25"
+    },
+    "name": "CityJS Brazil"
   },
   {
     "date": {
       "start": "2023-05-04"
     },
     "name": "Devoxx Greece"
+  },
+  {
+    "date": {
+      "start": "2023-05-18"
+    },
+    "name": "JSHeroes"
+  },
+  {
+    "date": {
+      "start": "2023-05-10"
+    },
+    "name": "Google I/O"
+  },
+  {
+    "date": {
+      "start": "2023-06-01"
+    },
+    "name": "JSNation"
+  },
+  {
+    "date": {
+      "start": "2023-06-02"
+    },
+    "name": "JSConf India"
   },
   {
     "date": {
