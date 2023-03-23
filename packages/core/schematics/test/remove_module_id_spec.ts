@@ -60,7 +60,6 @@ describe('Remove `moduleId` migration', () => {
     shx.rm('-r', tmpDirPath);
   });
 
-
   it('should remove `moduleId` from `@Directive`', async () => {
     writeFile('/index.ts', dedent`
       import {Directive} from '@angular/core';
@@ -86,6 +85,43 @@ describe('Remove `moduleId` migration', () => {
     `);
   });
 
+  it('should be able to remove `moduleId` from multiple classes in the same file', async () => {
+    writeFile('/index.ts', dedent`
+      import {Directive} from '@angular/core';
+
+      @Directive({
+        selector: 'my-dir-a',
+        moduleId: module.id,
+        standalone: true,
+      })
+      export class MyDirA {}
+
+      @Directive({
+        selector: 'my-dir-b',
+        moduleId: module.id,
+        standalone: true,
+      })
+      export class MyDirB {}
+    `);
+
+    await runMigration();
+
+    expect(tree.readContent('/index.ts')).toEqual(dedent`
+      import {Directive} from '@angular/core';
+
+      @Directive({
+        selector: 'my-dir-a',
+        standalone: true,
+      })
+      export class MyDirA {}
+
+      @Directive({
+        selector: 'my-dir-b',
+        standalone: true,
+      })
+      export class MyDirB {}
+    `);
+  });
 
   it('should not fail if `moduleId` is last property of decorator', async () => {
     writeFile('/index.ts', dedent`

@@ -10,7 +10,7 @@ import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {relative} from 'path';
 import ts from 'typescript';
 
-import {extractDirectiveMetadata} from '../../utils/directive_extractor';
+import {extractAngularClassMetadata} from '../../utils/extract_metadata';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 import {getPropertyNameText} from '../../utils/typescript/property_name';
@@ -53,7 +53,7 @@ function runRemoveModuleIdMigration(tree: Tree, tsconfigPath: string, basePath: 
 function collectUpdatesForFile(typeChecker: ts.TypeChecker, file: ts.SourceFile): ts.Node[] {
   const removeNodes: ts.Node[] = [];
   const attemptMigrateClass = (node: ts.ClassDeclaration) => {
-    const metadata = extractDirectiveMetadata(typeChecker, node);
+    const metadata = extractAngularClassMetadata(typeChecker, node);
     if (metadata === null) {
       return;
     }

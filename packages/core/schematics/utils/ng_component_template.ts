@@ -10,10 +10,8 @@ import {Tree} from '@angular-devkit/schematics';
 import {dirname, relative, resolve} from 'path';
 import ts from 'typescript';
 
-import {extractDirectiveMetadata} from './directive_extractor';
+import {extractAngularClassMetadata} from './extract_metadata';
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
-import {getAngularDecorators} from './ng_decorators';
-import {unwrapExpression} from './typescript/functions';
 import {getPropertyNameText} from './typescript/property_name';
 
 export interface ResolvedTemplate {
@@ -55,7 +53,7 @@ export class NgComponentTemplateVisitor {
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
-    const metadata = extractDirectiveMetadata(this.typeChecker, node);
+    const metadata = extractAngularClassMetadata(this.typeChecker, node);
     if (metadata === null || metadata.type !== 'component') {
       return;
     }

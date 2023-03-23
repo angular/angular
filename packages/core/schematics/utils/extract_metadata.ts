@@ -11,15 +11,15 @@ import ts from 'typescript';
 import {getAngularDecorators} from './ng_decorators';
 import {unwrapExpression} from './typescript/functions';
 
-/** Interface describing metadata of a directive class. */
-export interface DirectiveMetadata {
+/** Interface describing metadata of an Angular class. */
+export interface AngularClassMetadata {
   type: 'component'|'directive';
   node: ts.ObjectLiteralExpression;
 }
 
 /** Extracts `@Directive` or `@Component` metadata from the given class. */
-export function extractDirectiveMetadata(
-    typeChecker: ts.TypeChecker, node: ts.ClassDeclaration): DirectiveMetadata|null {
+export function extractAngularClassMetadata(
+    typeChecker: ts.TypeChecker, node: ts.ClassDeclaration): AngularClassMetadata|null {
   const decorators = ts.getDecorators(node);
 
   if (!decorators || !decorators.length) {
