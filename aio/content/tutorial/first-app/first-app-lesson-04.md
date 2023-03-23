@@ -8,7 +8,7 @@ This tutorial lesson demonstrates how to create an interface and include it in a
 
 This lesson starts with the code from the previous lesson, so you can:
 
-*   Use the code that you created in Lesson 3 in your interactive development environment (IDE).
+*   Use the code that you created in Lesson 3 in your integrated development environment (IDE).
 *   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-03"></live-example> from Lesson 3 where you can:
     *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
     *   Use the *download example* and open it in your IDE.
