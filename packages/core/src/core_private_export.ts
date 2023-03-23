@@ -29,7 +29,7 @@ export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from './signals';
 export {TESTABILITY as ɵTESTABILITY, TESTABILITY_GETTER as ɵTESTABILITY_GETTER} from './testability/testability';
-export {escapeTransferStateContent as ɵescapeTransferStateContent, makeStateKey as ɵmakeStateKey, StateKey as ɵStateKey, TransferState as ɵTransferState, unescapeTransferStateContent as ɵunescapeTransferStateContent} from './transfer_state';
+export {escapeTransferStateContent as ɵescapeTransferStateContent, unescapeTransferStateContent as ɵunescapeTransferStateContent} from './transfer_state';
 export {coerceToBoolean as ɵcoerceToBoolean} from './util/coercion';
 export {devModeEqual as ɵdevModeEqual} from './util/comparison';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';

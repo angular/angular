@@ -7,8 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {APP_ID, NgModule, Provider, ɵescapeTransferStateContent as escapeTransferStateContent} from '@angular/core';
-import {TransferState} from '@angular/platform-browser';
+import {APP_ID, NgModule, Provider, TransferState, ɵescapeTransferStateContent as escapeTransferStateContent} from '@angular/core';
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
 

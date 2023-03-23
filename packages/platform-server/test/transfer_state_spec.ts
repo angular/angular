@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, NgModule,} from '@angular/core';
-import {BrowserModule, makeStateKey, TransferState} from '@angular/platform-browser';
+import {Component, makeStateKey, NgModule, TransferState} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 import {renderModule, ServerModule} from '@angular/platform-server';
 
 describe('transfer_state', () => {
