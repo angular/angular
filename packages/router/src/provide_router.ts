@@ -211,6 +211,7 @@ export function getBootstrapListener() {
     router.resetRootComponentType(ref.componentTypes[0]);
     if (!bootstrapDone.closed) {
       bootstrapDone.next();
+      bootstrapDone.complete();
       bootstrapDone.unsubscribe();
     }
   };
