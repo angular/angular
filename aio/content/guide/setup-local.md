@@ -37,7 +37,7 @@ To install Angular on your local system, you need the following:
 
 ## Install the Angular CLI
 
-You use the Angular CLI to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+You can use the Angular CLI to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 
 To install the Angular CLI, open a terminal window and run the following command:
 
