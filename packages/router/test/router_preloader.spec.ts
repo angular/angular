@@ -818,5 +818,35 @@ describe('RouterPreloader', () => {
          tick(3);
          expect(getLoadedComponent(baseRoute)).toBeDefined();
        }));
+
+    it('loads nested components', () => {
+      @Component({template: '', standalone: true})
+      class LoadedComponent {
+      }
+      lazyComponentSpy.and.returnValue(LoadedComponent);
+
+      TestBed.inject(Router).resetConfig([
+        {
+          path: 'a',
+          loadComponent: lazyComponentSpy,
+          children: [{
+            path: 'b',
+            loadComponent: lazyComponentSpy,
+            children: [{
+              path: 'c',
+              loadComponent: lazyComponentSpy,
+              children: [{
+                path: 'd',
+                loadComponent: lazyComponentSpy,
+              }]
+            }]
+          }]
+        },
+      ]);
+
+      const preloader = TestBed.inject(RouterPreloader);
+      preloader.preload().subscribe(() => {});
+      expect(lazyComponentSpy).toHaveBeenCalledTimes(4);
+    });
   });
 });
