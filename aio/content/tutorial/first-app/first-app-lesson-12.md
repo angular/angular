@@ -28,7 +28,7 @@ Using a web interface to send and receive the form's data is not covered in this
 
 This lesson starts with the code from the previous lesson, so you can:
 
-*   Use the code that you created in Lesson 11 in your interactive development environment (IDE).
+*   Use the code that you created in Lesson 11 in your integrated development environment (IDE).
 *   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-11"></live-example> from Lesson \[TODO: previous lesson number\] where you can:
     *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
     *   Use the *download example* and open it in your IDE.

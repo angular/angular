@@ -16,7 +16,7 @@ This tutorial lesson demonstrates how to create an Angular service and use depen
 
 This lesson starts with the code from the previous lesson, so you can:
 
-*   Use the code that you created in Lesson 8 in your interactive development environment (IDE).
+*   Use the code that you created in Lesson 8 in your integrated development environment (IDE).
 *   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-08"></live-example> from Lesson 8 where you can:
     *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
     *   Use the *download example* and open it in your IDE.
