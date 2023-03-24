@@ -137,7 +137,7 @@ This section guides you through editing the HTML, also known as the template.
     <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.3.html"></code-example>
 
     The application now displays the name and description of each product in the list.
-    Notice that the final product does not have a description paragraph.
+    Note that the final product does not have a description paragraph.
     Angular doesn't create the `<p>` element because the product's description property is empty.
 
     <div class="lightbox">
@@ -178,8 +178,8 @@ For more information, see [Introduction to components and templates](guide/archi
 Currently, the product list displays the name and description of each product.
 The `ProductListComponent` also defines a `products` property that contains imported data for each product from the `products` array in `products.ts`.
 
-The next step is to create a new alert feature that uses product data from the `ProductListComponent`.
-The alert checks the product's price, and, if the price is greater than &dollar;700, displays a **Notify Me** button that lets users sign up for notifications when the product goes on sale.
+The next step is to create a new alert feature that will use product data from the `ProductListComponent`.
+The alert should check the product's price. If it is found to be greater than &dollar;700, a Notify Me button should be displayed. When a user clicks on the button, they should be able to sign up for notifications that will inform them when the product goes on sale.
 
 This section walks you through creating a child component, `ProductAlertsComponent`, that can receive data from its parent component, `ProductListComponent`.
 
