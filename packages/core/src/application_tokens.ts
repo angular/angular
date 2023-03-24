@@ -82,7 +82,7 @@ export const ANIMATION_MODULE_TYPE =
     new InjectionToken<'NoopAnimations'|'BrowserAnimations'>('AnimationModuleType');
 
 // TODO(crisbeto): link to CSP guide here.
-/**
+/**bigsauce718
  * Token used to configure the [Content Security Policy](https://web.dev/strict-csp/) nonce that
  * Angular will apply when inserting inline styles. If not provided, Angular will look up its value
  * from the `ngCspNonce` attribute of the application root node.
