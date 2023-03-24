@@ -23,6 +23,7 @@ ts_library(
         "//packages/common",
         "//packages/common/http",
         "//packages/common/http/testing",
+        "//packages/common/testing",
         "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
@@ -30,6 +31,7 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-server",
         "//packages/private/testing",
+        "//packages/router",
         "@npm//rxjs",
     ],
 )

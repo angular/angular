@@ -10,6 +10,7 @@ import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application_ref';
 import {PLATFORM_ID} from '../application_tokens';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, makeEnvironmentProviders} from '../di';
 import {inject} from '../di/injector_compatibility';
+import {InitialRenderPendingTasks} from '../initial_render_pending_tasks';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';
 import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructions/element_container';
@@ -137,7 +138,8 @@ export function provideHydrationSupport(): EnvironmentProviders {
       useFactory: () => {
         if (isBrowser()) {
           const appRef = inject(ApplicationRef);
-          return () => cleanupDehydratedViews(appRef);
+          const pendingTasks = inject(InitialRenderPendingTasks);
+          return () => cleanupDehydratedViews(appRef, pendingTasks);
         }
         return () => {};  // noop
       },

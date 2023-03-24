@@ -8,12 +8,15 @@
 
 import '@angular/localize/init';
 
-import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
-import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Input, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet, PlatformLocation} from '@angular/common';
+import {MockPlatformLocation} from '@angular/common/testing';
+import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {unescapeTransferStateContent} from '@angular/core/src/transfer_state';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
+import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {first} from 'rxjs/operators';
 
 import {provideServerSupport} from '../public_api';
@@ -91,7 +94,9 @@ function stripExcessiveSpaces(html: string): string {
 
 /** Returns a Promise that resolves when the ApplicationRef becomes stable. */
 function whenStable(appRef: ApplicationRef): Promise<unknown> {
-  return appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
+  const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
+  const pendingTasksPromise = appRef.injector.get(InitialRenderPendingTasks).whenAllTasksComplete;
+  return Promise.allSettled([isStablePromise, pendingTasksPromise]);
 }
 
 function verifyClientAndSSRContentsMatch(ssrContents: string, clientAppRootElement: HTMLElement) {
@@ -330,7 +335,7 @@ describe('platform-server integration', () => {
     });
 
     describe('hydration', () => {
-      it('should remove ngh attributes after hydation on the client', async () => {
+      it('should remove ngh attributes after hydration on the client', async () => {
         @Component({
           standalone: true,
           selector: 'app',
@@ -3704,6 +3709,69 @@ describe('platform-server integration', () => {
               'During hydration Angular was unable to locate a node using the "firstChild" path, ' +
               'starting from the <projector-cmp>…</projector-cmp> node');
         });
+      });
+    });
+
+    describe('Router', () => {
+      it('should wait for lazy routes before triggering post-hydration cleanup', async () => {
+        const ngZone = TestBed.inject(NgZone);
+
+        @Component({
+          standalone: true,
+          selector: 'lazy',
+          template: `LazyCmp content`,
+        })
+        class LazyCmp {
+        }
+
+        const routes: Routes = [{
+          path: '',
+          loadComponent: () => {
+            return ngZone.runOutsideAngular(() => {
+              return new Promise(resolve => {
+                setTimeout(() => resolve(LazyCmp), 100);
+              });
+            });
+          },
+        }];
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [RouterOutlet],
+          template: `
+            Works!
+            <router-outlet />
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const providers = [
+          {provide: PlatformLocation, useClass: MockPlatformLocation},
+          provideRouter(routes),
+        ] as unknown as Provider[];
+        const html = await ssr(SimpleComponent, undefined, providers);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        // Expect serialization to happen once a lazy-loaded route completes loading
+        // and a lazy component is rendered.
+        expect(ssrContents).toContain(`<lazy ${NGH_ATTR_NAME}="0">LazyCmp content</lazy>`);
+
+        resetTViewsFor(SimpleComponent, LazyCmp);
+
+        const appRef = await hydrate(html, SimpleComponent, providers);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        await whenStable(appRef);
+
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
     });
   });

@@ -282,6 +282,9 @@
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
+    "name": "InitialRenderPendingTasks"
+  },
+  {
     "name": "InjectFlags"
   },
   {
@@ -436,6 +439,9 @@
   },
   {
     "name": "NavigationError"
+  },
+  {
+    "name": "NavigationResult"
   },
   {
     "name": "NavigationSkipped"

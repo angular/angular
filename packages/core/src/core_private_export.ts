@@ -20,6 +20,7 @@ export {provideHydrationSupport as ɵprovideHydrationSupport} from './hydration/
 export {IS_HYDRATION_FEATURE_ENABLED as ɵIS_HYDRATION_FEATURE_ENABLED} from './hydration/tokens';
 export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleDataIndex, findLocaleData as ɵfindLocaleData, getLocaleCurrencyCode as ɵgetLocaleCurrencyCode, getLocalePluralCase as ɵgetLocalePluralCase, LocaleDataIndex as ɵLocaleDataIndex, registerLocaleData as ɵregisterLocaleData, unregisterAllLocaleData as ɵunregisterLocaleData} from './i18n/locale_data_api';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
+export {InitialRenderPendingTasks as ɵInitialRenderPendingTasks} from './initial_render_pending_tasks';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, resolveComponentResources as ɵresolveComponentResources} from './metadata/resource_loading';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
