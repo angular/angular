@@ -63,7 +63,7 @@ export class ImportManager {
    */
   addImportToSourceFile(
       sourceFile: ts.SourceFile, symbolName: string|null, moduleName: string,
-      alias: string|null = null, typeImport = false): ts.Expression {
+      alias: string|null = null, typeImport = false, keepSymbolName = false): ts.Expression {
     const sourceDir = dirname(sourceFile.fileName);
     let importStartIndex = 0;
     let existingImport: ts.ImportDeclaration|null = null;
@@ -135,7 +135,8 @@ export class ImportManager {
     }
 
     if (existingImport) {
-      const {propertyName, name} = this._getImportParts(sourceFile, symbolName!, alias);
+      const {propertyName, name} =
+          this._getImportParts(sourceFile, symbolName!, alias, keepSymbolName);
 
       // Since it can happen that multiple classes need to be imported within the
       // specified source file and we want to add the identifiers to the existing
@@ -165,7 +166,8 @@ export class ImportManager {
     }
 
     if (symbolName) {
-      const {propertyName, name} = this._getImportParts(sourceFile, symbolName, alias);
+      const {propertyName, name} =
+          this._getImportParts(sourceFile, symbolName, alias, keepSymbolName);
       const importMap = this.newImports.get(sourceFile)!.namedImports;
       identifier = name;
 
@@ -318,7 +320,8 @@ export class ImportManager {
    * would correspond to `import {name as alias}` while `{name: 'name', propertyName: undefined}`
    * corresponds to `import {name}`.
    */
-  private _getImportParts(sourceFile: ts.SourceFile, symbolName: string, alias: string|null) {
+  private _getImportParts(
+      sourceFile: ts.SourceFile, symbolName: string, alias: string|null, keepSymbolName: boolean) {
     const symbolIdentifier = ts.factory.createIdentifier(symbolName);
     const aliasIdentifier = alias ? ts.factory.createIdentifier(alias) : null;
     const generatedUniqueIdentifier = this._getUniqueIdentifier(sourceFile, alias || symbolName);
@@ -326,7 +329,7 @@ export class ImportManager {
     let propertyName: ts.Identifier|undefined;
     let name: ts.Identifier;
 
-    if (needsGeneratedUniqueName) {
+    if (needsGeneratedUniqueName && !keepSymbolName) {
       propertyName = symbolIdentifier;
       name = generatedUniqueIdentifier;
     } else if (aliasIdentifier) {
