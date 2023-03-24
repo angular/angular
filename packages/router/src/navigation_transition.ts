@@ -11,6 +11,7 @@ import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rx
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
+import {INPUT_BINDER} from './directives/router_outlet';
 import {Event, GuardsCheckEnd, GuardsCheckStart, IMPERATIVE_NAVIGATION, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
 import {isNavigationCancelingError, isRedirectingNavigationCancelingError, redirectingNavigationError} from './navigation_canceling_error';
@@ -292,6 +293,7 @@ export class NavigationTransitions {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
+  private readonly inputBindingEnabled = inject(INPUT_BINDER, {optional: true}) !== null;
   navigationId = 0;
   get hasRequestedNavigation() {
     return this.navigationId !== 0;
@@ -641,7 +643,7 @@ export class NavigationTransitions {
 
                          activateRoutes(
                              this.rootContexts, router.routeReuseStrategy,
-                             (evt: Event) => this.events.next(evt)),
+                             (evt: Event) => this.events.next(evt), this.inputBindingEnabled),
 
                          tap({
                            next: (t: NavigationTransition) => {

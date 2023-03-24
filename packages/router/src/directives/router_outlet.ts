@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentRef, Directive, EnvironmentInjector, EventEmitter, inject, Injector, Input, OnDestroy, OnInit, Output, SimpleChanges, ViewContainerRef, ɵRuntimeError as RuntimeError,} from '@angular/core';
+import {ChangeDetectorRef, ComponentRef, Directive, EnvironmentInjector, EventEmitter, inject, Injectable, InjectionToken, Injector, Input, OnDestroy, OnInit, Output, reflectComponentType, SimpleChanges, ViewContainerRef, ɵRuntimeError as RuntimeError,} from '@angular/core';
+import {combineLatest, Subscription} from 'rxjs';
+import {switchMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from '../errors';
 import {Data} from '../models';
@@ -96,6 +98,16 @@ export interface RouterOutletContract {
    * subtree.
    */
   detachEvents?: EventEmitter<unknown>;
+
+  /**
+   * Used to indicate that the outlet is able to bind data from the `Router` to the outlet
+   * component's inputs.
+   *
+   * When this is `undefined` or `false` and the developer has opted in to the
+   * feature using `withComponentInputBinding`, a warning will be logged in dev mode if this outlet
+   * is used in the application.
+   */
+  readonly supportsBindingToComponentInputs?: true;
 }
 
 /**
@@ -156,6 +168,10 @@ export interface RouterOutletContract {
 })
 export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private activated: ComponentRef<any>|null = null;
+  /** @internal */
+  get activatedComponentRef(): ComponentRef<any>|null {
+    return this.activated;
+  }
   private _activatedRoute: ActivatedRoute|null = null;
   /**
    * The name of the outlet
@@ -181,6 +197,9 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private location = inject(ViewContainerRef);
   private changeDetector = inject(ChangeDetectorRef);
   private environmentInjector = inject(EnvironmentInjector);
+  private inputBinder = inject(INPUT_BINDER, {optional: true});
+  /** @nodoc */
+  readonly supportsBindingToComponentInputs = true;
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
@@ -208,6 +227,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     if (this.isTrackedInParentContexts(this.name)) {
       this.parentContexts.onChildOutletDestroyed(this.name);
     }
+    this.inputBinder?.unsubscribeFromRouteData(this);
   }
 
   private isTrackedInParentContexts(outletName: string) {
@@ -293,6 +313,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
     this.location.insert(ref.hostView);
+    this.inputBinder?.bindActivatedRouteToOutletComponent(this);
     this.attachEvents.emit(ref.instance);
   }
 
@@ -328,6 +349,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
+    this.inputBinder?.bindActivatedRouteToOutletComponent(this);
     this.activateEvents.emit(this.activated.instance);
   }
 }
@@ -347,5 +369,72 @@ class OutletInjector implements Injector {
     }
 
     return this.parent.get(token, notFoundValue);
+  }
+}
+
+export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>('');
+
+/**
+ * Injectable used as a tree-shakable provider for opting in to binding router data to component
+ * inputs.
+ *
+ * The RouterOutlet registers itself with this service when an `ActivatedRoute` is attached or
+ * activated. When this happens, the service subscribes to the `ActivatedRoute` observables (params,
+ * queryParams, data) and sets the inputs of the component using `ComponentRef.setInput`.
+ * Importantly, when an input does not have an item in the route data with a matching key, this
+ * input is set to `undefined`. If it were not done this way, the previous information would be
+ * retained if the data got removed from the route (i.e. if a query parameter is removed).
+ *
+ * The `RouterOutlet` should unregister itself when destroyed via `unsubscribeFromRouteData` so that
+ * the subscriptions are cleaned up.
+ */
+@Injectable()
+export class RoutedComponentInputBinder {
+  private outletDataSubscriptions = new Map<RouterOutlet, Subscription>;
+
+  bindActivatedRouteToOutletComponent(outlet: RouterOutlet) {
+    this.unsubscribeFromRouteData(outlet);
+    this.subscribeToRouteData(outlet);
+  }
+
+  unsubscribeFromRouteData(outlet: RouterOutlet) {
+    this.outletDataSubscriptions.get(outlet)?.unsubscribe();
+    this.outletDataSubscriptions.delete(outlet);
+  }
+
+  private subscribeToRouteData(outlet: RouterOutlet) {
+    const {activatedRoute} = outlet;
+    const dataSubscription =
+        combineLatest([
+          activatedRoute.queryParams,
+          activatedRoute.params,
+          activatedRoute.data,
+        ])
+            .pipe(switchMap(([queryParams, params, data]) => {
+              // Promise.resolve is used to avoid synchronously writing the wrong data when two of
+              // the Observables in the `combineLatest` stream emit one after another.
+              return Promise.resolve({...queryParams, ...params, ...data});
+            }))
+            .subscribe(data => {
+              // Outlet may have been deactivated or changed names to be associated with a different
+              // route
+              if (!outlet.isActivated || !outlet.activatedComponentRef ||
+                  outlet.activatedRoute !== activatedRoute || activatedRoute.component === null) {
+                this.unsubscribeFromRouteData(outlet);
+                return;
+              }
+
+              const mirror = reflectComponentType(activatedRoute.component);
+              if (!mirror) {
+                this.unsubscribeFromRouteData(outlet);
+                return;
+              }
+
+              for (const {templateName} of mirror.inputs) {
+                outlet.activatedComponentRef.setInput(templateName, data[templateName]);
+              }
+            });
+
+    this.outletDataSubscriptions.set(outlet, dataSubscription);
   }
 }
