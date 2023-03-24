@@ -795,7 +795,7 @@ export abstract class Injector {
     // @deprecated (undocumented)
     static create(providers: StaticProvider[], parent?: Injector): Injector;
     static create(options: {
-        providers: StaticProvider[];
+        providers: Array<Provider | StaticProvider>;
         parent?: Injector;
         name?: string;
     }): Injector;
