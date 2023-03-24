@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Observable} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 
-import {NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped} from '../events';
-import {Router} from '../router';
+import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped} from '../events';
 
 enum NavigationResult {
   COMPLETE,
@@ -26,7 +26,7 @@ enum NavigationResult {
  * redirecting/superseding navigation must finish.
  * - `NavigationError`, `NavigationEnd`, or `NavigationSkipped` event emits
  */
-export function afterNextNavigation(router: Router, action: () => void) {
+export function afterNextNavigation(router: {events: Observable<Event>}, action: () => void) {
   router.events
       .pipe(
           filter(

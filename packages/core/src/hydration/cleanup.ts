@@ -9,6 +9,7 @@
 import {first} from 'rxjs/operators';
 
 import {ApplicationRef} from '../application_ref';
+import {InitialRenderPendingTasks} from '../initial_render_pending_tasks';
 import {CONTAINER_HEADER_OFFSET, DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
 import {Renderer} from '../render3/interfaces/renderer';
 import {RNode} from '../render3/interfaces/renderer_dom';
@@ -91,11 +92,14 @@ function cleanupLView(lView: LView) {
  * Walks over all views registered within the ApplicationRef and removes
  * all dehydrated views from all `LContainer`s along the way.
  */
-export function cleanupDehydratedViews(appRef: ApplicationRef) {
+export function cleanupDehydratedViews(
+    appRef: ApplicationRef, pendingTasks: InitialRenderPendingTasks) {
   // Wait once an app becomes stable and cleanup all views that
   // were not claimed during the application bootstrap process.
   // The timing is similar to when we kick off serialization on the server.
-  return appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise().then(() => {
+  const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
+  const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
+  return Promise.allSettled([isStablePromise, pendingTasksPromise]).then(() => {
     const viewRefs = appRef._views;
     for (const viewRef of viewRefs) {
       const lView = getComponentLViewForHydration(viewRef);

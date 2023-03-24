@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
+import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
 import {first} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
@@ -53,56 +53,58 @@ function _render<T>(
         environmentInjector.get(ApplicationRef);
     const serverContext =
         sanitizeServerContext(environmentInjector.get(SERVER_CONTEXT, DEFAULT_SERVER_CONTEXT));
-    return applicationRef.isStable.pipe((first((isStable: boolean) => isStable)))
-        .toPromise()
-        .then(() => {
-          appendServerContextInfo(serverContext, applicationRef);
+    const isStablePromise =
+        applicationRef.isStable.pipe((first((isStable: boolean) => isStable))).toPromise();
+    const pendingTasks = environmentInjector.get(InitialRenderPendingTasks);
+    const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
+    return Promise.allSettled([isStablePromise, pendingTasksPromise]).then(() => {
+      appendServerContextInfo(serverContext, applicationRef);
 
-          const platformState = platform.injector.get(PlatformState);
+      const platformState = platform.injector.get(PlatformState);
 
-          const asyncPromises: Promise<any>[] = [];
+      const asyncPromises: Promise<any>[] = [];
 
-          if (applicationRef.injector.get(IS_HYDRATION_FEATURE_ENABLED, false)) {
-            annotateForHydration(applicationRef, platformState.getDocument());
-          }
+      if (applicationRef.injector.get(IS_HYDRATION_FEATURE_ENABLED, false)) {
+        annotateForHydration(applicationRef, platformState.getDocument());
+      }
 
-          // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
-          const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
+      // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
+      const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
 
-          if (callbacks) {
-            for (const callback of callbacks) {
-              try {
-                const callbackResult = callback();
-                if (ɵisPromise(callbackResult)) {
-                  // TODO: in TS3.7, callbackResult is void.
-                  asyncPromises.push(callbackResult as any);
-                }
-
-              } catch (e) {
-                // Ignore exceptions.
-                console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
-              }
+      if (callbacks) {
+        for (const callback of callbacks) {
+          try {
+            const callbackResult = callback();
+            if (ɵisPromise(callbackResult)) {
+              // TODO: in TS3.7, callbackResult is void.
+              asyncPromises.push(callbackResult as any);
             }
+
+          } catch (e) {
+            // Ignore exceptions.
+            console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
           }
+        }
+      }
 
-          const complete = () => {
-            const output = platformState.renderToString();
-            platform.destroy();
-            return output;
-          };
+      const complete = () => {
+        const output = platformState.renderToString();
+        platform.destroy();
+        return output;
+      };
 
-          if (asyncPromises.length === 0) {
-            return complete();
-          }
+      if (asyncPromises.length === 0) {
+        return complete();
+      }
 
-          return Promise
-              .all(asyncPromises.map(asyncPromise => {
-                return asyncPromise.catch(e => {
-                  console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
-                });
-              }))
-              .then(complete);
-        });
+      return Promise
+          .all(asyncPromises.map(asyncPromise => {
+            return asyncPromise.catch(e => {
+              console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
+            });
+          }))
+          .then(complete);
+    });
   });
 }
 

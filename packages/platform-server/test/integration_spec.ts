@@ -10,10 +10,11 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, mergeApplicationConfig, NgModule, NgZone, PLATFORM_ID, Provider, Type, ViewEncapsulation} from '@angular/core';
+import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, mergeApplicationConfig, NgModule, NgZone, PLATFORM_ID, Provider, Type, ViewEncapsulation, ɵInitialRenderPendingTasks as InitialRenderPendingTasks} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {bootstrapApplication, BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, provideServerSupport, renderModule, ServerModule} from '@angular/platform-server';
+import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -50,6 +51,39 @@ const MyServerAppStandalone = createMyServerApp(true);
   exports: [MyServerApp],
 })
 export class MyServerAppModule {
+}
+
+function createAppWithPendingTask(standalone: boolean) {
+  @Component({
+    standalone,
+    selector: 'app',
+    template: `Completed: {{ completed }}`,
+  })
+  class PendingTasksApp {
+    completed = 'No';
+
+    constructor() {
+      const pendingTasks = coreInject(InitialRenderPendingTasks);
+      const taskId = pendingTasks.add();
+      setTimeout(() => {
+        pendingTasks.remove(taskId);
+        this.completed = 'Yes';
+      });
+    }
+  }
+  return PendingTasksApp;
+}
+
+const PendingTasksApp = createAppWithPendingTask(false);
+const PendingTasksAppStandalone = createAppWithPendingTask(true);
+
+@NgModule({
+  declarations: [PendingTasksApp],
+  exports: [PendingTasksApp],
+  imports: [ServerModule],
+  bootstrap: [PendingTasksApp],
+})
+export class PendingTasksAppModule {
 }
 
 @NgModule({
@@ -987,6 +1021,75 @@ describe('platform-server integration', () => {
              called = true;
            });
          }));
+
+      it(`should wait for InitialRenderPendingTasks before serializing ` +
+             `(standalone: ${isStandalone})`,
+         waitForAsync(() => {
+           const options = {document: doc};
+           const bootstrap = isStandalone ?
+               renderApplication(getStandaloneBoostrapFn(PendingTasksAppStandalone), options) :
+               renderModule(PendingTasksAppModule, options);
+           bootstrap.then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body>' +
+                 '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Completed: Yes</app>' +
+                 '</body></html>');
+             called = true;
+           });
+         }));
+    });
+  });
+
+  describe('Router', () => {
+    it('should wait for lazy routes before serializing', async () => {
+      const ngZone = TestBed.inject(NgZone);
+
+      @Component({
+        standalone: true,
+        selector: 'lazy',
+        template: `LazyCmp content`,
+      })
+      class LazyCmp {
+      }
+
+      const routes: Routes = [{
+        path: '',
+        loadComponent: () => {
+          return ngZone.runOutsideAngular(() => {
+            return new Promise(resolve => {
+              setTimeout(() => resolve(LazyCmp), 100);
+            });
+          });
+        },
+      }];
+
+      @Component({
+        standalone: false,
+        selector: 'app',
+        template: `
+          Works!
+          <router-outlet />
+        `,
+      })
+      class MyServerApp {
+      }
+
+      @NgModule({
+        declarations: [MyServerApp],
+        exports: [MyServerApp],
+        imports: [BrowserModule, ServerModule, RouterOutlet],
+        providers: [provideRouter(routes)],
+        bootstrap: [MyServerApp],
+      })
+      class MyServerAppModule {
+      }
+
+      const options = {document: '<html><head></head><body><app></app></body></html>'};
+      const output = await renderModule(MyServerAppModule, options);
+
+      // Expect serialization to happen once a lazy-loaded route completes loading
+      // and a lazy component is rendered.
+      expect(output).toContain('<lazy>LazyCmp content</lazy>');
     });
   });
 

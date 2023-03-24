@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, of, SubscriptionLike} from 'rxjs';
 
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
@@ -24,6 +24,7 @@ import {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {standardizeConfig, validateConfig} from './utils/config';
+import {afterNextNavigation} from './utils/navigations';
 
 
 
@@ -172,6 +173,8 @@ export class Router {
   public readonly routerState: RouterState;
 
   private options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
+
+  private pendingTasks = inject(InitialRenderPendingTasks);
 
   /**
    * A handler for navigation errors in this NgModule.
@@ -736,6 +739,10 @@ export class Router {
       // This is unused when `canceledNavigationResolution` is not computed.
       targetPageId = 0;
     }
+
+    // Indicate that the navigation is happening.
+    const taskId = this.pendingTasks.add();
+    afterNextNavigation(this, () => this.pendingTasks.remove(taskId));
 
     this.navigationTransitions.handleNavigationRequest({
       targetPageId,
