@@ -808,6 +808,32 @@ class SomeComponent {
          expectStableTexts(MacroMicroTaskComp, ['111']);
        }));
 
+    it('isStable should show warning when nested call detected', (done: DoneFn) => {
+      const fixture = TestBed.createComponent(MicroMacroTaskComp);
+      const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
+      const zone: NgZone = TestBed.inject(NgZone);
+      appRef.attachView(fixture.componentRef.hostView);
+      zone.run(() => appRef.tick());
+
+      const warnSpy = spyOn(console, 'warn');
+      let count = 0;
+      appRef.isStable.subscribe({
+        next: () => {
+          count++;
+          stableCalled = true;
+          if (count > 5) {
+            return;
+          }
+          if (count === 5) {
+            expect(warnSpy).toHaveBeenCalled();
+            done();
+            return;
+          }
+          zone.run(() => {});
+        }
+      });
+    });
+
     describe('unstable', () => {
       let unstableCalled = false;
 

@@ -529,6 +529,7 @@ export const ZONE_IS_STABLE_OBSERVABLE =
 export function isStableFactory() {
   const zone = inject(NgZone);
   let _stable = true;
+  let isStableEmitting = false;
   const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
     _stable = zone.isStable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks;
     zone.runOutsideAngular(() => {
@@ -544,13 +545,29 @@ export function isStableFactory() {
     zone.runOutsideAngular(() => {
       stableSub = zone.onStable.subscribe(() => {
         NgZone.assertNotInAngularZone();
+        // If ApplicationRef.isStable emtter is running, and another zone.onStable
+        // is emitted, we need to warn the user in ngDevMode to prevent possible
+        // endless loop, the possible use case is
+        // applicationRef.isStable.subscribe(() => {
+        //   ngZone.run(() => {});
+        // });
+        ngDevMode && isStableEmitting &&
+            console.warn(
+                `Nested ApplicationRef.isStable detected, please do not trigger NgZone.onStable inside ApplicationRef.isStale, possible use case like this:
+        appRef.isStale.subscribe(() => {
+          ngZone.run(() => {});
+        });
+        Such code casues endless loop.
+        `);
 
         // Check whether there are no pending macro/micro tasks in the next tick
         // to allow for NgZone to update the state.
         scheduleMicroTask(() => {
           if (!_stable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks) {
             _stable = true;
+            ngDevMode && (isStableEmitting = true);
             observer.next(true);
+            ngDevMode && (isStableEmitting = false);
           }
         });
       });
