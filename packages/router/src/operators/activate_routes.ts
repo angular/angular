@@ -17,20 +17,24 @@ import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_stat
 import {getClosestRouteInjector} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
+let warnedAboutUnsupportedInputBinding = false;
+
 export const activateRoutes =
     (rootContexts: ChildrenOutletContexts, routeReuseStrategy: RouteReuseStrategy,
-     forwardEvent: (evt: Event) => void): MonoTypeOperatorFunction<NavigationTransition> =>
-        map(t => {
-          new ActivateRoutes(
-              routeReuseStrategy, t.targetRouterState!, t.currentRouterState, forwardEvent)
-              .activate(rootContexts);
-          return t;
-        });
+     forwardEvent: (evt: Event) => void,
+     inputBindingEnabled: boolean): MonoTypeOperatorFunction<NavigationTransition> => map(t => {
+      new ActivateRoutes(
+          routeReuseStrategy, t.targetRouterState!, t.currentRouterState, forwardEvent,
+          inputBindingEnabled)
+          .activate(rootContexts);
+      return t;
+    });
 
 export class ActivateRoutes {
   constructor(
       private routeReuseStrategy: RouteReuseStrategy, private futureState: RouterState,
-      private currState: RouterState, private forwardEvent: (evt: Event) => void) {}
+      private currState: RouterState, private forwardEvent: (evt: Event) => void,
+      private inputBindingEnabled: boolean) {}
 
   activate(parentContexts: ChildrenOutletContexts): void {
     const futureRoot = this.futureState._root;
@@ -208,6 +212,17 @@ export class ActivateRoutes {
       } else {
         // if we have a componentless route, we recurse but keep the same outlet map.
         this.activateChildRoutes(futureNode, null, parentContexts);
+      }
+    }
+    if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
+      const context = parentContexts.getOrCreateContext(future.outlet);
+      const outlet = context.outlet;
+      if (outlet && this.inputBindingEnabled && !outlet.supportsBindingToComponentInputs &&
+          !warnedAboutUnsupportedInputBinding) {
+        console.warn(
+            `'withComponentInputBinding' feature is enabled but ` +
+            `this application is using an outlet that may not support binding to component inputs.`);
+        warnedAboutUnsupportedInputBinding = true;
       }
     }
   }

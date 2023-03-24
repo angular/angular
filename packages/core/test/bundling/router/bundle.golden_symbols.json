@@ -276,6 +276,9 @@
     "name": "INJECTOR_SCOPE"
   },
   {
+    "name": "INPUT_BINDER"
+  },
+  {
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {

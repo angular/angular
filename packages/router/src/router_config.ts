@@ -198,6 +198,12 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
   initialNavigation?: InitialNavigation;
 
   /**
+   * When true, enables binding information from the `Router` state directly to the inputs of the
+   * component in `Route` configurations.
+   */
+  bindToComponentInputs?: boolean;
+
+  /**
    * A custom error handler for failed navigations.
    * If the handler returns a value, the navigation Promise is resolved with this value.
    * If the handler throws an exception, the navigation Promise is rejected with the exception.

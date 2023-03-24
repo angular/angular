@@ -16,7 +16,7 @@ import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
 import {NavigationTransitions} from './navigation_transition';
-import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
+import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withComponentInputBinding, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
 import {Router} from './router';
 import {ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
@@ -125,6 +125,7 @@ export class RouterModule {
         config?.preloadingStrategy ? withPreloading(config.preloadingStrategy).ɵproviders : [],
         {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
         config?.initialNavigation ? provideInitialNavigation(config) : [],
+        config?.bindToComponentInputs ? withComponentInputBinding().ɵproviders : [],
         provideRouterInitializer(),
       ],
     };

@@ -7,11 +7,11 @@
  */
 
 import {HashLocationStrategy, LOCATION_INITIALIZED, LocationStrategy, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Component, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
-import {filter, map, take} from 'rxjs/operators';
 
-import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, stringifyEvent} from './events';
+import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
+import {Event, NavigationError, stringifyEvent} from './events';
 import {Routes} from './models';
 import {NavigationTransitions} from './navigation_transition';
 import {Router} from './router';
@@ -649,6 +649,46 @@ export function withNavigationErrorHandler(fn: (error: NavigationError) => void)
 }
 
 /**
+ * A type alias for providers returned by `withComponentInputBinding` for use with `provideRouter`.
+ *
+ * @see `withComponentInputBinding`
+ * @see `provideRouter`
+ *
+ * @publicApi
+ */
+export type ComponentInputBindingFeature =
+    RouterFeature<RouterFeatureKind.ComponentInputBindingFeature>;
+
+/**
+ * Enables binding information from the `Router` state directly to the inputs of the component in
+ * `Route` configurations.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable the feature:
+ * ```
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withComponentInputBinding())
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * @returns A set of providers for use with `provideRouter`.
+ */
+export function withComponentInputBinding(): ComponentInputBindingFeature {
+  const providers = [
+    RoutedComponentInputBinder,
+    {provide: INPUT_BINDER, useExisting: RoutedComponentInputBinder},
+  ];
+
+  return routerFeature(RouterFeatureKind.ComponentInputBindingFeature, providers);
+}
+
+/**
  * A type alias that represents all Router features available for use with `provideRouter`.
  * Features can be enabled by adding special functions to the `provideRouter` call.
  * See documentation for each symbol to find corresponding function name. See also `provideRouter`
@@ -658,8 +698,9 @@ export function withNavigationErrorHandler(fn: (error: NavigationError) => void)
  *
  * @publicApi
  */
-export type RouterFeatures = PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|
-    InMemoryScrollingFeature|RouterConfigurationFeature|NavigationErrorHandlerFeature;
+export type RouterFeatures =
+    PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|InMemoryScrollingFeature|
+    RouterConfigurationFeature|NavigationErrorHandlerFeature|ComponentInputBindingFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -673,4 +714,5 @@ export const enum RouterFeatureKind {
   RouterConfigurationFeature,
   RouterHashLocationFeature,
   NavigationErrorHandlerFeature,
+  ComponentInputBindingFeature,
 }

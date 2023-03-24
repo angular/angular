@@ -293,6 +293,7 @@ export const enum EventType {
 
 // @public
 export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
+    bindToComponentInputs?: boolean;
     enableTracing?: boolean;
     // @deprecated
     errorHandler?: (error: any) => any;
@@ -688,6 +689,7 @@ export class Router {
     constructor();
     // @deprecated
     canceledNavigationResolution: 'replace' | 'computed';
+    readonly componentInputBindingEnabled: boolean;
     // (undocumented)
     config: Routes;
     createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
@@ -780,7 +782,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -911,6 +913,7 @@ export interface RouterOutletContract {
     detach(): ComponentRef<unknown>;
     detachEvents?: EventEmitter<unknown>;
     isActivated: boolean;
+    supportsBindingToComponentInputs?: boolean;
 }
 
 // @public
