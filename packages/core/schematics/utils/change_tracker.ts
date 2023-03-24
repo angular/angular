@@ -99,8 +99,8 @@ export class ChangeTracker {
    * @param moduleName Module from which the symbol is imported.
    */
   addImport(
-      sourceFile: ts.SourceFile, symbolName: string, moduleName: string,
-      alias: string|null = null): ts.Expression {
+      sourceFile: ts.SourceFile, symbolName: string, moduleName: string, alias: string|null = null,
+      keepSymbolName = false): ts.Expression {
     if (this._importRemapper) {
       moduleName = this._importRemapper(moduleName, sourceFile.fileName);
     }
@@ -110,7 +110,8 @@ export class ChangeTracker {
     // paths will also cause TS to escape the forward slashes.
     moduleName = normalizePath(moduleName);
 
-    return this._importManager.addImportToSourceFile(sourceFile, symbolName, moduleName, alias);
+    return this._importManager.addImportToSourceFile(
+        sourceFile, symbolName, moduleName, alias, false, keepSymbolName);
   }
 
   /**
@@ -120,6 +121,13 @@ export class ChangeTracker {
   recordChanges(): ChangesByFile {
     this._importManager.recordChanges();
     return this._changes;
+  }
+
+  /**
+   * Clear the tracked changes
+   */
+  clearChanges(): void {
+    this._changes.clear();
   }
 
   /**
