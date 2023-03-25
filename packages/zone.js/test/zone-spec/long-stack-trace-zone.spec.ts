@@ -152,6 +152,7 @@ describe(
               });
               setTimeout(function() {
                 expectElapsed(log[0].stack!, 5);
+                promise.catch(() => {});
                 done();
               }, 0);
             }, 0);

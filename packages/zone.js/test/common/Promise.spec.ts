@@ -286,6 +286,9 @@ describe(
             (new Promise(function(_, rejectFn) {
                reject = rejectFn;
              }) as any)
+                .catch((err: any) => {
+                  expect(err).toBe('error');
+                })
                 .finally(function() {
                   expect(arguments.length).toBe(0);
                   expect(Zone.current).toBe(testZone);
@@ -295,6 +298,81 @@ describe(
 
           reject!('error');
         });
+
+        it('should work with .finally with lazy rejected promise without catch', async function() {
+          await jasmine.spyOnGlobalErrorsAsync(async () => {
+            let reject: Function|null = null;
+            let uncaughtError: any = null;
+            let promise: any = null;
+
+            const uncaught = (error: any, p: Promise<any>) => {
+              uncaughtError = (error?.reason || error).rejection;
+              promise = error?.promise || p;
+              if (isNode) {
+                process?.removeListener('unhandledRejection', uncaught);
+              } else {
+                window?.removeEventListener('unhandledrejection', uncaught as any);
+              }
+              expect(uncaughtError).toBe('error');
+            };
+            if (isNode) {
+              process?.addListener('unhandledRejection', uncaught);
+            } else {
+              window?.addEventListener('unhandledrejection', uncaught as any);
+            }
+
+            testZone.run(function() {
+              (new Promise(function(_, rejectFn) {
+                 reject = rejectFn;
+               }) as any)
+                  .finally(function() {
+                    expect(arguments.length).toBe(0);
+                    expect(Zone.current).toBe(testZone);
+                  });
+            });
+
+            reject!('error');
+            return new Promise(res => setTimeout(() => {
+                                 promise?.catch(() => {});
+                                 res();
+                               }));
+          });
+        });
+
+        it('should work with .finally with rejected promise without catch', async function() {
+          await jasmine.spyOnGlobalErrorsAsync(async () => {
+            let uncaughtError: any = null;
+            let promise: any = null;
+
+            const uncaught = (error: any, p: any) => {
+              uncaughtError = (error?.reason || error).rejection;
+              promise = error?.promise || p;
+              if (isNode) {
+                process?.removeListener('unhandledRejection', uncaught);
+              } else {
+                window?.removeEventListener('unhandledrejection', uncaught as any);
+              }
+              expect(uncaughtError).toBe('error');
+            };
+            if (isNode) {
+              process?.addListener('unhandledRejection', uncaught);
+            } else {
+              window?.addEventListener('unhandledrejection', uncaught as any);
+            }
+
+            testZone.run(function() {
+              Promise.reject('error').finally(function() {
+                expect(arguments.length).toBe(0);
+                expect(Zone.current).toBe(testZone);
+              });
+            });
+            return new Promise(res => setTimeout(() => {
+                                 promise?.catch(() => {});
+                                 res();
+                               }));
+          });
+        });
+
 
         it('should work with Promise.resolve', () => {
           queueZone.run(() => {
@@ -356,49 +434,6 @@ describe(
               expect(value).toEqual('rejectReason');
             });
           });
-
-          it('should output error to console if ignoreConsoleErrorUncaughtError is false',
-             async () => {
-               await jasmine.spyOnGlobalErrorsAsync(() => {
-                 const originalConsoleError = console.error;
-                 Zone.current.fork({name: 'promise-error'}).run(() => {
-                   (Zone as any)[Zone.__symbol__('ignoreConsoleErrorUncaughtError')] = false;
-                   console.error = jasmine.createSpy('consoleErr');
-                   const p = new Promise((resolve, reject) => {
-                     throw new Error('promise error');
-                   });
-                 });
-                 return new Promise(res => {
-                   setTimeout(() => {
-                     expect(console.error).toHaveBeenCalled();
-                     console.error = originalConsoleError;
-                     res();
-                   });
-                 });
-               });
-             });
-
-          it('should not output error to console if ignoreConsoleErrorUncaughtError is true',
-             async () => {
-               await jasmine.spyOnGlobalErrorsAsync(() => {
-                 const originalConsoleError = console.error;
-                 Zone.current.fork({name: 'promise-error'}).run(() => {
-                   (Zone as any)[Zone.__symbol__('ignoreConsoleErrorUncaughtError')] = true;
-                   console.error = jasmine.createSpy('consoleErr');
-                   const p = new Promise((resolve, reject) => {
-                     throw new Error('promise error');
-                   });
-                 });
-                 return new Promise(res => {
-                   setTimeout(() => {
-                     expect(console.error).not.toHaveBeenCalled();
-                     console.error = originalConsoleError;
-                     (Zone as any)[Zone.__symbol__('ignoreConsoleErrorUncaughtError')] = false;
-                     res();
-                   });
-                 });
-               });
-             });
 
           it('should notify Zone.onHandleError if no one catches promise', (done) => {
             let promiseError: Error|null = null;

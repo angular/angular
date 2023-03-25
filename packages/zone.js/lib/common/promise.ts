@@ -54,7 +54,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
           throw uncaughtPromiseError;
         });
       } catch (error) {
-        handleUnhandledRejection(error);
+        handleUnhandledRejection({reason: error, promise: uncaughtPromiseError.promise});
       }
     }
   };
@@ -62,11 +62,12 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   const UNHANDLED_PROMISE_REJECTION_HANDLER_SYMBOL = __symbol__('unhandledPromiseRejectionHandler');
 
   function handleUnhandledRejection(this: unknown, e: any) {
-    api.onUnhandledError(e);
     try {
       const handler = (Zone as any)[UNHANDLED_PROMISE_REJECTION_HANDLER_SYMBOL];
       if (typeof handler === 'function') {
         handler.call(this, e);
+      } else {
+        api.onUnhandledError(e);
       }
     } catch (err) {
     }
@@ -188,10 +189,18 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
           }
         }
 
+        let isAllFinallyPromiseOrEmptyQueue = true;
         for (let i = 0; i < queue.length;) {
-          scheduleResolveOrReject(promise, queue[i++], queue[i++], queue[i++], queue[i++]);
+          const isFinally =
+              scheduleResolveOrReject(promise, queue[i++], queue[i++], queue[i++], queue[i++]);
+          if (isAllFinallyPromiseOrEmptyQueue && !isFinally) {
+            isAllFinallyPromiseOrEmptyQueue = false;
+          }
         }
-        if (queue.length == 0 && state == REJECTED) {
+        // If the queue is empty or all queued promises are generated from finally call
+        // we need to check the state is REJECTED or not, if it is rejected, we got an
+        // uncaught promise rejection.
+        if (isAllFinallyPromiseOrEmptyQueue && state == REJECTED) {
           (promise as any)[symbolState] = REJECTED_NO_CATCH;
           let uncaughtPromiseError = value;
           try {
@@ -249,8 +258,13 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   function scheduleResolveOrReject<R, U1, U2>(
       promise: ZoneAwarePromise<any>, zone: Zone, chainPromise: ZoneAwarePromise<any>,
       onFulfilled?: ((value: R) => U1)|null|undefined,
-      onRejected?: ((error: any) => U2)|null|undefined): void {
-    clearRejectedNoCatch(promise);
+      onRejected?: ((error: any) => U2)|null|undefined): boolean {
+    const isFinallyPromise = symbolFinally === (chainPromise as any)?.[symbolFinally];
+    // If the chainPromise is generated from promise.finally() call, we should not
+    // clear the uncaught promise errors.
+    // otherwise, the code Promise.reject(new Error("test error")).finally(() =>
+    // console.log("finally")); will only print finally without throw rejection error.
+    !isFinallyPromise && clearRejectedNoCatch(promise);
     const promiseState = (promise as any)[symbolState];
     const delegate = promiseState ?
         (typeof onFulfilled === 'function') ? onFulfilled : forwardResolution :
@@ -259,8 +273,6 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
     zone.scheduleMicroTask(source, () => {
       try {
         const parentPromiseValue = (promise as any)[symbolValue];
-        const isFinallyPromise =
-            !!chainPromise && symbolFinally === (chainPromise as any)[symbolFinally];
         if (isFinallyPromise) {
           // if the promise is generated from finally call, keep parent promise's state and value
           (chainPromise as any)[symbolParentPromiseValue] = parentPromiseValue;
@@ -278,6 +290,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
         resolvePromise(chainPromise, false, error);
       }
     }, chainPromise as TaskData);
+    return isFinallyPromise;
   }
 
   const ZONE_AWARE_PROMISE_TO_STRING = 'function ZoneAwarePromise() { [native code] }';

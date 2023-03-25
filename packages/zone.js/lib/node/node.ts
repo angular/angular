@@ -96,17 +96,28 @@ Zone.__load_patch(
       function findProcessPromiseRejectionHandler(evtName: string) {
         return function(e: any) {
           const eventTasks = findEventTasks(process, evtName);
+          let found = false;
           eventTasks.forEach(eventTask => {
             // process has added unhandledrejection event listener
             // trigger the event listener
             if (evtName === 'unhandledRejection') {
-              eventTask.invoke(e.rejection, e.promise);
+              eventTask.invoke(e.reason, e.promise);
+              found = true;
             } else if (evtName === 'rejectionHandled') {
               eventTask.invoke(e.promise);
+              found = true;
             }
           });
+          if (!found && evtName === 'unhandledRejection') {
+            api.onUnhandledError(e);
+          }
         };
       }
+
+      // api.onUnhandledError = function(error: any) {
+      //   const NativePromise = global[api.symbol('Promise')];
+      //   NativePromise?.reject(error?.rejection || error);
+      // }
     });
 
 
