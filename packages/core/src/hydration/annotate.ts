@@ -195,6 +195,19 @@ function appendSerializedNodePath(ngh: SerializedView, tNode: TNode, lView: LVie
 }
 
 /**
+ * Helper function to append information about a disconnected node.
+ * This info is needed at runtime to avoid DOM lookups for this element
+ * and instead, the element would be created from scratch.
+ */
+function appendDisconnectedNodeIndex(ngh: SerializedView, tNode: TNode) {
+  const noOffsetIndex = tNode.index - HEADER_OFFSET;
+  ngh[DISCONNECTED_NODES] ??= [];
+  if (!ngh[DISCONNECTED_NODES].includes(noOffsetIndex)) {
+    ngh[DISCONNECTED_NODES].push(noOffsetIndex);
+  }
+}
+
+/**
  * There is no special TNode type for an i18n block, so we verify
  * whether the structure that we store at the `TView.data[idx]` position
  * has the `TI18n` shape.
@@ -235,14 +248,8 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
     // This situation may happen during the content projection, when some nodes don't make it
     // into one of the content projection slots (for example, when there is no default
     // <ng-content /> slot in projector component's template).
-    //
-    // Note: we leverage the fact that we have this information available in the DOM emulation
-    // layer (in Domino) for now. Longer-term solution should not rely on the DOM emulation and
-    // only use internal data structures and state to compute this information.
-    if (!(tNode.type & TNodeType.Projection) && !!lView[i] &&
-        !(unwrapRNode(lView[i]) as Node).isConnected && isContentProjectedNode(tNode)) {
-      ngh[DISCONNECTED_NODES] ??= [];
-      ngh[DISCONNECTED_NODES].push(noOffsetIndex);
+    if (isDisconnectedNode(tNode, lView) && isContentProjectedNode(tNode)) {
+      appendDisconnectedNodeIndex(ngh, tNode);
       continue;
     }
     if (Array.isArray(tNode.projection)) {
@@ -257,7 +264,15 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
           // a parent lView, which contains those nodes.
           if (!isProjectionTNode(projectionHeadTNode) &&
               !isInSkipHydrationBlock(projectionHeadTNode)) {
-            appendSerializedNodePath(ngh, projectionHeadTNode, lView);
+            if (isDisconnectedNode(projectionHeadTNode, lView)) {
+              // Check whether this node is connected, since we may have a TNode
+              // in the data structure as a projection segment head, but the
+              // content projection slot might be disabled (e.g.
+              // <ng-content *ngIf="false" />).
+              appendDisconnectedNodeIndex(ngh, projectionHeadTNode);
+            } else {
+              appendSerializedNodePath(ngh, projectionHeadTNode, lView);
+            }
           }
         } else {
           // If a value is an array, it means that we are processing a projection
@@ -429,4 +444,16 @@ function isContentProjectedNode(tNode: TNode): boolean {
     currentTNode = currentTNode.parent as TNode;
   }
   return false;
+}
+
+/**
+ * Check whether a given node exists, but is disconnected from the DOM.
+ *
+ * Note: we leverage the fact that we have this information available in the DOM emulation
+ * layer (in Domino) for now. Longer-term solution should not rely on the DOM emulation and
+ * only use internal data structures and state to compute this information.
+ */
+function isDisconnectedNode(tNode: TNode, lView: LView) {
+  return !(tNode.type & TNodeType.Projection) && !!lView[tNode.index] &&
+      !(unwrapRNode(lView[tNode.index]) as Node).isConnected;
 }

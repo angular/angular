@@ -3102,8 +3102,137 @@ describe('platform-server integration', () => {
              expect(errorMessage).toContain('<dynamic>…</dynamic>  <-- AT THIS LOCATION');
            }
          });
-    });
 
+      it('should support cases when <ng-content> is used with *ngIf="false"', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          imports: [NgIf],
+          template: `
+            Project?: <span>{{ project ? 'yes' : 'no' }}</span>
+            <ng-content *ngIf="project" />
+          `,
+        })
+        class ProjectorCmp {
+          @Input() project: boolean = false;
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `
+              <projector-cmp [project]="project">
+                <h1>This node is not projected.</h1>
+                <h2>This node is not projected as well.</h2>
+              </projector-cmp>
+            `,
+        })
+        class SimpleComponent {
+          project = false;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+        let h1 = clientRootNode.querySelector('h1');
+        let h2 = clientRootNode.querySelector('h2');
+        let span = clientRootNode.querySelector('span');
+
+        expect(h1).not.toBeDefined();
+        expect(h2).not.toBeDefined();
+        expect(span.textContent).toBe('no');
+
+        // Flip the flag to enable content projection.
+        compRef.instance.project = true;
+        compRef.changeDetectorRef.detectChanges();
+
+        h1 = clientRootNode.querySelector('h1');
+        h2 = clientRootNode.querySelector('h2');
+        span = clientRootNode.querySelector('span');
+
+        expect(h1).toBeDefined();
+        expect(h2).toBeDefined();
+        expect(span.textContent).toBe('yes');
+      });
+
+      it('should support cases when <ng-content> is used with *ngIf="true"', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          imports: [NgIf],
+          template: `
+            Project?: <span>{{ project ? 'yes' : 'no' }}</span>
+            <ng-content *ngIf="project" />
+          `,
+        })
+        class ProjectorCmp {
+          @Input() project: boolean = false;
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `
+              <projector-cmp [project]="project">
+                <h1>This node is projected.</h1>
+                <h2>This node is projected as well.</h2>
+              </projector-cmp>
+            `,
+        })
+        class SimpleComponent {
+          project = true;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+        let h1 = clientRootNode.querySelector('h1');
+        let h2 = clientRootNode.querySelector('h2');
+        let span = clientRootNode.querySelector('span');
+
+        expect(h1).toBeDefined();
+        expect(h2).toBeDefined();
+        expect(span.textContent).toBe('yes');
+
+        // Flip the flag to disable content projection.
+        compRef.instance.project = false;
+        compRef.changeDetectorRef.detectChanges();
+
+        h1 = clientRootNode.querySelector('h1');
+        h2 = clientRootNode.querySelector('h2');
+        span = clientRootNode.querySelector('span');
+
+        expect(h1).not.toBeDefined();
+        expect(h2).not.toBeDefined();
+        expect(span.textContent).toBe('no');
+      });
+    });
 
     describe('error handling', () => {
       it('should handle text node mismatch', async () => {
