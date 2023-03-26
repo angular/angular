@@ -869,6 +869,11 @@
               "tooltip": "Add inputs to components in your app"
             },
             {
+              "url": "tutorial/first-app/first-app-lesson-06",
+              "title": "Add property binding to components",
+              "tooltip": "Add property binding to components in your app"
+            },
+            {
               "url": "tutorial/first-app/first-app-lesson-09",
               "title": "Angular services",
               "tooltip": "Add an Angular service to your app"
