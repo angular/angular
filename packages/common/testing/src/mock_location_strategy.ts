@@ -35,18 +35,18 @@ export class MockLocationStrategy extends LocationStrategy {
     this._subject.emit(new _MockPopStateEvent(this.path()));
   }
 
-  path(includeHash: boolean = false): string {
+  override path(includeHash: boolean = false): string {
     return this.internalPath;
   }
 
-  prepareExternalUrl(internal: string): string {
+  override prepareExternalUrl(internal: string): string {
     if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
       return this.internalBaseHref + internal.substring(1);
     }
     return this.internalBaseHref + internal;
   }
 
-  pushState(ctx: any, title: string, path: string, query: string): void {
+  override pushState(ctx: any, title: string, path: string, query: string): void {
     // Add state change to changes array
     this.stateChanges.push(ctx);
 
@@ -59,7 +59,7 @@ export class MockLocationStrategy extends LocationStrategy {
     this.urlChanges.push(externalUrl);
   }
 
-  replaceState(ctx: any, title: string, path: string, query: string): void {
+  override replaceState(ctx: any, title: string, path: string, query: string): void {
     // Reset the last index of stateChanges to the ctx (state) object
     this.stateChanges[(this.stateChanges.length || 1) - 1] = ctx;
 
@@ -72,15 +72,15 @@ export class MockLocationStrategy extends LocationStrategy {
     this.urlChanges.push('replace: ' + externalUrl);
   }
 
-  onPopState(fn: (value: any) => void): void {
+  override onPopState(fn: (value: any) => void): void {
     this._subject.subscribe({next: fn});
   }
 
-  getBaseHref(): string {
+  override getBaseHref(): string {
     return this.internalBaseHref;
   }
 
-  back(): void {
+  override back(): void {
     if (this.urlChanges.length > 0) {
       this.urlChanges.pop();
       this.stateChanges.pop();
@@ -89,11 +89,11 @@ export class MockLocationStrategy extends LocationStrategy {
     }
   }
 
-  forward(): void {
+  override forward(): void {
     throw 'not implemented';
   }
 
-  getState(): unknown {
+  override getState(): unknown {
     return this.stateChanges[(this.stateChanges.length || 1) - 1];
   }
 }
