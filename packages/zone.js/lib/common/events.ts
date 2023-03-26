@@ -293,6 +293,16 @@ export function patchEventTarget(
       // if task is not marked as isRemoved, this call is directly
       // from Zone.prototype.cancelTask, we should remove the task
       // from tasksList of target first
+      const signal = task?.options?.signal;
+      if (typeof signal === 'object' && signal?.tasks) {
+        const abortTasks = signal.tasks;
+        for (let i = 0; i < abortTasks?.length || 0; i++) {
+          if (abortTasks[i] === task) {
+            abortTasks.splice(i, 1);
+            break;
+          }
+        }
+      }
       if (!task.isRemoved) {
         const symbolEventNames = zoneSymbolEventNames[task.eventName];
         let symbolEventName;
@@ -394,6 +404,11 @@ export function patchEventTarget(
         const passive =
             passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
         const options = buildEventListenerOptions(arguments[2], passive);
+        const signal = typeof options === 'object' && options?.signal;
+        if (typeof signal === 'object' && signal?.aborted) {
+          // the signal is an aborted one, just return without attaching the event listener.
+          return;
+        }
 
         if (unpatchedEvents) {
           // check unpatched list
@@ -465,8 +480,30 @@ export function patchEventTarget(
           (data as any).taskData = taskData;
         }
 
+        if (signal && typeof signal === 'object') {
+          // if addEventListener with signal options, we don't pass it to
+          // native addEventListener, instead we keep the signal setting
+          // and handle ourselves.
+          taskData.options.signal = undefined;
+        }
         const task: any =
             zone.scheduleEventTask(source, delegate, data, customScheduleFn, customCancelFn);
+
+        if (signal && typeof signal === 'object') {
+          // after task is scheduled, we need to store the signal back to task.options
+          taskData.options.signal = signal;
+          const tasks = signal.tasks || [];
+          tasks.push(task);
+          signal.tasks = tasks;
+          if (!signal[Zone.__symbol__('abortListener')]) {
+            signal[Zone.__symbol__('abortListener')] = true;
+            nativeListener.call(signal, 'abort', function() {
+              const sTasks = signal.tasks.slice();
+              sTasks.forEach((task: Task) => task.zone.cancelTask(task));
+              signal.tasks.length = 0;
+            });
+          }
+        }
 
         // should clear taskData.target to avoid memory leak
         // issue, https://github.com/angular/angular/issues/20442
