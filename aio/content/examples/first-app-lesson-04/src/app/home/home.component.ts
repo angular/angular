@@ -25,22 +25,17 @@ import { HousingLocation } from '../housinglocation';
   `,
   styleUrls: ['./home.component.css'],
 })
-
 // #docregion only-house
 export class HomeComponent {
-  housingLocation: HousingLocation;
-
-  constructor() {
-    this.housingLocation = {
-      id: 9999,
-      name: 'Test Home',
-      city: 'Test city',
-      state: 'ST',
-      photo: 'assets/example-house.jpg',
-      availableUnits: 99,
-      wifi: true,
-      laundry: false,
-    };
-  }
+  housingLocation: HousingLocation = {
+    id: 9999,
+    name: 'Test Home',
+    city: 'Test city',
+    state: 'ST',
+    photo: 'assets/example-house.jpg',
+    availableUnits: 99,
+    wifi: true,
+    laundry: false,
+  };
 }
 // #enddocregion
