@@ -44,6 +44,7 @@ import {TestBed} from '@angular/core/testing';
       const parent = IterableDiffers.create(<any>[factory1]);
       const child = IterableDiffers.create(<any>[factory2], parent);
 
+      // @ts-expect-error private member
       expect(child.factories).toEqual([factory2, factory1]);
     });
 
@@ -55,7 +56,10 @@ import {TestBed} from '@angular/core/testing';
         const childInjector =
             Injector.create({providers: [IterableDiffers.extend([factory2])], parent: injector});
 
+        // @ts-expect-error factories is a private member
         expect(injector.get<IterableDiffers>(IterableDiffers).factories).toEqual([factory1]);
+
+        // @ts-expect-error factories is a private member
         expect(childInjector.get<IterableDiffers>(IterableDiffers).factories).toEqual([
           factory2, factory1
         ]);

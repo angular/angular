@@ -880,8 +880,6 @@ export class IterableDiffers {
     // (undocumented)
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
     static extend(factories: IterableDifferFactory[]): StaticProvider;
-    // @deprecated (undocumented)
-    factories: IterableDifferFactory[];
     // (undocumented)
     find(iterable: any): IterableDifferFactory;
     // (undocumented)
