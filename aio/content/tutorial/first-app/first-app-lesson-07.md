@@ -1,0 +1,1 @@
+# Lesson 7 - Add an interpolation to a component’s template
