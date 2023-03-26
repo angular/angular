@@ -13,11 +13,13 @@ function createExtension(ids: any[], caps: any) {
   return new Promise<any>((res, rej) => {
     try {
       res(Injector
-              .create([
-                ids.map((id) => ({provide: id, useValue: new MockExtension(id)})),
-                {provide: Options.CAPABILITIES, useValue: caps},
-                WebDriverExtension.provideFirstSupported(ids)
-              ])
+              .create({
+                providers: [
+                  ids.map((id) => ({provide: id, useValue: new MockExtension(id)})),
+                  {provide: Options.CAPABILITIES, useValue: caps},
+                  WebDriverExtension.provideFirstSupported(ids)
+                ]
+              })
               .get(WebDriverExtension));
     } catch (e) {
       rej(e);

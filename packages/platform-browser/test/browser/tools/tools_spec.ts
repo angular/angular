@@ -7,6 +7,7 @@
  */
 
 import {ApplicationRef, Injector, ɵglobal as global} from '@angular/core';
+import {ComponentRef} from '@angular/core/src/render3';
 import {disableDebugTools, enableDebugTools} from '@angular/platform-browser';
 
 {
@@ -19,13 +20,15 @@ import {disableDebugTools, enableDebugTools} from '@angular/platform-browser';
 
     beforeEach(() => {
       enableDebugTools({
-        injector: Injector.create([{
-          provide: ApplicationRef,
-          useValue: jasmine.createSpyObj(
-              'ApplicationRef', ['bootstrap', 'tick', 'attachView', 'detachView']),
-          deps: []
-        }])
-      } as any);
+        injector: Injector.create({
+          providers: [{
+            provide: ApplicationRef,
+            useValue: jasmine.createSpyObj(
+                'ApplicationRef', ['bootstrap', 'tick', 'attachView', 'detachView']),
+            deps: []
+          }]
+        })
+      } as ComponentRef<any>);
     });
 
     afterEach(() => {

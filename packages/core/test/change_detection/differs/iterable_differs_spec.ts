@@ -50,8 +50,10 @@ import {TestBed} from '@angular/core/testing';
     describe('.extend()', () => {
       it('should extend di-inherited differs', () => {
         const parent = new IterableDiffers([factory1]);
-        const injector = Injector.create([{provide: IterableDiffers, useValue: parent}]);
-        const childInjector = Injector.create([IterableDiffers.extend([factory2])], injector);
+        const injector =
+            Injector.create({providers: [{provide: IterableDiffers, useValue: parent}]});
+        const childInjector =
+            Injector.create({providers: [IterableDiffers.extend([factory2])], parent: injector});
 
         expect(injector.get<IterableDiffers>(IterableDiffers).factories).toEqual([factory1]);
         expect(childInjector.get<IterableDiffers>(IterableDiffers).factories).toEqual([

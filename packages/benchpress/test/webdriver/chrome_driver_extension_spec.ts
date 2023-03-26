@@ -40,14 +40,16 @@ import {TraceEventFactory} from '../trace_event_factory';
       }
       log = [];
       extension = Injector
-                      .create([
-                        ChromeDriverExtension.PROVIDERS, {
-                          provide: WebDriverAdapter,
-                          useValue: new MockDriverAdapter(log, perfRecords, messageMethod)
-                        },
-                        {provide: Options.USER_AGENT, useValue: userAgent},
-                        {provide: Options.RAW_PERFLOG_PATH, useValue: null}
-                      ])
+                      .create({
+                        providers: [
+                          ChromeDriverExtension.PROVIDERS, {
+                            provide: WebDriverAdapter,
+                            useValue: new MockDriverAdapter(log, perfRecords, messageMethod)
+                          },
+                          {provide: Options.USER_AGENT, useValue: userAgent},
+                          {provide: Options.RAW_PERFLOG_PATH, useValue: null}
+                        ]
+                      })
                       .get(ChromeDriverExtension);
       return extension;
     }
