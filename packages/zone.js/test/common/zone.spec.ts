@@ -379,6 +379,17 @@ describe('Zone', function() {
       macro.invoke();
     });
 
+    it('should be able to cancel microtask from queue', () => {
+      const z = Zone.current;
+
+      z.scheduleMicroTask('test', () => log.push('microTask'));
+      const task1 = z.scheduleMicroTask('test1', () => log.push('microTask1'));
+      task1.zone.cancelTask(task1);
+      setTimeout(() => {
+        expect(log).toEqual(['microTask']);
+      });
+    });
+
     it('should convert task to json without cyclic error', () => {
       const z = Zone.current;
       const event = z.scheduleEventTask('test', () => {}, undefined, noop, noop);

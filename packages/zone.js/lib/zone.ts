@@ -1190,10 +1190,13 @@ const Zone: ZoneType = (function(global: any) {
         value = this._cancelTaskZS.onCancelTask!
                 (this._cancelTaskDlgt!, this._cancelTaskCurrZone!, targetZone, task);
       } else {
-        if (!task.cancelFn) {
+        if (task.cancelFn) {
+          value = task.cancelFn(task);
+        } else if (task.type === microTask) {
+          cancelMicroTask(<MicroTask>task);
+        } else {
           throw Error('Task is not cancelable');
         }
-        value = task.cancelFn(task);
       }
       return value;
     }
@@ -1372,6 +1375,19 @@ const Zone: ZoneType = (function(global: any) {
       nativeScheduleMicroTask(drainMicroTaskQueue);
     }
     task && _microTaskQueue.push(task);
+  }
+
+  function cancelMicroTask(task?: MicroTask) {
+    // cancel microTask and remove it from the _microTaskQueue.
+    if (!task) {
+      return;
+    }
+    for (let i = 0; i < _microTaskQueue.length; i++) {
+      if (_microTaskQueue[i] === task) {
+        _microTaskQueue.splice(i, 1);
+        return;
+      }
+    }
   }
 
   function drainMicroTaskQueue() {
