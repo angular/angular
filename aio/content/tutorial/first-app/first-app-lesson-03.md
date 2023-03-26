@@ -69,11 +69,20 @@ In the **Edit** pane of your IDE:
 
     <code-example header="Add housing location to the component template in src/app/home/home.component.ts" path="first-app-lesson-03/src/app/home/home.component.ts" region="add-housingLocation-to-template"></code-example>
 
+### Step 3 - Add the styles for the component
+
+In this step, you will copy over the pre-written styles for the `HousingLocationComponent` to your app so that the app renders properly.
+
+1. Open `src/app/housing-location/housing-location.css`, and paste the styles below into the file:
+        
+    <code-example header="Add CSS styles to housing location to the component in src/app/housing-location/housing-location.component.css" path="first-app-lesson-03/src/app/housing-location/housing-location.component.css"></code-example>
+
 1.  Save your code, return to the browser and confirm that the app builds without error. You should find the message "housing-location works!" rendered to the screen.Correct any errors before you continue to the next step.
 
     <section class="lightbox">
     <img alt="browser frame of homes-app displaying logo, filter text input box and search button and the message 'housing-location works!" src="generated/images/guide/faa/homes-app-lesson-03-step-2.png">
     </section>
+
 
 ## Lesson review
 

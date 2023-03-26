@@ -45,7 +45,7 @@ In the code editor:
     <code-example header="Import HousingLocationComponent and Input in src/app/housing-location/housing-location.component.ts" path="first-app-lesson-05/src/app/housing-location/housing-location.component.ts" region="add-imports"></code-example>
 
 ### Step 2 - Add the Input property
-1.  In the same file, add a property called `housingLocation` of type `HousingLocation` to the `HousingLocationComponent` class. ADd an `!` after the property name and prefix it with the `@Input()` decorator:
+1.  In the same file, add a property called `housingLocation` of type `HousingLocation` to the `HousingLocationComponent` class. Add an `!` after the property name and prefix it with the `@Input()` decorator:
 
     <code-example header="Import HousingLocationComponent and Input in src/app/housing-location/housing-location.component.ts" path="first-app-lesson-05/src/app/housing-location/housing-location.component.ts" region="add-housing-location-property"></code-example>
 
@@ -64,4 +64,6 @@ If you are having any trouble with this lesson, you can review the completed cod
 ## Next steps
 
 * [Lesson 6 - Add a property binding to an component’s template](tutorial/first-app/first-app-lesson-06)
+
 ## For more information about the topics covered in this lesson, visit:
+* [Sharing data between child and parent directives and components](guide/inputs-outputs)
