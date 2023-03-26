@@ -29,23 +29,7 @@ Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const fetchTaskAborting = api.symbol('fetchTaskAborting');
   const OriginalAbortController = global['AbortController'];
   const supportAbort = typeof OriginalAbortController === 'function';
-  let abortNative: Function|null = null;
-  if (supportAbort) {
-    global['AbortController'] = function() {
-      const abortController = new OriginalAbortController();
-      const signal = abortController.signal;
-      signal.abortController = abortController;
-      return abortController;
-    };
-    abortNative = api.patchMethod(
-        OriginalAbortController.prototype, 'abort',
-        (delegate: Function) => (self: any, args: any) => {
-          if (self.task) {
-            return self.task.zone.cancelTask(self.task);
-          }
-          return delegate.apply(self, args);
-        });
-  }
+  let abortNative: Function|null = OriginalAbortController?.prototype[api.symbol('abort')];
   const placeholder = function() {};
   global['fetch'] = function() {
     const args = Array.prototype.slice.call(arguments);
@@ -105,7 +89,7 @@ Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
             }
           });
       if (signal && signal.abortController) {
-        signal.abortController.task = task;
+        signal.abortController.tasks = [task];
       }
     });
   };

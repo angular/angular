@@ -1762,6 +1762,113 @@ describe('Zone', function() {
            expect(logs).toEqual(['click2']);
          });
 
+      it('should support remove event listeners via AbortController', function() {
+        let logs: string[] = [];
+        const ac = new AbortController();
+
+        button.addEventListener('click', function() {
+          logs.push('click1');
+        }, {signal: ac.signal});
+        button.addEventListener('click', function() {
+          logs.push('click2');
+        });
+        button.addEventListener('click', function() {
+          logs.push('click3');
+        }, {signal: ac.signal});
+        let listeners = button.eventListeners!('click');
+        expect(listeners.length).toBe(3);
+
+        button.dispatchEvent(clickEvent);
+        expect(logs.length).toBe(3);
+        expect(logs).toEqual(['click1', 'click2', 'click3']);
+        ac.abort();
+        logs = [];
+
+        listeners = button.eventListeners!('click');
+        button.dispatchEvent(clickEvent);
+        expect(logs.length).toBe(1);
+        expect(listeners.length).toBe(1);
+        expect(logs).toEqual(['click2']);
+      });
+
+      it('should support remove event listeners with AbortController', function() {
+        let logs: string[] = [];
+        const ac = new AbortController();
+
+        const listener1 = function() {
+          logs.push('click1');
+        };
+        button.addEventListener('click', listener1, {signal: ac.signal});
+        button.addEventListener('click', function() {
+          logs.push('click2');
+        });
+        let listeners = button.eventListeners!('click');
+        expect(listeners.length).toBe(2);
+
+        button.dispatchEvent(clickEvent);
+        expect(logs.length).toBe(2);
+        expect(logs).toEqual(['click1', 'click2']);
+
+        button.removeEventListener('click', listener1);
+        listeners = button.eventListeners!('click');
+        expect(listeners.length).toBe(1);
+
+        logs = [];
+
+        listeners = button.eventListeners!('click');
+        button.dispatchEvent(clickEvent);
+        expect(logs.length).toBe(1);
+        expect(listeners.length).toBe(1);
+        expect(logs).toEqual(['click2']);
+
+        ac.abort();
+        expect(logs).toEqual(['click2']);
+      });
+
+      it('should not add event listeners with aborted signal', function() {
+        let logs: string[] = [];
+
+        button.addEventListener('click', function() {
+          logs.push('click1');
+        }, {signal: AbortSignal.abort()});
+        button.addEventListener('click', function() {
+          logs.push('click2');
+        });
+        let listeners = button.eventListeners!('click');
+        expect(listeners.length).toBe(1);
+
+        button.dispatchEvent(clickEvent);
+        expect(logs.length).toBe(1);
+        expect(logs).toEqual(['click2']);
+      });
+
+      it('should remove event listeners with timeout signal',
+         ifEnvSupportsWithDone(
+             () => typeof AbortSignal.timeout === 'function', function(done: DoneFn) {
+               let logs: string[] = [];
+
+               button.addEventListener('click', function() {
+                 logs.push('click1');
+               }, {signal: AbortSignal.timeout(1)});
+               button.addEventListener('click', function() {
+                 logs.push('click2');
+               });
+               let listeners = button.eventListeners!('click');
+               expect(listeners.length).toBe(2);
+
+               button.dispatchEvent(clickEvent);
+               expect(logs.length).toBe(2);
+               expect(logs).toEqual(['click1', 'click2']);
+
+               setTimeout(() => {
+                 logs = [];
+                 button.dispatchEvent(clickEvent);
+                 expect(logs.length).toBe(1);
+                 expect(logs).toEqual(['click2']);
+                 done();
+               }, 10);
+             }));
+
       it('should support reschedule eventTask',
          ifEnvSupports(supportEventListenerOptions, function() {
            let hookSpy1 = jasmine.createSpy('spy1');
