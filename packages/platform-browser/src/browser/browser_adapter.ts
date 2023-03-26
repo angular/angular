@@ -22,7 +22,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     setRootDomAdapter(new BrowserDomAdapter());
   }
 
-  onAndCancel(el: Node, evt: any, listener: any): Function {
+  override onAndCancel(el: Node, evt: any, listener: any): Function {
     el.addEventListener(evt, listener, false);
     // Needed to follow Dart's subscription semantic, until fix of
     // https://code.google.com/p/dart/issues/detail?id=17406
@@ -30,35 +30,35 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       el.removeEventListener(evt, listener, false);
     };
   }
-  dispatchEvent(el: Node, evt: any) {
+  override dispatchEvent(el: Node, evt: any) {
     el.dispatchEvent(evt);
   }
-  remove(node: Node): void {
+  override remove(node: Node): void {
     if (node.parentNode) {
       node.parentNode.removeChild(node);
     }
   }
-  createElement(tagName: string, doc?: Document): HTMLElement {
+  override createElement(tagName: string, doc?: Document): HTMLElement {
     doc = doc || this.getDefaultDocument();
     return doc.createElement(tagName);
   }
-  createHtmlDocument(): Document {
+  override createHtmlDocument(): Document {
     return document.implementation.createHTMLDocument('fakeTitle');
   }
-  getDefaultDocument(): Document {
+  override getDefaultDocument(): Document {
     return document;
   }
 
-  isElementNode(node: Node): boolean {
+  override isElementNode(node: Node): boolean {
     return node.nodeType === Node.ELEMENT_NODE;
   }
 
-  isShadowRoot(node: any): boolean {
+  override isShadowRoot(node: any): boolean {
     return node instanceof DocumentFragment;
   }
 
   /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
-  getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
+  override getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
     if (target === 'window') {
       return window;
     }
@@ -70,17 +70,17 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return null;
   }
-  getBaseHref(doc: Document): string|null {
+  override getBaseHref(doc: Document): string|null {
     const href = getBaseElementHref();
     return href == null ? null : relativePath(href);
   }
-  resetBaseElement(): void {
+  override resetBaseElement(): void {
     baseElement = null;
   }
-  getUserAgent(): string {
+  override getUserAgent(): string {
     return window.navigator.userAgent;
   }
-  getCookie(name: string): string|null {
+  override getCookie(name: string): string|null {
     return parseCookieValue(document.cookie, name);
   }
 }
