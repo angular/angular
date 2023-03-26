@@ -11,10 +11,12 @@ import {Injector, MeasureValues, MultiReporter, Reporter} from '../../index';
 (function() {
 function createReporters(ids: any[]) {
   const r = Injector
-                .create([
-                  ids.map(id => ({provide: id, useValue: new MockReporter(id)})),
-                  MultiReporter.provideWith(ids)
-                ])
+                .create({
+                  providers: [
+                    ids.map(id => ({provide: id, useValue: new MockReporter(id)})),
+                    MultiReporter.provideWith(ids)
+                  ]
+                })
                 .get<MultiReporter>(MultiReporter);
   return Promise.resolve(r);
 }
