@@ -150,7 +150,11 @@ const wrapFn = function(this: unknown, event: Event) {
     }
   } else {
     result = listener && listener.apply(this, arguments);
-    if (result != undefined && !result) {
+    if (event.type === 'beforeunload') {
+      // For beforeunload event, we need to set returnValue
+      // so the browser can prompt
+      event.returnValue = result;
+    } else if (result != undefined && !result) {
       event.preventDefault();
     }
   }
