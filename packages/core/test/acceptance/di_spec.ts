@@ -2428,7 +2428,7 @@ describe('di', () => {
       }
 
       const testBedInjector: Injector = TestBed.get(Injector);
-      const childInjector = Injector.create([], testBedInjector);
+      const childInjector = Injector.create({providers: [], parent: testBedInjector});
 
       const anyService = childInjector.get(AnyService);
       expect(anyService.injector).toBe(childInjector);

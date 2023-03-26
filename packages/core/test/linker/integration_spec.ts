@@ -2090,7 +2090,8 @@ class DynamicViewport {
     const myService = new MyService();
     myService.greeting = 'dynamic greet';
 
-    this.injector = Injector.create([{provide: MyService, useValue: myService}], vc.injector);
+    this.injector = Injector.create(
+        {providers: [{provide: MyService, useValue: myService}], parent: vc.injector});
     this.componentFactory =
         componentFactoryResolver.resolveComponentFactory(ChildCompUsingService)!;
   }

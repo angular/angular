@@ -29,7 +29,7 @@ function createMetric(
     {provide: Options.USER_METRICS, useValue: userMetrics},
     {provide: WebDriverAdapter, useValue: wdAdapter}
   ];
-  return Injector.create(providers).get(UserMetric);
+  return Injector.create({providers}).get(UserMetric);
 }
 
 describe('user metric', () => {

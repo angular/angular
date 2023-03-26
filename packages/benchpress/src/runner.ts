@@ -61,7 +61,7 @@ export class Runner {
       sampleProviders.push(providers);
     }
 
-    const inj = Injector.create(sampleProviders);
+    const inj = Injector.create({providers: sampleProviders});
     const adapter: WebDriverAdapter = inj.get(WebDriverAdapter);
 
     return Promise
@@ -75,11 +75,13 @@ export class Runner {
           // Only WebDriverAdapter is reused.
           // TODO(vsavkin): consider changing it when toAsyncFactory is added back or when child
           // injectors are handled better.
-          const injector = Injector.create([
-            sampleProviders, {provide: Options.CAPABILITIES, useValue: capabilities},
-            {provide: Options.USER_AGENT, useValue: userAgent},
-            {provide: WebDriverAdapter, useValue: adapter}
-          ]);
+          const injector = Injector.create({
+            providers: [
+              sampleProviders, {provide: Options.CAPABILITIES, useValue: capabilities},
+              {provide: Options.USER_AGENT, useValue: userAgent},
+              {provide: WebDriverAdapter, useValue: adapter}
+            ]
+          });
 
           // TODO: With TypeScript 2.5 injector.get does not infer correctly the
           // return type. Remove 'any' and investigate the issue.
