@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal} from '@angular/core/src/signals';
+import {computed, signal, Watch} from '@angular/core/src/signals';
 
 import {flushEffects, resetEffects, testingEffect} from './effect_util';
 
@@ -126,5 +126,26 @@ describe('watchers', () => {
     flushEffects();
     // cleanup (array trim) should have run before executing effect
     expect(seenCounterValues).toEqual([2]);
+  });
+
+  it('should throw an error when reading a signal during the notification phase', () => {
+    const source = signal(0);
+    let ranScheduler = false;
+    const watch = new Watch(
+        () => {
+          source();
+        },
+        () => {
+          ranScheduler = true;
+          expect(() => source()).toThrow();
+        },
+        false);
+
+    // Run the effect manually to initiate dependency tracking.
+    watch.run();
+
+    // Changing the signal will attempt to schedule the effect.
+    source.set(1);
+    expect(ranScheduler).toBeTrue();
   });
 });

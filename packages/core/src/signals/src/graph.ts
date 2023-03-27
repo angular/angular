@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {throwInvalidWriteToSignalError} from './errors';
 import {newWeakRef, WeakRef} from './weak_ref';
 
 /**
@@ -18,6 +19,11 @@ let _nextReactiveId: number = 0;
  * consumer).
  */
 let activeConsumer: ReactiveNode|null = null;
+
+/**
+ * Whether the graph is currently propagating change notifications.
+ */
+let inNotificationPhase = false;
 
 export function setActiveConsumer(consumer: ReactiveNode|null): ReactiveNode|null {
   const prev = activeConsumer;
@@ -113,6 +119,11 @@ export abstract class ReactiveNode {
   protected valueVersion = 0;
 
   /**
+   * Whether signal writes should be allowed while this `ReactiveNode` is the current consumer.
+   */
+  protected abstract readonly consumerAllowSignalWrites: boolean;
+
+  /**
    * Called for consumers whenever one of their dependencies notifies that it might have a new
    * value.
    */
@@ -157,15 +168,22 @@ export abstract class ReactiveNode {
    * Notify all consumers of this producer that its value may have changed.
    */
   protected producerMayHaveChanged(): void {
-    for (const [consumerId, edge] of this.consumers) {
-      const consumer = edge.consumerNode.deref();
-      if (consumer === undefined || consumer.trackingVersion !== edge.atTrackingVersion) {
-        this.consumers.delete(consumerId);
-        consumer?.producers.delete(this.id);
-        continue;
-      }
+    // Prevent signal reads when we're updating the graph
+    const prev = inNotificationPhase;
+    inNotificationPhase = true;
+    try {
+      for (const [consumerId, edge] of this.consumers) {
+        const consumer = edge.consumerNode.deref();
+        if (consumer === undefined || consumer.trackingVersion !== edge.atTrackingVersion) {
+          this.consumers.delete(consumerId);
+          consumer?.producers.delete(this.id);
+          continue;
+        }
 
-      consumer.onConsumerDependencyMayHaveChanged();
+        consumer.onConsumerDependencyMayHaveChanged();
+      }
+    } finally {
+      inNotificationPhase = prev;
     }
   }
 
@@ -173,6 +191,13 @@ export abstract class ReactiveNode {
    * Mark that this producer node has been accessed in the current reactive context.
    */
   protected producerAccessed(): void {
+    if (inNotificationPhase) {
+      throw new Error(
+          typeof ngDevMode !== 'undefined' && ngDevMode ?
+              `Assertion error: signal read during notification phase` :
+              '');
+    }
+
     if (activeConsumer === null) {
       return;
     }
@@ -199,6 +224,14 @@ export abstract class ReactiveNode {
    */
   protected get hasProducers(): boolean {
     return this.producers.size > 0;
+  }
+
+  /**
+   * Whether this `ReactiveNode` in its producer capacity is currently allowed to initiate updates,
+   * based on the current consumer context.
+   */
+  protected get producerUpdatesAllowed(): boolean {
+    return activeConsumer?.consumerAllowSignalWrites !== false;
   }
 
   /**

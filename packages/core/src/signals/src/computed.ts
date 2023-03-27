@@ -86,6 +86,8 @@ class ComputedImpl<T> extends ReactiveNode {
    */
   private stale = true;
 
+  protected override readonly consumerAllowSignalWrites = false;
+
   protected override onConsumerDependencyMayHaveChanged(): void {
     if (this.stale) {
       // We've already notified consumers that this value has potentially changed.
