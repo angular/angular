@@ -18,9 +18,7 @@ pkg_npm(
     visibility = ["//packages/core:__pkg__"],
     deps = [
         "//packages/core/schematics/migrations/guard-and-resolve-interfaces:bundle",
-        "//packages/core/schematics/migrations/relative-link-resolution:bundle",
         "//packages/core/schematics/migrations/remove-module-id:bundle",
-        "//packages/core/schematics/migrations/router-link-with-href:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration:bundle",
     ],
 )
