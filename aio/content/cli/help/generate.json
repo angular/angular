@@ -52,6 +52,7 @@
         {
           "name": "app-id",
           "type": "string",
+          "deprecated": "This option is no longer used.",
           "default": "serverApp",
           "description": "The application ID to use in withServerTransition()."
         },
