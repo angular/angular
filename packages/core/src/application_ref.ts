@@ -40,6 +40,7 @@ import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
 import {createEnvironmentInjector, createNgModuleRefWithProviders, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
+import {setThrowInvalidWriteToSignalError} from './signals/src/errors';
 import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
 import {stringify} from './util/stringify';
@@ -128,6 +129,19 @@ export function publishDefaultGlobalUtils() {
   ngDevMode && _publishDefaultGlobalUtils();
 }
 
+/**
+ * Sets the error for an invalid write to a signal to be an Angular `RuntimeError`.
+ */
+export function publishSignalConfiguration(): void {
+  setThrowInvalidWriteToSignalError(() => {
+    throw new RuntimeError(
+        RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT,
+        ngDevMode &&
+            'Writing to signals is not allowed in a `computed` or an `effect` by default. ' +
+                'Use `allowSignalWrites` in the `CreateEffectOptions` to enable this inside effects.');
+  });
+}
+
 export function isBoundToModule<C>(cf: ComponentFactory<C>): boolean {
   return (cf as R3ComponentFactory<C>).isBoundToModule;
 }
@@ -155,6 +169,7 @@ export function createPlatform(injector: Injector): PlatformRef {
             'There can be only one platform. Destroy the previous one to create a new one.');
   }
   publishDefaultGlobalUtils();
+  publishSignalConfiguration();
   _platformInjector = injector;
   const platform = injector.get(PlatformRef);
   runPlatformInitializers(injector);

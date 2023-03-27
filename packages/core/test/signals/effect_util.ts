@@ -14,7 +14,7 @@ let queue = new Set<Watch>();
  * A wrapper around `Watch` that emulates the `effect` API and allows for more streamlined testing.
  */
 export function testingEffect(effectFn: () => void): void {
-  const watch = new Watch(effectFn, queue.add.bind(queue));
+  const watch = new Watch(effectFn, queue.add.bind(queue), true);
 
   // Effects start dirty.
   watch.notify();

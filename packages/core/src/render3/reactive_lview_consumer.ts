@@ -16,6 +16,7 @@ import {LView, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER} from 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 export class ReactiveLViewConsumer extends ReactiveNode {
+  protected override consumerAllowSignalWrites = false;
   private _lView: LView|null = null;
 
   set lView(lView: LView) {

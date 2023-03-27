@@ -336,6 +336,7 @@ export interface CreateComputedOptions<T> {
 
 // @public
 export interface CreateEffectOptions {
+    allowSignalWrites?: boolean;
     injector?: Injector;
     manualCleanup?: boolean;
 }

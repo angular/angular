@@ -666,6 +666,9 @@
     "name": "importProvidersFrom"
   },
   {
+    "name": "inNotificationPhase"
+  },
+  {
     "name": "includeViewProviders"
   },
   {

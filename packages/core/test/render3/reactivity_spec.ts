@@ -179,4 +179,41 @@ describe('effects', () => {
 
     expect(didRun).toBeTrue();
   });
+  it('should disallow writing to signals within effects by default',
+     withBody('<test-cmp></test-cmp>', async () => {
+       @Component({
+         selector: 'test-cmp',
+         standalone: true,
+         template: '',
+       })
+       class Cmp {
+         counter = signal(0);
+         constructor() {
+           effect(() => {
+             expect(() => this.counter.set(1)).toThrow();
+           });
+         }
+       }
+
+       await bootstrapApplication(Cmp);
+     }));
+
+  it('should allow writing to signals within effects when option set',
+     withBody('<test-cmp></test-cmp>', async () => {
+       @Component({
+         selector: 'test-cmp',
+         standalone: true,
+         template: '',
+       })
+       class Cmp {
+         counter = signal(0);
+         constructor() {
+           effect(() => {
+             expect(() => this.counter.set(1)).not.toThrow();
+           }, {allowSignalWrites: true});
+         }
+       }
+
+       await bootstrapApplication(Cmp);
+     }));
 });

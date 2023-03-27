@@ -7,6 +7,7 @@
  */
 
 import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
+import {throwInvalidWriteToSignalError} from './errors';
 import {ReactiveNode} from './graph';
 
 /**
@@ -34,6 +35,8 @@ export interface WritableSignal<T> extends Signal<T> {
 }
 
 class WritableSignalImpl<T> extends ReactiveNode {
+  protected override readonly consumerAllowSignalWrites = false;
+
   constructor(private value: T, private equal: ValueEqualityFn<T>) {
     super();
   }
@@ -54,6 +57,9 @@ class WritableSignalImpl<T> extends ReactiveNode {
    * a no-op.
    */
   set(newValue: T): void {
+    if (!this.producerUpdatesAllowed) {
+      throwInvalidWriteToSignalError();
+    }
     if (!this.equal(this.value, newValue)) {
       this.value = newValue;
       this.valueVersion++;
@@ -68,6 +74,9 @@ class WritableSignalImpl<T> extends ReactiveNode {
    * value.
    */
   update(updater: (value: T) => T): void {
+    if (!this.producerUpdatesAllowed) {
+      throwInvalidWriteToSignalError();
+    }
     this.set(updater(this.value));
   }
 
@@ -75,6 +84,9 @@ class WritableSignalImpl<T> extends ReactiveNode {
    * Calls `mutator` on the current value and assumes that it has been mutated.
    */
   mutate(mutator: (value: T) => void): void {
+    if (!this.producerUpdatesAllowed) {
+      throwInvalidWriteToSignalError();
+    }
     // Mutate bypasses equality checks as it's by definition changing the value.
     mutator(this.value);
     this.valueVersion++;

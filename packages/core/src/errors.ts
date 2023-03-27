@@ -68,6 +68,9 @@ export const enum RuntimeErrorCode {
   // Temporary error code for hydration while i18n is not supported
   HYDRATION_I18N_NOT_YET_SUPPORTED = 518,
 
+  // Signal Errors
+  SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
+
   // Styling Errors
 
   // Declarations Errors
@@ -108,7 +111,8 @@ export const enum RuntimeErrorCode {
  *
  * Note: the `message` argument contains a descriptive error message as a string in development
  * mode (when the `ngDevMode` is defined). In production mode (after tree-shaking pass), the
- * `message` argument becomes `false`, thus we account for it in the typings and the runtime logic.
+ * `message` argument becomes `false`, thus we account for it in the typings and the runtime
+ * logic.
  */
 export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
   constructor(public code: T, message: null|false|string) {

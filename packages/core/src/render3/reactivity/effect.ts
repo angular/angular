@@ -29,7 +29,7 @@ export class EffectManager {
   private all = new Set<Watch>();
   private queue = new Map<Watch, Zone>();
 
-  create(effectFn: () => void, destroyRef: DestroyRef|null): EffectRef {
+  create(effectFn: () => void, destroyRef: DestroyRef|null, allowSignalWrites: boolean): EffectRef {
     const zone = Zone.current;
     const watch = new Watch(effectFn, (watch) => {
       if (!this.all.has(watch)) {
@@ -37,7 +37,7 @@ export class EffectManager {
       }
 
       this.queue.set(watch, zone);
-    });
+    }, allowSignalWrites);
 
     this.all.add(watch);
 
@@ -115,6 +115,14 @@ export interface CreateEffectOptions {
    * with the current `DestroyRef`.
    */
   manualCleanup?: boolean;
+
+  /**
+   * Whether the `effect` should allow writing to signals.
+   *
+   * Using effects to synchronize data by writing to signals can lead to confusing and potentially
+   * incorrect behavior, and should be enabled only when necessary.
+   */
+  allowSignalWrites?: boolean;
 }
 
 /**
@@ -128,5 +136,5 @@ export function effect(
   const injector = options?.injector ?? inject(Injector);
   const effectManager = injector.get(EffectManager);
   const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
-  return effectManager.create(effectFn, destroyRef);
+  return effectManager.create(effectFn, destroyRef, !!options?.allowSignalWrites);
 }
