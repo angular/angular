@@ -111,10 +111,9 @@ export function siblingAfter<T extends RNode>(skip: number, from: RNode): T|null
  */
 function stringifyNavigationInstructions(instructions: (number|NodeNavigationStep)[]): string {
   const container = [];
-  let i = 0;
-  while (i < instructions.length) {
-    const step = instructions[i++];
-    const repeat = instructions[i++] as number;
+  for (let i = 0; i < instructions.length; i += 2) {
+    const step = instructions[i];
+    const repeat = instructions[i + 1] as number;
     for (let r = 0; r < repeat; r++) {
       container.push(step === NodeNavigationStep.FirstChild ? 'firstChild' : 'nextSibling');
     }
@@ -128,10 +127,9 @@ function stringifyNavigationInstructions(instructions: (number|NodeNavigationSte
  */
 function navigateToNode(from: Node, instructions: (number|NodeNavigationStep)[]): RNode {
   let node = from;
-  let i = 0;
-  while (i < instructions.length) {
-    const step = instructions[i++];
-    const repeat = instructions[i++] as number;
+  for (let i = 0; i < instructions.length; i += 2) {
+    const step = instructions[i];
+    const repeat = instructions[i + 1] as number;
     for (let r = 0; r < repeat; r++) {
       if (ngDevMode && !node) {
         throw nodeNotFoundAtPathError(from, stringifyNavigationInstructions(instructions));

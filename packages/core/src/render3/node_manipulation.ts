@@ -825,15 +825,12 @@ export function nativeRemoveNode(renderer: Renderer, rNode: RNode, isHostElement
 }
 
 /**
- * Removes the contents of a given RElement using a given renderer.
+ * Clears the contents of a given RElement.
  *
- * @param renderer A renderer to be used
  * @param rElement the native RElement to be cleared
  */
-export function clearElementContents(renderer: Renderer, rElement: RElement): void {
-  while (rElement.firstChild) {
-    nativeRemoveChild(renderer, rElement, rElement.firstChild, false);
-  }
+export function clearElementContents(rElement: RElement): void {
+  rElement.textContent = '';
 }
 
 
