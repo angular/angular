@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Attribute, Compiler, Component, ComponentFactory, ComponentRef, ContentChildren, Directive, EventEmitter, Host, HostBinding, HostListener, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, Output, Pipe, SkipSelf, ViewChild, ViewRef} from '@angular/core';
+import {Attribute, Compiler, Component, ComponentFactory, ComponentRef, ContentChildren, createComponent, Directive, EnvironmentInjector, EventEmitter, Host, HostBinding, HostListener, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, Output, Pipe, reflectComponentType, SkipSelf, ViewChild, ViewRef} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
@@ -16,6 +16,7 @@ import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {TestBedCompiler} from '@angular/core/testing/src/test_bed_compiler';
 import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -1073,14 +1074,12 @@ describe('integration tests', function() {
           const compiler = TestBed.inject(Compiler);
           const myModule =
               compiler.compileModuleSync(MyModule).create(TestBed.inject(NgModuleRef).injector);
-          const myCompFactory =
-              TestBed.inject(ComponentFactoryResolver).resolveComponentFactory(MyComp);
 
           // Note: MyComp was declared as entryComponent in the RootModule,
           // but we pass MyModule to the createComponent call.
           // -> expect the providers of MyModule!
-          const compRef = compFixture.componentInstance.vc.createComponent(
-              myCompFactory, undefined, undefined, undefined, myModule);
+          const compRef =
+              compFixture.componentInstance.vc.createComponent(MyComp, {ngModuleRef: myModule});
           expect(compRef.instance.someToken).toBe('someValue');
         });
 
@@ -1383,30 +1382,15 @@ describe('integration tests', function() {
     });
 
     it('should use a default element name for components without selectors', () => {
-      let noSelectorComponentFactory: ComponentFactory<SomeComponent> = undefined!;
-
       @Component({template: '----'})
       class NoSelectorComponent {
       }
 
-      @Component({selector: 'some-comp', template: ''})
-      class SomeComponent {
-        constructor(componentFactoryResolver: ComponentFactoryResolver) {
-          // grab its own component factory
-          noSelectorComponentFactory =
-              componentFactoryResolver.resolveComponentFactory(NoSelectorComponent)!;
-        }
-      }
+      expect(reflectComponentType(NoSelectorComponent)?.selector).toBe('ng-component');
 
-      TestBed.configureTestingModule({declarations: [SomeComponent, NoSelectorComponent]});
-
-      // get the factory
-      TestBed.createComponent(SomeComponent);
-
-      expect(noSelectorComponentFactory.selector).toBe('ng-component');
-
-      expect(noSelectorComponentFactory.create(Injector.NULL)
-                 .location.nativeElement.nodeName.toLowerCase())
+      expect(createComponent(NoSelectorComponent, {
+               environmentInjector: TestBed.inject(EnvironmentInjector)
+             }).location.nativeElement.nodeName.toLowerCase())
           .toEqual('ng-component');
     });
   });
@@ -2084,20 +2068,18 @@ class SimpleImperativeViewComponent {
 
 @Directive({selector: 'dynamic-vp'})
 class DynamicViewport {
-  private componentFactory: ComponentFactory<ChildCompUsingService>;
   private injector: Injector;
-  constructor(private vc: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver) {
+  constructor(private vc: ViewContainerRef) {
     const myService = new MyService();
     myService.greeting = 'dynamic greet';
 
     this.injector = Injector.create(
         {providers: [{provide: MyService, useValue: myService}], parent: vc.injector});
-    this.componentFactory =
-        componentFactoryResolver.resolveComponentFactory(ChildCompUsingService)!;
   }
 
   create(): ComponentRef<ChildCompUsingService> {
-    return this.vc.createComponent(this.componentFactory, this.vc.length, this.injector);
+    return this.vc.createComponent(
+        ChildCompUsingService, {index: this.vc.length, injector: this.injector});
   }
 
   insert(viewRef: ViewRef, index?: number): ViewRef {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, NgModule, Renderer2, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ComponentRef, Directive, ElementRef, HostBinding, Input, Renderer2, ViewChild, ViewContainerRef} from '@angular/core';
 import {bypassSanitizationTrustStyle} from '@angular/core/src/sanitization/bypass';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
@@ -2660,11 +2660,8 @@ describe('styling', () => {
          }
 
          ngAfterViewInit() {
-           const factory = this.componentFactoryResolver.resolveComponentFactory(ChildCmp);
-           this.child = this.vcr.createComponent(factory);
+           this.child = this.vcr.createComponent(ChildCmp);
          }
-
-         constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
        }
 
        @Component({
@@ -2732,11 +2729,8 @@ describe('styling', () => {
          }
 
          ngAfterViewInit() {
-           const factory = this.componentFactoryResolver.resolveComponentFactory(ChildCmp);
-           this.child = this.vcr.createComponent(factory);
+           this.child = this.vcr.createComponent(ChildCmp);
          }
-
-         constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
        }
 
        @Component({

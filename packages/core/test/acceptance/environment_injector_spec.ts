@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectFlags, InjectionToken, INJECTOR, Injector, NgModuleRef, ViewContainerRef} from '@angular/core';
+import {Component, createComponent, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectFlags, InjectionToken, INJECTOR, Injector, NgModuleRef, ViewContainerRef} from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {TestBed} from '@angular/core/testing';
@@ -89,10 +89,8 @@ describe('environment injector', () => {
        }
 
        const parentEnvInjector = TestBed.inject(EnvironmentInjector);
-       const envInjector = createEnvironmentInjector([Service], parentEnvInjector);
-       const cfr = envInjector.get(ComponentFactoryResolver);
-       const cf = cfr.resolveComponentFactory(TestComponent);
-       const cRef = cf.create(Injector.NULL);
+       const environmentInjector = createEnvironmentInjector([Service], parentEnvInjector);
+       const cRef = createComponent(TestComponent, {environmentInjector});
 
        expect(cRef.instance.service).toBeInstanceOf(Service);
      });
