@@ -256,6 +256,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
   override hostView: ViewRef<T>;
   override changeDetectorRef: ChangeDetectorRef;
   override componentType: Type<T>;
+  private previousInputValues: Map<string, unknown>|null = null;
 
   constructor(
       componentType: Type<T>, instance: T, public location: ElementRef, private _rootLView: LView,
@@ -270,8 +271,17 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     const inputData = this._tNode.inputs;
     let dataValue: PropertyAliasValue|undefined;
     if (inputData !== null && (dataValue = inputData[name])) {
+      this.previousInputValues ??= new Map();
+      // Do not set the input if it is the same as the last value
+      // This behavior matches `bindingUpdated` when binding inputs in templates.
+      if (this.previousInputValues.has(name) &&
+          Object.is(this.previousInputValues.get(name), value)) {
+        return;
+      }
+
       const lView = this._rootLView;
       setInputsForProperty(lView[TVIEW], lView, dataValue, name, value);
+      this.previousInputValues.set(name, value);
       markDirtyIfOnPush(lView, this._tNode.index);
     } else {
       if (ngDevMode) {

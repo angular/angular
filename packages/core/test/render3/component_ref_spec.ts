@@ -397,5 +397,28 @@ describe('ComponentFactory', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('pushed');
     });
+
+    it('should not set input if value is the same as the previous', () => {
+      let log: string[] = [];
+      @Component({
+        template: `{{in}}`,
+        standalone: true,
+      })
+      class DynamicCmp {
+        @Input()
+            set in(v: string) {
+          log.push(v);
+        }
+      }
+
+      const fixture = TestBed.createComponent(DynamicCmp);
+      fixture.componentRef.setInput('in', '1');
+      fixture.detectChanges();
+      fixture.componentRef.setInput('in', '1');
+      fixture.detectChanges();
+      fixture.componentRef.setInput('in', '2');
+      fixture.detectChanges();
+      expect(log).toEqual(['1', '2']);
+    });
   });
 });
