@@ -8,7 +8,7 @@
 
 
 import {CommonModule} from '@angular/common';
-import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
@@ -138,8 +138,7 @@ describe('change detection', () => {
       TestBed.configureTestingModule({declarations: [App, ViewManipulation, DynamicComp]});
       const fixture = TestBed.createComponent(App);
       const vm: ViewManipulation = fixture.debugElement.childNodes[0].references['vm'];
-      const factory = TestBed.get(ComponentFactoryResolver).resolveComponentFactory(DynamicComp);
-      const componentRef = vm.vcRef.createComponent(factory);
+      const componentRef = vm.vcRef.createComponent(DynamicComp);
       const button = fixture.nativeElement.querySelector('button');
       fixture.detectChanges();
 
@@ -175,11 +174,10 @@ describe('change detection', () => {
         counter = 0;
         @ViewChild('vc', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
 
-        constructor(private _cfr: ComponentFactoryResolver) {}
+        constructor() {}
 
         createComponentView<T>(cmptType: Type<T>): ComponentRef<T> {
-          const cf = this._cfr.resolveComponentFactory(cmptType);
-          return this.vcRef.createComponent(cf);
+          return this.vcRef.createComponent(cmptType);
         }
       }
 

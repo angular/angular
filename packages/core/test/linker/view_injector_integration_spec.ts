@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, DebugElement, Directive, ElementRef, EmbeddedViewRef, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, createComponent as coreCreateComponent, createEnvironmentInjector, DebugElement, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -854,15 +854,11 @@ describe('View injector', () => {
         constructor(public vcr: ViewContainerRef) {}
       }
 
-      const testInjector = <Injector>{
-        get: (token: any, notFoundValue: any) =>
-            token === 'someToken' ? 'someNewValue' : notFoundValue
-      };
+      TestBed.configureTestingModule({declarations: [TestComp]});
+      const environmentInjector = createEnvironmentInjector(
+          [{provide: 'someToken', useValue: 'someNewValue'}], TestBed.inject(EnvironmentInjector));
 
-      const compFactory = TestBed.configureTestingModule({declarations: [TestComp]})
-                              .inject(ComponentFactoryResolver)
-                              .resolveComponentFactory(TestComp);
-      const component = compFactory.create(testInjector);
+      const component = coreCreateComponent(TestComp, {environmentInjector});
       expect(component.instance.vcr.parentInjector.get('someToken')).toBe('someNewValue');
     });
 
@@ -941,16 +937,12 @@ describe('View injector', () => {
 
     @Component({selector: 'listener-and-on-destroy', template: ''})
     class ComponentThatLoadsAnotherComponentThenMovesIt {
-      constructor(
-          private viewContainerRef: ViewContainerRef,
-          private componentFactoryResolver: ComponentFactoryResolver) {}
+      constructor(private viewContainerRef: ViewContainerRef) {}
 
       ngOnInit() {
         // Dynamically load some component.
-        const componentFactory =
-            this.componentFactoryResolver.resolveComponentFactory(SomeComponent);
-        const componentRef =
-            this.viewContainerRef.createComponent(componentFactory, this.viewContainerRef.length);
+        const componentRef = this.viewContainerRef.createComponent(
+            SomeComponent, {index: this.viewContainerRef.length});
 
         // Manually move the loaded component to some arbitrary DOM node.
         const componentRootNode =

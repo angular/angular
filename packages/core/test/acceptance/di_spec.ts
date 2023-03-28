@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {assertInInjectionContext, Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgModuleRef, NgZone, Optional, Output, Pipe, PipeTransform, Provider, runInInjectionContext, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
+import {assertInInjectionContext, Attribute, ChangeDetectorRef, Component, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgModuleRef, NgZone, Optional, Output, Pipe, PipeTransform, Provider, runInInjectionContext, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
 import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
@@ -895,15 +895,12 @@ describe('di', () => {
           childOrigin!: ViewContainerRef;
           @ViewChild('childOriginWithDirB', {read: ViewContainerRef, static: true})
           childOriginWithDirB!: ViewContainerRef;
-          childFactory = this.resolver.resolveComponentFactory(Child);
-
-          constructor(readonly resolver: ComponentFactoryResolver, readonly injector: Injector) {}
 
           addChild() {
-            return this.childOrigin.createComponent(this.childFactory);
+            return this.childOrigin.createComponent(Child);
           }
           addChildWithDirB() {
-            return this.childOriginWithDirB.createComponent(this.childFactory);
+            return this.childOriginWithDirB.createComponent(Child);
           }
         }
 
@@ -913,15 +910,18 @@ describe('di', () => {
         const child = fixture.componentInstance.addChild();
         expect(child).toBeDefined();
         expect(child.instance.dirA)
-            .not.toBeNull('dirA should be found. It is on the parent of the viewContainerRef.');
+            .withContext('dirA should be found. It is on the parent of the viewContainerRef.')
+            .not.toBeNull();
         const child2 = fixture.componentInstance.addChildWithDirB();
         expect(child2).toBeDefined();
         expect(child2.instance.dirA)
-            .not.toBeNull('dirA should be found. It is on the parent of the viewContainerRef.');
+            .withContext('dirA should be found. It is on the parent of the viewContainerRef.')
+            .not.toBeNull();
         expect(child2.instance.dirB)
-            .toBeNull(
+            .withContext(
                 'dirB appears on the ng-container and should not be found because the ' +
-                'viewContainerRef.createComponent node is inserted next to the container.');
+                'viewContainerRef.createComponent node is inserted next to the container.')
+            .toBeNull();
       });
     });
 
@@ -2879,12 +2879,10 @@ describe('di', () => {
         class RootComp {
           public childCompRef!: ComponentRef<ChildComp>;
 
-          constructor(
-              public factoryResolver: ComponentFactoryResolver, public vcr: ViewContainerRef) {}
+          constructor(public vcr: ViewContainerRef) {}
 
           create() {
-            const factory = this.factoryResolver.resolveComponentFactory(ChildComp);
-            this.childCompRef = this.vcr.createComponent(factory);
+            this.childCompRef = this.vcr.createComponent(ChildComp);
             this.childCompRef.changeDetectorRef.detectChanges();
           }
         }
