@@ -1,0 +1,1 @@
+# Lesson 8 - Use *ngFor to list objects in component

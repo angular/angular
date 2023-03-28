@@ -19,7 +19,7 @@ If you have any trouble during this lesson, you can review the completed code fo
 
 ## After you finish
 
-*  Your app has data bindings in the template `HousingLocationComponent` template.
+*  Your app has data bindings in the `HomeComponent` template.
 *  Your app sends data from the `HomeComponent` to the `HousingLocationComponent`.
 
 ## Conceptual preview of Inputs
@@ -27,7 +27,7 @@ In lesson 5, you added `@Input` decorators to properties in the `HousingLocation
 
 Property binding enables you to connect a variable to an `Input` in an Angular template. The data is then dynamically bound to the `Input`.
 
-For a more in depth explanation, please refer to the [Property binding guide](guide/property-binding) guide.
+For a more in depth explanation, please refer to the [Property binding](guide/property-binding) guide.
 
 ## Lesson steps
 
@@ -38,7 +38,7 @@ This step adds property binding to the `<app-housing-location>` tag.
 
 In the code editor:
 1.  Navigate to `src/app/home/home.component.ts`
-1.  In the template property of the `@Component` decorator, add an attribute called `housingLocation`:
+1.  In the template property of the `@Component` decorator, update the code to match the code below:
     <code-example header="Add housingLocation property binding" path="first-app-lesson-06/src/app/home/home.component.ts" region="add-property-binding"></code-example>
 
     When adding a property binding to a component tag, we use the `[attribute] = "value"` syntax to notify Angular that the assigned value should be treated as a property from the component class and not a string value. 
@@ -51,7 +51,7 @@ In the code editor:
 
 ## Lesson review
 
-In this lesson, you added a new property propety binding and passed in a reference to a class property. Now, the `HousingLocationComponent` has access to data that it can use to customize the the component's display.
+In this lesson, you added a new property binding and passed in a reference to a class property. Now, the `HousingLocationComponent` has access to data that it can use to customize the the component's display.
 
 If you are having any trouble with this lesson, you can review the completed code for it in the <live-example></live-example>.
 
@@ -60,3 +60,4 @@ If you are having any trouble with this lesson, you can review the completed cod
 * [Lesson 7 - Add an interpolation to a component’s template](tutorial/first-app/first-app-lesson-07)
 
 ## For more information about the topics covered in this lesson, visit:
+* [Property binding](guide/property-binding)
