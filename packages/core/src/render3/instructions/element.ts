@@ -238,6 +238,8 @@ function locateOrCreateElementNodeImpl(
       // Since this isn't hydratable, we need to empty the node
       // so there's no duplicate content after render
       clearElementContents(native);
+
+      ngDevMode && ngDevMode.componentsSkippedHydration++;
     } else if (ngDevMode) {
       // If this is not a component host, throw an error.
       // Hydration can be skipped on per-component basis only.
