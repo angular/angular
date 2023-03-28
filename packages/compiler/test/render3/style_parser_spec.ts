@@ -57,6 +57,18 @@ describe('style parsing', () => {
     expect(result).toEqual(['border-width', '200px']);
   });
 
+  describe('should not remove quotes', () => {
+    it('from string data types', () => {
+      const result = parseStyle('content: "foo"');
+      expect(result).toEqual(['content', '"foo"']);
+    });
+
+    it('that changes the value context from invalid to valid', () => {
+      const result = parseStyle('width: "1px"');
+      expect(result).toEqual(['width', '"1px"']);
+    });
+  });
+
   describe('camelCasing => hyphenation', () => {
     it('should convert a camel-cased value to a hyphenated value', () => {
       expect(hyphenate('fooBar')).toEqual('foo-bar');

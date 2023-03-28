@@ -158,6 +158,8 @@ describe('styling', () => {
         selector: 'test-style-quoting',
         template: `
           <div style="content: &quot;foo&quot;"></div>
+          <div style='content: "foo"'></div>
+          <div style="content: 'foo'"></div>
         `
       })
       class Cmp {
@@ -167,8 +169,10 @@ describe('styling', () => {
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
-      const div = fixture.nativeElement.querySelector('div');
-      expect(getSortedStyle(div)).toBe('content: "foo";');
+      const divElements = fixture.nativeElement.querySelectorAll('div');
+      expect(getSortedStyle(divElements[0])).toBe('content: "foo";');
+      expect(getSortedStyle(divElements[1])).toBe('content: "foo";');
+      expect(getSortedStyle(divElements[2])).toMatch(/content: ["']foo["'];/);
     });
 
     it('should apply template classes in correct order', () => {
