@@ -121,7 +121,7 @@ v16 - v19
 | `@angular/core` | `EnvironmentInjector.runInContext` | v16 | v18 |
 | `@angular/platform-server`          | [`PlatformConfig.baseUrl` and `PlatformConfig.useAbsoluteUrl` config options](api/platform-server/PlatformConfig) | v16           | v18               |
 | `@angular/platform-browser`         | [`BrowserModule.withServerTransition`](api/platform-browser/BrowserModule#withservertransition)            | v16           | v18         |
-| `@angular/platform-browser`         | [`makeStateKey`, `StateKey` and `TransferState`](#platform-browser)                                        | v16           | v18         |
+| `@angular/platform-browser`         | [`makeStateKey`, `StateKey` and `TransferState`](#platform-browser), symbols were moved to `@angular/core`                                        | v16           | v18         |
 
 ### Deprecated features with no planned removal version
 
