@@ -343,6 +343,9 @@ export class HttpXhrBackend implements HttpBackend, OnDestroy {
   }
 }
 
+// Cannot use `Number.MAX_VALUE` as it does not fit into a 32-bit signed integer.
+const MAX_INT = 2147483647;
+
 /**
  * A method that creates a background macrotask of up to Number.MAX_VALUE.
  *
@@ -353,7 +356,7 @@ export class HttpXhrBackend implements HttpBackend, OnDestroy {
  * @returns a callback method to cancel the macrotask.
  */
 function createBackgroundMacroTask(): VoidFunction {
-  const timeout = setTimeout(() => void 0, Number.MAX_VALUE);
+  const timeout = setTimeout(() => void 0, MAX_INT);
 
   return () => clearTimeout(timeout);
 }
