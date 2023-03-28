@@ -7,7 +7,7 @@
  */
 
 import {XhrFactory} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -40,7 +40,9 @@ function getResponseUrl(xhr: any): string|null {
  * @publicApi
  */
 @Injectable()
-export class HttpXhrBackend implements HttpBackend {
+export class HttpXhrBackend implements HttpBackend, OnDestroy {
+  private macroTaskCanceller: VoidFunction|undefined;
+
   constructor(private xhrFactory: XhrFactory) {}
 
   /**
@@ -294,12 +296,11 @@ export class HttpXhrBackend implements HttpBackend {
       }
 
       /** Tear down logic to cancel the backround macrotask. */
-      let macroTaskCanceller: VoidFunction|undefined;
       const onLoadStart = () => {
-        macroTaskCanceller ??= createBackgroundMacroTask();
+        this.macroTaskCanceller ??= createBackgroundMacroTask();
       };
       const onLoadEnd = () => {
-        macroTaskCanceller?.();
+        this.macroTaskCanceller?.();
       };
 
       xhr.addEventListener('loadstart', onLoadStart);
@@ -320,7 +321,7 @@ export class HttpXhrBackend implements HttpBackend {
         xhr.removeEventListener('timeout', onError);
 
         //  Cancel the background macrotask.
-        macroTaskCanceller?.();
+        this.macroTaskCanceller?.();
 
         if (req.reportProgress) {
           xhr.removeEventListener('progress', onDownProgress);
@@ -336,12 +337,14 @@ export class HttpXhrBackend implements HttpBackend {
       };
     });
   }
+
+  ngOnDestroy(): void {
+    this.macroTaskCanceller?.();
+  }
 }
 
-const MAX_INT = 2147483647;
-
 /**
- * A method that creates a background macrotask of up to 2147483647ms.
+ * A method that creates a background macrotask of up to Number.MAX_VALUE.
  *
  * This is so that Zone.js can intercept HTTP calls, this is important for server rendering,
  * as the application is only rendered once the application is stabilized, meaning there are pending
@@ -350,7 +353,7 @@ const MAX_INT = 2147483647;
  * @returns a callback method to cancel the macrotask.
  */
 function createBackgroundMacroTask(): VoidFunction {
-  const timeout = setTimeout(() => void 0, MAX_INT);
+  const timeout = setTimeout(() => void 0, Number.MAX_VALUE);
 
   return () => clearTimeout(timeout);
 }
