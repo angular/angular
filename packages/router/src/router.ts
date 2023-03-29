@@ -742,7 +742,11 @@ export class Router {
 
     // Indicate that the navigation is happening.
     const taskId = this.pendingTasks.add();
-    afterNextNavigation(this, () => this.pendingTasks.remove(taskId));
+    afterNextNavigation(this, () => {
+      // Remove pending task in a microtask to allow for cancelled
+      // initial navigations and redirects within the same task.
+      Promise.resolve().then(() => this.pendingTasks.remove(taskId));
+    });
 
     this.navigationTransitions.handleNavigationRequest({
       targetPageId,
