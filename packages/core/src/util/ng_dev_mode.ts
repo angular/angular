@@ -24,6 +24,7 @@ declare global {
    * Finally, ngDevMode may not have been defined at all.
    */
   const ngDevMode: null|NgDevModePerfCounters;
+
   interface NgDevModePerfCounters {
     namedConstructors: boolean;
     firstCreatePass: number;

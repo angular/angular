@@ -10,7 +10,8 @@ import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {Console} from '@angular/core/src/console';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {unescapeTransferStateContent} from '@angular/core/src/transfer_state';
@@ -128,6 +129,16 @@ function verifyAllNodesClaimedForHydration(el: HTMLElement, exceptions: HTMLElem
 }
 
 /**
+ * Verifies whether a console has a log entry that contains a given message.
+ */
+function verifyHasLog(appRef: ApplicationRef, message: string) {
+  const console = appRef.injector.get(Console) as DebugConsole;
+  const context = `Expected '${message}' to be present in the log, but it was not found. ` +
+      `Logs content: ${JSON.stringify(console.logs)}`;
+  expect(console.logs.some(log => log.includes(message))).withContext(context).toBe(true);
+}
+
+/**
  * Reset TView, so that we re-enter the first create pass as
  * we would normally do when we hydrate on the client. Otherwise,
  * hydration info would not be applied to T data structures.
@@ -155,8 +166,30 @@ function withNoopErrorHandler() {
   }];
 }
 
+@Injectable()
+class DebugConsole extends Console {
+  logs: string[] = [];
+  override log(message: string) {
+    this.logs.push(message);
+  }
+}
+
+function withDebugConsole() {
+  return [{provide: Console, useClass: DebugConsole}];
+}
+
 describe('platform-server integration', () => {
   beforeEach(() => {
+    if (typeof ngDevMode === 'object') {
+      // Reset all ngDevMode counters.
+      for (const metric of Object.keys(ngDevMode!)) {
+        const currentValue = (ngDevMode as unknown as {[key: string]: number | boolean})[metric];
+        if (typeof currentValue === 'number') {
+          // Rest only numeric values, which represent counters.
+          (ngDevMode as unknown as {[key: string]: number | boolean})[metric] = 0;
+        }
+      }
+    }
     if (getPlatform()) destroyPlatform();
   });
 
@@ -1266,9 +1299,6 @@ describe('platform-server integration', () => {
                  'if there is a mismatch in template ids between the current view ' +
                  '(that is being created) and the first dehydrated view in the list',
              async () => {
-               // Reset the relevant counter.
-               (ngDevMode as any).dehydratedViewsRemoved = 0;
-
                @Component({
                  standalone: true,
                  selector: 'app',
@@ -1323,7 +1353,7 @@ describe('platform-server integration', () => {
                // (each dehydrated view represents a real embedded view),
                // since we can not hydrate them in order (views were
                // moved in a container).
-               expect((ngDevMode as any).dehydratedViewsRemoved).toBe(3);
+               expect(ngDevMode!.dehydratedViewsRemoved).toBe(3);
 
                const clientRootNode = compRef.location.nativeElement;
                const h1 = clientRootNode.querySelector('h1');
@@ -1791,9 +1821,13 @@ describe('platform-server integration', () => {
 
            resetTViewsFor(SimpleComponent, NestedComponent);
 
-           const appRef = await hydrate(html, SimpleComponent);
+           const appRef = await hydrate(html, SimpleComponent, [withDebugConsole()]);
            const compRef = getComponentRef<SimpleComponent>(appRef);
            appRef.tick();
+
+           verifyHasLog(
+               appRef,
+               'Angular hydrated 1 component(s) and 6 node(s), 1 component(s) were skipped');
 
            const clientRootNode = compRef.location.nativeElement;
            verifyAllNodesClaimedForHydration(clientRootNode);
@@ -2423,9 +2457,12 @@ describe('platform-server integration', () => {
 
         resetTViewsFor(SimpleComponent, ProjectorCmp);
 
-        const appRef = await hydrate(html, SimpleComponent);
+        const appRef = await hydrate(html, SimpleComponent, [withDebugConsole()]);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
+
+        verifyHasLog(
+            appRef, 'Angular hydrated 2 component(s) and 5 node(s), 0 component(s) were skipped');
 
         const clientRootNode = compRef.location.nativeElement;
         verifyAllNodesClaimedForHydration(clientRootNode);
