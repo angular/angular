@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, effect, NgZone} from '@angular/core';
+import {Component, effect, NgZone, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
@@ -72,4 +73,41 @@ describe('effects', () => {
 
        expect(log).not.toEqual(['angular', 'angular']);
      }));
+
+  it('should run effect cleanup function on destroy', async () => {
+    let counterLog: number[] = [];
+    let cleanupCount = 0;
+
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      template: '',
+    })
+    class Cmp {
+      counter = signal(0);
+      effectRef = effect(() => {
+        counterLog.push(this.counter());
+        return () => {
+          cleanupCount++;
+        };
+      });
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(counterLog).toEqual([0]);
+    // initially an effect runs but the default cleanup function is noop
+    expect(cleanupCount).toBe(0);
+
+    fixture.componentInstance.counter.set(5);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(counterLog).toEqual([0, 5]);
+    expect(cleanupCount).toBe(1);
+
+    fixture.destroy();
+    expect(counterLog).toEqual([0, 5]);
+    expect(cleanupCount).toBe(2);
+  });
 });

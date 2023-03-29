@@ -99,4 +99,32 @@ describe('watchers', () => {
     flushEffects();
     expect(updateCounter).toEqual(3);
   });
+
+  it('should allow returning cleanup function from the watch logic', () => {
+    const source = signal(0);
+
+    const seenCounterValues: number[] = [];
+    testingEffect(() => {
+      seenCounterValues.push(source());
+
+      // return a cleanup function that is executed every time an effect re-runs
+      return () => {
+        if (seenCounterValues.length === 2) {
+          seenCounterValues.length = 0;
+        }
+      };
+    });
+
+    flushEffects();
+    expect(seenCounterValues).toEqual([0]);
+
+    source.update(c => c + 1);
+    flushEffects();
+    expect(seenCounterValues).toEqual([0, 1]);
+
+    source.update(c => c + 1);
+    flushEffects();
+    // cleanup (array trim) should have run before executing effect
+    expect(seenCounterValues).toEqual([2]);
+  });
 });

@@ -11,5 +11,5 @@ export {computed, CreateComputedOptions} from './src/computed';
 export {setActiveConsumer} from './src/graph';
 export {CreateSignalOptions, signal, WritableSignal} from './src/signal';
 export {untracked} from './src/untracked';
-export {Watch} from './src/watch';
+export {Watch, WatchCleanupFn} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';

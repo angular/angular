@@ -12,6 +12,15 @@ import {inject} from '../../di/injector_compatibility';
 import {DestroyRef} from '../../linker/destroy_ref';
 import {Watch} from '../../signals';
 
+/**
+ * An effect can, optionally, return a cleanup function. If returned, the cleanup is executed before
+ * the next effect run. The cleanup function makes it possible to "cancel" any work that the
+ * previous effect run might have started.
+ *
+ * @developerPreview
+ */
+export type EffectCleanupFn = () => void;
+
 const globalWatches = new Set<Watch>();
 const queuedWatches = new Map<Watch, Zone>();
 
@@ -56,7 +65,8 @@ export interface CreateEffectOptions {
  *
  * @developerPreview
  */
-export function effect(effectFn: () => void, options?: CreateEffectOptions): EffectRef {
+export function effect(
+    effectFn: () => EffectCleanupFn | void, options?: CreateEffectOptions): EffectRef {
   !options?.injector && assertInInjectionContext(effect);
 
   const zone = Zone.current;
@@ -73,6 +83,7 @@ export function effect(effectFn: () => void, options?: CreateEffectOptions): Eff
   let unregisterOnDestroy: (() => void)|undefined;
 
   const destroy = () => {
+    watch.cleanup();
     unregisterOnDestroy?.();
     queuedWatches.delete(watch);
     globalWatches.delete(watch);
