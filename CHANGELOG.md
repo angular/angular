@@ -1,3 +1,28 @@
+<a name="15.2.5"></a>
+# 15.2.5 (2023-03-29)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca5acadb78](https://github.com/angular/angular/commit/ca5acadb78c33bf896001a5810cb4be15ff7bc86) | fix | invalid ImageKit transformation ([#49201](https://github.com/angular/angular/pull/49201)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [077f6b4674](https://github.com/angular/angular/commit/077f6b4674c01bfed083e73a17d848e226e543b4) | fix | do not unquote CSS values ([#49460](https://github.com/angular/angular/pull/49460)) |
+| [c3cff35869](https://github.com/angular/angular/commit/c3cff35869648fdf70c9707c3d87bcfdcc84d903) | fix | handle trailing comma in object literal ([#49535](https://github.com/angular/angular/pull/49535)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d201fc2dec](https://github.com/angular/angular/commit/d201fc2dec1a3a9cc6952ebb46cb672200a78236) | fix | set style property value to empty string instead of an invalid value ([#49460](https://github.com/angular/angular/pull/49460)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [978d37f324](https://github.com/angular/angular/commit/978d37f324ce4a1fe9b57f3d9430d7c28ecf6131) | fix | Ensure Router preloading works with lazy component and static children ([#49571](https://github.com/angular/angular/pull/49571)) |
+| [a844435514](https://github.com/angular/angular/commit/a844435514962c52f4fb480bcfab7ee6519a59cc) | fix | fix [#49457](https://github.com/angular/angular/pull/49457) outlet activating with old info ([#49459](https://github.com/angular/angular/pull/49459)) |
+## Special Thanks
+Alan Agius, Andrew Scott, Asaf Malin, Jan Cabadaj, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Sid and Tano Abeleyra
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-next.4"></a>
 # 16.0.0-next.4 (2023-03-22)
 ## Breaking Changes
