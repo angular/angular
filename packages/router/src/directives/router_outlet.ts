@@ -107,7 +107,7 @@ export interface RouterOutletContract {
    * feature using `withComponentInputBinding`, a warning will be logged in dev mode if this outlet
    * is used in the application.
    */
-  supportsBindingToComponentInputs?: boolean;
+  readonly supportsBindingToComponentInputs?: true;
 }
 
 /**
@@ -198,6 +198,8 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private changeDetector = inject(ChangeDetectorRef);
   private environmentInjector = inject(EnvironmentInjector);
   private inputBinder = inject(INPUT_BINDER, {optional: true});
+  /** @nodoc */
+  readonly supportsBindingToComponentInputs = true;
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
@@ -370,8 +372,22 @@ class OutletInjector implements Injector {
   }
 }
 
-export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder|null>('');
+export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>('');
 
+/**
+ * Injectable used as a tree-shakable provider for opting in to binding router data to component
+ * inputs.
+ *
+ * The RouterOutlet registers itself with this service when an `ActivatedRoute` is attached or
+ * activated. When this happens, the service subscribes to the `ActivatedRoute` observables (params,
+ * queryParams, data) and sets the inputs of the component using `ComponentRef.setInput`.
+ * Importantly, when an input does not have an item in the route data with a matching key, this
+ * input is set to `undefined`. If it were not done this way, the previous information would be
+ * retained if the data got removed from the route (i.e. if a query parameter is removed).
+ *
+ * The `RouterOutlet` should unregister itself when destroyed via `unsubscribeFromRouteData` so that
+ * the subscriptions are cleaned up.
+ */
 @Injectable()
 export class RoutedComponentInputBinder {
   private outletDataSubscriptions = new Map<RouterOutlet, Subscription>;
