@@ -327,8 +327,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       const styleEl = document.createElement('style');
 
       if (nonce) {
-        // Uses a keyed write to avoid issues with property minification.
-        styleEl['nonce'] = nonce;
+        styleEl.setAttribute('nonce', nonce);
       }
 
       styleEl.textContent = style;

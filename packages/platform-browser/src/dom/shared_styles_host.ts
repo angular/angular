@@ -147,8 +147,7 @@ export class SharedStylesHost implements OnDestroy {
       const styleEl = this.doc.createElement('style');
 
       if (this.nonce) {
-        // Uses a keyed write to avoid issues with property minification.
-        styleEl['nonce'] = this.nonce;
+        styleEl.setAttribute('nonce', this.nonce);
       }
 
       styleEl.textContent = style;
