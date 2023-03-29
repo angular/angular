@@ -23,5 +23,6 @@ export {
   CreateEffectOptions,
   effect,
   EffectRef,
+  EffectCleanupFn,
 } from './render3/reactivity/effect';
 // clang-format on    

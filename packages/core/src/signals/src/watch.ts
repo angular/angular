@@ -9,6 +9,14 @@
 import {ReactiveNode, setActiveConsumer} from './graph';
 
 /**
+ * A cleanup function that can be optionally returned from the watch logic. When returned, the
+ * cleanup logic runs before the next watch execution.
+ */
+export type WatchCleanupFn = () => void;
+
+const NOOP_CLEANUP_FN: WatchCleanupFn = () => {};
+
+/**
  * Watches a reactive expression and allows it to be scheduled to re-run
  * when any dependencies notify of a change.
  *
@@ -17,8 +25,9 @@ import {ReactiveNode, setActiveConsumer} from './graph';
  */
 export class Watch extends ReactiveNode {
   private dirty = false;
+  private cleanupFn = NOOP_CLEANUP_FN;
 
-  constructor(private watch: () => void, private schedule: (watch: Watch) => void) {
+  constructor(private watch: () => void|WatchCleanupFn, private schedule: (watch: Watch) => void) {
     super();
   }
 
@@ -52,9 +61,14 @@ export class Watch extends ReactiveNode {
     const prevConsumer = setActiveConsumer(this);
     this.trackingVersion++;
     try {
-      this.watch();
+      this.cleanupFn();
+      this.cleanupFn = this.watch() ?? NOOP_CLEANUP_FN;
     } finally {
       setActiveConsumer(prevConsumer);
     }
+  }
+
+  cleanup() {
+    this.cleanupFn();
   }
 }
