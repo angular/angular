@@ -8,13 +8,11 @@
 
 import {EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {map} from 'rxjs/operators';
 
 import {createRouterState} from '../src/create_router_state';
 import {Routes} from '../src/models';
 import {recognize} from '../src/recognize';
 import {DefaultRouteReuseStrategy} from '../src/route_reuse_strategy';
-import {RouterConfigLoader} from '../src/router_config_loader';
 import {ActivatedRoute, advanceActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
@@ -134,10 +132,10 @@ describe('create router state', async () => {
     const current2 = reuseCalls.argsFor(1)[1];
 
     // Routing from '' to 'product/30'
-    expect(current1._routerState.url).toEqual(tree('').toString());
-    expect(future1._routerState.url).toEqual(tree('product/30').toString());
-    expect(current2._routerState.url).toEqual(tree('').toString());
-    expect(future2._routerState.url).toEqual(tree('product/30').toString());
+    expect(current1._routerState.url).toEqual('');
+    expect(future1._routerState.url).toEqual('product/30');
+    expect(current2._routerState.url).toEqual('');
+    expect(future2._routerState.url).toEqual('product/30');
   });
 });
 
@@ -152,9 +150,8 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
 
 async function createState(config: Routes, url: string): Promise<RouterStateSnapshot> {
   return recognize(
-             TestBed.inject(EnvironmentInjector), TestBed.inject(RouterConfigLoader), RootComponent,
-             config, tree(url), new DefaultUrlSerializer())
-      .pipe(map(result => result.state))
+             TestBed.inject(EnvironmentInjector), RootComponent, config, tree(url), url,
+             new DefaultUrlSerializer())
       .toPromise();
 }
 

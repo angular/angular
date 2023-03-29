@@ -33,6 +33,9 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "ApplyRedirects"
+  },
+  {
     "name": "ArgumentOutOfRangeError"
   },
   {
@@ -474,6 +477,9 @@
     "name": "NoMatch"
   },
   {
+    "name": "NoMatch2"
+  },
+  {
     "name": "NodeInjector"
   },
   {
@@ -733,6 +739,9 @@
   },
   {
     "name": "TakeSubscriber"
+  },
+  {
+    "name": "TakeWhileSubscriber"
   },
   {
     "name": "TapSubscriber"
@@ -1059,16 +1068,10 @@
     "name": "createRoot"
   },
   {
-    "name": "createSegmentGroupFromRoute"
-  },
-  {
     "name": "createTView"
   },
   {
     "name": "createTemplateRef"
-  },
-  {
-    "name": "createUrlTreeFromSegmentGroup"
   },
   {
     "name": "currentConsumer"
@@ -1350,6 +1353,9 @@
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
+    "name": "getOrCreateRouteInjectorIfNeeded"
+  },
+  {
     "name": "getOrCreateTNode"
   },
   {
@@ -1557,6 +1563,9 @@
     "name": "isFunction2"
   },
   {
+    "name": "isImmediateMatch"
+  },
+  {
     "name": "isInlineTemplate"
   },
   {
@@ -1618,6 +1627,9 @@
   },
   {
     "name": "joinWithSlash"
+  },
+  {
+    "name": "last"
   },
   {
     "name": "last2"
@@ -1720,6 +1732,9 @@
   },
   {
     "name": "ngZoneApplicationErrorHandlerFactory"
+  },
+  {
+    "name": "noLeftoversInUrl"
   },
   {
     "name": "noMatch"
@@ -1854,6 +1869,9 @@
     "name": "saveNameToExportMap"
   },
   {
+    "name": "scan"
+  },
+  {
     "name": "scheduleArray"
   },
   {
@@ -1927,6 +1945,9 @@
   },
   {
     "name": "shouldSearchParent"
+  },
+  {
+    "name": "sortByMatchingOutlets"
   },
   {
     "name": "split"
