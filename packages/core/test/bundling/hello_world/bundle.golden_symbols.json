@@ -81,6 +81,9 @@
     "name": "ERROR_ORIGINAL_ERROR"
   },
   {
+    "name": "EffectManager"
+  },
+  {
     "name": "ElementRef"
   },
   {
@@ -187,6 +190,9 @@
   },
   {
     "name": "NG_TOKEN_PATH"
+  },
+  {
+    "name": "NOOP_CLEANUP_FN"
   },
   {
     "name": "NOT_FOUND"
@@ -346,6 +352,9 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "Watch"
   },
   {
     "name": "WeakRefImpl"

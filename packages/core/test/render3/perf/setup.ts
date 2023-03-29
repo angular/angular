@@ -11,6 +11,7 @@ import {ComponentTemplate, DirectiveDefList} from '../../../src/render3/interfac
 import {TAttributes, TElementNode, TNodeType} from '../../../src/render3/interfaces/node';
 import {LView, LViewEnvironment, LViewFlags, TVIEW, TView, TViewType} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
+import {EffectManager} from '../../../src/render3/reactivity/effect';
 
 import {MicroBenchmarkDomRendererFactory, MicroBenchmarkRendererFactory} from './noop_renderer';
 
@@ -22,6 +23,7 @@ const renderer = rendererFactory.createRenderer(null, null);
 const environment: LViewEnvironment = {
   rendererFactory,
   sanitizer: null,
+  effectManager: new EffectManager(),
 };
 
 export function createAndRenderLView(

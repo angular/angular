@@ -142,8 +142,9 @@ describe('di', () => {
       const contentView = createLView(
           null,
           createTView(TViewType.Component, null, null, 1, 0, null, null, null, null, null, null),
-          {}, LViewFlags.CheckAlways, null, null, {rendererFactory: {} as any, sanitizer: null},
-          {} as any, null, null, null);
+          {}, LViewFlags.CheckAlways, null, null,
+          {rendererFactory: {} as any, sanitizer: null, effectManager: null}, {} as any, null, null,
+          null);
       enterView(contentView);
       try {
         const parentTNode = getOrCreateTNode(contentView[TVIEW], 0, TNodeType.Element, null, null);
