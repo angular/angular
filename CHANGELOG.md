@@ -1,3 +1,120 @@
+<a name="16.0.0-next.5"></a>
+# 16.0.0-next.5 (2023-03-29)
+## Breaking Changes
+### bazel
+- Several changes to the Angular Package Format (APF)
+  - Removal of FESM2015
+  - Replacing ES2020 with ES2022
+  - Replacing FESM2020 with FESM2022
+- Several changes to the Angular Package Format (APF)
+  - Removal of FESM2015
+  - Replacing ES2020 with ES2022
+  - Replacing FESM2020 with FESM2022
+### common
+-  If the 'ngTemplateOutletContext' is different from the context, it will result in a compile-time error.
+  
+  Before the change, the following template was compiling:
+  
+  ```typescript
+  interface MyContext {
+    $implicit: string;
+  }
+  
+  @Component({
+    standalone: true,
+    imports: [NgTemplateOutlet],
+    selector: 'person',
+    template: `
+      <ng-container
+        *ngTemplateOutlet="
+          myTemplateRef;
+          context: { $implicit: 'test', xxx: 'xxx' }
+        "></ng-container>
+    `,
+  })
+  export class PersonComponent {
+    myTemplateRef!: TemplateRef<MyContext>;
+  }
+  ```
+  However, it does not compile now because the 'xxx' property does not exist in 'MyContext', resulting in the error: 'Type '{ $implicit: string; xxx: string; }' is not assignable to type 'MyContext'.'
+  
+  The solution is either:
+  - add the 'xxx' property to 'MyContext' with the correct type or
+  - add '$any(...)' inside the template to make the error disappear. However, adding '$any(...)' does not correct the error but only preserves the previous behavior of the code.
+### core
+- * `entryComponents` has been deleted from the `@NgModule` and `@Component` public APIs. Any usages can be removed since they weren't doing anyting.
+  * `ANALYZE_FOR_ENTRY_COMPONENTS` injection token has been deleted. Any references can be removed.
+- ComponentRef.setInput will only set the input on the
+  component if it is different from the previous value (based on `Object.is`
+  equality). If code relies on the input always being set, it should be
+  updated to copy objects or wrap primitives in order to ensure the input
+  value differs from the previous call to `setInput`.
+## Deprecations
+### core
+-  `makeStateKey`, `StateKey` and  `TransferState` exports have been moved from `@angular/platform-browser` to `@angular/core`. Please update the imports.
+  
+  ```diff
+  - import {makeStateKey, StateKey, TransferState} from '@angular/platform-browser';
+  + import {makeStateKey, StateKey, TransferState} from '@angular/core';
+  ```
+- The `@Directive`/`@Component` `moduleId` property is now
+  deprecated. It did not have any effect for multiple major versions and
+  will be removed in v17.
+### platform-server
+- `PlatformConfig.baseUrl` and `PlatformConfig.useAbsoluteUrl` platform-server config options  are deprecated as these were not used.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6499f5ae28](https://github.com/angular/angular/commit/6499f5ae28fbd02147e8fe4bc7f4487bad1f0198) | fix | invalid ImageKit transformation ([#49201](https://github.com/angular/angular/pull/49201)) |
+| [d47fef72cb](https://github.com/angular/angular/commit/d47fef72cb497db555e67db50997b3b1cc3ee590) | fix | strict type checking for ngtemplateoutlet ([#48374](https://github.com/angular/angular/pull/48374)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1829542aea](https://github.com/angular/angular/commit/1829542aeabd0e4d5dfb1790872a00d248cd52fd) | fix | do not unquote CSS values ([#49460](https://github.com/angular/angular/pull/49460)) |
+| [73d2f3c866](https://github.com/angular/angular/commit/73d2f3c8666f6456c7db9735e1e20af8c4ed328c) | fix | handle trailing comma in object literal ([#49535](https://github.com/angular/angular/pull/49535)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [03d1d00ad9](https://github.com/angular/angular/commit/03d1d00ad9f88a2c449cceab64c1328787576162) | feat | Add an extended diagnostic for `nSkipHydration` ([#49512](https://github.com/angular/angular/pull/49512)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [89d291c367](https://github.com/angular/angular/commit/89d291c367e6b1b4618999c4044dcafcc1953109) | feat | add `assertInInjectionContext` ([#49529](https://github.com/angular/angular/pull/49529)) |
+| [605c536420](https://github.com/angular/angular/commit/605c5364208d9ab60041121e2ebbcfb2a1a52c1a) | feat | add migration to remove `moduleId` references ([#49496](https://github.com/angular/angular/pull/49496)) |
+| [9c5fd50de4](https://github.com/angular/angular/commit/9c5fd50de4489d98b40668f7d9885c18d9a43c73) | feat | effects can optionally return a cleanup function ([#49625](https://github.com/angular/angular/pull/49625)) |
+| [c024574f46](https://github.com/angular/angular/commit/c024574f46f18c42c1e5b02afa6c1e3e4219d25b) | feat | expose `makeStateKey`, `StateKey` and  `TransferState` ([#49563](https://github.com/angular/angular/pull/49563)) |
+| [9b65b84cb9](https://github.com/angular/angular/commit/9b65b84cb9a0392d8aef5b52b34d35c7c5b9f566) | feat | Mark components for check if they read a signal ([#49153](https://github.com/angular/angular/pull/49153)) |
+| [585e34bf6c](https://github.com/angular/angular/commit/585e34bf6c86f7b056b0aafaaca056baedaedae3) | feat | remove entryComponents ([#49484](https://github.com/angular/angular/pull/49484)) |
+| [be23b7ce65](https://github.com/angular/angular/commit/be23b7ce650634c95f6709a879c89bbad45c4701) | fix | ComponentRef.setInput only sets input when not equal to previous ([#49607](https://github.com/angular/angular/pull/49607)) |
+| [316c91b1a4](https://github.com/angular/angular/commit/316c91b1a47f1fb574045553288acca5fcb6e354) | fix | deprecate `moduleId` `@Component` property ([#49496](https://github.com/angular/angular/pull/49496)) |
+| [fdafdb78dc](https://github.com/angular/angular/commit/fdafdb78dce89d550426fbdbccad1dd1320cad01) | fix | set style property value to empty string instead of an invalid value ([#49460](https://github.com/angular/angular/pull/49460)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [45a6ac09fd](https://github.com/angular/angular/commit/45a6ac09fdd2228fa4bbf5188ba8e67298754e7e) | fix | force macro task creation during HTTP request ([#49546](https://github.com/angular/angular/pull/49546)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5e5dac278d](https://github.com/angular/angular/commit/5e5dac278d57d29277f0847f025e7dfa850bec45) | feat | Migration to remove `Router` guard and resolver interfaces ([#49337](https://github.com/angular/angular/pull/49337)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e8e36811d5](https://github.com/angular/angular/commit/e8e36811d5700d23a6d853c78e6314b19d937e5e) | fix | set nonce attribute in a platform compatible way ([#49624](https://github.com/angular/angular/pull/49624)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e99460865e](https://github.com/angular/angular/commit/e99460865e6a038be08a3436422ad129901aec8c) | refactor | deprecate `useAbsoluteUrl` and `baseUrl` ([#49546](https://github.com/angular/angular/pull/49546)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2dbf3e0023](https://github.com/angular/angular/commit/2dbf3e0023304b0e80c274c3fb79b70a45b7b317) | fix | Ensure Router preloading works with lazy component and static children ([#49571](https://github.com/angular/angular/pull/49571)) |
+| [d3018c0ee7](https://github.com/angular/angular/commit/d3018c0ee71eab2ab35aff20d95e9fa882944d14) | fix | fix [#49457](https://github.com/angular/angular/pull/49457) outlet activating with old info ([#49459](https://github.com/angular/angular/pull/49459)) |
+| [1600687fe5](https://github.com/angular/angular/commit/1600687fe518e67adcc629c78857720a5118d489) | fix | Route matching should only happen once when navigating ([#49163](https://github.com/angular/angular/pull/49163)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Asaf Malin, Jan Cabadaj, Jessica Janiuk, JiaLiPassion, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Sid, Tano Abeleyra and tomalaforge
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.5"></a>
 # 15.2.5 (2023-03-29)
 ### common
