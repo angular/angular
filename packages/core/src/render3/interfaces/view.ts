@@ -12,6 +12,7 @@ import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
+import type {EffectManager} from '../reactivity/effect';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
@@ -367,6 +368,9 @@ export interface LViewEnvironment {
 
   /** An optional custom sanitizer. */
   sanitizer: Sanitizer|null;
+
+  /** Container for reactivity system `effect`s. */
+  effectManager: EffectManager|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

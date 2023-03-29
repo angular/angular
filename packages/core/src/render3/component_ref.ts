@@ -42,6 +42,7 @@ import {CONTEXT, HEADER_OFFSET, INJECTOR, LView, LViewEnvironment, LViewFlags, T
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {createElementNode, setupStaticAttributes, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
+import {EffectManager} from './reactivity/effect';
 import {enterView, getCurrentTNode, getLView, leaveView} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {mergeHostAttrs, setUpAttributes} from './util/attrs_utils';
@@ -165,9 +166,12 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     }
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
+    const effectManager = rootViewInjector.get(EffectManager, null);
+
     const environment: LViewEnvironment = {
       rendererFactory,
       sanitizer,
+      effectManager,
     };
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);

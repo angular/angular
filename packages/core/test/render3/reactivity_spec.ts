@@ -6,13 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, effect, NgZone, signal} from '@angular/core';
+import {AfterViewInit, Component, destroyPlatform, effect, inject, Injector, NgZone, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
 describe('effects', () => {
-  it('should run prior to change detection', withBody('<test-cmp></test-cmp>', async () => {
+  beforeEach(destroyPlatform);
+  afterEach(destroyPlatform);
+
+  it('created in the constructor should run during change detection',
+     withBody('<test-cmp></test-cmp>', async () => {
        const log: string[] = [];
        @Component({
          selector: 'test-cmp',
@@ -38,11 +42,52 @@ describe('effects', () => {
        expect(log).toEqual([
          // B: component bootstrapped
          'B',
-         // C: change detection runs -> triggers ngDoCheck
-         'C',
-         // E: effect runs
+         // E: effect runs during change detection
          'E',
-         // C: change detection runs after effect runs
+         // C: change detection was observed (first round from `ApplicationRef.tick` called
+         // manually)
+         'C',
+         // C: second change detection happens (from zone becoming stable)
+         'C',
+       ]);
+     }));
+
+  it('created in ngOnInit should run during change detection',
+     withBody('<test-cmp></test-cmp>', async () => {
+       const log: string[] = [];
+       @Component({
+         selector: 'test-cmp',
+         standalone: true,
+         template: '',
+       })
+       class Cmp {
+         private injector = inject(Injector);
+
+         constructor() {
+           log.push('B');
+         }
+
+         ngOnInit() {
+           effect(() => {
+             log.push('E');
+           }, {injector: this.injector});
+         }
+
+         ngDoCheck() {
+           log.push('C');
+         }
+       }
+
+       await bootstrapApplication(Cmp);
+
+       expect(log).toEqual([
+         // B: component bootstrapped
+         'B',
+         // ngDoCheck runs before ngOnInit
+         'C',
+         // E: effect runs during change detection
+         'E',
+         // C: second change detection happens (from zone becoming stable)
          'C',
        ]);
      }));
@@ -109,5 +154,29 @@ describe('effects', () => {
     fixture.destroy();
     expect(counterLog).toEqual([0, 5]);
     expect(cleanupCount).toBe(2);
+  });
+
+  it('should run effects created in ngAfterViewInit', async () => {
+    let didRun = false;
+
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      template: '',
+    })
+    class Cmp implements AfterViewInit {
+      injector = inject(Injector);
+
+      ngAfterViewInit(): void {
+        effect(() => {
+          didRun = true;
+        }, {injector: this.injector});
+      }
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    expect(didRun).toBeTrue();
   });
 });

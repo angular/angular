@@ -365,10 +365,14 @@ export function refreshView<T>(
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
   const flags = lView[FLAGS];
   if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
-  enterView(lView);
+
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to execute lifecycle hooks in that mode.
   const isInCheckNoChangesPass = ngDevMode && isInCheckNoChangesMode();
+
+  !isInCheckNoChangesPass && lView[ENVIRONMENT].effectManager?.flush();
+
+  enterView(lView);
   try {
     resetPreOrderHookFlags(lView);
 
@@ -1819,6 +1823,10 @@ export function detectChangesInternal<T>(
     throw error;
   } finally {
     if (!checkNoChangesMode && rendererFactory.end) rendererFactory.end();
+
+    // One final flush of the effects queue to catch any effects created in `ngAfterViewInit` or
+    // other post-order hooks.
+    !checkNoChangesMode && lView[ENVIRONMENT].effectManager?.flush();
   }
 }
 

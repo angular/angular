@@ -135,6 +135,9 @@
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
+    "name": "EffectManager"
+  },
+  {
     "name": "ElementRef"
   },
   {
@@ -271,6 +274,9 @@
   },
   {
     "name": "NG_TOKEN_PATH"
+  },
+  {
+    "name": "NOOP_CLEANUP_FN"
   },
   {
     "name": "NOT_FOUND"
@@ -532,6 +538,9 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "Watch"
   },
   {
     "name": "WeakRefImpl"
