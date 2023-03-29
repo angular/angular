@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {first} from 'rxjs/operators';
+
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application_ref';
 import {PLATFORM_ID} from '../application_tokens';
+import {Console} from '../console';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, makeEnvironmentProviders} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {InitialRenderPendingTasks} from '../initial_render_pending_tasks';
@@ -62,6 +65,29 @@ function enableHydrationRuntimeSupport() {
  */
 function isBrowser(): boolean {
   return inject(PLATFORM_ID) === 'browser';
+}
+
+/**
+ * Outputs a message with hydration stats into a console.
+ */
+function printHydrationStats(console: Console) {
+  const message = `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
+      `and ${ngDevMode!.hydratedNodes} node(s), ` +
+      `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
+      `Learn more at https://angular.io/guides/hydration.`;
+  // tslint:disable-next-line:no-console
+  console.log(message);
+}
+
+
+/**
+ * Returns a Promise that is resolved when an application becomes stable.
+ */
+function whenStable(
+    appRef: ApplicationRef, pendingTasks: InitialRenderPendingTasks): Promise<unknown> {
+  const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
+  const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
+  return Promise.allSettled([isStablePromise, pendingTasksPromise]);
 }
 
 /**
@@ -139,7 +165,20 @@ export function provideHydrationSupport(): EnvironmentProviders {
         if (isBrowser()) {
           const appRef = inject(ApplicationRef);
           const pendingTasks = inject(InitialRenderPendingTasks);
-          return () => cleanupDehydratedViews(appRef, pendingTasks);
+          const console = inject(Console);
+          return () => {
+            whenStable(appRef, pendingTasks).then(() => {
+              // Wait until an app becomes stable and cleanup all views that
+              // were not claimed during the application bootstrap process.
+              // The timing is similar to when we start the serialization process
+              // on the server.
+              cleanupDehydratedViews(appRef);
+
+              if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+                printHydrationStats(console);
+              }
+            });
+          };
         }
         return () => {};  // noop
       },
