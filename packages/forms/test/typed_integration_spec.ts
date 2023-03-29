@@ -10,7 +10,7 @@
 // at compile time.
 
 import {FormBuilder, NonNullableFormBuilder, UntypedFormBuilder} from '../src/form_builder';
-import {AbstractControl, FormArray, FormControl, FormGroup, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators} from '../src/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup, UntypedFormArray, UntypedFormControl, UntypedFormGroup, ValidatorFn, Validators} from '../src/forms';
 import {FormRecord} from '../src/model/form_group';
 
 describe('Typed Class', () => {
@@ -1074,6 +1074,17 @@ describe('Typed Class', () => {
         const c = fb.group({foo: [{value: 'bar', disabled: true}, Validators.required]});
         {
           type ControlsType = {foo: FormControl<string|null>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+      });
+
+      it('from objects with any array nested inside ControlConfigs', () => {
+        const anyArr: any[] = [];
+        const c = fb.group({foo: [anyArr, Validators.required]});
+        {
+          type ControlsType = {foo: FormControl<any[]|null>};
           let t: ControlsType = c.controls;
           let t1 = c.controls;
           t1 = null as unknown as ControlsType;

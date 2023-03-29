@@ -53,6 +53,20 @@ interface PermissiveAbstractControlOptions extends Omit<AbstractControlOptions, 
 }
 
 /**
+ * Helper type to exclude Validators and ControlsOptions from ControlConfig
+ */
+type ExcludeValidatorsAndControlOptions<U> =
+    Exclude<U, ValidatorConfig|PermissiveAbstractControlOptions>;
+
+/**
+ * Helper type to extract the control value type from a Control Config
+ * The type is need to detect `Array<any>` as `Exclude<Array<any>, string[]> = never`
+ */
+type ExtractTypeFromControlConfig<U> = U extends Array<any>?
+    Array<any> extends U ? U : ExcludeValidatorsAndControlOptions<U>:
+    ExcludeValidatorsAndControlOptions<U>;
+
+/**
  * ControlConfig<T> is a tuple containing a value of type T, plus optional validators and async
  * validators.
  *
@@ -96,7 +110,7 @@ export type ɵElement<T, N extends null> =
   // FormControlState object container, which produces a nullable control.
   [T] extends [FormControlState<infer U>] ? FormControl<U|N> :
   // A ControlConfig tuple, which produces a nullable control.
-  [T] extends [PermissiveControlConfig<infer U>] ? FormControl<Exclude<U, ValidatorConfig| PermissiveAbstractControlOptions>|N> :
+  [T] extends [PermissiveControlConfig<infer U>] ? FormControl<ExtractTypeFromControlConfig<U>|N> :
   FormControl<T|N>;
 
 // clang-format on
