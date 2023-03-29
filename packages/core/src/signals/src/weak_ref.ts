@@ -8,10 +8,22 @@
 
 import {global} from '../../util/global';
 
+/**
+ * A `WeakRef`-compatible reference that fakes the API with a strong reference
+ * internally.
+ */
+class LeakyRef<T>/* implements WeakRef<T> */ {
+  constructor(private readonly ref: T) {}
+
+  deref(): T|undefined {
+    return this.ref;
+  }
+}
+
 // `WeakRef` is not always defined in every TS environment where Angular is compiled. Instead,
 // read it off of the global context if available.
 // tslint:disable-next-line: no-toplevel-property-access
-let WeakRefImpl: WeakRefCtor|undefined = global['WeakRef'];
+let WeakRefImpl: WeakRefCtor|undefined = global['WeakRef'] ?? LeakyRef;
 
 export interface WeakRef<T extends object> {
   deref(): T|undefined;
@@ -28,11 +40,7 @@ export interface WeakRefCtor {
   new<T extends object>(value: T): WeakRef<T>;
 }
 
-/**
- * Use an alternate implementation of `WeakRef` if a platform implementation isn't available.
- */
 export function setAlternateWeakRefImpl(impl: WeakRefCtor) {
-  if (!WeakRefImpl) {
-    WeakRefImpl = impl;
-  }
+  // no-op since the alternate impl is included by default by the framework. Remove once internal
+  // migration is complete.
 }
