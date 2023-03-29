@@ -810,7 +810,7 @@ describe('platform-server integration', () => {
              expect(output).toContain('Works!');
              expect(output).toContain('ng-trigger-myAnimation');
              expect(output).toContain('opacity:1;');
-             expect(output).toContain('transform:translate3d(0 , 0 , 0);');
+             expect(output).toContain('transform:translate3d(0, 0, 0);');
              expect(output).toContain('font-weight:bold;');
              called = true;
            });
