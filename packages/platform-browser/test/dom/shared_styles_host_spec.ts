@@ -54,5 +54,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       ssh.ngOnDestroy();
       expect(someHost.innerHTML).toEqual('');
     });
+
+    it(`should add 'nonce' attribute when a nonce value is provided`, () => {
+      ssh = new SharedStylesHost(doc, 'app-id', '{% nonce %}');
+      ssh.addStyles(['a {};']);
+      ssh.addHost(someHost);
+      expect(someHost.innerHTML).toEqual('<style nonce="{% nonce %}">a {};</style>');
+    });
   });
 }
