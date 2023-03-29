@@ -9,7 +9,7 @@
 import {XSS_SECURITY_URL} from '../error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {getDocument} from '../render3/interfaces/document';
-import {SANITIZER} from '../render3/interfaces/view';
+import {ENVIRONMENT} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
@@ -260,5 +260,5 @@ export function validateAgainstEventAttributes(name: string) {
 
 function getSanitizer(): Sanitizer|null {
   const lView = getLView();
-  return lView && lView[SANITIZER];
+  return lView && lView[ENVIRONMENT].sanitizer;
 }

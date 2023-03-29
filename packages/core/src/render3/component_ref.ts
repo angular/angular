@@ -38,7 +38,7 @@ import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/defini
 import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {Renderer, RendererFactory} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
-import {CONTEXT, HEADER_OFFSET, INJECTOR, LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, INJECTOR, LView, LViewEnvironment, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {createElementNode, setupStaticAttributes, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
@@ -165,6 +165,11 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     }
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
+    const environment: LViewEnvironment = {
+      rendererFactory,
+      sanitizer,
+    };
+
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
     // Determine a tag name used for creating host elements when this component is created
     // dynamically. Default to 'div' if this component did not specify any tag name in its selector.
@@ -181,8 +186,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     const rootTView =
         createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null, null);
     const rootLView = createLView(
-        null, rootTView, null, rootFlags, null, null, rendererFactory, hostRenderer, sanitizer,
-        rootViewInjector, null, null);
+        null, rootTView, null, rootFlags, null, null, environment, hostRenderer, rootViewInjector,
+        null, null);
 
     // rootView is the parent when bootstrapping
     // TODO(misko): it looks like we are entering view here but we don't really need to as
@@ -210,7 +215,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
 
       const hostTNode = createRootComponentTNode(rootLView, hostRNode);
       const componentView = createRootComponentView(
-          hostTNode, hostRNode, rootComponentDef, rootDirectives, rootLView, rendererFactory,
+          hostTNode, hostRNode, rootComponentDef, rootDirectives, rootLView, environment,
           hostRenderer);
 
       tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
@@ -345,8 +350,8 @@ function createRootComponentTNode(lView: LView, rNode: RNode): TElementNode {
  */
 function createRootComponentView(
     tNode: TElementNode, hostRNode: RElement|null, rootComponentDef: ComponentDef<any>,
-    rootDirectives: DirectiveDef<any>[], rootView: LView, rendererFactory: RendererFactory,
-    hostRenderer: Renderer, sanitizer?: Sanitizer|null): LView {
+    rootDirectives: DirectiveDef<any>[], rootView: LView, environment: LViewEnvironment,
+    hostRenderer: Renderer): LView {
   const tView = rootView[TVIEW];
   applyRootComponentStyling(rootDirectives, tNode, hostRNode, hostRenderer);
 
@@ -356,11 +361,11 @@ function createRootComponentView(
   if (hostRNode !== null) {
     hydrationInfo = retrieveHydrationInfo(hostRNode, rootView[INJECTOR]!);
   }
-  const viewRenderer = rendererFactory.createRenderer(hostRNode, rootComponentDef);
+  const viewRenderer = environment.rendererFactory.createRenderer(hostRNode, rootComponentDef);
   const componentView = createLView(
       rootView, getOrCreateComponentTView(rootComponentDef), null,
       rootComponentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[tNode.index],
-      tNode, rendererFactory, viewRenderer, sanitizer || null, null, null, hydrationInfo);
+      tNode, environment, viewRenderer, null, null, hydrationInfo);
 
   if (tView.firstCreatePass) {
     markAsComponentHost(tView, tNode, rootDirectives.length - 1);

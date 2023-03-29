@@ -37,23 +37,22 @@ export const T_HOST = 6;
 export const CLEANUP = 7;
 export const CONTEXT = 8;
 export const INJECTOR = 9;
-export const RENDERER_FACTORY = 10;
+export const ENVIRONMENT = 10;
 export const RENDERER = 11;
-export const SANITIZER = 12;
-export const CHILD_HEAD = 13;
-export const CHILD_TAIL = 14;
+export const CHILD_HEAD = 12;
+export const CHILD_TAIL = 13;
 // FIXME(misko): Investigate if the three declarations aren't all same thing.
-export const DECLARATION_VIEW = 15;
-export const DECLARATION_COMPONENT_VIEW = 16;
-export const DECLARATION_LCONTAINER = 17;
-export const PREORDER_HOOK_FLAGS = 18;
-export const QUERIES = 19;
-export const ID = 20;
-export const EMBEDDED_VIEW_INJECTOR = 21;
-export const ON_DESTROY_HOOKS = 22;
-export const HYDRATION = 23;
-export const REACTIVE_TEMPLATE_CONSUMER = 24;
-export const REACTIVE_HOST_BINDING_CONSUMER = 25;
+export const DECLARATION_VIEW = 14;
+export const DECLARATION_COMPONENT_VIEW = 15;
+export const DECLARATION_LCONTAINER = 16;
+export const PREORDER_HOOK_FLAGS = 17;
+export const QUERIES = 18;
+export const ID = 19;
+export const EMBEDDED_VIEW_INJECTOR = 20;
+export const ON_DESTROY_HOOKS = 21;
+export const HYDRATION = 22;
+export const REACTIVE_TEMPLATE_CONSUMER = 23;
+export const REACTIVE_HOST_BINDING_CONSUMER = 24;
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -61,7 +60,7 @@ export const REACTIVE_HOST_BINDING_CONSUMER = 25;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 26;
+export const HEADER_OFFSET = 25;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -180,14 +179,13 @@ export interface LView<T = unknown> extends Array<any> {
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
   readonly[INJECTOR]: Injector|null;
 
-  /** Factory to be used for creating Renderer. */
-  [RENDERER_FACTORY]: RendererFactory;
+  /**
+   * Contextual data that is shared across multiple instances of `LView` in the same application.
+   */
+  [ENVIRONMENT]: LViewEnvironment;
 
   /** Renderer to be used for this view. */
   [RENDERER]: Renderer;
-
-  /** An optional custom sanitizer. */
-  [SANITIZER]: Sanitizer|null;
 
   /**
    * Reference to the first LView or LContainer beneath this LView in
@@ -358,6 +356,17 @@ export interface LView<T = unknown> extends Array<any> {
    * Same as REACTIVE_TEMPLATE_CONSUMER, but for the host bindings of the LView.
    */
   [REACTIVE_HOST_BINDING_CONSUMER]: ReactiveLViewConsumer|null;
+}
+
+/**
+ * Contextual data that is shared across multiple instances of `LView` in the same application.
+ */
+export interface LViewEnvironment {
+  /** Factory to be used for creating Renderer. */
+  rendererFactory: RendererFactory;
+
+  /** An optional custom sanitizer. */
+  sanitizer: Sanitizer|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
