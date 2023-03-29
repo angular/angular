@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "12.11.1",
-    "domino": "https://github.com/angular/domino.git#4280d0380df839d97b81e7680877ad5b55500e77",
+    "domino": "https://github.com/angular/domino.git#f29f0473d1b5ecca67a93fcc9e1f097d3193d3ab",
     "zone.js": "file:../../../../dist/bin/packages/zone.js/npm_package"
   },
   "devDependencies": {
