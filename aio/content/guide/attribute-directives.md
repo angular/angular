@@ -12,7 +12,7 @@ See the <live-example></live-example> for a working example containing the code 
 
 This section walks you through creating a highlight directive that sets the background color of the host element to yellow.
 
-1.  To create a directive, use the CLI command [`ng generate directive`](cli/generate).
+1.  To create a directive, use the CLI command [`ng generate directive`](cli/generate). 
 
     <code-example format="shell" language="shell">
 
