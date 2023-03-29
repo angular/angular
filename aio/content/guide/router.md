@@ -119,41 +119,22 @@ To edit an item, users click an Edit button, which opens an `EditGroceryItem` co
 You want that component to retrieve the `id` for the grocery item so it can display the right information to the user.
 
 Use a route to pass this type of information to your application components.
-To do so, you use the [ActivatedRoute](api/router/ActivatedRoute) interface.
+To do so, you use the [withComponentInputBinding](api/router/withComponentInputBinding) feature with `provideRouter` or the `bindToComponentInputs` option of `RouterModule.forRoot`.
 
 To get information from a route:
 
-1.  Import `ActivatedRoute` and `ParamMap` to your component.
+1.  Add the `withComponentInputBinding` feature to the `provideRouter` method.
 
-    <code-example header="In the component class (excerpt)" path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="imports-route-info"></code-example>
+    <code-example header="provideRouter feature" path="router/src/app/app-routing.module.11.ts" region="withComponentInputBinding"></code-example>
 
-    These `import` statements add several important elements that your component needs.
-    To learn more about each, see the following API pages:
+1.  Update the component to have an `Input` matching the name of the parameter.
 
-    *   [`Router`](api/router)
-    *   [`ActivatedRoute`](api/router/ActivatedRoute)
-    *   [`ParamMap`](api/router/ParamMap)
-
-1.  Inject an instance of `ActivatedRoute` by adding it to your component's constructor:
-
-    <code-example header="In the component class (excerpt)" path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="activated-route"></code-example>
-
-1.  Update the `ngOnInit()` method to access the `ActivatedRoute` and track the `name` parameter:
-
-    <code-example header="In the component (excerpt)">
-
-    ngOnInit() {
-      this.route.queryParams.subscribe(params =&gt; {
-        this.name = params['name'];
-      });
-    }
-
-    </code-example>
+    <code-example header="The component input (excerpt)" path="router/src/app/heroes/hero-detail/hero-detail.component.4.ts" region="id-input"></code-example>
 
     <div class="alert is-helpful">
 
-    **NOTE**: <br />
-    The preceding example uses a variable, `name`, and assigns it the value based on the `name` parameter.
+    **NOTE:** <br>
+    You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
 
     </div>
 

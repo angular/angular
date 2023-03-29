@@ -264,27 +264,6 @@ describe('component input binding', () => {
     const instance = await harness.navigateByUrl('/x;language=english', MyComponent);
     expect(instance.language).toEqual('english');
   });
-  it('sets component inputs from path params', async () => {
-    @Component({
-      template: '',
-    })
-    class MyComponent {
-      @Input() language?: string;
-    }
-
-    TestBed.configureTestingModule({
-      providers: [provideRouter(
-          [{
-            path: '**',
-            component: MyComponent,
-          }],
-          withComponentInputBinding())]
-    });
-    const harness = await RouterTestingHarness.create();
-
-    const instance = await harness.navigateByUrl('/x;language=english', MyComponent);
-    expect(instance.language).toEqual('english');
-  });
 
   it('when keys conflict, sets inputs based on priority: data > path params > query params',
      async () => {
