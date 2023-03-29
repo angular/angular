@@ -16,7 +16,6 @@ import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
-import {Sanitizer} from '../../sanitization/sanitizer';
 import {assertDefined, assertEqual, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -32,11 +31,11 @@ import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory
 import {NodeInjectorFactory} from '../interfaces/injector';
 import {getUniqueLViewId} from '../interfaces/lview_tracking';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
-import {Renderer, RendererFactory} from '../interfaces/renderer';
+import {Renderer} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -126,8 +125,8 @@ function renderChildComponents(hostLView: LView, components: number[]): void {
 
 export function createLView<T>(
     parentLView: LView|null, tView: TView, context: T|null, flags: LViewFlags, host: RElement|null,
-    tHostNode: TNode|null, rendererFactory: RendererFactory|null, renderer: Renderer|null,
-    sanitizer: Sanitizer|null, injector: Injector|null, embeddedViewInjector: Injector|null,
+    tHostNode: TNode|null, environment: LViewEnvironment|null, renderer: Renderer|null,
+    injector: Injector|null, embeddedViewInjector: Injector|null,
     hydrationInfo: DehydratedView|null): LView {
   const lView = tView.blueprint.slice() as LView;
   lView[HOST] = host;
@@ -140,11 +139,10 @@ export function createLView<T>(
   ngDevMode && tView.declTNode && parentLView && assertTNodeForLView(tView.declTNode, parentLView);
   lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
   lView[CONTEXT] = context;
-  lView[RENDERER_FACTORY] = (rendererFactory || parentLView && parentLView[RENDERER_FACTORY])!;
-  ngDevMode && assertDefined(lView[RENDERER_FACTORY], 'RendererFactory is required');
+  lView[ENVIRONMENT] = (environment || parentLView && parentLView[ENVIRONMENT])!;
+  ngDevMode && assertDefined(lView[ENVIRONMENT], 'LViewEnvironment is required');
   lView[RENDERER] = (renderer || parentLView && parentLView[RENDERER])!;
   ngDevMode && assertDefined(lView[RENDERER], 'Renderer is required');
-  lView[SANITIZER] = sanitizer || parentLView && parentLView[SANITIZER] || null!;
   lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
   lView[T_HOST] = tHostNode;
   lView[ID] = getUniqueLViewId();
@@ -1446,13 +1444,13 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
-  const rendererFactory = lView[RENDERER_FACTORY];
+  const rendererFactory = lView[ENVIRONMENT].rendererFactory;
   const componentView = addToViewTree(
       lView,
       createLView(
           lView, tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, native,
-          hostTNode as TElementNode, rendererFactory, rendererFactory.createRenderer(native, def),
-          null, null, null, null));
+          hostTNode as TElementNode, null, rendererFactory.createRenderer(native, def), null, null,
+          null));
 
   // Component view will always be created before any injected LContainers,
   // so this is a regular element, wrap it with the component view
@@ -1804,7 +1802,7 @@ export function addToViewTree<T extends LView|LContainer>(lView: LView, lViewOrL
 ///////////////////////////////
 export function detectChangesInternal<T>(
     tView: TView, lView: LView, context: T, notifyErrorHandler = true) {
-  const rendererFactory = lView[RENDERER_FACTORY];
+  const rendererFactory = lView[ENVIRONMENT].rendererFactory;
 
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to invoke renderer factory functions in that mode
