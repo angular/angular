@@ -1098,6 +1098,9 @@ export class UrlTree {
 export const VERSION: Version;
 
 // @public
+export function withComponentInputBinding(): ComponentInputBindingFeature;
+
+// @public
 export function withDebugTracing(): DebugTracingFeature;
 
 // @public
