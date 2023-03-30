@@ -419,11 +419,6 @@ export class DebugNode {
 }
 
 // @public
-export type DeepReadonly<T> = T extends (infer R)[] ? ReadonlyArray<DeepReadonly<R>> : (T extends Function ? T : (T extends object ? {
-    readonly [P in keyof T]: DeepReadonly<T[P]>;
-} : T));
-
-// @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
 
 // @public @deprecated (undocumented)
@@ -1366,7 +1361,7 @@ export interface SelfDecorator {
 export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
-export type Signal<T> = (() => DeepReadonly<T>) & {
+export type Signal<T> = (() => T) & {
     [SIGNAL]: unknown;
 };
 

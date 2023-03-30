@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignalFromFunction, DeepReadonly, defaultEquals, Signal, ValueEqualityFn} from './api';
+import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
 import {ReactiveNode} from './graph';
 
 /**
@@ -81,9 +81,9 @@ class WritableSignalImpl<T> extends ReactiveNode {
     this.producerMayHaveChanged();
   }
 
-  signal(): DeepReadonly<T> {
+  signal(): T {
     this.producerAccessed();
-    return this.value as unknown as DeepReadonly<T>;
+    return this.value;
   }
 }
 
