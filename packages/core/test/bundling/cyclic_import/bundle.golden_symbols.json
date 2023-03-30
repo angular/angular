@@ -639,9 +639,6 @@
     "name": "currentConsumer"
   },
   {
-    "name": "decoratePreventDefault"
-  },
-  {
     "name": "deepForEach"
   },
   {

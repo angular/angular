@@ -867,9 +867,6 @@
     "name": "dashCaseToCamelCase"
   },
   {
-    "name": "decoratePreventDefault"
-  },
-  {
     "name": "deepForEach"
   },
   {

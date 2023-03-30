@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 
 /**
@@ -53,21 +52,6 @@ export class EventManager {
   }
 
   /**
-   * Registers a global handler for an event in a target view.
-   *
-   * @param target A target for global event notifications. One of "window", "document", or "body".
-   * @param eventName The name of the event to listen for.
-   * @param handler A function to call when the notification occurs. Receives the
-   * event object as an argument.
-   * @returns A callback function that can be used to remove the handler.
-   * @deprecated No longer being used in Ivy code. To be removed in version 14.
-   */
-  addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
-    const plugin = this._findPluginFor(eventName);
-    return plugin.addGlobalEventListener(target, eventName, handler);
-  }
-
-  /**
    * Retrieves the compilation zone in which event listeners are registered.
    */
   getZone(): NgZone {
@@ -102,12 +86,4 @@ export abstract class EventManagerPlugin {
   abstract supports(eventName: string): boolean;
 
   abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
-
-  addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
-    const target: HTMLElement = getDOM().getGlobalEventTarget(this._doc, element);
-    if (!target) {
-      throw new Error(`Unsupported event target ${target} for event ${eventName}`);
-    }
-    return this.addEventListener(target, eventName, handler);
-  }
 }

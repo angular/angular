@@ -21,13 +21,4 @@ export class ServerEventManagerPlugin /* extends EventManagerPlugin which is pri
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     return getDOM().onAndCancel(element, eventName, handler);
   }
-
-  /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
-  addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
-    const target: HTMLElement = getDOM().getGlobalEventTarget(this.doc, element);
-    if (!target) {
-      throw new Error(`Unsupported event target ${target} for event ${eventName}`);
-    }
-    return this.addEventListener(target, eventName, handler);
-  }
 }

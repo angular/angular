@@ -1092,9 +1092,6 @@
     "name": "decodeQuery"
   },
   {
-    "name": "decoratePreventDefault"
-  },
-  {
     "name": "deepForEach"
   },
   {

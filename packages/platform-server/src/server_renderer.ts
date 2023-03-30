@@ -209,11 +209,7 @@ class DefaultServerRenderer2 implements Renderer2 {
       target: 'document'|'window'|'body'|any, eventName: string,
       callback: (event: any) => boolean): () => void {
     checkNoSyntheticProp(eventName, 'listener');
-    if (typeof target === 'string') {
-      return <() => void>this.eventManager.addGlobalEventListener(
-          target, eventName, this.decoratePreventDefault(callback));
-    }
-    return <() => void>this.eventManager.addEventListener(
+    return this.eventManager.addEventListener(
                target, eventName, this.decoratePreventDefault(callback)) as () => void;
   }
 

@@ -94,8 +94,6 @@ export const EVENT_MANAGER_PLUGINS: InjectionToken<EventManagerPlugin[]>;
 export class EventManager {
     constructor(plugins: EventManagerPlugin[], _zone: NgZone);
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
-    // @deprecated
-    addGlobalEventListener(target: string, eventName: string, handler: Function): Function;
     getZone(): NgZone;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<EventManager, never>;
