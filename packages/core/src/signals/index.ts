@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {DeepReadonly, isSignal, Signal, ValueEqualityFn} from './src/api';
+export {isSignal, Signal, ValueEqualityFn} from './src/api';
 export {computed, CreateComputedOptions} from './src/computed';
 export {setActiveConsumer} from './src/graph';
 export {CreateSignalOptions, signal, WritableSignal} from './src/signal';

@@ -97,18 +97,4 @@ describe('signals', () => {
     state.set(stateValue);
     expect(derived()).toEqual('object:5');
   });
-
-  it('should prohibit mutable access to properties at a type level', () => {
-    const state = signal({name: 'John'});
-
-    // @ts-expect-error
-    state().name = 'Jacob';
-  });
-
-  it('should prohibit mutable access to arrays at a type level', () => {
-    const state = signal(['John']);
-
-    // @ts-expect-error
-    state().push('Jacob');
-  });
 });

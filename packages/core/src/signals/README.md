@@ -4,7 +4,7 @@ This directory contains the code for Angular's reactive primitive, an implementa
 
 ## Conceptual surface
 
-Angular Signals are zero-argument functions (`() => DeepReadonly<T>`). When executed, they return the current value of the signal. Executing signals does not trigger side effects, though it may lazily recompute intermediate values (lazy memoization).
+Angular Signals are zero-argument functions (`() => T`). When executed, they return the current value of the signal. Executing signals does not trigger side effects, though it may lazily recompute intermediate values (lazy memoization).
 
 Particular contexts (such as template expressions) can be _reactive_. In such contexts, executing a signal will return the value, but also register the signal as a dependency of the context in question. The context's owner will then be notified if any of its signal dependencies produces a new value (usually, this results in the re-execution of those expressions to consume the new values).
 
@@ -38,10 +38,6 @@ The signal creation function one can, optionally, specify an equality comparator
 If the equality function determines that 2 values are equal it will:
 * block update of signal’s value;
 * skip change propagation.
-
-#### `DeepReadonly`
-
-Values read from signals are wrapped in a TypeScript type `DeepReadonly`, which recursively tags all properties and arrays in the inner type as `readonly`, preventing simple mutations. This acts as a safeguard against accidental mutation of signal values outside of the mutation API for `WritableSignal`s.
 
 ### Declarative derived values: `computed()`
 
