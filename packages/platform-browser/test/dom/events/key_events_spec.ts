@@ -71,17 +71,6 @@ import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_even
           .toEqual(KeyEventsPlugin.parseEventName('keyup.control.escape'));
     });
 
-    if (!isNode) {
-      it('should implement addGlobalEventListener', () => {
-        const plugin = new KeyEventsPlugin(document);
-
-        spyOn(plugin, 'addEventListener').and.callFake(() => () => {});
-
-        expect(() => plugin.addGlobalEventListener('window', 'keyup.control.esc', () => {}))
-            .not.toThrowError();
-      });
-    }
-
     it('should match key field', () => {
       const baseKeyboardEvent = {
         isTrusted: true,

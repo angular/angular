@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, OnDestroy, Optional, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
@@ -288,10 +289,13 @@ class DefaultDomRenderer2 implements Renderer2 {
       () => void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
-      return <() => void>this.eventManager.addGlobalEventListener(
-          target, event, decoratePreventDefault(callback));
+      target = getDOM().getGlobalEventTarget(document, target);
+      if (!target) {
+        throw new Error(`Unsupported event target ${target} for event ${event}`);
+      }
     }
-    return <() => void>this.eventManager.addEventListener(
+
+    return this.eventManager.addEventListener(
                target, event, decoratePreventDefault(callback)) as () => void;
   }
 }
