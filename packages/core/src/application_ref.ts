@@ -218,6 +218,8 @@ export function internalCreateApplication(config: {
     providers: allAppProviders,
     parent: platformInjector as EnvironmentInjector,
     debugName: (typeof ngDevMode === 'undefined' || ngDevMode) ? 'Environment Injector' : '',
+    // We skip environment initializers because we need to run them inside the NgZone, which happens
+    // after we get the NgZone instance from the Injector.
     runEnvironmentInitializers: false,
   });
   const envInjector = adapter.injector;
@@ -1215,7 +1217,7 @@ export class NgZoneChangeDetectionScheduler {
 }
 
 /**
- * Internal token used to provide verify that `provideZoneChangeDetection` is not used
+ * Internal token used to verify that `provideZoneChangeDetection` is not used
  * with the bootstrapModule API.
  */
 const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
@@ -1246,15 +1248,18 @@ export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone):
 }
 
 /**
- * Provides `NgZone`-based change detection for the application.
+ * Provides `NgZone`-based change detection for the application bootstrapped using
+ * `bootstrapApplication`.
  *
  * `NgZone` is already provided in applications by default. This provider allows you to configure
- * options like `ngZoneEventCoalescing` in the `NgZone`.
+ * options like `eventCoalescing` in the `NgZone`.
+ * This provider is not available for `platformBrowser().bootstrapModule`, which uses
+ * `BootstrapOptions` instead.
  *
  * @usageNotes
  * ```typescript=
  * bootstrapApplication(MyApp, {providers: [
- *   provideZoneChangeDetection({ngZoneEventCoalescing: true}),
+ *   provideZoneChangeDetection({eventCoalescing: true}),
  * ]});
  * ```
  *

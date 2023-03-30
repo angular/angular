@@ -406,7 +406,7 @@ function bootstrap(
            }
 
            await bootstrapApplication(AnimationCmp, {
-             providers: [provideZoneChangeDetection({ngZoneEventCoalescing: true})],
+             providers: [provideZoneChangeDetection({eventCoalescing: true})],
            });
            expect(moduleInitialized).toBe(true);
          });
