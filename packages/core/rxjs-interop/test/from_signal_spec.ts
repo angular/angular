@@ -6,113 +6,131 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal} from '@angular/core';
+import {Component, computed, Injector, signal} from '@angular/core';
 import {fromSignal} from '@angular/core/rxjs-interop';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {take, toArray} from 'rxjs/operators';
 
-import {test} from './util';
-
 describe('fromSignal()', () => {
-  it('should produce an observable that tracks a signal', test(async () => {
-       const counter = signal(0);
-       const counterValues = fromSignal(counter).pipe(take(3), toArray()).toPromise();
+  let fixture!: ComponentFixture<unknown>;
+  let injector!: Injector;
 
-       // Initial effect execution, emits 0.
-       await Promise.resolve();
+  @Component({
+    template: '',
+    standalone: true,
+  })
+  class Cmp {
+  }
 
-       counter.set(1);
-       // Emits 1.
-       await Promise.resolve();
+  beforeEach(() => {
+    fixture = TestBed.createComponent(Cmp);
+    injector = TestBed.inject(Injector);
+  });
 
-       counter.set(2);
-       counter.set(3);
-       // Emits 3 (ignores 2 as it was batched by the effect).
-       await Promise.resolve();
+  function flushEffects(): void {
+    fixture.detectChanges();
+  }
 
-       expect(await counterValues).toEqual([0, 1, 3]);
-     }));
+  it('should produce an observable that tracks a signal', async () => {
+    const counter = signal(0);
+    const counterValues = fromSignal(counter, {injector}).pipe(take(3), toArray()).toPromise();
 
-  it('should propagate errors from the signal', test(async () => {
-       const source = signal(1);
-       const counter = computed(() => {
-         const value = source();
-         if (value === 2) {
-           throw 'fail';
-         } else {
-           return value;
-         }
-       });
+    // Initial effect execution, emits 0.
+    flushEffects();
 
-       const counter$ = fromSignal(counter);
+    counter.set(1);
+    // Emits 1.
+    flushEffects();
 
-       let currentValue: number = 0;
-       let currentError: any = null;
+    counter.set(2);
+    counter.set(3);
+    // Emits 3 (ignores 2 as it was batched by the effect).
+    flushEffects();
 
-       const sub = counter$.subscribe({
-         next: value => currentValue = value,
-         error: err => currentError = err,
-       });
+    expect(await counterValues).toEqual([0, 1, 3]);
+  });
 
-       await Promise.resolve();
-       expect(currentValue).toBe(1);
+  it('should propagate errors from the signal', () => {
+    const source = signal(1);
+    const counter = computed(() => {
+      const value = source();
+      if (value === 2) {
+        throw 'fail';
+      } else {
+        return value;
+      }
+    });
 
-       source.set(2);
-       await Promise.resolve();
-       expect(currentError).toBe('fail');
+    const counter$ = fromSignal(counter, {injector});
 
-       sub.unsubscribe();
-     }));
+    let currentValue: number = 0;
+    let currentError: any = null;
 
-  it('should not monitor the signal if the Observable is never subscribed', test(async () => {
-       let counterRead = false;
-       const counter = computed(() => {
-         counterRead = true;
-         return 0;
-       });
+    const sub = counter$.subscribe({
+      next: value => currentValue = value,
+      error: err => currentError = err,
+    });
 
-       fromSignal(counter);
+    flushEffects();
+    expect(currentValue).toBe(1);
 
-       // Simply creating the Observable shouldn't trigger a signal read.
-       expect(counterRead).toBeFalse();
+    source.set(2);
+    flushEffects();
+    expect(currentError).toBe('fail');
 
-       // Nor should the signal be read after effects have run.
-       await Promise.resolve();
-       expect(counterRead).toBeFalse();
-     }));
+    sub.unsubscribe();
+  });
 
-  it('should not monitor the signal if the Observable has no active subscribers', test(async () => {
-       const counter = signal(0);
+  it('should not monitor the signal if the Observable is never subscribed', () => {
+    let counterRead = false;
+    const counter = computed(() => {
+      counterRead = true;
+      return 0;
+    });
 
-       // Tracks how many reads of `counter()` there have been.
-       let readCount = 0;
-       const trackedCounter = computed(() => {
-         readCount++;
-         return counter();
-       });
+    fromSignal(counter, {injector});
 
-       const counter$ = fromSignal(trackedCounter);
+    // Simply creating the Observable shouldn't trigger a signal read.
+    expect(counterRead).toBeFalse();
 
-       const sub = counter$.subscribe();
-       expect(readCount).toBe(0);
+    // Nor should the signal be read after effects have run.
+    flushEffects();
+    expect(counterRead).toBeFalse();
+  });
 
-       await Promise.resolve();
-       expect(readCount).toBe(1);
+  it('should not monitor the signal if the Observable has no active subscribers', () => {
+    const counter = signal(0);
 
-       // Sanity check of the read tracker - updating the counter should cause it to be read again
-       // by the active effect.
-       counter.set(1);
-       await Promise.resolve();
-       expect(readCount).toBe(2);
+    // Tracks how many reads of `counter()` there have been.
+    let readCount = 0;
+    const trackedCounter = computed(() => {
+      readCount++;
+      return counter();
+    });
 
-       // Tear down the only subscription and hence the effect that's monitoring the signal.
-       sub.unsubscribe();
+    const counter$ = fromSignal(trackedCounter, {injector});
 
-       // Now, setting the signal shouldn't trigger any additional reads, as the Observable is no
-       // longer interested in its value.
+    const sub = counter$.subscribe();
+    expect(readCount).toBe(0);
 
-       counter.set(2);
-       await Promise.resolve();
+    flushEffects();
+    expect(readCount).toBe(1);
 
-       expect(readCount).toBe(2);
-     }));
+    // Sanity check of the read tracker - updating the counter should cause it to be read again
+    // by the active effect.
+    counter.set(1);
+    flushEffects();
+    expect(readCount).toBe(2);
+
+    // Tear down the only subscription and hence the effect that's monitoring the signal.
+    sub.unsubscribe();
+
+    // Now, setting the signal shouldn't trigger any additional reads, as the Observable is no
+    // longer interested in its value.
+
+    counter.set(2);
+    flushEffects();
+
+    expect(readCount).toBe(2);
+  });
 });
