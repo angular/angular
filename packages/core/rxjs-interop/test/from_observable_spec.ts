@@ -10,8 +10,6 @@ import {EnvironmentInjector, Injector, runInInjectionContext} from '@angular/cor
 import {fromObservable} from '@angular/core/rxjs-interop';
 import {BehaviorSubject, Subject} from 'rxjs';
 
-import {test} from './util';
-
 describe('fromObservable()', () => {
   it('should reflect the last emitted value of an Observable', test(() => {
        const counter$ = new BehaviorSubject(0);
@@ -103,3 +101,18 @@ describe('fromObservable()', () => {
        }));
   });
 });
+
+function test(fn: () => void|Promise<void>): () => Promise<void> {
+  return async () => {
+    const injector = Injector.create({
+      providers: [
+        {provide: EnvironmentInjector, useFactory: () => injector},
+      ]
+    }) as EnvironmentInjector;
+    try {
+      return await runInInjectionContext(injector, fn);
+    } finally {
+      injector.destroy();
+    }
+  };
+}
