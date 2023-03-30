@@ -361,11 +361,72 @@ export function getPlatform(): PlatformRef|null {
 }
 
 /**
+ * Used to configure event and run coalescing with `provideZoneChangeDetection`.
+ *
  * @publicApi
  *
  * @see provideZoneChangeDetection
  */
 export interface NgZoneOptions {
+  /**
+   * Optionally specify coalescing event change detections or not.
+   * Consider the following case.
+   *
+   * ```
+   * <div (click)="doSomething()">
+   *   <button (click)="doSomethingElse()"></button>
+   * </div>
+   * ```
+   *
+   * When button is clicked, because of the event bubbling, both
+   * event handlers will be called and 2 change detections will be
+   * triggered. We can coalesce such kind of events to only trigger
+   * change detection only once.
+   *
+   * By default, this option will be false. So the events will not be
+   * coalesced and the change detection will be triggered multiple times.
+   * And if this option be set to true, the change detection will be
+   * triggered async by scheduling a animation frame. So in the case above,
+   * the change detection will only be triggered once.
+   */
+  eventCoalescing?: boolean;
+
+  /**
+   * Optionally specify if `NgZone#run()` method invocations should be coalesced
+   * into a single change detection.
+   *
+   * Consider the following case.
+   * ```
+   * for (let i = 0; i < 10; i ++) {
+   *   ngZone.run(() => {
+   *     // do something
+   *   });
+   * }
+   * ```
+   *
+   * This case triggers the change detection multiple times.
+   * With ngZoneRunCoalescing options, all change detections in an event loop trigger only once.
+   * In addition, the change detection executes in requestAnimation.
+   *
+   */
+  runCoalescing?: boolean;
+}
+
+/**
+ * Provides additional options to the bootstrapping process.
+ *
+ * @publicApi
+ */
+export interface BootstrapOptions {
+  /**
+   * Optionally specify which `NgZone` should be used.
+   *
+   * - Provide your own `NgZone` instance.
+   * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
+   * - `noop` - Use `NoopNgZone` which does nothing.
+   */
+  ngZone?: NgZone|'zone.js'|'noop';
+
   /**
    * Optionally specify coalescing event change detections or not.
    * Consider the following case.
@@ -411,22 +472,6 @@ export interface NgZoneOptions {
 }
 
 /**
- * Provides additional options to the bootstrapping process.
- *
- * @publicApi
- */
-export interface BootstrapOptions extends NgZoneOptions {
-  /**
-   * Optionally specify which `NgZone` should be used.
-   *
-   * - Provide your own `NgZone` instance.
-   * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
-   * - `noop` - Use `NoopNgZone` which does nothing.
-   */
-  ngZone?: NgZone|'zone.js'|'noop';
-}
-
-/**
  * The Angular platform is the entry point for Angular on a web page.
  * Each page has exactly one platform. Services (such as reflection) which are common
  * to every Angular application running on the page are bound in its scope.
@@ -456,7 +501,10 @@ export class PlatformRef {
     // as instantiating the module creates some providers eagerly.
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
-    const ngZone = getNgZone(options?.ngZone, getNgZoneOptions(options));
+    const ngZone = getNgZone(options?.ngZone, getNgZoneOptions({
+                               eventCoalescing: options?.ngZoneEventCoalescing,
+                               runCoalescing: options?.ngZoneRunCoalescing
+                             }));
     // Note: Create ngZoneInjector within ngZone.run so that all of the instantiated services are
     // created within the Angular zone
     // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
@@ -604,8 +652,8 @@ interface InternalNgZoneOptions {
 function getNgZoneOptions(options?: NgZoneOptions): InternalNgZoneOptions {
   return {
     enableLongStackTrace: typeof ngDevMode === 'undefined' ? false : !!ngDevMode,
-    shouldCoalesceEventChangeDetection: options?.ngZoneEventCoalescing ?? false,
-    shouldCoalesceRunChangeDetection: options?.ngZoneRunCoalescing ?? false,
+    shouldCoalesceEventChangeDetection: options?.eventCoalescing ?? false,
+    shouldCoalesceRunChangeDetection: options?.runCoalescing ?? false,
   };
 }
 

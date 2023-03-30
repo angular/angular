@@ -120,8 +120,10 @@ export interface AttributeDecorator {
 }
 
 // @public
-export interface BootstrapOptions extends NgZoneOptions {
+export interface BootstrapOptions {
     ngZone?: NgZone | 'zone.js' | 'noop';
+    ngZoneEventCoalescing?: boolean;
+    ngZoneRunCoalescing?: boolean;
 }
 
 // @public
@@ -1047,10 +1049,10 @@ export class NgZone {
     runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[], name?: string): T;
 }
 
-// @public (undocumented)
+// @public
 export interface NgZoneOptions {
-    ngZoneEventCoalescing?: boolean;
-    ngZoneRunCoalescing?: boolean;
+    eventCoalescing?: boolean;
+    runCoalescing?: boolean;
 }
 
 // @public
