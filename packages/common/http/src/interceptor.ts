@@ -157,9 +157,8 @@ export const HTTP_INTERCEPTOR_FNS =
 /**
  * A multi-provided token of `HttpInterceptorFn`s that are only set in root.
  */
-export const HTTP_ROOT_INTERCEPTOR_FNS = new InjectionToken<HttpInterceptorFn[]>(
-    ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '', {providedIn: 'root', factory: () => []});
-
+export const HTTP_ROOT_INTERCEPTOR_FNS =
+    new InjectionToken<HttpInterceptorFn[]>(ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '');
 
 /**
  * Creates an `HttpInterceptorFn` which lazily initializes an interceptor chain from the legacy
@@ -195,7 +194,7 @@ export class HttpInterceptorHandler extends HttpHandler {
     if (this.chain === null) {
       const dedupedInterceptorFns = Array.from(new Set([
         ...this.injector.get(HTTP_INTERCEPTOR_FNS),
-        ...this.injector.get(HTTP_ROOT_INTERCEPTOR_FNS),
+        ...this.injector.get(HTTP_ROOT_INTERCEPTOR_FNS, []),
       ]));
 
       // Note: interceptors are wrapped right-to-left so that final execution order is
