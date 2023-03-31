@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, LexerRange, ParsedTemplate, ParseSourceFile, parseTemplate, TmplAstNode} from '@angular/compiler';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, LexerRange, ParsedTemplate, ParseSourceFile, parseTemplate, TmplAstNode,} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
@@ -325,8 +325,7 @@ export function parseTemplateDeclaration(
     };
   } else {
     throw new FatalDiagnosticError(
-        ErrorCode.COMPONENT_MISSING_TEMPLATE, Decorator.nodeForError(decorator),
-        'component is missing a template');
+        ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node, 'component is missing a template');
   }
 }
 
