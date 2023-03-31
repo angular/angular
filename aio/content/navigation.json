@@ -426,6 +426,11 @@
           "tooltip": "Use HTTP to talk to a remote server."
         },
         {
+          "url": "guide/hydration",
+          "title": "Hydration",
+          "tooltip": "How to enable hydration on your server rendered applications."
+        },
+        {
           "url": "guide/image-directive",
           "title": "Image optimization",
           "tooltip": "Performant images with the Angular image directive."
