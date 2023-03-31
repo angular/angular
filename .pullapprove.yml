@@ -352,7 +352,8 @@ groups:
           'aio/content/guide/view-encapsulation.md',
           'aio/content/examples/view-encapsulation/**/{*,.*}',
           'aio/content/images/guide/view-encapsulation/**/{*,.*}',
-          'aio/content/special-elements/**/{*,.*}'
+          'aio/content/special-elements/**/{*,.*}',
+          'aio/content/guide/hydration.md'
           ])
     reviewers:
       users:
