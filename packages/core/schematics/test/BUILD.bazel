@@ -21,6 +21,8 @@ jasmine_node_test(
         "//packages/core/schematics:migrations.json",
         "//packages/core/schematics/migrations/guard-and-resolve-interfaces",
         "//packages/core/schematics/migrations/guard-and-resolve-interfaces:bundle",
+        "//packages/core/schematics/migrations/querylist-changes",
+        "//packages/core/schematics/migrations/querylist-changes:bundle",
         "//packages/core/schematics/migrations/remove-module-id",
         "//packages/core/schematics/migrations/remove-module-id:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration",

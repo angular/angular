@@ -9,6 +9,11 @@
       "version": "16.0.0",
       "description": "In Angular version 15.2, the guard and resolver interfaces (CanActivate, Resolve, etc) were deprecated. This migration removes imports and 'implements' clauses that contain them.",
       "factory": "./migrations/guard-and-resolve-interfaces/bundle"
+    },
+    "migration-v16-querylist-changes": {
+      "version": "16.0.0",
+      "description": "In Angular version 16, QueryList.changes returns Observable<T> instance of Observable<any>. This migration will ...",
+      "factory": "./migrations/querylist-changes/bundle"
     }
   }
 }

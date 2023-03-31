@@ -6,6 +6,7 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
         "//packages/core/schematics/migrations/guard-and-resolve-interfaces",
+        "//packages/core/schematics/migrations/querylist-changes",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
@@ -18,6 +19,15 @@ esbuild(
     entry_point = ":guardAndResolveInterfacesRule.ts",
     format = "cjs",
     output = "guardAndResolveInterfacesCjsRule.js",
+    platform = "node",
+    deps = [":google3"],
+)
+
+esbuild(
+    name = "querylist_changes_cjs",
+    entry_point = ":querylistChangesRule.ts",
+    format = "cjs",
+    output = "querylistChangesCjsRule.js",
     platform = "node",
     deps = [":google3"],
 )
