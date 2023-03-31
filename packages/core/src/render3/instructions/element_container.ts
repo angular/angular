@@ -83,8 +83,6 @@ export function ɵɵelementContainerStart(
       tView.data[adjustedIndex] as TElementContainerNode;
   setCurrentTNode(tNode, true);
 
-  ngDevMode && ngDevMode.rendererCreateComment++;
-
   const comment = _locateOrCreateElementContainerNode(tView, lView, tNode, index);
   lView[adjustedIndex] = comment;
 
