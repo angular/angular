@@ -5861,6 +5861,26 @@ function allTests(os: string) {
         expect(ts.isClassDeclaration(id.parent)).toBe(true);
       });
 
+      it('should report an error when a visible host directive is not exported', () => {
+        env.tsconfig({'flatModuleOutFile': 'flat.js'});
+        env.write('test.ts', `
+        import {Directive, NgModule} from '@angular/core';
+
+        @Directive({
+          standalone: true,
+        })
+        class HostDir {}
+
+        // The directive is not exported.
+        @Directive({selector: 'test', hostDirectives: [HostDir]})
+        export class Dir {}
+      `);
+
+        const errors = env.driveDiagnostics();
+        expect(errors.length).toBe(1);
+        expect(errors[0].code).toBe(ngErrorCode(ErrorCode.SYMBOL_NOT_EXPORTED));
+      });
+
       it('should report an error when a deeply visible directive is not exported', () => {
         env.tsconfig({'flatModuleOutFile': 'flat.js'});
         env.write('test.ts', `

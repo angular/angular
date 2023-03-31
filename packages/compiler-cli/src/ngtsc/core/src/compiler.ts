@@ -1037,7 +1037,7 @@ export class NgCompiler {
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs === true, this.moduleResolver,
-          this.cycleAnalyzer, cycleHandlingStrategy, refEmitter,
+          this.cycleAnalyzer, cycleHandlingStrategy, refEmitter, referencesRegistry,
           this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
           this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver),
 
@@ -1046,7 +1046,7 @@ export class NgCompiler {
       // clang-format off
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, ngModuleScopeRegistry, metaReader,
-            injectableRegistry, refEmitter, isCore, strictCtorDeps, semanticDepGraphUpdater,
+            injectableRegistry, refEmitter, referencesRegistry, isCore, strictCtorDeps, semanticDepGraphUpdater,
           this.closureCompilerEnabled,
           this.delegatingPerfRecorder,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
