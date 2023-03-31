@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3HostDirectiveMetadata, R3QueryMetadata, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3HostDirectiveMetadata, R3QueryMetadata, verifyHostBindings, WrappedNodeExpr,} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {Reference, ReferenceEmitter} from '../../../imports';
 import {ClassPropertyMapping, HostDirectiveMeta, InputMapping} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral,} from '../../../reflection';
 import {HandlerFlags} from '../../../transform';
-import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
+import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const QUERY_TYPES = new Set([
@@ -47,7 +47,7 @@ export function extractDirectiveMetadata(
     directive = new Map<string, ts.Expression>();
   } else if (decorator.args.length !== 1) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
+        ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
         `Incorrect number of arguments to @${decorator.name} decorator`);
   } else {
     const meta = unwrapExpression(decorator.args[0]);
@@ -337,7 +337,7 @@ export function extractHostBindings(
           if (decorator.args !== null && decorator.args.length > 0) {
             if (decorator.args.length !== 1) {
               throw new FatalDiagnosticError(
-                  ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
+                  ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
                   `@HostBinding can have at most one argument, got ${
                       decorator.args.length} argument(s)`);
             }
@@ -345,8 +345,7 @@ export function extractHostBindings(
             const resolved = evaluator.evaluate(decorator.args[0]);
             if (typeof resolved !== 'string') {
               throw createValueHasWrongTypeError(
-                  Decorator.nodeForError(decorator), resolved,
-                  `@HostBinding's argument must be a string`);
+                  decorator.node, resolved, `@HostBinding's argument must be a string`);
             }
 
             hostPropertyName = resolved;
@@ -482,7 +481,7 @@ function queriesFromFields(
     evaluator: PartialEvaluator): R3QueryMetadata[] {
   return fields.map(({member, decorators}) => {
     const decorator = decorators[0];
-    const node = member.node || Decorator.nodeForError(decorator);
+    const node = member.node || decorator.node;
 
     // Throw in case of `@Input() @ContentChild('foo') foo: any`, which is not supported in Ivy
     if (member.decorators!.some(v => v.name === 'Input')) {
@@ -540,7 +539,7 @@ function parseDecoratedFields(
     for (const decorator of field.decorators) {
       if (decorator.args != null && decorator.args.length > 1) {
         throw new FatalDiagnosticError(
-            ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
+            ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
             `@${decorator.name} can have at most one argument, got ${
                 decorator.args.length} argument(s)`);
       }
@@ -626,7 +625,7 @@ function parseInputFields(
       required = options.get('required') === true;
     } else {
       throw createValueHasWrongTypeError(
-          Decorator.nodeForError(decorator), options,
+          decorator.node, options,
           `@${decorator.name} decorator argument must resolve to a string or an object literal`);
     }
 
@@ -652,7 +651,7 @@ function parseOutputFields(
   parseDecoratedFields(outputMembers, evaluator, (fieldName, bindingPropertyName, decorator) => {
     if (bindingPropertyName != null && typeof bindingPropertyName !== 'string') {
       throw createValueHasWrongTypeError(
-          Decorator.nodeForError(decorator), bindingPropertyName,
+          decorator.node, bindingPropertyName,
           `@${decorator.name} decorator argument must resolve to a string`);
     }
 

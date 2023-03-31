@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
+
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getDeclaration, makeProgram} from '../../testing';
-import {ClassMember, ClassMemberKind, CtorParameter, DeclarationKind, TypeValueReferenceKind} from '../src/host';
+import {ClassMember, ClassMemberKind, CtorParameter, TypeValueReferenceKind} from '../src/host';
 import {TypeScriptReflectionHost} from '../src/typescript';
 import {isNamedClassDeclaration} from '../src/util';
 
@@ -384,11 +385,9 @@ runInEachFileSystem(() => {
         const Target = foo.type.typeName;
         const decl = host.getDeclarationOfIdentifier(Target);
         expect(decl).toEqual({
-          kind: DeclarationKind.Concrete,
           node: targetDecl,
           known: null,
           viaModule: 'absolute',
-          identity: null,
         });
       });
 
@@ -419,8 +418,6 @@ runInEachFileSystem(() => {
           node: targetDecl,
           known: null,
           viaModule: 'absolute',
-          identity: null,
-          kind: DeclarationKind.Concrete
         });
       });
     });

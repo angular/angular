@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationKind, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
 import {typeToValue} from './type_to_value';
 import {isNamedClassDeclaration} from './util';
 
@@ -349,16 +349,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         node: symbol.valueDeclaration,
         known: null,
         viaModule,
-        identity: null,
-        kind: DeclarationKind.Concrete,
       };
     } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       return {
         node: symbol.declarations[0],
         known: null,
         viaModule,
-        identity: null,
-        kind: DeclarationKind.Concrete,
       };
     } else {
       return null;

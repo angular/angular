@@ -10,7 +10,7 @@ import {Expression, LiteralExpr, R3DependencyMetadata, WrappedNodeExpr} from '@a
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
-import {ClassDeclaration, CtorParameter, Decorator, ReflectionHost, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../../reflection';
+import {ClassDeclaration, CtorParameter, ReflectionHost, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind,} from '../../../reflection';
 
 import {isAngularCore, valueReferenceToExpression} from './util';
 
@@ -49,7 +49,7 @@ export function getConstructorDependencies(
       if (name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
-              ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
+              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
               `Unexpected number of arguments to @Inject().`);
         }
         token = new WrappedNodeExpr(dec.args[0]);
@@ -64,7 +64,7 @@ export function getConstructorDependencies(
       } else if (name === 'Attribute') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
-              ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
+              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
               `Unexpected number of arguments to @Attribute().`);
         }
         const attributeName = dec.args[0];
@@ -77,8 +77,7 @@ export function getConstructorDependencies(
         }
       } else {
         throw new FatalDiagnosticError(
-            ErrorCode.DECORATOR_UNEXPECTED, Decorator.nodeForError(dec),
-            `Unexpected decorator ${name} on parameter.`);
+            ErrorCode.DECORATOR_UNEXPECTED, dec.node, `Unexpected decorator ${name} on parameter.`);
       }
     });
 
