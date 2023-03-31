@@ -112,8 +112,8 @@ export class DecorationAnalyzer {
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
-        CycleHandlingStrategy.UseRemoteScoping, this.refEmitter, NOOP_DEPENDENCY_TRACKER,
-        this.injectableRegistry,
+        CycleHandlingStrategy.UseRemoteScoping, this.refEmitter, this.referencesRegistry,
+        NOOP_DEPENDENCY_TRACKER, this.injectableRegistry,
         /* semanticDepGraphUpdater */ null, !!this.compilerOptions.annotateForClosureCompiler,
         NOOP_PERF_RECORDER, this.hostDirectivesResolver),
 
@@ -121,7 +121,7 @@ export class DecorationAnalyzer {
     // clang-format off
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
-        this.fullMetaReader, this.injectableRegistry, this.refEmitter, this.isCore, /* strictCtorDeps */ false,
+        this.fullMetaReader, this.injectableRegistry, this.refEmitter, this.referencesRegistry, this.isCore, /* strictCtorDeps */ false,
         /* semanticDepGraphUpdater */ null,
         !!this.compilerOptions.annotateForClosureCompiler,
         // In ngcc we want to compile undecorated classes with Angular features. As of
