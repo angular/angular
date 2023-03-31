@@ -26,7 +26,7 @@ import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/a
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
-import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, validateHostDirectives, wrapFunctionExpressionsInParens,} from '../../common';
+import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, ReferencesRegistry, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, validateHostDirectives, wrapFunctionExpressionsInParens,} from '../../common';
 import {extractDirectiveMetadata, parseFieldStringArrayValue} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
@@ -56,7 +56,7 @@ export class ComponentDecoratorHandler implements
       private usePoisonedData: boolean, private i18nNormalizeLineEndingsInICUs: boolean,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
       private cycleHandlingStrategy: CycleHandlingStrategy, private refEmitter: ReferenceEmitter,
-      private depTracker: DependencyTracker|null,
+      private referencesRegistry: ReferencesRegistry, private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
@@ -194,8 +194,8 @@ export class ComponentDecoratorHandler implements
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
     const directiveResult = extractDirectiveMetadata(
-        node, decorator, this.reflector, this.evaluator, this.refEmitter, this.isCore, flags,
-        this.annotateForClosureCompiler,
+        node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
+        this.isCore, flags, this.annotateForClosureCompiler,
         this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
