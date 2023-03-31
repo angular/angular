@@ -46,7 +46,7 @@ export function createInjectableDefinitionMap(meta: R3InjectableMetadata):
   definitionMap.set('minVersion', o.literal(MINIMUM_PARTIAL_LINKER_VERSION));
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
   definitionMap.set('ngImport', o.importExpr(R3.core));
-  definitionMap.set('type', meta.internalType);
+  definitionMap.set('type', meta.type.value);
 
   // Only generate providedIn property if it has a non-null value
   if (meta.providedIn !== undefined) {

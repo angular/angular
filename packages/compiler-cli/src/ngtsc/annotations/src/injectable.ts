@@ -166,7 +166,6 @@ function extractInjectableMetadata(
     reflector: ReflectionHost): R3InjectableMetadata {
   const name = clazz.name.text;
   const type = wrapTypeReference(reflector, clazz);
-  const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
@@ -177,7 +176,6 @@ function extractInjectableMetadata(
       name,
       type,
       typeArgumentCount,
-      internalType,
       providedIn: createMayBeForwardRefExpression(new LiteralExpr(null), ForwardRefHandling.None),
     };
   } else if (decorator.args.length === 1) {
@@ -209,7 +207,7 @@ function extractInjectableMetadata(
       deps = depsExpr.elements.map(dep => getDep(dep, reflector));
     }
 
-    const result: R3InjectableMetadata = {name, type, typeArgumentCount, internalType, providedIn};
+    const result: R3InjectableMetadata = {name, type, typeArgumentCount, providedIn};
     if (meta.has('useValue')) {
       result.useValue = getProviderExpression(meta.get('useValue')!, reflector);
     } else if (meta.has('useExisting')) {

@@ -81,7 +81,6 @@ export class PipeDecoratorHandler implements
 
     const name = clazz.name.text;
     const type = wrapTypeReference(this.reflector, clazz);
-    const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(clazz));
 
     if (decorator.args === null) {
       throw new FatalDiagnosticError(
@@ -133,7 +132,6 @@ export class PipeDecoratorHandler implements
         meta: {
           name,
           type,
-          internalType,
           typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0,
           pipeName,
           deps: getValidConstructorDependencies(clazz, this.reflector, this.isCore),

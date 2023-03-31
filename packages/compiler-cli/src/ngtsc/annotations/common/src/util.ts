@@ -351,7 +351,6 @@ export function toFactoryMetadata(
   return {
     name: meta.name,
     type: meta.type,
-    internalType: meta.internalType,
     typeArgumentCount: meta.typeArgumentCount,
     deps: meta.deps,
     target

@@ -40,7 +40,6 @@ export function toR3InjectorMeta<TExpression>(
   return {
     name: typeName,
     type: wrapReference(typeExpr.getOpaque()),
-    internalType: metaObj.getOpaque('type'),
     providers: metaObj.has('providers') ? metaObj.getOpaque('providers') : null,
     imports: metaObj.has('imports') ? metaObj.getArray('imports').map(i => i.getOpaque()) : [],
   };
