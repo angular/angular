@@ -7,6 +7,8 @@
 // @public
 export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
+    INTERPOLATED_SIGNAL_NOT_INVOKED = "interpolatedSignalNotInvoked",
+    // (undocumented)
     INVALID_BANANA_IN_BOX = "invalidBananaInBox",
     // (undocumented)
     MISSING_CONTROL_FLOW_DIRECTIVE = "missingControlFlowDirective",
