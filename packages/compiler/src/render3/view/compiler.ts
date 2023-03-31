@@ -43,7 +43,7 @@ function baseDirectiveFields(
   const selectors = core.parseSelectorToR3Selector(meta.selector);
 
   // e.g. `type: MyDirective`
-  definitionMap.set('type', meta.internalType);
+  definitionMap.set('type', meta.type.value);
 
   // e.g. `selectors: [['', 'someDir', '']]`
   if (selectors.length > 0) {

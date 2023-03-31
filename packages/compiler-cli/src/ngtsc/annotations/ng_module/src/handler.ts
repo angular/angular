@@ -299,13 +299,9 @@ export class NgModuleDecoratorHandler implements
         exports.some(isForwardReference);
 
     const type = wrapTypeReference(this.reflector, node);
-    const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(node));
-    const adjacentType = new WrappedNodeExpr(this.reflector.getAdjacentNameOfClass(node));
 
     const ngModuleMetadata: R3NgModuleMetadata = {
       type,
-      internalType,
-      adjacentType,
       bootstrap,
       declarations,
       publicDeclarationTypes: this.onlyPublishPublicTypings ? exportedDeclarations : null,
@@ -374,14 +370,12 @@ export class NgModuleDecoratorHandler implements
     const injectorMetadata: Omit<R3InjectorMetadata, 'imports'> = {
       name,
       type,
-      internalType,
       providers: wrappedProviders,
     };
 
     const factoryMetadata: R3FactoryMetadata = {
       name,
       type,
-      internalType,
       typeArgumentCount: 0,
       deps: getValidConstructorDependencies(node, this.reflector, this.isCore),
       target: FactoryTarget.NgModule,

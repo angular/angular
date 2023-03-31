@@ -23,15 +23,6 @@ export interface R3PipeMetadata {
   type: R3Reference;
 
   /**
-   * An expression representing the pipe being compiled, intended for use within a class definition
-   * itself.
-   *
-   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside an
-   * IIFE structure that uses a different name internally.
-   */
-  internalType: o.Expression;
-
-  /**
    * Number of generic type parameters of the type itself.
    */
   typeArgumentCount: number;

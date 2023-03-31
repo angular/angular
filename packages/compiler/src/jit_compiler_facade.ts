@@ -39,7 +39,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const metadata: R3PipeMetadata = {
       name: facade.name,
       type: wrapReference(facade.type),
-      internalType: new WrappedNodeExpr(facade.type),
       typeArgumentCount: 0,
       deps: null,
       pipeName: facade.pipeName,
@@ -65,7 +64,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
         {
           name: facade.name,
           type: wrapReference(facade.type),
-          internalType: new WrappedNodeExpr(facade.type),
           typeArgumentCount: facade.typeArgumentCount,
           providedIn: computeProvidedIn(facade.providedIn),
           useClass: convertToProviderExpression(facade, 'useClass'),
@@ -86,7 +84,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
         {
           name: facade.type.name,
           type: wrapReference(facade.type),
-          internalType: new WrappedNodeExpr(facade.type),
           typeArgumentCount: 0,
           providedIn: computeProvidedIn(facade.providedIn),
           useClass: convertToProviderExpression(facade, 'useClass'),
@@ -106,7 +103,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const meta: R3InjectorMetadata = {
       name: facade.name,
       type: wrapReference(facade.type),
-      internalType: new WrappedNodeExpr(facade.type),
       providers: facade.providers && facade.providers.length > 0 ?
           new WrappedNodeExpr(facade.providers) :
           null,
@@ -129,8 +125,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
       facade: R3NgModuleMetadataFacade): any {
     const meta: R3NgModuleMetadata = {
       type: wrapReference(facade.type),
-      internalType: new WrappedNodeExpr(facade.type),
-      adjacentType: new WrappedNodeExpr(facade.type),
       bootstrap: facade.bootstrap.map(wrapReference),
       declarations: facade.declarations.map(wrapReference),
       publicDeclarationTypes: null,  // only needed for types in AOT
@@ -232,7 +226,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const factoryRes = compileFactoryFunction({
       name: meta.name,
       type: wrapReference(meta.type),
-      internalType: new WrappedNodeExpr(meta.type),
       typeArgumentCount: meta.typeArgumentCount,
       deps: convertR3DependencyMetadataArray(meta.deps),
       target: meta.target,
@@ -246,7 +239,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const factoryRes = compileFactoryFunction({
       name: meta.type.name,
       type: wrapReference(meta.type),
-      internalType: new WrappedNodeExpr(meta.type),
       typeArgumentCount: 0,
       deps: Array.isArray(meta.deps) ? meta.deps.map(convertR3DeclareDependencyMetadata) :
                                        meta.deps,
@@ -351,7 +343,6 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     typeArgumentCount: 0,
     typeSourceSpan: facade.typeSourceSpan,
     type: wrapReference(facade.type),
-    internalType: new WrappedNodeExpr(facade.type),
     deps: null,
     host: extractHostBindings(facade.propMetadata, facade.typeSourceSpan, facade.host),
     inputs: {...inputsFromMetadata, ...inputsFromType},
@@ -370,7 +361,6 @@ function convertDeclareDirectiveFacadeToMetadata(
     name: declaration.type.name,
     type: wrapReference(declaration.type),
     typeSourceSpan,
-    internalType: new WrappedNodeExpr(declaration.type),
     selector: declaration.selector ?? null,
     inputs: declaration.inputs ? inputsMappingToInputMetadata(declaration.inputs) : {},
     outputs: declaration.outputs ?? {},
@@ -709,7 +699,6 @@ function convertDeclarePipeFacadeToMetadata(declaration: R3DeclarePipeFacade): R
   return {
     name: declaration.type.name,
     type: wrapReference(declaration.type),
-    internalType: new WrappedNodeExpr(declaration.type),
     typeArgumentCount: 0,
     pipeName: declaration.name,
     deps: null,
@@ -723,7 +712,6 @@ function convertDeclareInjectorFacadeToMetadata(declaration: R3DeclareInjectorFa
   return {
     name: declaration.type.name,
     type: wrapReference(declaration.type),
-    internalType: new WrappedNodeExpr(declaration.type),
     providers: declaration.providers !== undefined && declaration.providers.length > 0 ?
         new WrappedNodeExpr(declaration.providers) :
         null,

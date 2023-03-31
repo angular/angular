@@ -49,7 +49,7 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
 
   // e.g. `type: MyDirective`
-  definitionMap.set('type', meta.internalType);
+  definitionMap.set('type', meta.type.value);
 
   if (meta.isStandalone) {
     definitionMap.set('isStandalone', o.literal(meta.isStandalone));

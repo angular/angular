@@ -25,10 +25,10 @@ export interface Decorator {
    */
   identifier: DecoratorIdentifier;
 
-/**
- * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
- * if the decorator was declared in the same module and not imported.
- */
+  /**
+   * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
+   * if the decorator was declared in the same module and not imported.
+   */
   import: Import|null;
 
   /**
@@ -649,26 +649,6 @@ export interface ReflectionHost {
    * if the value cannot be computed.
    */
   getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null;
-
-  /**
-   * Get a `ts.Identifier` for a given `ClassDeclaration` which can be used to refer to the class
-   * within its definition (such as in static fields).
-   *
-   * This can differ from `clazz.name` when ngcc runs over ES5 code, since the class may have a
-   * different name within its IIFE wrapper than it does externally.
-   */
-  getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier;
-
-  /**
-   * Get a `ts.Identifier` for a given `ClassDeclaration` which can be used to refer to the class
-   * from statements that are "adjacent", and conceptually tightly bound, to the class but not
-   * actually inside it.
-   *
-   * Similar to `getInternalNameOfClass()`, this name can differ from `clazz.name` when ngcc runs
-   * over ES5 code, since these "adjacent" statements need to exist in the IIFE where the class may
-   * have a different name than it does externally.
-   */
-  getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier;
 
   /**
    * Returns `true` if a declaration is exported from the module in which it's defined.

@@ -189,14 +189,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return declaration.initializer || null;
   }
 
-  getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier {
-    return clazz.name;
-  }
-
-  getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier {
-    return clazz.name;
-  }
-
   isStaticallyExported(decl: ts.Node): boolean {
     // First check if there's an `export` modifier directly on the declaration.
     let topLevel = decl;

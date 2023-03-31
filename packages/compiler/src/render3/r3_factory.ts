@@ -8,6 +8,7 @@
 import {InjectFlags} from '../core';
 import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
+
 import {R3CompiledExpression, R3Reference, typeWithParameters} from './util';
 
 
@@ -24,15 +25,6 @@ export interface R3ConstructorFactoryMetadata {
    * An expression representing the interface type being constructed.
    */
   type: R3Reference;
-
-  /**
-   * An expression representing the constructor type, intended for use within a class definition
-   * itself.
-   *
-   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside
-   * an IIFE structure that uses a different name internally.
-   */
-  internalType: o.Expression;
 
   /** Number of arguments for the `type`. */
   typeArgumentCount: number;
@@ -127,7 +119,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   // delegated factory (which is used to create the current type) then this is only the type-to-
   // create parameter (t).
   const typeForCtor = !isDelegatedFactoryMetadata(meta) ?
-      new o.BinaryOperatorExpr(o.BinaryOperator.Or, t, meta.internalType) :
+      new o.BinaryOperatorExpr(o.BinaryOperator.Or, t, meta.type.value) :
       t;
 
   let ctorExpr: o.Expression|null = null;
@@ -177,8 +169,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
     body.push(o.importExpr(R3.invalidFactory).callFn([]).toStmt());
   } else if (baseFactoryVar !== null) {
     // This factory uses a base factory, so call `ɵɵgetInheritedFactory()` to compute it.
-    const getInheritedFactoryCall =
-        o.importExpr(R3.getInheritedFactory).callFn([meta.internalType]);
+    const getInheritedFactoryCall = o.importExpr(R3.getInheritedFactory).callFn([meta.type.value]);
     // Memoize the base factoryFn: `baseFactory || (baseFactory = ɵɵgetInheritedFactory(...))`
     const baseFactory = new o.BinaryOperatorExpr(
         o.BinaryOperator.Or, baseFactoryVar, baseFactoryVar.set(getInheritedFactoryCall));

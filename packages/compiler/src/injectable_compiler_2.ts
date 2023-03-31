@@ -15,7 +15,6 @@ import {DefinitionMap} from './render3/view/util';
 export interface R3InjectableMetadata {
   name: string;
   type: R3Reference;
-  internalType: o.Expression;
   typeArgumentCount: number;
   providedIn: MaybeForwardRefExpression;
   useClass?: MaybeForwardRefExpression;
@@ -32,7 +31,6 @@ export function compileInjectable(
   const factoryMeta: R3FactoryMetadata = {
     name: meta.name,
     type: meta.type,
-    internalType: meta.internalType,
     typeArgumentCount: meta.typeArgumentCount,
     deps: [],
     target: FactoryTarget.Injectable,
@@ -46,7 +44,7 @@ export function compileInjectable(
     // A special case exists for useClass: Type where Type is the injectable type itself and no
     // deps are specified, in which case 'useClass' is effectively ignored.
 
-    const useClassOnSelf = meta.useClass.expression.isEquivalent(meta.internalType);
+    const useClassOnSelf = meta.useClass.expression.isEquivalent(meta.type.value);
     let deps: R3DependencyMetadata[]|undefined = undefined;
     if (meta.deps !== undefined) {
       deps = meta.deps;
@@ -102,12 +100,12 @@ export function compileInjectable(
     result = {
       statements: [],
       expression: delegateToFactory(
-          meta.type.value as o.WrappedNodeExpr<any>, meta.internalType as o.WrappedNodeExpr<any>,
+          meta.type.value as o.WrappedNodeExpr<any>, meta.type.value as o.WrappedNodeExpr<any>,
           resolveForwardRefs)
     };
   }
 
-  const token = meta.internalType;
+  const token = meta.type.value;
 
   const injectableProps =
       new DefinitionMap<{token: o.Expression, factory: o.Expression, providedIn: o.Expression}>();
@@ -135,31 +133,31 @@ export function createInjectableType(meta: R3InjectableMetadata) {
 }
 
 function delegateToFactory(
-    type: o.WrappedNodeExpr<any>, internalType: o.WrappedNodeExpr<any>,
+    type: o.WrappedNodeExpr<any>, useType: o.WrappedNodeExpr<any>,
     unwrapForwardRefs: boolean): o.Expression {
-  if (type.node === internalType.node) {
+  if (type.node === useType.node) {
     // The types are the same, so we can simply delegate directly to the type's factory.
     // ```
     // factory: type.ɵfac
     // ```
-    return internalType.prop('ɵfac');
+    return useType.prop('ɵfac');
   }
 
   if (!unwrapForwardRefs) {
     // The type is not wrapped in a `forwardRef()`, so we create a simple factory function that
     // accepts a sub-type as an argument.
     // ```
-    // factory: function(t) { return internalType.ɵfac(t); }
+    // factory: function(t) { return useType.ɵfac(t); }
     // ```
-    return createFactoryFunction(internalType);
+    return createFactoryFunction(useType);
   }
 
-  // The internalType is actually wrapped in a `forwardRef()` so we need to resolve that before
+  // The useType is actually wrapped in a `forwardRef()` so we need to resolve that before
   // calling its factory.
   // ```
   // factory: function(t) { return core.resolveForwardRef(type).ɵfac(t); }
   // ```
-  const unwrappedType = o.importExpr(Identifiers.resolveForwardRef).callFn([internalType]);
+  const unwrappedType = o.importExpr(Identifiers.resolveForwardRef).callFn([useType]);
   return createFactoryFunction(unwrappedType);
 }
 

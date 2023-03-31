@@ -183,7 +183,6 @@ export function extractDirectiveMetadata(
   const usesInheritance = reflector.hasBaseClass(clazz);
   const sourceFile = clazz.getSourceFile();
   const type = wrapTypeReference(reflector, clazz);
-  const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
   const rawHostDirectives = directive.get('hostDirectives') || null;
   const hostDirectives =
       rawHostDirectives === null ? null : extractHostDirectives(rawHostDirectives, evaluator);
@@ -202,7 +201,6 @@ export function extractDirectiveMetadata(
     selector,
     fullInheritance: !!(flags & HandlerFlags.FULL_INHERITANCE),
     type,
-    internalType,
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: createSourceSpan(clazz.name),
     usesInheritance,
