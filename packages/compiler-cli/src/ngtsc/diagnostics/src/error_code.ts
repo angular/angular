@@ -378,6 +378,16 @@ export enum ErrorCode {
   SKIP_HYDRATION_NOT_STATIC = 8108,
 
   /**
+   * Signal functions should be invoked when interpolated in templates.
+   *
+   * For example:
+   * ```
+   * {{ mySignal() }}
+   * ```
+   */
+  INTERPOLATED_SIGNAL_NOT_INVOKED = 8109,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
