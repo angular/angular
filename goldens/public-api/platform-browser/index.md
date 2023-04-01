@@ -9,6 +9,7 @@ import { ApplicationRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { DebugElement } from '@angular/core';
 import { DebugNode } from '@angular/core';
+import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
@@ -143,6 +144,17 @@ export class HammerModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<HammerModule, never, never, never>;
 }
 
+// @public
+export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
+    // (undocumented)
+    ɵkind: FeatureKind;
+    // (undocumented)
+    ɵproviders: Provider[];
+}
+
+// @public
+export type HydrationFeatures = NoDomReuseFeature;
+
 // @public @deprecated
 export const makeStateKey: typeof makeStateKey_2;
 
@@ -178,7 +190,13 @@ export type MetaDefinition = {
 };
 
 // @public
+export type NoDomReuseFeature = HydrationFeature<HydrationFeatureKind.NoDomReuseFeature>;
+
+// @public
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
+
+// @public
+export function provideClientHydration(...features: HydrationFeatures[]): EnvironmentProviders;
 
 // @public
 export function provideProtractorTestingSupport(): Provider[];
@@ -231,6 +249,9 @@ export const TransferState: {
 
 // @public (undocumented)
 export const VERSION: Version;
+
+// @public
+export function withoutDomReuse(): NoDomReuseFeature;
 
 // (No @packageDocumentation comment for this package)
 

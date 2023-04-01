@@ -74,6 +74,7 @@ function printHydrationStats(console: Console) {
   const message = `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
       `and ${ngDevMode!.hydratedNodes} node(s), ` +
       `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
+      `Note: this feature is in Developer Preview mode. ` +
       `Learn more at https://angular.io/guides/hydration.`;
   // tslint:disable-next-line:no-console
   console.log(message);
@@ -92,47 +93,15 @@ function whenStable(
 
 /**
  * Returns a set of providers required to setup hydration support
- * for an application that is server side rendered.
- *
- * ## NgModule-based bootstrap
- *
- * You can add the function call to the root AppModule of an application:
- * ```
- * import {provideHydrationSupport} from '@angular/core';
- *
- * @NgModule({
- *   providers: [
- *     // ... other providers ...
- *     provideHydrationSupport()
- *   ],
- *   declarations: [AppComponent],
- *   bootstrap: [AppComponent]
- * })
- * class AppModule {}
- * ```
- *
- * ## Standalone-based bootstrap
- *
- * Add the function to the `bootstrapApplication` call:
- * ```
- * import {provideHydrationSupport} from '@angular/core';
- *
- * bootstrapApplication(RootComponent, {
- *   providers: [
- *     // ... other providers ...
- *     provideHydrationSupport()
- *   ]
- * });
- * ```
+ * for an application that is server side rendered. This function is
+ * included into the `provideClientHydration` public API function from
+ * the `platform-browser` package.
  *
  * The function sets up an internal flag that would be recognized during
  * the server side rendering time as well, so there is no need to
  * configure or change anything in NgUniversal to enable the feature.
- *
- * @publicApi
- * @developerPreview
  */
-export function provideHydrationSupport(): EnvironmentProviders {
+export function withDomHydration(): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
       provide: ENVIRONMENT_INITIALIZER,

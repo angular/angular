@@ -16,7 +16,7 @@ export {INJECTOR_SCOPE as ɵINJECTOR_SCOPE} from './di/scope';
 export {XSS_SECURITY_URL as ɵXSS_SECURITY_URL} from './error_details_base_url';
 export {formatRuntimeError as ɵformatRuntimeError, RuntimeError as ɵRuntimeError} from './errors';
 export {annotateForHydration as ɵannotateForHydration} from './hydration/annotate';
-export {provideHydrationSupport as ɵprovideHydrationSupport} from './hydration/api';
+export {withDomHydration as ɵwithDomHydration} from './hydration/api';
 export {IS_HYDRATION_FEATURE_ENABLED as ɵIS_HYDRATION_FEATURE_ENABLED} from './hydration/tokens';
 export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleDataIndex, findLocaleData as ɵfindLocaleData, getLocaleCurrencyCode as ɵgetLocaleCurrencyCode, getLocalePluralCase as ɵgetLocalePluralCase, LocaleDataIndex as ɵLocaleDataIndex, registerLocaleData as ɵregisterLocaleData, unregisterAllLocaleData as ɵunregisterLocaleData} from './i18n/locale_data_api';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';

@@ -10,13 +10,13 @@ import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideHydrationSupport as provideHydrationSupport, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {unescapeTransferStateContent} from '@angular/core/src/transfer_state';
 import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication} from '@angular/platform-browser';
+import {bootstrapApplication, HydrationFeatures, provideClientHydration, withoutDomReuse} from '@angular/platform-browser';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {first} from 'rxjs/operators';
 
@@ -129,6 +129,25 @@ function verifyAllNodesClaimedForHydration(el: HTMLElement, exceptions: HTMLElem
 }
 
 /**
+ * Walks over DOM nodes starting from a given node and make sure
+ * those nodes were not annotated as "claimed" by hydration.
+ * This helper function is needed to verify that the non-destructive
+ * hydration feature can be turned off.
+ */
+function verifyNoNodesWereClaimedForHydration(el: HTMLElement) {
+  if ((el as any).__claimed) {
+    fail(
+        'Unexpected state: the following node was hydrated, when the test ' +
+        'expects the node to be re-created instead: ' + el.outerHTML);
+  }
+  let current = el.firstChild;
+  while (current) {
+    verifyNoNodesWereClaimedForHydration(current as HTMLElement);
+    current = current.nextSibling;
+  }
+}
+
+/**
  * Verifies whether a console has a log entry that contains a given message.
  */
 function verifyHasLog(appRef: ApplicationRef, message: string) {
@@ -137,6 +156,17 @@ function verifyHasLog(appRef: ApplicationRef, message: string) {
       `Logs content: ${JSON.stringify(console.logs)}`;
   expect(console.logs.some(log => log.includes(message))).withContext(context).toBe(true);
 }
+
+/**
+ * Verifies that there is no message with a particular content in a console.
+ */
+function verifyHasNoLog(appRef: ApplicationRef, message: string) {
+  const console = appRef.injector.get(Console) as DebugConsole;
+  const context = `Expected '${message}' to be present in the log, but it was not found. ` +
+      `Logs content: ${JSON.stringify(console.logs)}`;
+  expect(console.logs.some(log => log.includes(message))).withContext(context).toBe(false);
+}
+
 
 /**
  * Reset TView, so that we re-enter the first create pass as
@@ -215,12 +245,13 @@ describe('platform-server integration', () => {
      * @returns a promise containing the server rendered app as a string
      */
     async function ssr(
-        component: Type<unknown>, doc?: string, envProviders?: Provider[]): Promise<string> {
+        component: Type<unknown>, doc?: string, envProviders?: Provider[],
+        hydrationFeatures?: HydrationFeatures[]): Promise<string> {
       const defaultHtml = '<html><head></head><body><app></app></body></html>';
       const providers = [
         ...(envProviders ?? []),
         provideServerRendering(),
-        provideHydrationSupport(),
+        provideClientHydration(...(hydrationFeatures || [])),
       ];
 
       const bootstrap = () => bootstrapApplication(component, {providers});
@@ -239,8 +270,9 @@ describe('platform-server integration', () => {
      * @param envProviders the environment providers
      * @returns a promise with the application ref
      */
-    async function hydrate(html: string, component: Type<unknown>, envProviders?: Provider[]):
-        Promise<ApplicationRef> {
+    async function hydrate(
+        html: string, component: Type<unknown>, envProviders?: Provider[],
+        hydrationFeatures?: HydrationFeatures[]): Promise<ApplicationRef> {
       // Destroy existing platform, a new one will be created later by the `bootstrapApplication`.
       destroyPlatform();
 
@@ -257,11 +289,48 @@ describe('platform-server integration', () => {
       const providers = [
         ...(envProviders ?? []),
         {provide: DOCUMENT, useFactory: _document, deps: []},
-        provideHydrationSupport(),
+        provideClientHydration(...(hydrationFeatures || [])),
       ];
 
       return bootstrapApplication(component, {providers});
     }
+
+    describe('public API', () => {
+      it('should allow to disable DOM hydration using `withoutDomReuse` feature', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            <header>Header</header>
+            <main>This is hydrated content in the main element.</main>
+            <footer>Footer</footer>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html =
+            await ssr(SimpleComponent, undefined, [withDebugConsole()], [withoutDomReuse()]);
+        const ssrContents = getAppContents(html);
+
+        // There should be no `ngh` annotations.
+        expect(ssrContents).not.toContain(`<app ${NGH_ATTR_NAME}`);
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef =
+            await hydrate(html, SimpleComponent, [withDebugConsole()], [withoutDomReuse()]);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        // Make sure there is no hydration-related message in a console.
+        verifyHasNoLog(appRef, 'Angular hydrated');
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyNoNodesWereClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+    });
 
     describe('annotations', () => {
       it('should add hydration annotations to component host nodes during ssr', async () => {
