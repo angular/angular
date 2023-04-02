@@ -21,6 +21,8 @@ jasmine_node_test(
         "//packages/core/schematics:migrations.json",
         "//packages/core/schematics/migrations/block-template-entities",
         "//packages/core/schematics/migrations/block-template-entities:bundle",
+        "//packages/core/schematics/migrations/compiler-options",
+        "//packages/core/schematics/migrations/compiler-options:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration",
         "//packages/core/schematics/ng-generate/standalone-migration:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration:static_files",
