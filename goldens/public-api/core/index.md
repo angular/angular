@@ -211,10 +211,8 @@ export abstract class CompilerFactory {
 
 // @public
 export type CompilerOptions = {
-    useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
     providers?: StaticProvider[];
-    missingTranslation?: MissingTranslationStrategy;
     preserveWhitespaces?: boolean;
 };
 
