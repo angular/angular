@@ -38,7 +38,7 @@ describe('EventsService', () => {
 
   it('should handle a failed request for `events.json`', () => {
     const request = httpMock.expectOne('generated/events.json');
-    request.error(new ErrorEvent('404'));
+    request.error(new ProgressEvent('404'));
     expect(mockLogger.output.error).toEqual([
       [jasmine.any(Error)]
     ]);
@@ -47,7 +47,7 @@ describe('EventsService', () => {
 
   it('should return an empty array on a failed request for `events.json`', done => {
     const request = httpMock.expectOne('generated/events.json');
-    request.error(new ErrorEvent('404'));
+    request.error(new ProgressEvent('404'));
     eventsService.events.subscribe(results => {
       expect(results).toEqual([]);
       done();

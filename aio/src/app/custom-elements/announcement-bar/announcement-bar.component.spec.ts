@@ -76,7 +76,7 @@ describe('AnnouncementBarComponent', () => {
     it('should handle a failed request for `announcements.json`', () => {
       component.ngOnInit();
       const request = httpMock.expectOne('generated/announcements.json');
-      request.error(new ErrorEvent('404'));
+      request.error(new ProgressEvent('404'));
       expect(component.announcement).toBeUndefined();
       expect(mockLogger.output.error).toEqual([
         [jasmine.any(Error)]
