@@ -5,11 +5,21 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
+        "//packages/core/schematics/migrations/compiler-options",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
         "@npm//typescript",
     ],
+)
+
+esbuild(
+    name = "compiler_options_cjs",
+    entry_point = ":compilerOptionsRule.ts",
+    format = "cjs",
+    output = "compilerOptionsCjsRule.js",
+    platform = "node",
+    deps = [":google3"],
 )
 
 esbuild(
