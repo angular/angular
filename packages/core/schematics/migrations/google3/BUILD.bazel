@@ -5,12 +5,22 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
+        "//packages/core/schematics/migrations/browser-transfer-state-module",
         "//packages/core/schematics/migrations/guard-and-resolve-interfaces",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
         "@npm//typescript",
     ],
+)
+
+esbuild(
+    name = "browser_transfer_state_module_cjs",
+    entry_point = ":browserTransferStateModuleRule.ts",
+    format = "cjs",
+    output = "browserTransferStateModuleCjsRule.js",
+    platform = "node",
+    deps = [":google3"],
 )
 
 esbuild(

@@ -5,6 +5,11 @@
       "description": "As of Angular v16, the `moduleId` property of `@Component` is deprecated as it no longer has any effect.",
       "factory": "./migrations/remove-module-id/bundle"
     },
+    "migration-v16-browser-transfer-state-module": {
+      "version": "16.0.0",
+      "description": "Since Angular version 14.1, TransferState class is available for injection without importing BrowserTransferStateModule. This module is now useless and can be removed.",
+      "factory": "./migrations/browser-transfer-state-module/bundle"
+    },
     "migration-v16-guard-and-resolve-interfaces": {
       "version": "16.0.0",
       "description": "In Angular version 15.2, the guard and resolver interfaces (CanActivate, Resolve, etc) were deprecated. This migration removes imports and 'implements' clauses that contain them.",
