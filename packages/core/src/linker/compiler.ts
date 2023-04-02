@@ -120,16 +120,8 @@ export class Compiler {
  * @publicApi
  */
 export type CompilerOptions = {
-  /**
-   * @deprecated not used at all in Ivy, providing this config option has no effect.
-   */
-  useJit?: boolean,
   defaultEncapsulation?: ViewEncapsulation,
   providers?: StaticProvider[],
-  /**
-   * @deprecated not used at all in Ivy, providing this config option has no effect.
-   */
-  missingTranslation?: MissingTranslationStrategy,
   preserveWhitespaces?: boolean,
 };
 
