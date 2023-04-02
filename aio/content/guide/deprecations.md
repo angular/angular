@@ -92,7 +92,6 @@ v16 - v19
 | `@angular/core`                     | [`ComponentFactory`](#core)                                                                                | v13           | v16         |
 | `@angular/core`                     | [`ComponentFactoryResolver`](#core)                                                                        | v13           | v16         |
 | `@angular/core`                     | [`CompilerOptions.useJit and CompilerOptions.missingTranslation config options`](#core)                    | v13           | v16         |
-| `@angular/platform-browser`         | [`BrowserTransferStateModule`](#platform-browser)                                                          | v14           | v16         |
 | `@angular/platform-browser-dynamic` | [`JitCompilerFactory`](#platform-browser-dynamic)                                                          | v13           | v16         |
 | `@angular/platform-browser-dynamic` | [`RESOURCE_CACHE_PROVIDER`](#platform-browser-dynamic)                                                     | v13           | v16         |
 | `@angular/platform-server`          | [`ServerTransferStateModule`](#platform-server)                                                            | v14           | v16         |
@@ -205,7 +204,6 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 
 | API                                                              | Replacement                                        | Deprecation announced | Details |
 |:---                                                              |:---                                                |:---                   |:---     |
-| [`BrowserTransferStateModule`](api/platform-browser/BrowserTransferStateModule) | No replacement needed.  | v14.1                   | The `TransferState` class is available for injection without importing additional modules on the client side of a server-rendered application. |
 | [`BrowserModule.withServerTransition`](api/platform-browser/BrowserModule#withservertransition) | No replacement needed.  | v16.0                   | The `APP_ID`token should be used instead to set the application ID. |
 | `makeStateKey`, `StateKey` and `TransferState` | Import from `@angular/core`.  | v16.0                   | Same behavior, but exported from a different package. |
 <a id="platform-browser-dynamic"></a>
