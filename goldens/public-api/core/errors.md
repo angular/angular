@@ -43,9 +43,9 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HYDRATION_I18N_NOT_YET_SUPPORTED = 518,
     // (undocumented)
-    HYDRATION_MISSING_NODE = 502,
+    HYDRATION_MISSING_NODE = -502,
     // (undocumented)
-    HYDRATION_MISSING_SIBLINGS = 501,
+    HYDRATION_MISSING_SIBLINGS = -501,
     // (undocumented)
     HYDRATION_NODE_MISMATCH = -500,
     // (undocumented)

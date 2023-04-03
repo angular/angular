@@ -61,8 +61,8 @@ export const enum RuntimeErrorCode {
 
   // Hydration Errors
   HYDRATION_NODE_MISMATCH = -500,
-  HYDRATION_MISSING_SIBLINGS = 501,
-  HYDRATION_MISSING_NODE = 502,
+  HYDRATION_MISSING_SIBLINGS = -501,
+  HYDRATION_MISSING_NODE = -502,
   UNSUPPORTED_PROJECTION_DOM_NODES = 503,
   INVALID_SKIP_HYDRATION_HOST = 504,
   // Temporary error code for hydration while i18n is not supported
