@@ -6,20 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵAnimationEngine} from '@angular/animations/browser';
 import {DOCUMENT, PlatformLocation, ViewportScroller, ɵgetDOM as getDOM, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
-import {createPlatformFactory, Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, StaticProvider, Testability, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS, ɵsetDocument, ɵTESTABILITY as TESTABILITY} from '@angular/core';
+import {createPlatformFactory, Injector, NgModule, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, StaticProvider, Testability, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS, ɵsetDocument, ɵTESTABILITY as TESTABILITY} from '@angular/core';
 import {BrowserModule, EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
-import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 import {DominoAdapter, parseDocument} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
 import {PlatformState} from './platform_state';
 import {ServerEventManagerPlugin} from './server_events';
-import {ServerRendererFactory2} from './server_renderer';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {TRANSFER_STATE_SERIALIZATION_PROVIDERS} from './transfer_state';
 
@@ -42,18 +40,7 @@ function initDominoAdapter() {
   };
 }
 
-export function instantiateServerRendererFactory(
-    renderer: RendererFactory2, engine: ɵAnimationEngine, zone: NgZone) {
-  return new ɵAnimationRendererFactory(renderer, engine, zone);
-}
-
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
-  ServerRendererFactory2,
-  {
-    provide: RendererFactory2,
-    useFactory: instantiateServerRendererFactory,
-    deps: [ServerRendererFactory2, ɵAnimationEngine, NgZone]
-  },
   {provide: EVENT_MANAGER_PLUGINS, multi: true, useClass: ServerEventManagerPlugin},
 ];
 

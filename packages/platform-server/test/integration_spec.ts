@@ -709,7 +709,7 @@ describe('platform-server integration', () => {
     let doc: string;
     let called: boolean;
     let expectedOutput =
-        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!<h1 textcontent="fine">fine</h1></app></body></html>';
+        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!<h1>fine</h1></app></body></html>';
 
     beforeEach(() => {
       // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -735,7 +735,7 @@ describe('platform-server integration', () => {
                // `renderModule` or `renderApplication` functions are not used here.
                const expectedOutput =
                    '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                   'Works!<h1 textcontent="fine">fine</h1></app></body></html>';
+                   'Works!<h1>fine</h1></app></body></html>';
 
                expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
                platform.destroy();
@@ -779,7 +779,7 @@ describe('platform-server integration', () => {
                  expect(output).toBe(
                      '<html><head><title>fakeTitle</title></head>' +
                      '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-                     'Works!<h1 textcontent="fine">fine</h1></app>' +
+                     'Works!<h1>fine</h1></app>' +
                      '<!--test marker--></body></html>');
                  called = true;
                })
@@ -809,9 +809,9 @@ describe('platform-server integration', () => {
            bootstrap.then(output => {
              expect(output).toContain('Works!');
              expect(output).toContain('ng-trigger-myAnimation');
-             expect(output).toContain('opacity:1;');
-             expect(output).toContain('transform:translate3d(0, 0, 0);');
-             expect(output).toContain('font-weight:bold;');
+             expect(output).toContain('opacity: 1;');
+             expect(output).toContain('transform: translate3d(0, 0, 0);');
+             expect(output).toContain('font-weight: bold;');
              called = true;
            });
          }));
