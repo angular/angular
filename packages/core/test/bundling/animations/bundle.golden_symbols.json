@@ -879,7 +879,7 @@
     "name": "diPublicInInjector"
   },
   {
-    "name": "dominoElementHasProperty"
+    "name": "documentElement"
   },
   {
     "name": "empty"
