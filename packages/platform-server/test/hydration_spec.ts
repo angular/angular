@@ -149,9 +149,9 @@ function resetTViewsFor(...types: Type<unknown>[]) {
   }
 }
 
-function getHydrationInfoFromTransferState(input: string): {} {
-  const rawContents = input.match(/<script[^>]+>(.*?)<\/script>/)![1];
-  return unescapeTransferStateContent(rawContents);
+function getHydrationInfoFromTransferState(input: string): string {
+  const rawContents = input.match(/<script[^>]+>(.*?)<\/script>/)?.[1];
+  return unescapeTransferStateContent(rawContents ?? '');
 }
 
 function withNoopErrorHandler() {
@@ -1649,6 +1649,44 @@ describe('platform-server integration', () => {
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
+
+      it('should skip hydrating elements when host element ' +
+             'has the ngSkipHydration attribute',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `
+            <main>Main content</main>
+          `,
+           })
+           class SimpleComponent {
+           }
+
+           const indexHtml = '<html><head></head><body>' +
+               '<app ngSkipHydration></app>' +
+               '</body></html>';
+           const html = await ssr(SimpleComponent, indexHtml);
+           const ssrContents = getAppContents(html);
+
+           // No `ngh` attribute in the <app> element.
+           expect(ssrContents).toContain('<app ngskiphydration=""><main>Main content</main></app>');
+
+           // There should be no transfer state information present, since we skip
+           // hydration at the root element level.
+           const transferState = getHydrationInfoFromTransferState(html);
+           expect(!!transferState).toBe(false);
+
+           resetTViewsFor(SimpleComponent);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           verifyAllNodesClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
 
       it('should hydrate when the value of an attribute is "ngskiphydration"', async () => {
         @Component({

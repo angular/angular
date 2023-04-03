@@ -107,7 +107,9 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
     // an embedded view (not a component view).
     if (lView !== null) {
       const hostElement = lView[HOST];
-      if (hostElement) {
+      // Root elements might also be annotated with the `ngSkipHydration` attribute,
+      // check if it's present before starting the serialization process.
+      if (hostElement && !(hostElement as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
         const context: HydrationContext = {
           serializedViewCollection,
           corruptedTextNodes,
