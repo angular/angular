@@ -66,6 +66,11 @@ The command creates the following folder structure.
         </div>
         <div class='children'>
             <div class='file'>
+              app.module.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; client-side application module
+            </div>
+        </div>
+        <div class='children'>
+            <div class='file'>
               app.server.module.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; server-side application module
             </div>
         </div>
@@ -86,6 +91,8 @@ The command creates the following folder structure.
         </div>
     </div>
 </div>
+
+Open app.module.ts and add an import at the top to `provideClientHydration` from `angular/platform-browser` . Then add `provideClientHydration` to your provider list in the app module. See <a href="#hydration">Hydration</a> for more details on what hydration is and how it works in Angular.
 
 The files marked with `*` are new and not in the original tutorial sample.
 
@@ -124,6 +131,22 @@ You can simulate a slower network to see the transition more clearly as follows:
 1.  Try one of the "3G" speeds.
 
 The server-rendered application still launches quickly but the full client application might take seconds to load.
+
+<a id="hydration"></a>
+
+## Hydration
+
+### What is hydration?
+
+Hydration is the process that restores the server side rendered application on the client. This includes things like reusing the server rendered DOM structures, persisting the application state, transferring application data that was retrieved already by the server, and other processes.
+
+### Why use hydration?
+
+Hydration improves application performance by avoiding extra work to re-create DOM nodes. Instead, Angular tries to match existing DOM elements to the applications structure at runtime and reuses DOM nodes when possible. This results in a performance improvement that can be measured using Core Web Vitals (CWV) statistics, such as reducing the First Input Delay (FID) and Largest Contentful Paint (LCP), as well as Cumulative Layout Shift (CLS). Improving these numbers also affects things like SEO performance.
+
+Without hydration enabled, server side rendered applications may see a flicker as the page initially loads due to that re-rendering that occurs. Angular will destroy and re-render the application, which will also negatively impact all of the Core Web Vitals mentioned. The re-rendering means an additional delay for every one of the statistics, and a potential for layout shift with all of the imagery. Hydration prevents that flickering from happening.
+
+See the [hydration guide](guides/hydration) for additional information.
 
 <a id="why-do-it"></a>
 
