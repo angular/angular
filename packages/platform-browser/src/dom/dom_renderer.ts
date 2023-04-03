@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵgetDOM as getDOM} from '@angular/common';
-import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, OnDestroy, Optional, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {DOCUMENT, isPlatformServer, ɵgetDOM as getDOM} from '@angular/common';
+import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, NgZone, OnDestroy, PLATFORM_ID, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {SharedStylesHost} from './shared_styles_host';
@@ -57,43 +57,26 @@ export function shimStylesContent(compId: string, styles: string[]): string[] {
   return styles.map(s => s.replace(COMPONENT_REGEX, compId));
 }
 
-function decoratePreventDefault(eventHandler: Function): Function {
-  // `DebugNode.triggerEventHandler` needs to know if the listener was created with
-  // decoratePreventDefault or is a listener added outside the Angular context so it can handle the
-  // two differently. In the first case, the special '__ngUnwrap__' token is passed to the unwrap
-  // the listener (see below).
-  return (event: any) => {
-    // Ivy uses '__ngUnwrap__' as a special token that allows us to unwrap the function
-    // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`. The debug_node
-    // can inspect the listener toString contents for the existence of this special token. Because
-    // the token is a string literal, it is ensured to not be modified by compiled code.
-    if (event === '__ngUnwrap__') {
-      return eventHandler;
-    }
-
-    const allowDefaultBehavior = eventHandler(event);
-    if (allowDefaultBehavior === false) {
-      // TODO(tbosch): move preventDefault into event plugins...
-      event.preventDefault();
-      event.returnValue = false;
-    }
-
-    return undefined;
-  };
-}
-
 @Injectable()
 export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
-  private rendererByCompId =
+  private readonly rendererByCompId =
       new Map<string, EmulatedEncapsulationDomRenderer2|NoneEncapsulationDomRenderer>();
-  private defaultRenderer: Renderer2;
+  private readonly defaultRenderer: Renderer2;
+  private readonly platformIsServer: boolean;
 
   constructor(
-      private eventManager: EventManager, private sharedStylesHost: SharedStylesHost,
-      @Inject(APP_ID) private appId: string,
+      private readonly eventManager: EventManager,
+      private readonly sharedStylesHost: SharedStylesHost,
+      @Inject(APP_ID) private readonly appId: string,
       @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestory: boolean,
-      @Inject(CSP_NONCE) @Optional() private nonce?: string|null) {
-    this.defaultRenderer = new DefaultDomRenderer2(eventManager);
+      @Inject(DOCUMENT) private readonly doc: Document,
+      @Inject(PLATFORM_ID) readonly platformId: Object,
+      readonly ngZone: NgZone,
+      @Inject(CSP_NONCE) private readonly nonce: string|null = null,
+  ) {
+    this.platformIsServer = isPlatformServer(platformId);
+    this.defaultRenderer =
+        new DefaultDomRenderer2(eventManager, doc, ngZone, this.platformIsServer);
   }
 
   createRenderer(element: any, type: RendererType2|null): Renderer2 {
@@ -101,8 +84,12 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       return this.defaultRenderer;
     }
 
-    const renderer = this.getOrCreateRenderer(element, type);
+    if (this.platformIsServer && type.encapsulation === ViewEncapsulation.ShadowDom) {
+      // Domino does not support shadow DOM.
+      type = {...type, encapsulation: ViewEncapsulation.Emulated};
+    }
 
+    const renderer = this.getOrCreateRenderer(element, type);
     // Renderers have different logic due to different encapsulation behaviours.
     // Ex: for emulated, an attribute is added to the element.
     if (renderer instanceof EmulatedEncapsulationDomRenderer2) {
@@ -119,20 +106,27 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     let renderer = rendererByCompId.get(type.id);
 
     if (!renderer) {
+      const doc = this.doc;
+      const ngZone = this.ngZone;
       const eventManager = this.eventManager;
       const sharedStylesHost = this.sharedStylesHost;
       const removeStylesOnCompDestory = this.removeStylesOnCompDestory;
+      const platformIsServer = this.platformIsServer;
 
       switch (type.encapsulation) {
         case ViewEncapsulation.Emulated:
           renderer = new EmulatedEncapsulationDomRenderer2(
-              eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestory);
+              eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestory, doc,
+              ngZone, platformIsServer);
           break;
         case ViewEncapsulation.ShadowDom:
-          return new ShadowDomRenderer(eventManager, sharedStylesHost, element, type, this.nonce);
+          return new ShadowDomRenderer(
+              eventManager, sharedStylesHost, element, type, doc, ngZone, this.nonce,
+              platformIsServer);
         default:
           renderer = new NoneEncapsulationDomRenderer(
-              eventManager, sharedStylesHost, type, removeStylesOnCompDestory);
+              eventManager, sharedStylesHost, type, removeStylesOnCompDestory, doc, ngZone,
+              platformIsServer);
           break;
       }
 
@@ -154,7 +148,9 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
 class DefaultDomRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
-  constructor(private eventManager: EventManager) {}
+  constructor(
+      private readonly eventManager: EventManager, private readonly doc: Document,
+      private readonly ngZone: NgZone, private readonly platformIsServer: boolean) {}
 
   destroy(): void {}
 
@@ -171,18 +167,18 @@ class DefaultDomRenderer2 implements Renderer2 {
       // Related issues:
       // https://github.com/angular/angular/issues/44028
       // https://github.com/angular/angular/issues/44883
-      return document.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
+      return this.doc.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
     }
 
-    return document.createElement(name);
+    return this.doc.createElement(name);
   }
 
   createComment(value: string): any {
-    return document.createComment(value);
+    return this.doc.createComment(value);
   }
 
   createText(value: string): any {
-    return document.createTextNode(value);
+    return this.doc.createTextNode(value);
   }
 
   appendChild(parent: any, newChild: any): void {
@@ -204,7 +200,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
-    let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
+    let el: any = typeof selectorOrNode === 'string' ? this.doc.querySelector(selectorOrNode) :
                                                        selectorOrNode;
     if (!el) {
       throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
@@ -289,14 +285,43 @@ class DefaultDomRenderer2 implements Renderer2 {
       () => void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
-      target = getDOM().getGlobalEventTarget(document, target);
+      target = getDOM().getGlobalEventTarget(this.doc, target);
       if (!target) {
         throw new Error(`Unsupported event target ${target} for event ${event}`);
       }
     }
 
     return this.eventManager.addEventListener(
-               target, event, decoratePreventDefault(callback)) as () => void;
+               target, event, this.decoratePreventDefault(callback)) as VoidFunction;
+  }
+
+  private decoratePreventDefault(eventHandler: Function): Function {
+    // `DebugNode.triggerEventHandler` needs to know if the listener was created with
+    // decoratePreventDefault or is a listener added outside the Angular context so it can handle
+    // the two differently. In the first case, the special '__ngUnwrap__' token is passed to the
+    // unwrap the listener (see below).
+    return (event: any) => {
+      // Ivy uses '__ngUnwrap__' as a special token that allows us to unwrap the function
+      // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`. The
+      // debug_node can inspect the listener toString contents for the existence of this special
+      // token. Because the token is a string literal, it is ensured to not be modified by compiled
+      // code.
+      if (event === '__ngUnwrap__') {
+        return eventHandler;
+      }
+
+      // Run the event handler inside the ngZone because event handlers are not patched
+      // by Zone on the server. This is required only for tests.
+      const allowDefaultBehavior = this.platformIsServer ?
+          this.ngZone.runGuarded(() => eventHandler(event)) :
+          eventHandler(event);
+      if (allowDefaultBehavior === false) {
+        event.preventDefault();
+        event.returnValue = false;
+      }
+
+      return undefined;
+    };
   }
 }
 
@@ -319,9 +344,16 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   private shadowRoot: any;
 
   constructor(
-      eventManager: EventManager, private sharedStylesHost: SharedStylesHost, private hostEl: any,
-      component: RendererType2, nonce?: string|null) {
-    super(eventManager);
+      eventManager: EventManager,
+      private sharedStylesHost: SharedStylesHost,
+      private hostEl: any,
+      component: RendererType2,
+      doc: Document,
+      ngZone: NgZone,
+      nonce: string|null,
+      platformIsServer: boolean,
+  ) {
+    super(eventManager, doc, ngZone, platformIsServer);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     this.sharedStylesHost.addHost(this.shadowRoot);
@@ -371,10 +403,13 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
       private readonly sharedStylesHost: SharedStylesHost,
       component: RendererType2,
       private removeStylesOnCompDestory: boolean,
-      compId = component.id,
+      doc: Document,
+      ngZone: NgZone,
+      platformIsServer: boolean,
+      compId?: string,
   ) {
-    super(eventManager);
-    this.styles = shimStylesContent(compId, component.styles);
+    super(eventManager, doc, ngZone, platformIsServer);
+    this.styles = compId ? shimStylesContent(compId, component.styles) : component.styles;
   }
 
   applyStyles(): void {
@@ -401,9 +436,12 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
 
   constructor(
       eventManager: EventManager, sharedStylesHost: SharedStylesHost, component: RendererType2,
-      appId: string, removeStylesOnCompDestory: boolean) {
+      appId: string, removeStylesOnCompDestory: boolean, doc: Document, ngZone: NgZone,
+      platformIsServer: boolean) {
     const compId = appId + '-' + component.id;
-    super(eventManager, sharedStylesHost, component, removeStylesOnCompDestory, compId);
+    super(
+        eventManager, sharedStylesHost, component, removeStylesOnCompDestory, doc, ngZone,
+        platformIsServer, compId);
     this.contentAttr = shimContentAttribute(compId);
     this.hostAttr = shimHostAttribute(compId);
   }

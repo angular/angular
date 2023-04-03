@@ -450,6 +450,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PLATFORM_SERVER_ID"
+  },
+  {
     "name": "PRESERVE_HOST_CONTENT"
   },
   {
@@ -1303,6 +1306,9 @@
   },
   {
     "name": "isOptionsObj"
+  },
+  {
+    "name": "isPlatformServer"
   },
   {
     "name": "isPositive"
