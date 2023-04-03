@@ -51,7 +51,7 @@ export class PlatformState {
 }
 
 // @public
-export function provideServerSupport(): EnvironmentProviders;
+export function provideServerRendering(): EnvironmentProviders;
 
 // @public
 export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {

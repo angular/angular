@@ -14,7 +14,7 @@ import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, Environme
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {bootstrapApplication, BrowserModule, Title} from '@angular/platform-browser';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, provideServerSupport, renderModule, ServerModule} from '@angular/platform-server';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, provideServerRendering, renderModule, ServerModule} from '@angular/platform-server';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
@@ -23,7 +23,7 @@ import {renderApplication, SERVER_CONTEXT} from '../src/utils';
 
 const APP_CONFIG: ApplicationConfig = {
   providers: [
-    provideServerSupport(),
+    provideServerRendering(),
   ]
 };
 

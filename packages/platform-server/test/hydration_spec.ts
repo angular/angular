@@ -20,7 +20,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {first} from 'rxjs/operators';
 
-import {provideServerSupport} from '../public_api';
+import {provideServerRendering} from '../public_api';
 import {renderApplication} from '../src/utils';
 
 /**
@@ -219,7 +219,7 @@ describe('platform-server integration', () => {
       const defaultHtml = '<html><head></head><body><app></app></body></html>';
       const providers = [
         ...(envProviders ?? []),
-        provideServerSupport(),
+        provideServerRendering(),
         provideHydrationSupport(),
       ];
 

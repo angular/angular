@@ -20,14 +20,14 @@ import {PLATFORM_SERVER_PROVIDERS} from './server';
  * Basic example of how you can add server support to your application:
  * ```ts
  * bootstrapApplication(AppComponent, {
- *   providers: [provideServerSupport()]
+ *   providers: [provideServerRendering()]
  * });
  * ```
  *
  * @publicApi
  * @returns A set of providers to setup the server.
  */
-export function provideServerSupport(): EnvironmentProviders {
+export function provideServerRendering(): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideHttpClient(withInterceptorsFromDi()),
     provideNoopAnimations(),
