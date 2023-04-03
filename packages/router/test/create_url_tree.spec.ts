@@ -206,6 +206,32 @@ describe('createUrlTree', async () => {
       expect(serializer.serialize(t)).toEqual('/parent/child(rootSecondary:rootPopup)');
     });
 
+    it('works with named children of empty path primary, relative to non-empty parent',
+       async () => {
+         router.resetConfig([{
+           path: 'case',
+           component: class {},
+           children: [
+             {
+               path: '',
+               component: class {},
+               children: [
+                 {path: 'foo', outlet: 'foo', children: []},
+               ],
+             },
+           ]
+         }]);
+         await router.navigateByUrl('/case');
+         expect(router.url).toEqual('/case');
+         expect(router
+                    .createUrlTree(
+                        [{outlets: {'foo': ['foo']}}],
+                        // relative to the 'case' route
+                        {relativeTo: router.routerState.root.firstChild})
+                    .toString())
+             .toEqual('/case/(foo:foo)');
+       });
+
     describe('absolute navigations', () => {
       it('with and pathless root', async () => {
         router.resetConfig([
