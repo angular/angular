@@ -339,8 +339,9 @@ function updateSegmentGroupChildren(
     const outlets = getOutlets(commands);
     const children: {[key: string]: UrlSegmentGroup} = {};
     // If the set of commands does not apply anything to the primary outlet and the child segment is
-    // an empty path primary segment on its own, we want to skip applying the commands at this
-    // level. Imagine the following config:
+    // an empty path primary segment on its own, we want to apply the commands to the empty child
+    // path rather than here. The outcome is that the empty primary child is effectively removed
+    // from the final output UrlTree. Imagine the following config:
     //
     // {path: '', children: [{path: '**', outlet: 'popup'}]}.
     //
@@ -361,8 +362,9 @@ function updateSegmentGroupChildren(
     if (!outlets[PRIMARY_OUTLET] && segmentGroup.children[PRIMARY_OUTLET] &&
         segmentGroup.numberOfChildren === 1 &&
         segmentGroup.children[PRIMARY_OUTLET].segments.length === 0) {
-      return updateSegmentGroupChildren(
-          segmentGroup.children[PRIMARY_OUTLET], startIndex, commands);
+      const childrenOfEmptyChild =
+          updateSegmentGroupChildren(segmentGroup.children[PRIMARY_OUTLET], startIndex, commands);
+      return new UrlSegmentGroup(segmentGroup.segments, childrenOfEmptyChild.children);
     }
 
     Object.entries(outlets).forEach(([outlet, commands]) => {
