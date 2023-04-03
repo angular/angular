@@ -67,7 +67,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_MULTI_PROVIDER = -209,
     // (undocumented)
-    INVALID_SKIP_HYDRATION_HOST = 504,
+    INVALID_SKIP_HYDRATION_HOST = -504,
     // (undocumented)
     MISSING_GENERATED_DEF = 906,
     // (undocumented)
