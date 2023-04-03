@@ -10,6 +10,7 @@ import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedView} from '../../hydration/interfaces';
+import {SKIP_HYDRATION_ATTR_NAME} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration, retrieveHydrationInfo} from '../../hydration/utils';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
@@ -37,7 +38,7 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, ON_DESTROY_HOOKS, PARENT, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
-import {updateTextNode} from '../node_manipulation';
+import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler, ProfilerEvent} from '../profiler';
 import {commitLViewConsumerIfHasProducers, getReactiveLViewConsumer} from '../reactive_lview_consumer';
@@ -687,7 +688,7 @@ export function locateHostElement(
   // tree-shakable one (providedIn:'root'). This code path can be triggered during dynamic
   // component creation (after calling ViewContainerRef.createComponent) when an injector
   // instance can be provided. The injector instance might be disconnected from the main DI
-  // tree, thus the `PRESERVE_HOST_CONTENT` woild not be able to instantiate. In this case, the
+  // tree, thus the `PRESERVE_HOST_CONTENT` would not be able to instantiate. In this case, the
   // default value will be used.
   const preserveHostContent = injector.get(PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT);
 
@@ -727,7 +728,14 @@ let _applyRootElementTransformImpl: typeof applyRootElementTransformImpl =
  * @param rootElement the app root HTML Element
  */
 export function applyRootElementTransformImpl(rootElement: HTMLElement) {
-  processTextNodeMarkersBeforeHydration(rootElement);
+  if (rootElement.hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
+    // Handle a situation when the `ngSkipHydration` attribute is applied
+    // to the root node of an application. In this case, we should clear
+    // the contents and render everything from scratch.
+    clearElementContents(rootElement as RElement);
+  } else {
+    processTextNodeMarkersBeforeHydration(rootElement);
+  }
 }
 
 /**
