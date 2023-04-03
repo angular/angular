@@ -1117,8 +1117,6 @@ export class ApplicationRef {
    *
    * @param callback A callback function to add as a listener.
    * @returns A function which unregisters a listener.
-   *
-   * @internal
    */
   onDestroy(callback: () => void): VoidFunction {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
