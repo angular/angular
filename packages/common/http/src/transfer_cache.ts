@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, DestroyRef, ENVIRONMENT_INITIALIZER, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState, ɵInitialRenderPendingTasks as InitialRenderPendingTasks} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {filter, take, tap} from 'rxjs/operators';
+import {first, tap} from 'rxjs/operators';
 
 import {HttpHeaders} from './headers';
-import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn, HttpInterceptorFn} from './interceptor';
+import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
 
@@ -153,22 +153,23 @@ export function withHttpTransferCache(): Provider[] {
       deps: [TransferState, CACHE_STATE]
     },
     {
-      provide: ENVIRONMENT_INITIALIZER,
+      provide: APP_BOOTSTRAP_LISTENER,
       multi: true,
       useFactory: () => {
         const appRef = inject(ApplicationRef);
-        const destroyRef = inject(DestroyRef);
         const cacheState = inject(CACHE_STATE);
+        const pendingTasks = inject(InitialRenderPendingTasks);
 
         return () => {
-          const subscription =
-              appRef.isStable.pipe(filter((isStable) => isStable), take(1)).subscribe(() => {
-                cacheState.isCacheActive = false;
-              });
-          destroyRef.onDestroy(() => subscription.unsubscribe());
+          const isStablePromise = appRef.isStable.pipe(first((isStable) => isStable)).toPromise();
+          const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
+
+          Promise.allSettled([isStablePromise, pendingTasksPromise]).then(() => {
+            cacheState.isCacheActive = false;
+          });
         };
       },
-      deps: [ApplicationRef, DestroyRef]
+      deps: [ApplicationRef, CACHE_STATE, InitialRenderPendingTasks]
     }
   ];
 }
