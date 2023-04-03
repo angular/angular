@@ -2,8 +2,7 @@
 
 <div class="alert is-important">
 
-Hydration feature is available for [developer preview](https://angular.io/guide/releases#developer-preview).
-It's ready for you to try, but it might change before it is stable.
+The hydration feature is available for [developer preview](https://angular.io/guide/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
 
 </div>
 
