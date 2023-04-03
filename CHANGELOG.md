@@ -1,3 +1,32 @@
+<a name="16.0.0-next.6"></a>
+# 16.0.0-next.6 (2023-04-03)
+## Breaking Changes
+### 
+- Deprecated `EventManager` method `addGlobalEventListener` has been removed as it is not used by Ivy.
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2703fd6260](https://github.com/angular/angular/commit/2703fd626040c5e65401ebd776404a3b9e284724) | refactor | remove deprecated `EventManager` method `addGlobalEventListener` ([#49645](https://github.com/angular/angular/pull/49645)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d7d6514add](https://github.com/angular/angular/commit/d7d6514add2912a18c50f190aaa8afafa313bc9e) | feat | Add ability to configure `NgZone` in `bootstrapApplication` ([#49557](https://github.com/angular/angular/pull/49557)) |
+| [e883198460](https://github.com/angular/angular/commit/e8831984601da631afc29f9fd72d36f57696f936) | feat | implement `takeUntilDestroyed` in rxjs-interop ([#49154](https://github.com/angular/angular/pull/49154)) |
+| [8997bdc03b](https://github.com/angular/angular/commit/8997bdc03bd3ef0dc1ac68c913bf7d09340cee0d) | feat | prototype implementation of @angular/core/rxjs-interop ([#49154](https://github.com/angular/angular/pull/49154)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [07a1aa3004](https://github.com/angular/angular/commit/07a1aa300404969155ed1eb3cd02f4a766e07963) | feat | Improve typings form (async)Validators ([#48679](https://github.com/angular/angular/pull/48679)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f982a3f965](https://github.com/angular/angular/commit/f982a3f965995c4883780b0d48cb5d1411ebad0f) | feat | Opt-in for binding `Router` information to component inputs ([#49633](https://github.com/angular/angular/pull/49633)) |
+| [fa3909e8b4](https://github.com/angular/angular/commit/fa3909e8b4b982423357a6e3d6c1d719ea6fa378) | fix | Ensure initial navigation clears current navigation when blocking ([#49572](https://github.com/angular/angular/pull/49572)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, John Manners, Johnny Gérard, Kristiyan Kostadinov, Matthieu Riegler, Pawel Kozlowski, Sarthak Thakkar and Vinit Neogi
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-next.5"></a>
 # 16.0.0-next.5 (2023-03-29)
 ## Breaking Changes
