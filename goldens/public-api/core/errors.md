@@ -119,7 +119,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNSAFE_VALUE_IN_SCRIPT = 905,
     // (undocumented)
-    UNSUPPORTED_PROJECTION_DOM_NODES = 503,
+    UNSUPPORTED_PROJECTION_DOM_NODES = -503,
     // (undocumented)
     VIEW_ALREADY_ATTACHED = 902
 }
