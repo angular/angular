@@ -7,6 +7,7 @@
  */
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
+import {setActiveConsumer} from '../signals';
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
 import {assertFirstCreatePass} from './assert';
@@ -240,6 +241,22 @@ function callHooks(
 }
 
 /**
+ * Executes a single lifecycle hook, making sure that:
+ * - it is called in the non-reactive context;
+ * - profiling data are registered.
+ */
+function callHookInternal(directive: any, hook: () => void) {
+  profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
+  const prevConsumer = setActiveConsumer(null);
+  try {
+    hook.call(directive);
+  } finally {
+    setActiveConsumer(prevConsumer);
+    profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
+  }
+}
+
+/**
  * Execute one hook against the current `LView`.
  *
  * @param currentView The current view
@@ -259,19 +276,9 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
             (currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift) &&
         (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
       currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
-      profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
-      try {
-        hook.call(directive);
-      } finally {
-        profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
-      }
+      callHookInternal(directive, hook);
     }
   } else {
-    profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
-    try {
-      hook.call(directive);
-    } finally {
-      profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
-    }
+    callHookInternal(directive, hook);
   }
 }
