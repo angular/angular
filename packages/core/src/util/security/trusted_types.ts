@@ -17,6 +17,7 @@
  */
 
 import {global} from '../global';
+
 import {TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory} from './trusted_type_defs';
 
 /**
@@ -119,7 +120,7 @@ export function newTrustedFunctionForDev(...args: string[]): Function {
   // Using eval directly confuses the compiler and prevents this module from
   // being stripped out of JS binaries even if not used. The global['eval']
   // indirection fixes that.
-  const fn = global['eval'](trustedScriptFromString(body) as string) as Function;
+  const fn = global['eval'](trustedScriptFromString(body)) as Function;
   if (fn.bind === undefined) {
     // Workaround for a browser bug that only exists in Chrome 83, where passing
     // a TrustedScript to eval just returns the TrustedScript back without
