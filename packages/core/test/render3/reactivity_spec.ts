@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Component, destroyPlatform, effect, inject, Injector, NgZone, signal} from '@angular/core';
+import {AfterViewInit, Component, destroyPlatform, effect, inject, Injector, Input, NgZone, OnChanges, signal, SimpleChanges} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
@@ -216,4 +216,36 @@ describe('effects', () => {
 
        await bootstrapApplication(Cmp);
      }));
+
+  it('should allow writing to signals in ngOnChanges', () => {
+    @Component({
+      selector: 'with-input',
+      standalone: true,
+      template: '{{inSignal()}}',
+    })
+    class WithInput implements OnChanges {
+      inSignal = signal<string|undefined>(undefined);
+      @Input() in : string|undefined;
+
+      ngOnChanges(changes: SimpleChanges): void {
+        if (changes.in) {
+          this.inSignal.set(changes.in.currentValue);
+        }
+      }
+    }
+
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      imports: [WithInput],
+      template: `<with-input [in]="'A'" />|<with-input [in]="'B'" />
+      `,
+    })
+    class Cmp {
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('A|B');
+  });
 });
