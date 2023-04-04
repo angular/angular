@@ -485,7 +485,7 @@ export class NgClass implements DoCheck {
     // (undocumented)
     ngDoCheck(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgClass, "[ngClass]", never, { "klass": { "alias": "class"; "required": false; }; "ngClass": { "alias": "ngClass"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgClass, "[ngClass]", never, { "klass": { "alias": "class"; "required": false; }; "ngClass": { "alias": "ngClass"; "required": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgClass, never>;
 }
@@ -508,7 +508,7 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet, "[ngComponentOutlet]", never, { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet, "[ngComponentOutlet]", never, { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": true; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet, never>;
 }
@@ -524,7 +524,7 @@ class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     get ngForTrackBy(): TrackByFunction<T>;
     static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForOf<any, any>, "[ngFor][ngForOf]", never, { "ngForOf": { "alias": "ngForOf"; "required": false; }; "ngForTrackBy": { "alias": "ngForTrackBy"; "required": false; }; "ngForTemplate": { "alias": "ngForTemplate"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForOf<any, any>, "[ngFor]", never, { "ngForOf": { "alias": "ngForOf"; "required": true; }; "ngForTrackBy": { "alias": "ngForTrackBy"; "required": false; }; "ngForTemplate": { "alias": "ngForTemplate"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgForOf<any, any>, never>;
 }
@@ -561,7 +561,7 @@ export class NgIf<T = unknown> {
     static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false | 0 | '' | null | undefined>>;
     static ngTemplateGuard_ngIf: 'binding';
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgIf<any>, "[ngIf]", never, { "ngIf": { "alias": "ngIf"; "required": false; }; "ngIfThen": { "alias": "ngIfThen"; "required": false; }; "ngIfElse": { "alias": "ngIfElse"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgIf<any>, "[ngIf]", never, { "ngIf": { "alias": "ngIf"; "required": true; }; "ngIfThen": { "alias": "ngIfThen"; "required": false; }; "ngIfElse": { "alias": "ngIfElse"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgIf<any>, never>;
 }
@@ -628,7 +628,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // (undocumented)
     get width(): number | undefined;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": { "alias": "ngSrc"; "required": false; }; "ngSrcset": { "alias": "ngSrcset"; "required": false; }; "sizes": { "alias": "sizes"; "required": false; }; "width": { "alias": "width"; "required": false; }; "height": { "alias": "height"; "required": false; }; "loading": { "alias": "loading"; "required": false; }; "priority": { "alias": "priority"; "required": false; }; "loaderParams": { "alias": "loaderParams"; "required": false; }; "disableOptimizedSrcset": { "alias": "disableOptimizedSrcset"; "required": false; }; "fill": { "alias": "fill"; "required": false; }; "src": { "alias": "src"; "required": false; }; "srcset": { "alias": "srcset"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": { "alias": "ngSrc"; "required": true; }; "ngSrcset": { "alias": "ngSrcset"; "required": false; }; "sizes": { "alias": "sizes"; "required": false; }; "width": { "alias": "width"; "required": false; }; "height": { "alias": "height"; "required": false; }; "loading": { "alias": "loading"; "required": false; }; "priority": { "alias": "priority"; "required": false; }; "loaderParams": { "alias": "loaderParams"; "required": false; }; "disableOptimizedSrcset": { "alias": "disableOptimizedSrcset"; "required": false; }; "fill": { "alias": "fill"; "required": false; }; "src": { "alias": "src"; "required": false; }; "srcset": { "alias": "srcset"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
 }
@@ -641,7 +641,7 @@ export class NgPlural {
     // (undocumented)
     set ngPlural(value: number);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgPlural, "[ngPlural]", never, { "ngPlural": { "alias": "ngPlural"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgPlural, "[ngPlural]", never, { "ngPlural": { "alias": "ngPlural"; "required": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgPlural, never>;
 }
@@ -667,7 +667,7 @@ export class NgStyle implements DoCheck {
         [klass: string]: any;
     } | null | undefined);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgStyle, "[ngStyle]", never, { "ngStyle": { "alias": "ngStyle"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgStyle, "[ngStyle]", never, { "ngStyle": { "alias": "ngStyle"; "required": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgStyle, never>;
 }
@@ -677,7 +677,7 @@ export class NgSwitch {
     // (undocumented)
     set ngSwitch(newValue: any);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitch, "[ngSwitch]", never, { "ngSwitch": { "alias": "ngSwitch"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitch, "[ngSwitch]", never, { "ngSwitch": { "alias": "ngSwitch"; "required": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitch, never>;
 }
@@ -688,7 +688,7 @@ export class NgSwitchCase implements DoCheck {
     ngDoCheck(): void;
     ngSwitchCase: any;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitchCase, "[ngSwitchCase]", never, { "ngSwitchCase": { "alias": "ngSwitchCase"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitchCase, "[ngSwitchCase]", never, { "ngSwitchCase": { "alias": "ngSwitchCase"; "required": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitchCase, [null, null, { optional: true; host: true; }]>;
 }
@@ -711,7 +711,7 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
     ngTemplateOutletContext: C | null;
     ngTemplateOutletInjector: Injector | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet<any>, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": { "alias": "ngTemplateOutletContext"; "required": false; }; "ngTemplateOutlet": { "alias": "ngTemplateOutlet"; "required": false; }; "ngTemplateOutletInjector": { "alias": "ngTemplateOutletInjector"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet<any>, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": { "alias": "ngTemplateOutletContext"; "required": false; }; "ngTemplateOutlet": { "alias": "ngTemplateOutlet"; "required": true; }; "ngTemplateOutletInjector": { "alias": "ngTemplateOutletInjector"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgTemplateOutlet<any>, never>;
 }

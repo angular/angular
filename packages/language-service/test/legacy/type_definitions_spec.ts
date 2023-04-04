@@ -132,11 +132,8 @@ describe('type definitions', () => {
         const definitions = getTypeDefinitions({
           templateOverride: `<div *ngFor="let item o¦f heroes"></div>`,
         });
-        // In addition to all the array defs, this will also return the NgForOf def because the
-        // input is part of the selector ([ngFor][ngForOf]).
         expectAllDefinitions(
-            definitions, new Set(['Array', 'NgForOf']),
-            new Set([...possibleArrayDefFiles, 'ng_for_of.d.ts']));
+            definitions, new Set(['Array']), new Set([...possibleArrayDefFiles, 'ng_for_of.d.ts']));
       });
 
       it('should return nothing for two-way binding providers', () => {

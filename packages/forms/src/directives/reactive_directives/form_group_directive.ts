@@ -85,7 +85,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Tracks the `FormGroup` bound to this directive.
    */
-  @Input('formGroup') form: FormGroup = null!;
+  @Input({alias: 'formGroup', required: true}) form: FormGroup = null!;
 
   /**
    * @description

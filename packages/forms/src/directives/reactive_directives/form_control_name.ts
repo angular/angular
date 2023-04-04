@@ -86,7 +86,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * while the numerical form allows for form controls to be bound
    * to indices when iterating over controls in a `FormArray`.
    */
-  @Input('formControlName') override name: string|number|null = null;
+  @Input({alias: 'formControlName', required: true}) override name: string|number|null = null;
 
   /**
    * @description

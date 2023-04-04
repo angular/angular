@@ -113,7 +113,7 @@ export class NgSwitch {
   private _lastCasesMatched = false;
   private _ngSwitch: any;
 
-  @Input()
+  @Input({required: true})
   set ngSwitch(newValue: any) {
     this._ngSwitch = newValue;
     if (this._caseCount === 0) {
@@ -196,7 +196,7 @@ export class NgSwitchCase implements DoCheck {
   /**
    * Stores the HTML template to be selected on match.
    */
-  @Input() ngSwitchCase: any;
+  @Input({required: true}) ngSwitchCase: any;
 
   constructor(
       viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,

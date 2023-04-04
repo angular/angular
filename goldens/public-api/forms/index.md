@@ -209,7 +209,7 @@ export class EmailValidator extends AbstractValidatorDirective {
     // (undocumented)
     enabled(input: boolean): boolean;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": { "alias": "email"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": { "alias": "email"; "required": true; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<EmailValidator, never>;
 }
@@ -272,7 +272,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
     ngOnInit(): void;
     get path(): string[];
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormArrayName, "[formArrayName]", never, { "name": { "alias": "formArrayName"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormArrayName, "[formArrayName]", never, { "name": { "alias": "formArrayName"; "required": true; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormArrayName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
@@ -356,7 +356,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     viewModel: any;
     viewToModelUpdate(newValue: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlDirective, "[formControl]", ["ngForm"], { "form": { "alias": "formControl"; "required": false; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlDirective, "[formControl]", ["ngForm"], { "form": { "alias": "formControl"; "required": true; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormControlDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }, { optional: true; }]>;
 }
@@ -379,7 +379,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     update: EventEmitter<any>;
     viewToModelUpdate(newValue: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlName, "[formControlName]", never, { "name": { "alias": "formControlName"; "required": false; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlName, "[formControlName]", never, { "name": { "alias": "formControlName"; "required": true; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormControlName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
@@ -492,7 +492,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     readonly submitted: boolean;
     updateModel(dir: FormControlName, value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": { "alias": "formGroup"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": { "alias": "formGroup"; "required": true; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
@@ -502,7 +502,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
     constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
     name: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupName, "[formGroupName]", never, { "name": { "alias": "formGroupName"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupName, "[formGroupName]", never, { "name": { "alias": "formGroupName"; "required": true; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
@@ -578,7 +578,7 @@ export const isFormRecord: (control: unknown) => control is FormRecord<AbstractC
 export class MaxLengthValidator extends AbstractValidatorDirective {
     maxlength: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxLengthValidator, "[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]", never, { "maxlength": { "alias": "maxlength"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxLengthValidator, "[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]", never, { "maxlength": { "alias": "maxlength"; "required": true; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MaxLengthValidator, never>;
 }
@@ -587,7 +587,7 @@ export class MaxLengthValidator extends AbstractValidatorDirective {
 export class MaxValidator extends AbstractValidatorDirective {
     max: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxValidator, "input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]", never, { "max": { "alias": "max"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxValidator, "input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]", never, { "max": { "alias": "max"; "required": true; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MaxValidator, never>;
 }
@@ -596,7 +596,7 @@ export class MaxValidator extends AbstractValidatorDirective {
 export class MinLengthValidator extends AbstractValidatorDirective {
     minlength: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MinLengthValidator, "[minlength][formControlName],[minlength][formControl],[minlength][ngModel]", never, { "minlength": { "alias": "minlength"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MinLengthValidator, "[minlength][formControlName],[minlength][formControl],[minlength][ngModel]", never, { "minlength": { "alias": "minlength"; "required": true; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MinLengthValidator, never>;
 }
@@ -605,7 +605,7 @@ export class MinLengthValidator extends AbstractValidatorDirective {
 export class MinValidator extends AbstractValidatorDirective {
     min: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MinValidator, "input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]", never, { "min": { "alias": "min"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MinValidator, "input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]", never, { "min": { "alias": "min"; "required": true; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MinValidator, never>;
 }
@@ -715,7 +715,7 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
     constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
     name: string;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelGroup, "[ngModelGroup]", ["ngModelGroup"], { "name": { "alias": "ngModelGroup"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelGroup, "[ngModelGroup]", ["ngModelGroup"], { "name": { "alias": "ngModelGroup"; "required": true; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelGroup, [{ host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
@@ -764,7 +764,7 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor implements 
 export class PatternValidator extends AbstractValidatorDirective {
     pattern: string | RegExp;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<PatternValidator, "[pattern][formControlName],[pattern][formControl],[pattern][ngModel]", never, { "pattern": { "alias": "pattern"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<PatternValidator, "[pattern][formControlName],[pattern][formControl],[pattern][ngModel]", never, { "pattern": { "alias": "pattern"; "required": true; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PatternValidator, never>;
 }

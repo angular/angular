@@ -164,16 +164,12 @@ describe('definitions', () => {
           templateOverride: `<div *ngFor="let item o¦f heroes"></div>`,
           expectedSpanText: 'of',
         });
-        // Because the input is also part of the selector ([ngFor][ngForOf]), the directive is also
-        // returned.
-        expect(definitions!.length).toEqual(2);
-        const [inputDef, directiveDef] = definitions;
+        expect(definitions!.length).toEqual(1);
+        const [inputDef] = definitions;
 
         expect(inputDef.textSpan).toEqual('ngForOf');
         expect(inputDef.contextSpan)
             .toEqual('set ngForOf(ngForOf: U & NgIterable<T> | undefined | null);');
-        expect(directiveDef.textSpan).toEqual('NgForOf');
-        expect(directiveDef.contextSpan).toContain('export declare class NgForOf');
       });
 
       it('should work for two-way binding providers', () => {

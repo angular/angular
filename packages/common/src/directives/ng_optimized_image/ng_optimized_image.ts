@@ -247,7 +247,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * Image name will be processed by the image loader and the final URL will be applied as the `src`
    * property of the image.
    */
-  @Input() ngSrc!: string;
+  @Input({required: true}) ngSrc!: string;
 
   /**
    * A comma separated list of width or density descriptors.

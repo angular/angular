@@ -77,7 +77,7 @@ export class NgClass implements DoCheck {
     this.initialClasses = value != null ? value.trim().split(WS_REGEXP) : EMPTY_ARRAY;
   }
 
-  @Input('ngClass')
+  @Input({alias: 'ngClass', required: true})
   set ngClass(value: string|string[]|Set<string>|{[klass: string]: any}|null|undefined) {
     this.rawClass = typeof value === 'string' ? value.trim().split(WS_REGEXP) : value;
   }

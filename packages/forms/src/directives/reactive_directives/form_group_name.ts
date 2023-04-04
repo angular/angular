@@ -81,7 +81,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
    * while the numerical form allows for form groups to be bound
    * to indices when iterating over groups in a `FormArray`.
    */
-  @Input('formGroupName') override name: string|number|null = null;
+  @Input({alias: 'formGroupName', required: true}) override name: string|number|null = null;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
@@ -145,7 +145,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * while the numerical form allows for form arrays to be bound
    * to indices when iterating over arrays in a `FormArray`.
    */
-  @Input('formArrayName') override name: string|number|null = null;
+  @Input({alias: 'formArrayName', required: true}) override name: string|number|null = null;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,

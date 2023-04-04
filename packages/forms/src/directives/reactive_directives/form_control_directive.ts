@@ -63,7 +63,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
    * Tracks the `FormControl` instance bound to the directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formControl') form!: FormControl;
+  @Input({alias: 'formControl', required: true}) form!: FormControl;
 
   /**
    * @description

@@ -277,7 +277,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    *   - **null|undefined**: effectively disables the `routerLink`
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  @Input()
+  @Input({required: true})
   set routerLink(commands: any[]|string|null|undefined) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];

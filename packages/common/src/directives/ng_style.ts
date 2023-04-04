@@ -55,7 +55,7 @@ export class NgStyle implements DoCheck {
   constructor(
       private _ngEl: ElementRef, private _differs: KeyValueDiffers, private _renderer: Renderer2) {}
 
-  @Input('ngStyle')
+  @Input({alias: 'ngStyle', required: true})
   set ngStyle(values: {[klass: string]: any}|null|undefined) {
     this._ngStyle = values;
     if (!this._differ && values) {

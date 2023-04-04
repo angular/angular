@@ -133,7 +133,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * @publicApi
  */
 @Directive({
-  selector: '[ngFor][ngForOf]',
+  selector: '[ngFor]',
   standalone: true,
 })
 export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
@@ -141,7 +141,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * The value of the iterable expression, which can be used as a
    * [template input variable](guide/structural-directives#shorthand).
    */
-  @Input()
+  @Input({required: true})
   set ngForOf(ngForOf: U&NgIterable<T>|undefined|null) {
     this._ngForOf = ngForOf;
     this._ngForOfDirty = true;

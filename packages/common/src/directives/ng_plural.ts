@@ -53,7 +53,7 @@ export class NgPlural {
 
   constructor(private _localization: NgLocalization) {}
 
-  @Input()
+  @Input({required: true})
   set ngPlural(value: number) {
     this._updateView(value);
   }

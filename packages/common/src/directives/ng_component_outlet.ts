@@ -73,7 +73,7 @@ import {ComponentRef, createNgModule, Directive, Injector, Input, NgModuleFactor
   standalone: true,
 })
 export class NgComponentOutlet implements OnChanges, OnDestroy {
-  @Input() ngComponentOutlet: Type<any>|null = null;
+  @Input({required: true}) ngComponentOutlet: Type<any>|null = null;
 
   @Input() ngComponentOutletInjector?: Injector;
   @Input() ngComponentOutletContent?: any[][];

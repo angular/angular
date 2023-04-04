@@ -50,7 +50,7 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
   /**
    * A string defining the template reference and optionally the context object for the template.
    */
-  @Input() public ngTemplateOutlet: TemplateRef<C>|null = null;
+  @Input({required: true}) public ngTemplateOutlet: TemplateRef<C>|null = null;
 
   /** Injector to be used within the embedded view. */
   @Input() public ngTemplateOutletInjector: Injector|null = null;

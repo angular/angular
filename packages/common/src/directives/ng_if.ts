@@ -166,7 +166,7 @@ export class NgIf<T = unknown> {
   /**
    * The Boolean expression to evaluate as the condition for showing a template.
    */
-  @Input()
+  @Input({required: true})
   set ngIf(condition: T) {
     this._context.$implicit = this._context.ngIf = condition;
     this._updateView();

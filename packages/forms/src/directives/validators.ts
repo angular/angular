@@ -211,7 +211,7 @@ export class MaxValidator extends AbstractValidatorDirective {
    * @description
    * Tracks changes to the max bound to this directive.
    */
-  @Input() max!: string|number|null;
+  @Input({required: true}) max!: string|number|null;
   /** @internal */
   override inputName = 'max';
   /** @internal */
@@ -262,7 +262,7 @@ export class MinValidator extends AbstractValidatorDirective {
    * @description
    * Tracks changes to the min bound to this directive.
    */
-  @Input() min!: string|number|null;
+  @Input({required: true}) min!: string|number|null;
   /** @internal */
   override inputName = 'min';
   /** @internal */
@@ -460,7 +460,7 @@ export class EmailValidator extends AbstractValidatorDirective {
    * @description
    * Tracks changes to the email attribute bound to this directive.
    */
-  @Input() email!: boolean|string;
+  @Input({required: true}) email!: boolean|string;
 
   /** @internal */
   override inputName = 'email';
@@ -543,7 +543,7 @@ export class MinLengthValidator extends AbstractValidatorDirective {
    * @description
    * Tracks changes to the minimum length bound to this directive.
    */
-  @Input() minlength!: string|number|null;
+  @Input({required: true}) minlength!: string|number|null;
 
   /** @internal */
   override inputName = 'minlength';
@@ -596,7 +596,7 @@ export class MaxLengthValidator extends AbstractValidatorDirective {
    * @description
    * Tracks changes to the minimum length bound to this directive.
    */
-  @Input() maxlength!: string|number|null;
+  @Input({required: true}) maxlength!: string|number|null;
 
   /** @internal */
   override inputName = 'maxlength';
@@ -652,7 +652,7 @@ export class PatternValidator extends AbstractValidatorDirective {
    * @description
    * Tracks changes to the pattern bound to this directive.
    */
-  @Input()
+  @Input({required: true})
   pattern!: string|RegExp;  // This input is always defined, since the name matches selector.
 
   /** @internal */
