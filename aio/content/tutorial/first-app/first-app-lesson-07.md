@@ -9,7 +9,7 @@ This tutorial lesson demonstrates how to add interpolation to Angular templates 
 This lesson starts with the code from the previous lesson, so you can:
 
 *   Use the code that you created in Lesson 6 in your integrated development environment (IDE).
-*   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-06"></live-example> from Lesson 5 where you can:
+*   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-06"></live-example> from Lesson 6 where you can:
     *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
     *   Use the *download example* and open it in your IDE.
 
