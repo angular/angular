@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal} from '@angular/core/src/signals';
+import {computed, setPostSignalSetFn, signal} from '@angular/core/src/signals';
 
 describe('signals', () => {
   it('should be a getter which reflect the set value', () => {
@@ -96,5 +96,46 @@ describe('signals', () => {
     // reset signal value to the same array instance, expect change notification
     state.set(stateValue);
     expect(derived()).toEqual('object:5');
+  });
+
+  describe('post-signal-set functions', () => {
+    let prevPostSignalSetFn: (() => void)|null = null;
+    let log: number;
+    beforeEach(() => {
+      log = 0;
+      prevPostSignalSetFn = setPostSignalSetFn(() => log++);
+    });
+
+    afterEach(() => {
+      setPostSignalSetFn(prevPostSignalSetFn);
+    });
+
+    it('should call the post-signal-set fn when invoking .set()', () => {
+      const counter = signal(0);
+
+      counter.set(1);
+      expect(log).toBe(1);
+    });
+
+    it('should call the post-signal-set fn when invoking .update()', () => {
+      const counter = signal(0);
+
+      counter.update(c => c + 2);
+      expect(log).toBe(1);
+    });
+
+    it('should call the post-signal-set fn when invoking .mutate()', () => {
+      const counter = signal(0);
+
+      counter.mutate(() => {});
+      expect(log).toBe(1);
+    });
+
+    it('should not call the post-signal-set fn when the value doesn\'t change', () => {
+      const counter = signal(0);
+
+      counter.set(0);
+      expect(log).toBe(0);
+    });
   });
 });

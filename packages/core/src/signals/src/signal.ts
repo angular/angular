@@ -11,6 +11,14 @@ import {throwInvalidWriteToSignalError} from './errors';
 import {ReactiveNode} from './graph';
 
 /**
+ * If set, called after `WritableSignal`s are updated.
+ *
+ * This hook can be used to achieve various effects, such as running effects synchronously as part
+ * of setting a signal.
+ */
+let postSignalSetFn: (() => void)|null = null;
+
+/**
  * A `Signal` with a value that can be mutated via a setter interface.
  *
  * @developerPreview
@@ -64,6 +72,8 @@ class WritableSignalImpl<T> extends ReactiveNode {
       this.value = newValue;
       this.valueVersion++;
       this.producerMayHaveChanged();
+
+      postSignalSetFn?.();
     }
   }
 
@@ -91,6 +101,8 @@ class WritableSignalImpl<T> extends ReactiveNode {
     mutator(this.value);
     this.valueVersion++;
     this.producerMayHaveChanged();
+
+    postSignalSetFn?.();
   }
 
   signal(): T {
@@ -127,4 +139,10 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
                      mutate: signalNode.mutate.bind(signalNode),
                    }) as unknown as WritableSignal<T>;
   return signalFn;
+}
+
+export function setPostSignalSetFn(fn: (() => void)|null): (() => void)|null {
+  const prev = postSignalSetFn;
+  postSignalSetFn = fn;
+  return prev;
 }
