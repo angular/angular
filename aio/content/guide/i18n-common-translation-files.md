@@ -92,7 +92,7 @@ To create a translation file for a locale or language, complete the following ac
 
     <code-example language="file">
 
-    messages.xlf --&gt; message.{locale}.xlf
+    messages.xlf --&gt; messages.{locale}.xlf
 
     </code-example>
 
