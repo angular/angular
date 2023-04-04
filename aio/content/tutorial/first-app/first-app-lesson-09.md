@@ -1,16 +1,7 @@
 # First Angular app lesson 09 - Angular services
-
-<div class="callout is-important">
-
-<header>This topic is a work in progress</header>
-
-This topic is a first draft. It is complete, but it some or all content might change before its final draft.
-
-</div>
-
 This tutorial lesson demonstrates how to create an Angular service and use dependency injection to include it in your app.
 
-**Time required:** expect to spend about 20 minutes to complete this lesson.
+**Time required:** expect to spend about 15 minutes to complete this lesson.
 
 ## Before you start
 
@@ -46,7 +37,7 @@ The component depends on those services and can't function without them.
 
 #### Dependency injection
 
-*Dependency injection* is the Angular mechanism that manages the dependencies of an app's components and the services that other components can use.
+*Dependency injection* is the mechanism that manages the dependencies of an app's components and the services that other components can use.
 
 ## Lesson steps
 
@@ -79,15 +70,15 @@ For now, your app's new service uses the data that has, so far, been created loc
 
 In the **Edit** pane of your IDE:
 
-1.  In `src/app/home/home.component.ts`, from `HomeComponent`, copy the `img_server` and `housingLocationList` variables.
+1.  In `src/app/home/home.component.ts`, from `HomeComponent`, copy the `housingLocationList` variable and its array value.
 1.  In `src/app/housing.servivce.ts`:
-    1.  Inside the `HousingService` class, paste the variables that you copied from `HomeComponent` in the previous step.
+    1.  Inside the `HousingService` class, paste the variable that you copied from `HomeComponent` in the previous step.
     1.  Inside the `HousingService` class, paste these functions after the data you just copied.
         These functions allow dependencies to access the service's data.
 
         <code-example header="Service functions in src/app/housing.service.ts" path="first-app-lesson-09/src/app/housing.service.ts" region="service-functions"></code-example>
 
-    1.  After the `import { Injectable }...` line at the top of the file, add this line to import the `HousingLocation` type.
+    1.  Add a file level import for the `HousingLocation`.
 
         <code-example header="Import HousingLocation type in  src/app/housing.service.ts" path="first-app-lesson-09/src/app/housing.service.ts" region="import-housing-location"></code-example>
 
@@ -97,21 +88,21 @@ In the **Edit** pane of your IDE:
 ### Step 3 - Inject the new service into `HomeComponent`
 
 This step injects the new service into your app's `HomeComponent` so that it can read the app's data from a service.
-In a later lesson, you replace the static data with a web interface to get data as you might in a real app.
+In a later lesson, you replace the static data with a live data source to get data as you might in a real app.
 
 In the **Edit** pane of your IDE, in `src/app/home/home.component.ts`:
 
-1.  At the top of `src/app/home/home.component.ts`, replace the `import { Component...` line with this line to also import the `inject` function.
+1.  At the top of `src/app/home/home.component.ts`, add the `inject` to the items imported from `@angular/common`. This will import the `inject` function into the `HomeComponent` class.
 
     <code-example header="Update to src/app/home/home.component.ts" path="first-app-lesson-09/src/app/home/home.component.ts" region="import-inject"></code-example>
 
-1.  After the imports at the top of `src/app/home/home.component.ts`, add this line to import your new service.
+1.  Add a new file level import for the `HousingService`:
 
     <code-example header="Add import to src/app/home/home.component.ts" path="first-app-lesson-09/src/app/home/home.component.ts" region="import-service"></code-example>
 
-1.  From `HomeComponent`, delete the `img_server` and `housingLocationList` properties that you copied to the service in the previous step.
+1.  From `HomeComponent`, delete the `housingLocationList` delete the array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
 
-1.  In `HomeComponent`, add this code to inject the new service and initialize the data for the app.
+1.  In `HomeComponent`, add this code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
 
     <code-example header="Initialize data from service in src/app/home/home.component.ts" path="first-app-lesson-09/src/app/home/home.component.ts" region="use-new-service"></code-example>
 
@@ -120,16 +111,16 @@ In the **Edit** pane of your IDE, in `src/app/home/home.component.ts`:
 
 ## Lesson review
 
-In this lesson, you added an Angular service to your app and injected it into .
+In this lesson, you added an Angular service to your app and injected it into the `HomeComponent` class.
 This compartmentalizes how your app gets its data.
 For now, the new service gets its data from a static array of data.
-In a later lesson, you refactor the service to get its data from a webservice.
+In a later lesson, you refactor the service to get its data from a from an API endpoint.
 
 If you are having any trouble with this lesson, you can review the completed code for it in the <live-example></live-example>.
 
 ## Next steps
 
-*  **(TODO) Link to lesson 10**
+*  [Lesson 10 - Add routes to the application](tutorial/first-app/first-app-lesson-10)
 
 ## More information
 
