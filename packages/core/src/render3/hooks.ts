@@ -38,18 +38,17 @@ export function registerPreOrderHooks(
 
   if (ngOnChanges as Function | undefined) {
     const wrappedOnChanges = NgOnChangesFeatureImpl(directiveDef);
-    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(directiveIndex, wrappedOnChanges);
-    (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = []))
-        .push(directiveIndex, wrappedOnChanges);
+    (tView.preOrderHooks ??= []).push(directiveIndex, wrappedOnChanges);
+    (tView.preOrderCheckHooks ??= []).push(directiveIndex, wrappedOnChanges);
   }
 
   if (ngOnInit) {
-    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(0 - directiveIndex, ngOnInit);
+    (tView.preOrderHooks ??= []).push(0 - directiveIndex, ngOnInit);
   }
 
   if (ngDoCheck) {
-    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(directiveIndex, ngDoCheck);
-    (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(directiveIndex, ngDoCheck);
+    (tView.preOrderHooks ??= []).push(directiveIndex, ngDoCheck);
+    (tView.preOrderCheckHooks ??= []).push(directiveIndex, ngDoCheck);
   }
 }
 
@@ -90,25 +89,25 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
     } = lifecycleHooks;
 
     if (ngAfterContentInit) {
-      (tView.contentHooks || (tView.contentHooks = [])).push(-i, ngAfterContentInit);
+      (tView.contentHooks ??= []).push(-i, ngAfterContentInit);
     }
 
     if (ngAfterContentChecked) {
-      (tView.contentHooks || (tView.contentHooks = [])).push(i, ngAfterContentChecked);
-      (tView.contentCheckHooks || (tView.contentCheckHooks = [])).push(i, ngAfterContentChecked);
+      (tView.contentHooks ??= []).push(i, ngAfterContentChecked);
+      (tView.contentCheckHooks ??= []).push(i, ngAfterContentChecked);
     }
 
     if (ngAfterViewInit) {
-      (tView.viewHooks || (tView.viewHooks = [])).push(-i, ngAfterViewInit);
+      (tView.viewHooks ??= []).push(-i, ngAfterViewInit);
     }
 
     if (ngAfterViewChecked) {
-      (tView.viewHooks || (tView.viewHooks = [])).push(i, ngAfterViewChecked);
-      (tView.viewCheckHooks || (tView.viewCheckHooks = [])).push(i, ngAfterViewChecked);
+      (tView.viewHooks ??= []).push(i, ngAfterViewChecked);
+      (tView.viewCheckHooks ??= []).push(i, ngAfterViewChecked);
     }
 
     if (ngOnDestroy != null) {
-      (tView.destroyHooks || (tView.destroyHooks = [])).push(i, ngOnDestroy);
+      (tView.destroyHooks ??= []).push(i, ngOnDestroy);
     }
   }
 }
