@@ -16,7 +16,7 @@ import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pendin
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {unescapeTransferStateContent} from '@angular/core/src/transfer_state';
 import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication, HydrationFeatures, provideClientHydration, withoutDomReuse} from '@angular/platform-browser';
+import {bootstrapApplication, HydrationFeature, HydrationFeatureKind, provideClientHydration, withNoDomReuse} from '@angular/platform-browser';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {first} from 'rxjs/operators';
 
@@ -246,12 +246,12 @@ describe('platform-server integration', () => {
      */
     async function ssr(
         component: Type<unknown>, doc?: string, envProviders?: Provider[],
-        hydrationFeatures?: HydrationFeatures[]): Promise<string> {
+        hydrationFeatures: HydrationFeature<HydrationFeatureKind>[] = []): Promise<string> {
       const defaultHtml = '<html><head></head><body><app></app></body></html>';
       const providers = [
         ...(envProviders ?? []),
         provideServerRendering(),
-        provideClientHydration(...(hydrationFeatures || [])),
+        provideClientHydration(...hydrationFeatures),
       ];
 
       const bootstrap = () => bootstrapApplication(component, {providers});
@@ -272,7 +272,7 @@ describe('platform-server integration', () => {
      */
     async function hydrate(
         html: string, component: Type<unknown>, envProviders?: Provider[],
-        hydrationFeatures?: HydrationFeatures[]): Promise<ApplicationRef> {
+        hydrationFeatures: HydrationFeature<HydrationFeatureKind>[] = []): Promise<ApplicationRef> {
       // Destroy existing platform, a new one will be created later by the `bootstrapApplication`.
       destroyPlatform();
 
@@ -289,14 +289,14 @@ describe('platform-server integration', () => {
       const providers = [
         ...(envProviders ?? []),
         {provide: DOCUMENT, useFactory: _document, deps: []},
-        provideClientHydration(...(hydrationFeatures || [])),
+        provideClientHydration(...hydrationFeatures),
       ];
 
       return bootstrapApplication(component, {providers});
     }
 
     describe('public API', () => {
-      it('should allow to disable DOM hydration using `withoutDomReuse` feature', async () => {
+      it('should allow to disable DOM hydration using `withNoDomReuse` feature', async () => {
         @Component({
           standalone: true,
           selector: 'app',
@@ -310,7 +310,7 @@ describe('platform-server integration', () => {
         }
 
         const html =
-            await ssr(SimpleComponent, undefined, [withDebugConsole()], [withoutDomReuse()]);
+            await ssr(SimpleComponent, undefined, [withDebugConsole()], [withNoDomReuse()]);
         const ssrContents = getAppContents(html);
 
         // There should be no `ngh` annotations.
@@ -319,7 +319,7 @@ describe('platform-server integration', () => {
         resetTViewsFor(SimpleComponent);
 
         const appRef =
-            await hydrate(html, SimpleComponent, [withDebugConsole()], [withoutDomReuse()]);
+            await hydrate(html, SimpleComponent, [withDebugConsole()], [withNoDomReuse()]);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 

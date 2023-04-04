@@ -153,7 +153,12 @@ export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
 }
 
 // @public
-export type HydrationFeatures = NoDomReuseFeature;
+export const enum HydrationFeatureKind {
+    // (undocumented)
+    NoDomReuseFeature = 0,
+    // (undocumented)
+    NoHttpTransferCache = 1
+}
 
 // @public @deprecated
 export const makeStateKey: typeof makeStateKey_2;
@@ -190,13 +195,10 @@ export type MetaDefinition = {
 };
 
 // @public
-export type NoDomReuseFeature = HydrationFeature<HydrationFeatureKind.NoDomReuseFeature>;
-
-// @public
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 // @public
-export function provideClientHydration(...features: HydrationFeatures[]): EnvironmentProviders;
+export function provideClientHydration(...features: HydrationFeature<HydrationFeatureKind>[]): EnvironmentProviders;
 
 // @public
 export function provideProtractorTestingSupport(): Provider[];
@@ -251,7 +253,10 @@ export const TransferState: {
 export const VERSION: Version;
 
 // @public
-export function withoutDomReuse(): NoDomReuseFeature;
+export function withNoDomReuse(): HydrationFeature<HydrationFeatureKind.NoDomReuseFeature>;
+
+// @public
+export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache>;
 
 // (No @packageDocumentation comment for this package)
 

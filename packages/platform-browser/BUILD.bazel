@@ -14,6 +14,7 @@ ng_module(
     deps = [
         "//packages:types",
         "//packages/common",
+        "//packages/common/http",
         "//packages/core",
         "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/hammerjs",
