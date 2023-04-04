@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// Required as the signals library is in a separate package, so we need to explicitly ensure the
+// global `ngDevMode` type is defined.
+import '../../util/ng_dev_mode';
+
 import {global} from '../../util/global';
 
 /**
