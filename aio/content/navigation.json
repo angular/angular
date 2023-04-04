@@ -854,8 +854,13 @@
             },
             {
               "url": "tutorial/first-app/first-app-lesson-07",
-              "title": "Add dynamic values to your templates",
+              "title": "Add dynamic values to templates",
               "tooltip": "Add dynamic values to your templates in your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-08",
+              "title": "Use *ngFor in templates",
+              "tooltip": "Use *ngFor in your templates in your app"
             },
             {
               "url": "tutorial/first-app/first-app-lesson-09",
