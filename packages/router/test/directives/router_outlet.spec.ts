@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
-import {Component, Input, Type} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {provideRouter, Router, RouterOutlet} from '@angular/router/src';
 import {withComponentInputBinding} from '@angular/router/src/provide_router';
@@ -326,6 +326,44 @@ describe('component input binding', () => {
 
     await harness.navigateByUrl('/x;result=from path param?result=from query params', MyComponent);
     expect(resultLog).toEqual([undefined, 'from path param']);
+  });
+
+  it('refreshes routed component when shielded by an OnPush parent', async () => {
+    @Component({
+      template: '{{myInput}}',
+      standalone: true,
+      changeDetection: ChangeDetectionStrategy.OnPush
+    })
+    class MyComponent {
+      @Input() myInput?: string;
+    }
+
+    @Component({
+      template: '<router-outlet/>',
+      imports: [RouterOutlet],
+      standalone: true,
+      changeDetection: ChangeDetectionStrategy.OnPush
+    })
+    class OutletWrapper {
+    }
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter(
+          [{
+            path: 'root',
+            component: OutletWrapper,
+            children: [
+              {path: '**', component: MyComponent},
+            ]
+          }],
+          withComponentInputBinding())]
+    });
+    const harness = await RouterTestingHarness.create('/root/child');
+
+    await harness.navigateByUrl('/root/child?myInput=1');
+    expect(harness.routeNativeElement!.innerText).toBe('1');
+    await harness.navigateByUrl('/root/child?myInput=2');
+    expect(harness.routeNativeElement!.innerText).toBe('2');
   });
 });
 

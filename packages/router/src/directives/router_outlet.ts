@@ -195,7 +195,8 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
 
   private parentContexts = inject(ChildrenOutletContexts);
   private location = inject(ViewContainerRef);
-  private changeDetector = inject(ChangeDetectorRef);
+  /** @internal */
+  readonly changeDetector = inject(ChangeDetectorRef);
   private environmentInjector = inject(EnvironmentInjector);
   private inputBinder = inject(INPUT_BINDER, {optional: true});
   /** @nodoc */
@@ -430,6 +431,7 @@ export class RoutedComponentInputBinder {
                 return;
               }
 
+              outlet.changeDetector.markForCheck();
               for (const {templateName} of mirror.inputs) {
                 outlet.activatedComponentRef.setInput(templateName, data[templateName]);
               }
