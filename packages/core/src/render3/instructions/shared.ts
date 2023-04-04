@@ -1144,12 +1144,12 @@ export function initializeDirectives(
       // We will push the actual hook function into this array later during dir instantiation.
       // We cannot do it now because we must ensure hooks are registered in the same
       // order that directives are created (i.e. injection order).
-      (tView.preOrderHooks || (tView.preOrderHooks = [])).push(tNode.index);
+      (tView.preOrderHooks ??= []).push(tNode.index);
       preOrderHooksFound = true;
     }
 
     if (!preOrderCheckHooksFound && (lifeCycleHooks.ngOnChanges || lifeCycleHooks.ngDoCheck)) {
-      (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(tNode.index);
+      (tView.preOrderCheckHooks ??= []).push(tNode.index);
       preOrderCheckHooksFound = true;
     }
 
@@ -1362,7 +1362,7 @@ export function markAsComponentHost(tView: TView, hostTNode: TNode, componentOff
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && assertGreaterThan(componentOffset, -1, 'componentOffset must be great than -1');
   hostTNode.componentOffset = componentOffset;
-  (tView.components || (tView.components = [])).push(hostTNode.index);
+  (tView.components ??= []).push(hostTNode.index);
 }
 
 /** Caches local names and their matching directive indices for query and template lookups. */
