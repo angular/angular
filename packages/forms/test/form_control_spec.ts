@@ -398,15 +398,6 @@ describe('FormControl', () => {
          expect(c.hasValidator(minValidator)).toEqual(true);
          expect(c.hasValidator(Validators.min(5))).toEqual(false);
        });
-
-    it('should error if passed an async validator instead of a validator', fakeAsync(() => {
-         // @ts-expect-error
-         const c = new FormControl('value', asyncValidator('expected'));
-         tick();
-
-         expect(c.valid).toEqual(false);
-         expect(c.errors).not.toEqual({'async': true});
-       }));
   });
 
   describe('asyncValidator', () => {
@@ -599,16 +590,16 @@ describe('FormControl', () => {
        }));
 
     it('should clear async validators', fakeAsync(() => {
-         const c = new FormControl('value', [], [asyncValidator('expected'), otherAsyncValidator]);
+         const c = new FormControl('value', [asyncValidator('expected'), otherAsyncValidator]);
 
-         c.clearAsyncValidators();
+         c.clearValidators();
 
          expect(c.asyncValidator).toEqual(null);
        }));
 
     it('should not change validity state if control is disabled while async validating',
        fakeAsync(() => {
-         const c = new FormControl('value', [], [asyncValidator('expected')]);
+         const c = new FormControl('value', [asyncValidator('expected')]);
          c.disable();
          tick();
          expect(c.status).toEqual('DISABLED');

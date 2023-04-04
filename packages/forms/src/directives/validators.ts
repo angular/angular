@@ -482,13 +482,10 @@ export class EmailValidator extends AbstractValidatorDirective {
  * A function that receives a control and synchronously returns a map of
  * validation errors if present, otherwise null.
  *
- * Error objects with a `then` key or a `subscribe` key are not valid.
- * They describe an async validator returning respectively a Promise or an Observable.
- *
  * @publicApi
  */
 export interface ValidatorFn {
-  (control: AbstractControl): (ValidationErrors&{then?: never, subscribe?: never})|null;
+  (control: AbstractControl): ValidationErrors|null;
 }
 
 /**
