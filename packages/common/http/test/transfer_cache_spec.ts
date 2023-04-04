@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {ApplicationRef, Component} from '@angular/core';
+import {ApplicationRef, Component, Injectable} from '@angular/core';
 import {makeStateKey, TransferState} from '@angular/core/src/transfer_state';
 import {fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
@@ -39,7 +39,8 @@ describe('TransferCache', () => {
       TestBed.resetTestingModule();
       isStable = new BehaviorSubject<boolean>(false);
 
-      class ApplicationRefPathed extends ApplicationRef {
+      @Injectable()
+      class ApplicationRefPatched extends ApplicationRef {
         override isStable = new BehaviorSubject<boolean>(false);
       }
 
@@ -47,8 +48,7 @@ describe('TransferCache', () => {
         declarations: [SomeComponent],
         providers: [
           {provide: DOCUMENT, useFactory: () => document},
-          {provide: ApplicationRef, useClass: ApplicationRefPathed},
-          {provide: ApplicationRef, useClass: ApplicationRefPathed},
+          {provide: ApplicationRef, useClass: ApplicationRefPatched},
           withHttpTransferCache(),
           provideHttpClient(),
           provideHttpClientTesting(),

@@ -6,13 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵwithHttpTransferCache as withHttpTransferCache} from '@angular/common/http';
 import {EnvironmentProviders, makeEnvironmentProviders, Provider, ɵwithDomHydration as withDomHydration} from '@angular/core';
 
 /**
- * The list of features as an enum to uniquely type each feature.
+ * The list of features as an enum to uniquely type each `HydrationFeature`.
+ * @see HydrationFeature
+ *
+ * @publicApi
+ * @developerPreview
  */
 export const enum HydrationFeatureKind {
-  NoDomReuseFeature
+  NoDomReuseFeature,
+  NoHttpTransferCache
 }
 
 /**
@@ -30,22 +36,9 @@ export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
  * Helper function to create an object that represents a Hydration feature.
  */
 function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
-    kind: FeatureKind, providers: Provider[]): HydrationFeature<FeatureKind> {
+    kind: FeatureKind, providers: Provider[] = []): HydrationFeature<FeatureKind> {
   return {ɵkind: kind, ɵproviders: providers};
 }
-
-/**
- * A type alias that represents a feature which disables DOM reuse during hydration
- * (effectively making Angular re-render the whole application from scratch).
- * The type is used to describe the return value of the `withoutDomReuse` function.
- *
- * @see `withoutDomReuse`
- * @see `provideClientHydration`
- *
- * @publicApi
- * @developerPreview
- */
-export type NoDomReuseFeature = HydrationFeature<HydrationFeatureKind.NoDomReuseFeature>;
 
 /**
  * Disables DOM nodes reuse during hydration. Effectively makes
@@ -54,25 +47,25 @@ export type NoDomReuseFeature = HydrationFeature<HydrationFeatureKind.NoDomReuse
  * @publicApi
  * @developerPreview
  */
-export function withoutDomReuse(): NoDomReuseFeature {
+export function withNoDomReuse(): HydrationFeature<HydrationFeatureKind.NoDomReuseFeature> {
   // This feature has no providers and acts as a flag that turns off
   // non-destructive hydration (which otherwise is turned on by default).
-  const providers: Provider[] = [];
-  return hydrationFeature(HydrationFeatureKind.NoDomReuseFeature, providers);
+  return hydrationFeature(HydrationFeatureKind.NoDomReuseFeature);
 }
 
 /**
- * A type alias that represents all Hydration features available for use with
- * `provideClientHydration`. Features can be enabled by adding special functions to the
- * `provideClientHydration` call. See documentation for each symbol to find corresponding
- * function name. See also `provideClientHydration` documentation on how to use those functions.
- *
- * @see `provideClientHydration`
+ * Disables HTTP transfer cache. Effectively causes HTTP requests to be performed twice: once on the
+ * server and other one on the browser.
  *
  * @publicApi
  * @developerPreview
  */
-export type HydrationFeatures = NoDomReuseFeature;
+export function withNoHttpTransferCache():
+    HydrationFeature<HydrationFeatureKind.NoHttpTransferCache> {
+  // This feature has no providers and acts as a flag that turns off
+  // HTTP transfer cache (which otherwise is turned on by default).
+  return hydrationFeature(HydrationFeatureKind.NoHttpTransferCache);
+}
 
 /**
  * Sets up providers necessary to enable hydration functionality for the application.
@@ -102,7 +95,8 @@ export type HydrationFeatures = NoDomReuseFeature;
  * export class AppModule {}
  * ```
  *
- * @see `HydrationFeatures`
+ * @see `withNoDomReuse`
+ * @see `withNoHttpTransferCache`
  *
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to enable hydration.
@@ -110,11 +104,22 @@ export type HydrationFeatures = NoDomReuseFeature;
  * @publicApi
  * @developerPreview
  */
-export function provideClientHydration(...features: HydrationFeatures[]): EnvironmentProviders {
-  const shouldUseDomHydration =
-      !features.find(feature => feature.ɵkind === HydrationFeatureKind.NoDomReuseFeature);
+export function provideClientHydration(...features: HydrationFeature<HydrationFeatureKind>[]):
+    EnvironmentProviders {
+  const providers: Provider[] = [];
+  const featuresKind = new Set<HydrationFeatureKind>();
+
+  for (const {ɵproviders, ɵkind} of features) {
+    featuresKind.add(ɵkind);
+
+    if (ɵproviders.length) {
+      providers.push(ɵproviders);
+    }
+  }
+
   return makeEnvironmentProviders([
-    (shouldUseDomHydration ? withDomHydration() : []),
-    features.map(feature => feature.ɵproviders),
+    (featuresKind.has(HydrationFeatureKind.NoDomReuseFeature) ? [] : withDomHydration()),
+    (featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) ? [] : withHttpTransferCache()),
+    providers,
   ]);
 }
