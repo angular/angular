@@ -213,7 +213,7 @@ export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeI
   if (tNode.parent && tNode.parent.injectorIndex !== -1) {
     // If we have a parent `TNode` and there is an injector associated with it we are done, because
     // the parent injector is within the current `LView`.
-    return tNode.parent.injectorIndex as any;  // ViewOffset is 0
+    return tNode.parent.injectorIndex as RelativeInjectorLocation;  // ViewOffset is 0
   }
 
   // When parent injector location is computed it may be outside of the current view. (ie it could
@@ -242,7 +242,8 @@ export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeI
     if (parentTNode.injectorIndex !== -1) {
       // We found a NodeInjector which points to something.
       return (parentTNode.injectorIndex |
-              (declarationViewOffset << RelativeInjectorLocationFlags.ViewOffsetShift)) as any;
+              (declarationViewOffset << RelativeInjectorLocationFlags.ViewOffsetShift)) as
+          RelativeInjectorLocation;
     }
   }
   return NO_PARENT_INJECTOR;
@@ -477,7 +478,7 @@ function lookupTokenUsingNodeInjector<T>(
     // injector.
     let previousTView: TView|null = null;
     let injectorIndex = getInjectorIndex(tNode, lView);
-    let parentLocation: RelativeInjectorLocation = NO_PARENT_INJECTOR;
+    let parentLocation = NO_PARENT_INJECTOR;
     let hostTElementNode: TNode|null =
         flags & InjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][T_HOST] : null;
 
