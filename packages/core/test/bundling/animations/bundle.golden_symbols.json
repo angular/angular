@@ -1200,7 +1200,7 @@
     "name": "markAsComponentHost"
   },
   {
-    "name": "markDirtyIfOnPush"
+    "name": "markViewDirty"
   },
   {
     "name": "maybeWrapInNotSelector"

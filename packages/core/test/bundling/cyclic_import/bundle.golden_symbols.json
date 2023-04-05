@@ -915,6 +915,9 @@
     "name": "markAsComponentHost"
   },
   {
+    "name": "markViewDirty"
+  },
+  {
     "name": "maybeWrapInNotSelector"
   },
   {
