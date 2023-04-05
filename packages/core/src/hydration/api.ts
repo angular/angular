@@ -35,7 +35,7 @@ let isHydrationSupportEnabled = false;
 
 /**
  * Brings the necessary hydration code in tree-shakable manner.
- * The code is only present when the `provideHydrationSupport` is
+ * The code is only present when the `provideClientHydration` is
  * invoked. Otherwise, this code is tree-shaken away during the
  * build optimization step.
  *

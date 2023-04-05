@@ -114,7 +114,9 @@ class ExampleCmp {}
 The `ngSkipHydration` attribute will force Angular to skip hydrating the entire component and its children. Using this attribute means that the component will behave as if hydration is not enabled, meaning it will destroy and re-render itself.
 
 <div class="alert is-helpful">
-  This will fix rendering issues, but it means that for this component (and its children), you don't get the benefits of hydration. You will need to adjust your component's implementation to avoid hydration-breaking patterns (i.e. Direct DOM Manipulation) to be able to remove the skip hydration annotation.
+
+This will fix rendering issues, but it means that for this component (and its children), you don't get the benefits of hydration. You will need to adjust your component's implementation to avoid hydration-breaking patterns (i.e. Direct DOM Manipulation) to be able to remove the skip hydration annotation.
+
 </div>
 
 The `ngSkipHydration` attribute can only be used on component host nodes. Angular throws an error if this attribute is added to other nodes.
@@ -124,7 +126,10 @@ Keep in mind that adding the `ngSkipHydration` attribute to your root applicatio
 <a id="i18n"></a>
 
 ## I18N
-We don't yet support internationalization with hydration, but support is coming. If you attempt to enable hydration on an application with internationalization, you will receive an error NG518, which states that I18N is not yet supported.
+
+We don't yet support internationalization with hydration, but support is coming.
+Currently, Angular would skip hydration for components that use i18n blocks, effectively
+re-rendering those components from scratch.
 
 ## Third Party Libraries with DOM Manipulation
 
