@@ -868,6 +868,11 @@
               "tooltip": "Add an Angular service to your app"
             },
             {
+              "url": "tutorial/first-app/first-app-lesson-10",
+              "title": "Add routing",
+              "tooltip": "Add routing to your app"
+            },
+            {
               "url": "tutorial/first-app/first-app-lesson-12",
               "title": "Angular forms",
               "tooltip": "Add an Angular form to your app"
