@@ -1,7 +1,9 @@
+// #docregion import-routes-components
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { DetailsComponent } from './details/details.component';
-
+// #enddocregion
+// #docregion define-app-routes
 const routeConfig: Routes = [
   {
     path: '',
@@ -16,3 +18,4 @@ const routeConfig: Routes = [
 ];
 
 export default routeConfig;
+// #enddocregion
