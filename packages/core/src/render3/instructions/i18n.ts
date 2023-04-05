@@ -15,7 +15,7 @@ import {i18nAttributesFirstPass, i18nStartFirstCreatePass} from '../i18n/i18n_pa
 import {i18nPostprocess} from '../i18n/i18n_postprocess';
 import {TI18n} from '../interfaces/i18n';
 import {TElementNode, TNodeType} from '../interfaces/node';
-import {HEADER_OFFSET, T_HOST} from '../interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, FLAGS, HEADER_OFFSET, LViewFlags, T_HOST, TViewType} from '../interfaces/view';
 import {getClosestRElement} from '../node_manipulation';
 import {getCurrentParentTNode, getLView, getTView, nextBindingIndex, setInI18nBlock} from '../state';
 import {getConstant} from '../util/view_utils';
@@ -58,6 +58,19 @@ export function ɵɵi18nStart(
         tView, parentTNode === null ? 0 : parentTNode.index, lView, adjustedIndex, message,
         subTemplateIndex);
   }
+
+  // Set a flag that this LView has i18n blocks.
+  // The flag is later used to determine whether this component should
+  // be hydrated (currently hydration is not supported for i18n blocks).
+  if (tView.type === TViewType.Embedded) {
+    // Annotate host component's LView (not embedded view's LView),
+    // since hydration can be skipped on per-component basis only.
+    const componentLView = lView[DECLARATION_COMPONENT_VIEW];
+    componentLView[FLAGS] |= LViewFlags.HasI18n;
+  } else {
+    lView[FLAGS] |= LViewFlags.HasI18n;
+  }
+
   const tI18n = tView.data[adjustedIndex] as TI18n;
   const sameViewParentTNode = parentTNode === lView[T_HOST] ? null : parentTNode;
   const parentRNode = getClosestRElement(tView, sameViewParentTNode, lView);

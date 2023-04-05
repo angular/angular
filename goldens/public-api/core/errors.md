@@ -41,8 +41,6 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HOST_DIRECTIVE_UNRESOLVABLE = 307,
     // (undocumented)
-    HYDRATION_I18N_NOT_YET_SUPPORTED = 518,
-    // (undocumented)
     HYDRATION_MISSING_NODE = -502,
     // (undocumented)
     HYDRATION_MISSING_SIBLINGS = -501,
