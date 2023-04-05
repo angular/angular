@@ -174,23 +174,6 @@ export function invalidSkipHydrationHost(rNode: RNode): Error {
   return new RuntimeError(RuntimeErrorCode.INVALID_SKIP_HYDRATION_HOST, message);
 }
 
-/**
- * Builds the hydration error message in the case that a user is attempting to enable
- * hydration on internationalized nodes, which is not yet supported.
- *
- * @param rNode the HTML Element
- * @returns an error
- */
-export function notYetSupportedI18nBlockError(rNode: RNode): Error {
-  const header = 'Hydration for nodes marked with `i18n` is not yet supported. ' +
-      'You can opt-out a component that uses `i18n` in a template using ' +
-      'the `ngSkipHydration` attribute or fall back to the previous ' +
-      'hydration logic (which re-creates the application structure).\n\n';
-  const actual = `${describeDomFromNode(rNode)}\n\n`;
-  const message = header + actual;
-  return new RuntimeError(RuntimeErrorCode.HYDRATION_I18N_NOT_YET_SUPPORTED, message);
-}
-
 // Stringification methods
 
 /**
