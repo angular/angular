@@ -1194,9 +1194,6 @@
     "name": "markAsComponentHost"
   },
   {
-    "name": "markDirtyIfOnPush"
-  },
-  {
     "name": "markDuplicates"
   },
   {
