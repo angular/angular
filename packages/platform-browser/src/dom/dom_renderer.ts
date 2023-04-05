@@ -140,9 +140,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
   ngOnDestroy() {
     this.rendererByCompId.clear();
   }
-
-  begin() {}
-  end() {}
 }
 
 class DefaultDomRenderer2 implements Renderer2 {
