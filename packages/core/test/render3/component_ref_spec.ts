@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ComponentRef} from '@angular/core';
 import {ComponentFactoryResolver} from '@angular/core/src/render3/component_ref';
 import {Renderer} from '@angular/core/src/render3/interfaces/renderer';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {TestBed} from '@angular/core/testing';
 
-import {ChangeDetectionStrategy, Component, Injector, Input, NgModuleRef, OnChanges, Output, RendererType2, SimpleChanges, ViewEncapsulation} from '../../src/core';
+import {ChangeDetectionStrategy, Component, Injector, Input, NgModuleRef, OnChanges, Output, RendererType2, SimpleChanges, ViewChild, ViewContainerRef, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
@@ -396,6 +397,47 @@ describe('ComponentFactory', () => {
       fixture.componentRef.setInput('in', 'pushed');
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('pushed');
+    });
+
+    it('marks parents dirty so component is not "shielded" by a non-dirty OnPush parent', () => {
+      @Component({
+        template: `{{input}}`,
+        standalone: true,
+        selector: 'dynamic',
+      })
+      class DynamicCmp {
+        @Input() input?: string;
+      }
+
+      @Component({
+        template: '<ng-template #template></ng-template>',
+        standalone: true,
+        imports: [DynamicCmp],
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class Wrapper {
+        @ViewChild('template', {read: ViewContainerRef}) template?: ViewContainerRef;
+        componentRef?: ComponentRef<DynamicCmp>;
+
+        create() {
+          this.componentRef = this.template!.createComponent(DynamicCmp);
+        }
+        setInput(value: string) {
+          this.componentRef!.setInput('input', value);
+        }
+      }
+
+      const fixture = TestBed.createComponent(Wrapper);
+      fixture.detectChanges();
+      fixture.componentInstance.create();
+
+      fixture.componentInstance.setInput('1');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerText).toBe('1');
+
+      fixture.componentInstance.setInput('2');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerText).toBe('2');
     });
   });
 });

@@ -801,6 +801,9 @@
     "name": "makeRecord"
   },
   {
+    "name": "markViewDirty"
+  },
+  {
     "name": "maybeWrapInNotSelector"
   },
   {
