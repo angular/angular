@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, Injector, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, Injectable, Injector, Input, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 
@@ -33,9 +33,11 @@ export class Greeter {
 
 @Component({
   selector: 'complete-component',
-  template: `Complete: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`
+  template: `{{ label }}: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`
 })
 export class CompleteComponent {
+  @Input() label!: string;
+
   constructor(public greeter: Greeter) {}
 }
 
@@ -45,12 +47,16 @@ export class CompleteComponent {
     <ng-template #ahoj>Ahoj</ng-template>
     <ng-template #svet>Svet</ng-template>
     <ng-container *ngComponentOutlet="CompleteComponent;
+                                      inputs: myInputs;
                                       injector: myInjector;
                                       content: myContent"></ng-container>`
 })
 export class NgComponentOutletCompleteExample implements OnInit {
   // This field is necessary to expose CompleteComponent to the template.
   CompleteComponent = CompleteComponent;
+
+  myInputs = {'label': 'Complete'};
+
   myInjector: Injector;
   @ViewChild('ahoj', {static: true}) ahojTemplateRef!: TemplateRef<any>;
   @ViewChild('svet', {static: true}) svetTemplateRef!: TemplateRef<any>;
