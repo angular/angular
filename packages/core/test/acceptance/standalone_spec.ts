@@ -785,33 +785,33 @@ describe('standalone components, directives, and pipes', () => {
    */
   describe('inheritance', () => {
     it('should allow extending a regular component and turn it into a standalone one', () => {
-      @Component({selector: 'regular', template: 'regular: {{in}}'})
+      @Component({selector: 'regular', template: 'regular: {{input}}'})
       class RegularCmp {
-        @Input() in : string|undefined;
+        @Input() input: string|undefined;
       }
 
-      @Component({selector: 'standalone', template: 'standalone: {{in}}', standalone: true})
+      @Component({selector: 'standalone', template: 'standalone: {{input}}', standalone: true})
       class StandaloneCmp extends RegularCmp {
       }
 
       const fixture = TestBed.createComponent(StandaloneCmp);
-      fixture.componentInstance.in = 'input value';
+      fixture.componentInstance.input = 'input value';
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('standalone: input value');
     });
 
     it('should allow extending a regular component and turn it into a standalone one', () => {
-      @Component({selector: 'standalone', template: 'standalone: {{in}}', standalone: true})
+      @Component({selector: 'standalone', template: 'standalone: {{input}}', standalone: true})
       class StandaloneCmp {
-        @Input() in : string|undefined;
+        @Input() input: string|undefined;
       }
 
-      @Component({selector: 'regular', template: 'regular: {{in}}'})
+      @Component({selector: 'regular', template: 'regular: {{input}}'})
       class RegularCmp extends StandaloneCmp {
       }
 
       const fixture = TestBed.createComponent(RegularCmp);
-      fixture.componentInstance.in = 'input value';
+      fixture.componentInstance.input = 'input value';
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('regular: input value');
     });
@@ -828,11 +828,11 @@ describe('standalone components, directives, and pipes', () => {
       @Component({
         selector: 'standalone',
         standalone: true,
-        template: 'standalone: {{in}}; (<inner></inner>)',
+        template: 'standalone: {{input}}; (<inner></inner>)',
         imports: [InnerCmp]
       })
       class StandaloneCmp {
-        @Input() in : string|undefined;
+        @Input() input: string|undefined;
       }
 
       @Component({selector: 'regular'})
@@ -840,7 +840,7 @@ describe('standalone components, directives, and pipes', () => {
       }
 
       const fixture = TestBed.createComponent(RegularCmp);
-      fixture.componentInstance.in = 'input value';
+      fixture.componentInstance.input = 'input value';
       fixture.detectChanges();
       // the assumption here is that not providing a template is equivalent to providing an empty
       // one

@@ -39,6 +39,14 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          expect(fixture.nativeElement).toHaveText('hello');
        }));
 
+    it('should work in a template attribute with in operator', waitForAsync(() => {
+         const template = '<span *ngIf="\'foo\' in {foo: 3}">hello</span>';
+         fixture = createTestComponent(template);
+         fixture.detectChanges();
+         expect(fixture.debugElement.queryAll(By.css('span')).length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('hello');
+       }));
+
     it('should work on a template element', waitForAsync(() => {
          const template = '<ng-template [ngIf]="booleanCondition">hello2</ng-template>';
          fixture = createTestComponent(template);

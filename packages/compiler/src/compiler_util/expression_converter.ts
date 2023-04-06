@@ -308,6 +308,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       case '>=':
         op = o.BinaryOperator.BiggerEquals;
         break;
+      case 'in':
+        op = o.BinaryOperator.In;
+        break;
       case '??':
         return this.convertNullishCoalesce(ast, mode);
       default:

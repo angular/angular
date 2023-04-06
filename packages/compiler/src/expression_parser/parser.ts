@@ -780,7 +780,7 @@ export class _ParseAST {
   parseMultiplicative(): AST {
     // '*', '%', '/'
     const start = this.inputIndex;
-    let result = this.parsePrefix();
+    let result = this.parseInOperator();
     while (this.next.type == TokenType.Operator) {
       const operator = this.next.strValue;
       switch (operator) {
@@ -796,6 +796,19 @@ export class _ParseAST {
     }
     return result;
   }
+
+  parseInOperator(): AST {
+    const start = this.inputIndex;
+    let result = this.parsePrefix();
+    if (this.next.isKeywordIn()) {
+      const operator = this.next.strValue;
+      this.advance();
+      let right = this.parsePrefix();
+      result = new Binary(this.span(start), this.sourceSpan(start), operator, result, right);
+    }
+    return result;
+  }
+
 
   parsePrefix(): AST {
     if (this.next.type == TokenType.Operator) {
@@ -1080,7 +1093,6 @@ export class _ParseAST {
    */
   parseTemplateBindings(templateKey: TemplateBindingIdentifier): TemplateBindingParseResult {
     const bindings: TemplateBinding[] = [];
-
     // The first binding is for the template key itself
     // In *ngFor="let item of items", key = "ngFor", value = null
     // In *ngIf="cond | pipe", key = "ngIf", value = "cond | pipe"

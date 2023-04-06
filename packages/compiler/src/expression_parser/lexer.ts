@@ -19,7 +19,8 @@ export enum TokenType {
   Error
 }
 
-const KEYWORDS = ['var', 'let', 'as', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
+const KEYWORDS =
+    ['var', 'let', 'as', 'null', 'in', 'undefined', 'true', 'false', 'if', 'else', 'this'];
 
 export class Lexer {
   tokenize(text: string): Token[] {
@@ -65,6 +66,10 @@ export class Token {
 
   isKeyword(): boolean {
     return this.type == TokenType.Keyword;
+  }
+
+  isKeywordIn(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'in';
   }
 
   isKeywordLet(): boolean {

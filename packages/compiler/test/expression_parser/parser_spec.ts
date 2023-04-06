@@ -700,6 +700,14 @@ describe('parser', () => {
       ]);
     });
 
+    it('should support usage of ngIf in', () => {
+      const bindings = parseTemplateBindings(`*ngIf="'foo' in a"`);
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, VariableBinding ]
+        ['ngIf', `'foo' in a`, false],
+      ]);
+    });
+
     it('should support common usage of ngFor', () => {
       let bindings: TemplateBinding[];
       bindings = parseTemplateBindings('*ngFor="let person of people"');
