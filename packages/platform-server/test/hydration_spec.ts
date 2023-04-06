@@ -10,7 +10,7 @@ import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {getComponentDef} from '@angular/core/src/render3/definition';
@@ -44,8 +44,11 @@ const TEXT_NODE_SEPARATOR_REGEXP = new RegExp(`<!--${TEXT_NODE_SEPARATOR_COMMENT
  * so that it's easier to make assertions in tests.
  */
 function stripUtilAttributes(html: string, keepNgh: boolean): string {
-  html = html.replace(/ ng-version=".*?"/g, '')  //
-             .replace(/ ng-server-context=".*?"/g, '');
+  html = html.replace(/ ng-version=".*?"/g, '')
+             .replace(/ ng-server-context=".*?"/g, '')
+             .replace(/ ng-reflect-(.*?)=".*?"/g, '')
+             .replace(/ _nghost(.*?)=""/g, '')
+             .replace(/ _ngcontent(.*?)=""/g, '');
   if (!keepNgh) {
     html = html.replace(NGH_ATTR_REGEXP, '')
                .replace(EMPTY_TEXT_NODE_REGEXP, '')
@@ -1728,6 +1731,70 @@ describe('platform-server integration', () => {
            const clientRootNode = compRef.location.nativeElement;
            verifyAllNodesClaimedForHydration(clientRootNode);
            verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
+    });
+
+    describe('ShadowDom encapsulation', () => {
+      it('should append skip hydration flag if component uses ShadowDom encapsulation',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             encapsulation: ViewEncapsulation.ShadowDom,
+             template: `Hi!`,
+             styles: [':host { color: red; }']
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+           expect(ssrContents).toContain('<app ngskiphydration="">');
+         });
+
+      it('should append skip hydration flag if component uses ShadowDom encapsulation ' +
+             '(but keep parent and sibling elements hydratable)',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'shadow-dom',
+             encapsulation: ViewEncapsulation.ShadowDom,
+             template: `ShadowDom component`,
+             styles: [':host { color: red; }']
+           })
+           class ShadowDomComponent {
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'regular',
+             template: `<p>Regular component</p>`,
+           })
+           class RegularComponent {
+             @Input() id?: string;
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [RegularComponent, ShadowDomComponent],
+             template: `
+                <main>Main content</main>
+                <regular id="1" />
+                <shadow-dom />
+                <regular id="2" />
+              `,
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh="0">');
+           expect(ssrContents).toContain('<shadow-dom ngskiphydration="">');
+           expect(ssrContents).toContain('<regular id="1" ngh="0">');
+           expect(ssrContents).toContain('<regular id="2" ngh="0">');
          });
     });
 
