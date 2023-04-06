@@ -68,7 +68,8 @@ export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   }
 }
 
-function toRefArray<T>(map: {[P in keyof T]?: string|[minifiedName: string, flags: InputFlags]}):
+export function toRefArray<T>(
+    map: {[P in keyof T]?: string|[minifiedName: string, flags: InputFlags]}):
     {propName: string; templateName: string}[] {
   const array: {propName: string; templateName: string;}[] = [];
   for (const publicName in map) {

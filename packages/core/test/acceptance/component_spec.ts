@@ -923,6 +923,17 @@ describe('component', () => {
   });
 
   describe('reflectComponentType', () => {
+    @Directive({selector: '[dir1]', inputs: ['input-1a', 'input-1b'], outputs: ['output-1']})
+    class Dir1 {
+    }
+    @Directive({
+      selector: '[dir2]',
+      inputs: ['input-2a', 'input-2b:input-alias-2b'],
+      outputs: ['output-2']
+    })
+    class Dir2 {
+    }
+
     it('should create an ComponentMirror for a standalone component', () => {
       function transformFn() {}
 
@@ -937,13 +948,14 @@ describe('component', () => {
         `,
         inputs: ['input-a', 'input-b:input-alias-b'],
         outputs: ['output-a', 'output-b:output-alias-b'],
+        imports: [Dir1, Dir2],
+        hostDirectives: [Dir1, Dir2],
       })
       class StandaloneComponent {
         @Input({alias: 'input-alias-c', transform: transformFn}) inputC: unknown;
       }
 
       const mirror = reflectComponentType(StandaloneComponent)!;
-
       expect(mirror.selector).toBe('standalone-component');
       expect(mirror.type).toBe(StandaloneComponent);
       expect(mirror.isStandalone).toEqual(true);
@@ -951,10 +963,16 @@ describe('component', () => {
         {propName: 'input-a', templateName: 'input-a'},
         {propName: 'input-b', templateName: 'input-alias-b'},
         {propName: 'inputC', templateName: 'input-alias-c', transform: transformFn},
+        {propName: 'input-1a', templateName: 'input-1a'},
+        {propName: 'input-1b', templateName: 'input-1b'},
+        {propName: 'input-2a', templateName: 'input-2a'},
+        {propName: 'input-2b', templateName: 'input-alias-2b'},
       ]);
       expect(mirror.outputs).toEqual([
         {propName: 'output-a', templateName: 'output-a'},
-        {propName: 'output-b', templateName: 'output-alias-b'}
+        {propName: 'output-b', templateName: 'output-alias-b'},
+        {propName: 'output-1', templateName: 'output-1'},
+        {propName: 'output-2', templateName: 'output-2'},
       ]);
       expect(mirror.ngContentSelectors).toEqual([
         '*', 'content-selector-a', 'content-selector-b', '*'
@@ -974,6 +992,7 @@ describe('component', () => {
         `,
         inputs: ['input-a', 'input-b:input-alias-b'],
         outputs: ['output-a', 'output-b:output-alias-b'],
+        hostDirectives: [Dir1, Dir2],
       })
       class NonStandaloneComponent {
         @Input({alias: 'input-alias-c', transform: transformFn}) inputC: unknown;
@@ -988,10 +1007,16 @@ describe('component', () => {
         {propName: 'input-a', templateName: 'input-a'},
         {propName: 'input-b', templateName: 'input-alias-b'},
         {propName: 'inputC', templateName: 'input-alias-c', transform: transformFn},
+        {propName: 'input-1a', templateName: 'input-1a'},
+        {propName: 'input-1b', templateName: 'input-1b'},
+        {propName: 'input-2a', templateName: 'input-2a'},
+        {propName: 'input-2b', templateName: 'input-alias-2b'},
       ]);
       expect(mirror.outputs).toEqual([
         {propName: 'output-a', templateName: 'output-a'},
-        {propName: 'output-b', templateName: 'output-alias-b'}
+        {propName: 'output-b', templateName: 'output-alias-b'},
+        {propName: 'output-1', templateName: 'output-1'},
+        {propName: 'output-2', templateName: 'output-2'},
       ]);
       expect(mirror.ngContentSelectors).toEqual([
         '*', 'content-selector-a', 'content-selector-b', '*'

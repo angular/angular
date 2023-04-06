@@ -11,8 +11,8 @@ import {EnvironmentInjector, getNullInjector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentRef} from '../linker/component_factory';
 
-import {ComponentFactory} from './component_ref';
-import {getComponentDef} from './definition';
+import {ComponentFactory, toRefArray} from './component_ref';
+import {getComponentDef, getDirectiveDef} from './definition';
 import {assertComponentDef} from './errors';
 
 /**
@@ -115,7 +115,8 @@ export interface ComponentMirror<C> {
   /**
    * The outputs of the component.
    */
-  get outputs(): ReadonlyArray<{readonly propName: string, readonly templateName: string}>;
+  get outputs(): ReadonlyArray<{readonly propName: string; readonly templateName: string}>;
+
   /**
    * Selector for all <ng-content> elements in the component.
    */
@@ -174,8 +175,8 @@ export interface ComponentMirror<C> {
 export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|null {
   const componentDef = getComponentDef(component);
   if (!componentDef) return null;
-
   const factory = new ComponentFactory<C>(componentDef);
+
   return {
     get selector(): string {
       return factory.selector;
@@ -184,14 +185,25 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|
       return factory.componentType;
     },
     get inputs(): ReadonlyArray<{
-      propName: string,
-      templateName: string,
+      propName: string; templateName: string;
       transform?: (value: any) => any,
     }> {
-      return factory.inputs;
+      return [
+        ...factory.inputs,
+        ...(componentDef.hostDirectives ?? []).flatMap((directiveRef) => {
+          // the directiveRef returns no inputs, a call the getDirectiveDef is required
+          return toRefArray(getDirectiveDef(directiveRef.directive)?.inputs ?? {});
+        }),
+      ];
     },
-    get outputs(): ReadonlyArray<{propName: string, templateName: string}> {
-      return factory.outputs;
+    get outputs(): ReadonlyArray<{propName: string; templateName: string}> {
+      return [
+        ...factory.outputs,
+        ...(componentDef.hostDirectives ?? []).flatMap((directiveRef) => {
+          // the directiveRef returns no inputs, a call the getDirectiveDef is required
+          return toRefArray(getDirectiveDef(directiveRef.directive)?.outputs ?? {});
+        }),
+      ];
     },
     get ngContentSelectors(): ReadonlyArray<string> {
       return factory.ngContentSelectors;
