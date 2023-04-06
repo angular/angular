@@ -7,12 +7,14 @@
  */
 
 import {ApplicationRef} from '../application_ref';
+import {ViewEncapsulation} from '../metadata';
 import {collectNativeNodes} from '../render3/collect_native_nodes';
+import {getComponentDef} from '../render3/definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {isComponentHost, isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
@@ -379,6 +381,17 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
 }
 
 /**
+ * Determines whether a component instance that is represented
+ * by a given LView uses `ViewEncapsulation.ShadowDom`.
+ */
+function componentUsesShadowDomEncapsulation(lView: LView): boolean {
+  const instance = lView[CONTEXT];
+  return instance?.constructor ?
+      getComponentDef(instance.constructor)?.encapsulation === ViewEncapsulation.ShadowDom :
+      false;
+}
+
+/**
  * Annotates component host element for hydration:
  * - by either adding the `ngh` attribute and collecting hydration-related info
  *   for the serialization and transferring to the client
@@ -392,9 +405,13 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
 function annotateHostElementForHydration(
     element: RElement, lView: LView, context: HydrationContext): void {
   const renderer = lView[RENDERER];
-  if ((lView[FLAGS] & LViewFlags.HasI18n) === LViewFlags.HasI18n) {
-    // Attach the skip hydration attribute if a component has i18n blocks,
-    // since hydrating such blocks is not yet supported.
+  if ((lView[FLAGS] & LViewFlags.HasI18n) === LViewFlags.HasI18n ||
+      componentUsesShadowDomEncapsulation(lView)) {
+    // Attach the skip hydration attribute if this component:
+    // - either has i18n blocks, since hydrating such blocks is not yet supported
+    // - or uses ShadowDom view encapsulation, since Domino doesn't support
+    //   shadow DOM, so we can not guarantee that client and server representations
+    //   would exactly match
     renderer.setAttribute(element, SKIP_HYDRATION_ATTR_NAME, '');
   } else {
     const ngh = serializeLView(lView, context);
