@@ -39,6 +39,19 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          }));
     });
 
+    describe('components', () => {
+      it('should support component with keywordy variables', () => {
+        TestBed.configureTestingModule({
+          declarations: [
+            TestComponent,
+          ],
+        });
+
+        const template = `<div>{{as}}</div>`;
+        fixture = createTestComponent(template);
+      });
+    });
+
     describe('ng-container', () => {
       if (browserDetection.isChromeDesktop) {
         it('should work regardless the namespace', waitForAsync(() => {
@@ -66,6 +79,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
+  as: string = 'as';
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {

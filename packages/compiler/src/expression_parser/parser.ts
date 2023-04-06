@@ -545,7 +545,7 @@ export class _ParseAST {
 
   expectIdentifierOrKeyword(): string|null {
     const n = this.next;
-    if (!n.isIdentifier() && !n.isKeyword()) {
+    if (!n.isIdentifier() && !n.isKeyword() && !n.isKeywordyIdentifier()) {
       if (n.isPrivateIdentifier()) {
         this._reportErrorForPrivateIdentifier(n, 'expected identifier or keyword');
       } else {
@@ -559,7 +559,7 @@ export class _ParseAST {
 
   expectIdentifierOrKeywordOrString(): string {
     const n = this.next;
-    if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
+    if (!n.isIdentifier() && !n.isKeyword() && !n.isKeywordyIdentifier() && !n.isString()) {
       if (n.isPrivateIdentifier()) {
         this._reportErrorForPrivateIdentifier(n, 'expected identifier, keyword or string');
       } else {
@@ -885,7 +885,7 @@ export class _ParseAST {
     } else if (this.next.isCharacter(chars.$LBRACE)) {
       return this.parseLiteralMap();
 
-    } else if (this.next.isIdentifier()) {
+    } else if (this.next.isIdentifier() || this.next.isKeywordyIdentifier()) {
       return this.parseAccessMember(
           new ImplicitReceiver(this.span(start), this.sourceSpan(start)), start, false);
     } else if (this.next.isNumber()) {

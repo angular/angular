@@ -12,6 +12,7 @@ export enum TokenType {
   Character,
   Identifier,
   PrivateIdentifier,
+  KeywordyIdentifier,
   Keyword,
   String,
   Operator,
@@ -20,6 +21,9 @@ export enum TokenType {
 }
 
 const KEYWORDS = ['var', 'let', 'as', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
+
+/* This list contains keywords that are valid identifiers is JS */
+const KEYWORDY_IDENTIFIERS = ['as'];
 
 export class Lexer {
   tokenize(text: string): Token[] {
@@ -63,6 +67,10 @@ export class Token {
     return this.type == TokenType.PrivateIdentifier;
   }
 
+  isKeywordyIdentifier(): boolean {
+    return this.type == TokenType.KeywordyIdentifier;
+  }
+
   isKeyword(): boolean {
     return this.type == TokenType.Keyword;
   }
@@ -72,7 +80,7 @@ export class Token {
   }
 
   isKeywordAs(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'as';
+    return this.type == TokenType.KeywordyIdentifier && this.strValue == 'as';
   }
 
   isKeywordNull(): boolean {
@@ -107,6 +115,7 @@ export class Token {
     switch (this.type) {
       case TokenType.Character:
       case TokenType.Identifier:
+      case TokenType.KeywordyIdentifier:
       case TokenType.Keyword:
       case TokenType.Operator:
       case TokenType.PrivateIdentifier:
@@ -127,6 +136,10 @@ function newCharacterToken(index: number, end: number, code: number): Token {
 
 function newIdentifierToken(index: number, end: number, text: string): Token {
   return new Token(index, end, TokenType.Identifier, 0, text);
+}
+
+function newKeywordyIdentifierToken(index: number, end: number, text: string): Token {
+  return new Token(index, end, TokenType.KeywordyIdentifier, 0, text);
 }
 
 function newPrivateIdentifierToken(index: number, end: number, text: string): Token {
@@ -286,8 +299,13 @@ class _Scanner {
     this.advance();
     while (isIdentifierPart(this.peek)) this.advance();
     const str: string = this.input.substring(start, this.index);
-    return KEYWORDS.indexOf(str) > -1 ? newKeywordToken(start, this.index, str) :
-                                        newIdentifierToken(start, this.index, str);
+    if (KEYWORDS.indexOf(str) === -1) {
+      return newIdentifierToken(start, this.index, str);
+    } else if (KEYWORDY_IDENTIFIERS.indexOf(str) > -1) {
+      return newKeywordyIdentifierToken(start, this.index, str);
+    } else {
+      return newKeywordToken(start, this.index, str);
+    }
   }
 
   /** Scans an ECMAScript private identifier. */
