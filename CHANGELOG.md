@@ -1,3 +1,19 @@
+<a name="15.2.6"></a>
+# 15.2.6 (2023-04-05)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d9efa1b0d7](https://github.com/angular/angular/commit/d9efa1b0d742217de1164f7904c202b2697348d9) | feat | change the URL sanitization to only block javascript: URLs ([#49659](https://github.com/angular/angular/pull/49659)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cad7274ef9](https://github.com/angular/angular/commit/cad7274ef90914f0c24d071473a6cbae0e5b8250) | fix | create correct URL relative to path with empty child ([#49691](https://github.com/angular/angular/pull/49691)) |
+| [9b61379096](https://github.com/angular/angular/commit/9b6137909690d6cbfdd8cbef502e9e2ac0d28c4a) | fix | Ensure initial navigation clears current navigation when blocking ([#49572](https://github.com/angular/angular/pull/49572)) |
+## Special Thanks
+Andrew Scott, Guillaume Weghsteen, John Manners, Johnny Gérard, Matthieu Riegler, Robin Richtsfeld, Sandra Limacher, Sarthak Thakkar, Vinit Neogi and vikram menon
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.5"></a>
 # 15.2.5 (2023-03-29)
 ### common
