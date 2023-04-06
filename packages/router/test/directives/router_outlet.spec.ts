@@ -324,6 +324,40 @@ describe('component input binding', () => {
     await harness.navigateByUrl('/x;result=from path param?result=from query params', MyComponent);
     expect(resultLog).toEqual([undefined, 'from path param']);
   });
+
+  it('Should have inputs available to all outlets after navigation', async () => {
+    @Component({
+      template: '{{myInput}}',
+      standalone: true,
+    })
+    class MyComponent {
+      @Input() myInput?: string;
+    }
+
+    @Component({
+      template: '<router-outlet/>',
+      imports: [RouterOutlet],
+      standalone: true,
+    })
+    class OutletWrapper {
+    }
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter(
+          [{
+            path: 'root',
+            component: OutletWrapper,
+            children: [
+              {path: '**', component: MyComponent},
+            ]
+          }],
+          withComponentInputBinding())]
+    });
+    const harness = await RouterTestingHarness.create('/root/child?myInput=1');
+    expect(harness.routeNativeElement!.innerText).toBe('1');
+    await harness.navigateByUrl('/root/child?myInput=2');
+    expect(harness.routeNativeElement!.innerText).toBe('2');
+  });
 });
 
 function advance(fixture: ComponentFixture<unknown>, millis?: number): void {
