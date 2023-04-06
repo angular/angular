@@ -1009,8 +1009,7 @@ export class ApplicationRef {
     this._loadComponent(compRef);
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       const _console = this._injector.get(Console);
-      _console.log(
-          `Angular is running in development mode. Call enableProdMode() to enable production mode.`);
+      _console.log(`Angular is running in development mode.`);
     }
     return compRef;
   }
