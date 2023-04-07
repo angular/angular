@@ -4022,11 +4022,23 @@ describe('platform-server integration', () => {
            resetTViewsFor(SimpleComponent);
 
            const appRef = await hydrate(html, SimpleComponent, [withDebugConsole()]);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
 
            verifyHasLog(
                appRef,
-               'NG0505: Angular hydration was enabled on the client, ' +
-                   'but there was no serialized information present in the server response.');
+               'NG0505: Angular hydration was requested on the client, ' +
+                   'but there was no serialized information present in the server response');
+
+           const clientRootNode = compRef.location.nativeElement;
+
+           // Make sure that no hydration logic was activated,
+           // effectively re-rendering from scratch happened and
+           // all the content inside the <app> host element was
+           // cleared on the client (as it usually happens in client
+           // rendering mode).
+           verifyNoNodesWereClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
          });
     });
 
