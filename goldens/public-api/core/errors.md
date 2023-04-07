@@ -69,6 +69,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_GENERATED_DEF = 906,
     // (undocumented)
+    MISSING_HYDRATION_ANNOTATIONS = -505,
+    // (undocumented)
     MISSING_INJECTION_CONTEXT = -203,
     // (undocumented)
     MISSING_INJECTION_TOKEN = 208,
