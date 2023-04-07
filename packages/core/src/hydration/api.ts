@@ -11,8 +11,9 @@ import {first} from 'rxjs/operators';
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application_ref';
 import {PLATFORM_ID} from '../application_tokens';
 import {Console} from '../console';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, makeEnvironmentProviders} from '../di';
+import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironmentProviders} from '../di';
 import {inject} from '../di/injector_compatibility';
+import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {InitialRenderPendingTasks} from '../initial_render_pending_tasks';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';
@@ -20,10 +21,11 @@ import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructi
 import {enableApplyRootElementTransformImpl} from '../render3/instructions/shared';
 import {enableLocateOrCreateContainerAnchorImpl} from '../render3/instructions/template';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
+import {TransferState} from '../transfer_state';
 
 import {cleanupDehydratedViews} from './cleanup';
 import {IS_HYDRATION_FEATURE_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
-import {enableRetrieveHydrationInfoImpl} from './utils';
+import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 
 
@@ -70,14 +72,27 @@ function isBrowser(): boolean {
 /**
  * Outputs a message with hydration stats into a console.
  */
-function printHydrationStats(console: Console) {
-  const message = `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
-      `and ${ngDevMode!.hydratedNodes} node(s), ` +
-      `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
-      `Note: this feature is in Developer Preview mode. ` +
-      `Learn more at https://next.angular.io/guide/hydration.`;
-  // tslint:disable-next-line:no-console
-  console.log(message);
+function printHydrationInfo(injector: Injector) {
+  const console = injector.get(Console);
+  const transferState = injector.get(TransferState, null, {optional: true});
+  if (transferState && transferState.get(NGH_DATA_KEY, null)) {
+    const message = `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
+        `and ${ngDevMode!.hydratedNodes} node(s), ` +
+        `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
+        `Note: this feature is in Developer Preview mode. ` +
+        `Learn more at https://next.angular.io/guide/hydration.`;
+    // tslint:disable-next-line:no-console
+    console.log(message);
+  } else {
+    const message = formatRuntimeError(
+        RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
+        'Angular hydration was enabled on the client, but there was no ' +
+            'serialized information present in the server response. ' +
+            'Make sure the `provideClientHydration()` is included into the list ' +
+            'of providers in the server part of the application configuration.');
+    // tslint:disable-next-line:no-console
+    console.warn(message);
+  }
 }
 
 
@@ -134,7 +149,7 @@ export function withDomHydration(): EnvironmentProviders {
         if (isBrowser()) {
           const appRef = inject(ApplicationRef);
           const pendingTasks = inject(InitialRenderPendingTasks);
-          const console = inject(Console);
+          const injector = inject(Injector);
           return () => {
             whenStable(appRef, pendingTasks).then(() => {
               // Wait until an app becomes stable and cleanup all views that
@@ -144,7 +159,7 @@ export function withDomHydration(): EnvironmentProviders {
               cleanupDehydratedViews(appRef);
 
               if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-                printHydrationStats(console);
+                printHydrationInfo(injector);
               }
             });
           };
