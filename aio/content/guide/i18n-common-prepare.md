@@ -229,11 +229,20 @@ That one translation entry is merged back into the application wherever the same
 ICU expressions help you mark alternate text in component templates to meet conditions.
 An ICU expression includes a component property, an ICU clause, and the case statements surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
+<div class="alert is-helpful">
+ICU expressions will only work in templates, not when using $localize in other angular code.   
+</div>
+
+  
 <!--todo: replace with code-example -->
 
-<code-example>
-
-{ component_property, icu_clause, case_statements }
+In the example we assume that the variable numberOfItems exists in the template and use the plural function to render correct pluralization.
+  
+<code-example>  
+  
+`<span i18n>
+  Item count: {numberOfItems, plural, =0 { No item } =1 { One item } other { {{numberOfItems }} items }} }
+ </span>`
 
 </code-example>
 
