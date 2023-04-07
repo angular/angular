@@ -146,7 +146,13 @@ function generateHash(value: string): string {
  */
 export function withHttpTransferCache(): Provider[] {
   return [
-    {provide: CACHE_STATE, useValue: {isCacheActive: true}}, {
+    {
+      provide: CACHE_STATE,
+      useFactory: () => {
+        return {isCacheActive: true};
+      }
+    },
+    {
       provide: HTTP_ROOT_INTERCEPTOR_FNS,
       useValue: transferCacheInterceptorFn,
       multi: true,
