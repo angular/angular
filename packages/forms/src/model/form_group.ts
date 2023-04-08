@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵWritable as Writable} from '@angular/core';
+
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
 import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model';
@@ -533,7 +535,7 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
 
   /** @internal */
   override _updateValue(): void {
-    (this as {value: any}).value = this._reduceValue();
+    (this as Writable<this>).value = this._reduceValue() as any;
   }
 
   /** @internal */

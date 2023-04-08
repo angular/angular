@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵWritable as Writable} from '@angular/core';
+
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
 import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model';
@@ -476,7 +478,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
 
   /** @internal */
   override _updateValue(): void {
-    (this as {value: any}).value =
+    (this as Writable<this>).value =
         this.controls.filter((control) => control.enabled || this.disabled)
             .map((control) => control.value);
   }
