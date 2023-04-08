@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Optional, Self} from '@angular/core';
+import {Directive, Optional, Self, ɵWritable as Writable} from '@angular/core';
 
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
+import {type NgForm} from './ng_form';
+import {type FormGroupDirective} from './reactive_directives/form_group_directive';
 
 // DO NOT REFACTOR!
 // Each status is represented by a separate function to make sure that
@@ -54,7 +56,7 @@ export class AbstractControlStatus {
   protected get isSubmitted() {
     // We check for the `submitted` field from `NgForm` and `FormGroupDirective` classes, but
     // we avoid instanceof checks to prevent non-tree-shakable references to those types.
-    return !!(this._cd as unknown as {submitted: boolean} | null)?.submitted;
+    return !!(this._cd as Writable<NgForm|FormGroupDirective>| null)?.submitted;
   }
 }
 

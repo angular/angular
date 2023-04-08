@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Provider, Self} from '@angular/core';
+import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Provider, Self, ɵWritable as Writable} from '@angular/core';
 
 import {AbstractControl, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -191,7 +191,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      (dir as {control: FormControl}).control =
+      (dir as Writable<NgModel>).control =
           <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir, this.callSetDisabledState);
       dir.control.updateValueAndValidity({emitEvent: false});
@@ -297,7 +297,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    * @param $event The "submit" event object
    */
   onSubmit($event: Event): boolean {
-    (this as {submitted: boolean}).submitted = true;
+    (this as Writable<this>).submitted = true;
     syncPendingControls(this.form, this._directives);
     this.ngSubmit.emit($event);
     // Forms with `method="dialog"` have some special behavior
@@ -321,7 +321,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    */
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    (this as {submitted: boolean}).submitted = false;
+    (this as Writable<this>).submitted = false;
   }
 
   private _setUpdateStrategy() {
