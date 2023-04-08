@@ -23,6 +23,7 @@ export {SSR_CONTENT_INTEGRITY_MARKER as ɵSSR_CONTENT_INTEGRITY_MARKER} from './
 export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleDataIndex, findLocaleData as ɵfindLocaleData, getLocaleCurrencyCode as ɵgetLocaleCurrencyCode, getLocalePluralCase as ɵgetLocalePluralCase, LocaleDataIndex as ɵLocaleDataIndex, registerLocaleData as ɵregisterLocaleData, unregisterAllLocaleData as ɵunregisterLocaleData} from './i18n/locale_data_api';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {InitialRenderPendingTasks as ɵInitialRenderPendingTasks} from './initial_render_pending_tasks';
+export {Writable as ɵWritable} from './interface/type';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution as ɵisComponentDefPendingResolution, resolveComponentResources as ɵresolveComponentResources, restoreComponentResolutionQueue as ɵrestoreComponentResolutionQueue} from './metadata/resource_loading';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
