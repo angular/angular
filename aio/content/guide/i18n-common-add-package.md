@@ -10,7 +10,7 @@ It adds `types: ["@angular/localize"]` in the TypeScript configuration files as 
 
 <div class="alert is-helpful">
 
-For more information about `package.json` and `tsconfig.json` files, see [Workspace npm dependencies][AioGuideNpmPackages] and [TypeScript Configuraiton][AioGuideTsConfig].
+For more information about `package.json` and `tsconfig.json` files, see [Workspace npm dependencies][AioGuideNpmPackages] and [TypeScript Configuration][AioGuideTsConfig].
 
 </div>
 
