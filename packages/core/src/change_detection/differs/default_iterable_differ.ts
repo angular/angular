@@ -7,6 +7,7 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {Writable} from '../../interface/type';
 import {isListLikeIterable, iterateListLike} from '../../util/iterable';
 import {stringify} from '../../util/stringify';
 
@@ -178,7 +179,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     let item: V;
     let itemTrackBy: any;
     if (Array.isArray(collection)) {
-      (this as {length: number}).length = collection.length;
+      (this as Writable<this>).length = collection.length;
 
       for (let index = 0; index < this.length; index++) {
         item = collection[index];
@@ -213,12 +214,11 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
         record = record._next;
         index++;
       });
-      (this as {length: number}).length = index;
+      (this as Writable<this>).length = index;
     }
 
     this._truncate(record);
-    // @ts-expect-error overwriting a readonly member
-    this.collection = collection;
+    (this as Writable<this>).collection = collection;
     return this.isDirty;
   }
 
