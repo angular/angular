@@ -56,6 +56,14 @@ describe('url serializer', () => {
     expect(tree.root.children.primary.segments[2].path).toEqual('=');
   });
 
+  it('should parse segments with matrix parameter values containing an =', () => {
+    const tree = url.parse('/path/to/something;query=file=test;query2=test2');
+    expect(tree.root.children.primary.segments[2].path).toEqual('something');
+    expect(tree.root.children.primary.segments[2].parameterMap.keys).toHaveSize(2);
+    expect(tree.root.children.primary.segments[2].parameterMap.get('query')).toEqual('file=test');
+    expect(tree.root.children.primary.segments[2].parameterMap.get('query2')).toEqual('test2');
+  });
+
   it('should parse top-level nodes with only secondary segment', () => {
     const tree = url.parse('/(left:one)');
 

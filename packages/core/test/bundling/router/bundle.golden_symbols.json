@@ -1683,9 +1683,6 @@
     "name": "match"
   },
   {
-    "name": "matchMatrixParamSegments"
-  },
-  {
     "name": "matchSegments"
   },
   {
