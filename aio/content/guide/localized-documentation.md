@@ -10,7 +10,7 @@ This topic lists localized versions of the Angular documentation.
 *   [&Epsilon;&lambda;&lambda;&eta;&nu;&iota;&kappa;ά](https://angular-gr.web.app) <!-- Ελληνικά -->
 
 For information on localizing Angular documentation, see [Angular localization guidelines](guide/localizing-angular).
-
+Need to add Urdu in list of language
 <!-- links -->
 
 <!-- external links -->
