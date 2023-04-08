@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, Optional} from '@angular/core';
+import {Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 import * as url from 'url';
 
@@ -91,7 +91,7 @@ export class ServerPlatformLocation implements PlatformLocation {
       // Don't fire events if the hash has not changed.
       return;
     }
-    (this as {hash: string}).hash = value;
+    (this as Writable<this>).hash = value;
     const newUrl = this.url;
     queueMicrotask(
         () => this._hashUpdate.next(
@@ -101,8 +101,8 @@ export class ServerPlatformLocation implements PlatformLocation {
   replaceState(state: any, title: string, newUrl: string): void {
     const oldUrl = this.url;
     const parsedUrl = parseUrl(newUrl);
-    (this as {pathname: string}).pathname = parsedUrl.pathname;
-    (this as {search: string}).search = parsedUrl.search;
+    (this as Writable<this>).pathname = parsedUrl.pathname;
+    (this as Writable<this>).search = parsedUrl.search;
     this.setHash(parsedUrl.hash, oldUrl);
   }
 
