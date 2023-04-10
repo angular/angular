@@ -189,6 +189,9 @@ export function extractDirectiveMetadata(
       rawHostDirectives === null ? null : extractHostDirectives(rawHostDirectives, evaluator);
 
   if (hostDirectives !== null) {
+    // The template type-checker will need to import host directive types, so add them
+    // as referenced by `clazz`. This will ensure that libraries are required to export
+    // host directives which are visible from publicly exported components.
     referencesRegistry.add(clazz, ...hostDirectives.map(hostDir => hostDir.directive));
   }
 
