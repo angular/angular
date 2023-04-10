@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, InjectFlags, InjectionToken, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Injectable, InjectFlags, InjectionToken, ɵRuntimeErrorCode as RuntimeErrorCode, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
-import {RuntimeErrorCode} from '../../errors';
 
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';

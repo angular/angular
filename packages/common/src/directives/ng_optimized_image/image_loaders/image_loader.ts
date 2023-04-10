@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {InjectionToken, Provider, ɵRuntimeError as RuntimeError, ɵRuntimeErrorCode as RuntimeErrorCode,} from '@angular/core';
 
-import {RuntimeErrorCode} from '../../../errors';
 import {isAbsoluteUrl, isValidPath, normalizePath, normalizeSrc} from '../url';
 
 /**
@@ -108,23 +107,26 @@ export function createImageLoader(
   };
 }
 
-function throwInvalidPathError(path: unknown, exampleUrls: string[]): never {
-  throw new RuntimeError(
+function throwInvalidPathError(path: unknown, exampleUrls: string[]): void {
+  if(ngDevMode) {
+    throw new RuntimeError(
       RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
-      ngDevMode &&
           `Image loader has detected an invalid path (\`${path}\`). ` +
               `To fix this, supply a path using one of the following formats: ${
                   exampleUrls.join(' or ')}`);
+  }
+  
 }
 
-function throwUnexpectedAbsoluteUrlError(path: string, url: string): never {
-  throw new RuntimeError(
-      RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
-      ngDevMode &&
-          `Image loader has detected a \`<img>\` tag with an invalid \`ngSrc\` attribute: ${
-              url}. ` +
-              `This image loader expects \`ngSrc\` to be a relative URL - ` +
-              `however the provided value is an absolute URL. ` +
-              `To fix this, provide \`ngSrc\` as a path relative to the base URL ` +
-              `configured for this loader (\`${path}\`).`);
+function throwUnexpectedAbsoluteUrlError(path: string, url: string): void {
+  if(ngDevMode) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
+            `Image loader has detected a \`<img>\` tag with an invalid \`ngSrc\` attribute: ${
+                url}. ` +
+                `This image loader expects \`ngSrc\` to be a relative URL - ` +
+                `however the provided value is an absolute URL. ` +
+                `To fix this, provide \`ngSrc\` as a path relative to the base URL ` +
+                `configured for this loader (\`${path}\`).`);
+  }
 }

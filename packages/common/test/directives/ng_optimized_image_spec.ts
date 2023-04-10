@@ -7,9 +7,8 @@
  */
 
 import {CommonModule, DOCUMENT} from '@angular/common';
-import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {Component, PLATFORM_ID, Provider, Type} from '@angular/core';
+import {Component, PLATFORM_ID, Provider, Type, ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
