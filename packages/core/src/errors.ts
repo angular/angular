@@ -69,6 +69,7 @@ export const enum RuntimeErrorCode {
 
   // Signal Errors
   SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
+  REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
 
   // Styling Errors
 

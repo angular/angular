@@ -7,7 +7,10 @@
  */
 
 import {assertInInjectionContext, computed, DestroyRef, inject, signal, Signal, WritableSignal} from '@angular/core';
+import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {Observable} from 'rxjs';
+
+import {untracked} from '../../src/signals';
 
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
@@ -28,7 +31,7 @@ import {Observable} from 'rxjs';
  *
  * `fromObservable` must be called in an injection context.
  */
-export function fromObservable<T>(source: Observable<T>): Signal<T>;
+export function fromObservable<T>(source: Observable<T>): Signal<T|undefined>;
 
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
@@ -52,21 +55,25 @@ export function fromObservable<T>(source: Observable<T>): Signal<T>;
  * @developerPreview
  */
 export function fromObservable<T, U extends T|null|undefined>(
-    // fromObservable(Observable<Animal>) -> Signal<Cat>
-    source: Observable<T>, initialValue: U): Signal<T|U>;
-export function fromObservable<T, U = never>(source: Observable<T>, initialValue?: U): Signal<T|U> {
+    // fromObservable(Observable<Animal>, {initialValue: null}) -> Signal<Animal|null>
+    source: Observable<T>, options: {initialValue: U, requireSync?: false}): Signal<T|U>;
+export function fromObservable<T>(
+    // fromObservable(Observable<Animal>, {requireSync: true}) -> Signal<Animal>
+    source: Observable<T>, options: {requireSync: true}): Signal<T>;
+// fromObservable(Observable<Animal>) -> Signal<Animal|undefined>
+export function fromObservable<T, U = undefined>(
+    source: Observable<T>, options?: {initialValue?: U, requireSync?: boolean}): Signal<T|U> {
   assertInInjectionContext(fromObservable);
 
   // Note: T is the Observable value type, and U is the initial value type. They don't have to be
   // the same - the returned signal gives values of type `T`.
   let state: WritableSignal<State<T|U>>;
-  if (initialValue === undefined && arguments.length !== 2) {
-    // No initial value was passed, so initially the signal is in a `NoValue` state and will throw
-    // if accessed.
+  if (options?.requireSync) {
+    // Initially the signal is in a `NoValue` state.
     state = signal({kind: StateKind.NoValue});
   } else {
-    // An initial value was passed, so use it.
-    state = signal<State<T|U>>({kind: StateKind.Value, value: initialValue!});
+    // If an initial value was passed, use it. Otherwise, use `undefined` as the initial value.
+    state = signal<State<T|U>>({kind: StateKind.Value, value: options?.initialValue as U});
   }
 
   const sub = source.subscribe({
@@ -75,6 +82,12 @@ export function fromObservable<T, U = never>(source: Observable<T>, initialValue
     // Completion of the Observable is meaningless to the signal. Signals don't have a concept of
     // "complete".
   });
+
+  if (ngDevMode && options?.requireSync && untracked(state).kind === StateKind.NoValue) {
+    throw new RuntimeError(
+        RuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
+        '`fromObservable()` called with `requireSync` but `Observable` did not emit synchronously.');
+  }
 
   // Unsubscribe when the current context is destroyed.
   inject(DestroyRef).onDestroy(sub.unsubscribe.bind(sub));
@@ -89,8 +102,11 @@ export function fromObservable<T, U = never>(source: Observable<T>, initialValue
       case StateKind.Error:
         throw current.error;
       case StateKind.NoValue:
+        // This shouldn't really happen because the error is thrown on creation.
         // TODO(alxhub): use a RuntimeError when we finalize the error semantics
-        throw new Error(`fromObservable() signal read before the Observable emitted`);
+        throw new RuntimeError(
+            RuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
+            '`fromObservable()` called with `requireSync` but `Observable` did not emit synchronously.');
     }
   });
 }
