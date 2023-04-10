@@ -7,13 +7,13 @@
  */
 
 import {EnvironmentInjector, Injector, runInInjectionContext} from '@angular/core';
-import {fromObservable} from '@angular/core/rxjs-interop';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {BehaviorSubject, ReplaySubject, Subject} from 'rxjs';
 
-describe('fromObservable()', () => {
+describe('toSignal()', () => {
   it('should reflect the last emitted value of an Observable', test(() => {
        const counter$ = new BehaviorSubject(0);
-       const counter = fromObservable(counter$);
+       const counter = toSignal(counter$);
 
        expect(counter()).toBe(0);
        counter$.next(1);
@@ -25,7 +25,7 @@ describe('fromObservable()', () => {
   it('should notify when the last emitted value of an Observable changes', test(() => {
        let seenValue: number = 0;
        const counter$ = new BehaviorSubject(1);
-       const counter = fromObservable(counter$);
+       const counter = toSignal(counter$);
 
        expect(counter()).toBe(1);
 
@@ -35,7 +35,7 @@ describe('fromObservable()', () => {
 
   it('should propagate an error returned by the Observable', test(() => {
        const counter$ = new BehaviorSubject(1);
-       const counter = fromObservable(counter$);
+       const counter = toSignal(counter$);
 
        expect(counter()).toBe(1);
 
@@ -46,7 +46,7 @@ describe('fromObservable()', () => {
   it('should unsubscribe when the current context is destroyed', test(() => {
        const counter$ = new BehaviorSubject(0);
        const injector = Injector.create({providers: []}) as EnvironmentInjector;
-       const counter = runInInjectionContext(injector, () => fromObservable(counter$));
+       const counter = runInInjectionContext(injector, () => toSignal(counter$));
 
        expect(counter()).toBe(0);
        counter$.next(1);
@@ -66,7 +66,7 @@ describe('fromObservable()', () => {
   describe('with no initial value', () => {
     it('should return `undefined` if read before a value is emitted', test(() => {
          const counter$ = new Subject<number>();
-         const counter = fromObservable(counter$);
+         const counter = toSignal(counter$);
 
          expect(counter()).toBeUndefined();
          counter$.next(1);
@@ -75,7 +75,7 @@ describe('fromObservable()', () => {
 
     it('should not throw if a value is emitted before called', test(() => {
          const counter$ = new Subject<number>();
-         const counter = fromObservable(counter$);
+         const counter = toSignal(counter$);
 
          counter$.next(1);
          expect(() => counter()).not.toThrow();
@@ -85,13 +85,13 @@ describe('fromObservable()', () => {
   describe('with requireSync', () => {
     it('should throw if created before a value is emitted', test(() => {
          const counter$ = new Subject<number>();
-         expect(() => fromObservable(counter$, {requireSync: true})).toThrow();
+         expect(() => toSignal(counter$, {requireSync: true})).toThrow();
        }));
 
     it('should not throw if a value emits synchronously on creation', test(() => {
          const counter$ = new ReplaySubject<number>(1);
          counter$.next(1);
-         const counter = fromObservable(counter$);
+         const counter = toSignal(counter$);
          expect(counter()).toBe(1);
        }));
   });
@@ -99,7 +99,7 @@ describe('fromObservable()', () => {
   describe('with an initial value', () => {
     it('should return the initial value if called before a value is emitted', test(() => {
          const counter$ = new Subject<number>();
-         const counter = fromObservable(counter$, {initialValue: null});
+         const counter = toSignal(counter$, {initialValue: null});
 
          expect(counter()).toBeNull();
          counter$.next(1);
@@ -108,7 +108,7 @@ describe('fromObservable()', () => {
 
     it('should not return the initial value if called after a value is emitted', test(() => {
          const counter$ = new Subject<number>();
-         const counter = fromObservable(counter$, {initialValue: null});
+         const counter = toSignal(counter$, {initialValue: null});
 
          counter$.next(1);
          expect(counter()).not.toBeNull();
