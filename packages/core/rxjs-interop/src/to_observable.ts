@@ -43,11 +43,14 @@ export function toObservable<T>(
   // references to `source` to be dropped if the `Observable` is fully unsubscribed and thrown away.
   return new Observable(observer => {
     const watcher = effect(() => {
+      let value: T;
       try {
-        observer.next(source());
+        value = source();
       } catch (err) {
         observer.error(err);
+        return;
       }
+      observer.next(value);
     }, {injector, manualCleanup: true});
     return () => watcher.destroy();
   });
