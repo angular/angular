@@ -15,34 +15,34 @@ import {untracked} from '../../src/signals';
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
  *
- * `fromObservable` returns a `Signal` which provides synchronous reactive access to values produced
+ * `toSignal` returns a `Signal` which provides synchronous reactive access to values produced
  * by the given `Observable`, by subscribing to that `Observable`. The returned `Signal` will always
  * have the most recent value emitted by the subscription, and will throw an error if the
  * `Observable` errors.
  *
  * The subscription will last for the lifetime of the current injection context. That is, if
- * `fromObservable` is called from a component context, the subscription will be cleaned up when the
+ * `toSignal` is called from a component context, the subscription will be cleaned up when the
  * component is destroyed. When called outside of a component, the current `EnvironmentInjector`'s
  * lifetime will be used (which is typically the lifetime of the application itself).
  *
  * If the `Observable` does not produce a value before the `Signal` is read, the `Signal` will throw
  * an error. To avoid this, use a synchronous `Observable` (potentially created with the `startWith`
- * operator) or pass an initial value to `fromObservable` as the second argument.
+ * operator) or pass an initial value to `toSignal` as the second argument.
  *
- * `fromObservable` must be called in an injection context.
+ * `toSignal` must be called in an injection context.
  */
-export function fromObservable<T>(source: Observable<T>): Signal<T|undefined>;
+export function toSignal<T>(source: Observable<T>): Signal<T|undefined>;
 
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
  *
- * `fromObservable` returns a `Signal` which provides synchronous reactive access to values produced
+ * `toSignal` returns a `Signal` which provides synchronous reactive access to values produced
  * by the given `Observable`, by subscribing to that `Observable`. The returned `Signal` will always
  * have the most recent value emitted by the subscription, and will throw an error if the
  * `Observable` errors.
  *
  * The subscription will last for the lifetime of the current injection context. That is, if
- * `fromObservable` is called from a component context, the subscription will be cleaned up when the
+ * `toSignal` is called from a component context, the subscription will be cleaned up when the
  * component is destroyed. When called outside of a component, the current `EnvironmentInjector`'s
  * lifetime will be used (which is typically the lifetime of the application itself).
  *
@@ -50,20 +50,20 @@ export function fromObservable<T>(source: Observable<T>): Signal<T|undefined>;
  * `initialValue`. If the `Observable` is known to produce a value before the `Signal` will be read,
  * `initialValue` does not need to be passed.
  *
- * `fromObservable` must be called in an injection context.
+ * `toSignal` must be called in an injection context.
  *
  * @developerPreview
  */
-export function fromObservable<T, U extends T|null|undefined>(
-    // fromObservable(Observable<Animal>, {initialValue: null}) -> Signal<Animal|null>
+export function toSignal<T, U extends T|null|undefined>(
+    // toSignal(Observable<Animal>, {initialValue: null}) -> Signal<Animal|null>
     source: Observable<T>, options: {initialValue: U, requireSync?: false}): Signal<T|U>;
-export function fromObservable<T>(
-    // fromObservable(Observable<Animal>, {requireSync: true}) -> Signal<Animal>
+export function toSignal<T>(
+    // toSignal(Observable<Animal>, {requireSync: true}) -> Signal<Animal>
     source: Observable<T>, options: {requireSync: true}): Signal<T>;
-// fromObservable(Observable<Animal>) -> Signal<Animal|undefined>
-export function fromObservable<T, U = undefined>(
+// toSignal(Observable<Animal>) -> Signal<Animal|undefined>
+export function toSignal<T, U = undefined>(
     source: Observable<T>, options?: {initialValue?: U, requireSync?: boolean}): Signal<T|U> {
-  assertInInjectionContext(fromObservable);
+  assertInInjectionContext(toSignal);
 
   // Note: T is the Observable value type, and U is the initial value type. They don't have to be
   // the same - the returned signal gives values of type `T`.
@@ -86,7 +86,7 @@ export function fromObservable<T, U = undefined>(
   if (ngDevMode && options?.requireSync && untracked(state).kind === StateKind.NoValue) {
     throw new RuntimeError(
         RuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
-        '`fromObservable()` called with `requireSync` but `Observable` did not emit synchronously.');
+        '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.');
   }
 
   // Unsubscribe when the current context is destroyed.
@@ -106,7 +106,7 @@ export function fromObservable<T, U = undefined>(
         // TODO(alxhub): use a RuntimeError when we finalize the error semantics
         throw new RuntimeError(
             RuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
-            '`fromObservable()` called with `requireSync` but `Observable` did not emit synchronously.');
+            '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.');
     }
   });
 }

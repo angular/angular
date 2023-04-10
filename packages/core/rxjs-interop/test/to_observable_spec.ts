@@ -7,11 +7,11 @@
  */
 
 import {Component, computed, Injector, signal} from '@angular/core';
-import {fromSignal} from '@angular/core/rxjs-interop';
+import {toObservable} from '@angular/core/rxjs-interop';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {take, toArray} from 'rxjs/operators';
 
-describe('fromSignal()', () => {
+describe('toObservable()', () => {
   let fixture!: ComponentFixture<unknown>;
   let injector!: Injector;
 
@@ -33,7 +33,7 @@ describe('fromSignal()', () => {
 
   it('should produce an observable that tracks a signal', async () => {
     const counter = signal(0);
-    const counterValues = fromSignal(counter, {injector}).pipe(take(3), toArray()).toPromise();
+    const counterValues = toObservable(counter, {injector}).pipe(take(3), toArray()).toPromise();
 
     // Initial effect execution, emits 0.
     flushEffects();
@@ -61,7 +61,7 @@ describe('fromSignal()', () => {
       }
     });
 
-    const counter$ = fromSignal(counter, {injector});
+    const counter$ = toObservable(counter, {injector});
 
     let currentValue: number = 0;
     let currentError: any = null;
@@ -88,7 +88,7 @@ describe('fromSignal()', () => {
       return 0;
     });
 
-    fromSignal(counter, {injector});
+    toObservable(counter, {injector});
 
     // Simply creating the Observable shouldn't trigger a signal read.
     expect(counterRead).toBeFalse();
@@ -108,7 +108,7 @@ describe('fromSignal()', () => {
       return counter();
     });
 
-    const counter$ = fromSignal(trackedCounter, {injector});
+    const counter$ = toObservable(trackedCounter, {injector});
 
     const sub = counter$.subscribe();
     expect(readCount).toBe(0);
