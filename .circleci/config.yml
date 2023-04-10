@@ -89,7 +89,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: cimg/node:16.13.0
+      - image: cimg/node:16.14.0
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -99,7 +99,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: cimg/node:16.13.0-browsers
+      - image: cimg/node:16.14.0-browsers
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
