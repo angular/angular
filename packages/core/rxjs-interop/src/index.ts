@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {fromObservable} from './from_observable';
-export {fromSignal, FromSignalOptions} from './from_signal';
 export {takeUntilDestroyed} from './take_until_destroyed';
+export {toObservable, toObservableOptions} from './to_observable';
+export {toSignal} from './to_signal';
