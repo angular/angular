@@ -13,7 +13,7 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, EnvironmentProviders, getPlatform, HostListener, Inject, inject as coreInject, Injectable, Input, makeStateKey, mergeApplicationConfig, NgModule, NgZone, PLATFORM_ID, Provider, TransferState, Type, ViewEncapsulation} from '@angular/core';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {TestBed, waitForAsync} from '@angular/core/testing';
-import {bootstrapApplication, BrowserModule, Title} from '@angular/platform-browser';
+import {bootstrapApplication, BrowserModule, provideClientHydration, Title, withNoDomReuse, withNoHttpTransferCache} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, provideServerRendering, renderModule, ServerModule} from '@angular/platform-server';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {Observable} from 'rxjs';
@@ -899,6 +899,90 @@ describe('platform-server integration', () => {
              // All symbols other than [a-zA-Z0-9\-] are removed,
              // the `other` is used as the default.
              expect(output).toMatch(/ng-server-context="other"/);
+             called = true;
+           });
+         }));
+
+      it('includes a set of features into `ng-server-context` attribute', waitForAsync(() => {
+           const options = {
+             document: doc,
+           };
+           const providers = [{
+             provide: SERVER_CONTEXT,
+             useValue: 'ssg',
+           }];
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `<div>Works!</div>`,
+           })
+           class SimpleApp {
+           }
+
+           const bootstrap = renderApplication(
+               getStandaloneBoostrapFn(SimpleApp, [provideClientHydration()]),
+               {...options, platformProviders: providers});
+           bootstrap.then(output => {
+             // HttpClient cache and DOM hydration are enabled by default.
+             expect(output).toMatch(/ng-server-context="ssg\|httpcache,hydration"/);
+             called = true;
+           });
+         }));
+
+      it('should include a set of features into `ng-server-context` attribute ' +
+             '(excluding disabled hydration feature)',
+         waitForAsync(() => {
+           const options = {
+             document: doc,
+           };
+           const providers = [{
+             provide: SERVER_CONTEXT,
+             useValue: 'ssg',
+           }];
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `<div>Works!</div>`,
+           })
+           class SimpleApp {
+           }
+
+           const bootstrap = renderApplication(
+               getStandaloneBoostrapFn(SimpleApp, [provideClientHydration(withNoDomReuse())]),
+               {...options, platformProviders: providers});
+           bootstrap.then(output => {
+             // Dom hydration is disabled, so it should not be included.
+             expect(output).toMatch(/ng-server-context="ssg\|httpcache"/);
+             called = true;
+           });
+         }));
+
+      it('should not include features into `ng-server-context` attribute ' +
+             'when all features are disabled',
+         waitForAsync(() => {
+           const options = {
+             document: doc,
+           };
+           const providers = [{
+             provide: SERVER_CONTEXT,
+             useValue: 'ssg',
+           }];
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `<div>Works!</div>`,
+           })
+           class SimpleApp {
+           }
+
+           const bootstrap = renderApplication(
+               getStandaloneBoostrapFn(
+                   SimpleApp,
+                   [provideClientHydration(withNoDomReuse(), withNoHttpTransferCache())]),
+               {...options, platformProviders: providers});
+           bootstrap.then(output => {
+             // All features were disabled, so none of them are included.
+             expect(output).toMatch(/ng-server-context="ssg"/);
              called = true;
            });
          }));

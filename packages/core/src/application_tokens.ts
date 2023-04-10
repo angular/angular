@@ -112,3 +112,15 @@ export const CSP_NONCE = new InjectionToken<string|null>('CSP nonce', {
     return getDocument().body.querySelector('[ngCspNonce]')?.getAttribute('ngCspNonce') || null;
   },
 });
+
+/**
+ * Internal token to collect all SSR-related features enabled for this application.
+ *
+ * Note: the token is in `core` to let other packages register features (the `core`
+ * package is imported in other packages).
+ */
+export const ENABLED_SSR_FEATURES = new InjectionToken<Set<string>>(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'ENABLED_SSR_FEATURES' : '', {
+      providedIn: 'root',
+      factory: () => new Set(),
+    });

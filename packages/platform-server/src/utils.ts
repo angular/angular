@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
+import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
 import {first} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
@@ -33,7 +33,14 @@ function _getPlatform(
  * Adds the `ng-server-context` attribute to host elements of all bootstrapped components
  * within a given application.
  */
-function appendServerContextInfo(serverContext: string, applicationRef: ApplicationRef) {
+function appendServerContextInfo(applicationRef: ApplicationRef) {
+  const injector = applicationRef.injector;
+  let serverContext = sanitizeServerContext(injector.get(SERVER_CONTEXT, DEFAULT_SERVER_CONTEXT));
+  const features = injector.get(ENABLED_SSR_FEATURES);
+  if (features.size > 0) {
+    // Append features information into the server context value.
+    serverContext += `|${Array.from(features).join(',')}`;
+  }
   applicationRef.components.forEach(componentRef => {
     const renderer = componentRef.injector.get(Renderer2);
     const element = componentRef.location.nativeElement;
@@ -51,15 +58,11 @@ function _render<T>(
     const applicationRef: ApplicationRef = moduleOrApplicationRef instanceof ApplicationRef ?
         moduleOrApplicationRef :
         environmentInjector.get(ApplicationRef);
-    const serverContext =
-        sanitizeServerContext(environmentInjector.get(SERVER_CONTEXT, DEFAULT_SERVER_CONTEXT));
     const isStablePromise =
         applicationRef.isStable.pipe((first((isStable: boolean) => isStable))).toPromise();
     const pendingTasks = environmentInjector.get(InitialRenderPendingTasks);
     const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
     return Promise.allSettled([isStablePromise, pendingTasksPromise]).then(() => {
-      appendServerContextInfo(serverContext, applicationRef);
-
       const platformState = platform.injector.get(PlatformState);
 
       const asyncPromises: Promise<any>[] = [];
@@ -88,6 +91,7 @@ function _render<T>(
       }
 
       const complete = () => {
+        appendServerContextInfo(applicationRef);
         const output = platformState.renderToString();
         platform.destroy();
         return output;
