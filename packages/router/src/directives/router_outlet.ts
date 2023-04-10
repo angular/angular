@@ -415,13 +415,13 @@ export class RoutedComponentInputBinder {
             );
     const dataSubscription =
         merge(
+            // Get the first result from the data subscription synchronously so it's available to
+            // the component as soon as possible (and doesn't require a second change detection).
+            allParams.pipe(take(1)),
             // Promise.resolve is used to avoid synchronously writing the wrong data when
             // two of the Observables in the `combineLatest` stream emit one after
             // another.
             allParams.pipe(skip(1), switchMap(data => Promise.resolve(data))),
-            // Get the first result from the data subscription synchronously so it's available to
-            // the component as soon as possible (and doesn't require a second change detection).
-            allParams.pipe(take(1)),
             )
             .subscribe(data => {
               // Outlet may have been deactivated or changed names to be associated with a different
