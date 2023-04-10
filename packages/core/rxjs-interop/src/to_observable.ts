@@ -51,7 +51,7 @@ export function toObservable<T>(
         return;
       }
       observer.next(value);
-    }, {injector, manualCleanup: true});
+    }, {injector, manualCleanup: true, allowSignalWrites: true});
     return () => watcher.destroy();
   });
 }
