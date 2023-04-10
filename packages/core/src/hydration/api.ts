@@ -9,7 +9,7 @@
 import {first} from 'rxjs/operators';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application_ref';
-import {PLATFORM_ID} from '../application_tokens';
+import {ENABLED_SSR_FEATURES, PLATFORM_ID} from '../application_tokens';
 import {Console} from '../console';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironmentProviders} from '../di';
 import {inject} from '../di/injector_compatibility';
@@ -109,12 +109,13 @@ export function withDomHydration(): EnvironmentProviders {
     {
       provide: IS_HYDRATION_FEATURE_ENABLED,
       useFactory: () => {
+        let isEnabled = true;
         if (isBrowser()) {
           // On the client, verify that the server response contains
           // hydration annotations. Otherwise, keep hydration disabled.
           const transferState = inject(TransferState, {optional: true});
-          const hasHydrationAnnotations = !!transferState?.get(NGH_DATA_KEY, null);
-          if (!hasHydrationAnnotations) {
+          isEnabled = !!transferState?.get(NGH_DATA_KEY, null);
+          if (!isEnabled) {
             const console = inject(Console);
             const message = formatRuntimeError(
                 RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
@@ -126,10 +127,11 @@ export function withDomHydration(): EnvironmentProviders {
             // tslint:disable-next-line:no-console
             console.warn(message);
           }
-          return hasHydrationAnnotations;
         }
-        // We are running on the server, always return `true`.
-        return true;
+        if (isEnabled) {
+          inject(ENABLED_SSR_FEATURES).add('hydration');
+        }
+        return isEnabled;
       },
     },
     {
