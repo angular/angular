@@ -55,7 +55,7 @@
   },
   "//engines-comment": "If applicable, also update /package.json and /aio/tools/examples/shared/package.json",
   "engines": {
-    "node": ">=16.13.0",
+    "node": ">=16.14.0",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
