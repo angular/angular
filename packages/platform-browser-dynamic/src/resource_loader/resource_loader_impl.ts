@@ -23,13 +23,9 @@ export class ResourceLoaderImpl extends ResourceLoader {
     xhr.responseType = 'text';
 
     xhr.onload = function() {
-      // responseText is the old-school way of retrieving response (supported by IE8 & 9)
-      // response/responseType properties were introduced in ResourceLoader Level2 spec (supported
-      // by IE10)
-      const response = xhr.response || xhr.responseText;
+      const response = xhr.response;
 
-      // normalize IE9 bug (https://bugs.jquery.com/ticket/1450)
-      let status = xhr.status === 1223 ? 204 : xhr.status;
+      let status = xhr.status;
 
       // fix status code when it is 0 (0 status is undocumented).
       // Occurs when accessing file resources or on Android 4.1 stock browser
