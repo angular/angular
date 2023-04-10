@@ -101,6 +101,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     RENDERER_NOT_FOUND = 407,
     // (undocumented)
+    REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
+    // (undocumented)
     SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,

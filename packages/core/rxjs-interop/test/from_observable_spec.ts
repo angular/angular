@@ -8,7 +8,7 @@
 
 import {EnvironmentInjector, Injector, runInInjectionContext} from '@angular/core';
 import {fromObservable} from '@angular/core/rxjs-interop';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject, ReplaySubject, Subject} from 'rxjs';
 
 describe('fromObservable()', () => {
   it('should reflect the last emitted value of an Observable', test(() => {
@@ -64,11 +64,11 @@ describe('fromObservable()', () => {
      }));
 
   describe('with no initial value', () => {
-    it('should throw if called before a value is emitted', test(() => {
+    it('should return `undefined` if read before a value is emitted', test(() => {
          const counter$ = new Subject<number>();
          const counter = fromObservable(counter$);
 
-         expect(() => counter()).toThrow();
+         expect(counter()).toBeUndefined();
          counter$.next(1);
          expect(counter()).toBe(1);
        }));
@@ -82,10 +82,24 @@ describe('fromObservable()', () => {
        }));
   });
 
+  describe('with requireSync', () => {
+    it('should throw if created before a value is emitted', test(() => {
+         const counter$ = new Subject<number>();
+         expect(() => fromObservable(counter$, {requireSync: true})).toThrow();
+       }));
+
+    it('should not throw if a value emits synchronously on creation', test(() => {
+         const counter$ = new ReplaySubject<number>(1);
+         counter$.next(1);
+         const counter = fromObservable(counter$);
+         expect(counter()).toBe(1);
+       }));
+  });
+
   describe('with an initial value', () => {
     it('should return the initial value if called before a value is emitted', test(() => {
          const counter$ = new Subject<number>();
-         const counter = fromObservable(counter$, null);
+         const counter = fromObservable(counter$, {initialValue: null});
 
          expect(counter()).toBeNull();
          counter$.next(1);
@@ -94,7 +108,7 @@ describe('fromObservable()', () => {
 
     it('should not return the initial value if called after a value is emitted', test(() => {
          const counter$ = new Subject<number>();
-         const counter = fromObservable(counter$, null);
+         const counter = fromObservable(counter$, {initialValue: null});
 
          counter$.next(1);
          expect(counter()).not.toBeNull();

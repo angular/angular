@@ -11,10 +11,18 @@ import { Observable } from 'rxjs';
 import { Signal } from '@angular/core';
 
 // @public
-export function fromObservable<T>(source: Observable<T>): Signal<T>;
+export function fromObservable<T>(source: Observable<T>): Signal<T | undefined>;
 
 // @public
-export function fromObservable<T, U extends T | null | undefined>(source: Observable<T>, initialValue: U): Signal<T | U>;
+export function fromObservable<T, U extends T | null | undefined>(source: Observable<T>, options: {
+    initialValue: U;
+    requireSync?: false;
+}): Signal<T | U>;
+
+// @public (undocumented)
+export function fromObservable<T>(source: Observable<T>, options: {
+    requireSync: true;
+}): Signal<T>;
 
 // @public
 export function fromSignal<T>(source: Signal<T>, options?: FromSignalOptions): Observable<T>;
