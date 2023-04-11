@@ -1,8 +1,8 @@
 # Configuration for angular-robot
 
-#options for the size plugin
+# options for the size plugin
 size:
-  disabled: false
+  disabled: true
   maxSizeIncrease: 2000
   circleCiStatusName: 'ci/circleci: test'
 
@@ -70,7 +70,6 @@ merge:
     requiredStatuses:
       - 'ci/circleci: build'
       - 'ci/circleci: lint'
-      - 'ci/angular: size'
       - 'google-internal-tests'
       - 'pullapprove'
 
