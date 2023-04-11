@@ -7,7 +7,7 @@
  */
 
 import {ConstantPool} from '../../constant_pool';
-import {Interpolation} from '../../expression_parser/ast';
+import {BindingType, Interpolation} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
@@ -279,7 +279,9 @@ export function getAttrsForDirectiveMatching(elOrTpl: t.Element|
     });
 
     elOrTpl.inputs.forEach(i => {
-      attributesMap[i.name] = '';
+      if (i.type === BindingType.Property) {
+        attributesMap[i.name] = '';
+      }
     });
     elOrTpl.outputs.forEach(o => {
       attributesMap[o.name] = '';
