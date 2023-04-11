@@ -1093,6 +1093,31 @@ class TestComponent {
         `TestComponent.html(1, 1): Required input 'customAlias' from directive HostDir must be specified.`
       ]);
     });
+
+    it('should not report missing required inputs for an attribute binding with the same name',
+       () => {
+         const messages = diagnose(
+             `<div [attr.maxlength]="123"></div>`, `
+                class MaxLengthValidator {
+                  maxlength: string;
+                }
+                class TestComponent {}
+              `,
+             [{
+               type: 'directive',
+               name: 'MaxLengthValidator',
+               selector: '[maxlength]',
+               inputs: {
+                 maxlength: {
+                   classPropertyName: 'maxlength',
+                   bindingPropertyName: 'maxlength',
+                   required: true
+                 },
+               },
+             }]);
+
+         expect(messages).toEqual([]);
+       });
   });
 
   // https://github.com/angular/angular/issues/43970
