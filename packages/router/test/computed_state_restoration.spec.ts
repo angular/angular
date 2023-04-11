@@ -357,6 +357,55 @@ describe('`restoredState#ɵrouterPageId`', () => {
        const location = TestBed.inject(Location);
        const router = TestBed.inject(Router);
        router.urlUpdateStrategy = 'eager';
+       let allowNavigation = true;
+       router.resetConfig([
+         {path: 'initial', children: []},
+         {path: 'redirectFrom', redirectTo: 'redirectTo'},
+         {path: 'redirectTo', children: [], canActivate: [() => allowNavigation]},
+       ]);
+
+       // already at '2' from the `beforeEach` navigations
+       expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+       router.navigateByUrl('/initial');
+       advance(fixture);
+       expect(location.path()).toEqual('/initial');
+       expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+       TestBed.inject(MyCanActivateGuard).redirectTo = null;
+
+       router.navigateByUrl('redirectTo');
+       advance(fixture);
+       expect(location.path()).toEqual('/redirectTo');
+       expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+
+       // Navigate to different URL but get redirected to same URL should result in same page id
+       router.navigateByUrl('redirectFrom');
+       advance(fixture);
+       expect(location.path()).toEqual('/redirectTo');
+       expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+
+       // Back and forward should have page IDs 1 apart
+       location.back();
+       advance(fixture);
+       expect(location.path()).toEqual('/initial');
+       expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+       location.forward();
+       advance(fixture);
+       expect(location.path()).toEqual('/redirectTo');
+       expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+
+       // Rejected navigation after redirect to same URL should have the same page ID
+       allowNavigation = false;
+       router.navigateByUrl('redirectFrom');
+       advance(fixture);
+       expect(location.path()).toEqual('/redirectTo');
+       expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+     }));
+
+  it('urlUpdateStrategy="eager", redirectTo with same url, and guard reject', fakeAsync(() => {
+       const location = TestBed.inject(Location);
+       const router = TestBed.inject(Router);
+       router.urlUpdateStrategy = 'eager';
 
        TestBed.inject(MyCanActivateGuard).redirectTo = router.createUrlTree(['unguarded']);
        router.navigateByUrl('/third');
