@@ -236,7 +236,7 @@ ICU expressions will only work in templates, not when using $localize in other a
   
 <!--todo: replace with code-example -->
 
-In the example we assume that the variable numberOfItems exists in the template and use the plural function to render correct pluralization.
+In the example we assume that the variable `numberOfItems` exists in the template and use the plural function to render correct pluralization.
   
 <code-example>  
   
