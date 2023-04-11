@@ -81,7 +81,7 @@ If you choose this option, make sure to turn off the `guessRoutes` option.
 
 <code-example format="shell" language="shell">
 
-ng run &lt;app-name&gt;:prerender --no-guess-routes --routes /product/1 /product/1
+ng run &lt;app-name&gt;:prerender --no-guess-routes --routes /product/1 /product/2
 
 </code-example>
 
