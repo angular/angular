@@ -246,6 +246,11 @@ Similarly, without mouse or keyboard events, a server-side application can't rel
 The application must determine what to render based solely on the incoming client request.
 This is a good argument for making the application [routable](guide/router).
 
+<a id="service-worker"></a>
+### Universal and the Angular Service Worker
+
+If you are using Universal in conjunction with the Angular service worker, the behavior is different than the normal server side rendering behavior. The initial server request will be rendered on the server as expected. However, after that initial request, subsequent requests are handled by the service worker. For subsequent requests, the `index.html` file is served statically and bypasses server side rendering.
+
 <a id="universal-engine"></a>
 
 ### Universal template engine
