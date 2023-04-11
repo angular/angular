@@ -2837,6 +2837,43 @@ describe('styling', () => {
     expect(div.classes['my-class']).toBe(true);
   });
 
+  it('should remove styles via Renderer2', () => {
+    let dirInstance: any;
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      constructor(public elementRef: ElementRef, public renderer: Renderer2) {
+        dirInstance = this;
+      }
+    }
+
+    @Component({template: `<div dir></div>`})
+    class App {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const div = fixture.debugElement.children[0];
+    const nativeEl = dirInstance.elementRef.nativeElement;
+
+    // camel case
+    dirInstance.renderer.setStyle(nativeEl, 'backgroundColor', 'red');
+    expect(div.styles.backgroundColor).toBe('red');
+    dirInstance.renderer.removeStyle(nativeEl, 'backgroundColor');
+    expect(div.styles.backgroundColor).toBe('');
+
+    // kebab case
+    dirInstance.renderer.setStyle(nativeEl, 'background-color', 'red');
+    expect(div.styles.backgroundColor).toBe('red');
+    dirInstance.renderer.removeStyle(nativeEl, 'background-color');
+    expect(div.styles.backgroundColor).toBe('');
+  });
+
   it('should not set classes when falsy value is passed while a sanitizer is present', () => {
     @Component({
       // Note that we use `background` here because it needs to be sanitized.
