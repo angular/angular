@@ -14,13 +14,18 @@ import {DestroyRef} from '../../linker/destroy_ref';
 import {Watch} from '../../signals';
 
 /**
- * An effect can, optionally, return a cleanup function. If returned, the cleanup is executed before
- * the next effect run. The cleanup function makes it possible to "cancel" any work that the
+ * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
+ * before the next effect run. The cleanup function makes it possible to "cancel" any work that the
  * previous effect run might have started.
  *
  * @developerPreview
  */
 export type EffectCleanupFn = () => void;
+
+/**
+ * A callback passed to the effect function that makes it possible to register cleanup logic.
+ */
+export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 
 /**
  * Tracks all effects registered within a given application and runs them via `flush`.
@@ -29,7 +34,9 @@ export class EffectManager {
   private all = new Set<Watch>();
   private queue = new Map<Watch, Zone>();
 
-  create(effectFn: () => void, destroyRef: DestroyRef|null, allowSignalWrites: boolean): EffectRef {
+  create(
+      effectFn: (onCleanup: (cleanupFn: EffectCleanupFn) => void) => void,
+      destroyRef: DestroyRef|null, allowSignalWrites: boolean): EffectRef {
     const zone = Zone.current;
     const watch = new Watch(effectFn, (watch) => {
       if (!this.all.has(watch)) {
@@ -131,7 +138,8 @@ export interface CreateEffectOptions {
  * @developerPreview
  */
 export function effect(
-    effectFn: () => EffectCleanupFn | void, options?: CreateEffectOptions): EffectRef {
+    effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
+    options?: CreateEffectOptions): EffectRef {
   !options?.injector && assertInInjectionContext(effect);
   const injector = options?.injector ?? inject(Injector);
   const effectManager = injector.get(EffectManager);
