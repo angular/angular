@@ -42,8 +42,8 @@ export abstract class TemplateRef<C> {
   /**
    * The anchor element in the parent view for this embedded view.
    *
-   * The data-binding and injection contexts of embedded views created from this `TemplateRef`
-   * inherit from the contexts of this location.
+   * The data-binding and [injection contexts](guide/dependency-injection-context) of embedded views
+   * created from this `TemplateRef` inherit from the contexts of this location.
    *
    * Typically new embedded views are attached to the view container of this location, but in
    * advanced use-cases, the view can be attached to a different container while keeping the

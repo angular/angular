@@ -115,7 +115,8 @@ export interface CreateEffectOptions {
   /**
    * The `Injector` in which to create the effect.
    *
-   * If this is not provided, the current injection context will be used instead (via `inject`).
+   * If this is not provided, the current [injection context](guide/dependency-injection-context)
+   * will be used instead (via `inject`).
    */
   injector?: Injector;
 

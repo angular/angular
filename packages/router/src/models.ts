@@ -41,8 +41,9 @@ export type OnSameUrlNavigation = 'reload'|'ignore';
 /**
  * The `InjectionToken` and `@Injectable` classes for guards and resolvers are deprecated in favor
  * of plain JavaScript functions instead.. Dependency injection can still be achieved using the
- * `inject` function from `@angular/core` and an injectable class can be used as a functional guard
- * using `inject`: `canActivate: [() => inject(myGuard).canActivate()]`.
+ * [`inject`](api/core/inject) function from `@angular/core` and an injectable class can be used as
+ * a functional guard using [`inject`](api/core/inject): `canActivate: [() =>
+ * inject(myGuard).canActivate()]`.
  *
  * @deprecated
  * @see {@link CanMatchFn}
@@ -699,8 +700,8 @@ export interface LoadedRouterConfig {
  *
  * @publicApi
  * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the `inject` function:
- *     `canActivate: [() => inject(myGuard).canActivate()]`.
+ *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
+ * function: `canActivate: [() => inject(myGuard).canActivate()]`.
  * @see {@link CanActivateFn}
  */
 export interface CanActivate {
@@ -789,8 +790,8 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  *
  * @publicApi
  * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the `inject` function:
- *     `canActivateChild: [() => inject(myGuard).canActivateChild()]`.
+ *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
+ * function: `canActivateChild: [() => inject(myGuard).canActivateChild()]`.
  * @see {@link CanActivateChildFn}
  */
 export interface CanActivateChild {
@@ -872,8 +873,8 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  *
  * @publicApi
  * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the `inject` function:
- *     `canDeactivate: [() => inject(myGuard).canDeactivate()]`.
+ *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
+ * function: `canDeactivate: [() => inject(myGuard).canDeactivate()]`.
  * @see {@link CanDeactivateFn}
  */
 export interface CanDeactivate<T> {
@@ -964,8 +965,8 @@ export type CanDeactivateFn<T> =
  *
  * @publicApi
  * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the `inject` function:
- *     `canMatch: [() => inject(myGuard).canMatch()]`.
+ *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
+ * function: `canMatch: [() => inject(myGuard).canMatch()]`.
  * @see {@link CanMatchFn}
  */
 export interface CanMatch {
@@ -1083,7 +1084,8 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
  *
  * @publicApi
  * @deprecated Class-based `Route` resolvers are deprecated in favor of functional resolvers. An
- * injectable class can be used as a functional guard using the `inject` function: `resolve:
+ * injectable class can be used as a functional guard using the [`inject`](api/core/inject)
+ function: `resolve:
  * {'user': () => inject(UserResolver).resolve()}`.
  * @see {@link ResolveFn}
  */

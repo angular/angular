@@ -15,8 +15,8 @@ import {takeUntil} from 'rxjs/operators';
  * etc) is destroyed.
  *
  * @param destroyRef optionally, the `DestroyRef` representing the current context. This can be
- *     passed explicitly to use `takeUntilDestroyed` outside of an injection context. Otherwise, the
- * current `DestroyRef` is injected.
+ *     passed explicitly to use `takeUntilDestroyed` outside of an [injection
+ * context](guide/dependency-injection-context). Otherwise, the current `DestroyRef` is injected.
  *
  * @developerPreview
  */
