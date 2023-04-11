@@ -56,9 +56,9 @@
 
 version: 3
 
-availability:
-  users_unavailable:
-    - devversion
+# availability:
+#   users_unavailable:
+#     - <name>
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
