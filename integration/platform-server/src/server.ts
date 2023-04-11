@@ -46,7 +46,11 @@ app.get('/favicon.ico', (req, res) => {
 
 // Mock API
 app.get('/api', (req, res) => {
-  res.json({ data: 'API response'});
+  res.json({ data: 'API 1 response'});
+});
+
+app.get('/api-2', (req, res) => {
+  res.json({ data: 'API 2 response'});
 });
 
 //-----------ADD YOUR SERVER SIDE RENDERED APP HERE ----------------------
