@@ -241,7 +241,7 @@ In the example we assume that the variable `numberOfItems` exists in the templat
 <code-example>  
   
 `<span i18n>
-  Item count: {numberOfItems, plural, =0 { No item } =1 { One item } other { {{numberOfItems }} items }} }
+  Item count: {numberOfItems, plural, =0 { No item } =1 { One item } other { {{ numberOfItems }} items }} }
  </span>`
 
 </code-example>
