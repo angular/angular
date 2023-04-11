@@ -75,7 +75,6 @@ export function getElementStyles(element: Element): {[key: string]: string} {
       const key = style.item(i);
       const value = style.getPropertyValue(key);
       if (value !== '') {
-        // Workaround for IE not clearing properties, instead it just sets them to blank value.
         styles[key] = value;
       }
     }
