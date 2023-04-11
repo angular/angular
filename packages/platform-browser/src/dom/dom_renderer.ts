@@ -261,10 +261,9 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
     if (flags & RendererStyleFlags2.DashCase) {
+      // removeProperty has no effect when used on camelCased properties.
       el.style.removeProperty(style);
     } else {
-      // IE requires '' instead of null
-      // see https://github.com/angular/angular/issues/7916
       el.style[style] = '';
     }
   }

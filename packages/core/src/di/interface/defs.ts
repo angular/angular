@@ -214,33 +214,16 @@ export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDeclarati
   const def = type && (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF]);
 
   if (def) {
-    const typeName = getTypeName(type);
     ngDevMode &&
         console.warn(
             `DEPRECATED: DI is instantiating a token "${
-                typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
+                type.name}" that inherits its @Injectable decorator but does not provide one itself.\n` +
             `This will become an error in a future version of Angular. Please add @Injectable() to the "${
-                typeName}" class.`);
+                type.name}" class.`);
     return def;
   } else {
     return null;
   }
-}
-
-/** Gets the name of a type, accounting for some cross-browser differences. */
-function getTypeName(type: any): string {
-  // `Function.prototype.name` behaves differently between IE and other browsers. In most browsers
-  // it'll always return the name of the function itself, no matter how many other functions it
-  // inherits from. On IE the function doesn't have its own `name` property, but it takes it from
-  // the lowest level in the prototype chain. E.g. if we have `class Foo extends Parent` most
-  // browsers will evaluate `Foo.name` to `Foo` while IE will return `Parent`. We work around
-  // the issue by converting the function to a string and parsing its name out that way via a regex.
-  if (type.hasOwnProperty('name')) {
-    return type.name;
-  }
-
-  const match = ('' + type).match(/^function\s*([^\s(]+)/);
-  return match === null ? '' : match[1];
 }
 
 /**
