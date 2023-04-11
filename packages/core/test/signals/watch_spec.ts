@@ -100,19 +100,19 @@ describe('watchers', () => {
     expect(updateCounter).toEqual(3);
   });
 
-  it('should allow returning cleanup function from the watch logic', () => {
+  it('should allow registering cleanup function from the watch logic', () => {
     const source = signal(0);
 
     const seenCounterValues: number[] = [];
-    testingEffect(() => {
+    testingEffect((onCleanup) => {
       seenCounterValues.push(source());
 
-      // return a cleanup function that is executed every time an effect re-runs
-      return () => {
+      // register a cleanup function that is executed every time an effect re-runs
+      onCleanup(() => {
         if (seenCounterValues.length === 2) {
           seenCounterValues.length = 0;
         }
-      };
+      });
     });
 
     flushEffects();
@@ -126,6 +126,37 @@ describe('watchers', () => {
     flushEffects();
     // cleanup (array trim) should have run before executing effect
     expect(seenCounterValues).toEqual([2]);
+  });
+
+  it('should forget previously registered cleanup function when effect re-runs', () => {
+    const source = signal(0);
+
+    const seenCounterValues: number[] = [];
+    testingEffect((onCleanup) => {
+      const value = source();
+
+      seenCounterValues.push(value);
+
+      // register a cleanup function that is executed next time an effect re-runs
+      if (value === 0) {
+        onCleanup(() => {
+          seenCounterValues.length = 0;
+        });
+      }
+    });
+
+    flushEffects();
+    expect(seenCounterValues).toEqual([0]);
+
+    source.set(2);
+    flushEffects();
+    // cleanup (array trim) should have run before executing effect
+    expect(seenCounterValues).toEqual([2]);
+
+    source.set(3);
+    flushEffects();
+    // cleanup (array trim) should _not_ be registered again
+    expect(seenCounterValues).toEqual([2, 3]);
   });
 
   it('should throw an error when reading a signal during the notification phase', () => {

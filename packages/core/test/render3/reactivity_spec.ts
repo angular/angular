@@ -130,11 +130,11 @@ describe('effects', () => {
     })
     class Cmp {
       counter = signal(0);
-      effectRef = effect(() => {
+      effectRef = effect((onCleanup) => {
         counterLog.push(this.counter());
-        return () => {
+        onCleanup(() => {
           cleanupCount++;
-        };
+        });
       });
     }
 
@@ -179,6 +179,7 @@ describe('effects', () => {
 
     expect(didRun).toBeTrue();
   });
+
   it('should disallow writing to signals within effects by default',
      withBody('<test-cmp></test-cmp>', async () => {
        @Component({
