@@ -30,12 +30,11 @@ export class InitialRenderPendingTasks implements OnDestroy {
   private promise!: Promise<void>;
 
   get whenAllTasksComplete(): Promise<void> {
-    if (this.collection.size > 0) {
-      return this.promise;
+    if (this.collection.size === 0) {
+      this.complete();
     }
-    return Promise.resolve().then(() => {
-      this.completed = true;
-    });
+
+    return this.promise;
   }
 
   completed = false;
@@ -66,14 +65,17 @@ export class InitialRenderPendingTasks implements OnDestroy {
 
     this.collection.delete(taskId);
     if (this.collection.size === 0) {
-      // We've removed the last task, resolve the promise.
-      this.completed = true;
-      this.resolve();
+      this.complete();
     }
   }
 
   ngOnDestroy() {
-    this.completed = true;
+    this.complete();
     this.collection.clear();
+  }
+
+  private complete(): void {
+    this.completed = true;
+    this.resolve();
   }
 }
