@@ -230,7 +230,7 @@ ICU expressions help you mark alternate text in component templates to meet cond
 An ICU expression includes a component property, an ICU clause, and the case statements surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
 <div class="alert is-helpful">
-ICU expressions will only work in templates, not when using $localize in other angular code.   
+ICU expressions will only work in Angular templates. ICUs are **not** supported in $localize calls in TypeScript code.   
 </div>
 
   
