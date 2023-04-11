@@ -329,7 +329,7 @@ export class Router {
     this.navigationTransitions.setupNavigations(this).subscribe(
         t => {
           this.lastSuccessfulId = t.id;
-          this.currentPageId = t.targetPageId;
+          this.currentPageId = this.browserPageId ?? 0;
         },
         e => {
           this.console.warn(`Unhandled Navigation Error: ${e}`);
@@ -733,13 +733,9 @@ export class Router {
       if (restoredState && restoredState.ɵrouterPageId) {
         targetPageId = restoredState.ɵrouterPageId;
       } else {
-        // If we're replacing the URL or doing a silent navigation, we do not want to increment the
-        // page id because we aren't pushing a new entry to history.
-        if (extras.replaceUrl || extras.skipLocationChange) {
-          targetPageId = this.browserPageId ?? 0;
-        } else {
-          targetPageId = (this.browserPageId ?? 0) + 1;
-        }
+        // Otherwise, targetPageId should be the next number in the event of a `pushState`
+        // navigation.
+        targetPageId = (this.browserPageId ?? 0) + 1;
       }
     } else {
       // This is unused when `canceledNavigationResolution` is not computed.
@@ -779,13 +775,20 @@ export class Router {
   /** @internal */
   setBrowserUrl(url: UrlTree, transition: NavigationTransition) {
     const path = this.urlSerializer.serialize(url);
-    const state = {
-      ...transition.extras.state,
-      ...this.generateNgRouterState(transition.id, transition.targetPageId)
-    };
     if (this.location.isCurrentPathEqualTo(path) || !!transition.extras.replaceUrl) {
+      // replacements do not update the target page
+      const currentBrowserPageId =
+          this.canceledNavigationResolution === 'computed' ? this.browserPageId : undefined;
+      const state = {
+        ...transition.extras.state,
+        ...this.generateNgRouterState(transition.id, currentBrowserPageId)
+      };
       this.location.replaceState(path, '', state);
     } else {
+      const state = {
+        ...transition.extras.state,
+        ...this.generateNgRouterState(transition.id, transition.targetPageId)
+      };
       this.location.go(path, '', state);
     }
   }
@@ -797,16 +800,9 @@ export class Router {
    */
   restoreHistory(transition: NavigationTransition, restoringFromCaughtError = false) {
     if (this.canceledNavigationResolution === 'computed') {
-      const targetPagePosition = this.currentPageId - transition.targetPageId;
-      // The navigator change the location before triggered the browser event,
-      // so we need to go back to the current url if the navigation is canceled.
-      // Also, when navigation gets cancelled while using url update strategy eager, then we need to
-      // go back. Because, when `urlUpdateStrategy` is `eager`; `setBrowserUrl` method is called
-      // before any verification.
-      const browserUrlUpdateOccurred =
-          (transition.source === 'popstate' || this.urlUpdateStrategy === 'eager' ||
-           this.currentUrlTree === this.getCurrentNavigation()?.finalUrl);
-      if (browserUrlUpdateOccurred && targetPagePosition !== 0) {
+      const currentBrowserPageId = this.browserPageId ?? this.currentPageId;
+      const targetPagePosition = this.currentPageId - currentBrowserPageId;
+      if (targetPagePosition !== 0) {
         this.location.historyGo(targetPagePosition);
       } else if (
           this.currentUrlTree === this.getCurrentNavigation()?.finalUrl &&
