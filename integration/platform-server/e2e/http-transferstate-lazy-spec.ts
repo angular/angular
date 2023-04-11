@@ -16,12 +16,16 @@ describe('Http TransferState Lazy', function() {
     browser.driver.get(browser.baseUrl + 'http-transferstate-lazy');
 
     // Test the contents from the server.
-    const serverDiv = browser.driver.findElement(by.css('div'));
-    expect(serverDiv.getText()).toBe('API response');
+    const serverDivOne = browser.driver.findElement(by.css('div.one'));
+    expect(serverDivOne.getText()).toBe('API 1 response');
+
+    const serverDivTwo = browser.driver.findElement(by.css('div.two'));
+    expect(serverDivTwo.getText()).toBe('API 2 response');
 
     // Bootstrap the client side app and retest the contents
     browser.executeScript('doBootstrap()');
-    expect(element(by.css('div')).getText()).toBe('API response');
+    expect(element(by.css('div.one')).getText()).toBe('API 1 response');
+    expect(element(by.css('div.two')).getText()).toBe('API 2 response');
 
     // Make sure there were no client side errors.
     verifyNoBrowserErrors();
