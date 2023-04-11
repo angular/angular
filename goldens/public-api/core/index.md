@@ -512,7 +512,7 @@ export interface DoCheck {
 }
 
 // @public
-export function effect(effectFn: () => EffectCleanupFn | void, options?: CreateEffectOptions): EffectRef;
+export function effect(effectFn: (onCleanup: EffectCleanupRegisterFn) => void, options?: CreateEffectOptions): EffectRef;
 
 // @public
 export type EffectCleanupFn = () => void;

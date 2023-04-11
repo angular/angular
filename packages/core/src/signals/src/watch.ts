@@ -9,10 +9,15 @@
 import {ReactiveNode, setActiveConsumer} from './graph';
 
 /**
- * A cleanup function that can be optionally returned from the watch logic. When returned, the
+ * A cleanup function that can be optionally registered from the watch logic. If registered, the
  * cleanup logic runs before the next watch execution.
  */
 export type WatchCleanupFn = () => void;
+
+/**
+ * A callback passed to the watch function that makes it possible to register cleanup logic.
+ */
+export type WatchCleanupRegisterFn = (cleanupFn: WatchCleanupFn) => void;
 
 const NOOP_CLEANUP_FN: WatchCleanupFn = () => {};
 
@@ -27,10 +32,14 @@ export class Watch extends ReactiveNode {
   protected override readonly consumerAllowSignalWrites: boolean;
   private dirty = false;
   private cleanupFn = NOOP_CLEANUP_FN;
+  private registerOnCleanup =
+      (cleanupFn: WatchCleanupFn) => {
+        this.cleanupFn = cleanupFn;
+      }
 
   constructor(
-      private watch: () => void|WatchCleanupFn, private schedule: (watch: Watch) => void,
-      allowSignalWrites: boolean) {
+      private watch: (onCleanup: WatchCleanupRegisterFn) => void,
+      private schedule: (watch: Watch) => void, allowSignalWrites: boolean) {
     super();
     this.consumerAllowSignalWrites = allowSignalWrites;
   }
@@ -66,7 +75,8 @@ export class Watch extends ReactiveNode {
     this.trackingVersion++;
     try {
       this.cleanupFn();
-      this.cleanupFn = this.watch() ?? NOOP_CLEANUP_FN;
+      this.cleanupFn = NOOP_CLEANUP_FN;
+      this.watch(this.registerOnCleanup);
     } finally {
       setActiveConsumer(prevConsumer);
     }
