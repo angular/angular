@@ -7,7 +7,7 @@
  */
 
 import {XhrFactory} from '@angular/common';
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -40,9 +40,7 @@ function getResponseUrl(xhr: any): string|null {
  * @publicApi
  */
 @Injectable()
-export class HttpXhrBackend implements HttpBackend, OnDestroy {
-  private macroTaskCanceller: VoidFunction|undefined;
-
+export class HttpXhrBackend implements HttpBackend {
   constructor(private xhrFactory: XhrFactory) {}
 
   /**
@@ -295,12 +293,14 @@ export class HttpXhrBackend implements HttpBackend, OnDestroy {
         }
       }
 
+      let macroTaskCanceller: VoidFunction|undefined;
+
       /** Tear down logic to cancel the backround macrotask. */
       const onLoadStart = () => {
-        this.macroTaskCanceller ??= createBackgroundMacroTask();
+        macroTaskCanceller ??= createBackgroundMacroTask();
       };
       const onLoadEnd = () => {
-        this.macroTaskCanceller?.();
+        macroTaskCanceller?.();
       };
 
       xhr.addEventListener('loadstart', onLoadStart);
@@ -321,7 +321,7 @@ export class HttpXhrBackend implements HttpBackend, OnDestroy {
         xhr.removeEventListener('timeout', onError);
 
         //  Cancel the background macrotask.
-        this.macroTaskCanceller?.();
+        macroTaskCanceller?.();
 
         if (req.reportProgress) {
           xhr.removeEventListener('progress', onDownProgress);
@@ -336,10 +336,6 @@ export class HttpXhrBackend implements HttpBackend, OnDestroy {
         }
       };
     });
-  }
-
-  ngOnDestroy(): void {
-    this.macroTaskCanceller?.();
   }
 }
 
