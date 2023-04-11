@@ -10,8 +10,8 @@
     "@angular/elements": "file:../../dist/packages-dist/elements",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "file:../../node_modules/typescript",
     "tslib": "file:../../node_modules/tslib",
+    "typescript": "file:../../node_modules/typescript",
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
