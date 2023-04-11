@@ -294,6 +294,11 @@
               "tooltip": "A provider factory function is a plain function that Angular can call to create a dependency."
             },
             {
+              "url": "guide/dependency-injection-context",
+              "title": "Injection context",
+              "tooltip": "Dependency injection depends on a runtime context to work."
+            },
+            {
               "url": "guide/hierarchical-dependency-injection",
               "title": "Hierarchical injectors",
               "tooltip": "Hierarchical dependency injection enables you to share dependencies between different parts of the application only when and if you need to."
