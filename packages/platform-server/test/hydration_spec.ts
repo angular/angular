@@ -35,6 +35,8 @@ const TEXT_NODE_SEPARATOR_COMMENT = 'ngtns';
 const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
 const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
 
+const TRANSFER_STATE_TOKEN_ID = '__ɵnghData__';
+
 const NGH_ATTR_REGEXP = new RegExp(` ${NGH_ATTR_NAME}=".*?"`, 'g');
 const EMPTY_TEXT_NODE_REGEXP = new RegExp(`<!--${EMPTY_TEXT_NODE_COMMENT}-->`, 'g');
 const TEXT_NODE_SEPARATOR_REGEXP = new RegExp(`<!--${TEXT_NODE_SEPARATOR_COMMENT}-->`, 'g');
@@ -182,9 +184,9 @@ function resetTViewsFor(...types: Type<unknown>[]) {
   }
 }
 
-function getHydrationInfoFromTransferState(input: string): string {
+function getHydrationInfoFromTransferState(input: string): string|null {
   const rawContents = input.match(/<script[^>]+>(.*?)<\/script>/)?.[1];
-  return unescapeTransferStateContent(rawContents ?? '');
+  return rawContents ? unescapeTransferStateContent(rawContents) : null;
 }
 
 function withNoopErrorHandler() {
@@ -203,6 +205,9 @@ function withNoopErrorHandler() {
 class DebugConsole extends Console {
   logs: string[] = [];
   override log(message: string) {
+    this.logs.push(message);
+  }
+  override warn(message: string) {
     this.logs.push(message);
   }
 }
@@ -249,12 +254,13 @@ describe('platform-server integration', () => {
      */
     async function ssr(
         component: Type<unknown>, doc?: string, envProviders?: Provider[],
-        hydrationFeatures: HydrationFeature<HydrationFeatureKind>[] = []): Promise<string> {
+        hydrationFeatures: HydrationFeature<HydrationFeatureKind>[] = [],
+        enableHydration = true): Promise<string> {
       const defaultHtml = '<html><head></head><body><app></app></body></html>';
       const providers = [
         ...(envProviders ?? []),
         provideServerRendering(),
-        provideClientHydration(...hydrationFeatures),
+        (enableHydration ? provideClientHydration(...hydrationFeatures) : []),
       ];
 
       const bootstrap = () => bootstrapApplication(component, {providers});
@@ -1863,10 +1869,11 @@ describe('platform-server integration', () => {
            // No `ngh` attribute in the <app> element.
            expect(ssrContents).toContain('<app ngskiphydration=""><main>Main content</main></app>');
 
-           // There should be no transfer state information present, since we skip
-           // hydration at the root element level.
+           // Even though hydration was skipped at the root level, the hydration
+           // info key and an empty array as a value are still included into the
+           // TransferState to indicate that the server part was configured correctly.
            const transferState = getHydrationInfoFromTransferState(html);
-           expect(!!transferState).toBe(false);
+           expect(transferState).toContain(TRANSFER_STATE_TOKEN_ID);
 
            resetTViewsFor(SimpleComponent);
 
@@ -3995,6 +4002,44 @@ describe('platform-server integration', () => {
               'starting from the <projector-cmp>…</projector-cmp> node');
         });
       });
+
+      it('should log an warning when there was no hydration info in the TransferState',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `Hi!`,
+           })
+           class SimpleComponent {
+           }
+
+           // Note: SSR *without* hydration logic enabled.
+           const html = await ssr(SimpleComponent, undefined, undefined, undefined, false);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).not.toContain('<app ngh');
+
+           resetTViewsFor(SimpleComponent);
+
+           const appRef = await hydrate(html, SimpleComponent, [withDebugConsole()]);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           verifyHasLog(
+               appRef,
+               'NG0505: Angular hydration was requested on the client, ' +
+                   'but there was no serialized information present in the server response');
+
+           const clientRootNode = compRef.location.nativeElement;
+
+           // Make sure that no hydration logic was activated,
+           // effectively re-rendering from scratch happened and
+           // all the content inside the <app> host element was
+           // cleared on the client (as it usually happens in client
+           // rendering mode).
+           verifyNoNodesWereClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
     });
 
     describe('Router', () => {

@@ -120,11 +120,15 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
       }
     }
   }
-  const allSerializedViews = serializedViewCollection.getAll();
-  if (allSerializedViews.length > 0) {
-    const transferState = appRef.injector.get(TransferState);
-    transferState.set(NGH_DATA_KEY, allSerializedViews);
-  }
+
+  // Note: we *always* include hydration info key and a corresponding value
+  // into the TransferState, even if the list of serialized views is empty.
+  // This is needed as a signal to the client that the server part of the
+  // hydration logic was setup and enabled correctly. Otherwise, if a client
+  // hydration doesn't find a key in the transfer state - an error is produced.
+  const serializedViews = serializedViewCollection.getAll();
+  const transferState = appRef.injector.get(TransferState);
+  transferState.set(NGH_DATA_KEY, serializedViews);
 }
 
 /**
