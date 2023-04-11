@@ -7,8 +7,8 @@
  */
 
 import {ChangeDetectorRef, ComponentRef, Directive, EnvironmentInjector, EventEmitter, inject, Injectable, InjectionToken, Injector, Input, OnDestroy, OnInit, Output, reflectComponentType, SimpleChanges, ViewContainerRef, ɵRuntimeError as RuntimeError,} from '@angular/core';
-import {combineLatest, merge, Subscription} from 'rxjs';
-import {map, skip, startWith, switchMap, take} from 'rxjs/operators';
+import {combineLatest, of, Subscription} from 'rxjs';
+import {switchMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from '../errors';
 import {Data} from '../models';
@@ -404,25 +404,24 @@ export class RoutedComponentInputBinder {
 
   private subscribeToRouteData(outlet: RouterOutlet) {
     const {activatedRoute} = outlet;
-    const allParams =
+    const dataSubscription =
         combineLatest([
           activatedRoute.queryParams,
           activatedRoute.params,
           activatedRoute.data,
         ])
-            .pipe(
-                map(([queryParams, params, data]) => ({...queryParams, ...params, ...data})),
-            );
-    const dataSubscription =
-        merge(
-            // Get the first result from the data subscription synchronously so it's available to
-            // the component as soon as possible (and doesn't require a second change detection).
-            allParams.pipe(take(1)),
-            // Promise.resolve is used to avoid synchronously writing the wrong data when
-            // two of the Observables in the `combineLatest` stream emit one after
-            // another.
-            allParams.pipe(skip(1), switchMap(data => Promise.resolve(data))),
-            )
+            .pipe(switchMap(([queryParams, params, data], index) => {
+              data = {...queryParams, ...params, ...data};
+              // Get the first result from the data subscription synchronously so it's available to
+              // the component as soon as possible (and doesn't require a second change detection).
+              if (index === 0) {
+                return of(data);
+              }
+              // Promise.resolve is used to avoid synchronously writing the wrong data when
+              // two of the Observables in the `combineLatest` stream emit one after
+              // another.
+              return Promise.resolve(data);
+            }))
             .subscribe(data => {
               // Outlet may have been deactivated or changed names to be associated with a different
               // route
