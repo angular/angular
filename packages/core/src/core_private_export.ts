@@ -18,7 +18,7 @@ export {XSS_SECURITY_URL as ɵXSS_SECURITY_URL} from './error_details_base_url';
 export {formatRuntimeError as ɵformatRuntimeError, RuntimeError as ɵRuntimeError} from './errors';
 export {annotateForHydration as ɵannotateForHydration} from './hydration/annotate';
 export {withDomHydration as ɵwithDomHydration} from './hydration/api';
-export {IS_HYDRATION_FEATURE_ENABLED as ɵIS_HYDRATION_FEATURE_ENABLED} from './hydration/tokens';
+export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
 export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleDataIndex, findLocaleData as ɵfindLocaleData, getLocaleCurrencyCode as ɵgetLocaleCurrencyCode, getLocalePluralCase as ɵgetLocalePluralCase, LocaleDataIndex as ɵLocaleDataIndex, registerLocaleData as ɵregisterLocaleData, unregisterAllLocaleData as ɵunregisterLocaleData} from './i18n/locale_data_api';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {InitialRenderPendingTasks as ɵInitialRenderPendingTasks} from './initial_render_pending_tasks';

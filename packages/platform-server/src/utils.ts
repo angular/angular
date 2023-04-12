@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_FEATURE_ENABLED as IS_HYDRATION_FEATURE_ENABLED, ɵisPromise} from '@angular/core';
+import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵisPromise} from '@angular/core';
 import {first} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
@@ -67,7 +67,7 @@ function _render<T>(
 
       const asyncPromises: Promise<any>[] = [];
 
-      if (applicationRef.injector.get(IS_HYDRATION_FEATURE_ENABLED, false)) {
+      if (applicationRef.injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
         annotateForHydration(applicationRef, platformState.getDocument());
       }
 
