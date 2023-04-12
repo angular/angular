@@ -225,7 +225,7 @@ export interface DirectiveDef<T> {
   setInput:
       (<U extends T>(
            this: DirectiveDef<U>, instance: U, value: any, publicName: string,
-           privateName: string) => void)|null;
+           privateName: string) => void);
 }
 
 /**

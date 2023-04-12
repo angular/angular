@@ -1143,6 +1143,9 @@
     "name": "setDirectiveInputsWhichShadowsStyling"
   },
   {
+    "name": "setDirectiveProperty"
+  },
+  {
     "name": "setIncludeViewProviders"
   },
   {

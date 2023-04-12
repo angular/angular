@@ -1605,6 +1605,9 @@
     "name": "setDirectiveInputsWhichShadowsStyling"
   },
   {
+    "name": "setDirectiveProperty"
+  },
+  {
     "name": "setDisabledStateDefault"
   },
   {

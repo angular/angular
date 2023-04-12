@@ -606,6 +606,10 @@ export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleD
   return ngModuleDef;
 }
 
+function setDirectiveProperty<U>(instance: U, value: any, publicName: string, privateName: string) {
+  (instance as any)[privateName] = value;
+}
+
 function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
     Mutable<DirectiveDef<unknown>, keyof DirectiveDef<unknown>> {
   const declaredInputs: Record<string, string> = {};
@@ -624,7 +628,7 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
     selectors: directiveDefinition.selectors || EMPTY_ARRAY,
     viewQuery: directiveDefinition.viewQuery || null,
     features: directiveDefinition.features || null,
-    setInput: null,
+    setInput: setDirectiveProperty,
     findHostDirectiveDefs: null,
     hostDirectives: null,
     inputs: invertObject(directiveDefinition.inputs, declaredInputs),

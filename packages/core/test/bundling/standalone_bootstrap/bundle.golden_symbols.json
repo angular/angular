@@ -1005,6 +1005,9 @@
     "name": "setCurrentTNode"
   },
   {
+    "name": "setDirectiveProperty"
+  },
+  {
     "name": "setIncludeViewProviders"
   },
   {

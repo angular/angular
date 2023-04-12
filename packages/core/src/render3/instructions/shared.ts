@@ -1514,16 +1514,11 @@ function setInputsFromAttrs<T>(
     initialInputData: InitialInputData): void {
   const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
   if (initialInputs !== null) {
-    const setInput = def.setInput;
     for (let i = 0; i < initialInputs.length;) {
       const publicName = initialInputs[i++];
       const privateName = initialInputs[i++];
       const value = initialInputs[i++];
-      if (setInput !== null) {
-        def.setInput!(instance, value, publicName, privateName);
-      } else {
-        (instance as any)[privateName] = value;
-      }
+      def.setInput(instance, value, publicName, privateName);
       if (ngDevMode) {
         const nativeElement = getNativeByTNode(tNode, lView) as RElement;
         setNgReflectProperty(lView, nativeElement, tNode.type, privateName, value);
@@ -1951,11 +1946,7 @@ export function setInputsForProperty(
     const instance = lView[index];
     ngDevMode && assertIndexInRange(lView, index);
     const def = tView.data[index] as DirectiveDef<any>;
-    if (def.setInput !== null) {
-      def.setInput(instance, value, publicName, privateName);
-    } else {
-      instance[privateName] = value;
-    }
+    def.setInput(instance, value, publicName, privateName);
   }
 }
 
