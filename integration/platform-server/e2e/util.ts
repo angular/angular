@@ -11,15 +11,19 @@ declare var browser: any;
 declare var expect: any;
 
 export function verifyNoBrowserErrors() {
-  browser.manage().logs().get('browser').then(function(browserLog: any[]) {
-    const errors: any[] = [];
-    browserLog.filter(logEntry => {
-      const msg = logEntry.message;
-      console.log('>> ' + msg);
-      if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
-        errors.push(msg);
-      }
+  browser
+    .manage()
+    .logs()
+    .get('browser')
+    .then((browserLog: any[]) => {
+      const errors: any[] = [];
+      browserLog.forEach((logEntry) => {
+        const msg = logEntry.message;
+        console.log('>> ' + msg);
+        if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
+          errors.push(msg);
+        }
+      });
+      expect(errors).toEqual([]);
     });
-    expect(errors).toEqual([]);
-  });
 }

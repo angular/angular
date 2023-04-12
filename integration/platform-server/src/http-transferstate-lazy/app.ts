@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, provideClientHydration} from '@angular/platform-browser';
 import {RouterModule, Routes} from '@angular/router';
 import {AppComponent} from './app.component';
 
@@ -25,6 +25,7 @@ const routes: Routes = [
     BrowserModule,
     RouterModule.forRoot(routes),
   ],
+  providers: [provideClientHydration()]
 })
 export class HttpLazyTransferStateModule {
 }
