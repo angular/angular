@@ -15,7 +15,7 @@ import {TIcu} from './interfaces/i18n';
 import {NodeInjectorOffset} from './interfaces/injector';
 import {TNode} from './interfaces/node';
 import {isLContainer, isLView} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, T_HOST, TVIEW, TView} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, FLAGS, HEADER_OFFSET, LView, LViewFlags, T_HOST, TVIEW, TView} from './interfaces/view';
 
 // [Assert functions do not constraint type when they are guarded by a truthy
 // expression.](https://github.com/microsoft/TypeScript/issues/37295)

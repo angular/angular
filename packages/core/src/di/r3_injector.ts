@@ -212,6 +212,7 @@ export class R3Injector extends EnvironmentInjector {
   }
 
   override onDestroy(callback: () => void): () => void {
+    this.assertNotDestroyed();
     this._onDestroyHooks.push(callback);
     return () => this.removeOnDestroy(callback);
   }
