@@ -1512,7 +1512,7 @@ export function setElementAttribute(
 function setInputsFromAttrs<T>(
     lView: LView, directiveIndex: number, instance: T, def: DirectiveDef<T>, tNode: TNode,
     initialInputData: InitialInputData): void {
-  const initialInputs: InitialInputs|null = initialInputData![directiveIndex];
+  const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
   if (initialInputs !== null) {
     const setInput = def.setInput;
     for (let i = 0; i < initialInputs.length;) {
@@ -1952,7 +1952,7 @@ export function setInputsForProperty(
     ngDevMode && assertIndexInRange(lView, index);
     const def = tView.data[index] as DirectiveDef<any>;
     if (def.setInput !== null) {
-      def.setInput!(instance, value, publicName, privateName);
+      def.setInput(instance, value, publicName, privateName);
     } else {
       instance[privateName] = value;
     }
