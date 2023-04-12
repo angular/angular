@@ -24,7 +24,7 @@ import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
 import {TransferState} from '../transfer_state';
 
 import {cleanupDehydratedViews} from './cleanup';
-import {IS_HYDRATION_FEATURE_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
+import {IS_HYDRATION_DOM_REUSE_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 
@@ -107,7 +107,7 @@ function whenStable(
 export function withDomHydration(): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
-      provide: IS_HYDRATION_FEATURE_ENABLED,
+      provide: IS_HYDRATION_DOM_REUSE_ENABLED,
       useFactory: () => {
         let isEnabled = true;
         if (isBrowser()) {
@@ -142,7 +142,7 @@ export function withDomHydration(): EnvironmentProviders {
         // on the client. Moving forward, the `isBrowser` check should
         // be replaced with a tree-shakable alternative (e.g. `isServer`
         // flag).
-        if (isBrowser() && inject(IS_HYDRATION_FEATURE_ENABLED)) {
+        if (isBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
           enableHydrationRuntimeSupport();
         }
       },
@@ -155,13 +155,13 @@ export function withDomHydration(): EnvironmentProviders {
         // environment and when hydration is configured properly.
         // On a server, an application is rendered from scratch,
         // so the host content needs to be empty.
-        return isBrowser() && inject(IS_HYDRATION_FEATURE_ENABLED);
+        return isBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED);
       }
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,
       useFactory: () => {
-        if (isBrowser() && inject(IS_HYDRATION_FEATURE_ENABLED)) {
+        if (isBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
           const appRef = inject(ApplicationRef);
           const pendingTasks = inject(InitialRenderPendingTasks);
           const injector = inject(Injector);

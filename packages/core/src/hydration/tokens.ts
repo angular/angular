@@ -11,10 +11,11 @@ import {InjectionToken} from '../di/injection_token';
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
- * Internal token that specifies whether hydration is enabled.
+ * Internal token that specifies whether DOM reuse logic
+ * during hydration is enabled.
  */
-export const IS_HYDRATION_FEATURE_ENABLED =
-    new InjectionToken<boolean>(NG_DEV_MODE ? 'IS_HYDRATION_FEATURE_ENABLED' : '');
+export const IS_HYDRATION_DOM_REUSE_ENABLED =
+    new InjectionToken<boolean>(NG_DEV_MODE ? 'IS_HYDRATION_DOM_REUSE_ENABLED' : '');
 
 // By default (in client rendering mode), we remove all the contents
 // of the host element and render an application after that.
