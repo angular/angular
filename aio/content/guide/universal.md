@@ -112,9 +112,6 @@ If you throttle your network speed so that the client-side scripts take longer t
 *   The search box on the Dashboard page is ignored
 *   The *Back* and *Save* buttons on the Details page don't work
 
-User events other than `routerLink` clicks aren't supported.
-You must wait for the full client application to bootstrap and run, or buffer the events using libraries like [preboot](https://github.com/angular/preboot), which lets you replay these events once the client-side scripts load.
-
 The transition from the server-rendered application to the client application happens quickly on a development machine, but you should always test your applications in real-world scenarios.
 
 You can simulate a slower network to see the transition more clearly as follows:
