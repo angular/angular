@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
@@ -187,6 +188,10 @@ export function updateTransplantedViewCount(lContainer: LContainer, amount: 1|- 
  * Stores a LView-specific destroy callback.
  */
 export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
+  if ((lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
+    throw new RuntimeError(
+        RuntimeErrorCode.VIEW_ALREADY_DESTROYED, ngDevMode && 'View has already been destroyed.');
+  }
   if (lView[ON_DESTROY_HOOKS] === null) {
     lView[ON_DESTROY_HOOKS] = [];
   }
