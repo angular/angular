@@ -40,9 +40,18 @@ export interface WritableSignal<T> extends Signal<T> {
    * notify any dependents.
    */
   mutate(mutatorFn: (value: T) => void): void;
+
+  /**
+   * Returns a readonly version of this signal. Readonly signals can be accessed to read their value
+   * but can't be changed using set, update or mutate methods. The readonly signals do _not_ have
+   * any built-in mechanism that would prevent deep-mutation of their value.
+   */
+  asReadonly(): Signal<T>;
 }
 
 class WritableSignalImpl<T> extends ReactiveNode {
+  private readonlySignal: Signal<T>|undefined;
+
   protected override readonly consumerAllowSignalWrites = false;
 
   constructor(private value: T, private equal: ValueEqualityFn<T>) {
@@ -105,6 +114,13 @@ class WritableSignalImpl<T> extends ReactiveNode {
     postSignalSetFn?.();
   }
 
+  asReadonly(): Signal<T> {
+    if (this.readonlySignal === undefined) {
+      this.readonlySignal = createSignalFromFunction(this, () => this.signal());
+    }
+    return this.readonlySignal;
+  }
+
   signal(): T {
     this.producerAccessed();
     return this.value;
@@ -137,6 +153,7 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
                      set: signalNode.set.bind(signalNode),
                      update: signalNode.update.bind(signalNode),
                      mutate: signalNode.mutate.bind(signalNode),
+                     asReadonly: signalNode.asReadonly.bind(signalNode)
                    }) as unknown as WritableSignal<T>;
   return signalFn;
 }

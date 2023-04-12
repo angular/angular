@@ -98,6 +98,24 @@ describe('signals', () => {
     expect(derived()).toEqual('object:5');
   });
 
+  it('should allow converting writable signals to their readonly counterpart', () => {
+    const counter = signal(0);
+    const readOnlyCounter = counter.asReadonly();
+
+    // @ts-expect-error
+    expect(readOnlyCounter.set).toBeUndefined();
+    // @ts-expect-error
+    expect(readOnlyCounter.update).toBeUndefined();
+    // @ts-expect-error
+    expect(readOnlyCounter.mutate).toBeUndefined();
+
+    const double = computed(() => readOnlyCounter() * 2);
+    expect(double()).toBe(0);
+
+    counter.set(2);
+    expect(double()).toBe(4);
+  });
+
   describe('post-signal-set functions', () => {
     let prevPostSignalSetFn: (() => void)|null = null;
     let log: number;
