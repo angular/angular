@@ -7,9 +7,9 @@
  */
 
 import {assertInInjectionContext, computed, DestroyRef, inject, signal, Signal, WritableSignal} from '@angular/core';
-import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {Observable} from 'rxjs';
 
+import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
 import {untracked} from '../../src/signals';
 
 /**
