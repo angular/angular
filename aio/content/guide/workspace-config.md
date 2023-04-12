@@ -485,6 +485,7 @@ For [Universal](guide/glossary#universal), you can reduce the code rendered in t
 
 ### Source map configuration
 
+
 The `sourceMap` browser builder option can be either a Boolean or an Object for more fine-tune configuration to control the source maps of an application.
 
 | Options   | Details                                            | Value type | Default value |
@@ -513,6 +514,28 @@ When using hidden source maps, source maps are not referenced in the bundle.
 These are useful if you only want source maps to map error stack traces in error reporting tools. Hidden source maps don't expose your source maps in the browser developer tools.
 
 </div>
+
+### Index configuration option
+
+Configures the generation of the application's HTML index.
+
+The `index` option can have either simple path string value, or object value with specific fields.
+
+
+#### string
+
+The path of a file to use for the application's HTML index. The filename of the specified path will be used for the generated file and will be created in the root of the application's configured output path.
+
+#### object
+The object value contains two fields `input` and `output`
+
+The `input` field contains The path of a file to use for the application's generated HTML index.
+
+The `output` field contains the path of the application's generated HTML index file. The full provided path will be used and will be considered relative to the application's configured output path.
+
+
+
+
 
 <!-- links -->
 
