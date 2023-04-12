@@ -725,23 +725,6 @@ export class Router {
       });
     }
 
-    let targetPageId: number;
-    if (this.canceledNavigationResolution === 'computed') {
-      // If the `ɵrouterPageId` exist in the state then `targetpageId` should have the value of
-      // `ɵrouterPageId`. This is the case for something like a page refresh where we assign the
-      // target id to the previously set value for that page.
-      if (restoredState && restoredState.ɵrouterPageId) {
-        targetPageId = restoredState.ɵrouterPageId;
-      } else {
-        // Otherwise, targetPageId should be the next number in the event of a `pushState`
-        // navigation.
-        targetPageId = (this.browserPageId ?? 0) + 1;
-      }
-    } else {
-      // This is unused when `canceledNavigationResolution` is not computed.
-      targetPageId = 0;
-    }
-
     // Indicate that the navigation is happening.
     const taskId = this.pendingTasks.add();
     afterNextNavigation(this, () => {
@@ -751,7 +734,6 @@ export class Router {
     });
 
     this.navigationTransitions.handleNavigationRequest({
-      targetPageId,
       source,
       restoredState,
       currentUrlTree: this.currentUrlTree,
@@ -787,7 +769,7 @@ export class Router {
     } else {
       const state = {
         ...transition.extras.state,
-        ...this.generateNgRouterState(transition.id, transition.targetPageId)
+        ...this.generateNgRouterState(transition.id, (this.browserPageId ?? 0) + 1)
       };
       this.location.go(path, '', state);
     }
