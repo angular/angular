@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReactiveNode, setActiveConsumer} from '../signals/src/graph';
+import {ReactiveNode, setActiveConsumer} from '../signals';
 import {assertDefined, assertEqual} from '../util/assert';
 
 import {markViewDirty} from './instructions/mark_view_dirty';
