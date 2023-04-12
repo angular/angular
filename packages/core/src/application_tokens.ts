@@ -109,7 +109,7 @@ export const CSP_NONCE = new InjectionToken<string|null>('CSP nonce', {
     // 4. Have the `ComponentFactory` read the attribute and provide it to the injector under the
     // hood - has the same problem as #1 and #2 in that the renderer is used to query for the root
     // node and the nonce value needs to be available when the renderer is created.
-    return getDocument().body.querySelector('[ngCspNonce]')?.getAttribute('ngCspNonce') || null;
+    return getDocument().body?.querySelector('[ngCspNonce]')?.getAttribute('ngCspNonce') || null;
   },
 });
 
