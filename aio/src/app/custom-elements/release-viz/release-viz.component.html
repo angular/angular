@@ -1,0 +1,103 @@
+<div [hidden]="true">
+  <ng-content #template></ng-content>
+</div>
+
+<div>
+
+  <table>
+    <thead>
+      <tr>
+        <th *ngFor="let key of displayedColumns">
+          {{ key }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let release of dataSource">
+        <td *ngFor="let key of displayedColumns; first as first; index as i;">
+          <div
+            [ngClass]="{
+              'rv-table-version': first,
+              'rv-active': first && release.isActive(),
+              'rv-unsupported': first && release.isUnsupported(),
+              'rv-future': first && release.isFuture(),
+              'rv-lts': first && release.isLTS(),
+              'rv-version-dark': first && (!release.isFuture() && !release.isUnsupported()),
+              'rv-version-light': first && (release.isFuture() || release.isUnsupported()),
+              'rv-table-chip': first
+            }"
+          >
+            {{ release.get(key) }}
+          </div>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="rv-container" #svgContainer>
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      aria-labelledby="aio-release-viz-title aio-release-viz-desc"
+      role="group"
+
+      [attr.width]="svg?.overallWidth"
+      [attr.height]="svg?.overallHeight"
+
+      #theSVG
+    >
+      <title id="aio-release-viz-title">
+        Angular Release Visualizer
+      </title>
+      <desc id="aio-release-viz-desc">
+        Displays Angular version support lifecycles as a bar graph.
+      </desc>
+      <g
+        *ngFor="let group of renderGroups"
+        [attr.transform]="'translate(' + group.translateCoords.join(',') + ')'"
+      >
+        <g
+          *ngFor="let child of group.children;"
+        >
+          <text
+            class="{{child.asText.cssClass}}"
+
+            *ngIf="child.type === 'text'"
+            [attr.x]="child.asText.x"
+            [attr.y]="child.asText.y"
+          >
+            {{ child.asText.text }}
+          </text>
+
+          <rect
+            class="{{child.asRect.cssClass}}"
+
+            *ngIf="child.type === 'rect'"
+            [attr.width]="child.asRect.width"
+            [attr.height]="child.asRect.height"
+            [attr.x]="child.asRect.x"
+            [attr.y]="child.asRect.y"
+            [attr.rx]="child.asRect.rx"
+          >
+          </rect>
+
+          <line
+            class="{{child.asLine.cssClass}}"
+
+            *ngIf="child.type === 'line'"
+            [attr.x1]="child.asLine.x1"
+            [attr.y1]="child.asLine.y1"
+            [attr.x2]="child.asLine.x2"
+            [attr.y2]="child.asLine.y2"
+            [attr.stroke-dasharray]="child.asLine.dashed ? 5: ''"
+          >
+          </line>
+
+        </g>
+      </g>
+
+    </svg>
+    
+  </div>
+</div>
