@@ -235,7 +235,6 @@ export interface Navigation {
 
 export interface NavigationTransition {
   id: number;
-  targetPageId: number;
   currentUrlTree: UrlTree;
   extractedUrl: UrlTree;
   currentRawUrl: UrlTree;
@@ -323,8 +322,8 @@ export class NavigationTransitions {
   handleNavigationRequest(
       request: Pick<
           NavigationTransition,
-          'targetPageId'|'source'|'restoredState'|'currentUrlTree'|'currentRawUrl'|'rawUrl'|
-          'extras'|'resolve'|'reject'|'promise'|'currentSnapshot'|'currentRouterState'>) {
+          'source'|'restoredState'|'currentUrlTree'|'currentRawUrl'|'rawUrl'|'extras'|'resolve'|
+          'reject'|'promise'|'currentSnapshot'|'currentRouterState'>) {
     const id = ++this.navigationId;
     this.transitions?.next({...this.transitions.value, ...request, id});
   }
@@ -332,7 +331,6 @@ export class NavigationTransitions {
   setupNavigations(router: InternalRouterInterface): Observable<NavigationTransition> {
     this.transitions = new BehaviorSubject<NavigationTransition>({
       id: 0,
-      targetPageId: 0,
       currentUrlTree: router.currentUrlTree,
       currentRawUrl: router.currentUrlTree,
       extractedUrl: router.urlHandlingStrategy.extract(router.currentUrlTree),
