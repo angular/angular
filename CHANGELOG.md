@@ -1,3 +1,36 @@
+<a name="16.0.0-rc.0"></a>
+# 16.0.0-rc.0 (2023-04-12)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9de1e9da8f](https://github.com/angular/angular/commit/9de1e9da8fc7d102f74389d9a270c4608bf0dd64) | fix | incorrectly matching directives on attribute bindings ([#49713](https://github.com/angular/angular/pull/49713)) |
+| [6623810e4d](https://github.com/angular/angular/commit/6623810e4d3347edaccbbb214fa883ab6a669936) | fix | Produce diagnositc if directive used in host binding is not exported ([#49527](https://github.com/angular/angular/pull/49527)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ed817e32fe](https://github.com/angular/angular/commit/ed817e32fe0239c0f08ce342c7ad224055d56f84) | fix | Catch FatalDiagnosticError during template type checking ([#49527](https://github.com/angular/angular/pull/49527)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f8e25864e8](https://github.com/angular/angular/commit/f8e25864e8e35214a321b1c48a926d370f725e13) | fix | allow async functions in effects ([#49783](https://github.com/angular/angular/pull/49783)) |
+| [84216dabfc](https://github.com/angular/angular/commit/84216dabfcfc6e082f6042a0658fb0cb7a323525) | fix | catch errors from source signals outside of .next ([#49769](https://github.com/angular/angular/pull/49769)) |
+| [2f2ef14f9e](https://github.com/angular/angular/commit/2f2ef14f9e6b64445f76cb9e3f5958abe2439157) | fix | resolve `InitialRenderPendingTasks` promise on complete ([#49784](https://github.com/angular/angular/pull/49784)) |
+| [c7d8d3ee37](https://github.com/angular/angular/commit/c7d8d3ee3757c2540baf739001b0fc13c096a4a4) | fix | toObservable should allow writes to signals in the effect ([#49769](https://github.com/angular/angular/pull/49769)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [15c91a53ae](https://github.com/angular/angular/commit/15c91a53ae2cc1f34e05b158be69e10e9f43043b) | fix | delay accessing `pendingTasks.whenAllTasksComplete` ([#49784](https://github.com/angular/angular/pull/49784)) |
+| [9f0c6d1ed1](https://github.com/angular/angular/commit/9f0c6d1ed1d30eb5596fc68d8bd30ab132998ae6) | fix | ensure new cache state is returned on each request ([#49749](https://github.com/angular/angular/pull/49749)) |
+| [2eb9b8b402](https://github.com/angular/angular/commit/2eb9b8b402807aec817d0a58137f7d359c46d055) | fix | wait for all XHR requests to finish before stabilizing application ([#49776](https://github.com/angular/angular/pull/49776)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6193a3d406](https://github.com/angular/angular/commit/6193a3d40619c34127ec011a895e8fde3c5d8c48) | fix | fix = not parsed in router segment name ([#47332](https://github.com/angular/angular/pull/47332)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Brandon Roberts, De Wildt, Jessica Janiuk, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Nikola Kološnjaji, Paul Gschwendtner, Pawel Kozlowski and dewildt
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-next.7"></a>
 # 16.0.0-next.7 (2023-04-05)
 ## Breaking Changes
