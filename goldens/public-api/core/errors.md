@@ -123,7 +123,9 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNSUPPORTED_PROJECTION_DOM_NODES = -503,
     // (undocumented)
-    VIEW_ALREADY_ATTACHED = 902
+    VIEW_ALREADY_ATTACHED = 902,
+    // (undocumented)
+    VIEW_ALREADY_DESTROYED = 911
 }
 
 // (No @packageDocumentation comment for this package)

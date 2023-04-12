@@ -95,6 +95,7 @@ export const enum RuntimeErrorCode {
   MISSING_ZONEJS = 908,
   UNEXPECTED_ZONE_STATE = 909,
   UNSAFE_IFRAME_ATTRS = -910,
+  VIEW_ALREADY_DESTROYED = 911,
 }
 
 
