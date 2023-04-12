@@ -1,3 +1,22 @@
+<a name="15.2.7"></a>
+# 15.2.7 (2023-04-12)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b0c1a90f55](https://github.com/angular/angular/commit/b0c1a90f55ecfafb4fd5c22cdd1b4a5f12573f22) | fix | Produce diagnositc if directive used in host binding is not exported ([#49792](https://github.com/angular/angular/pull/49792)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a40529af2e](https://github.com/angular/angular/commit/a40529af2e2923f1dbdae8898a0e94e9e63a3fcf) | fix | Catch FatalDiagnosticError during template type checking ([#49792](https://github.com/angular/angular/pull/49792)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [702ec90110](https://github.com/angular/angular/commit/702ec901100b2d84efdf0b16d8347f8b28b94d5d) | fix | When using setInput, mark view dirty in same way as `markForCheck` ([#49747](https://github.com/angular/angular/pull/49747)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Kristiyan Kostadinov, Matthieu Riegler and Nikola Kološnjaji
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.6"></a>
 # 15.2.6 (2023-04-05)
 ### core
