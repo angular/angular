@@ -510,9 +510,6 @@
     "name": "applyView"
   },
   {
-    "name": "assertDefined"
-  },
-  {
     "name": "attachPatchData"
   },
   {

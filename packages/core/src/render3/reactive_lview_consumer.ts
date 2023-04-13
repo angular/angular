@@ -13,19 +13,18 @@ import {markViewDirty} from './instructions/mark_view_dirty';
 import {ComponentTemplate, HostBindingsFunction, RenderFlags} from './interfaces/definition';
 import {LView, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER} from './interfaces/view';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
-
 export class ReactiveLViewConsumer extends ReactiveNode {
   protected override consumerAllowSignalWrites = false;
   private _lView: LView|null = null;
 
   set lView(lView: LView) {
-    NG_DEV_MODE && assertEqual(this._lView, null, 'Consumer already associated with a view.');
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        assertEqual(this._lView, null, 'Consumer already associated with a view.');
     this._lView = lView;
   }
 
   protected override onConsumerDependencyMayHaveChanged() {
-    NG_DEV_MODE &&
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
         assertDefined(
             this._lView,
             'Updating a signal during template or host binding execution is not allowed.');

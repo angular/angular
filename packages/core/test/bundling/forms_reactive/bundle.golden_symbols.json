@@ -753,9 +753,6 @@
     "name": "assertControlPresent"
   },
   {
-    "name": "assertDefined"
-  },
-  {
     "name": "attachInjectFlag"
   },
   {
