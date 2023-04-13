@@ -7,7 +7,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'transfer-state-app-http',
@@ -16,18 +16,22 @@ import {Component} from '@angular/core';
     <div class="two">{{ responseTwo }}</div>
   `,
 })
-export class TransferStateComponent {
+export class TransferStateComponent implements OnInit {
   responseOne: string = '';
   responseTwo: string = '';
 
   constructor(
     private readonly httpClient: HttpClient,
   ) {
-    this.httpClient.get<any>(`http://localhost:4206/api`).subscribe((response) => {
+    // Test that HTTP cache works when HTTP call is made in the constructor.
+    this.httpClient.get<any>('http://localhost:4206/api').subscribe((response) => {
       this.responseOne = response.data;
     });
+  }
 
-    this.httpClient.get<any>(`http://localhost:4206/api-2`).subscribe((response) => {
+  ngOnInit(): void {
+    // Test that HTTP cache works when HTTP call is made in a lifecycle hook.
+    this.httpClient.get<any>('http://localhost:4206/api-2').subscribe((response) => {
       this.responseTwo = response.data;
     });
   }
