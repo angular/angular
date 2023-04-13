@@ -60,6 +60,9 @@ export class DtsMetadataReader implements MetadataReader {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      // NgModules declared outside the current compilation are assumed to contain providers, as it
+      // would be a non-breaking change for a library to introduce providers at any point.
+      mayDeclareProviders: true,
     };
   }
 
@@ -128,6 +131,8 @@ export class DtsMetadataReader implements MetadataReader {
       // The same goes for schemas.
       schemas: null,
       decorator: null,
+      // Assume that standalone components from .d.ts files may export providers.
+      assumedToExportProviders: isComponent && isStandalone,
     };
   }
 

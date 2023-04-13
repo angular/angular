@@ -11,8 +11,8 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../../imports';
-import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol,} from '../../../incremental/semantic_graph';
-import {MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
+import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticReference, SemanticSymbol,} from '../../../incremental/semantic_graph';
+import {ExportedProviderStatusResolver, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral,} from '../../../reflection';
@@ -59,12 +59,32 @@ export class NgModuleSymbol extends SemanticSymbol {
     usedPipes: SemanticReference[]
   }[] = [];
 
+  /**
+   * `SemanticSymbol`s of the transitive imports of this NgModule which came from imported
+   * standalone components.
+   *
+   * Standalone components are excluded/included in the `InjectorDef` emit output of the NgModule
+   * based on whether the compiler can prove that their transitive imports may contain exported
+   * providers, so a change in this set of symbols may affect the compilation output of this
+   * NgModule.
+   */
+  private transitiveImportsFromStandaloneComponents = new Set<SemanticSymbol>();
+
+  constructor(decl: ClassDeclaration, public readonly hasProviders: boolean) {
+    super(decl);
+  }
+
   override isPublicApiAffected(previousSymbol: SemanticSymbol): boolean {
     if (!(previousSymbol instanceof NgModuleSymbol)) {
       return true;
     }
 
-    // NgModules don't have a public API that could affect emit of Angular decorated classes.
+    // Changes in the provider status of this NgModule affect downstream dependencies, which may
+    // consider provider status in their own emits.
+    if (previousSymbol.hasProviders !== this.hasProviders) {
+      return true;
+    }
+
     return false;
   }
 
@@ -102,6 +122,25 @@ export class NgModuleSymbol extends SemanticSymbol {
         return true;
       }
     }
+
+    if (previousSymbol.transitiveImportsFromStandaloneComponents.size !==
+        this.transitiveImportsFromStandaloneComponents.size) {
+      return true;
+    }
+
+    const previousImports = Array.from(previousSymbol.transitiveImportsFromStandaloneComponents);
+    for (const transitiveImport of this.transitiveImportsFromStandaloneComponents) {
+      const prevEntry =
+          previousImports.find(prevEntry => isSymbolEqual(prevEntry, transitiveImport));
+      if (prevEntry === undefined) {
+        return true;
+      }
+
+      if (transitiveImport.isPublicApiAffected(prevEntry)) {
+        return true;
+      }
+    }
+
     return false;
   }
 
@@ -118,6 +157,10 @@ export class NgModuleSymbol extends SemanticSymbol {
       usedPipes: SemanticReference[]): void {
     this.remotelyScopedComponents.push({component, usedDirectives, usedPipes});
   }
+
+  addTransitiveImportFromStandaloneComponent(importedSymbol: SemanticSymbol): void {
+    this.transitiveImportsFromStandaloneComponents.add(importedSymbol);
+  }
 }
 
 /**
@@ -129,7 +172,9 @@ export class NgModuleDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaReader: MetadataReader, private metaRegistry: MetadataRegistry,
       private scopeRegistry: LocalModuleScopeRegistry,
-      private referencesRegistry: ReferencesRegistry, private isCore: boolean,
+      private referencesRegistry: ReferencesRegistry,
+      private exportedProviderStatusResolver: ExportedProviderStatusResolver,
+      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null, private isCore: boolean,
       private refEmitter: ReferenceEmitter, private annotateForClosureCompiler: boolean,
       private onlyPublishPublicTypings: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
@@ -433,8 +478,8 @@ export class NgModuleDecoratorHandler implements
     };
   }
 
-  symbol(node: ClassDeclaration): NgModuleSymbol {
-    return new NgModuleSymbol(node);
+  symbol(node: ClassDeclaration, analysis: NgModuleAnalysis): NgModuleSymbol {
+    return new NgModuleSymbol(node, analysis.providers !== null);
   }
 
   register(node: ClassDeclaration, analysis: NgModuleAnalysis): void {
@@ -452,6 +497,7 @@ export class NgModuleDecoratorHandler implements
       rawImports: analysis.rawImports,
       rawExports: analysis.rawExports,
       decorator: analysis.decorator,
+      mayDeclareProviders: analysis.providers !== null,
     });
 
     this.injectableRegistry.registerInjectable(node, {
@@ -489,11 +535,38 @@ export class NgModuleDecoratorHandler implements
       }
 
       const refsToEmit: Reference<ClassDeclaration>[] = [];
+      let symbol: NgModuleSymbol|null = null;
+      if (this.semanticDepGraphUpdater !== null) {
+        const sym = this.semanticDepGraphUpdater.getSymbol(node) as NgModuleSymbol;
+        if (sym instanceof NgModuleSymbol) {
+          symbol = sym;
+        }
+      }
+
       for (const ref of topLevelImport.resolvedReferences) {
         const dirMeta = this.metaReader.getDirectiveMetadata(ref);
-        if (dirMeta !== null && !dirMeta.isComponent) {
-          // Skip emit of directives in imports - directives can't carry providers.
-          continue;
+        if (dirMeta !== null) {
+          if (!dirMeta.isComponent) {
+            // Skip emit of directives in imports - directives can't carry providers.
+            continue;
+          }
+
+          // Check whether this component has providers.
+          const mayExportProviders =
+              this.exportedProviderStatusResolver.mayExportProviders(dirMeta.ref, (importRef) => {
+                // We need to keep track of which transitive imports were used to decide
+                // `mayExportProviders`, since if those change in a future compilation this
+                // NgModule will need to be re-emitted.
+                if (symbol !== null && this.semanticDepGraphUpdater !== null) {
+                  const importSymbol = this.semanticDepGraphUpdater.getSymbol(importRef.node);
+                  symbol.addTransitiveImportFromStandaloneComponent(importSymbol);
+                }
+              });
+
+          if (!mayExportProviders) {
+            // Skip emit of components that don't carry providers.
+            continue;
+          }
         }
 
         const pipeMeta = dirMeta === null ? this.metaReader.getPipeMetadata(ref) : null;

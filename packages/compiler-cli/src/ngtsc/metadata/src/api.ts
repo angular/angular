@@ -55,6 +55,14 @@ export interface NgModuleMeta {
    * If this is `null`, no decorator exists, meaning it's probably from a .d.ts file.
    */
   decorator: ts.Decorator|null;
+
+  /**
+   * Whether this NgModule may declare providers.
+   *
+   * If the compiler does not know if the NgModule may declare providers, this will be `true` (for
+   * example, NgModules declared outside the current compilation are assumed to declare providers).
+   */
+  mayDeclareProviders: boolean;
 }
 
 /**
@@ -195,6 +203,11 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
 
   /** Additional directives applied to the directive host. */
   hostDirectives: HostDirectiveMeta[]|null;
+
+  /**
+   * Whether the directive should be assumed to export providers if imported as a standalone type.
+   */
+  assumedToExportProviders: boolean;
 }
 
 /** Metadata collected about an additional directive that is being applied to a directive host. */
