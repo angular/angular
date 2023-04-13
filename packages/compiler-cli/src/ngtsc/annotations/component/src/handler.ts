@@ -503,6 +503,7 @@ export class ComponentDecoratorHandler implements
       animationTriggerNames: analysis.animationTriggerNames,
       schemas: analysis.schemas,
       decorator: analysis.decorator,
+      assumedToExportProviders: false,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);

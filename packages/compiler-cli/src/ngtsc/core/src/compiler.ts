@@ -18,7 +18,7 @@ import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracke
 import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, HostDirectivesResolver, LocalMetadataRegistry, MetadataReader, MetadataReaderWithIndex, PipeMeta, ResourceRegistry} from '../../metadata';
+import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, ExportedProviderStatusResolver, HostDirectivesResolver, LocalMetadataRegistry, MetadataReader, MetadataReaderWithIndex, PipeMeta, ResourceRegistry} from '../../metadata';
 import {NgModuleIndexImpl} from '../../metadata/src/ng_module_index';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf';
@@ -991,6 +991,7 @@ export class NgCompiler {
     const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, ngModuleScopeRegistry]);
     const injectableRegistry = new InjectableClassRegistry(reflector, isCore);
     const hostDirectivesResolver = new HostDirectivesResolver(metaReader);
+    const exportedProviderStatusResolver = new ExportedProviderStatusResolver(metaReader);
 
     const typeCheckScopeRegistry =
         new TypeCheckScopeRegistry(scopeReader, metaReader, hostDirectivesResolver);
@@ -1061,9 +1062,9 @@ export class NgCompiler {
           this.delegatingPerfRecorder),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,
-          isCore, refEmitter, this.closureCompilerEnabled,
-          this.options.onlyPublishPublicTypingsForNgModules ?? false, injectableRegistry,
-          this.delegatingPerfRecorder),
+          exportedProviderStatusResolver, semanticDepGraphUpdater, isCore, refEmitter,
+          this.closureCompilerEnabled, this.options.onlyPublishPublicTypingsForNgModules ?? false,
+          injectableRegistry, this.delegatingPerfRecorder),
     ];
 
     const traitCompiler = new TraitCompiler(

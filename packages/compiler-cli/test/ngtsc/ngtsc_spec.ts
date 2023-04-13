@@ -8219,11 +8219,20 @@ function allTests(os: string) {
     describe('InjectorDef emit optimizations for standalone', () => {
       it('should not filter components out of NgModule.imports', () => {
         env.write('test.ts', `
-          import {Component, NgModule} from '@angular/core';
+          import {Component, Injectable, NgModule} from '@angular/core';
+
+          @Injectable()
+          export class Service {}
+
+          @NgModule({
+            providers: [Service]
+          })
+          export class DepModule {}
 
           @Component({
             standalone: true,
             selector: 'standalone-cmp',
+            imports: [DepModule],
             template: '',
           })
           export class StandaloneCmp {}

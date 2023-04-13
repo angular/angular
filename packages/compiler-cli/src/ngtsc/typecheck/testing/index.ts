@@ -722,6 +722,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         imports: null,
         schemas: null,
         decorator: null,
+        assumedToExportProviders: false,
         hostDirectives:
             decl.hostDirectives === undefined ? null : decl.hostDirectives.map(hostDecl => {
               return {
