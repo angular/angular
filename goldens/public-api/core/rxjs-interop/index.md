@@ -14,10 +14,10 @@ import { Signal } from '@angular/core';
 export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperatorFunction<T>;
 
 // @public
-export function toObservable<T>(source: Signal<T>, options?: toObservableOptions): Observable<T>;
+export function toObservable<T>(source: Signal<T>, options?: ToObservableOptions): Observable<T>;
 
 // @public
-export interface toObservableOptions {
+export interface ToObservableOptions {
     injector?: Injector;
 }
 

@@ -14,7 +14,7 @@ import {Observable} from 'rxjs';
  *
  * @developerPreview
  */
-export interface toObservableOptions {
+export interface ToObservableOptions {
   /**
    * The `Injector` to use when creating the effect.
    *
@@ -34,7 +34,7 @@ export interface toObservableOptions {
  */
 export function toObservable<T>(
     source: Signal<T>,
-    options?: toObservableOptions,
+    options?: ToObservableOptions,
     ): Observable<T> {
   !options?.injector && assertInInjectionContext(toObservable);
   const injector = options?.injector ?? inject(Injector);
