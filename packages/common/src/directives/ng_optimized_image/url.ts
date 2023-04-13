@@ -26,13 +26,13 @@ export function extractHostname(url: string): string {
 export function isValidPath(path: unknown): boolean {
   const isString = typeof path === 'string';
 
-  if (!isString || path.trim() === '') {
+  if (!isString || (path as string).trim() === '') {
     return false;
   }
 
   // Calling new URL() will throw if the path string is malformed
   try {
-    const url = new URL(path);
+    const url = new URL(path as string);
     return true;
   } catch {
     return false;

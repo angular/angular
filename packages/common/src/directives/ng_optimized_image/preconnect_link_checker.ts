@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, InjectFlags, InjectionToken, ɵRuntimeErrorCode as RuntimeErrorCode, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Injectable, InjectFlags, InjectionToken, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError, ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
 
@@ -47,7 +47,7 @@ export const PRECONNECT_CHECK_BLOCKLIST =
  */
 @Injectable({providedIn: 'root'})
 export class PreconnectLinkChecker {
-  private document;
+  private document: Document;
 
   /**
    * Set of <link rel="preconnect"> tags found on this page.

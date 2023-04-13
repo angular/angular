@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, InjectionToken, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges,ɵRuntimeErrorCode as RuntimeErrorCode, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, Inject, InjectionToken, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError, ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/core';
 
 import {isPlatformServer} from '../../platform_id';
 
@@ -336,7 +336,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   @Input() srcset?: string;
 
   // a LCP image observer - should be injected only in the dev mode
-  private lcpObserver;
+  private lcpObserver: LCPImageObserver|null;
   private imgElement: HTMLImageElement;
 
   constructor(
@@ -668,7 +668,7 @@ function assertNotBlobUrl(dir: NgOptimizedImage) {
  */
 function assertNonEmptyInput(dir: NgOptimizedImage, name: string, value: unknown) {
   const isString = typeof value === 'string';
-  const isEmptyString = isString && value.trim() === '';
+  const isEmptyString = isString && (value as string).trim() === '';
   if (!isString || isEmptyString) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,

@@ -22,8 +22,8 @@ import {DEFAULT_PRELOADED_IMAGES_LIMIT, PRELOADED_IMAGES} from './tokens';
  */
 @Injectable({providedIn: 'root'})
 export class PreloadLinkCreator {
-  private readonly preloadedImages;
-  private readonly document;
+  private readonly preloadedImages: Set<string>;
+  private readonly document: Document;
 
   constructor() {
     this.preloadedImages = inject(PRELOADED_IMAGES);

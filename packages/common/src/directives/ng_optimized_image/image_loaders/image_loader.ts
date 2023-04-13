@@ -108,25 +108,23 @@ export function createImageLoader(
 }
 
 function throwInvalidPathError(path: unknown, exampleUrls: string[]): void {
-  if(ngDevMode) {
+  if (ngDevMode) {
     throw new RuntimeError(
-      RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
-          `Image loader has detected an invalid path (\`${path}\`). ` +
-              `To fix this, supply a path using one of the following formats: ${
-                  exampleUrls.join(' or ')}`);
+        RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
+        `Image loader has detected an invalid path (\`${path}\`). ` +
+            `To fix this, supply a path using one of the following formats: ${
+                exampleUrls.join(' or ')}`);
   }
-  
 }
 
 function throwUnexpectedAbsoluteUrlError(path: string, url: string): void {
-  if(ngDevMode) {
+  if (ngDevMode) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
-            `Image loader has detected a \`<img>\` tag with an invalid \`ngSrc\` attribute: ${
-                url}. ` +
-                `This image loader expects \`ngSrc\` to be a relative URL - ` +
-                `however the provided value is an absolute URL. ` +
-                `To fix this, provide \`ngSrc\` as a path relative to the base URL ` +
-                `configured for this loader (\`${path}\`).`);
+        `Image loader has detected a \`<img>\` tag with an invalid \`ngSrc\` attribute: ${url}. ` +
+            `This image loader expects \`ngSrc\` to be a relative URL - ` +
+            `however the provided value is an absolute URL. ` +
+            `To fix this, provide \`ngSrc\` as a path relative to the base URL ` +
+            `configured for this loader (\`${path}\`).`);
   }
 }
