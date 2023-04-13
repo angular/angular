@@ -7,5 +7,5 @@
  */
 
 export {takeUntilDestroyed} from './take_until_destroyed';
-export {toObservable, toObservableOptions} from './to_observable';
+export {toObservable, ToObservableOptions} from './to_observable';
 export {toSignal} from './to_signal';
