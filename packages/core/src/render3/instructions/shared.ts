@@ -84,8 +84,9 @@ export function processHostBindingOpCodes(tView: TView, lView: LView): void {
       }
     }
   } finally {
-    lView[REACTIVE_HOST_BINDING_CONSUMER] === null &&
-        commitLViewConsumerIfHasProducers(lView, REACTIVE_HOST_BINDING_CONSUMER);
+    if (lView[REACTIVE_HOST_BINDING_CONSUMER] === null) {
+      commitLViewConsumerIfHasProducers(lView, REACTIVE_HOST_BINDING_CONSUMER);
+    }
     setSelectedIndex(-1);
   }
 }
@@ -149,7 +150,6 @@ export function createLView<T>(
   lView[ID] = getUniqueLViewId();
   lView[HYDRATION] = hydrationInfo;
   lView[EMBEDDED_VIEW_INJECTOR as any] = embeddedViewInjector;
-  lView[REACTIVE_TEMPLATE_CONSUMER] = null;
 
   ngDevMode &&
       assertEqual(
