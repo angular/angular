@@ -3,7 +3,7 @@
   "command": "ng e2e [project]",
   "shortDescription": "Builds and serves an Angular application, then runs end-to-end tests.",
   "aliases": [
-    "e"
+    "e2e"
   ],
   "deprecated": false,
   "options": [
