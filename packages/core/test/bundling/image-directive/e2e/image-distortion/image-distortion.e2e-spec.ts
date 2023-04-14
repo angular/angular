@@ -23,7 +23,7 @@ describe('NgOptimizedImage directive', () => {
     await browser.get('/e2e/image-distortion-failing');
     const logs = await collectBrowserLogs(logging.Level.WARNING);
 
-    expect(logs.length).toEqual(5);
+    expect(logs.length).toEqual(7);
     // Image loading order is not guaranteed, so all logs, rather than single entry
     // needs to be checked in order to test whether a given error message is present.
     const expectErrorMessageInLogs = (logs: logging.Entry[], message: string) => {
@@ -70,6 +70,28 @@ describe('NgOptimizedImage directive', () => {
             'the aspect ratio of the rendered image does not match the image\'s intrinsic aspect ratio. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
             '\\nRendered image size: 30w x 250h (aspect-ratio: 0.12). ' +
+            '\\nThis issue can occur if \\"width\\" and \\"height\\" attributes are added to an image ' +
+            'without updating the corresponding image styling. To fix this, adjust image styling. In most cases, ' +
+            'adding \\"height: auto\\" or \\"width: auto\\" to the image styling will fix this issue.');
+
+    // Padding is used on <img>
+    expectErrorMessageInLogs(
+        logs,
+        'The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
+            'with the \`ngSrc=\\"/e2e/logo-500w.jpg\\"`) has detected that ' +
+            'the aspect ratio of the rendered image does not match the image\'s intrinsic aspect ratio. ' +
+            '\\nIntrinsic image size: 500w x 500h (aspect-ratio: 1). ' +
+            '\\nRendered image size: 100w x 500h (aspect-ratio: 0.2). ' +
+            '\\nThis issue can occur if \\"width\\" and \\"height\\" attributes are added to an image ' +
+            'without updating the corresponding image styling. To fix this, adjust image styling. In most cases, ' +
+            'adding \\"height: auto\\" or \\"width: auto\\" to the image styling will fix this issue.');
+    expectErrorMessageInLogs(
+        logs,
+        'The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
+            'with the \`ngSrc=\\"/e2e/logo-500w.jpg\\"`) has detected that ' +
+            'the aspect ratio of the rendered image does not match the image\'s intrinsic aspect ratio. ' +
+            '\\nIntrinsic image size: 500w x 500h (aspect-ratio: 1). ' +
+            '\\nRendered image size: 200w x 400h (aspect-ratio: 0.5). ' +
             '\\nThis issue can occur if \\"width\\" and \\"height\\" attributes are added to an image ' +
             'without updating the corresponding image styling. To fix this, adjust image styling. In most cases, ' +
             'adding \\"height: auto\\" or \\"width: auto\\" to the image styling will fix this issue.');
