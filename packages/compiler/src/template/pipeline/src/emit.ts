@@ -85,15 +85,28 @@ function emitView(view: ViewCompilation): o.FunctionExpr {
     updateStatements.push(op.statement);
   }
 
-  const rf = o.variable('rf');
-  const createCond = o.ifStmt(
-      new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, rf, o.literal(1)), createStatements);
-  const updateCond = o.ifStmt(
-      new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, rf, o.literal(2)), updateStatements);
+  const createCond = maybeGenerateRfBlock(1, createStatements);
+  const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
       [
         new o.FnParam('rf'),
         new o.FnParam('ctx'),
       ],
-      [createCond, updateCond], /* type */ undefined, /* sourceSpan */ undefined, view.fnName);
+      [
+        ...createCond,
+        ...updateCond,
+      ],
+      /* type */ undefined, /* sourceSpan */ undefined, view.fnName);
+}
+
+function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statement[] {
+  if (statements.length === 0) {
+    return [];
+  }
+
+  return [
+    o.ifStmt(
+        new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, o.variable('rf'), o.literal(flag)),
+        statements),
+  ];
 }
