@@ -107,28 +107,32 @@ function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
   const textXref = view.tpl.allocateXrefId();
   view.create.push(ir.createTextOp(textXref, ''));
   view.update.push(ir.createInterpolateTextOp(
-      textXref, value.strings, value.expressions.map(expr => convertAst(expr))));
+      textXref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
 }
 
 /**
  * Convert a template AST expression into an output AST expression.
  */
-function convertAst(ast: e.AST): o.Expression {
+function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
   if (ast instanceof e.ASTWithSource) {
-    return convertAst(ast.ast);
+    return convertAst(ast.ast, cpl);
   } else if (ast instanceof e.PropertyRead) {
     if (ast.receiver instanceof e.ImplicitReceiver) {
       return new ir.LexicalReadExpr(ast.name);
     } else {
-      return new o.ReadPropExpr(convertAst(ast.receiver), ast.name);
+      return new o.ReadPropExpr(convertAst(ast.receiver, cpl), ast.name);
     }
   } else if (ast instanceof e.Call) {
     if (ast.receiver instanceof e.ImplicitReceiver) {
       throw new Error(`Unexpected ImplicitReceiver`);
     } else {
       return new o.InvokeFunctionExpr(
-          convertAst(ast.receiver), ast.args.map(arg => convertAst(arg)));
+          convertAst(ast.receiver, cpl), ast.args.map(arg => convertAst(arg, cpl)));
     }
+  } else if (ast instanceof e.LiteralPrimitive) {
+    return o.literal(ast.value);
+  } else if (ast instanceof e.ThisReceiver) {
+    return new ir.ContextExpr(cpl.root.xref);
   } else {
     throw new Error(`Unhandled expression type: ${ast.constructor.name}`);
   }
@@ -170,18 +174,18 @@ function ingestBindings(
       if (typeof attr.value === 'string') {
         // TODO: do we need to handle static attribute bindings here?
       } else {
-        view.update.push(ir.createPropertyOp(op.xref, attr.name, convertAst(attr.value)));
+        view.update.push(ir.createPropertyOp(op.xref, attr.name, convertAst(attr.value, view.tpl)));
       }
     }
   } else {
     for (const input of element.inputs) {
-      view.update.push(ir.createPropertyOp(op.xref, input.name, convertAst(input.value)));
+      view.update.push(ir.createPropertyOp(op.xref, input.name, convertAst(input.value, view.tpl)));
     }
 
     for (const output of element.outputs) {
       const listenerOp = ir.createListenerOp(op.xref, output.name, op.tag);
       listenerOp.handlerOps.push(
-          ir.createStatementOp(new o.ReturnStatement(convertAst(output.handler))));
+          ir.createStatementOp(new o.ReturnStatement(convertAst(output.handler, view.tpl))));
       view.create.push(listenerOp);
     }
   }
