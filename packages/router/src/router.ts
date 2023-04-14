@@ -153,6 +153,9 @@ export class Router {
    * page id in the browser history is 1 more than the previous entry.
    */
   private get browserPageId(): number|undefined {
+    if (this.canceledNavigationResolution !== 'computed') {
+      return undefined;
+    }
     return (this.location.getState() as RestoredState | null)?.ɵrouterPageId;
   }
   private console = inject(Console);
@@ -777,8 +780,7 @@ export class Router {
     const path = this.urlSerializer.serialize(url);
     if (this.location.isCurrentPathEqualTo(path) || !!transition.extras.replaceUrl) {
       // replacements do not update the target page
-      const currentBrowserPageId =
-          this.canceledNavigationResolution === 'computed' ? this.browserPageId : undefined;
+      const currentBrowserPageId = this.browserPageId;
       const state = {
         ...transition.extras.state,
         ...this.generateNgRouterState(transition.id, currentBrowserPageId)
