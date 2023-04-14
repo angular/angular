@@ -80,8 +80,8 @@ export function reference(slot: number): o.Expression {
   ]);
 }
 
-export function nextContext(): o.Expression {
-  return o.importExpr(Identifiers.nextContext).callFn([]);
+export function nextContext(steps: number): o.Expression {
+  return o.importExpr(Identifiers.nextContext).callFn(steps === 1 ? [] : [o.literal(steps)]);
 }
 
 

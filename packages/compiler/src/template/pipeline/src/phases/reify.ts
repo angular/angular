@@ -128,7 +128,7 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
 function reifyIrExpression(expr: ir.Expression): o.Expression {
   switch (expr.kind) {
     case ir.ExpressionKind.NextContext:
-      return ng.nextContext();
+      return ng.nextContext(expr.steps);
     case ir.ExpressionKind.Reference:
       return ng.reference(expr.slot! + 1 + expr.offset);
     case ir.ExpressionKind.LexicalRead:

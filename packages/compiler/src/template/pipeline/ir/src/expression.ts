@@ -132,6 +132,8 @@ export class ContextExpr extends ExpressionBase {
 export class NextContextExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.NextContext;
 
+  steps = 1;
+
   constructor() {
     super();
   }
@@ -139,7 +141,7 @@ export class NextContextExpr extends ExpressionBase {
   override visitExpression(): void {}
 
   override isEquivalent(e: o.Expression): boolean {
-    return e instanceof NextContextExpr;
+    return e instanceof NextContextExpr && e.steps === this.steps;
   }
 
   override isConstant(): boolean {
