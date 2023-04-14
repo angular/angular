@@ -98,7 +98,7 @@ export function restoreView(savedView: o.Expression): o.Expression {
 
 
 export function resetView(returnValue: o.Expression): o.Expression {
-  return o.importExpr(Identifiers.reference).callFn([
+  return o.importExpr(Identifiers.resetView).callFn([
     returnValue,
   ]);
 }
