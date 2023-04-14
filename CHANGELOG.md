@@ -1,3 +1,21 @@
+<a name="16.0.0-rc.1"></a>
+# 16.0.0-rc.1 (2023-04-14)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4721c48a24](https://github.com/angular/angular/commit/4721c48a24bf4e72fd4742097ec8505a08f87579) | fix | error if document body is null ([#49818](https://github.com/angular/angular/pull/49818)) |
+| [87549af73c](https://github.com/angular/angular/commit/87549af73c675d33b2c87d083e05a82b18332bf0) | fix | Fix capitalization of toObservableOptions ([#49832](https://github.com/angular/angular/pull/49832)) |
+| [c34d7e0822](https://github.com/angular/angular/commit/c34d7e0822c21f7b6e7dfd46d3e12cd6ebb7390e) | fix | onDestroy should be registered only on valid DestroyRef ([#49804](https://github.com/angular/angular/pull/49804)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2a580b6f0b](https://github.com/angular/angular/commit/2a580b6f0b05d917dc220c4b7b69a8b3f59e6e98) | fix | HTTP cache was being disabled prematurely ([#49826](https://github.com/angular/angular/pull/49826)) |
+| [95bc7e2c03](https://github.com/angular/angular/commit/95bc7e2c03b60c41c8dbe431a3759d2b63405753) | fix | prevent headers from throwing an error when initializing numerical values ([#49379](https://github.com/angular/angular/pull/49379)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Danilo Bassi, Kristiyan Kostadinov, Matthieu Riegler, Pawel Kozlowski and Payam Valadkhan
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-rc.0"></a>
 # 16.0.0-rc.0 (2023-04-12)
 ### compiler
