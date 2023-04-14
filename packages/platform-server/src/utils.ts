@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵisPromise} from '@angular/core';
+import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED} from '@angular/core';
 import {first} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
@@ -50,66 +50,57 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
   });
 }
 
-function _render<T>(
+async function _render<T>(
     platform: PlatformRef,
     bootstrapPromise: Promise<NgModuleRef<T>|ApplicationRef>): Promise<string> {
-  return bootstrapPromise.then((moduleOrApplicationRef) => {
-    const environmentInjector = moduleOrApplicationRef.injector;
-    const applicationRef: ApplicationRef = moduleOrApplicationRef instanceof ApplicationRef ?
-        moduleOrApplicationRef :
-        environmentInjector.get(ApplicationRef);
-    const isStablePromise =
-        applicationRef.isStable.pipe((first((isStable: boolean) => isStable))).toPromise();
-    const pendingTasks = environmentInjector.get(InitialRenderPendingTasks);
-    const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
-    return Promise.allSettled([isStablePromise, pendingTasksPromise]).then(() => {
-      const platformState = platform.injector.get(PlatformState);
+  const moduleOrApplicationRef = await bootstrapPromise;
+  const environmentInjector = moduleOrApplicationRef.injector;
+  const applicationRef: ApplicationRef = moduleOrApplicationRef instanceof ApplicationRef ?
+      moduleOrApplicationRef :
+      environmentInjector.get(ApplicationRef);
+  const isStablePromise =
+      applicationRef.isStable.pipe((first((isStable: boolean) => isStable))).toPromise();
+  const pendingTasks = environmentInjector.get(InitialRenderPendingTasks);
+  const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
 
-      const asyncPromises: Promise<any>[] = [];
+  // Block until application is stable.
+  await Promise.allSettled([isStablePromise, pendingTasksPromise]);
 
-      if (applicationRef.injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
-        annotateForHydration(applicationRef, platformState.getDocument());
+  const platformState = platform.injector.get(PlatformState);
+  if (applicationRef.injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
+    annotateForHydration(applicationRef, platformState.getDocument());
+  }
+
+  // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
+  const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
+  if (callbacks) {
+    const asyncCallbacks: Promise<void>[] = [];
+    for (const callback of callbacks) {
+      try {
+        const callbackResult = callback();
+        if (callbackResult) {
+          asyncCallbacks.push(callbackResult);
+        }
+      } catch (e) {
+        // Ignore exceptions.
+        console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
       }
+    }
 
-      // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
-      const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
-
-      if (callbacks) {
-        for (const callback of callbacks) {
-          try {
-            const callbackResult = callback();
-            if (ɵisPromise(callbackResult)) {
-              // TODO: in TS3.7, callbackResult is void.
-              asyncPromises.push(callbackResult as any);
-            }
-
-          } catch (e) {
-            // Ignore exceptions.
-            console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
-          }
+    if (asyncCallbacks.length) {
+      for (const result of await Promise.allSettled(asyncCallbacks)) {
+        if (result.status === 'rejected') {
+          console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', result.reason);
         }
       }
+    }
+  }
 
-      const complete = () => {
-        appendServerContextInfo(applicationRef);
-        const output = platformState.renderToString();
-        platform.destroy();
-        return output;
-      };
+  appendServerContextInfo(applicationRef);
+  const output = platformState.renderToString();
+  platform.destroy();
 
-      if (asyncPromises.length === 0) {
-        return complete();
-      }
-
-      return Promise
-          .all(asyncPromises.map(asyncPromise => {
-            return asyncPromise.catch(e => {
-              console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
-            });
-          }))
-          .then(complete);
-    });
-  });
+  return output;
 }
 
 /**
