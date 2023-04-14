@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import {ExpressionKind, OpKind} from './enums';
-import {UsesSlotIndex, UsesSlotIndexExprTrait} from './traits';
+import {UsesSlotIndex, UsesSlotIndexTrait} from './traits';
 
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -79,7 +79,7 @@ export class LexicalReadExpr extends ExpressionBase {
 /**
  * Runtime operation to retrieve the value of a local reference.
  */
-export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexExprTrait {
+export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait {
   override readonly kind = ExpressionKind.Reference;
 
   readonly[UsesSlotIndex] = true;

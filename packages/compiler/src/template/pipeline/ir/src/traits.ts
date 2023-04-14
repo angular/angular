@@ -83,7 +83,7 @@ export interface DependsOnSlotContextOpTrait {
  * During IR processing, assigned slots of `ConsumesSlotOpTrait` implementors will be propagated to
  * `UsesSlotIndexTrait` implementors by matching their `XrefId`s.
  */
-export interface UsesSlotIndexExprTrait {
+export interface UsesSlotIndexTrait {
   readonly[UsesSlotIndex]: true;
 
   /**
@@ -113,6 +113,15 @@ export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'> = {
   [ConsumesSlot]: true,
   slot: null,
   numSlotsUsed: 1,
+} as const;
+
+/**
+ * Default values for most `UsesSlotIndexTrait` fields (used with the spread operator to initialize
+ * implementors of the trait).
+ */
+export const TRAIT_USES_SLOT_INDEX: Omit<UsesSlotIndexTrait, 'target'> = {
+  [UsesSlotIndex]: true,
+  slot: null,
 } as const;
 
 /**
@@ -157,9 +166,11 @@ export function hasConsumesVarsTrait(value: any): boolean {
 }
 
 /**
- * Test whether an expression implements `UsesSlotIndexExprTrait`.
+ * Test whether an operation or expression implements `UsesSlotIndexTrait`.
  */
 export function hasUsesSlotIndexTrait<ExprT extends Expression>(expr: ExprT): expr is ExprT&
-    UsesSlotIndexExprTrait {
-  return (expr as Partial<UsesSlotIndexExprTrait>)[UsesSlotIndex] === true;
+    UsesSlotIndexTrait;
+export function hasUsesSlotIndexTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&UsesSlotIndexTrait;
+export function hasUsesSlotIndexTrait(value: any): boolean {
+  return (value as Partial<UsesSlotIndexTrait>)[UsesSlotIndex] === true;
 }
