@@ -58,6 +58,9 @@ import {Component} from '@angular/core';
      <img ngSrc="/e2e/a.png" width="25" height="25" style="padding: 1px 2px 5px 10px; box-sizing: content-box; height: 25px; width: auto">
      <img ngSrc="/e2e/a.png" width="25" height="25" style="padding: 1px 2px 5px 10px; box-sizing: border-box; height: 25px; width: auto">
      <br>
+     <!-- autoscale with large difference between width and height resulting in rounding -->
+     <img ngSrc="/e2e/white-607x3.png" width="607" height="3" style="width: auto; height: 2px">
+     <br>
     `,
 })
 export class ImageDistortionPassingComponent {
