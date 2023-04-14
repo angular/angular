@@ -48,6 +48,16 @@ import {Component} from '@angular/core';
      <img ngSrc="/e2e/a.png" width="250" height="250" style="max-width: 100%; height: 100%">
      <img ngSrc="/e2e/a.png" width="25" height="25" style="height: 25%; width: 25%;">
      <br>
+     <!-- handles padding -->
+     <img ngSrc="/e2e/a.png" width="25" height="25" style="padding: 4px">
+     <img ngSrc="/e2e/a.png" width="25" height="25" style="padding-top: 4px">
+     <img ngSrc="/e2e/a.png" width="25" height="25" style="padding-right: 4px">
+     <img ngSrc="/e2e/a.png" width="25" height="25" style="padding-bottom: 4px">
+     <img ngSrc="/e2e/a.png" width="25" height="25" style="padding-left: 4px; box-sizing: content-box; height: 25px; width: auto">
+     <img ngSrc="/e2e/a.png" width="25" height="25" style="padding-left: 4px; box-sizing: border-box; height: 25px; width: auto">
+     <img ngSrc="/e2e/a.png" width="25" height="25" style="padding: 1px 2px 5px 10px; box-sizing: content-box; height: 25px; width: auto">
+     <img ngSrc="/e2e/a.png" width="25" height="25" style="padding: 1px 2px 5px 10px; box-sizing: border-box; height: 25px; width: auto">
+     <br>
     `,
 })
 export class ImageDistortionPassingComponent {
@@ -77,6 +87,19 @@ export class ImageDistortionPassingComponent {
        <!-- Images dimensions are incorrect AND image styling is incorrect -->
        <img ngSrc="/e2e/b.png" width="150" height="250" style="max-height: 10%" disableOptimizedSrcset>
      </div>
+     <!-- Image is distorted but padding is applied to trick clientWidth -->
+     <img
+       ngSrc="/e2e/logo-500w.jpg"
+       width="500"
+       height="500"
+       priority
+       style="width: 100px; height: 500px; padding-left: 400px; box-sizing: content-box">
+     <img
+       ngSrc="/e2e/logo-500w.jpg"
+       width="500"
+       height="500"
+       priority
+       style="width: 400px; height: 400px; padding-left: 200px; box-sizing: border-box">
      `,
 })
 export class ImageDistortionFailingComponent {
