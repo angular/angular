@@ -35,7 +35,10 @@ function addNamesToView(view: ViewCompilation, baseName: string, state: {index: 
         if (op.handlerFnName === null) {
           // TODO(alxhub): convert this temporary name to match how the
           // `TemplateDefinitionBuilder` names listener functions.
-          op.handlerFnName = `${view.fnName}_${op.name}_listener`;
+          if (op.slot === null) {
+            throw new Error(`Expected a slot to be assigned`);
+          }
+          op.handlerFnName = `${view.fnName}_${op.tag}_${op.name}_${op.slot}_listener`;
         }
         break;
       case ir.OpKind.Variable:

@@ -9,7 +9,7 @@
 import {ElementAttributes} from '../element';
 import {OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
-import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT} from '../traits';
+import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 import type {UpdateOp} from './update';
@@ -199,18 +199,18 @@ export function createTextOp(xref: XrefId, initialValue: string): TextOp {
 /**
  * Logical operation representing an event listener on an element in the creation IR.
  */
-export interface ListenerOp extends Op<CreateOp> {
+export interface ListenerOp extends Op<CreateOp>, UsesSlotIndexTrait {
   kind: OpKind.Listener;
-
-  /**
-   * `XrefId` of the element on which the event listener is bound.
-   */
-  xref: XrefId;
 
   /**
    * Name of the event which is being listened to.
    */
   name: string;
+
+  /**
+   * Tag name of the element on which this listener is placed.
+   */
+  tag: string;
 
   /**
    * A list of `UpdateOp`s representing the body of the event listener.
@@ -226,14 +226,16 @@ export interface ListenerOp extends Op<CreateOp> {
 /**
  * Create a `ListenerOp`.
  */
-export function createListenerOp(xref: XrefId, name: string): ListenerOp {
+export function createListenerOp(target: XrefId, name: string, tag: string): ListenerOp {
   return {
     kind: OpKind.Listener,
-    xref,
+    target,
+    tag,
     name,
     handlerOps: new OpList(),
     handlerFnName: null,
     ...NEW_OP,
+    ...TRAIT_USES_SLOT_INDEX,
   };
 }
 

@@ -12,7 +12,7 @@ import type {ComponentCompilation} from '../compilation';
 /**
  * Assign data slots for all operations which implement `ConsumesSlotOpTrait`, and propagate the
  * assigned data slots of those operations to any expressions which reference them via
- * `UsesSlotIndexExprTrait`.
+ * `UsesSlotIndexTrait`.
  *
  * This phase is also responsible for counting the number of slots used for each view (its `decls`)
  * and propagating that number into the `Template` operations which declare embedded views.
@@ -63,6 +63,16 @@ export function phaseSlotAllocation(cpl: ComponentCompilation): void {
         // operation itself, so it can be emitted later.
         const childView = cpl.views.get(op.xref)!;
         op.decls = childView.decls;
+      }
+
+      if (ir.hasUsesSlotIndexTrait(op) && op.slot === null) {
+        if (!slotMap.has(op.target)) {
+          // We do expect to find a slot allocated for everything which might be referenced.
+          throw new Error(
+              `AssertionError: no slot allocated for ${ir.OpKind[op.kind]} target ${op.target}`);
+        }
+
+        op.slot = slotMap.get(op.target)!;
       }
 
       // Process all `ir.Expression`s within this view, and look for `usesSlotIndexExprTrait`.
