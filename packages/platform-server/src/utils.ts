@@ -50,12 +50,8 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
   });
 }
 
-async function _render<T>(
-    platform: PlatformRef, moduleOrApplicationRef: NgModuleRef<T>|ApplicationRef): Promise<string> {
-  const environmentInjector = moduleOrApplicationRef.injector;
-  const applicationRef = moduleOrApplicationRef instanceof ApplicationRef ?
-      moduleOrApplicationRef :
-      environmentInjector.get(ApplicationRef);
+async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
+  const environmentInjector = applicationRef.injector;
   const isStablePromise =
       applicationRef.isStable.pipe((first((isStable: boolean) => isStable))).toPromise();
   const pendingTasks = environmentInjector.get(InitialRenderPendingTasks);
@@ -64,7 +60,7 @@ async function _render<T>(
   // Block until application is stable.
   await Promise.allSettled([isStablePromise, pendingTasksPromise]);
 
-  const platformState = platform.injector.get(PlatformState);
+  const platformState = platformRef.injector.get(PlatformState);
   if (applicationRef.injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
     annotateForHydration(applicationRef, platformState.getDocument());
   }
@@ -96,7 +92,7 @@ async function _render<T>(
 
   appendServerContextInfo(applicationRef);
   const output = platformState.renderToString();
-  platform.destroy();
+  platformRef.destroy();
 
   return output;
 }
@@ -141,8 +137,10 @@ export async function renderModule<T>(moduleType: Type<T>, options: {
   extraProviders?: StaticProvider[],
 }): Promise<string> {
   const {document, url, extraProviders: platformProviders} = options;
-  const platform = _getPlatform(platformDynamicServer, {document, url, platformProviders});
-  return _render(platform, await platform.bootstrapModule(moduleType));
+  const platformRef = _getPlatform(platformDynamicServer, {document, url, platformProviders});
+  const moduleRef = await platformRef.bootstrapModule(moduleType);
+  const applicationRef = moduleRef.injector.get(ApplicationRef);
+  return _render(platformRef, applicationRef);
 }
 
 /**
@@ -171,7 +169,7 @@ export async function renderApplication<T>(bootstrap: () => Promise<ApplicationR
   url?: string,
   platformProviders?: Provider[],
 }): Promise<string> {
-  const platform = _getPlatform(platformDynamicServer, options);
-
-  return _render(platform, await bootstrap());
+  const platformRef = _getPlatform(platformDynamicServer, options);
+  const applicationRef = await bootstrap();
+  return _render(platformRef, applicationRef);
 }
