@@ -179,7 +179,7 @@ function ingestBindings(
     }
 
     for (const output of element.outputs) {
-      const listenerOp = ir.createListenerOp(op.xref, output.name);
+      const listenerOp = ir.createListenerOp(op.xref, output.name, op.tag);
       listenerOp.handlerOps.push(
           ir.createStatementOp(new o.ReturnStatement(convertAst(output.handler))));
       view.create.push(listenerOp);
