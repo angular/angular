@@ -1027,18 +1027,16 @@ describe('platform-server integration', () => {
            });
          }));
 
-      it('should handle element property "hidden"', waitForAsync(() => {
-           const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(MyHiddenComponentStandalone, options) :
-               renderModule(HiddenModule, options);
-           bootstrap.then(output => {
-             expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-                 '<input hidden=""><input></app></body></html>');
-             called = true;
-           });
-         }));
+      it('should handle element property "hidden"', async () => {
+        const options = {document: doc};
+        const bootstrap = isStandalone ? renderApplication(MyHiddenComponentStandalone, options) :
+                                         renderModule(HiddenModule, options);
+        const output = await bootstrap;
+        expect(output).toBe(
+            '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
+            '<input hidden=""><input></app></body></html>');
+        called = true;
+      });
 
       it('should call render hook', waitForAsync(() => {
            const options = {document: doc};
@@ -1055,57 +1053,52 @@ describe('platform-server integration', () => {
            });
          }));
 
-      it('should call multiple render hooks', waitForAsync(() => {
-           const consoleSpy = spyOn(console, 'warn');
-           const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(
-                   getStandaloneBoostrapFn(MyServerAppStandalone, MultiRenderHookProviders),
-                   options) :
-               renderModule(MultiRenderHookModule, options);
-           bootstrap.then(output => {
-             // title should be added by the render hook.
-             expect(output).toBe(
-                 '<html><head><title>RenderHook</title><meta name="description"></head>' +
-                 '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
-             expect(consoleSpy).toHaveBeenCalled();
-             called = true;
-           });
-         }));
+      it('should call multiple render hooks', async () => {
+        const consoleSpy = spyOn(console, 'warn');
+        const options = {document: doc};
+        const bootstrap = isStandalone ?
+            renderApplication(
+                getStandaloneBoostrapFn(MyServerAppStandalone, MultiRenderHookProviders), options) :
+            renderModule(MultiRenderHookModule, options);
+        const output = await bootstrap;
+        // title should be added by the render hook.
+        expect(output).toBe(
+            '<html><head><title>RenderHook</title><meta name="description"></head>' +
+            '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
+        expect(consoleSpy).toHaveBeenCalled();
+        called = true;
+      });
 
-      it('should call async render hooks', waitForAsync(() => {
-           const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(
-                   getStandaloneBoostrapFn(MyServerAppStandalone, AsyncRenderHookProviders),
-                   options) :
-               renderModule(AsyncRenderHookModule, options);
-           bootstrap.then(output => {
-             // title should be added by the render hook.
-             expect(output).toBe(
-                 '<html><head><title>AsyncRenderHook</title></head><body>' +
-                 '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
-             called = true;
-           });
-         }));
+      it('should call async render hooks', async () => {
+        const options = {document: doc};
+        const bootstrap = isStandalone ?
+            renderApplication(
+                getStandaloneBoostrapFn(MyServerAppStandalone, AsyncRenderHookProviders), options) :
+            renderModule(AsyncRenderHookModule, options);
+        const output = await bootstrap;
+        // title should be added by the render hook.
+        expect(output).toBe(
+            '<html><head><title>AsyncRenderHook</title></head><body>' +
+            '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
+        called = true;
+      });
 
-      it('should call multiple async and sync render hooks', waitForAsync(() => {
-           const consoleSpy = spyOn(console, 'warn');
-           const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(
-                   getStandaloneBoostrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
-                   options) :
-               renderModule(AsyncMultiRenderHookModule, options);
-           bootstrap.then(output => {
-             // title should be added by the render hook.
-             expect(output).toBe(
-                 '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
-                 '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
-             expect(consoleSpy).toHaveBeenCalled();
-             called = true;
-           });
-         }));
+      it('should call multiple async and sync render hooks', async () => {
+        const consoleSpy = spyOn(console, 'warn');
+        const options = {document: doc};
+        const bootstrap = isStandalone ?
+            renderApplication(
+                getStandaloneBoostrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
+                options) :
+            renderModule(AsyncMultiRenderHookModule, options);
+        const output = await bootstrap;
+        // title should be added by the render hook.
+        expect(output).toBe(
+            '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
+            '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
+        expect(consoleSpy).toHaveBeenCalled();
+        called = true;
+      });
 
       it(`should wait for InitialRenderPendingTasks before serializing ` +
              `(standalone: ${isStandalone})`,

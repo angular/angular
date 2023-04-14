@@ -51,11 +51,9 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
 }
 
 async function _render<T>(
-    platform: PlatformRef,
-    bootstrapPromise: Promise<NgModuleRef<T>|ApplicationRef>): Promise<string> {
-  const moduleOrApplicationRef = await bootstrapPromise;
+    platform: PlatformRef, moduleOrApplicationRef: NgModuleRef<T>|ApplicationRef): Promise<string> {
   const environmentInjector = moduleOrApplicationRef.injector;
-  const applicationRef: ApplicationRef = moduleOrApplicationRef instanceof ApplicationRef ?
+  const applicationRef = moduleOrApplicationRef instanceof ApplicationRef ?
       moduleOrApplicationRef :
       environmentInjector.get(ApplicationRef);
   const isStablePromise =
@@ -137,14 +135,14 @@ function sanitizeServerContext(serverContext: string): string {
  *
  * @publicApi
  */
-export function renderModule<T>(moduleType: Type<T>, options: {
+export async function renderModule<T>(moduleType: Type<T>, options: {
   document?: string|Document,
   url?: string,
   extraProviders?: StaticProvider[],
 }): Promise<string> {
   const {document, url, extraProviders: platformProviders} = options;
   const platform = _getPlatform(platformDynamicServer, {document, url, platformProviders});
-  return _render(platform, platform.bootstrapModule(moduleType));
+  return _render(platform, await platform.bootstrapModule(moduleType));
 }
 
 /**
@@ -168,12 +166,12 @@ export function renderModule<T>(moduleType: Type<T>, options: {
  * @publicApi
  * @developerPreview
  */
-export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {
+export async function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {
   document?: string|Document,
   url?: string,
   platformProviders?: Provider[],
 }): Promise<string> {
   const platform = _getPlatform(platformDynamicServer, options);
 
-  return _render(platform, bootstrap());
+  return _render(platform, await bootstrap());
 }
