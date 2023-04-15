@@ -53,6 +53,7 @@ export interface ApplicationConfig {
 
 // @public
 export class ApplicationInitStatus {
+    constructor();
     // (undocumented)
     readonly done = false;
     // (undocumented)
