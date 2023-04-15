@@ -7,20 +7,21 @@
  */
 
 import ts from 'typescript';
+
 import {IncrementalState} from './state';
 
 /**
- * Strategy used to manage the association between a `ts.Program` and the `IncrementalDriver` which
+ * Strategy used to manage the association between a `ts.Program` and the `IncrementalState` which
  * represents the reusable Angular part of its compilation.
  */
 export interface IncrementalBuildStrategy {
   /**
-   * Determine the Angular `IncrementalDriver` for the given `ts.Program`, if one is available.
+   * Determine the Angular `IncrementalState` for the given `ts.Program`, if one is available.
    */
   getIncrementalState(program: ts.Program): IncrementalState|null;
 
   /**
-   * Associate the given `IncrementalDriver` with the given `ts.Program` and make it available to
+   * Associate the given `IncrementalState` with the given `ts.Program` and make it available to
    * future compilations.
    */
   setIncrementalState(driver: IncrementalState, program: ts.Program): void;
@@ -49,7 +50,7 @@ export class NoopIncrementalBuildStrategy implements IncrementalBuildStrategy {
 }
 
 /**
- * Tracks an `IncrementalDriver` within the strategy itself.
+ * Tracks an `IncrementalState` within the strategy itself.
  */
 export class TrackedIncrementalBuildStrategy implements IncrementalBuildStrategy {
   private state: IncrementalState|null = null;
@@ -73,8 +74,8 @@ export class TrackedIncrementalBuildStrategy implements IncrementalBuildStrategy
 }
 
 /**
- * Manages the `IncrementalDriver` associated with a `ts.Program` by monkey-patching it onto the
- * program under `SYM_INCREMENTAL_DRIVER`.
+ * Manages the `IncrementalState` associated with a `ts.Program` by monkey-patching it onto the
+ * program under `SYM_INCREMENTAL_STATE`.
  */
 export class PatchedProgramIncrementalBuildStrategy implements IncrementalBuildStrategy {
   getIncrementalState(program: ts.Program): IncrementalState|null {
@@ -96,7 +97,7 @@ export class PatchedProgramIncrementalBuildStrategy implements IncrementalBuildS
 
 
 /**
- * Symbol under which the `IncrementalDriver` is stored on a `ts.Program`.
+ * Symbol under which the `IncrementalState` is stored on a `ts.Program`.
  *
  * The TS model of incremental compilation is based around reuse of a previous `ts.Program` in the
  * construction of a new one. The `NgCompiler` follows this abstraction - passing in a previous
@@ -104,8 +105,8 @@ export class PatchedProgramIncrementalBuildStrategy implements IncrementalBuildS
  * not be from an Angular compilation (that is, it need not have been created from `NgCompiler`).
  *
  * If it is, though, Angular can benefit from reusing previous analysis work. This reuse is managed
- * by the `IncrementalDriver`, which is inherited from the old program to the new program. To
- * support this behind the API of passing an old `ts.Program`, the `IncrementalDriver` is stored on
+ * by the `IncrementalState`, which is inherited from the old program to the new program. To
+ * support this behind the API of passing an old `ts.Program`, the `IncrementalState` is stored on
  * the `ts.Program` under this symbol.
  */
 const SYM_INCREMENTAL_STATE = Symbol('NgIncrementalState');
