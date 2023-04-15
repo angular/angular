@@ -69,10 +69,9 @@ describe('styling', () => {
 
     it('should perform interpolation bindings', () => {
       @Component({
-        // TODO(misko): change `style-x` to `style` once #34202 lands
         template: `<div class="static {{'dynamic'}}"
                         style.color="blu{{'e'}}"
-                        style-x="width: {{'100'}}px"></div>`
+                        style="width: {{'100'}}px"></div>`
       })
       class Cmp {
       }
@@ -83,7 +82,7 @@ describe('styling', () => {
 
       const div = fixture.nativeElement.querySelector('div');
       expect(getSortedClassName(div)).toEqual('dynamic static');
-      expect(getSortedStyle(div)).toEqual('color: blue;');
+      expect(getSortedStyle(div)).toEqual('color: blue; width: 100px;');
     });
 
     it('should support hostBindings', () => {
