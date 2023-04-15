@@ -31,6 +31,10 @@ following products on your development machine:
 
 * [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
 
+* On Windows: [MSYS2](https://www.msys2.org/) which is used by Bazel. Follow the [instructions](https://docs.bazel.build/versions/master/install-windows.html#installing-compilers-and-language-runtimes)
+   to install [`MSYS2`](https://www.msys2.org/) and the listed "Common MSYS2 packages".
+   Afterwards add `C:\msys64\usr\bin` to the `PATH` environment variable.
+
 * Optional: [Java](https://openjdk.java.net/) version 7 or higher than required by [Closure Compiler](https://developers.google.com/closure/compiler). Most developers will not need this. Java is required for running some integration tests.
 
 ## Getting the Sources
