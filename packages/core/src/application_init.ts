@@ -9,6 +9,7 @@
 import {Observable} from 'rxjs';
 
 import {inject, Injectable, InjectionToken} from './di';
+import {RuntimeError, RuntimeErrorCode} from './errors';
 import {isPromise, isSubscribable} from './util/lang';
 
 /**
@@ -104,8 +105,18 @@ export class ApplicationInitStatus {
     this.reject = rej;
   });
 
-  // TODO: Throw RuntimeErrorCode.INVALID_MULTI_PROVIDER if appInits is not an array
   private readonly appInits = inject(APP_INITIALIZER, {optional: true}) ?? [];
+
+  constructor() {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !Array.isArray(this.appInits)) {
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_MULTI_PROVIDER,
+          'Unexpected type of the `APP_INITIALIZER` token value ' +
+              `(expected an array, but got ${typeof this.appInits}). ` +
+              'Please check that the `APP_INITIALIZER` token is configured as a ' +
+              '`multi: true` provider.');
+    }
+  }
 
   /** @internal */
   runInitializers() {
