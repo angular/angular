@@ -145,7 +145,7 @@ export function incrementalFromCompilerTicket(
   const oldProgram = oldCompiler.getCurrentProgram();
   const oldState = oldCompiler.incrementalStrategy.getIncrementalState(oldProgram);
   if (oldState === null) {
-    // No incremental step is possible here, since no IncrementalDriver was found for the old
+    // No incremental step is possible here, since no IncrementalState was found for the old
     // program.
     return freshCompilationTicket(
         newProgram, oldCompiler.options, incrementalBuildStrategy, programDriver, perfRecorder,
@@ -364,16 +364,6 @@ export class NgCompiler {
 
   get perfRecorder(): ActivePerfRecorder {
     return this.livePerfRecorder;
-  }
-
-  /**
-   * Exposes the `IncrementalCompilation` under an old property name that the CLI uses, avoiding a
-   * chicken-and-egg problem with the rename to `incrementalCompilation`.
-   *
-   * TODO(alxhub): remove when the CLI uses the new name.
-   */
-  get incrementalDriver(): IncrementalCompilation {
-    return this.incrementalCompilation;
   }
 
   private updateWithChangedResources(
