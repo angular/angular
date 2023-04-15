@@ -143,9 +143,8 @@ export function validateConstructorDependencies(
   } else if (deps.deps !== null) {
     return deps.deps;
   } else {
-    // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
     // There is at least one error.
-    const error = (deps as {errors: ConstructorDepError[]}).errors[0];
+    const error = deps.errors[0];
     throw createUnsuitableInjectionTokenError(clazz, error);
   }
 }

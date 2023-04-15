@@ -111,15 +111,7 @@ export type TemplateDeclaration = InlineTemplateDeclaration|ExternalTemplateDecl
 
 /** Determines the node to use for debugging purposes for the given TemplateDeclaration. */
 export function getTemplateDeclarationNodeForError(declaration: TemplateDeclaration): ts.Node {
-  // TODO(zarend): Change this to if/else when that is compatible with g3. This uses a switch
-  // because if/else fails to compile on g3. That is because g3 compiles this in non-strict mode
-  // where type inference does not work correctly.
-  switch (declaration.isInline) {
-    case true:
-      return declaration.expression;
-    case false:
-      return declaration.templateUrlExpression;
-  }
+  return declaration.isInline ? declaration.expression : declaration.templateUrlExpression;
 }
 
 export interface ExtractTemplateOptions {
@@ -199,9 +191,7 @@ export function extractTemplate(
       sourceMapping: {
         type: 'external',
         componentClass: node,
-        // TODO(alxhub): TS in g3 is unable to make this inference on its own, so cast it here
-        // until g3 is able to figure this out.
-        node: (template as ExternalTemplateDeclaration).templateUrlExpression,
+        node: template.templateUrlExpression,
         template: templateContent,
         templateUrl: template.resolvedTemplateUrl,
       },
