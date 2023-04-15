@@ -729,6 +729,52 @@ describe('platform-server integration', () => {
           verifyAllNodesClaimedForHydration(clientRootNode);
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
+
+        it('should support element containers with *ngIf', async () => {
+          @Component({
+            selector: 'cmp',
+            standalone: true,
+            template: 'Hi!',
+          })
+          class Cmp {
+          }
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            imports: [NgIf],
+            template: `
+              <ng-container *ngIf="true">
+                <div #inner></div>
+              </ng-container>
+              <ng-template #outer />
+            `,
+          })
+          class SimpleComponent {
+            @ViewChild('inner', {read: ViewContainerRef}) inner!: ViewContainerRef;
+            @ViewChild('outer', {read: ViewContainerRef}) outer!: ViewContainerRef;
+
+            ngAfterViewInit() {
+              this.inner.createComponent(Cmp);
+              this.outer.createComponent(Cmp);
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent, Cmp);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
       });
 
       describe('view containers', () => {

@@ -88,11 +88,6 @@ describe('TemplateRef', () => {
     });
 
     it('should descend into view containers on ng-template', () => {
-      /**
-       * NOTE: In VE, if `SUFFIX` text node below is _not_ present, VE will add an
-       * additional `<!---->` comment, thus being slightly different than Ivy.
-       * (resulting in 1 root node in Ivy and 2 in VE).
-       */
       const rootNodes = getRootNodes(`
       <ng-template #templateRef>
         <ng-template [ngIf]="true">text|</ng-template>SUFFIX
@@ -106,29 +101,31 @@ describe('TemplateRef', () => {
 
     it('should descend into view containers on an element', () => {
       /**
-       * NOTE: In VE, if `SUFFIX` text node below is _not_ present, VE will add an
-       * additional `<!---->` comment, thus being slightly different than Ivy.
-       * (resulting in 1 root node in Ivy and 2 in VE).
+       * Expected DOM structure:
+       * ```
+       * <div ng-reflect-ng-template-outlet="[object Object]"></div>
+       * text
+       * <!--container-->
+       * SUFFIX
+       * ```
        */
       const rootNodes = getRootNodes(`
-      <ng-template #dynamicTpl>text</ng-template>
-      <ng-template #templateRef>
-        <div [ngTemplateOutlet]="dynamicTpl"></div>SUFFIX
-      </ng-template>
-    `);
+        <ng-template #dynamicTpl>text</ng-template>
+        <ng-template #templateRef>
+          <div [ngTemplateOutlet]="dynamicTpl"></div>SUFFIX
+        </ng-template>
+      `);
 
-      expect(rootNodes.length).toBe(3);
+      expect(rootNodes.length).toBe(4);
       expect(rootNodes[0].nodeType).toBe(Node.ELEMENT_NODE);
       expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
-      expect(rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
+      // This comment node is an anchor for the `ViewContainerRef`
+      // created within the `NgTemplateOutlet` class.
+      expect(rootNodes[2].nodeType).toBe(Node.COMMENT_NODE);
+      expect(rootNodes[3].nodeType).toBe(Node.TEXT_NODE);
     });
 
     it('should descend into view containers on ng-container', () => {
-      /**
-       * NOTE: In VE, if `SUFFIX` text node below is _not_ present, VE will add an
-       * additional `<!---->` comment, thus being slightly different than Ivy.
-       * (resulting in 1 root node in Ivy and 2 in VE).
-       */
       const rootNodes = getRootNodes(`
           <ng-template #dynamicTpl>text</ng-template>
           <ng-template #templateRef><ng-container [ngTemplateOutlet]="dynamicTpl"></ng-container>SUFFIX</ng-template>
