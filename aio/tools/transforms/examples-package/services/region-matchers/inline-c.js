@@ -1,4 +1,4 @@
-// This comment type is used in C like languages such as JS, TS, Dart, etc
+// This comment type is used in C like languages such as JS, TS, etc
 module.exports = {
   regionStartMatcher: /^\s*\/\/\s*#docregion\s*(.*)\s*$/,
   regionEndMatcher: /^\s*\/\/\s*#enddocregion\s*(.*)\s*$/,

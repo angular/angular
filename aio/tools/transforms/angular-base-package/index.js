@@ -77,7 +77,7 @@ module.exports = new Package('angular-base', [
 
   // Target environments
   .config(function(targetEnvironments) {
-    const ALLOWED_LANGUAGES = ['ts', 'js', 'dart'];
+    const ALLOWED_LANGUAGES = ['ts', 'js'];
     const TARGET_LANGUAGE = 'ts';
 
     ALLOWED_LANGUAGES.forEach(target => targetEnvironments.addAllowed(target));
