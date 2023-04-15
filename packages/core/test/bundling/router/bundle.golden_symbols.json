@@ -288,9 +288,6 @@
     "name": "InitialRenderPendingTasks"
   },
   {
-    "name": "InjectFlags"
-  },
-  {
     "name": "InjectionToken"
   },
   {

@@ -750,7 +750,7 @@ export interface InjectDecorator {
 }
 
 // @public @deprecated
-export enum InjectFlags {
+export const enum InjectFlags {
     Default = 0,
     Host = 1,
     Optional = 8,

@@ -162,9 +162,6 @@
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
-    "name": "InjectFlags"
-  },
-  {
     "name": "InjectionToken"
   },
   {

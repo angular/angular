@@ -7,7 +7,7 @@
  */
 
 import {InjectFlags} from '../di';
-import {InternalInjectFlags} from '../di/interface/injector';
+import {ForPipeInjectFlag} from '../di/interface/injector';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost} from '../render3/interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView} from '../render3/interfaces/view';
@@ -129,8 +129,7 @@ export abstract class ChangeDetectorRef {
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
 export function injectChangeDetectorRef(flags: InjectFlags): ChangeDetectorRef {
   return createViewRef(
-      getCurrentTNode()!, getLView(),
-      (flags & InternalInjectFlags.ForPipe) === InternalInjectFlags.ForPipe);
+      getCurrentTNode()!, getLView(), (flags & ForPipeInjectFlag) === ForPipeInjectFlag);
 }
 
 /**

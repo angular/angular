@@ -140,7 +140,7 @@ function getInitializer(doc) {
   //
   // ```
   // const Optional: OptionalDecorator =
-  //       attachInjectFlag(makeParamDecorator('Optional'), InternalInjectFlags.Optional);
+  //       attachInjectFlag(makeParamDecorator('Optional'), InjectFlags.Optional);
   // ```
   //
   // If so, use the first argument of the call.

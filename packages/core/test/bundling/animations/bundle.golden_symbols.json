@@ -273,9 +273,6 @@
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
   },
   {
-    "name": "InjectFlags"
-  },
-  {
     "name": "InjectionToken"
   },
   {

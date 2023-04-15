@@ -22,10 +22,7 @@ export const enum DecoratorFlags {
  * @publicApi
  * @deprecated use an options object for `inject` instead.
  */
-export enum InjectFlags {
-  // TODO(alxhub): make this 'const' (and remove `InternalInjectFlags` enum) when ngc no longer
-  // writes exports of it into ngfactory files.
-
+export const enum InjectFlags {
   /** Check self and check parent injector if needed */
   Default = 0b0000,
 
@@ -46,40 +43,13 @@ export enum InjectFlags {
 }
 
 /**
- * This enum is an exact copy of the `InjectFlags` enum above, but the difference is that this is a
- * const enum, so actual enum values would be inlined in generated code. The `InjectFlags` enum can
- * be turned into a const enum when ViewEngine is removed (see TODO at the `InjectFlags` enum
- * above). The benefit of inlining is that we can use these flags at the top level without affecting
- * tree-shaking (see "no-toplevel-property-access" tslint rule for more info).
- * Keep this enum in sync with `InjectFlags` enum above.
+ * This token is being injected into a pipe.
+ *
+ * This flag is intentionally not in the public facing `InjectFlags` because it is only added by
+ * the compiler and is not a developer applicable flag.
  */
-export const enum InternalInjectFlags {
-  /** Check self and check parent injector if needed */
-  Default = 0b0000,
+export const ForPipeInjectFlag = 0b10000;
 
-  /**
-   * Specifies that an injector should retrieve a dependency from any injector until reaching the
-   * host element of the current component. (Only used with Element Injector)
-   */
-  Host = 0b0001,
-
-  /** Don't ascend to ancestors of the node requesting injection. */
-  Self = 0b0010,
-
-  /** Skip the node that is requesting injection. */
-  SkipSelf = 0b0100,
-
-  /** Inject `defaultValue` instead if token not found. */
-  Optional = 0b1000,
-
-  /**
-   * This token is being injected into a pipe.
-   *
-   * This flag is intentionally not in the public facing `InjectFlags` because it is only added by
-   * the compiler and is not a developer applicable flag.
-   */
-  ForPipe = 0b10000,
-}
 
 /**
  * Type of the options argument to `inject`.

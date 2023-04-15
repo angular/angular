@@ -15,7 +15,7 @@ import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
 import {Injector} from './injector';
-import {DecoratorFlags, InjectFlags, InjectOptions, InternalInjectFlags} from './interface/injector';
+import {DecoratorFlags, InjectFlags, InjectOptions} from './interface/injector';
 import {ProviderToken} from './provider_token';
 
 
@@ -228,11 +228,11 @@ export function convertToBitFlags(flags: InjectOptions|InjectFlags|undefined): I
   // While TypeScript doesn't accept it without a cast, bitwise OR with false-y values in
   // JavaScript is a no-op. We can use that for a very codesize-efficient conversion from
   // `InjectOptions` to `InjectFlags`.
-  return (InternalInjectFlags.Default |  // comment to force a line break in the formatter
-          ((flags.optional && InternalInjectFlags.Optional) as number) |
-          ((flags.host && InternalInjectFlags.Host) as number) |
-          ((flags.self && InternalInjectFlags.Self) as number) |
-          ((flags.skipSelf && InternalInjectFlags.SkipSelf) as number)) as InjectFlags;
+  return (InjectFlags.Default |  // comment to force a line break in the formatter
+          ((flags.optional && InjectFlags.Optional) as number) |
+          ((flags.host && InjectFlags.Host) as number) |
+          ((flags.self && InjectFlags.Self) as number) |
+          ((flags.skipSelf && InjectFlags.SkipSelf) as number)) as InjectFlags;
 }
 
 export function injectArgs(types: (ProviderToken<any>|any[])[]): any[] {
@@ -281,7 +281,7 @@ export function injectArgs(types: (ProviderToken<any>|any[])[]): any[] {
  * @param decorator Provided DI decorator.
  * @param flag InjectFlag that should be applied.
  */
-export function attachInjectFlag(decorator: any, flag: InternalInjectFlags|DecoratorFlags): any {
+export function attachInjectFlag(decorator: any, flag: InjectFlags|DecoratorFlags): any {
   decorator[DI_DECORATOR_FLAG] = flag;
   decorator.prototype[DI_DECORATOR_FLAG] = flag;
   return decorator;
