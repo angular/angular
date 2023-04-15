@@ -351,13 +351,11 @@ To use route guards, consider using [component-less routes](api/router/Route#com
 
 Create a service for your guard:
 
-<!-- TODO: update CLI 
 <code-example format="shell" language="shell">
 
 ng generate guard your-guard
 
 </code-example>
--->
 
 In your guard function, implement the guard you want to use.
 The following example uses `canActivate` to guard the route.
