@@ -23,11 +23,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
 
   override onAndCancel(el: Node, evt: any, listener: any): Function {
-    el.addEventListener(evt, listener, false);
-    // Needed to follow Dart's subscription semantic, until fix of
-    // https://code.google.com/p/dart/issues/detail?id=17406
+    el.addEventListener(evt, listener);
     return () => {
-      el.removeEventListener(evt, listener, false);
+      el.removeEventListener(evt, listener);
     };
   }
   override dispatchEvent(el: Node, evt: any) {
