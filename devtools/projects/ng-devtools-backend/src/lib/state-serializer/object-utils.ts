@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Intentionally do not include all the prototype (Except for getters and setters) 
+// Intentionally do not include all the prototype (Except for getters and setters)
 // because it contains inherited methods (hasOwnProperty, etc.). Also ignore symbols
 // because it is tricky to pass a path to a symbol.
 //
@@ -28,7 +28,7 @@ export const getKeys = (obj: {}): string[] => {
     const targetMethod = prototypeMembers[methodName];
 
     return targetMethod.get || targetMethod.set;
-  })
+  });
 
   return properties.concat(gettersAndSetters);
 };
