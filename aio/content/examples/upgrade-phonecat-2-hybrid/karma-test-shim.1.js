@@ -38,7 +38,6 @@ System.config({
     '@angular/core/testing': 'npm:@angular/core/fesm2022/testing.mjs',
     '@angular/common/testing': 'npm:@angular/common/fesm2022/testing.mjs',
     '@angular/common/http/testing': 'npm:@angular/common/fesm2022/http/testing.mjs',
-    '@angular/compiler/testing': 'npm:@angular/compiler/fesm2022/testing.mjs',
     '@angular/platform-browser/testing': 'npm:@angular/platform-browser/fesm2022/testing.mjs',
     '@angular/platform-browser-dynamic/testing': 'npm:@angular/platform-browser-dynamic/fesm2022/testing.mjs',
     '@angular/router/testing': 'npm:@angular/router/fesm2022/testing.mjs',
