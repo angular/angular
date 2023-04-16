@@ -27,7 +27,7 @@ export const getKeys = (obj: {}): string[] => {
     }
     const targetMethod = prototypeMembers[methodName];
 
-    return !!targetMethod.get || !!targetMethod.set;
+    return targetMethod.get || targetMethod.set;
   })
 
   return properties.concat(gettersAndSetters);

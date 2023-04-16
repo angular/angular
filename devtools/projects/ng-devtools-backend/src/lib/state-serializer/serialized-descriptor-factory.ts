@@ -130,28 +130,25 @@ const shallowPropTypeToTreeMetaData:
       },
     };
 
-const isEditable = (descriptor: any, propName: string|number, propData: TerminalType, isGetterOrSetter: boolean) => {
-  if (typeof propName === 'symbol') {
-    return false;
-  }
+const isEditable = 
+  (descriptor: any, propName: string|number, propData: TerminalType, isGetterOrSetter: boolean) => {
+    if (typeof propName === 'symbol') {
+      return false;
+    }
 
-  if (isGetterOrSetter) {
-    return false;
-  }
+    if (isGetterOrSetter) {
+      return false;
+    }
 
-  if (descriptor?.writable === false) {
-    return false;
-  }
+    if (descriptor?.writable === false) {
+      return false;
+    }
 
-  return shallowPropTypeToTreeMetaData[propData.type].editable;
+    return shallowPropTypeToTreeMetaData[propData.type].editable;
 };
 
-const isGetterOrSetter = (descriptor: any): boolean => {
-  if ((descriptor?.set || descriptor?.get) && !('value' in descriptor)) {
-    return true;
-  }
-  return false;
-};
+const isGetterOrSetter = 
+  (descriptor: any): boolean => (descriptor?.set || descriptor?.get) && !('value' in descriptor);
 
 const getPreview =
     (propData: TerminalType|CompositeType, isGetterOrSetter: boolean) => {
