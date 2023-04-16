@@ -42,7 +42,6 @@ ng_package(
     ],
     deps = [
         ":compiler",
-        "//packages/compiler/testing",
     ],
 )
 
