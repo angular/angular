@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgIf} from '@angular/common';
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
@@ -91,6 +92,54 @@ describe('OnPush components with signals', () => {
     expect(instance.numTemplateExecutions).toBe(2);
     expect(instance.value()).toBe('new');
   });
+
+  it('should not mark components as dirty when signal is read in a constructor of a child component',
+     () => {
+       const state = signal('initial');
+
+       @Component({
+         selector: 'child',
+         template: `child`,
+         changeDetection: ChangeDetectionStrategy.OnPush,
+         standalone: true,
+       })
+       class ChildReadingSignalCmp {
+         constructor() {
+           state();
+         }
+       }
+
+       @Component({
+         template: `
+            {{incrementTemplateExecutions()}}
+            <!-- Template constructed to execute child component constructor in the update pass of a host component -->
+            <ng-template [ngIf]="true"><child></child></ng-template>
+          `,
+         changeDetection: ChangeDetectionStrategy.OnPush,
+         standalone: true,
+         imports: [NgIf, ChildReadingSignalCmp],
+       })
+       class OnPushCmp {
+         numTemplateExecutions = 0;
+         incrementTemplateExecutions() {
+           this.numTemplateExecutions++;
+           return '';
+         }
+       }
+
+       const fixture = TestBed.createComponent(OnPushCmp);
+       const instance = fixture.componentInstance;
+
+       fixture.detectChanges();
+       expect(instance.numTemplateExecutions).toBe(1);
+       expect(fixture.nativeElement.textContent.trim()).toEqual('child');
+
+       // The "state" signal is not accesses in the template's update function anywhere so it
+       // shouldn't mark components as dirty / impact change detection.
+       state.set('new');
+       fixture.detectChanges();
+       expect(instance.numTemplateExecutions).toBe(1);
+     });
 
   it('can read a signal in a host binding', () => {
     @Component({
