@@ -32,7 +32,7 @@ jobs:
         env:
           ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN }}
       - name: Create a PR (if necessary)
-        uses: angular/dev-infra/github-actions/create-pr-for-changes@8b7f6b94197d14448c7fcc0e1bd4aa74a66f99aa
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@3c0ae65166d0d4ad64ea16e0891a59b0eed2682c
         with:
           branch-prefix: update-cli-help
           pr-title: 'docs: update Angular CLI help [${{github.ref_name}}]'
