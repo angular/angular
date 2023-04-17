@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AsyncPipe} from '@angular/common';
 import {AfterViewInit, Component, ContentChildren, createComponent, destroyPlatform, effect, EnvironmentInjector, inject, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild} from '@angular/core';
+import {toObservable} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
@@ -385,5 +387,22 @@ describe('effects', () => {
     state.set('changed');
     fixture.detectChanges();
     expect(fixture.componentInstance.noOfCmpCreated).toBe(1);
+  });
+
+  it('should allow toObservable subscription in template (with async pipe)', () => {
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      imports: [AsyncPipe],
+      template: '{{counter$ | async}}',
+    })
+    class Cmp {
+      counter$ = toObservable(signal(0));
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    expect(() => fixture.detectChanges(true)).not.toThrow();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('0');
   });
 });
