@@ -115,7 +115,7 @@ export function withDomHydration(): EnvironmentProviders {
           // hydration annotations. Otherwise, keep hydration disabled.
           const transferState = inject(TransferState, {optional: true});
           isEnabled = !!transferState?.get(NGH_DATA_KEY, null);
-          if (!isEnabled) {
+          if (!isEnabled && (typeof ngDevMode !== 'undefined' && ngDevMode)) {
             const console = inject(Console);
             const message = formatRuntimeError(
                 RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
