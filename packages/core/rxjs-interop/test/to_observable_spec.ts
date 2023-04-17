@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, Injector, signal} from '@angular/core';
+import {Component, computed, createEnvironmentInjector, EnvironmentInjector, Injector, Signal, signal} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {take, toArray} from 'rxjs/operators';
 
 describe('toObservable()', () => {
   let fixture!: ComponentFixture<unknown>;
-  let injector!: Injector;
+  let injector!: EnvironmentInjector;
 
   @Component({
     template: '',
@@ -24,7 +24,7 @@ describe('toObservable()', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(Cmp);
-    injector = TestBed.inject(Injector);
+    injector = TestBed.inject(EnvironmentInjector);
   });
 
   function flushEffects(): void {
@@ -81,7 +81,7 @@ describe('toObservable()', () => {
     sub.unsubscribe();
   });
 
-  it('should not monitor the signal if the Observable is never subscribed', () => {
+  it('monitors the signal even if the Observable is never subscribed', () => {
     let counterRead = false;
     const counter = computed(() => {
       counterRead = true;
@@ -93,12 +93,12 @@ describe('toObservable()', () => {
     // Simply creating the Observable shouldn't trigger a signal read.
     expect(counterRead).toBeFalse();
 
-    // Nor should the signal be read after effects have run.
+    // The signal is read after effects have run.
     flushEffects();
-    expect(counterRead).toBeFalse();
+    expect(counterRead).toBeTrue();
   });
 
-  it('should not monitor the signal if the Observable has no active subscribers', () => {
+  it('should still monitor the signal if the Observable has no active subscribers', () => {
     const counter = signal(0);
 
     // Tracks how many reads of `counter()` there have been.
@@ -122,15 +122,52 @@ describe('toObservable()', () => {
     flushEffects();
     expect(readCount).toBe(2);
 
-    // Tear down the only subscription and hence the effect that's monitoring the signal.
+    // Tear down the only subscription.
     sub.unsubscribe();
 
-    // Now, setting the signal shouldn't trigger any additional reads, as the Observable is no
-    // longer interested in its value.
-
+    // Now, setting the signal still triggers additional reads
     counter.set(2);
     flushEffects();
+    expect(readCount).toBe(3);
+  });
 
-    expect(readCount).toBe(2);
+  it('stops monitoring the signal once injector is destroyed', () => {
+    const counter = signal(0);
+
+    // Tracks how many reads of `counter()` there have been.
+    let readCount = 0;
+    const trackedCounter = computed(() => {
+      readCount++;
+      return counter();
+    });
+
+    const childInjector = createEnvironmentInjector([], injector);
+    toObservable(trackedCounter, {injector: childInjector});
+
+    expect(readCount).toBe(0);
+
+    flushEffects();
+    expect(readCount).toBe(1);
+
+    // Now, setting the signal shouldn't trigger any additional reads, as the Injector was destroyed
+    childInjector.destroy();
+    counter.set(2);
+    flushEffects();
+    expect(readCount).toBe(1);
+  });
+
+  it('does not track downstream signal reads in the effect', () => {
+    const counter = signal(0);
+    const emits = signal(0);
+    toObservable(counter, {injector}).subscribe(() => {
+      // Read emits. If we are still tracked in the effect, this will cause an infinite loop by
+      // triggering the effect again.
+      emits();
+      emits.update(v => v + 1);
+    });
+    flushEffects();
+    expect(emits()).toBe(1);
+    flushEffects();
+    expect(emits()).toBe(1);
   });
 });

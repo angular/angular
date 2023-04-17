@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertInInjectionContext, effect, inject, Injector, Signal} from '@angular/core';
-import {Observable} from 'rxjs';
+import {assertInInjectionContext, DestroyRef, effect, EffectRef, inject, Injector, Signal, untracked} from '@angular/core';
+import {Observable, ReplaySubject} from 'rxjs';
 
 /**
  * Options for `toObservable`.
@@ -38,20 +38,23 @@ export function toObservable<T>(
     ): Observable<T> {
   !options?.injector && assertInInjectionContext(toObservable);
   const injector = options?.injector ?? inject(Injector);
+  const subject = new ReplaySubject<T>(1);
 
-  // Creating a new `Observable` allows the creation of the effect to be lazy. This allows for all
-  // references to `source` to be dropped if the `Observable` is fully unsubscribed and thrown away.
-  return new Observable(observer => {
-    const watcher = effect(() => {
-      let value: T;
-      try {
-        value = source();
-      } catch (err) {
-        observer.error(err);
-        return;
-      }
-      observer.next(value);
-    }, {injector, manualCleanup: true, allowSignalWrites: true});
-    return () => watcher.destroy();
+  const watcher = effect(() => {
+    let value: T;
+    try {
+      value = source();
+    } catch (err) {
+      untracked(() => subject.error(err));
+      return;
+    }
+    untracked(() => subject.next(value));
+  }, {injector, manualCleanup: true});
+
+  injector.get(DestroyRef).onDestroy(() => {
+    watcher.destroy();
+    subject.complete();
   });
+
+  return subject.asObservable();
 }
