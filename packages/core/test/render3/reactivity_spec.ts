@@ -239,8 +239,7 @@ describe('effects', () => {
       selector: 'test-cmp',
       standalone: true,
       imports: [WithInput],
-      template: `<with-input [in]="'A'" />|<with-input [in]="'B'" />
-      `,
+      template: `<with-input [in]="'A'" />|<with-input [in]="'B'" />`,
     })
     class Cmp {
     }
@@ -248,5 +247,33 @@ describe('effects', () => {
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('A|B');
+  });
+
+  it('should allow writing to signals in a constructor', () => {
+    @Component({
+      selector: 'with-constructor',
+      standalone: true,
+      template: '{{state()}}',
+    })
+    class WithConstructor {
+      state = signal('property initializer');
+
+      constructor() {
+        this.state.set('constructor');
+      }
+    }
+
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      imports: [WithConstructor],
+      template: `<with-constructor />`,
+    })
+    class Cmp {
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('constructor');
   });
 });
