@@ -32,12 +32,12 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
  */
 export class EffectManager {
   private all = new Set<Watch>();
-  private queue = new Map<Watch, Zone>();
+  private queue = new Map<Watch, Zone|null>();
 
   create(
       effectFn: (onCleanup: (cleanupFn: EffectCleanupFn) => void) => void,
       destroyRef: DestroyRef|null, allowSignalWrites: boolean): EffectRef {
-    const zone = Zone.current;
+    const zone = (typeof Zone === 'undefined') ? null : Zone.current;
     const watch = new Watch(effectFn, (watch) => {
       if (!this.all.has(watch)) {
         return;
@@ -74,7 +74,11 @@ export class EffectManager {
 
     for (const [watch, zone] of this.queue) {
       this.queue.delete(watch);
-      zone.run(() => watch.run());
+      if (zone) {
+        zone.run(() => watch.run());
+      } else {
+        watch.run();
+      }
     }
   }
 
