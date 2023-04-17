@@ -17,6 +17,7 @@ import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
+import {setActiveConsumer} from '../../signals';
 import {assertDefined, assertEqual, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -507,9 +508,18 @@ function executeTemplate<T>(
     const preHookType =
         isUpdatePhase ? ProfilerEvent.TemplateUpdateStart : ProfilerEvent.TemplateCreateStart;
     profiler(preHookType, context as unknown as {});
-    consumer.runInContext(templateFn, rf, context);
+    if (isUpdatePhase) {
+      consumer.runInContext(templateFn, rf, context);
+    } else {
+      const prevConsumer = setActiveConsumer(null);
+      try {
+        templateFn(rf, context);
+      } finally {
+        setActiveConsumer(prevConsumer);
+      }
+    }
   } finally {
-    if (lView[REACTIVE_TEMPLATE_CONSUMER] === null) {
+    if (isUpdatePhase && lView[REACTIVE_TEMPLATE_CONSUMER] === null) {
       commitLViewConsumerIfHasProducers(lView, REACTIVE_TEMPLATE_CONSUMER);
     }
     setSelectedIndex(prevSelectedIndex);
