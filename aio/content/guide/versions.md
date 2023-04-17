@@ -2,7 +2,7 @@
 
 The following tables describe the versions of Node.js, TypeScript, and RxJS that each version of Angular requires. This information is collected from Angular's [package.json](https://unpkg.com/browse/@angular/core/package.json) file.
 
-## LTS Angular versions
+## Actively supported versions
 
 This table covers [Angular versions under long-term support (LTS)](guide/releases#actively-supported-versions).
 
