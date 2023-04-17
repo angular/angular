@@ -130,39 +130,38 @@ const shallowPropTypeToTreeMetaData:
       },
     };
 
-const isEditable = 
-  (descriptor: any, propName: string|number, propData: TerminalType, isGetterOrSetter: boolean) => {
-    if (typeof propName === 'symbol') {
-      return false;
-    }
+const isEditable =
+    (descriptor: any, propName: string|number, propData: TerminalType,
+     isGetterOrSetter: boolean) => {
+      if (typeof propName === 'symbol') {
+        return false;
+      }
 
-    if (isGetterOrSetter) {
-      return false;
-    }
+      if (isGetterOrSetter) {
+        return false;
+      }
 
-    if (descriptor?.writable === false) {
-      return false;
-    }
+      if (descriptor?.writable === false) {
+        return false;
+      }
 
-    return shallowPropTypeToTreeMetaData[propData.type].editable;
-};
-
-const isGetterOrSetter = 
-  (descriptor: any): boolean => (descriptor?.set || descriptor?.get) && !('value' in descriptor);
-
-const getPreview =
-    (propData: TerminalType|CompositeType, isGetterOrSetter: boolean) => {
-      return !isGetterOrSetter ?
-          typeToDescriptorPreview[propData.type](propData.prop) :
-          typeToDescriptorPreview[PropType.Function]({ name: '' });
+      return shallowPropTypeToTreeMetaData[propData.type].editable;
     };
+
+const isGetterOrSetter = (descriptor: any): boolean =>
+    (descriptor?.set || descriptor?.get) && !('value' in descriptor);
+
+const getPreview = (propData: TerminalType|CompositeType, isGetterOrSetter: boolean) => {
+  return !isGetterOrSetter ? typeToDescriptorPreview[propData.type](propData.prop) :
+                             typeToDescriptorPreview[PropType.Function]({name: ''});
+};
 
 export const createShallowSerializedDescriptor =
     (instance: any, propName: string|number, propData: TerminalType): Descriptor => {
       const {type} = propData;
 
       const descriptor = getDescriptor(instance, propName as string);
-      const getterOrSetter: boolean = isGetterOrSetter(descriptor); 
+      const getterOrSetter: boolean = isGetterOrSetter(descriptor);
 
       const shallowSerializedDescriptor: Descriptor = {
         type,
@@ -185,7 +184,7 @@ export const createLevelSerializedDescriptor =
           const {type, prop} = propData;
 
           const descriptor = getDescriptor(instance, propName as string);
-          const getterOrSetter: boolean = isGetterOrSetter(descriptor); 
+          const getterOrSetter: boolean = isGetterOrSetter(descriptor);
 
           const levelSerializedDescriptor: Descriptor = {
             type,
@@ -213,7 +212,7 @@ export const createNestedSerializedDescriptor =
       const {type, prop} = propData;
 
       const descriptor = getDescriptor(instance, propName as string);
-      const getterOrSetter: boolean = isGetterOrSetter(descriptor); 
+      const getterOrSetter: boolean = isGetterOrSetter(descriptor);
 
       const nestedSerializedDescriptor: Descriptor = {
         type,
