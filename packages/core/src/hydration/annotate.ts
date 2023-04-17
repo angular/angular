@@ -364,7 +364,10 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         //     live DOM has exactly the same state as it was before serialization.
         if (tNode.type & TNodeType.Text) {
           const rNode = unwrapRNode(lView[i]) as HTMLElement;
-          if (rNode.textContent?.replace(/\s/gm, '') === '') {
+          // Collect this node as required special annotation only when its
+          // contents is empty. Otherwise, such text node would be present on
+          // the client after server-side rendering and no special handling needed.
+          if (rNode.textContent === '') {
             context.corruptedTextNodes.set(rNode, TextNodeMarker.EmptyNode);
           } else if (rNode.nextSibling?.nodeType === Node.TEXT_NODE) {
             context.corruptedTextNodes.set(rNode, TextNodeMarker.Separator);
