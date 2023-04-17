@@ -355,6 +355,7 @@ export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
 
 /**
  * Processes a view in update mode. This includes a number of steps in a specific order:
+ * - flush scheduled effects;
  * - executing a template function in update mode;
  * - executing hooks;
  * - refreshing queries;
