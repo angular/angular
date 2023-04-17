@@ -498,6 +498,34 @@ describe('platform-server integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
 
+        it('should support a single text interpolation', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              {{ text }}
+            `,
+          })
+          class SimpleComponent {
+            text = 'text';
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
         it('should support text and HTML elements', async () => {
           @Component({
             standalone: true,
@@ -2382,6 +2410,85 @@ describe('platform-server integration', () => {
         const ssrContents = getAppContents(html);
 
         expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should support empty text interpolations within elements ' +
+             '(when interpolation is on a new line)',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'app',
+             template: `
+                <div>
+                  {{ text }}
+                </div>
+              `,
+           })
+           class SimpleComponent {
+             text = '';
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh');
+
+           // Expect special markers to not be present, since there
+           // are no corrupted text nodes that require restoring.
+           //
+           // The HTML contents produced by the SSR would look like this:
+           // `<div>  </div>` (1 text node with 2 empty spaces inside of
+           // a <div>), which would result in creating a text node by a
+           // browser.
+           expect(ssrContents).not.toContain(EMPTY_TEXT_NODE_COMMENT);
+           expect(ssrContents).not.toContain(TEXT_NODE_SEPARATOR_COMMENT);
+
+           resetTViewsFor(SimpleComponent);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           verifyAllNodesClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
+
+      it('should not treat text nodes with `&nbsp`s as empty', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            <div>&nbsp;{{ text }}&nbsp;</div>
+            &nbsp;&nbsp;&nbsp;
+            <h1>Hello world!</h1>
+            &nbsp;&nbsp;&nbsp;
+            <h2>Hello world!</h2>
+          `,
+        })
+        class SimpleComponent {
+          text = '';
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        // Expect special markers to not be present, since there
+        // are no corrupted text nodes that require restoring.
+        expect(ssrContents).not.toContain(EMPTY_TEXT_NODE_COMMENT);
+        expect(ssrContents).not.toContain(TEXT_NODE_SEPARATOR_COMMENT);
 
         resetTViewsFor(SimpleComponent);
 
