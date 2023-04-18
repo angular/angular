@@ -50,6 +50,21 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.ElementEnd:
         ir.OpList.replace(op, ng.elementEnd());
         break;
+      case ir.OpKind.ContainerStart:
+        ir.OpList.replace(
+            op,
+            ng.elementContainerStart(
+                op.slot!, op.attributes as number | null, op.localRefs as number | null));
+        break;
+      case ir.OpKind.Container:
+        ir.OpList.replace(
+            op,
+            ng.elementContainer(
+                op.slot!, op.attributes as number | null, op.localRefs as number | null));
+        break;
+      case ir.OpKind.ContainerEnd:
+        ir.OpList.replace(op, ng.elementContainerEnd());
+        break;
       case ir.OpKind.Template:
         const childView = view.tpl.views.get(op.xref)!;
         ir.OpList.replace(

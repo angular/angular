@@ -16,22 +16,21 @@ import * as ir from '../ir';
 
 export function element(
     slot: number, tag: string, constIndex: number|null, localRefIndex: number|null): ir.CreateOp {
-  return elementStartBase(Identifiers.element, slot, tag, constIndex, localRefIndex);
+  return elementOrContainerBase(Identifiers.element, slot, tag, constIndex, localRefIndex);
 }
-
 
 export function elementStart(
     slot: number, tag: string, constIndex: number|null, localRefIndex: number|null): ir.CreateOp {
-  return elementStartBase(Identifiers.elementStart, slot, tag, constIndex, localRefIndex);
+  return elementOrContainerBase(Identifiers.elementStart, slot, tag, constIndex, localRefIndex);
 }
 
-function elementStartBase(
-    instruction: o.ExternalReference, slot: number, tag: string, constIndex: number|null,
+function elementOrContainerBase(
+    instruction: o.ExternalReference, slot: number, tag: string|null, constIndex: number|null,
     localRefIndex: number|null): ir.CreateOp {
-  const args: o.Expression[] = [
-    o.literal(slot),
-    o.literal(tag),
-  ];
+  const args: o.Expression[] = [o.literal(slot)];
+  if (tag !== null) {
+    args.push(o.literal(tag));
+  }
   if (localRefIndex !== null) {
     args.push(
         o.literal(constIndex),  // might be null, but that's okay.
@@ -46,6 +45,22 @@ function elementStartBase(
 
 export function elementEnd(): ir.CreateOp {
   return call(Identifiers.elementEnd, []);
+}
+
+export function elementContainerStart(
+    slot: number, constIndex: number|null, localRefIndex: number|null): ir.CreateOp {
+  return elementOrContainerBase(
+      Identifiers.elementContainerStart, slot, /* tag */ null, constIndex, localRefIndex);
+}
+
+export function elementContainer(
+    slot: number, constIndex: number|null, localRefIndex: number|null): ir.CreateOp {
+  return elementOrContainerBase(
+      Identifiers.elementContainer, slot, /* tag */ null, constIndex, localRefIndex);
+}
+
+export function elementContainerEnd(): ir.CreateOp {
+  return call(Identifiers.elementContainerEnd, []);
 }
 
 export function template(

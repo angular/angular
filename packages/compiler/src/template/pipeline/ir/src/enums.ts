@@ -49,6 +49,21 @@ export enum OpKind {
   ElementEnd,
 
   /**
+   * An operation to begin an `ng-container`.
+   */
+  ContainerStart,
+
+  /**
+   * An operation for an `ng-container` with no children.
+   */
+  Container,
+
+  /**
+   * An operation to end an `ng-container`.
+   */
+  ContainerEnd,
+
+  /**
    * An operation to render a text node.
    */
   Text,
