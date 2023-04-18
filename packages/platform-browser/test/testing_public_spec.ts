@@ -338,6 +338,9 @@ const bTok = new InjectionToken<string>('b');
                  const fixture = TestBed.createComponent(TestComponent);
                  expect(fixture.nativeElement).toHaveText('from external template');
                });
+
+        it('should always pass to satisfy jasmine always wanting an `it` block under a `describe`',
+           () => {});
       });
 
       describe('overwriting metadata', () => {
