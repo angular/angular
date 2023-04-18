@@ -3,6 +3,7 @@
   width: 50%;
   object-fit: cover;
   border-radius: 30px;
+  float: right;
 }
 
 .listing-heading {
