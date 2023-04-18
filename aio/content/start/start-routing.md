@@ -78,14 +78,14 @@ In this section, you'll use the Angular Router to combine the `products` data an
     By injecting `ActivatedRoute`, you are configuring the component to use a service.
     The [Managing Data](start/start-data "Try it: Managing Data") step covers services in more detail.
 
-1.  In the `ngOnInit()` method, extract the `productId` from the route parameters and find the corresponding product in the `products` array.
+1.  In the `ngOnInit()` method, extract the `productID` from the route parameters and find the corresponding product in the `products` array.
 
     <code-example header="src/app/product-details/product-details.component.ts" path="getting-started/src/app/product-details/product-details.component.1.ts" region="get-product"></code-example>
 
     The route parameters correspond to the path variables you define in the route.
     To access the route parameters, we use `route.snapshot`, which is the `ActivatedRouteSnapshot` that contains information about the active route at that particular moment in time.
-    The URL that matches the route provides the `productId` .
-    Angular uses the `productId` to display the details for each unique product.
+    The URL that matches the route provides the `productID` .
+    Angular uses the `productID` to display the details for each unique product.
 
 1.  Update the `ProductDetailsComponent` template to display product details with an `*ngIf`.
     If a product exists, the `<div>` renders with a name, price, and description.
