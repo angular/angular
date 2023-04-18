@@ -12,10 +12,8 @@ import {Component, Inject, PLATFORM_ID, TransferState, makeStateKey} from '@angu
 const COUNTER_KEY = makeStateKey<number>('counter');
 
 @Component({
-  selector: 'transfer-state-app',
-  template: `
-    <div>{{counter}}</div>
-  `,
+  selector: 'transfer-state',
+  template: ` <div>{{ counter }}</div> `,
 })
 export class TransferStateComponent {
   counter = 0;

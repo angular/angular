@@ -1,26 +1,38 @@
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
+// @ts-check
 // Protractor configuration file, see link for more information
 // https://github.com/angular/protractor/blob/master/lib/config.ts
+const { SpecReporter } = require('jasmine-spec-reporter');
+
+/**
+ * @type { import("protractor").Config }
+ */
 exports.config = {
-  specs: ['../built/e2e/*-spec.js'],
+  allScriptsTimeout: 11000,
+  specs: [
+    './src/**/*-spec.ts'
+  ],
   chromeDriver: process.env.CHROMEDRIVER_BIN,
+  SELENIUM_PROMISE_MANAGER: false,
   capabilities: {
     browserName: 'chrome',
     chromeOptions: {
       binary: process.env.CHROME_BIN,
       // See /integration/README.md#browser-tests for more info on these args
       args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio']
-    }
+    },
   },
   directConnect: true,
-  // Port comes from express config `/src/server.ts` `app.listen(4206,...`
   baseUrl: 'http://localhost:4206/',
   framework: 'jasmine',
-  useAllAngular2AppRoots: true
+  jasmineNodeOpts: {
+    showColors: true,
+    defaultTimeoutInterval: 30000,
+    print: function() {}
+  },
+  onPrepare() {
+    require('ts-node').register({
+      project: require('path').join(__dirname, './tsconfig.json')
+    });
+    jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+  }
 };

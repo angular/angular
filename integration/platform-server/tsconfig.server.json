@@ -1,13 +1,14 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
-  "extends": "../tsconfig.json",
+  "extends": "./tsconfig.app.json",
   "compilerOptions": {
-    "outDir": "../out-tsc/e2e",
-    "module": "commonjs",
-    "target": "es2019",
+    "outDir": "./out-tsc/server",
     "types": [
-      "jasmine",
       "node"
     ]
-  }
+  },
+  "files": [
+    "src/main.server.ts",
+    "server.ts"
+  ]
 }
