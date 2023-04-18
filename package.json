@@ -74,7 +74,7 @@
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@schematics/angular": "16.0.0-rc.0",
     "@types/angular": "^1.6.47",
-    "@types/babel__core": "7.20.0",
+    "@types/babel__core": "7.1.20",
     "@types/babel__generator": "7.6.4",
     "@types/babel__template": "7.4.1",
     "@types/babel__traverse": "7.18.3",
