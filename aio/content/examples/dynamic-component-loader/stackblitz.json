@@ -4,6 +4,6 @@
     "!**/*.d.ts",
     "!**/*.js"
   ],
-  "file": "src/app/app.component.ts",
+  "file": "src/app/ad-banner.component.ts",
   "tags":["cookbook component"]
 }

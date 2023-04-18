@@ -1,7 +1,5 @@
 // #docregion
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AdBannerComponent } from './app/ad-banner.component';
 
-import { AppModule } from './app/app.module';
-
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+bootstrapApplication(AdBannerComponent);
