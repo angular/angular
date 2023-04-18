@@ -1686,6 +1686,9 @@
     "name": "writeDirectClass"
   },
   {
+    "name": "writeToDirectiveInput"
+  },
+  {
     "name": "ɵInternalFormsSharedModule"
   },
   {

@@ -1215,6 +1215,9 @@
     "name": "writeDirectClass"
   },
   {
+    "name": "writeToDirectiveInput"
+  },
+  {
     "name": "ɵɵdefineComponent"
   },
   {

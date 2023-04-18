@@ -1533,6 +1533,9 @@
     "name": "writeDirectClass"
   },
   {
+    "name": "writeToDirectiveInput"
+  },
+  {
     "name": "ɵPRE_STYLE"
   },
   {

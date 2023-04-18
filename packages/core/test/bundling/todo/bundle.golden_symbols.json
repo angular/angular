@@ -1464,6 +1464,9 @@
     "name": "writeDirectClass"
   },
   {
+    "name": "writeToDirectiveInput"
+  },
+  {
     "name": "ɵɵadvance"
   },
   {
