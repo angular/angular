@@ -243,12 +243,14 @@ Some extra options can only be set through the configuration file, either by dir
 | `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in the [Styles and scripts configuration](#style-script-config) section.                            |
 | `budgets`                  | Default size-budget type and thresholds for all or parts of your application. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](guide/build#configure-size-budgets). \(Not available in `test` section.\) |
 | `fileReplacements`         | An object containing files and their compile-time replacements. See more in [Configure target-specific file replacements](guide/build#configure-target-specific-file-replacements).                                                                                                                     |
+`index`                    | Configures the generation of the application's HTML index. See more in [Index configuration](#index-config). \(Only available in `browser` section.\)                                                                                                         |                                                                                                        |                                                                                                      |
+
 
 <a id="complex-config"></a>
 
 ## Complex configuration values
 
-The `assets`, `styles`, and `scripts` options can have either simple path string values, or object values with specific fields.
+The `assets`,`index`, `styles`, and `scripts` options can have either simple path string values, or object values with specific fields.
 The `sourceMap` and `optimization` options can be set to a simple Boolean value with a command flag. They can also be given a complex value using the configuration file.
 
 The following sections provide more details of how these complex values are used in each case.
@@ -485,7 +487,6 @@ For [Universal](guide/glossary#universal), you can reduce the code rendered in t
 
 ### Source map configuration
 
-
 The `sourceMap` browser builder option can be either a Boolean or an Object for more fine-tune configuration to control the source maps of an application.
 
 | Options   | Details                                            | Value type | Default value |
@@ -515,26 +516,20 @@ These are useful if you only want source maps to map error stack traces in error
 
 </div>
 
-### Index configuration option
+<a id="index-config"></a>
+
+### Index configuration
 
 Configures the generation of the application's HTML index.
 
-The `index` option can have either simple path string value, or object value with specific fields.
+The `index` option can be either a String or an Object for more fine-tune configuration.
+When supplying the value as a String the filename of the specified path will be used for the generated file and will be created in the root of the application's configured output path.
+#### Index options
 
-
-#### string
-
-The path of a file to use for the application's HTML index. The filename of the specified path will be used for the generated file and will be created in the root of the application's configured output path.
-
-#### object
-The object value contains two fields `input` and `output`
-
-The `input` field contains The path of a file to use for the application's generated HTML index.
-
-The `output` field contains the path of the application's generated HTML index file. The full provided path will be used and will be considered relative to the application's configured output path.
-
-
-
+| Options  | Details                                                                                                                                                                          | Value type | Default value |
+|:---      |:---                                                                                                                                                                              |:---        |:---           |
+| `input`  | The path of a file to use for the application's generated HTML index.                                                                                                            | `string`   |               |
+| `output` | The output path of the application's generated HTML index file. The full provided path will be used and will be considered relative to the application's configured output path. | `string`   | `index.html`  |
 
 
 <!-- links -->
