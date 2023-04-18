@@ -894,8 +894,13 @@
               "tooltip": "Add routing to your app"
             },
             {
+              "url": "tutorial/first-app/first-app-lesson-11",
+              "title": "Customize the details page",
+              "tooltip": "Add styles, links and more to the details page"
+            },
+            {
               "url": "tutorial/first-app/first-app-lesson-12",
-              "title": "Angular forms",
+              "title": "Integrate Angular forms",
               "tooltip": "Add an Angular form to your app"
             }
           ]

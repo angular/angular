@@ -78,6 +78,8 @@ In the **Edit** pane of your IDE:
 
         <code-example header="Service functions in src/app/housing.service.ts" path="first-app-lesson-09/src/app/housing.service.ts" region="service-functions"></code-example>
 
+        You will need these functions in a future lesson. For now, it is enough to understand that these functions return either a specific `HousingLocation` by id or the entire list.
+
     1.  Add a file level import for the `HousingLocation`.
 
         <code-example header="Import HousingLocation type in  src/app/housing.service.ts" path="first-app-lesson-09/src/app/housing.service.ts" region="import-housing-location"></code-example>
