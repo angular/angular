@@ -63,4 +63,17 @@ describe('takeUntilDestroyed', () => {
     source$.next(2);
     expect(last).toBe(1);
   });
+
+  it('should unregister listener if observable is unsubscribed', () => {
+    const injector = Injector.create({providers: []}) as EnvironmentInjector;
+    const destroyRef = injector.get(DestroyRef);
+    const unregisterFn = jasmine.createSpy();
+    spyOn(destroyRef, 'onDestroy').and.returnValue(unregisterFn);
+
+    const subscription = new BehaviorSubject(0).pipe(takeUntilDestroyed(destroyRef)).subscribe();
+
+    subscription.unsubscribe();
+
+    expect(unregisterFn).toHaveBeenCalled();
+  });
 });
