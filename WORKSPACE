@@ -26,8 +26,6 @@ http_archive(
 http_archive(
     name = "build_bazel_rules_nodejs",
     patches = [
-        # TODO(devversion): remove when https://github.com/bazelbuild/rules_nodejs/pull/3605 is available.
-        "//tools:bazel-repo-patches/rules_nodejs__#3605.patch",
         "//tools/esm-interop:patches/bazel/nodejs_binary_esm_support.patch",
     ],
     sha256 = "94070eff79305be05b7699207fbac5d2608054dd53e6109f7d00d923919ff45a",
