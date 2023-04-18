@@ -165,6 +165,12 @@ Do this when using factory summaries.
 When `false`, the default, removes blank text nodes from compiled templates, which results in smaller emitted template factory modules.
 Set to `true` to preserve blank text nodes.
 
+<div class="alert is-helpful">
+
+When using hydration, it is recommended that you use `preserveWhitespaces: false`, which is the default value. If you choose to enable preserving whitespaces by adding `preserveWhitespaces: true` to you tsconfig, it is possible you may encounter issues with hydration. This is not yet a fully supported configuration. Ensure this is also consistently set between the server and client tsconfig files. See the [hydration guide](guide/hydration#preserve-whitespaces) for more details.
+
+</div>
+
 ### `skipMetadataEmit`
 
 When `true`, does not produce `.metadata.json` files.

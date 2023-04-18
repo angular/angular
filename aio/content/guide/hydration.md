@@ -91,6 +91,17 @@ There are a few cases where if you have a component template that does not have 
 
 Other examples of this behavior are adding a `<div>` inside a `<p>` tag, putting a `<p>` inside of an `<a>`, and putting a `<p>` inside an `<h1>`. If you are uncertain about whether your HTML is valid, you can use a [syntax validator](https://validator.w3.org/) to check it.
 
+<a id="preserve-whitespaces"></a>
+### Preserve Whitespaces Configuration
+
+When using the hydration feature, we recommend using the default setting of `false` for `preserveWhitespaces`. If this setting is not in your tsconfig, the value will be `false` and no changes are required. If you choose to enable preserving whitespaces by adding `preserveWhitespaces: true` to you tsconfig, it is possible you may encounter issues with hydration. This is not yet a fully supported configuration.
+
+<div class="alert is-helpful">
+
+Make sure that this setting is set **consistently** in both your `tsconfig.server.json` for you server side and `tsconfig.app.json` for you client side. A mismatched value will cause hydration to break.
+
+</div>
+
 <a id="errors"></a>
 
 ## Errors
