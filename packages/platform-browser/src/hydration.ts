@@ -44,6 +44,30 @@ function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
  * Disables DOM nodes reuse during hydration. Effectively makes
  * Angular re-render an application from scratch on the client.
  *
+ * When this option is enabled, make sure that the initial navigation
+ * option is configured for the Router as `enabledBlocking` by using the
+ * `withEnabledBlockingInitialNavigation` in the `provideRouter` call:
+ *
+ * ```
+ * bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     provideRouter(
+ *       // ... other features ...
+ *       withEnabledBlockingInitialNavigation()
+ *     ),
+ *     provideClientHydration(withNoDomReuse())
+ *   ]
+ * });
+ * ```
+ *
+ * This would ensure that the application is rerendered after all async
+ * operations in the Router (such as lazy-loading of components,
+ * waiting for async guards and resolvers) are completed to avoid
+ * clearing the DOM on the client too soon, thus causing content flicker.
+ *
+ * @see `provideRouter`
+ * @see `withEnabledBlockingInitialNavigation`
+ *
  * @publicApi
  * @developerPreview
  */
