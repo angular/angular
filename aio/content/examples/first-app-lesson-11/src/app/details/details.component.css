@@ -1,8 +1,10 @@
+/* #docregion add-details-styles */
 .listing-photo {
   height: 600px;
   width: 50%;
   object-fit: cover;
   border-radius: 30px;
+  float: right;
 }
 
 .listing-heading {
@@ -68,3 +70,4 @@ input {
     height: 400px;
   }
 }
+/* #enddocregion */

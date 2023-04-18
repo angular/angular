@@ -1,7 +1,7 @@
 # Lesson 10 - Add routes to the application
 This tutorial lesson demonstrates how to add routes to your app.
 
-**Time required:** expect to spend about 15 minutes to complete this lesson.
+**Time required:** expect to spend about 25 minutes to complete this lesson.
 
 ## Before you start
 
@@ -19,7 +19,7 @@ If you have any trouble during this lesson, you can review the completed code fo
 ## After you finish
 At the end of this lesson your application will have support for routing.
 
-## Conceptual preview of interfaces
+## Conceptual preview of routing
 
 <!-- markdownLint-disable MD001 -->
 This tutorial introduces routing in Angular. Routing is the ability to navigate from one component in the application to another. In [single page applications (SPA)](/guide/router-tutorial#using-angular-routes-in-a-single-page-application), only parts of the page is updated to represent the requested view for the user.
