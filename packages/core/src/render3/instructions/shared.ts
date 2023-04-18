@@ -536,13 +536,18 @@ function executeTemplate<T>(
 
 export function executeContentQueries(tView: TView, tNode: TNode, lView: LView) {
   if (isContentQueryHost(tNode)) {
-    const start = tNode.directiveStart;
-    const end = tNode.directiveEnd;
-    for (let directiveIndex = start; directiveIndex < end; directiveIndex++) {
-      const def = tView.data[directiveIndex] as DirectiveDef<any>;
-      if (def.contentQueries) {
-        def.contentQueries(RenderFlags.Create, lView[directiveIndex], directiveIndex);
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      const start = tNode.directiveStart;
+      const end = tNode.directiveEnd;
+      for (let directiveIndex = start; directiveIndex < end; directiveIndex++) {
+        const def = tView.data[directiveIndex] as DirectiveDef<any>;
+        if (def.contentQueries) {
+          def.contentQueries(RenderFlags.Create, lView[directiveIndex], directiveIndex);
+        }
       }
+    } finally {
+      setActiveConsumer(prevConsumer);
     }
   }
 }
@@ -1873,7 +1878,12 @@ function executeViewQueryFn<T>(
     flags: RenderFlags, viewQueryFn: ViewQueriesFunction<T>, component: T): void {
   ngDevMode && assertDefined(viewQueryFn, 'View queries function to execute must be defined.');
   setCurrentQueryIndex(0);
-  viewQueryFn(flags, component);
+  const prevConsumer = setActiveConsumer(null);
+  try {
+    viewQueryFn(flags, component);
+  } finally {
+    setActiveConsumer(prevConsumer);
+  }
 }
 
 ///////////////////////////////

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Component, destroyPlatform, effect, inject, Injector, Input, NgZone, OnChanges, signal, SimpleChanges} from '@angular/core';
+import {AfterViewInit, Component, ContentChildren, createComponent, destroyPlatform, effect, EnvironmentInjector, inject, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
@@ -306,5 +306,84 @@ describe('effects', () => {
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('binding|static');
+  });
+
+  it('should allow writing to signals in query result setters', () => {
+    @Component({
+      selector: 'with-query',
+      standalone: true,
+      template: '{{items().length}}',
+    })
+    class WithQuery {
+      items = signal<unknown[]>([]);
+
+      @ContentChildren('item')
+      set itemsQuery(result: QueryList<unknown>) {
+        this.items.set(result.toArray());
+      }
+    }
+
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      imports: [WithQuery],
+      template: `<with-query><div #item></div></with-query>`,
+    })
+    class Cmp {
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('1');
+  });
+
+  it('should not execute query setters in the reactive context', () => {
+    const state = signal('initial');
+
+    @Component({
+      selector: 'with-query-setter',
+      standalone: true,
+      template: '<div #el></div>',
+
+    })
+    class WithQuerySetter {
+      el: unknown;
+      @ViewChild('el', {static: true})
+      set elQuery(result: unknown) {
+        // read a signal in a setter - I want to verify that framework executes this code outside of
+        // the reactive context
+        state();
+        this.el = result;
+      }
+    }
+
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      template: ``,
+    })
+    class Cmp {
+      noOfCmpCreated = 0;
+      constructor(environmentInjector: EnvironmentInjector) {
+        // A slightly artificial setup where a component instance is created using imperative APIs.
+        // We don't have control over the timing / reactive context of such API calls so need to
+        // code defensively in the framework.
+
+        // Here we want to specifically verify that an effect is _not_ re-run if a signal read
+        // happens in a query setter of a dynamically created component.
+        effect(() => {
+          createComponent(WithQuerySetter, {environmentInjector});
+          this.noOfCmpCreated++;
+        });
+      }
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.noOfCmpCreated).toBe(1);
+
+    state.set('changed');
+    fixture.detectChanges();
+    expect(fixture.componentInstance.noOfCmpCreated).toBe(1);
   });
 });
