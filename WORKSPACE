@@ -38,6 +38,8 @@ build_bazel_rules_nodejs_dependencies()
 
 # The PKG rules are needed to build tar packages for integration tests. The builtin
 # rule in `@bazel_tools` is not Windows compatible and outdated.
+# NOTE: We cannot move past version 0.6.0 as pkg_tar no longer works on directories, which rules_nodejs
+#       relies on for node_modules setup.
 http_archive(
     name = "rules_pkg",
     sha256 = "62eeb544ff1ef41d786e329e1536c1d541bb9bcad27ae984d57f18f314018e66",
@@ -48,6 +50,8 @@ http_archive(
 )
 
 # Fetch Aspect lib for utilities like write_source_files
+# NOTE: We cannot move past version 1.23.2 of aspect_bazel_lib because it requires us to move to bazel 6.0.0 which
+#       breaks our usage of managed_directories
 http_archive(
     name = "aspect_bazel_lib",
     sha256 = "4b2e774387bae6242879820086b7b738d49bf3d0659522ea5d9363be01a27582",

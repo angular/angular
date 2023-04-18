@@ -147,7 +147,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#d407e91db010f9eb72370b7509fc5e841ff8818b":
   version "0.0.0-1564c4e45db49460f2351cba356311e28062aa2f"
-  uid d407e91db010f9eb72370b7509fc5e841ff8818b
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#d407e91db010f9eb72370b7509fc5e841ff8818b"
   dependencies:
     "@angular-devkit/build-angular" "16.0.0-rc.0"
@@ -281,7 +280,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#0f6c44b5a58259c2a3bafe810ba42d3446dd9609":
   version "0.0.0-1564c4e45db49460f2351cba356311e28062aa2f"
-  uid "0f6c44b5a58259c2a3bafe810ba42d3446dd9609"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#0f6c44b5a58259c2a3bafe810ba42d3446dd9609"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -4007,10 +4005,10 @@
     "@types/node" "*"
     "@types/responselike" "*"
 
-"@types/chrome@^0.0.218":
-  version "0.0.218"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.218.tgz#d354cf0ac85204c17cfbe03ba7eb8f58c75d03a4"
-  integrity sha512-GC/c9B3Eo3h3l+fV5G6A9cRMEZOYo46E21mjHHfkXz+/A5uypXstMVAMk04IeGY2DJ7PxVxbn26oFBPZOa4Dkw==
+"@types/chrome@^0.0.232":
+  version "0.0.232"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.232.tgz#37a96fbabad47e0c63c52636d3a35a2de368d206"
+  integrity sha512-IfEhAewLgCDJZ70gnNJ2cbl4L5+9WvR0FL5wl3MGHguSbeQbThN2BNagFq5PddNFMVHW7JKf8TBu7tyWixOeyQ==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -6255,10 +6253,10 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-cldr@7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/cldr/-/cldr-7.3.0.tgz#a26b207e3a2c016a120c3a973f00aa450839526f"
-  integrity sha512-qMkSKxqDZHVDOiYkJqRAJ5dZlcKg3gPCmeeqc2R9iopnIbR1ODv7nP1f8Sx0PcXcpehXOnwfVEH5Y3F68Z8J/w==
+cldr@7.4.0:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/cldr/-/cldr-7.4.0.tgz#b0df29309a7c635f4efa6379d402d08d671d8925"
+  integrity sha512-S3TdLT1FOopmu1275Zbx5AaOeJ/q/tkL1zmkmfMUioCilGhVmukz+BmEh37iYP1nau5CUhPFRnf9T0+rtx8bLQ==
   dependencies:
     "@xmldom/xmldom" "^0.8.0"
     escodegen "^2.0.0"
@@ -7883,8 +7881,7 @@ domhandler@^4.2.0, domhandler@^4.3.1:
     domelementtype "^2.2.0"
 
 "domino@https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1":
-  version "2.1.6+git"
-  uid aa8de3486307f57a518b4b0d9e5e16d9fbd998d1
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1"
 
 domutils@^2.8.0:
@@ -9766,10 +9763,10 @@ got@^9.6.0:
     to-readable-stream "^1.0.0"
     url-parse-lax "^3.0.0"
 
-graceful-fs@4.2.10, graceful-fs@^4.0.0, graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.10, graceful-fs@^4.2.2, graceful-fs@^4.2.4, graceful-fs@^4.2.6, graceful-fs@^4.2.9:
-  version "4.2.10"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
-  integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
+graceful-fs@4.2.11, graceful-fs@^4.0.0, graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.10, graceful-fs@^4.2.2, graceful-fs@^4.2.4, graceful-fs@^4.2.6, graceful-fs@^4.2.9:
+  version "4.2.11"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
+  integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
 grapheme-splitter@^1.0.2:
   version "1.0.4"
@@ -14806,10 +14803,10 @@ sass@1.62.0:
   version "0.0.0"
   resolved "https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz#9c16682e4c9716734432789884f868212f95f563"
 
-saucelabs@7.2.0, saucelabs@^1.5.0, saucelabs@^4.6.3:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/saucelabs/-/saucelabs-7.2.0.tgz#82394a785e4cdc97270d1cd6b71dee9995cdbf91"
-  integrity sha512-87NDR3J5aH+mOSO9MY49ukxd2+PpvqYghAA0Vr6CHHw/0yuKtF94henVMdnC1HxpWe9agBizV+Gh9Bi98qzQow==
+saucelabs@7.2.1, saucelabs@^1.5.0, saucelabs@^4.6.3:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/saucelabs/-/saucelabs-7.2.1.tgz#d9aba144f419d32b20d5c9af81b03e45a27c74c8"
+  integrity sha512-HKrppXGiOD5B9XMCeg9QtKiyve4duafDv5Jof+7HZ6eRWqRYsDSYxIzMSYszeqvrbYUufd0nVPbhZDlFhe3atg==
   dependencies:
     change-case "^4.1.2"
     download "^8.0.0"
@@ -16231,10 +16228,10 @@ tsconfig-paths@^3.10.1:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tsec@0.2.6:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.6.tgz#a1d8a73d460986de2b4535e0ecedf95fb09bb216"
-  integrity sha512-k+R542uVRucupBFLsSXVvrgyy0W7MMNFsrDxewBsFaCGO18P9HX/91GmejA8cywRneWPV/CRdj3JwslKoPafVA==
+tsec@0.2.7:
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.7.tgz#be530025907037ed57f37fc7625b6a7e3658fe43"
+  integrity sha512-Pj9DuBBWLEo8p7QsbrEdXzW/u6QJBcib0ZGOTXkeSDx+PLXFY7hwyZE9Tfhp3TA3LQNpYouyT0WmzXRyUW4otQ==
   dependencies:
     glob "^7.1.1"
     minimatch "^3.0.3"

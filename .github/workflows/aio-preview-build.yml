@@ -22,7 +22,7 @@ jobs:
       (github.event.action == 'labeled' && github.event.label.name == 'aio: preview') ||
       (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'aio: preview'))
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - uses: ./.github/actions/yarn-install
 
       - uses: angular/dev-infra/github-actions/setup-bazel-remote-exec@1564c4e45db49460f2351cba356311e28062aa2f
