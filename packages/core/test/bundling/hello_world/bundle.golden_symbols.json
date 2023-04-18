@@ -957,6 +957,9 @@
     "name": "writeDirectClass"
   },
   {
+    "name": "writeToDirectiveInput"
+  },
+  {
     "name": "ɵɵdefineInjectable"
   },
   {

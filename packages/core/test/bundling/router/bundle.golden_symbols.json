@@ -2067,6 +2067,9 @@
     "name": "writeDirectClass"
   },
   {
+    "name": "writeToDirectiveInput"
+  },
+  {
     "name": "ɵEmptyOutletComponent"
   },
   {

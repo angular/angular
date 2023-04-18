@@ -276,4 +276,35 @@ describe('effects', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('constructor');
   });
+
+  it('should allow writing to signals in input setters', () => {
+    @Component({
+      selector: 'with-input-setter',
+      standalone: true,
+      template: '{{state()}}',
+    })
+    class WithInputSetter {
+      state = signal('property initializer');
+
+      @Input()
+      set testInput(newValue: string) {
+        this.state.set(newValue);
+      }
+    }
+
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      imports: [WithInputSetter],
+      template: `
+          <with-input-setter [testInput]="'binding'" />|<with-input-setter testInput="static" />
+      `,
+    })
+    class Cmp {
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('binding|static');
+  });
 });
