@@ -73,7 +73,7 @@ export interface StrictTemplateOptions {
 
 // @public
 export interface TargetOptions {
-    compilationMode?: 'full' | 'partial';
+    compilationMode?: 'full' | 'partial' | 'experimental-local';
 }
 
 // (No @packageDocumentation comment for this package)
