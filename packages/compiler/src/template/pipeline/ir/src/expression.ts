@@ -315,6 +315,9 @@ export function transformExpressionsInOp(
     case OpKind.Element:
     case OpKind.ElementStart:
     case OpKind.ElementEnd:
+    case OpKind.Container:
+    case OpKind.ContainerStart:
+    case OpKind.ContainerEnd:
     case OpKind.Template:
     case OpKind.Text:
     case OpKind.Advance:

@@ -17,8 +17,9 @@ import type {UpdateOp} from './update';
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
-    ElementEndOp|TemplateOp|TextOp|ListenerOp|VariableOp<CreateOp>;
+export type CreateOp =
+    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
+    ContainerStartOp|ContainerEndOp|TemplateOp|TextOp|ListenerOp|VariableOp<CreateOp>;
 
 /**
  * Representation of a local reference on an element.
@@ -39,8 +40,8 @@ export interface LocalRef {
  * Base interface for `Element`, `ElementStart`, and `Template` operations, containing common fields
  * used to represent their element-like nature.
  */
-export interface ElementOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
-  kind: OpKind.Element|OpKind.ElementStart|OpKind.Template;
+export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.Element|OpKind.ElementStart|OpKind.Container|OpKind.ContainerStart|OpKind.Template;
 
   /**
    * `XrefId` allocated for this element.
@@ -48,11 +49,6 @@ export interface ElementOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
    * This ID is used to reference this element from other IR structures.
    */
   xref: XrefId;
-
-  /**
-   * The HTML tag name for this element.
-   */
-  tag: string;
 
   /**
    * Attributes of various kinds on this element.
@@ -74,6 +70,15 @@ export interface ElementOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
    * compilation.
    */
   localRefs: LocalRef[]|ConstIndex|null;
+}
+
+export interface ElementOpBase extends ElementOrContainerOpBase {
+  kind: OpKind.Element|OpKind.ElementStart|OpKind.Template;
+
+  /**
+   * The HTML tag name for this element.
+   */
+  tag: string;
 }
 
 /**
@@ -164,6 +169,34 @@ export function createElementEndOp(xref: XrefId): ElementEndOp {
     xref,
     ...NEW_OP,
   };
+}
+
+/**
+ * Logical operation representing the start of a container in the creation IR.
+ */
+export interface ContainerStartOp extends ElementOrContainerOpBase {
+  kind: OpKind.ContainerStart;
+}
+
+/**
+ * Logical operation representing an empty container in the creation IR.
+ */
+export interface ContainerOp extends ElementOrContainerOpBase {
+  kind: OpKind.Container;
+}
+
+/**
+ * Logical operation representing the end of a container structure in the creation IR.
+ *
+ * Pairs with an `ContainerStart` operation.
+ */
+export interface ContainerEndOp extends Op<CreateOp> {
+  kind: OpKind.ContainerEnd;
+
+  /**
+   * The `XrefId` of the element declared via `ContainerStart`.
+   */
+  xref: XrefId;
 }
 
 /**
