@@ -1,56 +1,40 @@
 // #docregion
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AsyncPipe, NgComponentOutlet } from '@angular/common';
 
-import { AdDirective } from './ad.directive';
-import { AdItem } from './ad-item';
-import { AdComponent } from './ad.component';
+import { AdService } from './ad.service';
 
+// #docregion component
 @Component({
   selector: 'app-ad-banner',
-  // #docregion ad-host
+  standalone: true,
+  imports: [NgComponentOutlet, AsyncPipe],
   template: `
     <div class="ad-banner-example">
       <h3>Advertisements</h3>
-      <ng-template adHost></ng-template>
+      <ng-container *ngComponentOutlet="
+        currentAd.component;
+        inputs: currentAd.inputs;
+      " />
+      <button (click)="displayNextAd()">Next</button>
     </div>
   `
-  // #enddocregion ad-host
 })
-// #docregion class
-export class AdBannerComponent implements OnInit, OnDestroy {
-  @Input() ads: AdItem[] = [];
+export class AdBannerComponent {
+  private adList = inject(AdService).getAds();
 
-  currentAdIndex = -1;
+  private currentAdIndex = 0;
 
-  @ViewChild(AdDirective, {static: true}) adHost!: AdDirective;
-
-  private clearTimer: VoidFunction | undefined;
-
-  ngOnInit(): void {
-    this.loadComponent();
-    this.getAds();
+  get currentAd() {
+    return this.adList[this.currentAdIndex];
   }
 
-  ngOnDestroy() {
-    this.clearTimer?.();
-  }
-
-  loadComponent() {
-    this.currentAdIndex = (this.currentAdIndex + 1) % this.ads.length;
-    const adItem = this.ads[this.currentAdIndex];
-
-    const viewContainerRef = this.adHost.viewContainerRef;
-    viewContainerRef.clear();
-
-    const componentRef = viewContainerRef.createComponent<AdComponent>(adItem.component);
-    componentRef.instance.data = adItem.data;
-  }
-
-  getAds() {
-    const interval = setInterval(() => {
-      this.loadComponent();
-    }, 3000);
-    this.clearTimer = () => clearInterval(interval);
+  displayNextAd() {
+    this.currentAdIndex++;
+    // Reset the current ad index back to `0` when we reach the end of an array.
+    if (this.currentAdIndex === this.adList.length) {
+      this.currentAdIndex = 0;
+    }
   }
 }
-// #enddocregion class
+// #enddocregion component
