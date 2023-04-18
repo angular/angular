@@ -10,6 +10,7 @@ import { RouterModule } from '@angular/router';
     CommonModule,
     RouterModule
   ],
+  // #docregion add-router-link
   template: `
     <section class="listing">
       <img class="listing-photo" [src]="housingLocation.photo" alt="Exterior photo of {{housingLocation.name}}">
@@ -18,6 +19,7 @@ import { RouterModule } from '@angular/router';
       <a [routerLink]="['/details', housingLocation.id]">Learn More</a>
     </section>
   `,
+  // #enddocregion
   styleUrls: ['./housing-location.component.css'],
 })
 
