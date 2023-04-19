@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "#comment-1": "The below is used is for payload size checks",
+    "build": "ng build standalone && ng build ngmodule",
+    "#comment-2": "The below is used is for integration tests",
     "build:ngmodule": "ng run ngmodule:build:development && ng run ngmodule:server:development",
     "serve:ngmodule": "node ./dist/ngmodule/server/main.js",
     "test:ngmodule": "yarn build:ngmodule && concurrently \"yarn serve:ngmodule\" \"yarn ng e2e ngmodule\" --kill-others --success first",
