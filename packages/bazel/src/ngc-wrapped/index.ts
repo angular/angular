@@ -433,7 +433,10 @@ function gatherDiagnosticsForInputsOnly(
     // Note: We only get the diagnostics for individual files
     // to e.g. not check libraries.
     diagnostics.push(...tsProgram.getSyntacticDiagnostics(sf));
-    diagnostics.push(...tsProgram.getSemanticDiagnostics(sf));
+
+    if (options.compilationMode !== 'experimental-local') {
+      diagnostics.push(...tsProgram.getSemanticDiagnostics(sf));
+    }
   }
 
   if (ngProgram instanceof ng.NgtscProgram) {
