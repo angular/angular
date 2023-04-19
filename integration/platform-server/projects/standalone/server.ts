@@ -8,14 +8,14 @@
 /* tslint:disable:no-console  */
 import 'zone.js/node';
 import {APP_BASE_HREF} from '@angular/common';
-import {renderModule} from '@angular/platform-server';
+import {renderApplication} from '@angular/platform-server';
 import * as express from 'express';
-import {AppServerModule} from './src/main.server';
+import bootstrap from './src/main.server';
 import {join} from 'path';
 import {readFileSync} from 'fs';
 
 const app = express();
-const distFolder = join(process.cwd(), 'dist/platform-server/browser');
+const distFolder = join(process.cwd(), 'dist/standalone/browser');
 const indexHtml = readFileSync(join(distFolder, 'index.html'), 'utf-8');
 
 // Serve static files from /browser
@@ -37,10 +37,10 @@ app.get('/api-2', (req, res) => {
 
 // All regular routes use the Universal engine
 app.get('*', (req, res) => {
-  renderModule(AppServerModule, {
+  renderApplication(bootstrap, {
     document: indexHtml,
     url: req.url,
-    extraProviders: [{provide: APP_BASE_HREF, useValue: req.baseUrl}],
+    platformProviders: [{provide: APP_BASE_HREF, useValue: req.baseUrl}],
   }).then((response: string) => {
     res.send(response);
   });
