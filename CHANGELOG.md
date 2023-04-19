@@ -1,3 +1,25 @@
+<a name="16.0.0-rc.2"></a>
+# 16.0.0-rc.2 (2023-04-19)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [49fe974501](https://github.com/angular/angular/commit/49fe974501b6f446eaedf2490f2d456a5967318f) | perf | optimize NgModule emit for standalone components ([#49837](https://github.com/angular/angular/pull/49837)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fd9dcd36cd](https://github.com/angular/angular/commit/fd9dcd36cdf9ad92f404567f6c8c0914544b6e0d) | fix | Ensure effects can be created when Zone is not defined ([#49890](https://github.com/angular/angular/pull/49890)) |
+| [2650f1afc1](https://github.com/angular/angular/commit/2650f1afc1cf53423b433c2ee1782aae9d6117e4) | fix | execute input setters in non-reactive context ([#49906](https://github.com/angular/angular/pull/49906)) |
+| [f8b95b9da6](https://github.com/angular/angular/commit/f8b95b9da62d0c8719a38d230f389db5268c0b01) | fix | execute query setters in non-reactive context ([#49906](https://github.com/angular/angular/pull/49906)) |
+| [ef91a2e0fe](https://github.com/angular/angular/commit/ef91a2e0fe66378635d0787bd6d953eb8d31d881) | fix | execute template creation in non-reactive context ([#49883](https://github.com/angular/angular/pull/49883)) |
+| [a3c3ab757c](https://github.com/angular/angular/commit/a3c3ab757cf232c232c91e26d3dbc9b2aa04f296) | fix | handle invalid classes in class array bindings ([#49924](https://github.com/angular/angular/pull/49924)) |
+| [fedc75624c](https://github.com/angular/angular/commit/fedc75624c5dcfaaa2b5ef901e7e700309770a26) | fix | include inner ViewContainerRef anchor nodes into ViewRef.rootNodes output ([#49867](https://github.com/angular/angular/pull/49867)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [98223c11ca](https://github.com/angular/angular/commit/98223c11caab3f4fefa8530b72dcd680280afe71) | fix | canceledNavigationResolution: 'computed' with redirects to the current URL ([#49793](https://github.com/angular/angular/pull/49793)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-rc.1"></a>
 # 16.0.0-rc.1 (2023-04-14)
 ### core
