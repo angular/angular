@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "build": "ng build --configuration development && ng run platform-server:server:development",
-    "serve": "node ./dist/platform-server/server/main.js",
-    "pretest": "ng version && yarn build",
-    "test": "concurrently \"yarn serve\" \"yarn e2e\" --kill-others --success first",
-    "e2e": "ng e2e --port 0"
+    "build:ngmodule": "ng run ngmodule:build:development && ng run ngmodule:server:development",
+    "serve:ngmodule": "node ./dist/ngmodule/server/main.js",
+    "test:ngmodule": "yarn build:ngmodule && concurrently \"yarn serve:ngmodule\" \"yarn ng e2e ngmodule\" --kill-others --success first",
+    "build:standalone": "ng run standalone:build:development && ng run standalone:server:development",
+    "serve:standalone": "node ./dist/standalone/server/main.js",
+    "test:standalone": "yarn build:standalone && concurrently \"yarn serve:standalone\" \"yarn ng e2e standalone\" --kill-others --success first",
+    "test": "ng version && yarn test:standalone && yarn test:ngmodule"
   },
   "private": true,
   "dependencies": {
