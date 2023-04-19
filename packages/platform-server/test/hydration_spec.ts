@@ -1960,6 +1960,94 @@ describe('platform-server integration', () => {
            verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
          });
 
+      it('should allow the same component with and without hydration in the same template ' +
+             '(when component with `ngSkipHydration` goes first)',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'nested',
+             imports: [NgIf],
+             template: `
+               <ng-container *ngIf="true">Hello world</ng-container>
+             `
+           })
+           class Nested {
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [NgIf, Nested],
+             template: `
+                <nested ngSkipHydration />
+                <nested />
+                <nested ngSkipHydration />
+                <nested />
+              `,
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+           resetTViewsFor(SimpleComponent, Nested);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           verifyAllNodesClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
+
+      it('should allow the same component with and without hydration in the same template ' +
+             '(when component without `ngSkipHydration` goes first)',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'nested',
+             imports: [NgIf],
+             template: `
+               <ng-container *ngIf="true">Hello world</ng-container>
+             `
+           })
+           class Nested {
+           }
+
+           @Component({
+             standalone: true,
+             selector: 'app',
+             imports: [NgIf, Nested],
+             template: `
+               <nested />
+               <nested ngSkipHydration />
+               <nested />
+               <nested ngSkipHydration />
+             `,
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+           resetTViewsFor(SimpleComponent, Nested);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           verifyAllNodesClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
+
       it('should hydrate when the value of an attribute is "ngskiphydration"', async () => {
         @Component({
           standalone: true,
