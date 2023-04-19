@@ -45,6 +45,20 @@
       "polyfills": 33782
     }
   },
+  "platform-server/standalone/browser": {
+    "uncompressed": {
+      "runtime": 2694,
+      "main": 232544,
+      "polyfills": 33782
+    }
+  },
+  "platform-server/ngmodule/browser": {
+    "uncompressed": {
+      "runtime": 2688,
+      "main": 244602,
+      "polyfills": 33778
+    }
+  },
   "standalone-bootstrap": {
     "uncompressed": {
       "runtime": 918,
