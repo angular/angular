@@ -3157,6 +3157,94 @@ describe('platform-server integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
 
+      it('should handle view container nodes that go after projection slots', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          imports: [CommonModule],
+          template: `
+            <ng-container *ngIf="true">
+              <ng-content select="[left]"></ng-content>
+              <span *ngIf="true">{{ label }}</span>
+            </ng-container>
+          `,
+        })
+        class ProjectorCmp {
+          label = 'Hi';
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp />
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should handle view container nodes that go after projection slots ' +
+             '(when view container host node is <ng-container>)',
+         async () => {
+           @Component({
+             standalone: true,
+             selector: 'projector-cmp',
+             imports: [CommonModule],
+             template: `
+              <ng-container *ngIf="true">
+                <ng-content select="[left]"></ng-content>
+                <ng-container *ngIf="true">{{ label }}</ng-container>
+              </ng-container>
+            `,
+           })
+           class ProjectorCmp {
+             label = 'Hi';
+           }
+
+           @Component({
+             standalone: true,
+             imports: [ProjectorCmp],
+             selector: 'app',
+             template: `
+              <projector-cmp />
+            `,
+           })
+           class SimpleComponent {
+           }
+
+           const html = await ssr(SimpleComponent);
+           const ssrContents = getAppContents(html);
+
+           expect(ssrContents).toContain('<app ngh');
+
+           resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+           const appRef = await hydrate(html, SimpleComponent);
+           const compRef = getComponentRef<SimpleComponent>(appRef);
+           appRef.tick();
+
+           const clientRootNode = compRef.location.nativeElement;
+           verifyAllNodesClaimedForHydration(clientRootNode);
+           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+         });
+
       describe('partial projection', () => {
         it('should support cases when some element nodes are not projected', async () => {
           @Component({
