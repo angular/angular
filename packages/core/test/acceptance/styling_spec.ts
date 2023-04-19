@@ -300,6 +300,135 @@ describe('styling', () => {
     });
   });
 
+  describe('non-string class keys', () => {
+    it('should allow null in a class array binding', () => {
+      @Component({
+        template: `<div [class]="['a', null, 'c']" [class.extra]="true"></div>`,
+        standalone: true,
+      })
+      class Cmp {
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('class')).toBe('a c null extra');
+    });
+
+    it('should allow undefined in a class array binding', () => {
+      @Component({
+        template: `<div [class]="['a', undefined, 'c']" [class.extra]="true"></div>`,
+        standalone: true,
+      })
+      class Cmp {
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('class')).toBe('a c undefined extra');
+    });
+
+    it('should allow zero in a class array binding', () => {
+      @Component({
+        template: `<div [class]="['a', 0, 'c']" [class.extra]="true"></div>`,
+        standalone: true,
+      })
+      class Cmp {
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('class')).toBe('0 a c extra');
+    });
+
+    it('should allow false in a class array binding', () => {
+      @Component({
+        template: `<div [class]="['a', false, 'c']" [class.extra]="true"></div>`,
+        standalone: true,
+      })
+      class Cmp {
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('class')).toBe('a c false extra');
+    });
+
+    it('should ignore an empty string in a class array binding', () => {
+      @Component({
+        template: `<div [class]="['a', '', 'c']" [class.extra]="true"></div>`,
+        standalone: true,
+      })
+      class Cmp {
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('class')).toBe('a c extra');
+    });
+
+    it('should ignore a string containing spaces in a class array binding', () => {
+      @Component({
+        template: `<div [class]="['a', 'hello there', 'c']" [class.extra]="true"></div>`,
+        standalone: true,
+      })
+      class Cmp {
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('class')).toBe('a c extra');
+    });
+
+    it('should ignore a string containing spaces in a class object literal binding', () => {
+      @Component({
+        template:
+            `<div [class]="{a: true, 'hello there': true, c: true}" [class.extra]="true"></div>`,
+        standalone: true,
+      })
+      class Cmp {
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('class')).toBe('a c extra');
+    });
+
+    it('should ignore an object literal in a class array binding', () => {
+      @Component({
+        template: `<div [class]="['a', {foo: true}, 'c']" [class.extra]="true"></div>`,
+        standalone: true,
+      })
+      class Cmp {
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('class')).toBe('a c extra');
+    });
+
+    it('should handle a string array in a class array binding', () => {
+      @Component({
+        template: `<div [class]="['a', ['foo', 'bar'], 'c']" [class.extra]="true"></div>`,
+        standalone: true,
+      })
+      class Cmp {
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('class')).toBe('a c foo,bar extra');
+    });
+  });
+
   it('should bind [class] as input to directive', () => {
     @Component({
       template: `
