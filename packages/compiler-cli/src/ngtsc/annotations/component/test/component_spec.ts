@@ -40,7 +40,10 @@ export class StubResourceLoader implements ResourceLoader {
   }
 }
 
-function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.CompilerHost) {
+function setup(
+    program: ts.Program, options: ts.CompilerOptions, host: ts.CompilerHost,
+    opts: {isLocalCompilation?: boolean, usePoisonedData?: boolean} = {}) {
+  const {isLocalCompilation, usePoisonedData} = opts;
   const checker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(checker);
   const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
@@ -80,7 +83,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* defaultPreserveWhitespaces */ false,
       /* i18nUseExternalIds */ true,
       /* enableI18nLegacyMessageIdFormat */ false,
-      /* usePoisonedData */ false,
+      !!usePoisonedData,
       /* i18nNormalizeLineEndingsInICUs */ false,
       moduleResolver,
       cycleAnalyzer,
@@ -93,6 +96,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* annotateForClosureCompiler */ false,
       NOOP_PERF_RECORDER,
       hostDirectivesResolver,
+      !!isLocalCompilation,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }
@@ -533,6 +537,91 @@ runInEachFileSystem(() => {
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
       expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
       expect(meta?.animationTriggerNames?.staticTriggerNames.length).toBe(0);
+    });
+
+    describe('localCompilation', () => {
+      it('should not produce diagnostic for cross-file imports', () => {
+        const {program, options, host} = makeProgram(
+            [
+              {
+                name: _('/node_modules/@angular/core/index.d.ts'),
+                contents: 'export const Component: any;',
+              },
+              {
+                name: _('/entry.ts'),
+                contents: `
+            import {Component} from '@angular/core';
+            import {SomeModule} from './some_where';
+            
+            @Component({
+              standalone: true,
+              selector: 'main',
+              template: '<span>Hi!</span>',
+              imports: [SomeModule],
+            }) class TestCmp {}
+        `
+              },
+            ],
+            undefined, undefined, false);
+        const {reflectionHost, handler} = setup(program, options, host, {isLocalCompilation: true});
+        const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+
+        const detected =
+            handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+        if (detected === undefined) {
+          return fail('Failed to recognize @Component');
+        }
+        const {diagnostics} = handler.analyze(TestCmp, detected.metadata);
+
+        expect(diagnostics).toBeUndefined();
+      });
+
+      it('should not type check the template', () => {
+        const {program, options, host} = makeProgram(
+            [
+              {
+                name: _('/node_modules/@angular/core/index.d.ts'),
+                contents: 'export const Component: any;',
+              },
+              {
+                name: _('/entry.ts'),
+                contents: `
+            import {Component} from '@angular/core';
+            import {SomeModule} from './some_where';
+            
+            @Component({
+              standalone: true,
+              selector: 'main',
+              template: '<some-unknown-cmp>Hi!</some-unknown-cmp>',
+              imports: [SomeModule],
+            }) class TestCmp {}
+        `
+              },
+            ],
+            undefined, undefined, false);
+        const {reflectionHost, handler} =
+            setup(program, options, host, {isLocalCompilation: true, usePoisonedData: true});
+        const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+
+        const detected =
+            handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+        if (detected === undefined) {
+          return fail('Failed to recognize @Component');
+        }
+        const {analysis} = handler.analyze(TestCmp, detected.metadata);
+
+        try {
+          handler.typeCheck(
+              {
+                addTemplate: () => {
+                  throw new Error('Fake error!');
+                }
+              },
+              TestCmp, analysis!);
+        } catch (e) {
+          return fail('should not proceed to type checking!');
+        }
+      });
     });
   });
 

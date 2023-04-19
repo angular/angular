@@ -1030,6 +1030,8 @@ export class NgCompiler {
       }
     }
 
+    const isLocalCompilation = compilationMode === CompilationMode.LOCAL;
+
     // Cycles are handled in full compilation mode by "remote scoping".
     // "Remote scoping" does not work well with tree shaking for libraries.
     // So in partial compilation mode, when building a library, a cycle will cause an error.
@@ -1050,7 +1052,8 @@ export class NgCompiler {
           this.options.i18nNormalizeLineEndingsInICUs === true, this.moduleResolver,
           this.cycleAnalyzer, cycleHandlingStrategy, refEmitter, referencesRegistry,
           this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
-          this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver),
+          this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
+          isLocalCompilation),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -1074,7 +1077,7 @@ export class NgCompiler {
           reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,
           isCore, refEmitter, this.closureCompilerEnabled,
           this.options.onlyPublishPublicTypingsForNgModules ?? false, injectableRegistry,
-          this.delegatingPerfRecorder),
+          this.delegatingPerfRecorder, isLocalCompilation),
     ];
 
     const traitCompiler = new TraitCompiler(

@@ -21,10 +21,36 @@ import {getDeclaration, makeProgram} from '../../../testing';
 import {InjectableClassRegistry, NoopReferencesRegistry} from '../../common';
 import {NgModuleDecoratorHandler} from '../src/handler';
 
+function setup(program: ts.Program, isLocalCompilation = false) {
+  const checker = program.getTypeChecker();
+  const reflectionHost = new TypeScriptReflectionHost(checker);
+  const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
+  const referencesRegistry = new NoopReferencesRegistry();
+  const metaRegistry = new LocalMetadataRegistry();
+  const dtsReader = new DtsMetadataReader(checker, reflectionHost);
+  const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
+  const scopeRegistry = new LocalModuleScopeRegistry(
+      metaRegistry, metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null),
+      new ReferenceEmitter([]), null);
+  const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
+  const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
+
+  const handler = new NgModuleDecoratorHandler(
+      reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
+      /* isCore */ false, refEmitter,
+      /* annotateForClosureCompiler */ false,
+      /* onlyPublishPublicTypings */ false, injectableRegistry, NOOP_PERF_RECORDER,
+      isLocalCompilation);
+
+  return {handler, reflectionHost};
+}
+
 runInEachFileSystem(() => {
   describe('NgModuleDecoratorHandler', () => {
+    let _: typeof absoluteFrom;
+    beforeEach(() => _ = absoluteFrom);
+
     it('should resolve forwardRef', () => {
-      const _ = absoluteFrom;
       const {program} = makeProgram([
         {
           name: _('/node_modules/@angular/core/index.d.ts'),
@@ -56,26 +82,11 @@ runInEachFileSystem(() => {
         `
         },
       ]);
-      const checker = program.getTypeChecker();
-      const reflectionHost = new TypeScriptReflectionHost(checker);
-      const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
-      const referencesRegistry = new NoopReferencesRegistry();
-      const metaRegistry = new LocalMetadataRegistry();
-      const dtsReader = new DtsMetadataReader(checker, reflectionHost);
-      const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
-      const scopeRegistry = new LocalModuleScopeRegistry(
-          metaRegistry, metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null),
-          new ReferenceEmitter([]), null);
-      const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
-      const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
 
-      const handler = new NgModuleDecoratorHandler(
-          reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
-          /* isCore */ false, refEmitter,
-          /* annotateForClosureCompiler */ false, /* onlyPublishPublicTypings */ false,
-          injectableRegistry, NOOP_PERF_RECORDER);
+      const {handler, reflectionHost} = setup(program);
       const TestModule =
           getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
+
       const detected =
           handler.detect(TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
       if (detected === undefined) {
@@ -90,6 +101,122 @@ runInEachFileSystem(() => {
       function getReferenceIdentifierTexts(references: R3Reference[]) {
         return references.map(ref => (ref.value as WrappedNodeExpr<ts.Identifier>).node.text);
       }
+    });
+
+    describe('localCompilation', () => {
+      it('should not produce diagnostic for cross-file imports', () => {
+        const {program} = makeProgram(
+            [
+              {
+                name: _('/node_modules/@angular/core/index.d.ts'),
+                contents: 'export const NgModule: any;',
+              },
+              {
+                name: _('/entry.ts'),
+                contents: `
+            import {NgModule} from '@angular/core';
+            import {SomeModule} from './some_where';
+            
+            @NgModule({
+              imports: [SomeModule],              
+            }) class TestModule {}
+        `
+              },
+            ],
+            undefined, undefined, false);
+        const {reflectionHost, handler} = setup(program, true);
+        const TestModule =
+            getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
+
+        const detected =
+            handler.detect(TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
+        if (detected === undefined) {
+          return fail('Failed to recognize @NgModule');
+        }
+
+        try {
+          const {diagnostics} = handler.analyze(TestModule, detected.metadata);
+          expect(diagnostics).toBeUndefined();
+        } catch (e) {
+          return fail('should not fail!');
+        }
+      });
+
+      it('should not produce diagnostic for cross-file exports', () => {
+        const {program} = makeProgram(
+            [
+              {
+                name: _('/node_modules/@angular/core/index.d.ts'),
+                contents: 'export const NgModule: any;',
+              },
+              {
+                name: _('/entry.ts'),
+                contents: `
+            import {NgModule} from '@angular/core';
+            import {SomeModule} from './some_where';
+            
+            @NgModule({
+              exports: [SomeModule],              
+            }) class TestModule {}
+        `
+              },
+            ],
+            undefined, undefined, false);
+        const {reflectionHost, handler} = setup(program, true);
+        const TestModule =
+            getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
+
+        const detected =
+            handler.detect(TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
+        if (detected === undefined) {
+          return fail('Failed to recognize @NgModule');
+        }
+
+        try {
+          const {diagnostics} = handler.analyze(TestModule, detected.metadata);
+          expect(diagnostics).toBeUndefined();
+        } catch (e) {
+          return fail('should not fail!');
+        }
+      });
+
+      it('should not produce diagnostic for cross-file declarations', () => {
+        const {program} = makeProgram(
+            [
+              {
+                name: _('/node_modules/@angular/core/index.d.ts'),
+                contents: 'export const NgModule: any;',
+              },
+              {
+                name: _('/entry.ts'),
+                contents: `
+            import {NgModule} from '@angular/core';
+            import {SomeModule} from './some_where';
+            
+            @NgModule({
+              declarations: [SomeModule],              
+            }) class TestModule {}
+        `
+              },
+            ],
+            undefined, undefined, false);
+        const {reflectionHost, handler} = setup(program, true);
+        const TestModule =
+            getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
+
+        const detected =
+            handler.detect(TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
+        if (detected === undefined) {
+          return fail('Failed to recognize @NgModule');
+        }
+
+        try {
+          const {diagnostics} = handler.analyze(TestModule, detected.metadata);
+          expect(diagnostics).toBeUndefined();
+        } catch (e) {
+          return fail('should not fail!');
+        }
+      });
     });
   });
 });

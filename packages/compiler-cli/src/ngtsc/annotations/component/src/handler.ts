@@ -60,7 +60,8 @@ export class ComponentDecoratorHandler implements
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
-      private hostDirectivesResolver: HostDirectivesResolver) {
+      private hostDirectivesResolver: HostDirectivesResolver,
+      private readonly isLocalCompilation: boolean) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
@@ -272,7 +273,7 @@ export class ComponentDecoratorHandler implements
       // Poison the component so that we don't spam further template type-checking errors that
       // result from misconfigured imports.
       isPoisoned = true;
-    } else if (component.has('imports')) {
+    } else if (!this.isLocalCompilation && component.has('imports')) {
       const expr = component.get('imports')!;
       const importResolvers = combineResolvers([
         createModuleWithProvidersResolver(this.reflector, this.isCore),
@@ -560,9 +561,14 @@ export class ComponentDecoratorHandler implements
     if (meta.isPoisoned && !this.usePoisonedData) {
       return;
     }
+
     const scope = this.typeCheckScopeRegistry.getTypeCheckScope(node);
     if (scope.isPoisoned && !this.usePoisonedData) {
       // Don't type-check components that had errors in their scopes, unless requested.
+      return;
+    }
+
+    if (this.isLocalCompilation) {
       return;
     }
 

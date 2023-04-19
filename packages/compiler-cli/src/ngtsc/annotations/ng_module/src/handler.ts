@@ -132,7 +132,8 @@ export class NgModuleDecoratorHandler implements
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private refEmitter: ReferenceEmitter, private annotateForClosureCompiler: boolean,
       private onlyPublishPublicTypings: boolean,
-      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
+      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
+      private readonly isLocalCompilation: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = NgModuleDecoratorHandler.name;
@@ -194,9 +195,11 @@ export class NgModuleDecoratorHandler implements
     if (ngModule.has('declarations')) {
       rawDeclarations = ngModule.get('declarations')!;
       const declarationMeta = this.evaluator.evaluate(rawDeclarations, forwardRefResolver);
-      declarationRefs =
-          this.resolveTypeList(rawDeclarations, declarationMeta, name, 'declarations', 0)
-              .references;
+      if (!this.isLocalCompilation) {
+        declarationRefs =
+            this.resolveTypeList(rawDeclarations, declarationMeta, name, 'declarations', 0)
+                .references;
+      }
 
       // Look through the declarations to make sure they're all a part of the current compilation.
       for (const ref of declarationRefs) {
@@ -222,22 +225,29 @@ export class NgModuleDecoratorHandler implements
     let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
       rawImports = ngModule.get('imports')!;
-      const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
-      importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports', 0).references;
+      if (!this.isLocalCompilation) {
+        const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
+        importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports', 0).references;
+      }
     }
     let exportRefs: Reference<ClassDeclaration>[] = [];
     let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
       rawExports = ngModule.get('exports')!;
-      const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
-      exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports', 0).references;
-      this.referencesRegistry.add(node, ...exportRefs);
+      if (!this.isLocalCompilation) {
+        const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
+        exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports', 0).references;
+        this.referencesRegistry.add(node, ...exportRefs);
+      }
     }
     let bootstrapRefs: Reference<ClassDeclaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap')!;
       const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
-      bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap', 0).references;
+
+      if (!this.isLocalCompilation) {
+        bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap', 0).references;
+      }
 
       // Verify that the `@NgModule.bootstrap` list doesn't have Standalone Components.
       for (const ref of bootstrapRefs) {
@@ -332,7 +342,7 @@ export class NgModuleDecoratorHandler implements
     }
 
     const topLevelImports: TopLevelImportedExpression[] = [];
-    if (ngModule.has('imports')) {
+    if (!this.isLocalCompilation && ngModule.has('imports')) {
       const rawImports = unwrapExpression(ngModule.get('imports')!);
 
       let topLevelExpressions: ts.Expression[] = [];
