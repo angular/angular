@@ -75,7 +75,7 @@ Hydration imposes a few constraints on your application that are not present wit
 
 <div class="alert is-important">
 
-The HTML produced by the server side rendering operation **must not** be altered between the server and the client. 
+The HTML produced by the server side rendering operation **must not** be altered between the server and the client.
 
 </div>
 
@@ -104,7 +104,7 @@ When using the hydration feature, we recommend using the default setting of `fal
 
 <div class="alert is-helpful">
 
-Make sure that this setting is set **consistently** in both your `tsconfig.server.json` for you server side and `tsconfig.app.json` for you client side. A mismatched value will cause hydration to break.
+Make sure that this setting is set **consistently** in both `tsconfig.server.json` for your server side and `tsconfig.app.json` for your client side. A mismatched value will cause hydration to break.
 
 </div>
 
