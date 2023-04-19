@@ -8,7 +8,7 @@
 
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
-import {HEADER_OFFSET, HOST, LView, TView} from '../render3/interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, HOST, LView, TView} from '../render3/interfaces/view';
 import {getFirstNativeNode} from '../render3/node_manipulation';
 import {ɵɵresolveBody} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
@@ -158,9 +158,10 @@ function locateRNodeByPath(path: string, lView: LView): RNode {
   const [referenceNode, ...navigationInstructions] = decompressNodeLocation(path);
   let ref: Element;
   if (referenceNode === REFERENCE_NODE_HOST) {
-    ref = lView[0] as unknown as Element;
+    ref = lView[DECLARATION_COMPONENT_VIEW][HOST] as unknown as Element;
   } else if (referenceNode === REFERENCE_NODE_BODY) {
-    ref = ɵɵresolveBody(lView[0] as unknown as RElement & {ownerDocument: Document});
+    ref = ɵɵresolveBody(
+        lView[DECLARATION_COMPONENT_VIEW][HOST] as RElement & {ownerDocument: Document});
   } else {
     const parentElementId = Number(referenceNode);
     ref = unwrapRNode((lView as any)[parentElementId + HEADER_OFFSET]) as Element;
@@ -203,14 +204,18 @@ export function navigateBetween(start: Node, finish: Node): NodeNavigationStep[]
 
 /**
  * Calculates a path between 2 sibling nodes (generates a number of `NextSibling` navigations).
+ * Returns `null` if no such path exists between the given nodes.
  */
-function navigateBetweenSiblings(start: Node, finish: Node): NodeNavigationStep[] {
+function navigateBetweenSiblings(start: Node, finish: Node): NodeNavigationStep[]|null {
   const nav: NodeNavigationStep[] = [];
   let node: Node|null = null;
   for (node = start; node != null && node !== finish; node = node.nextSibling) {
     nav.push(NodeNavigationStep.NextSibling);
   }
-  return node === null ? [] : nav;
+  // If the `node` becomes `null` or `undefined` at the end, that means that we
+  // didn't find the `end` node, thus return `null` (which would trigger serialization
+  // error to be produced).
+  return node == null ? null : nav;
 }
 
 /**
@@ -235,10 +240,11 @@ export function calcPathForNode(tNode: TNode, lView: LView): string {
   let parentIndex: number|string;
   let parentRNode: RNode;
   let referenceNodeName: string;
-  if (parentTNode === null) {
-    // No parent TNode - use host element as a reference node.
+  if (parentTNode === null || !(parentTNode.type & TNodeType.AnyRNode)) {
+    // If there is no parent TNode or a parent TNode does not represent an RNode
+    // (i.e. not a DOM node), use component host element as a reference node.
     parentIndex = referenceNodeName = REFERENCE_NODE_HOST;
-    parentRNode = lView[HOST]!;
+    parentRNode = lView[DECLARATION_COMPONENT_VIEW][HOST]!;
   } else {
     // Use parent TNode as a reference node.
     parentIndex = parentTNode.index;
