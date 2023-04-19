@@ -104,7 +104,9 @@ When using the hydration feature, we recommend using the default setting of `fal
 
 <div class="alert is-helpful">
 
-Make sure that this setting is set **consistently** in both `tsconfig.server.json` for your server side and `tsconfig.app.json` for your client side. A mismatched value will cause hydration to break.
+Make sure that this setting is set **consistently** in `tsconfig.server.json` for your server and `tsconfig.app.json` for your browser builds. A mismatched value will cause hydration to break.
+
+If you choose to set this setting in your tsconfig, we recommend to set it only in `tsconfig.app.json` which by default the `tsconfig.server.json` will inherit it from.
 
 </div>
 
