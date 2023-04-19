@@ -1,3 +1,20 @@
+<a name="15.2.8"></a>
+# 15.2.8 (2023-04-19)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2fff8fadbe](https://github.com/angular/angular/commit/2fff8fadbeff9df3bc09b8847dbf08febbe3b5f8) | fix | handle invalid classes in class array bindings ([#49924](https://github.com/angular/angular/pull/49924)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [05a0225deb](https://github.com/angular/angular/commit/05a0225deb126849f3798e828f6dbef7c221ec57) | fix | prevent headers from throwing an error when initializing numerical values ([#49379](https://github.com/angular/angular/pull/49379)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [09a42d988e](https://github.com/angular/angular/commit/09a42d988e654825648205c8df90f7ca4d034c74) | fix | canceledNavigationResolution: 'computed' with redirects to the current URL ([#49793](https://github.com/angular/angular/pull/49793)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.7"></a>
 # 15.2.7 (2023-04-12)
 ### compiler
