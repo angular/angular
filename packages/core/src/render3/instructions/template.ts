@@ -23,8 +23,6 @@ import {getConstant} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesInstances, createLContainer, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
-
-
 function templateFirstCreatePass(
     index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>|null,
     decls: number, vars: number, tagName?: string|null, attrsIndex?: number|null,
@@ -36,7 +34,7 @@ function templateFirstCreatePass(
   const hydrationInfo = lView[HYDRATION];
   if (hydrationInfo) {
     const noOffsetIndex = index - HEADER_OFFSET;
-    ssrId = (hydrationInfo && hydrationInfo.data[TEMPLATES]?.[noOffsetIndex]) ?? null;
+    ssrId = hydrationInfo.data[TEMPLATES]?.[noOffsetIndex] ?? null;
   }
   // TODO(pk): refactor getOrCreateTNode to have the "create" only version
   const tNode = getOrCreateTNode(
