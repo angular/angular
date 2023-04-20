@@ -698,7 +698,7 @@ export class Router {
     errorHandler: (error: any) => any;
     get events(): Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
-    initialNavigation(): void;
+    initialNavigation(): Promise<void>;
     // @deprecated
     isActive(url: string | UrlTree, exact: boolean): boolean;
     isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;

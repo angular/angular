@@ -10,9 +10,9 @@ import {DOCUMENT, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {BrowserPlatformLocation} from '@angular/common/src/location/platform_location';
 import {NullViewportScroller, ViewportScroller} from '@angular/common/src/viewport_scroller';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, ENVIRONMENT_INITIALIZER, inject, Injectable, NgModule} from '@angular/core';
+import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, ENVIRONMENT_INITIALIZER, ErrorHandler, inject, Injectable, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
+import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {NavigationEnd, provideRouter, Router, RouterModule, RouterOutlet, withEnabledBlockingInitialNavigation} from '@angular/router';
 
@@ -395,6 +395,50 @@ describe('bootstrap', () => {
          expect((router as any).resetRootComponentType).not.toHaveBeenCalled();
        });
      });
+
+  it('should handle errors during initial navigation to a lazy component', async () => {
+    @Component({selector: 'lazy-comp-with-error', template: '', standalone: true})
+    class LazyCmpWithError {
+      constructor() {
+        throw new Error('Error from LazyCmpWithError ctor.');
+      }
+    }
+
+    @Component({
+      selector: 'test-app',
+      template: '<router-outlet></router-outlet>',
+      standalone: true,
+      imports: [RouterOutlet]
+    })
+    class RootComp {
+    }
+
+    const errorLogs: string[] = [];
+    await bootstrapApplication(RootComp, {
+      providers: [
+        ...testProviders,
+        {
+          provide: ErrorHandler,
+          useClass: class {
+            handleError(error: Error) {
+              errorLogs.push(error.message);
+            }
+          },
+        },
+        provideRouter([{path: '**', loadComponent: () => LazyCmpWithError}]),
+      ]
+    });
+
+    // Flush all microtasks by creating a macrotask.
+    // This is needed because the the framework promises are not always awaited.
+    // Such as promises inside APP_BOOTSTRAP_LISTENER, while on the browser this is not a
+    // big of deal on node this can result in some issues.
+    // - Node.js does not wait for promises which are not awaited.
+    // (https://github.com/nodejs/node/issues/22088)
+    // - We need to delay the check for logs to be done after the next macro eventloop cycle.
+    await new Promise<void>(resolve => setTimeout(() => resolve(), 0));
+    expect(errorLogs).toEqual(['Error from LazyCmpWithError ctor.']);
+  });
 
   it('should reinit router navigation listeners if a previously bootstrapped root component is destroyed',
      async () => {

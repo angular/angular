@@ -7,7 +7,7 @@
  */
 
 import {HashLocationStrategy, LOCATION_INITIALIZED, LocationStrategy, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Component, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Component, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EnvironmentProviders, ErrorHandler, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
@@ -203,7 +203,13 @@ export function getBootstrapListener() {
     const bootstrapDone = injector.get(BOOTSTRAP_DONE);
 
     if (injector.get(INITIAL_NAVIGATION) === InitialNavigation.EnabledNonBlocking) {
-      router.initialNavigation();
+      const errorHandler = injector.get(ErrorHandler, null);
+      const initialNavigation = router.initialNavigation();
+      if (errorHandler) {
+        // The below is to avoid unhandled promise rejections
+        // when there is a error in the component contructor.
+        initialNavigation.catch(e => errorHandler.handleError(e));
+      }
     }
 
     injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
@@ -335,7 +341,8 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
                 resolve(true);
                 return bootstrapDone.closed ? of(void 0) : bootstrapDone;
               };
-              router.initialNavigation();
+
+              return router.initialNavigation();
             });
           });
         };

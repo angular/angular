@@ -350,11 +350,11 @@ export class Router {
   /**
    * Sets up the location change listener and performs the initial navigation.
    */
-  initialNavigation(): void {
+  async initialNavigation(): Promise<void> {
     this.setUpLocationChangeListener();
     if (!this.navigationTransitions.hasRequestedNavigation) {
       const state = this.location.getState() as RestoredState;
-      this.navigateToSyncWithBrowser(this.location.path(true), IMPERATIVE_NAVIGATION, state);
+      await this.navigateToSyncWithBrowser(this.location.path(true), IMPERATIVE_NAVIGATION, state);
     }
   }
 
@@ -389,7 +389,7 @@ export class Router {
    * the Router needs to respond to ensure its internal state matches.
    */
   private navigateToSyncWithBrowser(
-      url: string, source: NavigationTrigger, state: RestoredState|undefined) {
+      url: string, source: NavigationTrigger, state: RestoredState|undefined): Promise<boolean> {
     const extras: NavigationExtras = {replaceUrl: true};
 
     // TODO: restoredState should always include the entire state, regardless
@@ -414,7 +414,7 @@ export class Router {
     }
 
     const urlTree = this.parseUrl(url);
-    this.scheduleNavigation(urlTree, source, restoredState, extras);
+    return this.scheduleNavigation(urlTree, source, restoredState, extras);
   }
 
   /** The current URL. */
