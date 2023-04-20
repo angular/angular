@@ -9,10 +9,9 @@
 import {InjectionToken} from '@angular/core';
 
 /**
- * A DI Token representing the main rendering context. In a browser this is the DOM Document.
- *
- * Note: Document might not be available in the Application Context when Application and Rendering
- * Contexts are not the same (e.g. when running the application in a Web Worker).
+ * A DI Token representing the main rendering context.
+ * In a browser and SSR this is the DOM Document.
+ * When using SSR, that document is created by [Domino](https://github.com/angular/domino).
  *
  * @publicApi
  */
