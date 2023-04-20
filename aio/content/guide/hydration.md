@@ -65,7 +65,7 @@ After you've followed these steps and have started up your server, load your app
 
 </div>
 
-You can confirm hydration is enabled by opening Developer Tools in your browser and viewing the console. You should see a message that includes hydration-related stats, such as the number of components and nodes hydrated. Note: Angular calculates the stats based on all components rendered on a page, including those that come from third-party libraries.
+While running an application in dev mode, you can confirm hydration is enabled by opening the Developer Tools in your browser and viewing the console. You should see a message that includes hydration-related stats, such as the number of components and nodes hydrated. Note: Angular calculates the stats based on all components rendered on a page, including those that come from third-party libraries.
 
 <a id="constraints"></a>
 
@@ -109,6 +109,13 @@ Make sure that this setting is set **consistently** in `tsconfig.server.json` fo
 If you choose to set this setting in your tsconfig, we recommend to set it only in `tsconfig.app.json` which by default the `tsconfig.server.json` will inherit it from.
 
 </div>
+
+### Custom or Noop Zone.js are not yet supported
+
+Hydration relies on a signal from Zone.js when it becomes stable inside an application, so that Angular can start the serialization process on the server or post-hydration cleanup on the client to remove DOM nodes that remained unclaimed.
+
+Providing a custom or a "noop" Zone.js implementation may lead to a different timing of the "stable" event, thus triggering the serialization or the cleanup too early or too late. This is not yet a fully supported configuration and you may need to adjust the timing of the `onStable` event in the custom Zone.js implementation.
+
 
 <a id="errors"></a>
 
