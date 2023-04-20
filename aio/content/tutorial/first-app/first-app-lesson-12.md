@@ -24,7 +24,7 @@ If you have any trouble during this lesson, you can review the completed code fo
 ## After you finish
 
 *  Your app has a form into which users can enter data that is sent to your app's service.
-   The service writes the data from the form to the browser's console.
+*  The service writes the data from the form to the browser's console.
 
 ## Lesson steps
 

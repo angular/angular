@@ -902,6 +902,11 @@
               "url": "tutorial/first-app/first-app-lesson-12",
               "title": "Integrate Angular forms",
               "tooltip": "Add an Angular form to your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-13",
+              "title": "Add search functionality",
+              "tooltip": "Add search functionality to your app"
             }
           ]
         },
