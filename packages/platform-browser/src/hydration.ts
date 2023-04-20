@@ -7,7 +7,9 @@
  */
 
 import {ɵwithHttpTransferCache as withHttpTransferCache} from '@angular/common/http';
-import {EnvironmentProviders, makeEnvironmentProviders, Provider, ɵwithDomHydration as withDomHydration} from '@angular/core';
+import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders, NgZone, Provider, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵwithDomHydration as withDomHydration} from '@angular/core';
+
+import {RuntimeErrorCode} from './errors';
 
 /**
  * The list of features as an enum to uniquely type each `HydrationFeature`.
@@ -92,6 +94,33 @@ export function withNoHttpTransferCache():
 }
 
 /**
+ * Returns an `ENVIRONMENT_INITIALIZER` token setup with a function
+ * that verifies whether compatible ZoneJS was used in an application
+ * and logs a warning in a console if it's not the case.
+ */
+function provideZoneJsCompatibilityDetector(): Provider[] {
+  return [{
+    provide: ENVIRONMENT_INITIALIZER,
+    useValue: () => {
+      const ngZone = inject(NgZone);
+      // Checking `ngZone instanceof NgZone` would be insufficient here,
+      // because custom implementations might use NgZone as a base class.
+      if (ngZone.constructor !== NgZone) {
+        const console = inject(Console);
+        const message = formatRuntimeError(
+            RuntimeErrorCode.UNSUPPORTED_ZONEJS_INSTANCE,
+            'Angular detected that hydration was enabled for an application ' +
+                'that uses a custom or a noop Zone.js implementation. ' +
+                'This is not yet a fully supported configuration.');
+        // tslint:disable-next-line:no-console
+        console.warn(message);
+      }
+    },
+    multi: true,
+  }];
+}
+
+/**
  * Sets up providers necessary to enable hydration functionality for the application.
  * By default, the function enables the recommended set of features for the optimal
  * performance for most of the applications. You can enable/disable features by
@@ -142,6 +171,7 @@ export function provideClientHydration(...features: HydrationFeature<HydrationFe
   }
 
   return makeEnvironmentProviders([
+    (typeof ngDevMode !== 'undefined' && ngDevMode) ? provideZoneJsCompatibilityDetector() : [],
     (featuresKind.has(HydrationFeatureKind.NoDomReuseFeature) ? [] : withDomHydration()),
     (featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) ? [] : withHttpTransferCache()),
     providers,
