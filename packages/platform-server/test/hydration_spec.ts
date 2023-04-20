@@ -15,6 +15,7 @@ import {Console} from '@angular/core/src/console';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {unescapeTransferStateContent} from '@angular/core/src/transfer_state';
+import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, HydrationFeature, HydrationFeatureKind, provideClientHydration, withNoDomReuse} from '@angular/platform-browser';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
@@ -587,9 +588,16 @@ describe('platform-server integration', () => {
 
           resetTViewsFor(SimpleComponent, NestedComponent);
 
-          const appRef = await hydrate(html, SimpleComponent);
+          const appRef = await hydrate(html, SimpleComponent, [withDebugConsole()]);
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
+
+          // Make sure there are no extra logs in case
+          // default NgZone is setup for an application.
+          verifyHasNoLog(
+              appRef,
+              'NG05000: Angular detected that hydration was enabled for an application ' +
+                  'that uses a custom or a noop Zone.js implementation.');
 
           const clientRootNode = compRef.location.nativeElement;
           verifyAllNodesClaimedForHydration(clientRootNode);
@@ -3987,6 +3995,78 @@ describe('platform-server integration', () => {
         expect(h1).not.toBeDefined();
         expect(h2).not.toBeDefined();
         expect(span.textContent).toBe('no');
+      });
+    });
+
+    describe('unsupported Zone.js config', () => {
+      it('should log a warning when a noop zone is used', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `Hi!`,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent, [
+          {provide: NgZone, useValue: new NoopNgZone()},
+          withDebugConsole(),
+        ]);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        verifyHasLog(
+            appRef,
+            'NG05000: Angular detected that hydration was enabled for an application ' +
+                'that uses a custom or a noop Zone.js implementation.');
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should log a warning when a custom zone is used', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `Hi!`,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        class CustomNgZone extends NgZone {}
+
+        const appRef = await hydrate(html, SimpleComponent, [
+          {provide: NgZone, useValue: new CustomNgZone({})},
+          withDebugConsole(),
+        ]);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        verifyHasLog(
+            appRef,
+            'NG05000: Angular detected that hydration was enabled for an application ' +
+                'that uses a custom or a noop Zone.js implementation.');
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
     });
 
