@@ -10,9 +10,9 @@ Choose from the following modes:
 
 | Modes                         | Details |
 |:---                           |:---     |
-| `ViewEncapsulation.ShadowDom` | Angular uses the browser's built-in [Shadow DOM API](https://developer.mozilla.org/docs/Web/Web_Components/Shadow_DOM) to enclose the component's view inside a ShadowRoot, used as the component's host element, and apply the provided styles in an isolated manner. <div class="alert is-important"> `ViewEncapsulation.ShadowDom` only works on browsers that have built-in support for the shadow DOM \(see [Can I use - Shadow DOM v1](https://caniuse.com/shadowdomv1)\). Not all browsers support it, which is why the `ViewEncapsulation.Emulated` is the recommended and default mode. </div> |
-| `ViewEncapsulation.Emulated`  | Angular modifies the component's CSS selectors so that they are only applied to the component's view and do not affect other elements in the application, *emulating* Shadow DOM behavior. For more details, see [Inspecting generated CSS](guide/view-encapsulation#inspect-generated-css).                                                                                                                                                                                                                                                                                                           |
-| `ViewEncapsulation.None`      | Angular does not apply any sort of view encapsulation meaning that any styles specified for the component are actually globally applied and can affect any HTML element present within the application. This mode is essentially the same as including the styles into the HTML itself.                                                                                                                                                                                                                                                                                                                   |
+| `ViewEncapsulation.ShadowDom` | Angular uses the browser's built-in [Shadow DOM API](https://developer.mozilla.org/docs/Web/Web_Components/Shadow_DOM) to enclose the component's view inside a ShadowRoot, used as the component's host element, and apply the provided styles in an isolated manner. |
+| `ViewEncapsulation.Emulated`  | Angular modifies the component's CSS selectors so that they are only applied to the component's view and do not affect other elements in the application, *emulating* Shadow DOM behavior. For more details, see [Inspecting generated CSS](guide/view-encapsulation#inspect-generated-css). |
+| `ViewEncapsulation.None`      | Angular does not apply any sort of view encapsulation meaning that any styles specified for the component are actually globally applied and can affect any HTML element present within the application. This mode is essentially the same as including the styles into the HTML itself. |
 
 <a id="inspect-generated-css"></a>
 
@@ -166,4 +166,4 @@ The result is that the `<h2>` element in the `NoEncapsulationComponent` is color
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-04-21
