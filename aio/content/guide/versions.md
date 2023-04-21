@@ -4,7 +4,7 @@ The following tables describe the versions of Node.js, TypeScript, and RxJS that
 
 ## Actively supported versions
 
-This table covers [Angular versions under long-term support (LTS)](guide/releases#actively-supported-versions).
+This table covers [Angular versions under active support](guide/releases#actively-supported-versions).
 
 | Angular            | Node.js                              | TypeScript     | RxJS               |
 | ------------------ | ------------------------------------ | -------------- | ------------------ |
