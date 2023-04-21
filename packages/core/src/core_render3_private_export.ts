@@ -16,24 +16,23 @@ export {
   isBoundToModule as ɵisBoundToModule
 } from './application_ref';
 export {
-  injectChangeDetectorRef as ɵinjectChangeDetectorRef,
+  injectChangeDetectorRef as ɵinjectChangeDetectorRef
 } from './change_detection/change_detector_ref';
 export {
-  getDebugNode as ɵgetDebugNode,
+  getDebugNode as ɵgetDebugNode
 } from './debug/debug_node';
+export { createInjector as ɵcreateInjector } from './di/create_injector';
 export {
   NG_INJ_DEF as ɵNG_INJ_DEF,
   NG_PROV_DEF as ɵNG_PROV_DEF,
-  isInjectable as ɵisInjectable,
+  isInjectable as ɵisInjectable
 } from './di/interface/defs';
-export {createInjector as ɵcreateInjector} from './di/create_injector';
 export {
-  registerNgModuleType as ɵɵregisterNgModuleType,
-  setAllowDuplicateNgModuleIdsForTest as ɵsetAllowDuplicateNgModuleIdsForTest,
+  setAllowDuplicateNgModuleIdsForTest as ɵsetAllowDuplicateNgModuleIdsForTest, registerNgModuleType as ɵɵregisterNgModuleType
 } from './linker/ng_module_registration';
 export {
   NgModuleDef as ɵNgModuleDef,
-  NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
+  NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes
 } from './metadata/ng_module_def';
 export {
   getLContext as ɵgetLContext
@@ -43,31 +42,17 @@ export {
   NG_DIR_DEF as ɵNG_DIR_DEF,
   NG_ELEMENT_ID as ɵNG_ELEMENT_ID,
   NG_MOD_DEF as ɵNG_MOD_DEF,
-  NG_PIPE_DEF as ɵNG_PIPE_DEF,
+  NG_PIPE_DEF as ɵNG_PIPE_DEF
 } from './render3/fields';
 export {
   AttributeMarker as ɵAttributeMarker,
-  ComponentDef as ɵComponentDef,
-  ComponentFactory as ɵRender3ComponentFactory,
-  ComponentRef as ɵRender3ComponentRef,
-  ComponentType as ɵComponentType,
-  CssSelectorList as ɵCssSelectorList,
-  detectChanges as ɵdetectChanges,
-  DirectiveDef as ɵDirectiveDef,
-  DirectiveType as ɵDirectiveType,
-  getDirectives as ɵgetDirectives,
-  getHostElement as ɵgetHostElement,
-  LifecycleHooksFeature as ɵLifecycleHooksFeature,
-  NgModuleFactory as ɵNgModuleFactory,
-  NgModuleRef as ɵRender3NgModuleRef,
-  NgModuleType as ɵNgModuleType,
-  NO_CHANGE as ɵNO_CHANGE,
-  PipeDef as ɵPipeDef,
-  RenderFlags as ɵRenderFlags,
-  setClassMetadata as ɵsetClassMetadata,
-  setLocaleId as ɵsetLocaleId,
-  store as ɵstore,
-  ɵɵadvance,
+  ComponentDef as ɵComponentDef, ComponentType as ɵComponentType,
+  CssSelectorList as ɵCssSelectorList, DirectiveDef as ɵDirectiveDef,
+  DirectiveType as ɵDirectiveType, LifecycleHooksFeature as ɵLifecycleHooksFeature, NO_CHANGE as ɵNO_CHANGE, NgModuleFactory as ɵNgModuleFactory, NgModuleType as ɵNgModuleType, PipeDef as ɵPipeDef, ComponentFactory as ɵRender3ComponentFactory,
+  ComponentRef as ɵRender3ComponentRef, NgModuleRef as ɵRender3NgModuleRef, RenderFlags as ɵRenderFlags, detectChanges as ɵdetectChanges, getDirectives as ɵgetDirectives,
+  getHostElement as ɵgetHostElement, ɵgetUnknownElementStrictMode, ɵgetUnknownPropertyStrictMode, setClassMetadata as ɵsetClassMetadata,
+  setLocaleId as ɵsetLocaleId, ɵsetUnknownElementStrictMode, ɵsetUnknownPropertyStrictMode, ɵɵComponentDeclaration, ɵɵCopyDefinitionFeature, ɵɵDirectiveDeclaration, ɵɵFactoryDeclaration, ɵɵHostDirectivesFeature, ɵɵInheritDefinitionFeature, ɵɵInjectorDeclaration, ɵɵNgModuleDeclaration,
+  ɵɵNgOnChangesFeature, ɵɵPipeDeclaration, ɵɵProvidersFeature, ɵɵStandaloneFeature, ɵɵadvance,
   ɵɵattribute,
   ɵɵattributeInterpolate1,
   ɵɵattributeInterpolate2,
@@ -88,16 +73,10 @@ export {
   ɵɵclassMapInterpolate7,
   ɵɵclassMapInterpolate8,
   ɵɵclassMapInterpolateV,
-  ɵɵclassProp,
-  ɵɵComponentDeclaration,
-  ɵɵcontentQuery,
-  ɵɵCopyDefinitionFeature,
-  ɵɵdefineComponent,
+  ɵɵclassProp, ɵɵcontentQuery, ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefineNgModule,
-  ɵɵdefinePipe,
-  ɵɵDirectiveDeclaration,
-  ɵɵdirectiveInject,
+  ɵɵdefinePipe, ɵɵdirectiveInject,
   ɵɵdisableBindings,
   ɵɵelement,
   ɵɵelementContainer,
@@ -105,9 +84,7 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementEnd,
   ɵɵelementStart,
-  ɵɵenableBindings,
-  ɵɵFactoryDeclaration,
-  ɵɵgetCurrentView,
+  ɵɵenableBindings, ɵɵgetCurrentView,
   ɵɵgetInheritedFactory,
   ɵɵhostProperty,
   ɵɵi18n,
@@ -116,27 +93,18 @@ export {
   ɵɵi18nEnd,
   ɵɵi18nExp,
   ɵɵi18nPostprocess,
-  ɵɵi18nStart,
-  ɵɵInheritDefinitionFeature,
-  ɵɵinjectAttribute,
-  ɵɵInjectorDeclaration,
-  ɵɵinvalidFactory,
+  ɵɵi18nStart, ɵɵinjectAttribute, ɵɵinvalidFactory,
   ɵɵlistener,
   ɵɵloadQuery,
   ɵɵnamespaceHTML,
   ɵɵnamespaceMathML,
   ɵɵnamespaceSVG,
-  ɵɵnextContext,
-  ɵɵNgModuleDeclaration,
-  ɵɵNgOnChangesFeature,
-  ɵɵpipe,
+  ɵɵnextContext, ɵɵpipe,
   ɵɵpipeBind1,
   ɵɵpipeBind2,
   ɵɵpipeBind3,
   ɵɵpipeBind4,
-  ɵɵpipeBindV,
-  ɵɵPipeDeclaration,
-  ɵɵprojection,
+  ɵɵpipeBindV, ɵɵprojection,
   ɵɵprojectionDef,
   ɵɵproperty,
   ɵɵpropertyInterpolate,
@@ -148,10 +116,7 @@ export {
   ɵɵpropertyInterpolate6,
   ɵɵpropertyInterpolate7,
   ɵɵpropertyInterpolate8,
-  ɵɵpropertyInterpolateV,
-  ɵɵProvidersFeature,
-  ɵɵHostDirectivesFeature,
-  ɵɵpureFunction0,
+  ɵɵpropertyInterpolateV, ɵɵpureFunction0,
   ɵɵpureFunction1,
   ɵɵpureFunction2,
   ɵɵpureFunction3,
@@ -170,9 +135,7 @@ export {
   ɵɵrestoreView,
 
   ɵɵsetComponentScope,
-  ɵɵsetNgModuleScope,
-  ɵɵStandaloneFeature,
-  ɵɵstyleMap,
+  ɵɵsetNgModuleScope, ɵɵstyleMap,
   ɵɵstyleMapInterpolate1,
   ɵɵstyleMapInterpolate2,
   ɵɵstyleMapInterpolate3,
@@ -207,24 +170,20 @@ export {
   ɵɵtextInterpolate7,
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
-  ɵɵviewQuery,
-  ɵgetUnknownElementStrictMode,
-  ɵsetUnknownElementStrictMode,
-  ɵgetUnknownPropertyStrictMode,
-  ɵsetUnknownPropertyStrictMode
+  ɵɵviewQuery
 } from './render3/index';
 export {
-  LContext as ɵLContext,
+  LContext as ɵLContext
 } from './render3/interfaces/context';
 export {
   setDocument as ɵsetDocument
 } from './render3/interfaces/document';
 export {
   compileComponent as ɵcompileComponent,
-  compileDirective as ɵcompileDirective,
+  compileDirective as ɵcompileDirective
 } from './render3/jit/directive';
 export {
-  resetJitOptions as ɵresetJitOptions,
+  resetJitOptions as ɵresetJitOptions
 } from './render3/jit/jit_options';
 export {
   compileNgModule as ɵcompileNgModule,
@@ -232,7 +191,7 @@ export {
   flushModuleScopingQueueAsMuchAsPossible as ɵflushModuleScopingQueueAsMuchAsPossible,
   patchComponentDefWithScope as ɵpatchComponentDefWithScope,
   resetCompiledComponents as ɵresetCompiledComponents,
-  transitiveScopesFor as ɵtransitiveScopesFor,
+  transitiveScopesFor as ɵtransitiveScopesFor
 } from './render3/jit/module';
 export {
   FactoryTarget as ɵɵFactoryTarget,
@@ -243,27 +202,31 @@ export {
   ɵɵngDeclareInjectable,
   ɵɵngDeclareInjector,
   ɵɵngDeclareNgModule,
-  ɵɵngDeclarePipe,
+  ɵɵngDeclarePipe
 } from './render3/jit/partial';
 export {
-  compilePipe as ɵcompilePipe,
+  compilePipe as ɵcompilePipe
 } from './render3/jit/pipe';
 export {
   isNgModule as ɵisNgModule
 } from './render3/jit/util';
 export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler';
 export {
-  publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
-,
-  publishGlobalUtil as ɵpublishGlobalUtil} from './render3/util/global_utils';
-export {ViewRef as ɵViewRef} from './render3/view_ref';
+  publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils,
+
+  publishGlobalUtil as ɵpublishGlobalUtil
+} from './render3/util/global_utils';
+export { ViewRef as ɵViewRef } from './render3/view_ref';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
   bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,
   bypassSanitizationTrustScript as ɵbypassSanitizationTrustScript,
   bypassSanitizationTrustStyle as ɵbypassSanitizationTrustStyle,
-  bypassSanitizationTrustUrl as ɵbypassSanitizationTrustUrl,
+  bypassSanitizationTrustUrl as ɵbypassSanitizationTrustUrl
 } from './sanitization/bypass';
+export {
+  ɵɵvalidateIframeAttribute
+} from './sanitization/iframe_attrs_validation';
 export {
   ɵɵsanitizeHtml,
   ɵɵsanitizeResourceUrl,
@@ -272,13 +235,10 @@ export {
   ɵɵsanitizeUrl,
   ɵɵsanitizeUrlOrResourceUrl,
   ɵɵtrustConstantHtml,
-  ɵɵtrustConstantResourceUrl,
+  ɵɵtrustConstantResourceUrl
 } from './sanitization/sanitization';
 export {
-  ɵɵvalidateIframeAttribute,
-} from './sanitization/iframe_attrs_validation';
-export {
-  noSideEffects as ɵnoSideEffects,
+  noSideEffects as ɵnoSideEffects
 } from './util/closure';
 
 

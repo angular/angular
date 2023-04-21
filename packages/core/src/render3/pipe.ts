@@ -13,14 +13,24 @@ import {Type} from '../interface/type';
 
 import {getFactoryDef} from './definition_factory';
 import {setIncludeViewProviders} from './di';
-import {store, ɵɵdirectiveInject} from './instructions/all';
+import {ɵɵdirectiveInject} from './instructions/all';
 import {isHostComponentStandalone} from './instructions/element_validation';
 import {PipeDef, PipeDefList} from './interfaces/definition';
-import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
+import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW, TView} from './interfaces/view';
 import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
 import {getBindingRoot, getLView, getTView} from './state';
 import {load} from './util/view_utils';
 
+/** Store a value in the `data` at a given `index`. */
+function store<T>(tView: TView, lView: LView, index: number, value: T): void {
+  // We don't store any static data for local variables, so the first time
+  // we see the template, we should store as null to avoid a sparse array
+  if (index >= tView.data.length) {
+    tView.data[index] = null;
+    tView.blueprint[index] = null;
+  }
+  lView[index] = value;
+}
 
 
 /**

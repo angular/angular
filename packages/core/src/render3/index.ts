@@ -23,9 +23,7 @@ export {ɵɵgetInheritedFactory} from './di';
 export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 // clang-format off
 export {
-  detectChanges,
-  store,
-  ɵɵadvance,
+  detectChanges, ɵgetUnknownElementStrictMode, ɵgetUnknownPropertyStrictMode, ɵsetUnknownElementStrictMode, ɵsetUnknownPropertyStrictMode, ɵɵadvance,
 
   ɵɵattribute,
   ɵɵattributeInterpolate1,
@@ -127,29 +125,25 @@ export {
   ɵɵtextInterpolate6,
   ɵɵtextInterpolate7,
   ɵɵtextInterpolate8,
-  ɵɵtextInterpolateV,
-  ɵgetUnknownElementStrictMode,
-  ɵsetUnknownElementStrictMode,
-  ɵgetUnknownPropertyStrictMode,
-  ɵsetUnknownPropertyStrictMode
+  ɵɵtextInterpolateV
 } from './instructions/all';
-export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵɵi18nPostprocess, ɵɵi18nStart} from './instructions/i18n';
-export {RenderFlags} from './interfaces/definition';
+export { ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp, ɵɵi18nPostprocess, ɵɵi18nStart } from './instructions/i18n';
+export { RenderFlags } from './interfaces/definition';
 export {
   AttributeMarker
 } from './interfaces/node';
-export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
+export { CssSelectorList, ProjectionSlots } from './interfaces/projection';
 export {
-  setClassMetadata,
+  setClassMetadata
 } from './metadata';
-export {NgModuleFactory, NgModuleRef, createEnvironmentInjector} from './ng_module_ref';
+export { NgModuleFactory, NgModuleRef, createEnvironmentInjector } from './ng_module_ref';
 export {
   ɵɵpipe,
   ɵɵpipeBind1,
   ɵɵpipeBind2,
   ɵɵpipeBind3,
   ɵɵpipeBind4,
-  ɵɵpipeBindV,
+  ɵɵpipeBindV
 } from './pipe';
 export {
   ɵɵpureFunction0,
@@ -161,25 +155,25 @@ export {
   ɵɵpureFunction6,
   ɵɵpureFunction7,
   ɵɵpureFunction8,
-  ɵɵpureFunctionV,
+  ɵɵpureFunctionV
 } from './pure_function';
 export {
   ɵɵcontentQuery,
   ɵɵloadQuery,
   ɵɵqueryRefresh,
-  ɵɵviewQuery} from './query';
+  ɵɵviewQuery
+} from './query';
 export {
   ɵɵdisableBindings,
 
   ɵɵenableBindings,
   ɵɵresetView,
-  ɵɵrestoreView,
+  ɵɵrestoreView
 } from './state';
-export {NO_CHANGE} from './tokens';
-export { ɵɵresolveBody, ɵɵresolveDocument,ɵɵresolveWindow} from './util/misc_utils';
-export { ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
+export { NO_CHANGE } from './tokens';
+export { ɵɵresolveBody, ɵɵresolveDocument, ɵɵresolveWindow } from './util/misc_utils';
+export { ɵɵtemplateRefExtractor } from './view_engine_compatibility_prebound';
 // clang-format on
-
 export {
   ComponentDebugMetadata,
   ComponentDef,
