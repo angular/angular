@@ -169,7 +169,7 @@ export function invalidSkipHydrationHost(rNode: RNode): Error {
       'that doesn\'t act as a component host. Hydration can be ' +
       'skipped only on per-component basis.\n\n';
   const actual = `${describeDomFromNode(rNode)}\n\n`;
-  const footer = 'Please move the `ngSkipHydration` attribute to the component host element.';
+  const footer = 'Please move the `ngSkipHydration` attribute to the component host element.\n\n';
   const message = header + actual + footer;
   return new RuntimeError(RuntimeErrorCode.INVALID_SKIP_HYDRATION_HOST, message);
 }
@@ -366,7 +366,7 @@ function getHydrationErrorFooter(componentClassName?: string): string {
   return `To fix this problem:\n` +
       `  * check ${componentInfo} component for hydration-related issues\n` +
       `  * or skip hydration by adding the \`ngSkipHydration\` attribute ` +
-      `to its host node in a template`;
+      `to its host node in a template\n\n`;
 }
 
 /**
