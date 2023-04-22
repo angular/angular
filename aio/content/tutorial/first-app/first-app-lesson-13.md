@@ -94,7 +94,7 @@ If you are having any trouble with this lesson, you can review the completed cod
 
 ## Next steps
 
-*  [Lesson 14 - Add the search feature to your application](tutorial/first-app/first-app-lesson-14)
+*  [Lesson 14 - Add HTTP communication to your app](tutorial/first-app/first-app-lesson-14)
 
 ## More information
 
