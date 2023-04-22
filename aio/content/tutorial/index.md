@@ -2,8 +2,13 @@
 
 This section contains tutorials to help you get started developing applications with Angular.
 
-## Tour of heroes
+## First App Tutorial - Angular Homes
+[First App Tutorial - Angular Homes](tutorial/first-app) gets you started with Angular
+The First App tutorial guides you through building an Angular app by taking you step by step through the fundamentals of building an application in Angular.
 
+Learn how to use Standalone Components, Inputs, Angular templates, data binding and more.
+
+## Tour of Heroes
 [Tour of Heroes](tutorial/tour-of-heroes) helps you gain confidence that Angular can do whatever you need it to do by showing you how to:
 
 *   Use Angular [directives](guide/glossary#directive "Directives definition") to show and hide elements and display lists of hero data.
