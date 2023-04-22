@@ -907,6 +907,11 @@
               "url": "tutorial/first-app/first-app-lesson-13",
               "title": "Add search functionality",
               "tooltip": "Add search functionality to your app"
+            },
+            {
+              "url": "tutorial/first-app/first-app-lesson-14",
+              "title": "Add HTTP communication",
+              "tooltip": "Add HTTP communication to your app"
             }
           ]
         },
