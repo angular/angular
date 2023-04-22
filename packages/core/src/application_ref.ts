@@ -190,6 +190,7 @@ function createOrReusePlatformInjector(providers: StaticProvider[] = []): Inject
   const injector = createPlatformInjector(providers);
   _platformInjector = injector;
   publishDefaultGlobalUtils();
+  publishSignalConfiguration();
   runPlatformInitializers(injector);
   return injector;
 }
