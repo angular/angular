@@ -275,7 +275,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_java
       - run:
           # We need to explicitly specify the --symlink_prefix option because otherwise we would
           # not be able to easily find the output bin directory when uploading artifacts for size
