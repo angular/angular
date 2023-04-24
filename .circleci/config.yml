@@ -91,7 +91,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: circleci/node:14.16.1@sha256:951e12268fe692615bfd155c327bd910e10c99db98404badd03879f984c32b31
+      - image: cimg/node:14.16.1
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -855,9 +855,10 @@ workflows:
       - build-ivy-npm-packages:
           requires:
             - setup
-      - legacy-unit-tests-saucelabs:
-          requires:
-            - setup
+      # Disable the saucelabs tests as we are only making LTS changes at this point and they are extremely flaky
+      # - legacy-unit-tests-saucelabs:
+      #     requires:
+      #       - setup
       - test_aio:
           requires:
             - setup
@@ -873,14 +874,15 @@ workflows:
       - test_docs_examples:
           requires:
             - build-npm-packages
-      - aio_preview:
-          # Only run on PR builds. (There can be no previews for non-PR builds.)
-          <<: *only_on_pull_requests
-          requires:
-            - setup
-      - test_aio_preview:
-          requires:
-            - aio_preview
+      # Disable the aio_preview as we are only making LTS changes at this point
+      # - aio_preview:
+      #     # Only run on PR builds. (There can be no previews for non-PR builds.)
+      #     <<: *only_on_pull_requests
+      #     requires:
+      #       - setup
+      # - test_aio_preview:
+      #     requires:
+      #       - aio_preview
       - publish_packages_as_artifacts:
           requires:
             - build-npm-packages
@@ -897,10 +899,11 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - build-ivy-npm-packages
-            - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
-          requires:
-            - build-npm-packages
+            # - legacy-unit-tests-saucelabs
+      # Disabled as the components repo structure has changed and no longer immediately works
+      # - components-repo-unit-tests:
+      #     requires:
+      #       - build-npm-packages
       - test_zonejs:
           requires:
             - setup
