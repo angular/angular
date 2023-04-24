@@ -185,8 +185,12 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
             hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation, rootViewInjector) :
         createElementNode(hostRenderer, elementName, getNamespace(elementName));
 
-    const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
-                                                 LViewFlags.CheckAlways | LViewFlags.IsRoot;
+    // Signal components use the granular "RefreshView"  for change detection
+    const signalFlags = (LViewFlags.SignalView | LViewFlags.IsRoot);
+    // Non-signal components use the traditional "CheckAlways or OnPush/Dirty" change detection
+    const nonSignalFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
+                                                      LViewFlags.CheckAlways | LViewFlags.IsRoot;
+    const rootFlags = this.componentDef.signals ? signalFlags : nonSignalFlags;
 
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootTView =
@@ -369,10 +373,15 @@ function createRootComponentView(
     hydrationInfo = retrieveHydrationInfo(hostRNode, rootView[INJECTOR]!);
   }
   const viewRenderer = environment.rendererFactory.createRenderer(hostRNode, rootComponentDef);
+  let lViewFlags = LViewFlags.CheckAlways;
+  if (rootComponentDef.signals) {
+    lViewFlags = LViewFlags.SignalView;
+  } else if (rootComponentDef.onPush) {
+    lViewFlags = LViewFlags.Dirty;
+  }
   const componentView = createLView(
-      rootView, getOrCreateComponentTView(rootComponentDef), null,
-      rootComponentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[tNode.index],
-      tNode, environment, viewRenderer, null, null, hydrationInfo);
+      rootView, getOrCreateComponentTView(rootComponentDef), null, lViewFlags,
+      rootView[tNode.index], tNode, environment, viewRenderer, null, null, hydrationInfo);
 
   if (tView.firstCreatePass) {
     markAsComponentHost(tView, tNode, rootDirectives.length - 1);

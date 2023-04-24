@@ -427,18 +427,21 @@ export const enum LViewFlags {
   /** Indicates that the view **or any of its ancestors** have an embedded view injector. */
   HasEmbeddedViewInjector = 1 << 11,
 
+  /** Indicates that the view was created with `signals: true`. */
+  SignalView = 1 << 12,
+
   /**
    * Index of the current init phase on last 21 bits
    */
-  IndexWithinInitPhaseIncrementer = 1 << 12,
+  IndexWithinInitPhaseIncrementer = 1 << 13,
   /**
    * This is the count of the bits the 1 was shifted above (base 10)
    */
-  IndexWithinInitPhaseShift = 12,
+  IndexWithinInitPhaseShift = 13,
 
   // Subtracting 1 gives all 1s to the right of the initial shift
   // So `(1 << 3) - 1` would give 3 1s: 1 << 3 = 0b01000, subtract 1 = 0b00111
-  IndexWithinInitPhaseReset = (1 << 12) - 1,
+  IndexWithinInitPhaseReset = (1 << 13) - 1,
 }
 
 /**

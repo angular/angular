@@ -1226,12 +1226,17 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
   const rendererFactory = lView[ENVIRONMENT].rendererFactory;
+  let lViewFlags = LViewFlags.CheckAlways;
+  if (def.signals) {
+    lViewFlags = LViewFlags.SignalView;
+  } else if (def.onPush) {
+    lViewFlags = LViewFlags.Dirty;
+  }
   const componentView = addToViewTree(
       lView,
       createLView(
-          lView, tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, native,
-          hostTNode as TElementNode, null, rendererFactory.createRenderer(native, def), null, null,
-          null));
+          lView, tView, null, lViewFlags, native, hostTNode as TElementNode, null,
+          rendererFactory.createRenderer(native, def), null, null, null));
 
   // Component view will always be created before any injected LContainers,
   // so this is a regular element, wrap it with the component view

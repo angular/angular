@@ -12,7 +12,7 @@ import {assertLContainer} from '../render3/assert';
 import {renderView} from '../render3/instructions/render';
 import {createLView} from '../render3/instructions/shared';
 import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
-import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view';
+import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {ViewRef as R3_ViewRef} from '../render3/view_ref';
 import {assertDefined} from '../util/assert';
@@ -121,10 +121,13 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
   override createEmbeddedViewImpl(
       context: T, injector?: Injector,
       hydrationInfo?: DehydratedContainerView|null): EmbeddedViewRef<T> {
+    // Embedded views follow the change detection strategy of the view they're declared in.
+    const isSignalView = this._declarationLView[FLAGS] & LViewFlags.SignalView;
+    const viewFlags = isSignalView ? LViewFlags.SignalView : LViewFlags.CheckAlways;
     const embeddedTView = this._declarationTContainer.tView as TView;
     const embeddedLView = createLView(
-        this._declarationLView, embeddedTView, context, LViewFlags.CheckAlways, null,
-        embeddedTView.declTNode, null, null, null, injector || null, hydrationInfo || null);
+        this._declarationLView, embeddedTView, context, viewFlags, null, embeddedTView.declTNode,
+        null, null, null, injector || null, hydrationInfo || null);
 
     const declarationLContainer = this._declarationLView[this._declarationTContainer.index];
     ngDevMode && assertLContainer(declarationLContainer);
