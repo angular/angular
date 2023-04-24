@@ -23,6 +23,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     BOOTSTRAP_COMPONENTS_NOT_FOUND = -403,
     // (undocumented)
+    COMPONENT_ID_COLLISION = -912,
+    // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
     DUPLICATE_DIRECTITVE = 309,

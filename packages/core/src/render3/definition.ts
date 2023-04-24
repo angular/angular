@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {Mutable, Type} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
@@ -716,13 +717,13 @@ function getComponentId(componentDef: ComponentDef<unknown>): string {
     if (GENERATED_COMP_IDS.has(compId)) {
       const previousCompDefType = GENERATED_COMP_IDS.get(compId)!;
       if (previousCompDefType !== componentDef.type) {
-        // TODO: use `formatRuntimeError` to have an error code and we can later on create an error
-        // guide to explain this further.
-        console.warn(`Component ID generation collision detected. Components '${
-            previousCompDefType.name}' and '${componentDef.type.name}' with selector '${
-            stringifyCSSSelectorList(
-                componentDef
-                    .selectors)}' generated the same component ID. To fix this, you can change the selector of one of those components or add an extra host attribute to force a different ID.`);
+        console.warn(formatRuntimeError(
+            RuntimeErrorCode.COMPONENT_ID_COLLISION,
+            `Component ID generation collision detected. Components '${
+                previousCompDefType.name}' and '${componentDef.type.name}' with selector '${
+                stringifyCSSSelectorList(
+                    componentDef
+                        .selectors)}' generated the same component ID. To fix this, you can change the selector of one of those components or add an extra host attribute to force a different ID.`));
       }
     } else {
       GENERATED_COMP_IDS.set(compId, componentDef.type);
