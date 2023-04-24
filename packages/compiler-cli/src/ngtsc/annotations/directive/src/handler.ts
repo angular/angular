@@ -155,6 +155,7 @@ export class DirectiveDecoratorHandler implements
       isStructural: analysis.isStructural,
       animationTriggerNames: null,
       isStandalone: analysis.meta.isStandalone,
+      isSignal: analysis.meta.isSignal,
       imports: null,
       schemas: null,
       decorator: analysis.decorator,

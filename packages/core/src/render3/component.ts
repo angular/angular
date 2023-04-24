@@ -120,6 +120,11 @@ export interface ComponentMirror<C> {
    * Note: an extra flag, not present in `ComponentFactory`.
    */
   get isStandalone(): boolean;
+  /**
+   * // TODO(signals): Remove internal and add public documentation
+   * @internal
+   */
+  get isSignal(): boolean;
 }
 
 /**
@@ -184,6 +189,9 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|
     },
     get isStandalone(): boolean {
       return componentDef.standalone;
+    },
+    get isSignal(): boolean {
+      return componentDef.signals;
     },
   };
 }

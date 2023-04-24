@@ -70,6 +70,7 @@ export function toR3DirectiveMeta<TExpression>(
     name: typeName,
     usesInheritance: metaObj.has('usesInheritance') ? metaObj.getBoolean('usesInheritance') : false,
     isStandalone: metaObj.has('isStandalone') ? metaObj.getBoolean('isStandalone') : false,
+    isSignal: metaObj.has('isSignal') ? metaObj.getBoolean('isSignal') : false,
     hostDirectives: metaObj.has('hostDirectives') ?
         toHostDirectivesMetadata(metaObj.getValue('hostDirectives')) :
         null,

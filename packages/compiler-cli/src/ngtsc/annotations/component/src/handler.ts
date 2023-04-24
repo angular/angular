@@ -499,6 +499,7 @@ export class ComponentDecoratorHandler implements
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
       isStandalone: analysis.meta.isStandalone,
+      isSignal: analysis.meta.isSignal,
       imports: analysis.resolvedImports,
       animationTriggerNames: analysis.animationTriggerNames,
       schemas: analysis.schemas,

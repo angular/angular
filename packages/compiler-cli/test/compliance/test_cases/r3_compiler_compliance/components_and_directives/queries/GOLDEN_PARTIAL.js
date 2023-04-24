@@ -21,7 +21,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never, false>;
 }
 
 /****************************************************************************************************
@@ -74,7 +74,7 @@ export declare class ViewQueryComponent {
     someDir: SomeDirective;
     someDirs: QueryList<SomeDirective>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ViewQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -156,15 +156,15 @@ export declare class ViewQueryComponent {
     someDir: SomeDirective;
     someDirList: QueryList<SomeDirective>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ViewQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never, false>;
 }
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -221,7 +221,7 @@ export declare class ViewQueryComponent {
     myRef: any;
     myRefs: QueryList<any>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ViewQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -252,7 +252,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never, false>;
 }
 
 /****************************************************************************************************
@@ -305,7 +305,7 @@ export declare class ViewQueryComponent {
     someDir: SomeDirective;
     foo: ElementRef;
     static ɵfac: i0.ɵɵFactoryDeclaration<ViewQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -336,7 +336,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never, false>;
 }
 
 /****************************************************************************************************
@@ -399,7 +399,7 @@ export declare class ViewQueryComponent {
     someDir: ElementRef;
     someDirs: QueryList<TemplateRef<unknown>>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ViewQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ViewQueryComponent, "view-query-component", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -430,7 +430,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never, false>;
 }
 
 /****************************************************************************************************
@@ -503,11 +503,11 @@ export declare class ContentQueryComponent {
     someDir: SomeDirective;
     someDirList: QueryList<SomeDirective>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ContentQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["someDir", "someDirList"], ["*"], false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["someDir", "someDirList"], ["*"], false, never, false>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -593,15 +593,15 @@ export declare class ContentQueryComponent {
     someDir: SomeDirective;
     someDirList: QueryList<SomeDirective>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ContentQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["someDir", "someDirList"], ["*"], false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["someDir", "someDirList"], ["*"], false, never, false>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never, false>;
 }
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -658,7 +658,7 @@ export declare class ContentQueryComponent {
     myRef: any;
     myRefs: QueryList<any>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ContentQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["myRef", "myRefs"], never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["myRef", "myRefs"], never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -689,7 +689,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never, false>;
 }
 
 /****************************************************************************************************
@@ -762,11 +762,11 @@ export declare class ContentQueryComponent {
     someDir: SomeDirective;
     foo: ElementRef;
     static ɵfac: i0.ɵɵFactoryDeclaration<ContentQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["someDir", "foo"], ["*"], false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["someDir", "foo"], ["*"], false, never, false>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -797,7 +797,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never, false>;
 }
 
 /****************************************************************************************************
@@ -860,7 +860,7 @@ export declare class ContentQueryComponent {
     someDir: ElementRef;
     someDirs: QueryList<TemplateRef<unknown>>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ContentQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["myRef", "someDir", "myRefs", "someDirs"], never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["myRef", "someDir", "myRefs", "someDirs"], never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -891,7 +891,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDir]", never, {}, {}, never, never, false, never, false>;
 }
 
 /****************************************************************************************************
@@ -952,7 +952,7 @@ export declare class ContentQueryComponent {
     someDirs: QueryList<any>;
     oldSomeDirs: QueryList<any>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ContentQueryComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["myRefs", "oldMyRefs"], never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ContentQueryComponent, "content-query-component", never, {}, {}, ["myRefs", "oldMyRefs"], never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;

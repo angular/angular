@@ -54,6 +54,9 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
   if (meta.isStandalone) {
     definitionMap.set('isStandalone', o.literal(meta.isStandalone));
   }
+  if (meta.isSignal) {
+    definitionMap.set('isSignal', o.literal(meta.isSignal));
+  }
 
   // e.g. `selector: 'some-dir'`
   if (meta.selector !== null) {

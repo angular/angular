@@ -173,6 +173,7 @@ export interface R3DirectiveMetadataFacade {
   viewQueries: R3QueryMetadataFacade[];
   isStandalone: boolean;
   hostDirectives: R3HostDirectiveMetadataFacade[]|null;
+  isSignal: boolean;
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
@@ -206,6 +207,7 @@ export interface R3DeclareDirectiveFacade {
   usesInheritance?: boolean;
   usesOnChanges?: boolean;
   isStandalone?: boolean;
+  isSignal?: boolean;
   hostDirectives?: R3HostDirectiveMetadataFacade[]|null;
 }
 

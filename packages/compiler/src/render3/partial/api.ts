@@ -120,6 +120,11 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
   isStandalone?: boolean;
 
   /**
+   * Whether the directive is a signal-based directive. Defaults to false.
+   */
+  isSignal?: boolean;
+
+  /**
    * Additional directives applied to the directive host.
    */
   hostDirectives?: R3DeclareHostDirectiveMetadata[];

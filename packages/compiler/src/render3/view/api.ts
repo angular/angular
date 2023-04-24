@@ -115,6 +115,11 @@ export interface R3DirectiveMetadata {
   isStandalone: boolean;
 
   /**
+   * Whether or not the component or directive is signal-based.
+   */
+  isSignal: boolean;
+
+  /**
    * Additional directives applied to the directive host.
    */
   hostDirectives: R3HostDirectiveMetadata[]|null;

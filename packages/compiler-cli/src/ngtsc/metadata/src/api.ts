@@ -185,6 +185,11 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   isStandalone: boolean;
 
   /**
+   * Whether the directive is a signal entity.
+   */
+  isSignal: boolean;
+
+  /**
    * For standalone components, the list of imported types.
    */
   imports: Reference<ClassDeclaration>[]|null;

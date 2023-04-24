@@ -84,6 +84,9 @@ function baseDirectiveFields(
   if (meta.isStandalone) {
     definitionMap.set('standalone', o.literal(true));
   }
+  if (meta.isSignal) {
+    definitionMap.set('signals', o.literal(true));
+  }
 
   return definitionMap;
 }
@@ -302,6 +305,7 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
+  typeParams.push(o.expressionType(o.literal(meta.isSignal)));
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -483,6 +487,7 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   typeParams.push(o.NONE_TYPE);
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
+  typeParams.push(o.expressionType(o.literal(meta.isSignal)));
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 
