@@ -337,6 +337,9 @@ export interface Directive {
    */
   standalone?: boolean;
 
+  /** @internal */
+  signals?: boolean;
+
   /**
    * Standalone directives that should be applied to the host whenever the directive is matched.
    * By default, none of the inputs or outputs of the host directives will be available on the host,
@@ -620,6 +623,9 @@ export interface Component extends Directive {
    * guide](guide/standalone-components).
    */
   standalone?: boolean;
+
+  /** @internal */
+  signals?: boolean;
 
   /**
    * The imports property specifies the standalone component's template dependencies — those

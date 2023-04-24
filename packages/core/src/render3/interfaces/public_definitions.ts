@@ -28,7 +28,8 @@ export type ɵɵDirectiveDeclaration<
   // Optional as this was added in Angular v14. All pre-existing directives
   // are not standalone.
   IsStandalone extends boolean = false,
-  HostDirectives = never> = unknown;
+  HostDirectives = never,
+  IsSignal extends boolean = false> = unknown;
 
 /**
  * @publicApi
@@ -45,7 +46,8 @@ export type ɵɵComponentDeclaration<
   // Optional as this was added in Angular v14. All pre-existing components
   // are not standalone.
   IsStandalone extends boolean = false,
-  HostDirectives = never> = unknown;
+  HostDirectives = never,
+  IsSignal extends boolean = false> = unknown;
 
 /**
  * @publicApi

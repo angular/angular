@@ -114,6 +114,8 @@ export interface R3DirectiveMetadata {
    */
   isStandalone: boolean;
 
+  isSignal: boolean;
+
   /**
    * Additional directives applied to the directive host.
    */

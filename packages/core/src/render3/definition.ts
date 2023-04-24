@@ -162,6 +162,8 @@ interface DirectiveDefinition<T> {
    * Whether this directive/component is standalone.
    */
   standalone?: boolean;
+
+  signals?: boolean;
 }
 
 interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'> {
@@ -303,6 +305,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<
       pipeDefs: null!,       // assigned in noSideEffects
       dependencies: baseDef.standalone && componentDefinition.dependencies || null,
       getStandaloneInjector: null,
+      signals: componentDefinition.signals ?? false,
       data: componentDefinition.data || {},
       encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
       styles: componentDefinition.styles || EMPTY_ARRAY,
@@ -621,6 +624,7 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
     declaredInputs,
     exportAs: directiveDefinition.exportAs || null,
     standalone: directiveDefinition.standalone === true,
+    signals: directiveDefinition.signals === true,
     selectors: directiveDefinition.selectors || EMPTY_ARRAY,
     viewQuery: directiveDefinition.viewQuery || null,
     features: directiveDefinition.features || null,

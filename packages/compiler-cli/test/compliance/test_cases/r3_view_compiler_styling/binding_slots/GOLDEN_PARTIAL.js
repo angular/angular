@@ -64,7 +64,7 @@ export declare class MyComponent {
     title: string;
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "name": { "alias": "name"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "name": { "alias": "name"; "required": false; }; }, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -115,7 +115,7 @@ export declare class WidthDirective {
     id: string;
     title: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<WidthDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<WidthDirective, "[myWidthDir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<WidthDirective, "[myWidthDir]", never, {}, {}, never, never, false, never, false>;
 }
 
 /****************************************************************************************************
@@ -190,11 +190,11 @@ export declare class MyDir {
     _animParam1: null;
     _animParam2: null;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, "[my-dir]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, "[my-dir]", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyAppComp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyAppComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyAppComp, "my-app", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyAppComp, "my-app", never, {}, {}, never, never, false, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;

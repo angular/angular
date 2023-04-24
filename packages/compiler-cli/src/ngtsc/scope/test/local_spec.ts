@@ -324,6 +324,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     isStructural: false,
     animationTriggerNames: null,
     isStandalone: false,
+    isSignal: false,
     imports: null,
     schemas: null,
     decorator: null,

@@ -25,6 +25,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   inputs: ClassPropertyMapping<InputMapping>;
   outputs: ClassPropertyMapping;
   isStandalone: boolean;
+  isSignal: boolean;
   hostDirectives: HostDirectiveMeta[]|null;
   decorator: ts.Decorator|null;
 }

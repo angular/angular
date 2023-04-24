@@ -371,6 +371,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     typeArgumentCount: 0,
     fullInheritance: false,
     isStandalone: declaration.isStandalone ?? false,
+    isSignal: declaration.isSignal ?? false,
     hostDirectives: convertHostDirectivesToMetadata(declaration),
   };
 }

@@ -119,6 +119,8 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    */
   isStandalone?: boolean;
 
+  isSignal?: boolean;
+
   /**
    * Additional directives applied to the directive host.
    */

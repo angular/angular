@@ -65,7 +65,7 @@ runInEachFileSystem(() => {
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, {}, never, never, false, ' +
               '[{ directive: typeof DirectiveA; inputs: {}; outputs: {}; }, ' +
-              '{ directive: typeof DirectiveB; inputs: {}; outputs: {}; }]>;');
+              '{ directive: typeof DirectiveB; inputs: {}; outputs: {}; }], false>;');
     });
 
     it('should generate a hostDirectives definition that has inputs and outputs', () => {
@@ -111,7 +111,7 @@ runInEachFileSystem(() => {
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof HostDir; ' +
               'inputs: { "value": "value"; "color": "colorAlias"; }; ' +
-              'outputs: { "opened": "opened"; "closed": "closedAlias"; }; }]>;');
+              'outputs: { "opened": "opened"; "closed": "closedAlias"; }; }], false>;');
     });
 
     it('should generate a hostDirectives definition that has aliased inputs and outputs', () => {
@@ -157,7 +157,7 @@ runInEachFileSystem(() => {
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof HostDir; ' +
               'inputs: { "valueAlias": "valueAlias"; "colorAlias": "customColorAlias"; }; ' +
-              'outputs: { "openedAlias": "openedAlias"; "closedAlias": "customClosedAlias"; }; }]>;');
+              'outputs: { "openedAlias": "openedAlias"; "closedAlias": "customClosedAlias"; }; }], false>;');
     });
 
     it('should generate hostDirectives definitions for a chain of host directives', () => {
@@ -213,22 +213,22 @@ runInEachFileSystem(() => {
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveA, never, never, {}, ' +
-              '{}, never, never, true, never>;');
+              '{}, never, never, true, never, false>;');
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, ' +
               '{}, never, never, true, [{ directive: typeof DirectiveA; ' +
-              'inputs: {}; outputs: {}; }]>;');
+              'inputs: {}; outputs: {}; }], false>;');
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveC, never, never, {}, ' +
               '{}, never, never, true, [{ directive: typeof DirectiveB; ' +
-              'inputs: {}; outputs: {}; }]>;');
+              'inputs: {}; outputs: {}; }], false>;');
       expect(dtsContents)
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof DirectiveC; ' +
-              'inputs: {}; outputs: {}; }]>;');
+              'inputs: {}; outputs: {}; }], false>;');
     });
 
     it('should generate a hostDirectives definition with forward references', () => {
@@ -276,18 +276,18 @@ runInEachFileSystem(() => {
           .toContain(
               'ɵɵComponentDeclaration<MyComponent, "my-component", ' +
               'never, {}, {}, never, never, false, [{ directive: typeof DirectiveB; ' +
-              'inputs: {}; outputs: {}; }]>;');
+              'inputs: {}; outputs: {}; }], false>;');
 
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, ' +
               '{}, never, never, true, [{ directive: typeof DirectiveA; ' +
-              'inputs: { "value": "value"; }; outputs: {}; }]>;');
+              'inputs: { "value": "value"; }; outputs: {}; }], false>;');
 
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveA, never, never, ' +
-              '{ "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never>;');
+              '{ "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never, false>;');
     });
 
     it('should generate a definition if the host directives are imported from other files', () => {
@@ -353,7 +353,7 @@ runInEachFileSystem(() => {
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof i1.DirectiveA; ' +
               'inputs: {}; outputs: {}; }, { directive: typeof i2.DirectiveB; ' +
-              'inputs: { "input": "inputAlias"; }; outputs: {}; }]>;');
+              'inputs: { "input": "inputAlias"; }; outputs: {}; }], false>;');
     });
 
     it('should generate a hostDirectives definition referring to external directives', () => {
@@ -362,7 +362,7 @@ runInEachFileSystem(() => {
 
         export declare class ExternalDir {
           static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never,
-            {input: "input"}, {output: "output"}, never, never, true, never>;
+            {input: "input"}, {output: "output"}, never, never, true, never, false>;
         }
       `);
 
@@ -392,7 +392,7 @@ runInEachFileSystem(() => {
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof i1.ExternalDir; ' +
-              'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }]>;');
+              'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }], false>;');
     });
 
     it('should reference host directives by their external name', () => {
@@ -429,7 +429,7 @@ runInEachFileSystem(() => {
       expect(dtsContents)
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, {}, ' +
-              'never, never, false, [{ directive: typeof i1.ExternalDir; inputs: {}; outputs: {}; }]>;');
+              'never, never, false, [{ directive: typeof i1.ExternalDir; inputs: {}; outputs: {}; }], false>;');
     });
 
     it('should produce a template diagnostic if a required input from a host directive is missing',

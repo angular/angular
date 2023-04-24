@@ -179,6 +179,15 @@ export function extractDirectiveMetadata(
     }
     isStandalone = resolved;
   }
+  let isSignal = false;
+  if (directive.has('signals')) {
+    const expr = directive.get('signals')!;
+    const resolved = evaluator.evaluate(expr);
+    if (typeof resolved !== 'boolean') {
+      throw createValueHasWrongTypeError(expr, resolved, `signals flag must be a boolean`);
+    }
+    isSignal = resolved;
+  }
 
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
@@ -215,6 +224,7 @@ export function extractDirectiveMetadata(
     exportAs,
     providers,
     isStandalone,
+    isSignal,
     hostDirectives:
         hostDirectives?.map(hostDir => toHostDirectiveMetadata(hostDir, sourceFile, refEmitter)) ||
         null,

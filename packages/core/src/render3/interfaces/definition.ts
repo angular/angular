@@ -196,6 +196,11 @@ export interface DirectiveDef<T> {
   readonly standalone: boolean;
 
   /**
+   * Whether this directive (or component) uses the signals authoring experience.
+   */
+  readonly signals: boolean;
+
+  /**
    * Factory function used to create a new directive instance. Will be null initially.
    * Populated when the factory is first requested by directive instantiation logic.
    */
@@ -306,6 +311,8 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
 
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;
+
+  readonly signals: boolean;
 
   /**
    * Registry of directives and components that may be found in this view.

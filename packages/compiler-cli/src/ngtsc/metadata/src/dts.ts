@@ -106,6 +106,8 @@ export class DtsMetadataReader implements MetadataReader {
     const hostDirectives = def.type.typeArguments.length > 8 ?
         readHostDirectivesType(this.checker, def.type.typeArguments[8], ref.bestGuessOwningModule) :
         null;
+    const isSignal =
+        def.type.typeArguments.length > 9 && (readBooleanType(def.type.typeArguments[9]) ?? false);
 
     return {
       kind: MetaKind.Directive,
@@ -125,6 +127,7 @@ export class DtsMetadataReader implements MetadataReader {
       isStructural,
       animationTriggerNames: null,
       isStandalone,
+      isSignal,
       // Imports are tracked in metadata only for template type-checking purposes,
       // so standalone components from .d.ts files don't have any.
       imports: null,
