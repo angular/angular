@@ -294,7 +294,7 @@ ng generate service &lt;service-name&gt;
 
 </code-example>
 
-In the newly created service, implement the `Resolve` interface provided by the `&commat;angular/router` package:
+In the newly created service, implement the `Resolve` interface provided by the `@angular/router` package:
 
 <code-example header="Resolver service (excerpt)">
 
