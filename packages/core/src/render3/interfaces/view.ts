@@ -387,7 +387,7 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b00000000100,
+  CreationMode = 1 << 2,
 
   /**
    * Whether or not this LView instance is on its first processing pass.
@@ -396,41 +396,47 @@ export const enum LViewFlags {
    * has completed one creation mode run and one update mode run. At this
    * time, the flag is turned off.
    */
-  FirstLViewPass = 0b00000001000,
+  FirstLViewPass = 1 << 3,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b00000010000,
+  CheckAlways = 1 << 4,
 
   /** Whether there are any i18n blocks inside this LView. */
-  HasI18n = 0b00000100000,
+  HasI18n = 1 << 5,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b000001000000,
+  Dirty = 1 << 6,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b000010000000,
+  Attached = 1 << 7,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b000100000000,
+  Destroyed = 1 << 8,
 
   /** Whether or not this view is the root view */
-  IsRoot = 0b001000000000,
+  IsRoot = 1 << 9,
 
   /**
    * Whether this moved LView was needs to be refreshed at the insertion location because the
    * declaration was dirty.
    */
-  RefreshTransplantedView = 0b0010000000000,
+  RefreshTransplantedView = 1 << 10,
 
   /** Indicates that the view **or any of its ancestors** have an embedded view injector. */
-  HasEmbeddedViewInjector = 0b0100000000000,
+  HasEmbeddedViewInjector = 1 << 11,
 
   /**
    * Index of the current init phase on last 21 bits
    */
-  IndexWithinInitPhaseIncrementer = 0b01000000000000,
+  IndexWithinInitPhaseIncrementer = 1 << 12,
+  /**
+   * This is the count of the bits the 1 was shifted above (base 10)
+   */
   IndexWithinInitPhaseShift = 12,
-  IndexWithinInitPhaseReset = 0b00111111111111,
+
+  // Subtracting 1 gives all 1s to the right of the initial shift
+  // So `(1 << 3) - 1` would give 3 1s: 1 << 3 = 0b01000, subtract 1 = 0b00111
+  IndexWithinInitPhaseReset = (1 << 12) - 1,
 }
 
 /**
