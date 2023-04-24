@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "app_bundle", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "protractor_web_test_suite", "ts_devserver", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -22,9 +22,12 @@ ng_module(
     ],
 )
 
-app_bundle(
+ng_rollup_bundle(
     name = "bundle",
     entry_point = ":index.ts",
+    tags = [
+        "ivy-only",
+    ],
     deps = [
         ":image-directive",
         "//packages/common",
