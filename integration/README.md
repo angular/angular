@@ -122,8 +122,6 @@ The manually configured ports are as follows:
 | TEST | PORT | CONFIGURATION |
 | ---------------------------- | ---------------- | -------------------------------------- |
 | dynamic-compiler             |      4201        | /e2e/browser.config.json: "port": 4201 |
-| hello_world__closure         |      4202        | /e2e/browser.config.json: "port": 4202 |
-| i18n                         |      4204        | /e2e/browser.config.json: "port": 4204 |
 | ng_elements                  |      4205        | /e2e/browser.config.json: "port": 4205 |
 | platform-server              |      4206        | /src/server.ts: app.listen(4206,...    |
 
