@@ -225,7 +225,7 @@ function locateOrCreateElementNodeImpl(
     // `<div #vcrTarget>` is represented in the DOM as `<div></div>...<!--container-->`,
     // so while processing a `<div>` instruction, point to the next sibling as a
     // start of a segment.
-    ngDevMode && validateNodeExists(native.nextSibling);
+    ngDevMode && validateNodeExists(native.nextSibling, lView, tNode);
     setSegmentHead(hydrationInfo, index, native.nextSibling);
   }
 

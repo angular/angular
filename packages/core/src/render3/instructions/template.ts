@@ -152,7 +152,7 @@ function locateOrCreateContainerAnchorImpl(
 
   // Hydration mode, looking up existing elements in DOM.
   const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
-  ngDevMode && validateNodeExists(currentRNode);
+  ngDevMode && validateNodeExists(currentRNode, lView, tNode);
 
   setSegmentHead(hydrationInfo, index, currentRNode);
   const viewContainerSize = calcSerializedContainerSize(hydrationInfo, index);
