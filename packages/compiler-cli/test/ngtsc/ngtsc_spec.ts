@@ -1153,7 +1153,7 @@ function allTests(os: string) {
 
       const dtsContents = env.getContents('test.d.ts');
       const expectedDirectiveDeclaration =
-          `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": "input"; }, {}, never, never, false, never>;`;
+          `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, false, never>;`;
       expect(dtsContents).toContain(expectedDirectiveDeclaration);
     });
 
@@ -2115,22 +2115,36 @@ function allTests(os: string) {
         });
       });
 
-      ['inputs', 'outputs'].forEach(field => {
-        it(`should throw error if @Directive.${field} has wrong type`, () => {
-          env.tsconfig({});
-          env.write('test.ts', `
-            import {Directive} from '@angular/core';
+      it(`should throw error if @Directive.inputs has wrong type`, () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Directive} from '@angular/core';
 
-            @Directive({
-              selector: 'test-dir',
-              ${field}: 'invalid-field-type',
-            })
-            export class TestDir {}
-          `);
-          verifyThrownError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE,
-              `Failed to resolve @Directive.${field} to a string array`);
-        });
+          @Directive({
+            selector: 'test-dir',
+            inputs: 'invalid-field-type',
+          })
+          export class TestDir {}
+        `);
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE,
+            `Failed to resolve @Directive.inputs to an array Value is of type 'string'.`);
+      });
+
+      it(`should throw error if @Directive.outputs has wrong type`, () => {
+        env.tsconfig({});
+        env.write('test.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'test-dir',
+            outputs: 'invalid-field-type',
+          })
+          export class TestDir {}
+        `);
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE,
+            `Failed to resolve @Directive.outputs to a string array`);
       });
 
       ['ContentChild', 'ContentChildren'].forEach(decorator => {
@@ -2960,6 +2974,37 @@ function allTests(os: string) {
                   `or add an explicit constructor to ConcreteDirWithoutCtor.`);
           expect(getDiagnosticSourceCode(diags[2])).toBe('ConcreteDirWithoutCtor');
         });
+
+        // https://github.com/angular/angular/issues/48152
+        it('should not give a compile-time error when a class inherits from foreign compilation unit',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('node_modules/external/index.d.ts', `
+               import * as i0 from '@angular/core';
+
+               export abstract class ExternalClass {
+                 static ɵprov: i0.ɵɵInjectableDeclaration<ExternalClass>;
+                 static ɵfac: i0.ɵɵFactoryDeclaration<ExternalClass, never>
+
+                 constructor(invalid: string) {}
+               }
+          `);
+             env.write('test.ts', `
+               import {Directive} from '@angular/core';
+               import {ExternalClass} from 'external';
+
+               @Directive()
+               export abstract class AbstractMiddleDir extends ExternalClass {}
+
+               @Directive()
+               export class ConcreteMiddleDir extends AbstractMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithoutCtor extends ConcreteMiddleDir {}
+             `);
+
+             env.driveMain();
+           });
       });
 
       describe('with strictInjectionParameters = false', () => {
@@ -4474,278 +4519,6 @@ function allTests(os: string) {
       expect(jsContents).toContain(`exportAs: ["foo", "bar"]`);
     });
 
-    it('should generate correct factory stubs for a test module', () => {
-      env.tsconfig({'generateNgFactoryShims': true});
-
-      env.write('test.ts', `
-        import {Injectable, NgModule} from '@angular/core';
-
-        @Injectable()
-        export class NotAModule {}
-
-        @NgModule({})
-        export class TestModule {}
-    `);
-
-      env.write('empty.ts', `
-        import {Injectable} from '@angular/core';
-
-        @Injectable()
-        export class NotAModule {}
-    `);
-
-      env.driveMain();
-
-      const factoryContents = env.getContents('test.ngfactory.js');
-      expect(factoryContents).toContain(`import * as i0 from '@angular/core';`);
-      expect(factoryContents).toContain(`import { NotAModule, TestModule } from './test';`);
-      expect(factoryContents)
-          .toContain(
-              'export const TestModuleNgFactory = i0.\u0275noSideEffects(function () { ' +
-              'return new i0.\u0275NgModuleFactory(TestModule); });');
-      expect(factoryContents).not.toContain(`NotAModuleNgFactory`);
-      expect(factoryContents).not.toContain('\u0275NonEmptyModule');
-
-      const emptyFactory = env.getContents('empty.ngfactory.js');
-      expect(emptyFactory).toContain(`import * as i0 from '@angular/core';`);
-      expect(emptyFactory).toContain(`export const \u0275NonEmptyModule = true;`);
-    });
-
-    describe('ngfactory shims', () => {
-      beforeEach(() => {
-        env.tsconfig({'generateNgFactoryShims': true});
-      });
-
-      it('should not be generated for .js files', () => {
-        // This test verifies that the compiler does not attempt to generate shim files
-        // for non-TS input files (in this case, other.js).
-        env.write('test.ts', `
-          import {Component, NgModule} from '@angular/core';
-
-          @Component({
-            selector: 'test-cmp',
-            template: 'This is a template',
-          })
-          export class TestCmp {}
-
-          @NgModule({
-            declarations: [TestCmp],
-            exports: [TestCmp],
-          })
-          export class TestModule {}
-        `);
-        env.write('other.js', `
-          export class TestJs {}
-        `);
-
-        expect(env.driveDiagnostics()).toEqual([]);
-        env.assertExists('test.ngfactory.js');
-        env.assertDoesNotExist('other.ngfactory.js');
-      });
-
-      it('should be able to depend on an existing factory shim', () => {
-        // This test verifies that ngfactory files from the compilations of dependencies
-        // are available to import in a fresh compilation. It is derived from a bug
-        // observed in g3 where the shim system accidentally caused TypeScript to think
-        // that *.ngfactory.ts files always exist.
-        env.write('other.ngfactory.d.ts', `
-          export class OtherNgFactory {}
-        `);
-        env.write('test.ts', `
-          import {OtherNgFactory} from './other.ngfactory';
-
-          class DoSomethingWith extends OtherNgFactory {}
-        `);
-        expect(env.driveDiagnostics()).toEqual([]);
-      });
-
-      it('should generate factory shims for files not listed in root files', () => {
-        // This test verifies that shims are generated for all files in the user's
-        // program, even if only a subset of those files are listed in the tsconfig as
-        // root files.
-
-        env.tsconfig({'generateNgFactoryShims': true}, /* extraRootDirs */ undefined, [
-          absoluteFrom('/test.ts'),
-        ]);
-        env.write('test.ts', `
-          import {Component} from '@angular/core';
-
-          import {OtherCmp} from './other';
-
-          @Component({
-            selector: 'test',
-            template: '...',
-          })
-          export class TestCmp {
-            constructor(other: OtherCmp) {}
-          }
-        `);
-        env.write('other.ts', `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'other',
-            template: '...',
-          })
-          export class OtherCmp {}
-        `);
-        env.driveMain();
-
-        expect(env.getContents('other.ngfactory.js')).toContain('OtherCmp');
-      });
-
-      it('should generate correct type annotation for NgModuleFactory calls in ngfactories', () => {
-        env.write('test.ts', `
-        import {Component} from '@angular/core';
-        @Component({
-          selector: 'test',
-          template: '...',
-        })
-        export class TestCmp {}
-      `);
-        env.driveMain();
-
-        const ngfactoryContents = env.getContents('test.ngfactory.d.ts');
-        expect(ngfactoryContents).toContain(`i0.ɵNgModuleFactory<any>`);
-      });
-
-      it('should be able to compile an app using the factory shim', () => {
-        env.tsconfig({'allowEmptyCodegenFiles': true});
-
-        env.write('test.ts', `
-          export {MyModuleNgFactory} from './my-module.ngfactory';
-      `);
-
-        env.write('my-module.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class MyModule {}
-      `);
-
-        env.driveMain();
-      });
-
-      it('should generate correct imports in factory stubs when compiling @angular/core', () => {
-        env.tsconfig({'allowEmptyCodegenFiles': true});
-
-        env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class TestModule {}
-      `);
-
-        // Trick the compiler into thinking it's compiling @angular/core.
-        env.write('r3_symbols.ts', 'export const ITS_JUST_ANGULAR = true;');
-
-        env.driveMain();
-
-        const factoryContents = env.getContents('test.ngfactory.js');
-        expect(factoryContents)
-            .toBe(
-                'import * as i0 from "./r3_symbols";\n' +
-                'import { TestModule } from \'./test\';\n' +
-                'export const TestModuleNgFactory = i0.\u0275noSideEffects(function () {' +
-                ' return new i0.NgModuleFactory(TestModule); });\n');
-      });
-
-      describe('file-level comments', () => {
-        it('should copy a top-level comment into a factory stub', () => {
-          env.tsconfig({'allowEmptyCodegenFiles': true});
-
-          env.write('test.ts', `/** I am a top-level comment. */
-
-            import {NgModule} from '@angular/core';
-
-            @NgModule({})
-            export class TestModule {}
-          `);
-          env.driveMain();
-
-          const factoryContents = env.getContents('test.ngfactory.js');
-          expect(factoryContents).toContain(`/** I am a top-level comment. */\n`);
-        });
-
-        it('should not copy a non-file level comment into a factory stub', () => {
-          env.tsconfig({'allowEmptyCodegenFiles': true});
-
-          env.write('test.ts', `/** I am a top-level comment, but not for the file. */
-            export const TEST = true;
-          `);
-          env.driveMain();
-
-          const factoryContents = env.getContents('test.ngfactory.js');
-          expect(factoryContents).not.toContain('top-level comment');
-        });
-
-        it('should not copy a file level comment with an @license into a factory stub', () => {
-          env.tsconfig({'allowEmptyCodegenFiles': true});
-
-          env.write('test.ts', `/** @license I am a top-level comment, but have a license. */
-            export const TEST = true;
-          `);
-          env.driveMain();
-
-          const factoryContents = env.getContents('test.ngfactory.js');
-          expect(factoryContents).not.toContain('top-level comment');
-        });
-      });
-    });
-
-
-    describe('ngsummary shim generation', () => {
-      beforeEach(() => {
-        env.tsconfig({'generateNgSummaryShims': true});
-      });
-
-      it('should generate a summary stub for decorated classes in the input file only', () => {
-        env.write('test.ts', `
-          import {Injectable, NgModule} from '@angular/core';
-
-          export class NotAModule {}
-
-          @NgModule({})
-          export class TestModule {}
-      `);
-
-        env.driveMain();
-
-        const summaryContents = env.getContents('test.ngsummary.js');
-        expect(summaryContents).toEqual(`export const TestModuleNgSummary = null;\n`);
-      });
-
-      it('should generate a summary stub for classes exported via exports', () => {
-        env.write('test.ts', `
-          import {Injectable, NgModule} from '@angular/core';
-
-          @NgModule({})
-          class NotDirectlyExported {}
-
-          export {NotDirectlyExported};
-      `);
-
-        env.driveMain();
-
-        const summaryContents = env.getContents('test.ngsummary.js');
-        expect(summaryContents).toEqual(`export const NotDirectlyExportedNgSummary = null;\n`);
-      });
-
-      it('it should generate empty export when there are no other summary symbols, to ensure the output is a valid ES module',
-         () => {
-           env.write('empty.ts', `
-          export class NotAModule {}
-      `);
-
-           env.driveMain();
-
-           const emptySummary = env.getContents('empty.ngsummary.js');
-           // The empty export ensures this js file is still an ES module.
-           expect(emptySummary).toEqual(`export const \u0275empty = null;\n`);
-         });
-    });
-
-
     it('should compile a banana-in-a-box inside of a template', () => {
       env.write('test.ts', `
         import {Component} from '@angular/core';
@@ -5703,37 +5476,68 @@ function allTests(os: string) {
       expect(trim(jsContents)).toContain(trim(inputsAndOutputs));
     });
 
-    it('should compile programs with typeRoots', () => {
-      // Write out a custom tsconfig.json that includes 'typeRoots' and 'files'. 'files'
-      // is necessary because otherwise TS picks up the testTypeRoot/test/index.d.ts
-      // file into the program automatically. Shims are also turned on because the shim
-      // ts.CompilerHost wrapper can break typeRoot functionality (which this test is
-      // meant to detect).
-      env.write('tsconfig.json', `{
-      "extends": "./tsconfig-base.json",
-      "angularCompilerOptions": {
-        "generateNgFactoryShims": true,
-        "generateNgSummaryShims": true,
-      },
-      "compilerOptions": {
-        "typeRoots": ["./testTypeRoot"],
-      },
-      "files": ["./test.ts"]
-    }`);
+    it('should generate the correct declaration for class members decorated with @Input', () => {
       env.write('test.ts', `
-      import {Test} from 'ambient';
-      console.log(Test);
-    `);
-      env.write('testTypeRoot/.exists', '');
-      env.write('testTypeRoot/test/index.d.ts', `
-      declare module 'ambient' {
-        export const Test = 'This is a test';
-      }
-    `);
+        import {Directive, Input} from '@angular/core';
+
+        @Directive({selector: '[dir]'})
+        export class TestDir {
+          @Input() noArgs: any;
+          @Input('aliasedStringArg') stringArg: any;
+          @Input({required: true}) requiredNoAlias: any;
+          @Input({alias: 'aliasedRequiredWithAlias', required: true}) requiredWithAlias: any;
+        }
+      `);
 
       env.driveMain();
 
-      // Success is enough to indicate that this passes.
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(dtsContents)
+          .toContain(
+              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
+              '{ "noArgs": { "alias": "noArgs"; "required": false; }; "stringArg": ' +
+              '{ "alias": "aliasedStringArg"; "required": false; }; "requiredNoAlias": ' +
+              '{ "alias": "requiredNoAlias"; "required": true; }; "requiredWithAlias": ' +
+              '{ "alias": "aliasedRequiredWithAlias"; "required": true; }; }, {}, never, never, false, never>;');
+    });
+
+    it('should generate the correct declaration for directives using the `inputs` array', () => {
+      env.write('test.ts', `
+        import {Directive, Input} from '@angular/core';
+
+        @Directive({
+          selector: '[dir]',
+          inputs: [
+            'plain',
+            'withAlias: aliasedWithAlias',
+            {name: 'plainLiteral'},
+            {name: 'aliasedLiteral', alias: 'alisedLiteralAlias'},
+            {name: 'requiredLiteral', required: true},
+            {name: 'requiredAlisedLiteral', alias: 'requiredAlisedLiteralAlias', required: true}
+          ]
+        })
+        export class TestDir {
+          plainLiteral: any;
+          aliasedLiteral: any;
+          requiredLiteral: any;
+          requiredAlisedLiteral: any;
+        }
+      `);
+
+      env.driveMain();
+
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(dtsContents)
+          .toContain(
+              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
+              '{ "plain": { "alias": "plain"; "required": false; }; ' +
+              '"withAlias": { "alias": "aliasedWithAlias"; "required": false; }; ' +
+              '"plainLiteral": { "alias": "plainLiteral"; "required": false; }; ' +
+              '"aliasedLiteral": { "alias": "alisedLiteralAlias"; "required": false; }; ' +
+              '"requiredLiteral": { "alias": "requiredLiteral"; "required": true; }; ' +
+              '"requiredAlisedLiteral": { "alias": "requiredAlisedLiteralAlias"; "required": true; }; }, {}, never, never, false, never>;');
     });
 
     describe('NgModule invalid import/export errors', () => {
@@ -5764,8 +5568,8 @@ function allTests(os: string) {
 
         verifyThrownError(
             ErrorCode.NGMODULE_INVALID_IMPORT,
-            'This likely means that the library (external) which declares NotAModule has not ' +
-                'been processed correctly by ngcc, or is not compatible with Angular Ivy.');
+            'This likely means that the library (external) which declares NotAModule is not ' +
+                'compatible with Angular Ivy.');
       });
 
       it('should provide a hint when importing an invalid NgModule from a local library', () => {
@@ -5785,8 +5589,8 @@ function allTests(os: string) {
 
         verifyThrownError(
             ErrorCode.NGMODULE_INVALID_IMPORT,
-            'This likely means that the dependency which declares NotAModule has not ' +
-                'been processed correctly by ngcc.');
+            'This likely means that the dependency which declares NotAModule is not ' +
+                'compatible with Angular Ivy.');
       });
 
       it('should provide a hint when importing an invalid NgModule in the current program', () => {
@@ -6055,6 +5859,26 @@ function allTests(os: string) {
         const id = expectTokenAtPosition(error.file!, error.start!, ts.isIdentifier);
         expect(id.text).toBe('Dir');
         expect(ts.isClassDeclaration(id.parent)).toBe(true);
+      });
+
+      it('should report an error when a visible host directive is not exported', () => {
+        env.tsconfig({'flatModuleOutFile': 'flat.js'});
+        env.write('test.ts', `
+        import {Directive, NgModule} from '@angular/core';
+
+        @Directive({
+          standalone: true,
+        })
+        class HostDir {}
+
+        // The directive is not exported.
+        @Directive({selector: 'test', hostDirectives: [HostDir]})
+        export class Dir {}
+      `);
+
+        const errors = env.driveDiagnostics();
+        expect(errors.length).toBe(1);
+        expect(errors[0].code).toBe(ngErrorCode(ErrorCode.SYMBOL_NOT_EXPORTED));
       });
 
       it('should report an error when a deeply visible directive is not exported', () => {
@@ -6540,32 +6364,6 @@ function allTests(os: string) {
         /**
          * @fileoverview added by tsickle
          * Generated from: test.ts
-         * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
-         */
-      `;
-          expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-        });
-
-        it('should be produced for generated factory files', () => {
-          env.tsconfig({
-            'annotateForClosureCompiler': true,
-            'generateNgFactoryShims': true,
-          });
-          env.write(`test.ts`, `
-            import {Component} from '@angular/core';
-
-            @Component({
-              template: '<div class="test"></div>',
-            })
-            export class SomeComp {}
-          `);
-
-          env.driveMain();
-          const jsContents = env.getContents('test.ngfactory.js');
-          const fileoverview = `
-        /**
-         * @fileoverview added by tsickle
-         * Generated from: test.ngfactory.ts
          * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
          */
       `;
@@ -7206,6 +7004,66 @@ function allTests(os: string) {
            expect(diags[0].messageText).toContain('Dir');
            expect(diags[0].messageText).toContain('Base');
          });
+
+      it('should produce a diagnostic if an inherited required input is not bound', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive()
+          export class BaseDir {
+            @Input({required: true}) input: any;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true
+          })
+          export class Dir extends BaseDir {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+            standalone: true,
+            imports: [Dir]
+          })
+          export class Cmp {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Required input 'input' from directive Dir must be specified.`);
+      });
+
+      it('should not produce a diagnostic if an inherited required input is bound', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive()
+          export class BaseDir {
+            @Input({required: true}) input: any;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true
+          })
+          export class Dir extends BaseDir {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div dir [input]="value"></div>',
+            standalone: true,
+            imports: [Dir]
+          })
+          export class Cmp {
+            value = 123;
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('inline resources', () => {
@@ -8361,11 +8219,20 @@ function allTests(os: string) {
     describe('InjectorDef emit optimizations for standalone', () => {
       it('should not filter components out of NgModule.imports', () => {
         env.write('test.ts', `
-          import {Component, NgModule} from '@angular/core';
+          import {Component, Injectable, NgModule} from '@angular/core';
+
+          @Injectable()
+          export class Service {}
+
+          @NgModule({
+            providers: [Service]
+          })
+          export class DepModule {}
 
           @Component({
             standalone: true,
             selector: 'standalone-cmp',
+            imports: [DepModule],
             template: '',
           })
           export class StandaloneCmp {}

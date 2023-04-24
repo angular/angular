@@ -7,14 +7,9 @@
  */
 
 import {runfiles} from '@bazel/runfiles';
-import {CldrStatic} from 'cldrjs';
+import cldrjs, {type CldrStatic} from 'cldrjs';
+import fs from 'fs';
 import glob from 'glob';
-
-// TypeScript doesn't allow us to import the default export without the `esModuleInterop`. We use
-// the NodeJS require function instead as specifying a custom tsconfig complicates the setup
-// unnecessarily.
-// TODO: See if we can improve this by having better types for `cldrjs`.
-const cldrjs: typeof import('cldrjs') = require('cldrjs');
 
 /**
  * Globs that match CLDR JSON data files that should be fetched. We limit these intentionally
@@ -93,14 +88,14 @@ export class CldrData {
    */
   getLanguageAliases():
       {[localeName: string]: {_reason: CldrLocaleAliasReason, _replacement: string}} {
-    return require(`${this.cldrDataDir}/${CLDR_LOCALE_ALIASES_PATH}`)
+    return this._loadJsonOrThrow(`${this.cldrDataDir}/${CLDR_LOCALE_ALIASES_PATH}`)
         .supplemental.metadata.alias.languageAlias;
   }
 
   /** Gets a list of all locales CLDR provides data for. */
   private _getAvailableLocales(): CldrLocaleData[] {
-    const allLocales =
-        require(`${this.cldrDataDir}/${CLDR_AVAILABLE_LOCALES_PATH}`).availableLocales.full;
+    const allLocales = this._loadJsonOrThrow(`${this.cldrDataDir}/${CLDR_AVAILABLE_LOCALES_PATH}`)
+                           .availableLocales.full;
     const localesWithData: CldrLocaleData[] = [];
 
     for (const localeName of allLocales) {
@@ -140,7 +135,7 @@ export class CldrData {
 
     // Read the JSON for all determined CLDR json files.
     return jsonFiles.map(filePath => {
-      const parsed = require(filePath);
+      const parsed = this._loadJsonOrThrow(filePath);
 
       // Guards against cases where non-CLDR data files are accidentally picked up
       // by the glob above and would throw-off the bundle lookup in `cldrjs`.
@@ -150,5 +145,9 @@ export class CldrData {
 
       return parsed;
     });
+  }
+
+  private _loadJsonOrThrow(filePath: string): any {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8')) as unknown as any;
   }
 }

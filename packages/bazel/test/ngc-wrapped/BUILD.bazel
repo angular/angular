@@ -12,6 +12,7 @@ ts_library(
     deps = [
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
         "//packages/compiler-cli",
+        "@npm//@bazel/runfiles",
         "@npm//typescript",
     ],
 )

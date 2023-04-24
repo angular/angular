@@ -35,18 +35,7 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular-1.8/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.8/angular-mocks.js', included: false, watched: false},
 
-      'node_modules/core-js-bundle/index.js',
       'node_modules/jasmine-ajax/lib/mock-ajax.js',
-
-      // ZoneJS configuration needed for some event manager tests. This config could
-      // affect all legacy tests but in reality is scoped to certain special tests.
-      'packages/platform-browser/test/dom/events/zone_event_unpatched_init.js',
-
-      // Dependencies built by Bazel. See `config.yml` for steps running before
-      // the legacy Saucelabs tests run.
-      'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
-      'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
-      'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
 
       // Static test assets.
       {pattern: 'packages/platform-browser/test/static_assets/**/*', included: false},
@@ -56,7 +45,7 @@ module.exports = function(config) {
       {
         pattern: 'node_modules/@webcomponents/custom-elements/**/*.js',
         included: false,
-        watched: false
+        watched: false,
       },
 
       'node_modules/reflect-metadata/Reflect.js',

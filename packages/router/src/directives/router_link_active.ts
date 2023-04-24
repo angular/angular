@@ -97,7 +97,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   private classes: string[] = [];
   private routerEventsSubscription: Subscription;
   private linkInputChangesSubscription?: Subscription;
-  public readonly isActive: boolean = false;
+  private _isActive = false;
+
+  get isActive() {
+    return this._isActive;
+  }
 
   /**
    * Options to configure how to determine if the router link is active.
@@ -161,7 +165,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
                                .filter((link): link is RouterLink => !!link)
                                .map(link => link.onChanges);
     this.linkInputChangesSubscription = from(allLinkChanges).pipe(mergeAll()).subscribe(link => {
-      if (this.isActive !== this.isLinkActive(this.router)(link)) {
+      if (this._isActive !== this.isLinkActive(this.router)(link)) {
         this.update();
       }
     });
@@ -187,8 +191,8 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     if (!this.links || !this.router.navigated) return;
     Promise.resolve().then(() => {
       const hasActiveLinks = this.hasActiveLinks();
-      if (this.isActive !== hasActiveLinks) {
-        (this as any).isActive = hasActiveLinks;
+      if (this._isActive !== hasActiveLinks) {
+        this._isActive = hasActiveLinks;
         this.cdr.markForCheck();
         this.classes.forEach((c) => {
           if (hasActiveLinks) {

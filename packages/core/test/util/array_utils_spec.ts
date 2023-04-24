@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayRemoveSorted, arraySplice, flatten, KeyValueArray, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
+import {arrayIndexOfSorted, arrayInsert, arrayInsert2, arraySplice, flatten, KeyValueArray, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
 
 describe('array_utils', () => {
   describe('flatten', () => {
@@ -75,59 +75,6 @@ describe('array_utils', () => {
       ]);
     });
   });
-
-  describe('arrayInsertSorted', () => {
-    it('should insert items don\'t allow duplicates', () => {
-      let a;
-      a = ['a', 'c', 'e', 'g', 'i'];
-      expect(arrayInsertSorted(a, 'a')).toEqual(0);
-      expect(a).toEqual(['a', 'c', 'e', 'g', 'i']);
-
-      a = ['a', 'c', 'e', 'g', 'i'];
-      expect(arrayInsertSorted(a, 'b')).toEqual(1);
-      expect(a).toEqual(['a', 'b', 'c', 'e', 'g', 'i']);
-
-      a = ['a', 'c', 'e', 'g', 'i'];
-      expect(arrayInsertSorted(a, 'c')).toEqual(1);
-      expect(a).toEqual(['a', 'c', 'e', 'g', 'i']);
-
-      a = ['a', 'c', 'e', 'g', 'i'];
-      expect(arrayInsertSorted(a, 'd')).toEqual(2);
-      expect(a).toEqual(['a', 'c', 'd', 'e', 'g', 'i']);
-
-      a = ['a', 'c', 'e', 'g', 'i'];
-      expect(arrayInsertSorted(a, 'e')).toEqual(2);
-      expect(a).toEqual(['a', 'c', 'e', 'g', 'i']);
-    });
-  });
-
-
-
-  describe('arrayRemoveSorted', () => {
-    it('should remove items', () => {
-      let a;
-      a = ['a', 'b', 'c', 'd', 'e'];
-      expect(arrayRemoveSorted(a, 'a')).toEqual(0);
-      expect(a).toEqual(['b', 'c', 'd', 'e']);
-
-      a = ['a', 'b', 'c', 'd', 'e'];
-      expect(arrayRemoveSorted(a, 'b')).toEqual(1);
-      expect(a).toEqual(['a', 'c', 'd', 'e']);
-
-      a = ['a', 'b', 'c', 'd', 'e'];
-      expect(arrayRemoveSorted(a, 'c')).toEqual(2);
-      expect(a).toEqual(['a', 'b', 'd', 'e']);
-
-      a = ['a', 'b', 'c', 'd', 'e'];
-      expect(arrayRemoveSorted(a, 'd')).toEqual(3);
-      expect(a).toEqual(['a', 'b', 'c', 'e']);
-
-      a = ['a', 'b', 'c', 'd', 'e'];
-      expect(arrayRemoveSorted(a, 'e')).toEqual(4);
-      expect(a).toEqual(['a', 'b', 'c', 'd']);
-    });
-  });
-
 
   describe('arrayIndexOfSorted', () => {
     it('should get index of', () => {

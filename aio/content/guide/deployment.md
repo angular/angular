@@ -151,7 +151,7 @@ To deploy your Angular application to [GitHub Pages](https://help.github.com/art
 
 1.  When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
 1.  Commit your changes and push.
-1.  On the GitHub project page, go to Settings and scroll down to the GitHub Pages section to configure the site to [publish from the docs folder](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#choosing-a-publishing-source).
+1.  On the GitHub project page, go to Settings and select the Pages option from the left sidebar to configure the site to [publish from the docs folder](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#choosing-a-publishing-source).
 1.  Click Save.
 1.  Click on the GitHub Pages link at the top of the GitHub Pages section to see your deployed application.
     The format of the link is `https://<user_name>.github.io/<project_name>`.
@@ -247,7 +247,7 @@ The `production` configuration engages the following build optimization features
 | Features                                              | Details |
 |:---                                                   |:---     |
 | [Ahead-of-Time (AOT) Compilation](guide/aot-compiler) | Pre-compiles Angular component templates.                                |
-| [Production mode](#enable-prod-mode)                  | Deploys the production environment which enables *production mode*.      |
+| [Production mode](#prod-mode)                         | Optimizes the application for the best runtime performance |
 | Bundling                                              | Concatenates your many application and library files into a few bundles. |
 | Minification                                          | Removes excess whitespace, comments, and optional tokens.                |
 | Uglification                                          | Rewrites code to use short, cryptic variable and function names.         |
@@ -255,23 +255,20 @@ The `production` configuration engages the following build optimization features
 
 See [`ng build`](cli/build) for more about CLI build options and what they do.
 
-<a id="enable-prod-mode"></a>
+<a id="prod-mode"></a>
 
-### Enable runtime production mode
+### Production mode at runtime
 
-In addition to build optimizations, Angular also has a runtime production mode.
-Angular applications run in development mode by default, as you can see by the following message on the browser console:
+When you run an application locally using `ng serve`, Angular uses the development mode configuration
+at runtime. The development mode at runtime enables extra safety checks, more detailed error messages
+and debugging utilities, such as the [expression-changed-after-checked](errors/NG0100) detection. Angular outputs
+a message in the browser console to indicate that the development mode is enabled.
 
-<code-example format="output" hideCopy language="shell">
+Those extra checks are helpful during the development, but they require an extra code in a bundle, which is
+undesirable in production. To ensure that there are no implications on the bundle size, the build optimizer
+removes the development-only code from the bundle when building in production mode.
 
-Angular is running in development mode.
-Call `enableProdMode()` to enable production mode.
-
-</code-example>
-
-*Production mode* improves application performance by disabling development-only safety checks and debugging utilities, such as the expression-changed-after-checked detection.
 Building your application with the production configuration automatically enables Angular's runtime production mode.
-
 <a id="lazy-loading"></a>
 
 ### Lazy loading

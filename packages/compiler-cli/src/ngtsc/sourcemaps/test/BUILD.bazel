@@ -13,15 +13,15 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "@npm//@jridgewell/sourcemap-codec",
         "@npm//@types/convert-source-map",
         "@npm//convert-source-map",
-        "@npm//sourcemap-codec",
     ],
 )
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_no_angular_es2015"],
+    bootstrap = ["//tools/testing:node_no_angular"],
     deps = [
         ":test_lib",
     ],

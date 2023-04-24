@@ -8,6 +8,7 @@
 
 import '@angular/compiler';
 
+import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -17,7 +18,7 @@ describe('treeshaking with uglify', () => {
   let content: string;
   // We use the debug version as otherwise symbols/identifiers would be mangled (and the test would
   // always pass)
-  const contentPath = require.resolve(path.join(PACKAGE, 'bundle.debug.min.js'));
+  const contentPath = runfiles.resolve(path.join(PACKAGE, 'bundle.debug.min.js'));
   beforeAll(() => {
     content = fs.readFileSync(contentPath, {encoding: 'utf-8'});
   });

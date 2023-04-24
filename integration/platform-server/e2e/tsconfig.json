@@ -1,8 +1,13 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../built/e2e",
-    "types": ["jasmine", "jasminewd2"],
-    // TODO(alexeagle): was required for Protractor 4.0.11
-    "skipLibCheck": true
+    "outDir": "../out-tsc/e2e",
+    "module": "commonjs",
+    "target": "es2019",
+    "types": [
+      "jasmine",
+      "node"
+    ]
   }
 }

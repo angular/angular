@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
@@ -15,15 +15,20 @@ ng_module(
     ],
 )
 
-ts_devserver(
-    name = "devserver",
-    entry_module = "angular/modules/playground/src/animate/index",
-    port = 4200,
-    scripts = ["@npm//:node_modules/tslib/tslib.js"],
-    static_files = [
-        "index.html",
-        "//packages/zone.js/bundles:zone.umd.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
-    ],
+app_bundle(
+    name = "app_bundle",
+    entry_point = ":index.ts",
     deps = [":animate"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "css/animate-app.css",
+        "index.html",
+    ],
+    deps = [
+        ":app_bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
 )

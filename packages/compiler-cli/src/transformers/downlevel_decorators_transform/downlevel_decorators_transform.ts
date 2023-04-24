@@ -8,10 +8,8 @@
 
 import ts from 'typescript';
 
+import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from '../../ngtsc/imports';
 import {Decorator, ReflectionHost} from '../../ngtsc/reflection';
-import {combineModifiers, createClassDeclaration, createGetAccessorDeclaration, createMethodDeclaration, createPropertyDeclaration, createSetAccessorDeclaration, getDecorators, getModifiers, ModifierLike, updateConstructorDeclaration, updateParameterDeclaration} from '../../ngtsc/ts_compatibility';
-
-import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './patch_alias_reference_resolution';
 
 /**
  * Whether a given decorator should be treated as an Angular decorator.
@@ -137,7 +135,7 @@ function createCtorParametersClassProperty(
       undefined, undefined, [], undefined,
       ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       ts.factory.createArrayLiteralExpression(params, true));
-  const ctorProp = createPropertyDeclaration(
+  const ctorProp = ts.factory.createPropertyDeclaration(
       [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)], 'ctorParameters', undefined, undefined,
       initializer);
   if (isClosureCompilerEnabled) {
@@ -244,23 +242,20 @@ interface ParameterDecorationInfo {
 }
 
 /**
- * Gets a transformer for downleveling Angular decorators.
+ * Gets a transformer for downleveling Angular constructor parameter and property decorators.
+ *
+ * Note that Angular class decorators are never processed as those rely on side effects that
+ * would otherwise no longer be executed. i.e. the creation of a component definition.
+ *
  * @param typeChecker Reference to the program's type checker.
  * @param host Reflection host that is used for determining decorators.
  * @param diagnostics List which will be populated with diagnostics if any.
  * @param isCore Whether the current TypeScript program is for the `@angular/core` package.
  * @param isClosureCompilerEnabled Whether closure annotations need to be added where needed.
- * @param skipClassDecorators Whether class decorators should be skipped from downleveling.
- *   This is useful for JIT mode where class decorators should be preserved as they could rely
- *   on immediate execution. e.g. downleveling `@Injectable` means that the injectable factory
- *   is not created, and injecting the token will not work. If this decorator would not be
- *   downleveled, the `Injectable` decorator will execute immediately on file load, and
- *   Angular will generate the corresponding injectable factory.
  */
 export function getDownlevelDecoratorsTransform(
     typeChecker: ts.TypeChecker, host: ReflectionHost, diagnostics: ts.Diagnostic[],
-    isCore: boolean, isClosureCompilerEnabled: boolean,
-    skipClassDecorators: boolean): ts.TransformerFactory<ts.SourceFile> {
+    isCore: boolean, isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
   function addJSDocTypeAnnotation(node: ts.Node, jsdocType: string): void {
     if (!isClosureCompilerEnabled) {
       return;
@@ -275,26 +270,6 @@ export function getDownlevelDecoratorsTransform(
         hasTrailingNewLine: true,
       },
     ]);
-  }
-
-  /**
-   * Takes a list of decorator metadata object ASTs and produces an AST for a
-   * static class property of an array of those metadata objects.
-   */
-  function createDecoratorClassProperty(decoratorList: ts.ObjectLiteralExpression[]) {
-    const modifier = ts.factory.createToken(ts.SyntaxKind.StaticKeyword);
-    const initializer = ts.factory.createArrayLiteralExpression(decoratorList, true);
-    // NB: the .decorators property does not get a @nocollapse property. There
-    // is no good reason why - it means .decorators is not runtime accessible
-    // if you compile with collapse properties, whereas propDecorators is,
-    // which doesn't follow any stringent logic. However this has been the
-    // case previously, and adding it back in leads to substantial code size
-    // increases as Closure fails to tree shake these props
-    // without @nocollapse.
-    const prop =
-        createPropertyDeclaration([modifier], 'decorators', undefined, undefined, initializer);
-    addJSDocTypeAnnotation(prop, DECORATOR_INVOCATION_JSDOC_TYPE);
-    return prop;
   }
 
   /**
@@ -320,7 +295,7 @@ export function getDownlevelDecoratorsTransform(
               decorators.map(deco => extractMetadataFromSingleDecorator(deco, diagnostics)))));
     }
     const initializer = ts.factory.createObjectLiteralExpression(entries, true);
-    const prop = createPropertyDeclaration(
+    const prop = ts.factory.createPropertyDeclaration(
         [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)], 'propDecorators', undefined,
         undefined, initializer);
     addJSDocTypeAnnotation(prop, `!Object<string, ${DECORATOR_INVOCATION_JSDOC_TYPE}>`);
@@ -421,11 +396,14 @@ export function getDownlevelDecoratorsTransform(
         return [undefined, element, []];
       }
 
-      const modifiers = decoratorsToKeep.length ?
-          ts.setTextRange(
-              ts.factory.createNodeArray(combineModifiers(decoratorsToKeep, getModifiers(element))),
-              element.modifiers) :
-          getModifiers(element);
+      const elementModifiers = ts.canHaveModifiers(element) ? ts.getModifiers(element) : undefined;
+      let modifiers: ts.NodeArray<ts.ModifierLike>|undefined;
+
+      if (decoratorsToKeep.length || elementModifiers?.length) {
+        modifiers = ts.setTextRange(
+            ts.factory.createNodeArray([...decoratorsToKeep, ...(elementModifiers || [])]),
+            (element as ts.HasModifiers).modifiers);
+      }
 
       return [element.name.text, cloneClassElementWithModifiers(element, modifiers), toLower];
     }
@@ -465,16 +443,22 @@ export function getDownlevelDecoratorsTransform(
           paramInfo!.type = param.type;
         }
         parametersInfo.push(paramInfo);
-        const newParam = updateParameterDeclaration(
-            param,
-            combineModifiers(
-                // Must pass 'undefined' to avoid emitting decorator metadata.
-                decoratorsToKeep.length ? decoratorsToKeep : undefined, getModifiers(param)),
-            param.dotDotDotToken, param.name, param.questionToken, param.type, param.initializer);
+
+        // Must pass 'undefined' to avoid emitting decorator metadata.
+        let modifiers: ts.ModifierLike[]|undefined;
+        const paramModifiers = ts.getModifiers(param);
+
+        if (decoratorsToKeep.length || paramModifiers?.length) {
+          modifiers = [...decoratorsToKeep, ...(paramModifiers || [])];
+        }
+
+        const newParam = ts.factory.updateParameterDeclaration(
+            param, modifiers, param.dotDotDotToken, param.name, param.questionToken, param.type,
+            param.initializer);
         newParameters.push(newParam);
       }
-      const updated =
-          updateConstructorDeclaration(ctor, getModifiers(ctor), newParameters, ctor.body);
+      const updated = ts.factory.updateConstructorDeclaration(
+          ctor, ts.getModifiers(ctor), newParameters, ctor.body);
       return [updated, parametersInfo];
     }
 
@@ -516,36 +500,15 @@ export function getDownlevelDecoratorsTransform(
         newMembers.push(ts.visitEachChild(member, decoratorDownlevelVisitor, context));
       }
 
-      // The `ReflectionHost.getDecoratorsOfDeclaration()` method will not return certain kinds of
-      // decorators that will never be Angular decorators. So we cannot rely on it to capture all
-      // the decorators that should be kept. Instead we start off with a set of the raw decorators
-      // on the class, and only remove the ones that have been identified for downleveling.
-      const decoratorsToKeep = new Set<ts.Decorator>(getDecorators(classDecl));
+      // Note: The `ReflectionHost.getDecoratorsOfDeclaration()` method will not
+      // return all decorators, but only ones that could be possible Angular decorators.
       const possibleAngularDecorators = host.getDecoratorsOfDeclaration(classDecl) || [];
 
-      let hasAngularDecorator = false;
-      const decoratorsToLower = [];
-      for (const decorator of possibleAngularDecorators) {
-        // We only deal with concrete nodes in TypeScript sources, so we don't
-        // need to handle synthetically created decorators.
-        const decoratorNode = decorator.node! as ts.Decorator;
-        const isNgDecorator = isAngularDecorator(decorator, isCore);
+      // Keep track if we come across an Angular class decorator. This is used
+      // to determine whether constructor parameters should be captured or not.
+      const hasAngularDecorator =
+          possibleAngularDecorators.some(d => isAngularDecorator(d, isCore));
 
-        // Keep track if we come across an Angular class decorator. This is used
-        // to determine whether constructor parameters should be captured or not.
-        if (isNgDecorator) {
-          hasAngularDecorator = true;
-        }
-
-        if (isNgDecorator && !skipClassDecorators) {
-          decoratorsToLower.push(extractMetadataFromSingleDecorator(decoratorNode, diagnostics));
-          decoratorsToKeep.delete(decoratorNode);
-        }
-      }
-
-      if (decoratorsToLower.length) {
-        newMembers.push(createDecoratorClassProperty(decoratorsToLower));
-      }
       if (classParameters) {
         if (hasAngularDecorator || classParameters.some(p => !!p.decorators.length)) {
           // Capture constructor parameters if the class has Angular decorator applied,
@@ -562,11 +525,9 @@ export function getDownlevelDecoratorsTransform(
           ts.factory.createNodeArray(newMembers, classDecl.members.hasTrailingComma),
           classDecl.members);
 
-      return createClassDeclaration(
-          combineModifiers(
-              decoratorsToKeep.size ? Array.from(decoratorsToKeep) : undefined,
-              getModifiers(classDecl)),
-          classDecl.name, classDecl.typeParameters, classDecl.heritageClauses, members);
+      return ts.factory.updateClassDeclaration(
+          classDecl, classDecl.modifiers, classDecl.name, classDecl.typeParameters,
+          classDecl.heritageClauses, members);
     }
 
     /**
@@ -591,21 +552,22 @@ export function getDownlevelDecoratorsTransform(
 }
 
 function cloneClassElementWithModifiers(
-    node: ts.ClassElement, modifiers: readonly ModifierLike[]|undefined): ts.ClassElement {
+    node: ts.ClassElement, modifiers: readonly ts.ModifierLike[]|undefined): ts.ClassElement {
   let clone: ts.ClassElement;
 
   if (ts.isMethodDeclaration(node)) {
-    clone = createMethodDeclaration(
+    clone = ts.factory.createMethodDeclaration(
         modifiers, node.asteriskToken, node.name, node.questionToken, node.typeParameters,
         node.parameters, node.type, node.body);
   } else if (ts.isPropertyDeclaration(node)) {
-    clone = createPropertyDeclaration(
+    clone = ts.factory.createPropertyDeclaration(
         modifiers, node.name, node.questionToken, node.type, node.initializer);
   } else if (ts.isGetAccessor(node)) {
-    clone =
-        createGetAccessorDeclaration(modifiers, node.name, node.parameters, node.type, node.body);
+    clone = ts.factory.createGetAccessorDeclaration(
+        modifiers, node.name, node.parameters, node.type, node.body);
   } else if (ts.isSetAccessor(node)) {
-    clone = createSetAccessorDeclaration(modifiers, node.name, node.parameters, node.body);
+    clone =
+        ts.factory.createSetAccessorDeclaration(modifiers, node.name, node.parameters, node.body);
   } else {
     throw new Error(`Unsupported decorated member with kind ${ts.SyntaxKind[node.kind]}`);
   }

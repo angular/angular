@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {decode, encode, SourceMapMappings, SourceMapSegment} from '@jridgewell/sourcemap-codec';
 import mapHelpers from 'convert-source-map';
-import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-codec';
 
 import {AbsoluteFsPath, PathManipulation} from '../../file_system';
 

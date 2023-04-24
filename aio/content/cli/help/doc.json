@@ -1,0 +1,36 @@
+{
+  "name": "doc",
+  "command": "ng doc <keyword>",
+  "shortDescription": "Opens the official Angular documentation (angular.io) in a browser, and searches for a given keyword.",
+  "aliases": [
+    "d"
+  ],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "keyword",
+      "type": "string",
+      "description": "The keyword to search for, as provided in the search bar in angular.io.",
+      "positional": 0
+    },
+    {
+      "name": "search",
+      "type": "boolean",
+      "aliases": [
+        "s"
+      ],
+      "default": false,
+      "description": "Search all of angular.io. Otherwise, searches only API reference documentation."
+    },
+    {
+      "name": "version",
+      "type": "string",
+      "description": "Contains the version of Angular to use for the documentation. If not provided, the command uses your current Angular core version."
+    }
+  ]
+}

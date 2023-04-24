@@ -123,12 +123,22 @@ function checkNonAnimatableInTimelines(
     return;
   }
 
+  const allowedNonAnimatableProps = new Set<string>([
+    // 'easing' is a utility/synthetic prop we use to represent
+    // easing functions, it represents a property of the animation
+    // which is not animatable but different values can be used
+    // in different steps
+    'easing'
+  ]);
+
   const invalidNonAnimatableProps = new Set<string>();
 
   timelines.forEach(({keyframes}) => {
     const nonAnimatablePropsInitialValues = new Map<string, string|number>();
     keyframes.forEach(keyframe => {
-      for (const [prop, value] of keyframe.entries()) {
+      const entriesToCheck =
+          Array.from(keyframe.entries()).filter(([prop]) => !allowedNonAnimatableProps.has(prop));
+      for (const [prop, value] of entriesToCheck) {
         if (!driver.validateAnimatableStyleProperty!(prop)) {
           if (nonAnimatablePropsInitialValues.has(prop) && !invalidNonAnimatableProps.has(prop)) {
             const propInitialValue = nonAnimatablePropsInitialValues.get(prop);
@@ -191,7 +201,7 @@ export class AnimationStateStyles {
           }
           const normalizedProp = this.normalizer.normalizePropertyName(prop, errors);
           val = this.normalizer.normalizeStyleValue(prop, normalizedProp, val, errors);
-          finalStyles.set(normalizedProp, val);
+          finalStyles.set(prop, val);
         });
       }
     });

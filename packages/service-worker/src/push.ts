@@ -132,8 +132,7 @@ export class SwPush {
     return this.sw.isEnabled;
   }
 
-  // TODO(issue/24571): remove '!'.
-  private pushManager!: Observable<PushManager>;
+  private pushManager: Observable<PushManager>|null = null;
   private subscriptionChanges = new Subject<PushSubscription|null>();
 
   constructor(private sw: NgswCommChannel) {
@@ -163,7 +162,7 @@ export class SwPush {
    * @returns A Promise that resolves to the new subscription object.
    */
   requestSubscription(options: {serverPublicKey: string}): Promise<PushSubscription> {
-    if (!this.sw.isEnabled) {
+    if (!this.sw.isEnabled || this.pushManager === null) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
     const pushOptions: PushSubscriptionOptionsInit = {userVisibleOnly: true};

@@ -101,6 +101,12 @@ export enum ErrorCode {
    */
   HOST_DIRECTIVE_CONFLICTING_ALIAS = 2018,
 
+  /**
+   * Raised when a host directive definition doesn't expose a
+   * required binding from the host directive.
+   */
+  HOST_DIRECTIVE_MISSING_REQUIRED_BINDING = 2019,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
@@ -242,6 +248,11 @@ export enum ErrorCode {
   SPLIT_TWO_WAY_BINDING = 8007,
 
   /**
+   * A directive usage isn't binding to one or more required inputs.
+   */
+  MISSING_REQUIRED_INPUTS = 8008,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
@@ -317,6 +328,20 @@ export enum ErrorCode {
    * When the type of foo doesn't include `null` or `undefined`.
    */
   OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
+
+
+  /**
+   * `ngSkipHydration` should not be a binding (it should be a static attribute).
+   *
+   * For example:
+   * ```
+   * <my-cmp [ngSkipHydration]="someTruthyVar" />
+   * ```
+   *
+   * `ngSkipHydration` cannot be a binding and can not have values other than "true" or an empty
+   * value
+   */
+  SKIP_HYDRATION_NOT_STATIC = 8108,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

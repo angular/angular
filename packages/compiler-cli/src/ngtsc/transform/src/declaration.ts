@@ -12,7 +12,6 @@ import ts from 'typescript';
 import {ImportRewriter} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 import {ImportManager, translateType} from '../../translator';
-import {createPropertyDeclaration, updateClassDeclaration} from '../../ts_compatibility';
 
 import {DtsTransform} from './api';
 import {addImports} from './utils';
@@ -99,7 +98,7 @@ class DtsTransformer {
     };
 
     // Recursively scan through the AST and process all nodes as desired.
-    sf = ts.visitNode(sf, visitor);
+    sf = ts.visitNode(sf, visitor, ts.isSourceFile) || sf;
 
     // Add new imports for this file.
     return addImports(imports, sf);
@@ -141,7 +140,7 @@ class DtsTransformer {
     // If some elements have been transformed but the class itself has not been transformed, create
     // an updated class declaration with the updated elements.
     if (elementsChanged && clazz === newClazz) {
-      newClazz = updateClassDeclaration(
+      newClazz = ts.factory.updateClassDeclaration(
           /* node */ clazz,
           /* modifiers */ clazz.modifiers,
           /* name */ clazz.name,
@@ -194,7 +193,7 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
       const modifiers = [ts.factory.createModifier(ts.SyntaxKind.StaticKeyword)];
       const typeRef = translateType(decl.type, imports);
       markForEmitAsSingleLine(typeRef);
-      return createPropertyDeclaration(
+      return ts.factory.createPropertyDeclaration(
           /* modifiers */ modifiers,
           /* name */ decl.name,
           /* questionOrExclamationToken */ undefined,
@@ -202,7 +201,7 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
           /* initializer */ undefined);
     });
 
-    return updateClassDeclaration(
+    return ts.factory.updateClassDeclaration(
         /* node */ clazz,
         /* modifiers */ clazz.modifiers,
         /* name */ clazz.name,

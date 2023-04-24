@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectFlags, InjectionToken, INJECTOR, Injector, NgModuleRef, ViewContainerRef} from '@angular/core';
+import {Component, createComponent, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectFlags, InjectionToken, INJECTOR, Injector, NgModuleRef, ViewContainerRef} from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
+import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {TestBed} from '@angular/core/testing';
 
 describe('environment injector', () => {
@@ -88,10 +89,8 @@ describe('environment injector', () => {
        }
 
        const parentEnvInjector = TestBed.inject(EnvironmentInjector);
-       const envInjector = createEnvironmentInjector([Service], parentEnvInjector);
-       const cfr = envInjector.get(ComponentFactoryResolver);
-       const cf = cfr.resolveComponentFactory(TestComponent);
-       const cRef = cf.create(Injector.NULL);
+       const environmentInjector = createEnvironmentInjector([Service], parentEnvInjector);
+       const cRef = createComponent(TestComponent, {environmentInjector});
 
        expect(cRef.instance.service).toBeInstanceOf(Service);
      });
@@ -117,11 +116,7 @@ describe('environment injector', () => {
       useValue: () => {},
     }];
     expect(() => createEnvironmentInjector(providers, parentEnvInjector))
-        .toThrowError(
-            'NG0209: Unexpected type of the `ENVIRONMENT_INITIALIZER` token value ' +
-            '(expected an array, but got function). ' +
-            'Please check that the `ENVIRONMENT_INITIALIZER` token is configured as ' +
-            'a `multi: true` provider.');
+        .toThrowMatching((e: RuntimeError) => e.code === RuntimeErrorCode.INVALID_MULTI_PROVIDER);
   });
 
   it('should adopt environment-scoped providers', () => {

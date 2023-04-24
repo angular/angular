@@ -7,7 +7,7 @@
  */
 
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import * as tss from 'typescript/lib/tsserverlibrary';
+import tss from 'typescript/lib/tsserverlibrary';
 
 import {TemplateInfo} from '../utils';
 

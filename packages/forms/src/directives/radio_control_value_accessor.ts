@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, NgModule, OnDestroy, OnInit, Renderer2, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, forwardRef, inject, Injectable, Injector, Input, NgModule, OnDestroy, OnInit, Provider, Renderer2, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
 import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
+import {CALL_SET_DISABLED_STATE, setDisabledStateDefault, SetDisabledStateOption} from './shared';
 
-export const RADIO_VALUE_ACCESSOR: any = {
+const RADIO_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => RadioControlValueAccessor),
   multi: true
@@ -124,6 +125,8 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
   // TODO(issue/24571): remove '!'.
   _fn!: Function;
 
+  private setDisabledStateFired = false;
+
   /**
    * The registered callback function called when a change event occurs on the input element.
    * Note: we declare `onChange` here (also used as host listener) as a function with no arguments
@@ -153,6 +156,9 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    * Tracks the value of the radio input element
    */
   @Input() value: any;
+
+  private callSetDisabledState =
+      inject(CALL_SET_DISABLED_STATE, {optional: true}) ?? setDisabledStateDefault;
 
   constructor(
       renderer: Renderer2, elementRef: ElementRef, private _registry: RadioControlRegistry,
@@ -191,6 +197,33 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
       fn(this.value);
       this._registry.select(this);
     };
+  }
+
+  /** @nodoc */
+  override setDisabledState(isDisabled: boolean): void {
+    /**
+     * `setDisabledState` is supposed to be called whenever the disabled state of a control changes,
+     * including upon control creation. However, a longstanding bug caused the method to not fire
+     * when an *enabled* control was attached. This bug was fixed in v15 in #47576.
+     *
+     * This had a side effect: previously, it was possible to instantiate a reactive form control
+     * with `[attr.disabled]=true`, even though the the corresponding control was enabled in the
+     * model. This resulted in a mismatch between the model and the DOM. Now, because
+     * `setDisabledState` is always called, the value in the DOM will be immediately overwritten
+     * with the "correct" enabled value.
+     *
+     * However, the fix also created an exceptional case: radio buttons. Because Reactive Forms
+     * models the entire group of radio buttons as a single `FormControl`, there is no way to
+     * control the disabled state for individual radios, so they can no longer be configured as
+     * disabled. Thus, we keep the old behavior for radio buttons, so that `[attr.disabled]`
+     * continues to work. Specifically, we drop the first call to `setDisabledState` if `disabled`
+     * is `false`, and we are not in legacy mode.
+     */
+    if (this.setDisabledStateFired || isDisabled ||
+        this.callSetDisabledState === 'whenDisabledForLegacyCode') {
+      this.setProperty('disabled', isDisabled);
+    }
+    this.setDisabledStateFired = true;
   }
 
   /**

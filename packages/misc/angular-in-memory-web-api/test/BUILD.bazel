@@ -20,14 +20,6 @@ ts_library(
 
 karma_web_test_suite(
     name = "test_web",
-    # do not sort
-    bootstrap = [
-        "@npm//:node_modules/core-js-bundle/index.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
-        "@npm//:node_modules/jasmine-ajax/lib/mock-ajax.js",
-        "//packages/zone.js/bundles:zone.umd.js",
-        "//packages/zone.js/bundles:zone-testing.umd.js",
-    ],
     deps = [
         ":test_lib",
     ],

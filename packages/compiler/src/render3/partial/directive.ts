@@ -10,7 +10,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {convertFromMaybeForwardRefExpression, generateForwardRef, R3CompiledExpression} from '../util';
 import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
 import {createDirectiveType, createHostDirectivesMappingArray} from '../view/compiler';
-import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util';
+import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from '../view/util';
 
 import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
 import {toOptionalLiteralMap} from './util';
@@ -49,7 +49,7 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
 
   // e.g. `type: MyDirective`
-  definitionMap.set('type', meta.internalType);
+  definitionMap.set('type', meta.type.value);
 
   if (meta.isStandalone) {
     definitionMap.set('isStandalone', o.literal(meta.isStandalone));
@@ -60,8 +60,8 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
     definitionMap.set('selector', o.literal(meta.selector));
   }
 
-  definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
-  definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
+  definitionMap.set('inputs', conditionallyCreateDirectiveBindingLiteral(meta.inputs, true));
+  definitionMap.set('outputs', conditionallyCreateDirectiveBindingLiteral(meta.outputs));
 
   definitionMap.set('host', compileHostMetadata(meta.host));
 

@@ -40,7 +40,7 @@ ts_library(
 
 jasmine_node_test(
     name = "extract_i18n",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     data = [
         "//packages/core:npm_package",
     ],
@@ -68,7 +68,7 @@ ts_library(
 
 jasmine_node_test(
     name = "downlevel_decorator_transform",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     deps = [
         ":downlevel_decorator_transform_lib",
     ],
@@ -92,7 +92,7 @@ ts_library(
 
 jasmine_node_test(
     name = "perform_watch",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     data = [
         "//packages/core:npm_package",
     ],
@@ -119,7 +119,7 @@ ts_library(
 
 jasmine_node_test(
     name = "perform_compile",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     data = [
         "//packages/core:npm_package",
     ],
@@ -142,7 +142,7 @@ ts_library(
 
 jasmine_node_test(
     name = "typescript_support",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     deps = [
         ":typescript_support_lib",
     ],
@@ -160,7 +160,7 @@ ts_library(
 
 jasmine_node_test(
     name = "version_helpers",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     deps = [
         ":version_helpers_lib",
     ],

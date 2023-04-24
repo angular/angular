@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Routes} from '../src';
 import {PRIMARY_OUTLET} from '../src/shared';
 import {validateConfig} from '../src/utils/config';
 
@@ -18,14 +19,13 @@ describe('config', () => {
     });
 
     it('should not throw when a matcher is provided', () => {
-      expect(() => validateConfig([{matcher: <any>'someFunc', component: ComponentA}]))
-          .not.toThrow();
+      expect(() => validateConfig([{matcher: () => null, component: ComponentA}])).not.toThrow();
     });
 
     it('should throw for undefined route', () => {
       expect(() => {
         validateConfig(
-            [{path: 'a', component: ComponentA}, , {path: 'b', component: ComponentB}] as any);
+            [{path: 'a', component: ComponentA}, , {path: 'b', component: ComponentB}] as Routes);
       }).toThrowError(/Invalid configuration of route ''/);
     });
 
@@ -37,7 +37,7 @@ describe('config', () => {
                            {path: 'b', component: ComponentB},
                            ,
                          ]
-                       }] as any);
+                       }] as Routes);
       }).toThrowError(/Invalid configuration of route 'a'/);
     });
 
@@ -45,8 +45,8 @@ describe('config', () => {
       expect(() => {
         validateConfig([
           {path: 'a', component: ComponentA},
-          [{path: 'b', component: ComponentB}, {path: 'c', component: ComponentC}] as any
-        ]);
+          [{path: 'b', component: ComponentB}, {path: 'c', component: ComponentC}]
+        ] as Routes);
       }).toThrowError();
     });
 
@@ -109,13 +109,13 @@ describe('config', () => {
 
     it('should throw when path and matcher are used together', () => {
       expect(() => {
-        validateConfig([{path: 'a', matcher: <any>'someFunc', children: []}]);
+        validateConfig([{path: 'a', matcher: () => null, children: []}]);
       }).toThrowError();
     });
 
     it('should throw when path and matcher are missing', () => {
       expect(() => {
-        validateConfig([{component: null, redirectTo: 'b'}] as any);
+        validateConfig([{redirectTo: 'b'}]);
       }).toThrowError();
     });
 
@@ -127,14 +127,14 @@ describe('config', () => {
 
     it('should throw when path starts with a slash', () => {
       expect(() => {
-        validateConfig([<any>{path: '/a', redirectTo: 'b'}]);
+        validateConfig([{path: '/a', redirectTo: 'b'}]);
       }).toThrowError();
     });
 
     it('should throw when emptyPath is used with redirectTo without explicitly providing matching',
        () => {
          expect(() => {
-           validateConfig([<any>{path: '', redirectTo: 'b'}]);
+           validateConfig([{path: '', redirectTo: 'b'}]);
          }).toThrowError(/Invalid configuration of route '{path: "", redirectTo: "b"}'/);
        });
 

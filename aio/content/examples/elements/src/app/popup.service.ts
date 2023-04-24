@@ -1,14 +1,13 @@
 
-import { ApplicationRef, ComponentFactoryResolver, Injectable, Injector } from '@angular/core';
+import { ApplicationRef, createComponent, EnvironmentInjector, Injectable } from '@angular/core';
 import { NgElement, WithProperties } from '@angular/elements';
 import { PopupComponent } from './popup.component';
 
 
 @Injectable()
 export class PopupService {
-  constructor(private injector: Injector,
-              private applicationRef: ApplicationRef,
-              private componentFactoryResolver: ComponentFactoryResolver) {}
+  constructor(private injector: EnvironmentInjector,
+              private applicationRef: ApplicationRef) {}
 
   // Previous dynamic-loading method required you to set up infrastructure
   // before adding the popup to the DOM.
@@ -17,8 +16,7 @@ export class PopupService {
     const popup = document.createElement('popup-component');
 
     // Create the component and wire it up with the element
-    const factory = this.componentFactoryResolver.resolveComponentFactory(PopupComponent);
-    const popupComponentRef = factory.create(this.injector, [], popup);
+    const popupComponentRef = createComponent(PopupComponent, {environmentInjector: this.injector, hostElement: popup});
 
     // Attach to the view so that the change detector knows to run
     this.applicationRef.attachView(popupComponentRef.hostView);

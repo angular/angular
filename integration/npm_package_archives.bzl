@@ -1,21 +1,11 @@
 # The @npm packages at the root node_modules are used by integration tests
 # with `file:../../node_modules/foobar` references
 NPM_PACKAGE_ARCHIVES = [
-    "@angular/animations-12",
-    "@angular/common-12",
-    "@angular/core-12",
-    "@angular/forms-12",
-    "@angular/platform-browser-12",
-    "@angular/platform-browser-dynamic-12",
-    "@angular/platform-server-12",
-    "@angular/router-12",
     "@babel/core",
     "@rollup/plugin-babel",
     "@rollup/plugin-node-resolve",
     "@rollup/plugin-commonjs",
     "check-side-effects",
-    "core-js",
-    "google-closure-compiler",
     "jasmine",
     "typescript",
     "rxjs",

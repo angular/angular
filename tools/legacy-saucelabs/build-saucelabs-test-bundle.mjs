@@ -74,37 +74,33 @@ async function main() {
 async function findSpecFiles() {
   const baseTestFiles = glob.sync('**/*_spec.js', {absolute: true, cwd: legacyOutputDir});
 
-  return multimatch(
-    baseTestFiles,
-    [
-      '**/*',
-      `!${legacyOutputDir}/_testing_init/**`,
-      `!${legacyOutputDir}/**/e2e_test/**`,
-      `!${legacyOutputDir}/**/*node_only_spec.js`,
-      `!${legacyOutputDir}/benchpress/**`,
-      `!${legacyOutputDir}/compiler-cli/**`,
-      `!${legacyOutputDir}/compiler-cli/src/ngtsc/**`,
-      `!${legacyOutputDir}/compiler-cli/test/compliance/**`,
-      `!${legacyOutputDir}/compiler-cli/test/ngtsc/**`,
-      `!${legacyOutputDir}/compiler/test/aot/**`,
-      `!${legacyOutputDir}/compiler/test/render3/**`,
-      `!${legacyOutputDir}/core/test/bundling/**`,
-      `!${legacyOutputDir}/core/schematics/test/**`,
-      `!${legacyOutputDir}/core/test/render3/ivy/**`,
-      `!${legacyOutputDir}/core/test/render3/jit/**`,
-      `!${legacyOutputDir}/core/test/render3/perf/**`,
-      `!${legacyOutputDir}/elements/schematics/**`,
-      `!${legacyOutputDir}/examples/**/e2e_test/*`,
-      `!${legacyOutputDir}/language-service/**`,
-      `!${legacyOutputDir}/platform-server/**`,
-      `!${legacyOutputDir}/localize/**/test/**`,
-      `!${legacyOutputDir}/localize/schematics/**`,
-      `!${legacyOutputDir}/router/**/test/**`,
-      `!${legacyOutputDir}/zone.js/**/test/**`,
-      `!${legacyOutputDir}/platform-browser/testing/e2e_util.js`,
-
-    ]
-  );
+  return multimatch(baseTestFiles, [
+    '**/*',
+    `!${legacyOutputDir}/_testing_init/**`,
+    `!${legacyOutputDir}/**/e2e_test/**`,
+    `!${legacyOutputDir}/**/*node_only_spec.js`,
+    `!${legacyOutputDir}/benchpress/**`,
+    `!${legacyOutputDir}/compiler-cli/**`,
+    `!${legacyOutputDir}/compiler-cli/src/ngtsc/**`,
+    `!${legacyOutputDir}/compiler-cli/test/compliance/**`,
+    `!${legacyOutputDir}/compiler-cli/test/ngtsc/**`,
+    `!${legacyOutputDir}/compiler/test/aot/**`,
+    `!${legacyOutputDir}/compiler/test/render3/**`,
+    `!${legacyOutputDir}/core/test/bundling/**`,
+    `!${legacyOutputDir}/core/schematics/test/**`,
+    `!${legacyOutputDir}/core/test/render3/ivy/**`,
+    `!${legacyOutputDir}/core/test/render3/jit/**`,
+    `!${legacyOutputDir}/core/test/render3/perf/**`,
+    `!${legacyOutputDir}/elements/schematics/**`,
+    `!${legacyOutputDir}/examples/**/e2e_test/*`,
+    `!${legacyOutputDir}/language-service/**`,
+    `!${legacyOutputDir}/platform-server/**`,
+    `!${legacyOutputDir}/localize/**/test/**`,
+    `!${legacyOutputDir}/localize/schematics/**`,
+    `!${legacyOutputDir}/router/**/test/**`,
+    `!${legacyOutputDir}/zone.js/**/test/**`,
+    `!${legacyOutputDir}/platform-browser/testing/e2e_util.js`,
+  ]);
 }
 
 /**
@@ -149,13 +145,16 @@ async function createResolveEsbuildPlugin() {
   const resolveMappings = new Map([
     [/@angular\//, `${legacyOutputDir}/`],
     [/^angular-in-memory-web-api$/, join(legacyOutputDir, 'misc/angular-in-memory-web-api')],
+    [/^zone.js\//, `${legacyOutputDir}/zone.js/`],
   ]);
 
   return {
-    name: 'ng-resolve-esbuild', setup: (build) => {
-      build.onResolve({filter: /(@angular\/|angular-in-memory-web-api)/}, async (args) => {
-        const matchedPattern = Array.from(resolveMappings.keys()).find(
-            pattern => args.path.match(pattern));
+    name: 'ng-resolve-esbuild',
+    setup: (build) => {
+      build.onResolve({filter: /(@angular\/|angular-in-memory-web-api|zone.js)/}, async (args) => {
+        const matchedPattern = Array.from(resolveMappings.keys()).find((pattern) =>
+          args.path.match(pattern)
+        );
 
         if (matchedPattern === undefined) {
           return undefined;
@@ -177,7 +176,7 @@ async function createResolveEsbuildPlugin() {
 
         return stats !== null ? {path: resolvedPath} : undefined;
       });
-    }
+    },
   };
 }
 
@@ -210,9 +209,10 @@ async function transpileDecoratorDownlevelTransform() {
  * Compiles the project using the TypeScript compiler in order to produce
  * JS output of the packages and tests.
  */
- async function compileProjectWithTsc() {
+async function compileProjectWithTsc() {
   const {legacyCompilationDownlevelDecoratorTransform} = await import(
-      url.pathToFileURL(decoratorDownlevelOutFile));
+    url.pathToFileURL(decoratorDownlevelOutFile)
+  );
   const config = parseTsconfigFile(legacyTsconfigPath, dirname(legacyTsconfigPath));
   const program = ts.createProgram(config.fileNames, config.options);
 
@@ -225,15 +225,17 @@ async function transpileDecoratorDownlevelTransform() {
   const diagnostics = [
     ...result.diagnostics,
     ...program.getSyntacticDiagnostics(),
-    ...program.getSemanticDiagnostics()
+    ...program.getSemanticDiagnostics(),
   ];
 
   if (diagnostics.length) {
-    console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics, {
-      getCanonicalFileName: fileName => fileName,
-      getCurrentDirectory: () => program.getCurrentDirectory(),
-      getNewLine: () => '\n',
-    }));
+    console.error(
+      ts.formatDiagnosticsWithColorAndContext(diagnostics, {
+        getCanonicalFileName: (fileName) => fileName,
+        getCurrentDirectory: () => program.getCurrentDirectory(),
+        getNewLine: () => '\n',
+      })
+    );
 
     throw new Error('Compilation failed. See errors above.');
   }
@@ -261,7 +263,6 @@ function parseTsconfigFile(tsconfigPath, basePath) {
   return ts.parseJsonConfigFileContent(config, parseConfigHost, basePath, {});
 }
 
-
 /**
  * Retrieves the `fs.Stats` results for the given path gracefully.
  * If the file does not exist, returns `null`.
@@ -274,7 +275,7 @@ async function statGraceful(path) {
   }
 }
 
-main().catch(e => {
+main().catch((e) => {
   console.error(e);
   process.exitCode = 1;
 });

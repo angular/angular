@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, NgZone, RendererFactory2} from '@angular/core';
+import {Subscription} from 'rxjs';
 
 
 /**
@@ -43,12 +44,12 @@ export class ComponentFixture<T> {
   private _renderer: RendererFactory2|null|undefined;
   private _isStable: boolean = true;
   private _isDestroyed: boolean = false;
-  private _resolve: ((result: any) => void)|null = null;
-  private _promise: Promise<any>|null = null;
-  private _onUnstableSubscription: any /** TODO #9100 */ = null;
-  private _onStableSubscription: any /** TODO #9100 */ = null;
-  private _onMicrotaskEmptySubscription: any /** TODO #9100 */ = null;
-  private _onErrorSubscription: any /** TODO #9100 */ = null;
+  private _resolve: ((result: boolean) => void)|null = null;
+  private _promise: Promise<boolean>|null = null;
+  private _onUnstableSubscription: Subscription|null = null;
+  private _onStableSubscription: Subscription|null = null;
+  private _onMicrotaskEmptySubscription: Subscription|null = null;
+  private _onErrorSubscription: Subscription|null = null;
 
   constructor(
       public componentRef: ComponentRef<T>, public ngZone: NgZone|null,

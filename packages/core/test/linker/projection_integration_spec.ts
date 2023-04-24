@@ -7,7 +7,7 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {Component, ComponentRef, createComponent, Directive, ElementRef, EnvironmentInjector, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, reflectComponentType, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
@@ -120,16 +120,17 @@ describe('projection', () => {
     TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
     const injector: Injector = TestBed.inject(Injector);
 
-    const componentFactoryResolver: ComponentFactoryResolver =
-        injector.get(ComponentFactoryResolver);
-    const componentFactory =
-        componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
-    expect(componentFactory.ngContentSelectors).toEqual(['h1', '*']);
+    expect(reflectComponentType(MultipleContentTagsComponent)?.ngContentSelectors).toEqual([
+      'h1', '*'
+    ]);
 
 
     const nodeOne = getDOM().getDefaultDocument().createTextNode('one');
     const nodeTwo = getDOM().getDefaultDocument().createTextNode('two');
-    const component = componentFactory.create(injector, [[nodeOne], [nodeTwo]]);
+    const component = createComponent(MultipleContentTagsComponent, {
+      environmentInjector: injector as EnvironmentInjector,
+      projectableNodes: [[nodeOne], [nodeTwo]]
+    });
     expect(component.location.nativeElement).toHaveText('(one, two)');
   });
 
@@ -670,7 +671,7 @@ describe('projection', () => {
   describe('projectable nodes', () => {
     @Component({selector: 'test', template: ''})
     class TestComponent {
-      constructor(public cfr: ComponentFactoryResolver) {}
+      constructor(public vcr: ViewContainerRef) {}
     }
 
     @Component({selector: 'with-content', template: ''})
@@ -713,9 +714,9 @@ describe('projection', () => {
       TestBed.overrideTemplate(WithContentCmpt, tpl);
 
       fixture = TestBed.createComponent(TestComponent);
-      const cfr = fixture.componentInstance.cfr;
-      const cf = cfr.resolveComponentFactory(WithContentCmpt);
-      const cmptRef = cf.create(Injector.NULL, projectableNodes);
+      const vcr = fixture.componentInstance.vcr;
+      const cmptRef =
+          vcr.createComponent(WithContentCmpt, {injector: Injector.NULL, projectableNodes});
 
       cmptRef.changeDetectorRef.detectChanges();
 

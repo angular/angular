@@ -9,7 +9,7 @@
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader} from './api';
+import {DirectiveMeta, InputMapping, MetadataReader} from './api';
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 /**
@@ -21,10 +21,10 @@ import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
  * followed.
  */
 export function flattenInheritedDirectiveMetadata(
-    reader: MetadataReader, dir: Reference<ClassDeclaration>): DirectiveMeta {
+    reader: MetadataReader, dir: Reference<ClassDeclaration>): DirectiveMeta|null {
   const topMeta = reader.getDirectiveMetadata(dir);
   if (topMeta === null) {
-    throw new Error(`Metadata not found for directive: ${dir.debugName}`);
+    return null;
   }
   if (topMeta.baseClass === null) {
     return topMeta;
@@ -35,7 +35,7 @@ export function flattenInheritedDirectiveMetadata(
   const restrictedInputFields = new Set<ClassPropertyName>();
   const stringLiteralInputFields = new Set<ClassPropertyName>();
   let isDynamic = false;
-  let inputs = ClassPropertyMapping.empty();
+  let inputs = ClassPropertyMapping.empty<InputMapping>();
   let outputs = ClassPropertyMapping.empty();
   let isStructural: boolean = false;
 

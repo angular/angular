@@ -5,6 +5,7 @@ autoprefixer
 bootstrapper
 cpus
 devtools
+Fairhouse
 initializer
 initializers
 injectable

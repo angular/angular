@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
@@ -456,6 +457,54 @@ runInEachFileSystem(() => {
       expect(written).toContain('/foo_component.js');
       expect(written).toContain('/foo_pipe.js');
       expect(written).toContain('/foo_module.js');
+    });
+
+    it('should re-emit an NgModule when the provider status of its imports changes', () => {
+      env.write('provider-dep.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        @Injectable()
+        export class Service {}
+
+        @NgModule({
+          providers: [Service],
+        })
+        export class DepModule {}
+      `);
+      env.write('standalone-cmp.ts', `
+        import {Component} from '@angular/core';
+        import {DepModule} from './provider-dep';
+
+        @Component({
+          standalone: true,
+          template: '',
+          imports: [DepModule],
+        })
+        export class Cmp {}
+      `);
+      env.write('module.ts', `
+        import {NgModule} from '@angular/core';
+        import {Cmp} from './standalone-cmp';
+
+        @NgModule({
+          imports: [Cmp],
+        })
+        export class Module {}
+      `);
+
+      env.driveMain();
+
+      env.write('provider-dep.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class DepModule {}
+      `);
+
+      env.flushWrittenFileTracking();
+      env.driveMain();
+      const written = env.getFilesWrittenSinceLastFlush();
+      expect(written).toContain('/module.js');
     });
 
     it('should compile incrementally with template type-checking turned on', () => {
@@ -943,6 +992,50 @@ runInEachFileSystem(() => {
           expect(written).toContain('/cmp.js');
           expect(written).not.toContain('/dir.js');
         });
+      });
+    });
+
+    describe('missing resource files', () => {
+      it('should re-analyze a component if a template file becomes available later', () => {
+        env.write('app.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'app',
+          templateUrl: './some-template.html',
+        })
+        export class AppComponent {}
+      `);
+
+        const firstDiagnostics = env.driveDiagnostics();
+        expect(firstDiagnostics.length).toBe(1);
+        expect(firstDiagnostics[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_RESOURCE_NOT_FOUND));
+
+        env.write('some-template.html', `
+          <span>Test</span>
+        `);
+
+        env.driveMain();
+      });
+
+      it('should re-analyze if component style file becomes available later', () => {
+        env.write('app.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'app',
+          template: 'Works',
+          styleUrls: ['./some-style.css'],
+        })
+        export class AppComponent {}
+      `);
+
+        const firstDiagnostics = env.driveDiagnostics();
+        expect(firstDiagnostics.length).toBe(1);
+        expect(firstDiagnostics[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_RESOURCE_NOT_FOUND));
+
+        env.write('some-style.css', `body {}`);
+        env.driveMain();
       });
     });
   });

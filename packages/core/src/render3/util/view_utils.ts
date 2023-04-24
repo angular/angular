@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TView} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TView} from '../interfaces/view';
 
 
 
@@ -53,20 +54,6 @@ export function unwrapLView(value: RNode|LView|LContainer): LView|null {
     // This check is same as `isLView()` but we don't call at as we don't want to call
     // `Array.isArray()` twice and give JITer more work for inlining.
     if (typeof value[TYPE] === 'object') return value as LView;
-    value = value[HOST] as any;
-  }
-  return null;
-}
-
-/**
- * Returns `LContainer` or `null` if not found.
- * @param value wrapped value of `RNode`, `LView`, `LContainer`
- */
-export function unwrapLContainer(value: RNode|LView|LContainer): LContainer|null {
-  while (Array.isArray(value)) {
-    // This check is same as `isLContainer()` but we don't call at as we don't want to call
-    // `Array.isArray()` twice and give JITer more work for inlining.
-    if (value[TYPE] === true) return value as LContainer;
     value = value[HOST] as any;
   }
   return null;
@@ -174,7 +161,7 @@ export function getConstant<T>(consts: TConstants|null, index: number|null|undef
  * @param lView the LView on which the flags are reset
  */
 export function resetPreOrderHookFlags(lView: LView) {
-  lView[PREORDER_HOOK_FLAGS] = 0;
+  lView[PREORDER_HOOK_FLAGS] = 0 as PreOrderHookFlags;
 }
 
 /**
@@ -194,5 +181,31 @@ export function updateTransplantedViewCount(lContainer: LContainer, amount: 1|- 
     parent[TRANSPLANTED_VIEWS_TO_REFRESH] += amount;
     viewOrContainer = parent;
     parent = parent[PARENT];
+  }
+}
+
+/**
+ * Stores a LView-specific destroy callback.
+ */
+export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
+  if ((lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
+    throw new RuntimeError(
+        RuntimeErrorCode.VIEW_ALREADY_DESTROYED, ngDevMode && 'View has already been destroyed.');
+  }
+  if (lView[ON_DESTROY_HOOKS] === null) {
+    lView[ON_DESTROY_HOOKS] = [];
+  }
+  lView[ON_DESTROY_HOOKS].push(onDestroyCallback);
+}
+
+/**
+ * Removes previously registered LView-specific destroy callback.
+ */
+export function removeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
+  if (lView[ON_DESTROY_HOOKS] === null) return;
+
+  const destroyCBIdx = lView[ON_DESTROY_HOOKS].indexOf(onDestroyCallback);
+  if (destroyCBIdx !== -1) {
+    lView[ON_DESTROY_HOOKS].splice(destroyCBIdx, 1);
   }
 }

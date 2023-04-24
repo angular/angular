@@ -7,11 +7,11 @@
  */
 
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
-declare var WorkerGlobalScope: any /** TODO #9100 */;
+declare var WorkerGlobalScope: any;
 // CommonJS / Node have global context exposed as "global" variable.
 // We don't want to include the whole node.d.ts this this compilation unit so we'll just fake
 // the global "global" var for now.
-declare var global: any /** TODO #9100 */;
+declare var global: any;
 
 // Always use __globalThis if available, which is the spec-defined global variable across all
 // environments, then fallback to __global first, because in Node tests both __global and

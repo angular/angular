@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
-import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MatchSource, MetadataRegistry, MetaKind, PipeMeta} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, MatchSource, MetadataRegistry, MetaKind, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {LocalModuleScope, ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
@@ -58,6 +58,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
 
     const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
@@ -79,6 +80,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -91,6 +93,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -103,6 +106,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
 
     const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -124,6 +128,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -136,6 +141,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
 
     const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -157,6 +163,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -169,6 +176,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -181,6 +189,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
 
     const scope = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -209,6 +218,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
 
     const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
@@ -229,6 +239,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -241,6 +252,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
 
     const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -261,6 +273,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -273,6 +286,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      mayDeclareProviders: false,
     });
 
     expect(scopeRegistry.getScopeOfModule(ModuleA.node)!.compilation.isPoisoned).toBeTrue();
@@ -314,6 +328,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     schemas: null,
     decorator: null,
     hostDirectives: null,
+    assumedToExportProviders: false,
   };
 }
 

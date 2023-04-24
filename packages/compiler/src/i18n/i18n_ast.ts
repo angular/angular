@@ -22,11 +22,11 @@ export interface MessagePlaceholder {
 
 export class Message {
   sources: MessageSpan[];
-  id: string = this.customId;
+  id: string;
   /** The ids to use if there are no custom id and if `i18nLegacyMessageIdFormat` is not empty */
   legacyIds: string[] = [];
 
-  messageString = serializeMessage(this.nodes);
+  messageString: string;
 
   /**
    * @param nodes message AST
@@ -40,6 +40,9 @@ export class Message {
       public nodes: Node[], public placeholders: {[phName: string]: MessagePlaceholder},
       public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
       public description: string, public customId: string) {
+    this.id = this.customId;
+    this.messageString = serializeMessage(this.nodes);
+
     if (nodes.length) {
       this.sources = [{
         filePath: nodes[0].sourceSpan.start.file.url,
@@ -86,11 +89,9 @@ export class Container implements Node {
 }
 
 export class Icu implements Node {
-  // TODO(issue/24571): remove '!'.
-  public expressionPlaceholder!: string;
   constructor(
       public expression: string, public type: string, public cases: {[k: string]: Node},
-      public sourceSpan: ParseSourceSpan) {}
+      public sourceSpan: ParseSourceSpan, public expressionPlaceholder?: string) {}
 
   visit(visitor: Visitor, context?: any): any {
     return visitor.visitIcu(this, context);
@@ -159,8 +160,7 @@ export class CloneVisitor implements Visitor {
   visitIcu(icu: Icu, context?: any): Icu {
     const cases: {[k: string]: Node} = {};
     Object.keys(icu.cases).forEach(key => cases[key] = icu.cases[key].visit(this, context));
-    const msg = new Icu(icu.expression, icu.type, cases, icu.sourceSpan);
-    msg.expressionPlaceholder = icu.expressionPlaceholder;
+    const msg = new Icu(icu.expression, icu.type, cases, icu.sourceSpan, icu.expressionPlaceholder);
     return msg;
   }
 

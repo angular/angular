@@ -353,10 +353,9 @@ class _Scanner {
     while (this.peek != quote) {
       if (this.peek == chars.$BACKSLASH) {
         buffer += input.substring(marker, this.index);
-        this.advance();
         let unescapedCode: number;
-        // Workaround for TS2.1-introduced type strictness
-        this.peek = this.peek;
+        this.advance();  // mutates this.peek
+        // @ts-expect-error see microsoft/TypeScript#9998
         if (this.peek == chars.$u) {
           // 4 character hex code for unicode character.
           const hex: string = input.substring(this.index + 1, this.index + 5);

@@ -10,6 +10,4 @@
 
 export {ShimAdapter} from './src/adapter';
 export {copyFileShimData, isShim, retagAllTsFiles, retagTsFile, sfExtensionData, untagAllTsFiles, untagTsFile} from './src/expando';
-export {FactoryGenerator, generatedFactoryTransform} from './src/factory_generator';
 export {ShimReferenceTagger} from './src/reference_tagger';
-export {SummaryGenerator} from './src/summary_generator';

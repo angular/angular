@@ -66,9 +66,9 @@ import { HEROES } from './mock-heroes';
     ]),
     trigger('animateMe', [
       transition('* <=> *', animate('500ms cubic-bezier(.68,-0.73,.26,1.65)', keyframes([
-        style({ backgroundColor: "transparent", color: '*', offset: 0 }),
-        style({ backgroundColor: "blue", color: 'white', offset: 0.2 }),
-        style({ backgroundColor: "transparent", color: '*', offset: 1 })
+        style({ backgroundColor: 'transparent', color: '*', offset: 0 }),
+        style({ backgroundColor: 'blue', color: 'white', offset: 0.2 }),
+        style({ backgroundColor: 'transparent', color: '*', offset: 1 })
       ])))
     ]),
   ]

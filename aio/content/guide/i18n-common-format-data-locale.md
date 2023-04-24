@@ -45,7 +45,7 @@ The locale specified for the `CurrencyPipe` overrides the global `LOCALE_ID` tok
 
 ## What's next
 
-*   [Prepare templates for translations][AioGuideI18nCommonPrepare]
+*   [Prepare component for translation][AioGuideI18nCommonPrepare]
 
 <!-- links -->
 
@@ -57,7 +57,7 @@ The locale specified for the `CurrencyPipe` overrides the global `LOCALE_ID` tok
 
 [AioGuideGlossaryPipe]: guide/glossary#pipe "pipe - Glossary | Angular"
 
-[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare "Prepare templates for translations | Angular"
+[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare "Prepare component for translation | Angular"
 
 <!-- external links -->
 

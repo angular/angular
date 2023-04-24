@@ -1,3 +1,4 @@
+/* eslint-disable @angular-eslint/component-selector */
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -8,7 +9,7 @@ import { SearchResultsComponent } from './search-results.component';
   selector: 'mat-icon',
   template: '',
 })
-class MockMatIcon {}
+class MockMatIconComponent {}
 
 describe('SearchResultsComponent', () => {
 
@@ -82,7 +83,7 @@ describe('SearchResultsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchResultsComponent, MockMatIcon ]
+      declarations: [ SearchResultsComponent, MockMatIconComponent ]
     });
   });
 
@@ -150,7 +151,7 @@ describe('SearchResultsComponent', () => {
         topics: '',
       },
       {
-        path: 'tutorial/toh-pt1',
+        path: 'tutorial/tour-of-heroes/toh-pt1',
         title: 'Tutorial - part 1',
         type: '',
         keywords: '',
@@ -197,7 +198,7 @@ describe('SearchResultsComponent', () => {
             topics: '',
           },
           {
-            path: 'tutorial/toh-pt1',
+            path: 'tutorial/tour-of-heroes/toh-pt1',
             title: 'Tutorial - part 1',
             type: '',
             keywords: '',

@@ -6,16 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {leadingComment} from '@angular/compiler';
-import generate from '@babel/generator';
-import template from '@babel/template';
-import {types as t} from '../../src/babel_core';
+import {types as t} from '@babel/core';
+import _generate from '@babel/generator';
+import _template from '@babel/template';
 
 import {BabelAstFactory} from '../../src/ast/babel_ast_factory';
 
+// Babel is a CJS package and misuses the `default` named binding:
+// https://github.com/babel/babel/issues/15269.
+const generate = (_generate as any)['default'] as typeof _generate;
+
 // Exposes shorthands for the `expression` and `statement`
 // methods exposed by `@babel/template`.
-const expression = template.expression;
-const statement = template.statement;
+const expression = _template.expression;
+const statement = _template.statement;
 
 describe('BabelAstFactory', () => {
   let factory: BabelAstFactory;

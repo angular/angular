@@ -6,18 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TagContentType, TagDefinition} from './tags';
+import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
+
+import {getNsPrefix, TagContentType, TagDefinition} from './tags';
 
 export class HtmlTagDefinition implements TagDefinition {
   private closedByChildren: {[key: string]: boolean} = {};
   private contentType: TagContentType|
       {default: TagContentType, [namespace: string]: TagContentType};
 
-  closedByParent: boolean = false;
+  closedByParent = false;
   implicitNamespacePrefix: string|null;
   isVoid: boolean;
   ignoreFirstLf: boolean;
-  canSelfClose: boolean = false;
+  canSelfClose: boolean;
   preventNamespaceInheritance: boolean;
 
   constructor({
@@ -27,7 +29,8 @@ export class HtmlTagDefinition implements TagDefinition {
     closedByParent = false,
     isVoid = false,
     ignoreFirstLf = false,
-    preventNamespaceInheritance = false
+    preventNamespaceInheritance = false,
+    canSelfClose = false,
   }: {
     closedByChildren?: string[],
     closedByParent?: boolean,
@@ -35,7 +38,8 @@ export class HtmlTagDefinition implements TagDefinition {
     contentType?: TagContentType|{default: TagContentType, [namespace: string]: TagContentType},
     isVoid?: boolean,
     ignoreFirstLf?: boolean,
-    preventNamespaceInheritance?: boolean
+    preventNamespaceInheritance?: boolean,
+    canSelfClose?: boolean
   } = {}) {
     if (closedByChildren && closedByChildren.length > 0) {
       closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
@@ -46,6 +50,7 @@ export class HtmlTagDefinition implements TagDefinition {
     this.contentType = contentType;
     this.ignoreFirstLf = ignoreFirstLf;
     this.preventNamespaceInheritance = preventNamespaceInheritance;
+    this.canSelfClose = canSelfClose ?? isVoid;
   }
 
   isClosedByChild(name: string): boolean {
@@ -61,7 +66,7 @@ export class HtmlTagDefinition implements TagDefinition {
   }
 }
 
-let _DEFAULT_TAG_DEFINITION!: HtmlTagDefinition;
+let DEFAULT_TAG_DEFINITION!: HtmlTagDefinition;
 
 // see https://www.w3.org/TR/html51/syntax.html#optional-tags
 // This implementation does not fully conform to the HTML5 spec.
@@ -69,7 +74,7 @@ let TAG_DEFINITIONS!: {[key: string]: HtmlTagDefinition};
 
 export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
   if (!TAG_DEFINITIONS) {
-    _DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
+    DEFAULT_TAG_DEFINITION = new HtmlTagDefinition({canSelfClose: true});
     TAG_DEFINITIONS = {
       'base': new HtmlTagDefinition({isVoid: true}),
       'meta': new HtmlTagDefinition({isVoid: true}),
@@ -138,9 +143,15 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
       'textarea': new HtmlTagDefinition(
           {contentType: TagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true}),
     };
+
+    new DomElementSchemaRegistry().allKnownElementNames().forEach(knownTagName => {
+      if (!TAG_DEFINITIONS.hasOwnProperty(knownTagName) && getNsPrefix(knownTagName) === null) {
+        TAG_DEFINITIONS[knownTagName] = new HtmlTagDefinition({canSelfClose: false});
+      }
+    });
   }
   // We have to make both a case-sensitive and a case-insensitive lookup, because
   // HTML tag names are case insensitive, whereas some SVG tags are case sensitive.
   return TAG_DEFINITIONS[tagName] ?? TAG_DEFINITIONS[tagName.toLowerCase()] ??
-      _DEFAULT_TAG_DEFINITION;
+      DEFAULT_TAG_DEFINITION;
 }

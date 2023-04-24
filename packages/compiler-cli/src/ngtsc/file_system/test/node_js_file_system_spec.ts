@@ -9,7 +9,8 @@
 // named exports being modified if we apply jasmine spies on `realFs`. Using
 // the default export gives us an object where we can patch properties on.
 import realFs from 'fs';
-import * as os from 'os';
+import os from 'os';
+import url from 'url';
 
 import {NodeJSFileSystem, NodeJSPathManipulation, NodeJSReadonlyFileSystem} from '../src/node_js_file_system';
 import {AbsoluteFsPath, PathSegment} from '../src/types';
@@ -57,7 +58,8 @@ describe('NodeJSReadonlyFileSystem', () => {
 
   describe('isCaseSensitive()', () => {
     it('should return true if the FS is case-sensitive', () => {
-      const isCaseSensitive = !realFs.existsSync(__filename.toUpperCase());
+      const currentFilename = url.fileURLToPath(import.meta.url);
+      const isCaseSensitive = !realFs.existsSync(currentFilename.toUpperCase());
       expect(fs.isCaseSensitive()).toEqual(isCaseSensitive);
     });
   });

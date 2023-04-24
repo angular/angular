@@ -21,6 +21,7 @@ export interface PotentialImport {
   // If no moduleSpecifier is present, the given symbol name is already in scope.
   moduleSpecifier?: string;
   symbolName: string;
+  isForwardReference: boolean;
 }
 
 /**
@@ -88,4 +89,19 @@ export interface PotentialPipe {
    * Whether or not this pipe is in scope.
    */
   isInScope: boolean;
+}
+
+/**
+ * Possible modes in which to look up a potential import.
+ */
+export enum PotentialImportMode {
+  /** Whether an import is standalone is inferred based on its metadata. */
+  Normal,
+
+  /**
+   * An import is assumed to be standalone and is imported directly. This is useful for migrations
+   * where a declaration wasn't standalone when the program was created, but will become standalone
+   * as a part of the migration.
+   */
+  ForceDirect,
 }

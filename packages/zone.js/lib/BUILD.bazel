@@ -1,4 +1,4 @@
-load("@npm//@bazel/concatjs:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -16,6 +16,7 @@ ts_library(
 
 ts_library(
     name = "lib",
+    package_name = "zone.js/lib",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["zone.ts"],
@@ -26,6 +27,5 @@ ts_library(
         "@npm//@types/jasmine",
         "@npm//@types/node",
         "@npm//rxjs",
-        "@npm//tslib",
     ],
 )

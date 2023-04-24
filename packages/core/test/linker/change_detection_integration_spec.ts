@@ -130,8 +130,8 @@ describe(`ChangeDetection`, () => {
        }));
 
     it('should support / operations', fakeAsync(() => {
-         expect(_bindAndCheckSimpleValue('10 / 2')).toEqual([`id=${5.0}`]);
-       }));  // dart exp=5.0, js exp=5
+         expect(_bindAndCheckSimpleValue('10 / 2')).toEqual([`id=5`]);
+       }));
 
     it('should support % operations', fakeAsync(() => {
          expect(_bindAndCheckSimpleValue('11 % 2')).toEqual(['id=1']);

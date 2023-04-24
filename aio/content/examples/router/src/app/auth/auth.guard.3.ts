@@ -1,13 +1,8 @@
-// #docregion can-activate-child
 import { inject } from '@angular/core';
-import {
-  CanActivateFn, CanMatchFn, Router,
-  CanActivateChildFn,
-  UrlTree
-} from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
-export const authGuard: CanMatchFn|CanActivateFn|CanActivateChildFn = () => {
+export const authGuard = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 

@@ -18,8 +18,6 @@ import * as s0207 from '../02-07/app/app.module';
 import * as s0208 from '../02-08/app/app.module';
 import * as s0408 from '../04-08/app/app.module';
 import * as s0410 from '../04-10/app/app.module';
-import * as s0411 from '../04-11/app/app.module';
-import * as s0412 from '../04-12/app/app.module';
 import * as s0502 from '../05-02/app/app.module';
 import * as s0503 from '../05-03/app/app.module';
 import * as s0504 from '../05-04/app/app.module';
@@ -32,7 +30,6 @@ import * as s0517 from '../05-17/app/app.module';
 import * as s0601 from '../06-01/app/app.module';
 import * as s0603 from '../06-03/app/app.module';
 import * as s0701 from '../07-01/app/app.module';
-import * as s0703 from '../07-03/app/app.module';
 import * as s0704 from '../07-04/app/app.module';
 import * as s0901 from '../09-01/app/app.module';
 
@@ -48,8 +45,6 @@ import * as s0901 from '../09-01/app/app.module';
     s0208.AppModule,
     s0408.AppModule,
     s0410.AppModule,
-    s0411.AppModule,
-    s0412.AppModule,
     s0502.AppModule,
     s0503.AppModule,
     s0504.AppModule,
@@ -62,7 +57,6 @@ import * as s0901 from '../09-01/app/app.module';
     s0601.AppModule,
     s0603.AppModule,
     s0701.AppModule,
-    s0703.AppModule,
     s0704.AppModule,
     s0901.AppModule,
 

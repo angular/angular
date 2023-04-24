@@ -19,21 +19,28 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
   describe('build()', () => {
     let cpSpy;
+    let chmodSpy;
     let yarnSpy;
 
     beforeEach(() => {
       cpSpy = spyOn(sh, 'cp');
+      chmodSpy = spyOn(sh, 'chmod');
       yarnSpy = spyOn(u, 'yarn');
     });
 
     it('should build the app for the appropriate mode', () => {
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
-      expect(yarnSpy).toHaveBeenCalledWith('build --aio_build_config=bar');
+      expect(yarnSpy).toHaveBeenCalledWith('build-prod --aio_build_config=bar');
+    });
+
+    it('should remove write protection from the dist folder', () => {
+      pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
+      expect(chmodSpy).toHaveBeenCalledWith('-R', 'u+w', '../dist/bin/aio/build');
     });
 
     it('should add mode-specific files into the distribution', () => {
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
-      expect(cpSpy).toHaveBeenCalledWith('-rf', 'src/extra-files/bar/.', '../dist/bin/aio/build');
+      expect(cpSpy).toHaveBeenCalledWith('-rf', 'src/extra-files/bar/.', 'dist');
     });
 
     it('should update the opensearch descriptor', () => {
@@ -52,13 +59,16 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
     it('should execute the operations in the correct order', () => {
       let logs = [];
       yarnSpy.and.callFake(cmd => logs.push(`yarn ${cmd}`));
+      chmodSpy.and.callFake((opts, mode, file) => logs.push(`chmod ${opts} ${mode} ${file}`));
       cpSpy.and.callFake((opts, from, to) => logs.push(`cp ${opts} ${from} ${to}`));
 
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
       expect(logs).toEqual([
-        'yarn build --aio_build_config=bar',
-        'cp -rf src/extra-files/bar/. ../dist/bin/aio/build',
+        'yarn build-prod --aio_build_config=bar',
+        'chmod -R u+w ../dist/bin/aio/build',
         'yarn set-opensearch-url http://example.com/foo/',
+        'cp -rf ../dist/bin/aio/build dist',
+        'cp -rf src/extra-files/bar/. dist',
       ]);
     });
   });
@@ -81,8 +91,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should disable the ServiceWorker by renaming the `ngsw.json` manifest', () => {
       pre.disableServiceWorker();
-      expect(mvSpy).toHaveBeenCalledWith('../dist/bin/aio/build/ngsw.json',
-          '../dist/bin/aio/build/ngsw.json.bak');
+      expect(mvSpy).toHaveBeenCalledWith('dist/ngsw.json', 'dist/ngsw.json.bak');
     });
   });
 
@@ -149,12 +158,13 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should undo `build()`', () => {
       pre.undo.build();
-      expect(rmSpy).toHaveBeenCalledWith('-rf', '../dist/bin/aio/build');
+      expect(rmSpy).toHaveBeenCalledWith('-rf', 'dist');
     });
   });
 
   describe('undo.checkPayloadSize()', () => {
     // This method is a no-op, so there is nothing to test.
+    // eslint-disable-next-line jasmine/expect-single-argument
     it('does not need tests', () => expect().nothing());
   });
 
@@ -165,8 +175,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should undo `disableServiceWorker()`', () => {
       pre.undo.disableServiceWorker();
-      expect(mvSpy).toHaveBeenCalledWith('../dist/bin/aio/build/ngsw.json.bak',
-          '../dist/bin/aio/build/ngsw.json');
+      expect(mvSpy).toHaveBeenCalledWith('dist/ngsw.json.bak', 'dist/ngsw.json');
     });
   });
 

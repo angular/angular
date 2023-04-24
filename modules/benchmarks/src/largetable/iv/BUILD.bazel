@@ -1,14 +1,15 @@
-load("//tools:defaults.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "http_server")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-ts_devserver(
+http_server(
     name = "devserver",
-    bootstrap = ["largetable.js"],
-    port = 4200,
-    static_files = ["index.html"],
+    srcs = [
+        "app_bundle.js",
+        "index.html",
+    ],
 )
 
 benchmark_test(

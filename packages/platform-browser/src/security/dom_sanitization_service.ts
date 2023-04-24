@@ -89,12 +89,13 @@ export interface SafeResourceUrl extends SafeValue {}
 @Injectable({providedIn: 'root', useExisting: forwardRef(() => DomSanitizerImpl)})
 export abstract class DomSanitizer implements Sanitizer {
   /**
-   * Sanitizes a value for use in the given SecurityContext.
+   * Gets a safe value from either a known safe value or a value with unknown safety.
    *
-   * If value is trusted for the context, this method will unwrap the contained safe value and use
-   * it directly. Otherwise, value will be sanitized to be safe in the given context, for example
-   * by replacing URLs that have an unsafe protocol part (such as `javascript:`). The implementation
-   * is responsible to make sure that the value can definitely be safely used in the given context.
+   * If the given value is already a `SafeValue`, this method returns the unwrapped value.
+   * If the security context is HTML and the given value is a plain string, this method
+   * sanitizes the string, removing any potentially unsafe content.
+   * For any other security context, this method throws an error if provided
+   * with a plain string.
    */
   abstract sanitize(context: SecurityContext, value: SafeValue|string|null): string|null;
 

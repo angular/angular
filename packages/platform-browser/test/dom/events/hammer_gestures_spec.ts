@@ -30,14 +30,6 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
         plugin = new HammerGesturesPlugin(document, new HammerGestureConfig(), fakeConsole);
       });
 
-      it('should implement addGlobalEventListener', () => {
-        spyOn(plugin, 'addEventListener').and.callFake(() => () => {});
-
-        expect(() => {
-          plugin.addGlobalEventListener('document', 'swipe', () => {});
-        }).not.toThrowError();
-      });
-
       it('should warn user and do nothing when Hammer.js not loaded', () => {
         expect(plugin.supports('swipe')).toBe(false);
         expect(fakeConsole.warn)

@@ -7,7 +7,10 @@
  */
 
 import {closeSync, exists, fstatSync, openSync, read, unlink, unlinkSync, unwatchFile, watch, watchFile, write, writeFile} from 'fs';
-import * as util from 'util';
+import url from 'url';
+import util from 'util';
+
+const currentFile = url.fileURLToPath(import.meta.url);
 
 describe('nodejs file system', () => {
   describe('async method patch test', () => {
@@ -94,7 +97,7 @@ describe('nodejs file system', () => {
 describe('util.promisify', () => {
   it('fs.exists should work with util.promisify', (done: DoneFn) => {
     const promisifyExists = util.promisify(exists);
-    promisifyExists(__filename)
+    promisifyExists(currentFile)
         .then(
             r => {
               expect(r).toBe(true);
@@ -107,7 +110,7 @@ describe('util.promisify', () => {
 
   it('fs.read should work with util.promisify', (done: DoneFn) => {
     const promisifyRead = util.promisify(read);
-    const fd = openSync(__filename, 'r');
+    const fd = openSync(currentFile, 'r');
     const stats = fstatSync(fd);
     const bufferSize = stats.size;
     const chunkSize = 512;
@@ -129,7 +132,7 @@ describe('util.promisify', () => {
 
   it('fs.write should work with util.promisify', (done: DoneFn) => {
     const promisifyWrite = util.promisify(write);
-    const dest = __filename + 'write';
+    const dest = currentFile + 'write';
     const fd = openSync(dest, 'a');
     const stats = fstatSync(fd);
     const chunkSize = 512;

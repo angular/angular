@@ -20,7 +20,7 @@ import {NOOP_PERF_RECORDER} from '../../../perf';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../scope';
 import {getDeclaration, makeProgram} from '../../../testing';
-import {InjectableClassRegistry, ResourceLoader, ResourceLoaderContext} from '../../common';
+import {InjectableClassRegistry, NoopReferencesRegistry, ResourceLoader, ResourceLoaderContext} from '../../common';
 import {ComponentDecoratorHandler} from '../src/handler';
 
 export class StubResourceLoader implements ResourceLoader {
@@ -55,6 +55,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const scopeRegistry = new LocalModuleScopeRegistry(
       metaRegistry, metaReader, dtsResolver, new ReferenceEmitter([]), null);
   const refEmitter = new ReferenceEmitter([]);
+  const referencesRegistry = new NoopReferencesRegistry();
   const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
   const resourceRegistry = new ResourceRegistry();
   const hostDirectivesResolver = new HostDirectivesResolver(metaReader);
@@ -85,6 +86,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       cycleAnalyzer,
       CycleHandlingStrategy.UseRemoteScoping,
       refEmitter,
+      referencesRegistry,
       /* depTracker */ null,
       injectableRegistry,
       /* semanticDepGraphUpdater */ null,

@@ -8,9 +8,11 @@
 
 import {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';
-import {Type} from '../../interface/type';
+import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
+import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
+import type {EffectManager} from '../reactivity/effect';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
@@ -18,7 +20,7 @@ import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
 import {LQueries, TQueries} from './query';
 import {Renderer, RendererFactory} from './renderer';
-import {RComment, RElement} from './renderer_dom';
+import {RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 
 
@@ -36,19 +38,22 @@ export const T_HOST = 6;
 export const CLEANUP = 7;
 export const CONTEXT = 8;
 export const INJECTOR = 9;
-export const RENDERER_FACTORY = 10;
+export const ENVIRONMENT = 10;
 export const RENDERER = 11;
-export const SANITIZER = 12;
-export const CHILD_HEAD = 13;
-export const CHILD_TAIL = 14;
+export const CHILD_HEAD = 12;
+export const CHILD_TAIL = 13;
 // FIXME(misko): Investigate if the three declarations aren't all same thing.
-export const DECLARATION_VIEW = 15;
-export const DECLARATION_COMPONENT_VIEW = 16;
-export const DECLARATION_LCONTAINER = 17;
-export const PREORDER_HOOK_FLAGS = 18;
-export const QUERIES = 19;
-export const ID = 20;
-export const EMBEDDED_VIEW_INJECTOR = 21;
+export const DECLARATION_VIEW = 14;
+export const DECLARATION_COMPONENT_VIEW = 15;
+export const DECLARATION_LCONTAINER = 16;
+export const PREORDER_HOOK_FLAGS = 17;
+export const QUERIES = 18;
+export const ID = 19;
+export const EMBEDDED_VIEW_INJECTOR = 20;
+export const ON_DESTROY_HOOKS = 21;
+export const HYDRATION = 22;
+export const REACTIVE_TEMPLATE_CONSUMER = 23;
+export const REACTIVE_HOST_BINDING_CONSUMER = 24;
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -56,7 +61,7 @@ export const EMBEDDED_VIEW_INJECTOR = 21;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 22;
+export const HEADER_OFFSET = 25;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -78,15 +83,6 @@ export interface OpaqueViewState {
  * don't have to edit the data array based on which views are present.
  */
 export interface LView<T = unknown> extends Array<any> {
-  /**
-   * Human readable representation of the `LView`.
-   *
-   * NOTE: This property only exists if `ngDevMode` is set to `true` and it is not present in
-   * production. Its presence is purely to help debug issue in development, and should not be relied
-   * on in production application.
-   */
-  debug?: LViewDebug;
-
   /**
    * The node into which this `LView` is inserted.
    */
@@ -184,14 +180,13 @@ export interface LView<T = unknown> extends Array<any> {
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
   readonly[INJECTOR]: Injector|null;
 
-  /** Factory to be used for creating Renderer. */
-  [RENDERER_FACTORY]: RendererFactory;
+  /**
+   * Contextual data that is shared across multiple instances of `LView` in the same application.
+   */
+  [ENVIRONMENT]: LViewEnvironment;
 
   /** Renderer to be used for this view. */
   [RENDERER]: Renderer;
-
-  /** An optional custom sanitizer. */
-  [SANITIZER]: Sanitizer|null;
 
   /**
    * Reference to the first LView or LContainer beneath this LView in
@@ -333,10 +328,49 @@ export interface LView<T = unknown> extends Array<any> {
   [ID]: number;
 
   /**
+   * A container related to hydration annotation information that's associated with this LView.
+   */
+  [HYDRATION]: DehydratedView|null;
+
+  /**
    * Optional injector assigned to embedded views that takes
    * precedence over the element and module injectors.
    */
   readonly[EMBEDDED_VIEW_INJECTOR]: Injector|null;
+
+  /**
+   * A collection of callbacks functions that are executed when a given LView is destroyed. Those
+   * are user defined, LView-specific destroy callbacks that don't have any corresponding TView
+   * entries.
+   */
+  [ON_DESTROY_HOOKS]: Array<() => void>|null;
+
+  /**
+   * The `Consumer` for this `LView`'s template so that signal reads can be tracked.
+   *
+   * This is initially `null` and gets assigned a consumer after template execution
+   * if any signals were read.
+   */
+  [REACTIVE_TEMPLATE_CONSUMER]: ReactiveLViewConsumer|null;
+
+  /**
+   * Same as REACTIVE_TEMPLATE_CONSUMER, but for the host bindings of the LView.
+   */
+  [REACTIVE_HOST_BINDING_CONSUMER]: ReactiveLViewConsumer|null;
+}
+
+/**
+ * Contextual data that is shared across multiple instances of `LView` in the same application.
+ */
+export interface LViewEnvironment {
+  /** Factory to be used for creating Renderer. */
+  rendererFactory: RendererFactory;
+
+  /** An optional custom sanitizer. */
+  sanitizer: Sanitizer|null;
+
+  /** Container for reactivity system `effect`s. */
+  effectManager: EffectManager|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
@@ -367,33 +401,36 @@ export const enum LViewFlags {
   /** Whether this view has default change detection strategy (checks always) or onPush */
   CheckAlways = 0b00000010000,
 
+  /** Whether there are any i18n blocks inside this LView. */
+  HasI18n = 0b00000100000,
+
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b00000100000,
+  Dirty = 0b000001000000,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b000001000000,
+  Attached = 0b000010000000,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b000010000000,
+  Destroyed = 0b000100000000,
 
   /** Whether or not this view is the root view */
-  IsRoot = 0b000100000000,
+  IsRoot = 0b001000000000,
 
   /**
    * Whether this moved LView was needs to be refreshed at the insertion location because the
    * declaration was dirty.
    */
-  RefreshTransplantedView = 0b001000000000,
+  RefreshTransplantedView = 0b0010000000000,
 
   /** Indicates that the view **or any of its ancestors** have an embedded view injector. */
-  HasEmbeddedViewInjector = 0b0010000000000,
+  HasEmbeddedViewInjector = 0b0100000000000,
 
   /**
    * Index of the current init phase on last 21 bits
    */
-  IndexWithinInitPhaseIncrementer = 0b0100000000000,
-  IndexWithinInitPhaseShift = 11,
-  IndexWithinInitPhaseReset = 0b0011111111111,
+  IndexWithinInitPhaseIncrementer = 0b01000000000000,
+  IndexWithinInitPhaseShift = 12,
+  IndexWithinInitPhaseReset = 0b00111111111111,
 }
 
 /**
@@ -519,17 +556,6 @@ export const enum TViewType {
    */
   Embedded = 2,
 }
-
-/**
- * Converts `TViewType` into human readable text.
- * Make sure this matches with `TViewType`
- */
-export const TViewTypeAsString = [
-  'Root',       // 0
-  'Component',  // 1
-  'Embedded',   // 2
-] as const;
-
 
 /**
  * The static data for an LView (shared between all templates of a
@@ -787,6 +813,14 @@ export interface TView {
    * view. This means that the view is likely corrupted and we should try to recover it.
    */
   incompleteFirstPass: boolean;
+
+  /**
+   * Unique id of this TView for hydration purposes:
+   * - TViewType.Embedded: a unique id generated during serialization on the server
+   * - TViewType.Component: an id generated based on component properties
+   *                        (see `getComponentId` function for details)
+   */
+  ssrId: string|null;
 }
 
 /** Single hook callback function. */
@@ -865,250 +899,3 @@ export type TData = (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|numb
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
-
-/**
- * Human readable version of the `LView`.
- *
- * `LView` is a data structure used internally to keep track of views. The `LView` is designed for
- * efficiency and so at times it is difficult to read or write tests which assert on its values. For
- * this reason when `ngDevMode` is true we patch a `LView.debug` property which points to
- * `LViewDebug` for easier debugging and test writing. It is the intent of `LViewDebug` to be used
- * in tests.
- */
-export interface LViewDebug<T = unknown> {
-  /**
-   * Flags associated with the `LView` unpacked into a more readable state.
-   *
-   * See `LViewFlags` for the flag meanings.
-   */
-  readonly flags: {
-    initPhaseState: number,
-    creationMode: boolean,
-    firstViewPass: boolean,
-    checkAlways: boolean,
-    dirty: boolean,
-    attached: boolean,
-    destroyed: boolean,
-    isRoot: boolean,
-    indexWithinInitPhase: number,
-  };
-
-  /**
-   * Associated TView
-   */
-  readonly tView: TView;
-
-  /**
-   * Parent view (or container)
-   */
-  readonly parent: LViewDebug|LContainerDebug|null;
-
-  /**
-   * Next sibling to the `LView`.
-   */
-  readonly next: LViewDebug|LContainerDebug|null;
-
-  /**
-   * The context used for evaluation of the `LView`
-   *
-   * (Usually the component)
-   */
-  readonly context: T;
-
-  /**
-   * Hierarchical tree of nodes.
-   */
-  readonly nodes: DebugNode[];
-
-  /**
-   * Template structure (no instance data).
-   * (Shows how TNodes are connected)
-   */
-  readonly template: string;
-
-  /**
-   * HTML representation of the `LView`.
-   *
-   * This is only approximate to actual HTML as child `LView`s are removed.
-   */
-  readonly html: string;
-
-  /**
-   * The host element to which this `LView` is attached.
-   */
-  readonly hostHTML: string|null;
-
-  /**
-   * Child `LView`s
-   */
-  readonly childViews: Array<LViewDebug|LContainerDebug>;
-
-  /**
-   * Sub range of `LView` containing decls (DOM elements).
-   */
-  readonly decls: LViewDebugRange;
-
-  /**
-   * Sub range of `LView` containing vars (bindings).
-   */
-  readonly vars: LViewDebugRange;
-
-  /**
-   * Sub range of `LView` containing expando (used by DI).
-   */
-  readonly expando: LViewDebugRange;
-}
-
-/**
- * Human readable version of the `LContainer`
- *
- * `LContainer` is a data structure used internally to keep track of child views. The `LContainer`
- * is designed for efficiency and so at times it is difficult to read or write tests which assert on
- * its values. For this reason when `ngDevMode` is true we patch a `LContainer.debug` property which
- * points to `LContainerDebug` for easier debugging and test writing. It is the intent of
- * `LContainerDebug` to be used in tests.
- */
-export interface LContainerDebug {
-  readonly native: RComment;
-  /**
-   * Child `LView`s.
-   */
-  readonly views: LViewDebug[];
-  readonly parent: LViewDebug|null;
-  readonly movedViews: LView[]|null;
-  readonly host: RElement|RComment|LView;
-  readonly next: LViewDebug|LContainerDebug|null;
-  readonly hasTransplantedViews: boolean;
-}
-
-
-
-/**
- * `LView` is subdivided to ranges where the actual data is stored. Some of these ranges such as
- * `decls` and `vars` are known at compile time. Other such as `i18n` and `expando` are runtime only
- * concepts.
- */
-export interface LViewDebugRange {
-  /**
-   * The starting index in `LView` where the range begins. (Inclusive)
-   */
-  start: number;
-
-  /**
-   * The ending index in `LView` where the range ends. (Exclusive)
-   */
-  end: number;
-
-  /**
-   * The length of the range
-   */
-  length: number;
-
-  /**
-   * The merged content of the range. `t` contains data from `TView.data` and `l` contains `LView`
-   * data at an index.
-   */
-  content: LViewDebugRangeContent[];
-}
-
-/**
- * For convenience the static and instance portions of `TView` and `LView` are merged into a single
- * object in `LViewRange`.
- */
-export interface LViewDebugRangeContent {
-  /**
-   * Index into original `LView` or `TView.data`.
-   */
-  index: number;
-
-  /**
-   * Value from the `TView.data[index]` location.
-   */
-  t: any;
-
-  /**
-   * Value from the `LView[index]` location.
-   */
-  l: any;
-}
-
-
-/**
- * A logical node which comprise into `LView`s.
- *
- */
-export interface DebugNode {
-  /**
-   * HTML representation of the node.
-   */
-  html: string|null;
-
-  /**
-   * Associated `TNode`
-   */
-  tNode: TNode;
-
-  /**
-   * Human readable node type.
-   */
-  type: string;
-
-  /**
-   * DOM native node.
-   */
-  native: Node;
-
-  /**
-   * Child nodes
-   */
-  children: DebugNode[];
-
-  /**
-   * A list of Component/Directive types which need to be instantiated an this location.
-   */
-  factories: Type<unknown>[];
-
-  /**
-   * A list of Component/Directive instances which were instantiated an this location.
-   */
-  instances: unknown[];
-
-  /**
-   * NodeInjector information.
-   */
-  injector: NodeInjectorDebug;
-
-  /**
-   * Injector resolution path.
-   */
-  injectorResolutionPath: any;
-}
-
-export interface NodeInjectorDebug {
-  /**
-   * Instance bloom. Does the current injector have a provider with a given bloom mask.
-   */
-  bloom: string;
-
-
-  /**
-   * Cumulative bloom. Do any of the above injectors have a provider with a given bloom mask.
-   */
-  cumulativeBloom: string;
-
-  /**
-   * A list of providers associated with this injector.
-   */
-  providers: (Type<unknown>|DirectiveDef<unknown>|ComponentDef<unknown>)[];
-
-  /**
-   * A list of providers associated with this injector visible to the view of the component only.
-   */
-  viewProviders: Type<unknown>[];
-
-
-  /**
-   * Location of the parent `TNode`.
-   */
-  parentInjectorIndex: number;
-}

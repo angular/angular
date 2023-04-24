@@ -77,7 +77,7 @@ Perform these steps from a command-line tool on your local computer or in the **
 
     <code-example language="shell">
 
-    yarn serve-and-sync
+    yarn start
 
     </code-example>
 
@@ -167,7 +167,7 @@ Remember to replace `personal` with your GitHub username.
 
     <code-example language="shell">
 
-    yarn serve-and-sync
+    yarn start
 
     </code-example>
 

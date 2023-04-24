@@ -29,6 +29,7 @@ ts_library(
     deps = [
         ":lib",
         "//packages:types",
+        "@npm//@bazel/runfiles",
         "@npm//typescript",
     ],
 )

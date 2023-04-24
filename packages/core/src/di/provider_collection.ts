@@ -13,9 +13,9 @@ import {getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError} from '../render3/errors_di';
 import {stringifyForError} from '../render3/util/stringify_utils';
 import {deepForEach} from '../util/array_utils';
+import {EMPTY_ARRAY} from '../util/empty';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
-import {EMPTY_ARRAY} from '../view';
 
 import {resolveForwardRef} from './forward_ref';
 import {ENVIRONMENT_INITIALIZER} from './initializer_token';
@@ -28,7 +28,8 @@ import {INJECTOR_DEF_TYPES} from './internal_tokens';
  * Wrap an array of `Provider`s into `EnvironmentProviders`, preventing them from being accidentally
  * referenced in `@Component in a component injector.
  */
-export function makeEnvironmentProviders(providers: Provider[]): EnvironmentProviders {
+export function makeEnvironmentProviders(providers: (Provider|EnvironmentProviders)[]):
+    EnvironmentProviders {
   return {
     ɵproviders: providers,
   } as unknown as EnvironmentProviders;

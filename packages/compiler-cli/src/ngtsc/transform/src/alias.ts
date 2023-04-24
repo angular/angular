@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 export function aliasTransformFactory(exportStatements: Map<string, Map<string, [string, string]>>):
     ts.TransformerFactory<ts.SourceFile> {
-  return (context: ts.TransformationContext) => {
+  return () => {
     return (file: ts.SourceFile) => {
       if (ts.isBundle(file) || !exportStatements.has(file.fileName)) {
         return file;
@@ -19,10 +19,9 @@ export function aliasTransformFactory(exportStatements: Map<string, Map<string, 
       const statements = [...file.statements];
       exportStatements.get(file.fileName)!.forEach(([moduleName, symbolName], aliasName) => {
         const stmt = ts.factory.createExportDeclaration(
-            /* decorators */ undefined,
             /* modifiers */ undefined,
             /* isTypeOnly */ false,
-            /* exportClause */ ts.createNamedExports([ts.factory.createExportSpecifier(
+            /* exportClause */ ts.factory.createNamedExports([ts.factory.createExportSpecifier(
                 false, symbolName, aliasName)]),
             /* moduleSpecifier */ ts.factory.createStringLiteral(moduleName));
         statements.push(stmt);

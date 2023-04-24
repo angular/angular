@@ -22,7 +22,6 @@ import {TNode, TNodeType} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
 import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state';
-import {attachDebugGetter} from '../util/debug_utils';
 
 import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
@@ -41,15 +40,31 @@ const SUBTEMPLATE_REGEXP = /�\/?\*(\d+:\d+)�/gi;
 const PH_REGEXP = /�(\/?[#*]\d+):?\d*�/gi;
 
 /**
- * Angular Dart introduced &ngsp; as a placeholder for non-removable space, see:
- * https://github.com/dart-lang/angular/blob/0bb611387d29d65b5af7f9d2515ab571fd3fbee4/_tests/test/compiler/preserve_whitespace_test.dart#L25-L32
- * In Angular Dart &ngsp; is converted to the 0xE500 PUA (Private Use Areas) unicode character
- * and later on replaced by a space. We are re-implementing the same idea here, since translations
- * might contain this special character.
+ * Angular uses the special entity &ngsp; as a placeholder for non-removable space.
+ * It's replaced by the 0xE500 PUA (Private Use Areas) unicode character and later on replaced by a
+ * space.
+ * We are re-implementing the same idea since translations might contain this special character.
  */
 const NGSP_UNICODE_REGEXP = /\uE500/g;
 function replaceNgsp(value: string): string {
   return value.replace(NGSP_UNICODE_REGEXP, ' ');
+}
+
+/**
+ * Patch a `debug` property getter on top of the existing object.
+ *
+ * NOTE: always call this method with `ngDevMode && attachDebugObject(...)`
+ *
+ * @param obj Object to patch
+ * @param debugGetter Getter returning a value to patch
+ */
+function attachDebugGetter<T>(obj: T, debugGetter: (this: T) => any): void {
+  if (ngDevMode) {
+    Object.defineProperty(obj, 'debug', {get: debugGetter, enumerable: false});
+  } else {
+    throw new Error(
+        'This method should be guarded with `ngDevMode` so that it can be tree shaken in production!');
+  }
 }
 
 /**

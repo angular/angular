@@ -1,7 +1,6 @@
 // #docregion
-import { CanActivateFn } from '@angular/router';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard = () => {
   console.log('authGuard#canActivate called');
   return true;
 };

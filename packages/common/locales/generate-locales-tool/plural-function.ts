@@ -10,7 +10,7 @@ import {runfiles} from '@bazel/runfiles';
 import {CldrLocaleData} from './cldr-data';
 
 // There are no types available for `cldr`.
-const {load: createCldr} = require('cldr');
+const {load: createCldr} = await import('cldr' as any);
 
 /**
  * Returns the plural function for a locale.

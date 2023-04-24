@@ -46,8 +46,7 @@ const POOL_INCLUSION_LENGTH_THRESHOLD_FOR_STRINGS = 50;
 class FixupExpression extends o.Expression {
   private original: o.Expression;
 
-  // TODO(issue/24571): remove '!'.
-  shared!: boolean;
+  shared = false;
 
   constructor(public resolved: o.Expression) {
     super(resolved.type);

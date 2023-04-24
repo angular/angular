@@ -18,6 +18,4 @@ function main() {
   process.stdout.write(generateBaseCurrenciesFile(baseLocaleData));
 }
 
-if (require.main === module) {
-  main();
-}
+main();

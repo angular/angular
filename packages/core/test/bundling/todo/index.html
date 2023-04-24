@@ -1,23 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html>
+  <head>
+    <title>Angular Todo Example</title>
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="todo.css" />
+    <style>
+      .done {
+        text-decoration: line-through;
+      }
+    </style>
+  </head>
 
-<head>
-  <title>Angular Todo Example</title>
-  <link rel="stylesheet" href="base.css">
-  <link rel="stylesheet" href="todo.css">
-  <style>
-    .done {
-      text-decoration: line-through;
-    }
-  </style>
-</head>
+  <body>
+    <!-- The Angular application will be bootstrapped into this element. -->
+    <todo-app></todo-app>
 
-<body>
-  <!-- The Angular application will be bootstrapped into this element. -->
-  <todo-app></todo-app>
-
-  <!--
+    <!--
       Script tag which bootstraps the application. Use `?debug` in URL to select
       the debug version of the script.
 
@@ -31,11 +30,18 @@
         plugins from the devkit and terser, however mangling is disabled and the minified
         file is formatted using prettier (to ease debugging).
     -->
-  <script>
-    document.write('<script src="' +
-      (document.location.search.endsWith('debug') ? '/bundle.debug.min.js' : '/bundle.min.js.br') +
-      '"></' + 'script>');
-  </script>
-</body>
-
+    <script>
+      document.write(
+        '<script src="' +
+          (document.location.search.endsWith('debug')
+            ? '/bundle.debug.min.js'
+            : '/bundle.min.js.br') +
+          '"></' +
+          'script>'
+      );
+    </script>
+    <script>
+      bootstrapApp();
+    </script>
+  </body>
 </html>

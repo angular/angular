@@ -41,7 +41,7 @@ function createNgModuleDefinitionMap(meta: R3NgModuleMetadata):
   definitionMap.set('minVersion', o.literal(MINIMUM_PARTIAL_LINKER_VERSION));
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
   definitionMap.set('ngImport', o.importExpr(R3.core));
-  definitionMap.set('type', meta.internalType);
+  definitionMap.set('type', meta.type.value);
 
   // We only generate the keys in the metadata if the arrays contain values.
 

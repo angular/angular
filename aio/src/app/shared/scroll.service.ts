@@ -161,8 +161,8 @@ export class ScrollService implements OnDestroy {
 
         // If we are very close to the top (<20px), then scroll all the way up.
         // (This can happen if `element` is at the top of the page, but has a small top-margin.)
-        if (window.pageYOffset < 20) {
-          window.scrollBy(0, -window.pageYOffset);
+        if (window.scrollY < 20) {
+          window.scrollBy(0, -window.scrollY);
         }
       }
     }

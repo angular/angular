@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
 import {LocalIdentifierStrategy, ReferenceEmitter} from '../../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, LocalMetadataRegistry} from '../../../metadata';
+import {CompoundMetadataReader, DtsMetadataReader, ExportedProviderStatusResolver, LocalMetadataRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../perf';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
@@ -68,11 +68,12 @@ runInEachFileSystem(() => {
           new ReferenceEmitter([]), null);
       const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
       const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
+      const exportedProviderStatusResolver = new ExportedProviderStatusResolver(metaReader);
 
       const handler = new NgModuleDecoratorHandler(
           reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
-          /* isCore */ false, refEmitter, /* factoryTracker */ null,
-          /* annotateForClosureCompiler */ false, /* onlyPublishPublicTypings */ false,
+          exportedProviderStatusResolver, /* semanticDepGraphUpdater */ null, /* isCore */ false,
+          refEmitter, /* annotateForClosureCompiler */ false, /* onlyPublishPublicTypings */ false,
           injectableRegistry, NOOP_PERF_RECORDER);
       const TestModule =
           getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);

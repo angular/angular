@@ -20,6 +20,4 @@ function main() {
   process.stdout.write(generateLocale(BASE_LOCALE, baseLocaleData, baseCurrencies));
 }
 
-if (require.main === module) {
-  main();
-}
+main();

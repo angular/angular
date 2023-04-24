@@ -7,13 +7,17 @@
  */
 import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵmakeTemplateObject} from '@angular/localize';
-import generate from '@babel/generator';
+import babel, {NodePath, TransformOptions, types as t} from '@babel/core';
+import _generate from '@babel/generator';
+import _template from '@babel/template';
 
-import {NodePath, TransformOptions, transformSync, types as t} from '../src/babel_core';
+// Babel is a CJS package and misuses the `default` named binding:
+// https://github.com/babel/babel/issues/15269.
+const generate = (_generate as any)['default'] as typeof _generate;
+const template = (_template as any)['default'] as typeof _template;
 
-import template from '@babel/template';
+import {buildLocalizeReplacement, getLocation, isArrayOfExpressions, isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, unwrapMessagePartsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, unwrapStringLiteralArray, unwrapSubstitutionsFromLocalizeCall, wrapInParensIfNecessary} from '../src/source_file_utils';
 
-import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, getLocation} from '../src/source_file_utils';
 import {runInNativeFileSystem} from './helpers';
 
 runInNativeFileSystem(() => {
@@ -450,7 +454,7 @@ function getFirstExpression<T extends t.Expression>(
 function getExpressions<T extends t.Expression>(
     code: string, options?: TransformOptions): NodePath<T>[] {
   const expressions: NodePath<t.Expression>[] = [];
-  transformSync(code, {
+  babel.transformSync(code, {
     code: false,
     filename: 'test/file.js',
     cwd: '/',
@@ -468,7 +472,7 @@ function getExpressions<T extends t.Expression>(
 
 function getLocalizeCall(code: string): NodePath<t.CallExpression> {
   let callPaths: NodePath<t.CallExpression>[] = [];
-  transformSync(code, {
+  babel.transformSync(code, {
     code: false,
     filename: 'test/file.js',
     cwd: '/',

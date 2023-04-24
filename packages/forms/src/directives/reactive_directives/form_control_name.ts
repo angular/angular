@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges, SkipSelf} from '@angular/core';
 
 import {FormControl} from '../../model/form_control';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -22,7 +22,7 @@ import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
 import {FormGroupDirective} from './form_group_directive';
 import {FormArrayName, FormGroupName} from './form_group_name';
 
-export const controlNameBinding: any = {
+const controlNameBinding: Provider = {
   provide: NgControl,
   useExisting: forwardRef(() => FormControlName)
 };
@@ -86,8 +86,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * while the numerical form allows for form controls to be bound
    * to indices when iterating over controls in a `FormArray`.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input('formControlName') override name!: string|number|null;
+  @Input('formControlName') override name: string|number|null = null;
 
   /**
    * @description

@@ -198,14 +198,10 @@ Classes that don't use Angular features don't need an Angular decorator.
 As support for selectorless decorators is introduced in Angular version 9, if you want to support Angular version 8 and earlier, you shouldn't add a selectorless `@Directive()` decorator.
 You can either add `@Directive()` with a selector or move the Angular-specific features to affected subclasses.
 
-## What about applications using non-migrated libraries?
-
-The [Angular compatibility compiler](guide/glossary#ngcc) \(`ngcc`\) should automatically transform any non-migrated libraries to generate the proper code.
-
 <!-- links -->
 
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-02-16

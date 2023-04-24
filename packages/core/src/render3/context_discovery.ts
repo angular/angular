@@ -13,7 +13,7 @@ import {EMPTY_ARRAY} from '../util/empty';
 import {assertLView} from './assert';
 import {LContext} from './interfaces/context';
 import {getLViewById, registerLView} from './interfaces/lview_tracking';
-import {TNode, TNodeFlags} from './interfaces/node';
+import {TNode} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {isLView} from './interfaces/type_checks';
 import {CONTEXT, HEADER_OFFSET, HOST, ID, LView, TVIEW} from './interfaces/view';

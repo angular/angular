@@ -198,7 +198,6 @@ function findTemplateFn(ctx: number, templateIndex: number|null) {
 function serializePlaceholderValue(value: any): string {
   const element = (data: any, closed?: boolean) => wrapTag('#', data, closed);
   const template = (data: any, closed?: boolean) => wrapTag('*', data, closed);
-  const projection = (data: any, closed?: boolean) => wrapTag('!', data, closed);
 
   switch (value.type) {
     case TagType.ELEMENT:

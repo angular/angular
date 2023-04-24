@@ -3,7 +3,7 @@ load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 circular_dependency_test(
     name = "circular_deps_test",
-    entry_point = "angular/packages/elements/index.js",
+    entry_point = "angular/packages/elements/index.mjs",
     deps = ["//packages/elements"],
 )
 
@@ -30,7 +30,6 @@ filegroup(
     testonly = True,
     # do not sort
     srcs = [
-        "@npm//:node_modules/core-js-bundle/index.js",
         # Required for browsers that do not natively support Custom Elements.
         "@npm//:node_modules/@webcomponents/custom-elements/custom-elements.min.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",

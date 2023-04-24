@@ -8,8 +8,8 @@
 
 /// <reference types="resize-observer-browser" />
 import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MatSlideToggleChange} from '@angular/material/slide-toggle';
-import {MatTabNav} from '@angular/material/tabs';
+import {MatLegacySlideToggleChange as MatSlideToggleChange} from '@angular/material/legacy-slide-toggle';
+import {MatLegacyTabNav as MatTabNav} from '@angular/material/legacy-tabs';
 import {Events, MessageBus, Route} from 'protocol';
 import {Subscription} from 'rxjs';
 

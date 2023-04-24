@@ -25,7 +25,6 @@ export function addImports(
         /* name */ undefined,
         /* namedBindings */ ts.factory.createNamespaceImport(qualifier));
     const decl = ts.factory.createImportDeclaration(
-        /* decorators */ undefined,
         /* modifiers */ undefined,
         /* importClause */ importClause,
         /* moduleSpecifier */ ts.factory.createStringLiteral(i.specifier));

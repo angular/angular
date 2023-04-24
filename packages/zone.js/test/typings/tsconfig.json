@@ -4,24 +4,15 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
     "outDir": "./build",
     "rootDir": ".",
-    "target": "ES2015",
+    "target": "es2020",
+    "module": "Node16",
+    "moduleResolution": "node",
     "noEmitOnError": false,
     "stripInternal": false,
     "strict": true,
-    "lib": [
-      "es5",
-      "dom",
-      "es2015.collection",
-      "es2015.iterable",
-      "es2015.promise",
-    ],
+    "lib": ["es5", "dom", "es2015.collection", "es2015.iterable", "es2015.promise"]
   },
-  "files": [
-    "./type.test.ts",
-    "./node_modules/zone.js/zone.d.ts"
-  ],
+  "files": ["./type.test.ts", "./node_modules/zone.js/zone.d.ts"]
 }

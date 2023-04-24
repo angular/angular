@@ -57,7 +57,7 @@ export class Location implements OnDestroy {
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
   /** @internal */
-  _baseHref: string;
+  _basePath: string;
   /** @internal */
   _locationStrategy: LocationStrategy;
   /** @internal */
@@ -67,8 +67,14 @@ export class Location implements OnDestroy {
 
   constructor(locationStrategy: LocationStrategy) {
     this._locationStrategy = locationStrategy;
-    const browserBaseHref = this._locationStrategy.getBaseHref();
-    this._baseHref = stripTrailingSlash(_stripIndexHtml(browserBaseHref));
+    const baseHref = this._locationStrategy.getBaseHref();
+    // Note: This class's interaction with base HREF does not fully follow the rules
+    // outlined in the spec https://www.freesoft.org/CIE/RFC/1808/18.htm.
+    // Instead of trying to fix individual bugs with more and more code, we should
+    // investigate using the URL constructor and providing the base as a second
+    // argument.
+    // https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#parameters
+    this._basePath = _stripOrigin(stripTrailingSlash(_stripIndexHtml(baseHref)));
     this._locationStrategy.onPopState((ev) => {
       this._subject.emit({
         'url': this.path(true),
@@ -127,7 +133,7 @@ export class Location implements OnDestroy {
    * @returns The normalized URL string.
    */
   normalize(url: string): string {
-    return Location.stripTrailingSlash(_stripBaseHref(this._baseHref, _stripIndexHtml(url)));
+    return Location.stripTrailingSlash(_stripBasePath(this._basePath, _stripIndexHtml(url)));
   }
 
   /**
@@ -294,10 +300,31 @@ export function createLocation() {
   return new Location(ɵɵinject(LocationStrategy as any));
 }
 
-function _stripBaseHref(baseHref: string, url: string): string {
-  return baseHref && url.startsWith(baseHref) ? url.substring(baseHref.length) : url;
+function _stripBasePath(basePath: string, url: string): string {
+  if (!basePath || !url.startsWith(basePath)) {
+    return url;
+  }
+  const strippedUrl = url.substring(basePath.length);
+  if (strippedUrl === '' || ['/', ';', '?', '#'].includes(strippedUrl[0])) {
+    return strippedUrl;
+  }
+  return url;
 }
 
 function _stripIndexHtml(url: string): string {
   return url.replace(/\/index.html$/, '');
+}
+
+function _stripOrigin(baseHref: string): string {
+  // DO NOT REFACTOR! Previously, this check looked like this:
+  // `/^(https?:)?\/\//.test(baseHref)`, but that resulted in
+  // syntactically incorrect code after Closure Compiler minification.
+  // This was likely caused by a bug in Closure Compiler, but
+  // for now, the check is rewritten to use `new RegExp` instead.
+  const isAbsoluteUrl = (new RegExp('^(https?:)?//')).test(baseHref);
+  if (isAbsoluteUrl) {
+    const [, pathname] = baseHref.split(/\/\/[^\/]+/);
+    return pathname;
+  }
+  return baseHref;
 }

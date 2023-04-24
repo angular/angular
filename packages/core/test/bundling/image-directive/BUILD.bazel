@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "app_bundle", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -22,7 +22,9 @@ ng_module(
     ],
 )
 
-app_bundle(
+# Note: Cannot use `app_bundle` as the e2e tests rely on `ngDevMode`
+# output which would otherwise be omitted.
+esbuild(
     name = "bundle",
     entry_point = ":index.ts",
     deps = [
@@ -35,35 +37,19 @@ app_bundle(
     ],
 )
 
-genrule(
-    name = "tslib",
-    srcs = [
-        "@npm//:node_modules/tslib/tslib.js",
-    ],
-    outs = [
-        "tslib.js",
-    ],
-    cmd = "cp $< $@",
-)
-
-ts_devserver(
+http_server(
     name = "devserver",
-    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
-    entry_module = "@angular/core/test/bundling/image-directive",
-    port = 4200,
-    scripts = [
-        "//tools/rxjs:rxjs_umd_modules",
-    ],
-    serving_path = "/bundle.min.js",
-    static_files = [
-        "index.html",
-        ":tslib",
+    srcs = [
         "e2e/a.png",
         "e2e/b.png",
-        "e2e/logo-500w.jpg",
         "e2e/logo-1500w.jpg",
+        "e2e/logo-500w.jpg",
+        "index.html",
     ],
-    deps = [":image-directive"],
+    deps = [
+        ":bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
 )
 
 ts_library(

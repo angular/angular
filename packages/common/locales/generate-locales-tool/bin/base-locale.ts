@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * Base locale used as foundation for other locales. For example: A base locale allows
  * generation of a file containing all currencies with their corresponding symbols. If we

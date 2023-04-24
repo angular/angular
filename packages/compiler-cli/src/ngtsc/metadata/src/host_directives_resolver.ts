@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveMeta, MatchSource, MetadataReader} from '../../metadata/src/api';
+import {DirectiveMeta, InputMapping, MatchSource, MetadataReader} from '../../metadata/src/api';
 import {ClassDeclaration} from '../../reflection';
-import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName} from '../src/property_mapping';
+import {ClassPropertyMapping, InputOrOutput} from '../src/property_mapping';
 
 import {flattenInheritedDirectiveMetadata} from './inheritance';
 
@@ -43,12 +43,9 @@ export class HostDirectivesResolver {
     for (const current of directives) {
       const hostMeta = flattenInheritedDirectiveMetadata(this.metaReader, current.directive);
 
-      // This case has been checked for already, but we keep the assertion here so that the
-      // user gets a better error message than "Cannot read property foo of null" in case
-      // something slipped through.
+      // This case has been checked for already and produces a diagnostic
       if (hostMeta === null) {
-        throw new Error(
-            `Could not resolve host directive metadata of ${current.directive.debugName}`);
+        continue;
       }
 
       if (hostMeta.hostDirectives) {
@@ -58,8 +55,10 @@ export class HostDirectivesResolver {
       results.push({
         ...hostMeta,
         matchSource: MatchSource.HostDirective,
-        inputs: this.filterMappings(hostMeta.inputs, current.inputs),
-        outputs: this.filterMappings(hostMeta.outputs, current.outputs),
+        inputs: ClassPropertyMapping.fromMappedObject(
+            this.filterMappings(hostMeta.inputs, current.inputs, resolveInput)),
+        outputs: ClassPropertyMapping.fromMappedObject(
+            this.filterMappings(hostMeta.outputs, current.outputs, resolveOutput)),
       });
     }
 
@@ -70,11 +69,12 @@ export class HostDirectivesResolver {
    * Filters the class property mappings so that only the allowed ones are present.
    * @param source Property mappings that should be filtered.
    * @param allowedProperties Property mappings that are allowed in the final results.
+   * @param valueResolver Function used to resolve the value that is assigned to the final mapping.
    */
-  private filterMappings(
-      source: ClassPropertyMapping,
-      allowedProperties: {[publicName: string]: string}|null): ClassPropertyMapping {
-    const result: Record<string, BindingPropertyName|[ClassPropertyName, BindingPropertyName]> = {};
+  private filterMappings<T, M extends InputOrOutput>(
+      source: ClassPropertyMapping<M>, allowedProperties: Record<string, string>|null,
+      valueResolver: (bindingName: string, binding: M) => T): Record<string, T> {
+    const result: Record<string, T> = {};
 
     if (allowedProperties !== null) {
       for (const publicName in allowedProperties) {
@@ -83,13 +83,26 @@ export class HostDirectivesResolver {
 
           if (bindings !== null) {
             for (const binding of bindings) {
-              result[binding.classPropertyName] = allowedProperties[publicName];
+              result[binding.classPropertyName] =
+                  valueResolver(allowedProperties[publicName], binding);
             }
           }
         }
       }
     }
 
-    return ClassPropertyMapping.fromMappedObject(result);
+    return result;
   }
+}
+
+function resolveInput(bindingName: string, binding: InputMapping): InputMapping {
+  return {
+    bindingPropertyName: bindingName,
+    classPropertyName: binding.classPropertyName,
+    required: binding.required
+  };
+}
+
+function resolveOutput(bindingName: string): string {
+  return bindingName;
 }

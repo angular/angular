@@ -127,13 +127,12 @@ export interface TestBed {
   /**
    * Overwrites all providers for the given token with the given provider definition.
    */
-  overrideProvider(token: any, provider: {
-    useFactory: Function,
-    deps: any[],
-  }): TestBed;
-  overrideProvider(token: any, provider: {useValue: any;}): TestBed;
-  overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
+  overrideProvider(token: any, provider: {useFactory: Function, deps: any[], multi?: boolean}):
       TestBed;
+  overrideProvider(token: any, provider: {useValue: any, multi?: boolean}): TestBed;
+  overrideProvider(
+      token: any,
+      provider: {useFactory?: Function, useValue?: any, deps?: any[], multi?: boolean}): TestBed;
 
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed;
 

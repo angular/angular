@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite", "ts_library")
 
 """
   Macro that can be used to create the Bazel targets for an "upgrade" example. Since the
@@ -7,11 +7,10 @@ load("//tools:defaults.bzl", "ng_module", "protractor_web_test_suite", "ts_devse
   for defining these targets.
 """
 
-def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = []):
+def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = []):
     ng_module(
         name = "%s_sources" % name,
         srcs = srcs,
-        generate_ve_shims = True,
         deps = [
             "@npm//@types/angular",
             "@npm//@types/jasmine",
@@ -38,24 +37,22 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         tsconfig = "//packages/examples:tsconfig-e2e.json",
     )
 
-    ts_devserver(
+    esbuild(
+        name = "app_bundle",
+        entry_point = entry_point,
+        deps = [":%s_sources" % name],
+    )
+
+    http_server(
         name = "devserver",
-        port = 4200,
-        entry_module = entry_module,
-        additional_root_paths = ["angular/packages/examples"],
-        bootstrap = [
+        additional_root_paths = ["angular/packages/examples/upgrade"],
+        srcs = [
+            "//packages/examples/upgrade:index.html",
             "//packages/zone.js/bundles:zone.umd.js",
             "@npm//:node_modules/angular-1.8/angular.js",
             "@npm//:node_modules/reflect-metadata/Reflect.js",
-        ],
-        static_files = [
-            "//packages/examples:index.html",
         ] + assets,
-        scripts = [
-            "@npm//:node_modules/tslib/tslib.js",
-            "//tools/rxjs:rxjs_umd_modules",
-        ],
-        deps = [":%s_sources" % name],
+        deps = [":app_bundle"],
     )
 
     protractor_web_test_suite(

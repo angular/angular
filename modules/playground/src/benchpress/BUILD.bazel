@@ -1,9 +1,8 @@
-load("//tools:defaults.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "http_server")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
-ts_devserver(
+http_server(
     name = "devserver",
-    port = 4200,
-    static_files = ["index.html"],
+    srcs = ["index.html"],
 )

@@ -6,13 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler/src/output/output_ast';
-import generate from '@babel/generator';
+import babel, {NodePath, PluginObj, types as t} from '@babel/core';
+import _generate from '@babel/generator';
+
+// Babel is a CJS package and misuses the `default` named binding:
+// https://github.com/babel/babel/issues/15269.
+const generate = (_generate as any)['default'] as typeof _generate;
 
 import {FileLinker} from '../../../linker';
 import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1';
-import {NodePath, PluginObj, transformSync, types as t} from '../src/babel_core';
 import {createEs2015LinkerPlugin} from '../src/es2015_linker_plugin';
 
 describe('createEs2015LinkerPlugin()', () => {
@@ -37,7 +41,7 @@ describe('createEs2015LinkerPlugin()', () => {
        const fileSystem = new MockFileSystemNative();
        const logger = new MockLogger();
        const plugin = createEs2015LinkerPlugin({fileSystem, logger});
-       transformSync(
+       babel.transformSync(
            [
              'var core;', `fn1()`, 'fn2({prop: () => fn3({})});', `x.method(() => fn4());`,
              'spread(...x);'
@@ -65,7 +69,7 @@ describe('createEs2015LinkerPlugin()', () => {
        const logger = new MockLogger();
        const plugin = createEs2015LinkerPlugin({fileSystem, logger});
 
-       transformSync(
+       babel.transformSync(
            [
              'var core;',
              `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, x: 1});`,
@@ -109,7 +113,7 @@ describe('createEs2015LinkerPlugin()', () => {
        const fileSystem = new MockFileSystemNative();
        const logger = new MockLogger();
        const plugin = createEs2015LinkerPlugin({fileSystem, logger});
-       const result = transformSync(
+       const result = babel.transformSync(
            [
              'var core;',
              'ɵɵngDeclareDirective({version: \'0.0.0-PLACEHOLDER\', ngImport: core});',
@@ -131,7 +135,7 @@ describe('createEs2015LinkerPlugin()', () => {
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
     const plugin = createEs2015LinkerPlugin({fileSystem, logger});
-    const result = transformSync(
+    const result = babel.transformSync(
         [
           'import * as core from \'some-module\';',
           'import {id} from \'other-module\';',
@@ -156,7 +160,7 @@ describe('createEs2015LinkerPlugin()', () => {
        const fileSystem = new MockFileSystemNative();
        const logger = new MockLogger();
        const plugin = createEs2015LinkerPlugin({fileSystem, logger});
-       const result = transformSync(
+       const result = babel.transformSync(
            [
              'var core;',
              `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
@@ -181,7 +185,7 @@ describe('createEs2015LinkerPlugin()', () => {
        const fileSystem = new MockFileSystemNative();
        const logger = new MockLogger();
        const plugin = createEs2015LinkerPlugin({fileSystem, logger});
-       const result = transformSync(
+       const result = babel.transformSync(
            [
              'function run(core) {',
              `  ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
@@ -206,7 +210,7 @@ describe('createEs2015LinkerPlugin()', () => {
        const fileSystem = new MockFileSystemNative();
        const logger = new MockLogger();
        const plugin = createEs2015LinkerPlugin({fileSystem, logger});
-       const result = transformSync(
+       const result = babel.transformSync(
            [
              'function run() {',
              `  ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
@@ -235,7 +239,7 @@ describe('createEs2015LinkerPlugin()', () => {
        const fileSystem = new MockFileSystemNative();
        const logger = new MockLogger();
        const plugin = createEs2015LinkerPlugin({fileSystem, logger});
-       const result = transformSync(
+       const result = babel.transformSync(
            [
              `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core}); FOO;`,
            ].join('\n'),
@@ -278,7 +282,7 @@ describe('createEs2015LinkerPlugin()', () => {
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
     const plugin = createEs2015LinkerPlugin({fileSystem, logger});
-    const result = transformSync(
+    const result = babel.transformSync(
         [
           'import * as core from \'some-module\';',
           `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,

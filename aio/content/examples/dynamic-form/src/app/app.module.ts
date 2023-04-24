@@ -12,7 +12,4 @@ import { DynamicFormQuestionComponent } from './dynamic-form-question.component'
   declarations: [ AppComponent, DynamicFormComponent, DynamicFormQuestionComponent ],
   bootstrap: [ AppComponent ]
 })
-export class AppModule {
-  constructor() {
-  }
-}
+export class AppModule {}

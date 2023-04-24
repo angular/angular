@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as path from 'path';
-import * as shx from 'shelljs';
+import {runfiles} from '@bazel/runfiles';
+import path from 'path';
+import shx from 'shelljs';
 
 function checkInSubFolder(subFolder: string, testFn: Function) {
   shx.cd(subFolder);
@@ -16,7 +17,7 @@ function checkInSubFolder(subFolder: string, testFn: Function) {
 
 describe('Zone.js npm_package', () => {
   beforeEach(() => {
-    shx.cd(path.dirname(require.resolve('angular/packages/zone.js/npm_package/package.json')));
+    shx.cd(path.dirname(runfiles.resolve('angular/packages/zone.js/npm_package/package.json')));
   });
   describe('misc root files', () => {
     describe('README.md', () => {

@@ -1063,6 +1063,13 @@
     "date": {
       "start": "2022-10-18"
     },
+    "linkUrl": "https://firebase.google.com/summit",
+    "name": "Firebase Summit 22"
+  },
+  {
+    "date": {
+      "start": "2022-10-18"
+    },
     "linkUrl": "https://extra.codemotion.com/conference-milan-2022",
     "name": "Codemotion Milan"
   },
@@ -1089,9 +1096,29 @@
   },
   {
     "date": {
+      "start": "2022-11-07"
+    },
+    "name": "Jamstack Conf"
+  },
+  {
+    "date": {
       "start": "2022-11-10"
     },
     "name": "JavaScript Day (JetBrains)"
+  },
+  {
+    "date": {
+      "start": "2022-11-16"
+    },
+    "linkUrl": "https://www.meetup.com/angular-london/",
+    "name": "Angular London"
+  },
+  {
+    "date": {
+      "start": "2022-11-17"
+    },
+    "linkUrl": "https://www.modernfrontends.live/",
+    "name": "Modern Frontends Live!"
   },
   {
     "date": {
@@ -1105,5 +1132,89 @@
       "start": "2022-12-06"
     },
     "name": "Angular Contributor Days"
+  },
+  {
+    "date": {
+      "start": "2023-01-24"
+    },
+    "name": "Online Meetup: The Future of Angular"
+  },
+  {
+    "date": {
+      "start": "2023-02-02"
+    },
+    "name": "Angular Zurich Meetup"
+  },
+  {
+    "date": {
+      "start": "2023-02-08"
+    },
+    "name": "JSWorld"
+  },
+  {
+    "date": {
+      "start": "2023-02-23"
+    },
+    "name": "Agent Conf"
+  },
+  {
+    "date": {
+      "start": "2023-03-24"
+    },
+    "name": "ng-be"
+  },
+  {
+    "date": {
+      "start": "2023-04-25"
+    },
+    "name": "CityJS Brazil"
+  },
+  {
+    "date": {
+      "start": "2023-05-04"
+    },
+    "name": "Devoxx Greece"
+  },
+  {
+    "date": {
+      "start": "2023-05-18"
+    },
+    "name": "JSHeroes"
+  },
+  {
+    "date": {
+      "start": "2023-05-10"
+    },
+    "name": "Google I/O"
+  },
+  {
+    "date": {
+      "start": "2023-06-01"
+    },
+    "name": "JSNation"
+  },
+  {
+    "date": {
+      "start": "2023-06-02"
+    },
+    "name": "JSConf India"
+  },
+  {
+    "date": {
+      "start": "2023-06-14"
+    },
+    "name": "ng-conf"
+  },
+  {
+    "date": {
+      "start": "2023-11-08"
+    },
+    "name": "NGPoland"
+  },
+  {
+    "date": {
+      "start": "2023-11-09"
+    },
+    "name": "JSPoland"
   }
 ]

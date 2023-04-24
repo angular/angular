@@ -537,7 +537,7 @@ describe('LocationService', () => {
       });
 
       it('zip url', () => {
-        anchor.href = 'tutorial/toh-p2.zip';
+        anchor.href = 'tutorial/tour-of-heroes/toh-p2.zip';
         const result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
@@ -571,7 +571,7 @@ describe('LocationService', () => {
       });
 
       it('url has any extension', () => {
-        anchor.href = 'tutorial/toh-p2.html';
+        anchor.href = 'tutorial/tour-of-heroes/toh-p2.html';
         const result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);

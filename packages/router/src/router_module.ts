@@ -15,8 +15,9 @@ import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
-import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
-import {Router, setupRouter} from './router';
+import {NavigationTransitions} from './navigation_transition';
+import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withComponentInputBinding, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
+import {Router} from './router';
 import {ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -24,7 +25,6 @@ import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
  * The directives defined in the `RouterModule`.
@@ -35,7 +35,8 @@ const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkActive, EmptyOutl
  * @docsNotRequired
  */
 export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
-    NG_DEV_MODE ? 'router duplicate forRoot guard' : 'ROUTER_FORROOT_GUARD');
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router duplicate forRoot guard' :
+                                                      'ROUTER_FORROOT_GUARD');
 
 // TODO(atscott): All of these except `ActivatedRoute` are `providedIn: 'root'`. They are only kept
 // here to avoid a breaking change whereby the provider order matters based on where the
@@ -44,13 +45,14 @@ export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
 export const ROUTER_PROVIDERS: Provider[] = [
   Location,
   {provide: UrlSerializer, useClass: DefaultUrlSerializer},
-  {provide: Router, useFactory: setupRouter},
+  Router,
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
   RouterConfigLoader,
   // Only used to warn when `provideRoutes` is used without `RouterModule` or `provideRouter`. Can
   // be removed when `provideRoutes` is removed.
-  NG_DEV_MODE ? {provide: ROUTER_IS_PROVIDED, useValue: true} : [],
+  (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: ROUTER_IS_PROVIDED, useValue: true} :
+                                                    [],
 ];
 
 export function routerNgProbeToken() {
@@ -108,7 +110,9 @@ export class RouterModule {
       ngModule: RouterModule,
       providers: [
         ROUTER_PROVIDERS,
-        NG_DEV_MODE ? (config?.enableTracing ? withDebugTracing().ɵproviders : []) : [],
+        (typeof ngDevMode === 'undefined' || ngDevMode) ?
+            (config?.enableTracing ? withDebugTracing().ɵproviders : []) :
+            [],
         {provide: ROUTES, multi: true, useValue: routes},
         {
           provide: ROUTER_FORROOT_GUARD,
@@ -121,6 +125,7 @@ export class RouterModule {
         config?.preloadingStrategy ? withPreloading(config.preloadingStrategy).ɵproviders : [],
         {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
         config?.initialNavigation ? provideInitialNavigation(config) : [],
+        config?.bindToComponentInputs ? withComponentInputBinding().ɵproviders : [],
         provideRouterInitializer(),
       ],
     };
@@ -158,14 +163,15 @@ export function provideRouterScroller(): Provider {
   return {
     provide: ROUTER_SCROLLER,
     useFactory: () => {
-      const router = inject(Router);
       const viewportScroller = inject(ViewportScroller);
       const zone = inject(NgZone);
       const config: ExtraOptions = inject(ROUTER_CONFIGURATION);
+      const transitions = inject(NavigationTransitions);
+      const urlSerializer = inject(UrlSerializer);
       if (config.scrollOffset) {
         viewportScroller.setOffset(config.scrollOffset);
       }
-      return new RouterScroller(router, viewportScroller, zone, config);
+      return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, config);
     },
   };
 }
@@ -183,7 +189,7 @@ function providePathLocationStrategy(): Provider {
 }
 
 export function provideForRootGuard(router: Router): any {
-  if (NG_DEV_MODE && router) {
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && router) {
     throw new RuntimeError(
         RuntimeErrorCode.FOR_ROOT_CALLED_TWICE,
         `The Router was provided more than once. This can happen if 'forRoot' is used outside of the root injector.` +
@@ -211,7 +217,7 @@ function provideInitialNavigation(config: Pick<ExtraOptions, 'initialNavigation'
  * @publicApi
  */
 export const ROUTER_INITIALIZER = new InjectionToken<(compRef: ComponentRef<any>) => void>(
-    NG_DEV_MODE ? 'Router Initializer' : '');
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'Router Initializer' : '');
 
 function provideRouterInitializer(): Provider[] {
   return [

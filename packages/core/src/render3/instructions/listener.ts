@@ -8,7 +8,7 @@
 
 
 import {assertIndexInRange} from '../../util/assert';
-import {isObservable} from '../../util/lang';
+import {isSubscribable} from '../../util/lang';
 import {PropertyAliasValue, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
@@ -19,7 +19,8 @@ import {profiler, ProfilerEvent} from '../profiler';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 
-import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {markViewDirty} from './mark_view_dirty';
+import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer} from './shared';
 
 
 
@@ -202,7 +203,7 @@ function listenerInternal(
         const directiveInstance = lView[index];
         const output = directiveInstance[minifiedName];
 
-        if (ngDevMode && !isObservable(output)) {
+        if (ngDevMode && !isSubscribable(output)) {
           throw new Error(`@Output ${minifiedName} not initialized in '${
               directiveInstance.constructor.name}'.`);
         }

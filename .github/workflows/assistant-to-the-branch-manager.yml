@@ -13,9 +13,9 @@ jobs:
   assistant_to_the_branch_manager:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           persist-credentials: false
-      - uses: angular/dev-infra/github-actions/branch-manager@0c06b3d1a58ab12f4f9933efc78e33083d008d17
+      - uses: angular/dev-infra/github-actions/branch-manager@070bfccea3fc824c834bbf09ac84835889165878
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}

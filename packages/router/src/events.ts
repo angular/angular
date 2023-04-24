@@ -19,6 +19,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  * @publicApi
  */
 export type NavigationTrigger = 'imperative'|'popstate'|'hashchange';
+export const IMPERATIVE_NAVIGATION = 'imperative';
 
 /**
  * Identifies the type of a router event.
@@ -581,7 +582,7 @@ export class Scroll {
 
   constructor(
       /** @docsNotRequired */
-      readonly routerEvent: NavigationEnd,
+      readonly routerEvent: NavigationEnd|NavigationSkipped,
 
       /** @docsNotRequired */
       readonly position: [number, number]|null,
@@ -628,16 +629,12 @@ export class Scroll {
  *
  * @publicApi
  */
-export type Event = RouterEvent|NavigationStart|NavigationEnd|NavigationCancel|NavigationError|
-    RoutesRecognized|GuardsCheckStart|GuardsCheckEnd|RouteConfigLoadStart|RouteConfigLoadEnd|
-    ChildActivationStart|ChildActivationEnd|ActivationStart|ActivationEnd|Scroll|ResolveStart|
-    ResolveEnd|NavigationSkipped;
-
+export type Event = NavigationStart|NavigationEnd|NavigationCancel|NavigationError|RoutesRecognized|
+    GuardsCheckStart|GuardsCheckEnd|RouteConfigLoadStart|RouteConfigLoadEnd|ChildActivationStart|
+    ChildActivationEnd|ActivationStart|ActivationEnd|Scroll|ResolveStart|ResolveEnd|
+    NavigationSkipped;
 
 export function stringifyEvent(routerEvent: Event): string {
-  if (!('type' in routerEvent)) {
-    return `Unknown Router Event: ${routerEvent.constructor.name}`;
-  }
   switch (routerEvent.type) {
     case EventType.ActivationEnd:
       return `ActivationEnd(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;

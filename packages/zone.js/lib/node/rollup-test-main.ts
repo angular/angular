@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './rollup-main';
-
+import './rollup-main-node-bundle';
 // load test related files into bundle
 import '../testing/zone-testing';

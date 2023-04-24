@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import './zone.js';
+import '../zone.umd.js';
 const testClosureFunction = () => {
   const logs: string[] = [];
   // call all Zone exposed functions

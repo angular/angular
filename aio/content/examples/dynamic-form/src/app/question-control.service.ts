@@ -6,8 +6,6 @@ import { QuestionBase } from './question-base';
 
 @Injectable()
 export class QuestionControlService {
-  constructor() { }
-
   toFormGroup(questions: QuestionBase<string>[] ) {
     const group: any = {};
 

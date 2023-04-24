@@ -49,7 +49,7 @@ def _get_target_name_base(pkg, entry_point):
 
 def _create_bundle_targets(pkg, entry_point, module_name):
     target_name_base = _get_target_name_base(pkg, entry_point)
-    fesm_bundle_path = "fesm2020/%s.mjs" % (entry_point if entry_point else pkg.name)
+    fesm_bundle_path = "fesm2022/%s.mjs" % (entry_point if entry_point else pkg.name)
 
     esbuild(
         name = "%s_linked_bundle" % target_name_base,
@@ -58,7 +58,7 @@ def _create_bundle_targets(pkg, entry_point, module_name):
         entry_point = "@npm//:node_modules/@angular/%s/%s" % (pkg.name, fesm_bundle_path),
         config = "//devtools/tools/esbuild:esbuild_config_esm",
         # List of dependencies which should never be bundled into these linker-processed bundles.
-        external = ["rxjs", "@angular", "domino", "xhr2"],
+        external = ["rxjs", "@angular", "domino", "xhr2", "@material"],
     )
 
     _linker_mapping(

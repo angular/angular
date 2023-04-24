@@ -217,7 +217,7 @@ As the next step, we need to finalize the recommendations and compile a list of 
 
 Earlier in 2020, we shared an [RFC](https://github.com/angular/angular/issues/38366) for Ivy library distribution.
 After invaluable feedback from the community, we developed a design of the project.
-We are now investing in the development of Ivy library distribution, including an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](guide/glossary#ngcc).
+We are now investing in the development of Ivy library distribution, including an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and ngcc.
 
 ### Improve test times and debugging with automatic test environment tear down
 

@@ -1,0 +1,11 @@
+load("//aio/content/examples:examples.bzl", "docs_example")
+load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+
+package(default_visibility = ["//visibility:public"])
+
+docs_example(
+    name = "first-app-lesson-08",
+    # This example downloads fonts and images from googleapis.com
+    test_exec_properties = ENABLE_NETWORK,
+    test_tags = ["requires-network"],
+)

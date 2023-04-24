@@ -17,9 +17,6 @@ const adminRoutes: Routes = [{
   canActivate: [authGuard],
 
   // #enddocregion admin-route
-  // #docregion can-match
-  canMatch: [authGuard],
-  // #enddocregion can-match
   // #docregion admin-route
   children: [{
     path: '',

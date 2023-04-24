@@ -40,7 +40,6 @@ export function toR3InjectableMeta<TExpression>(
   const meta: R3InjectableMetadata = {
     name: typeName,
     type: wrapReference(typeExpr.getOpaque()),
-    internalType: typeExpr.getOpaque(),
     typeArgumentCount: 0,
     providedIn: metaObj.has('providedIn') ?
         extractForwardRef(metaObj.getValue('providedIn')) :

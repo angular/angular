@@ -6,13 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgOptimizedImage} from '@angular/common';
+import {IMAGE_LOADER, ImageLoaderConfig, NgOptimizedImage} from '@angular/common';
 import {Component} from '@angular/core';
+
+const imageLoader = {
+  provide: IMAGE_LOADER,
+  useFactory: () => (config: ImageLoaderConfig) => config.src
+};
 
 @Component({
   selector: 'oversized-image-passing',
   standalone: true,
   imports: [NgOptimizedImage],
+  providers: [imageLoader],
   template: `
       <!-- Image is rendered within threshold range-->
       <div style="width: 500px; height: 500px">
@@ -33,6 +39,7 @@ export class OversizedImageComponentPassing {
   selector: 'oversized-image-failing',
   standalone: true,
   imports: [NgOptimizedImage],
+  providers: [imageLoader],
   template: `
       <!-- Image is rendered too small  -->
       <div style="width: 300px; height: 300px">

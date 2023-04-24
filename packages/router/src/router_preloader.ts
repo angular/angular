@@ -121,7 +121,8 @@ export class RouterPreloader implements OnDestroy {
       if ((route.loadChildren && !route._loadedRoutes && route.canLoad === undefined) ||
           (route.loadComponent && !route._loadedComponent)) {
         res.push(this.preloadConfig(injectorForCurrentRoute, route));
-      } else if (route.children || route._loadedRoutes) {
+      }
+      if (route.children || route._loadedRoutes) {
         res.push(this.processRoutes(injectorForChildren, (route.children ?? route._loadedRoutes)!));
       }
     }

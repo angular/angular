@@ -4,10 +4,6 @@
     "packages/animations/browser/src/render/shared.ts"
   ],
   [
-    "packages/compiler-cli/ngcc/src/packages/configuration.ts",
-    "packages/compiler-cli/ngcc/src/packages/entry_point.ts"
-  ],
-  [
     "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interface.ts",
     "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts"
   ],
@@ -98,15 +94,6 @@
     "packages/core/src/render3/definition.ts",
     "packages/core/src/render3/interfaces/definition.ts",
     "packages/core/src/di/r3_injector.ts"
-  ],
-  [
-    "packages/core/src/di/r3_injector.ts",
-    "packages/core/src/render3/definition.ts",
-    "packages/core/src/render3/interfaces/definition.ts"
-  ],
-  [
-    "packages/core/src/di/reflective_errors.ts",
-    "packages/core/src/di/reflective_injector.ts"
   ],
   [
     "packages/core/src/linker/component_factory_resolver.ts",
@@ -296,12 +283,6 @@
     "packages/forms/src/model/abstract_model.ts"
   ],
   [
-    "packages/router/src/apply_redirects.ts",
-    "packages/router/src/operators/check_guards.ts",
-    "packages/router/src/navigation_transition.ts",
-    "packages/router/src/operators/apply_redirects.ts"
-  ],
-  [
     "packages/router/src/directives/router_outlet.ts",
     "packages/router/src/router_outlet_context.ts"
   ],
@@ -320,7 +301,7 @@
   ],
   [
     "packages/router/src/navigation_transition.ts",
-    "packages/router/src/operators/apply_redirects.ts"
+    "packages/router/src/operators/check_guards.ts"
   ],
   [
     "packages/router/src/navigation_transition.ts",

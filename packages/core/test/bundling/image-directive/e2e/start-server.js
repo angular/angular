@@ -14,7 +14,7 @@ const protractor = require('protractor');
  * Used as a part of the `protractor_web_test_suite` rule configuration.
  */
 module.exports = async function(config) {
-  const {port} = await protractorUtils.runServer(config.workspace, config.server, '-port', []);
+  const {port} = await protractorUtils.runServer(config.workspace, config.server, '--port', []);
   const serverUrl = `http://localhost:${port}`;
 
   protractor.browser.baseUrl = serverUrl;

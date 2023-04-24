@@ -8,10 +8,8 @@
 
 import {Location} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
-import {Compiler, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
-
-import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
+import {Compiler, inject, Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {ChildrenOutletContexts, ExtraOptions, NoPreloading, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵwithPreloading as withPreloading} from '@angular/router';
 
 function isUrlHandlingStrategy(opts: ExtraOptions|
                                UrlHandlingStrategy): opts is UrlHandlingStrategy {
@@ -20,40 +18,72 @@ function isUrlHandlingStrategy(opts: ExtraOptions|
   return 'shouldProcessUrl' in opts;
 }
 
+function throwInvalidConfigError(parameter: string): never {
+  throw new Error(
+      `Parameter ${parameter} does not match the one available in the injector. ` +
+      '`setupTestingRouter` is meant to be used as a factory function with dependencies coming from DI.');
+}
+
 /**
  * Router setup factory function used for testing.
  *
  * @publicApi
- * @deprecated Use `provideRouter` or `RouterTestingModule` instead.
+ * @deprecated Use `provideRouter` or `RouterModule` instead.
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     compiler: Compiler, injector: Injector, routes: Route[][],
     opts?: ExtraOptions|UrlHandlingStrategy|null, urlHandlingStrategy?: UrlHandlingStrategy,
     routeReuseStrategy?: RouteReuseStrategy, titleStrategy?: TitleStrategy) {
-  const router =
-      new Router(null!, urlSerializer, contexts, location, injector, compiler, flatten(routes));
+  // Note: The checks below are to detect misconfigured providers and invalid uses of
+  // `setupTestingRouter`. This function is not used internally (neither in router code or anywhere
+  // in g3). It appears this function was exposed as publicApi by mistake and should not be used
+  // externally either. However, if it is, the documented intent is to be used as a factory function
+  // and parameter values should always match what's available in DI.
+  if (urlSerializer !== inject(UrlSerializer)) {
+    throwInvalidConfigError('urlSerializer');
+  }
+  if (contexts !== inject(ChildrenOutletContexts)) {
+    throwInvalidConfigError('contexts');
+  }
+  if (location !== inject(Location)) {
+    throwInvalidConfigError('location');
+  }
+  if (compiler !== inject(Compiler)) {
+    throwInvalidConfigError('compiler');
+  }
+  if (injector !== inject(Injector)) {
+    throwInvalidConfigError('injector');
+  }
+  if (routes !== inject(ROUTES)) {
+    throwInvalidConfigError('routes');
+  }
   if (opts) {
     // Handle deprecated argument ordering.
     if (isUrlHandlingStrategy(opts)) {
-      router.urlHandlingStrategy = opts;
+      if (opts !== inject(UrlHandlingStrategy)) {
+        throwInvalidConfigError('opts (UrlHandlingStrategy)');
+      }
     } else {
-      // Handle ExtraOptions
-      assignExtraOptionsToRouter(opts, router);
+      if (opts !== inject(ROUTER_CONFIGURATION)) {
+        throwInvalidConfigError('opts (ROUTER_CONFIGURATION)');
+      }
     }
   }
 
-  if (urlHandlingStrategy) {
-    router.urlHandlingStrategy = urlHandlingStrategy;
+  if (urlHandlingStrategy !== inject(UrlHandlingStrategy)) {
+    throwInvalidConfigError('urlHandlingStrategy');
   }
 
-  if (routeReuseStrategy) {
-    router.routeReuseStrategy = routeReuseStrategy;
+  if (routeReuseStrategy !== inject(RouteReuseStrategy)) {
+    throwInvalidConfigError('routeReuseStrategy');
   }
 
-  router.titleStrategy = titleStrategy;
+  if (titleStrategy !== inject(TitleStrategy)) {
+    throwInvalidConfigError('titleStrategy');
+  }
 
-  return router;
+  return new Router();
 }
 
 /**
@@ -71,7 +101,7 @@ export function setupTestingRouter(
  * beforeEach(() => {
  *   TestBed.configureTestingModule({
  *     imports: [
- *       RouterTestingModule.withRoutes(
+ *       RouterModule.forRoot(
  *         [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}]
  *       )
  *     ]
@@ -85,7 +115,6 @@ export function setupTestingRouter(
   exports: [RouterModule],
   providers: [
     ROUTER_PROVIDERS,
-    EXTRA_ROUTER_TESTING_PROVIDERS,
     provideLocationMocks(),
     withPreloading(NoPreloading).ɵproviders,
     {provide: ROUTES, multi: true, useValue: []},

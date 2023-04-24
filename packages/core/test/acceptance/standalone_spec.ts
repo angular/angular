@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, Injector, Input, isStandalone, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('standalone components, directives, and pipes', () => {
@@ -845,6 +845,104 @@ describe('standalone components, directives, and pipes', () => {
       // the assumption here is that not providing a template is equivalent to providing an empty
       // one
       expect(fixture.nativeElement.textContent).toBe('');
+    });
+  });
+
+  describe('isStandalone()', () => {
+    it('should return `true` if component is standalone', () => {
+      @Component({selector: 'standalone-cmp', standalone: true})
+      class StandaloneCmp {
+      }
+
+      expect(isStandalone(StandaloneCmp)).toBeTrue();
+    });
+
+    it('should return `false` if component is not standalone', () => {
+      @Component({selector: 'standalone-cmp', standalone: false})
+      class StandaloneCmp {
+      }
+
+      expect(isStandalone(StandaloneCmp)).toBeFalse();
+    });
+
+    it('should return `true` if directive is standalone', () => {
+      @Directive({selector: '[standaloneDir]', standalone: true})
+      class StandAloneDirective {
+      }
+
+      expect(isStandalone(StandAloneDirective)).toBeTrue();
+    });
+
+    it('should return `false` if directive is standalone', () => {
+      @Directive({selector: '[standaloneDir]', standalone: false})
+      class StandAloneDirective {
+      }
+
+      expect(isStandalone(StandAloneDirective)).toBeFalse();
+    });
+
+    it('should return `true` if pipe is standalone', () => {
+      @Pipe({name: 'standalonePipe', standalone: true})
+      class StandAlonePipe {
+      }
+
+      expect(isStandalone(StandAlonePipe)).toBeTrue();
+    });
+
+    it('should return `false` if pipe is standalone', () => {
+      @Pipe({name: 'standalonePipe', standalone: false})
+      class StandAlonePipe {
+      }
+
+      expect(isStandalone(StandAlonePipe)).toBeFalse();
+    });
+
+    it('should return `false` if the class is not annotated', () => {
+      class NonAnnotatedClass {}
+
+      expect(isStandalone(NonAnnotatedClass)).toBeFalse();
+    });
+
+    it('should return `false` if the class is an NgModule', () => {
+      @NgModule({})
+      class Module {
+      }
+
+      expect(isStandalone(Module)).toBeFalse();
+    });
+
+    it('should render a recursive cycle of standalone components', () => {
+      @Component({
+        selector: 'cmp-a',
+        standalone: true,
+        template: '<ng-template [ngIf]="false"><cmp-c></cmp-c></ng-template>A',
+        imports: [forwardRef(() => StandaloneCmpC)],
+      })
+      class StandaloneCmpA {
+      }
+
+      @Component({
+        selector: 'cmp-b',
+        standalone: true,
+        template: '(<cmp-a></cmp-a>)B',
+        imports: [StandaloneCmpA],
+      })
+      class StandaloneCmpB {
+      }
+
+      @Component({
+        selector: 'cmp-c',
+        standalone: true,
+        template: '(<cmp-b></cmp-b>)C',
+        imports: [StandaloneCmpB],
+      })
+      class StandaloneCmpC {
+      }
+
+      TestBed.configureTestingModule({imports: [StandaloneCmpC]});
+      const fixture = TestBed.createComponent(StandaloneCmpC);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('((A)B)C');
     });
   });
 });

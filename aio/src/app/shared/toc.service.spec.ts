@@ -303,7 +303,7 @@ describe('TocService', () => {
       callGenToc(`
         <h2 id="setup-to-develop-locally">
           Setup to <a href="moo">develop</a> <i>locally</i>.
-          <a class="header-link" href="tutorial/toh-pt1#setup-to-develop-locally" aria-hidden="true">
+          <a class="header-link" href="tutorial/tour-of-heroes/toh-pt1#setup-to-develop-locally" aria-hidden="true">
             <span class="icon">icon-link</span>
           </a>
           <div class="github-links">

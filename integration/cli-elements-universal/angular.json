@@ -20,7 +20,9 @@
             "outputPath": "dist/cli-elements-universal/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "zone.js/dist/zone"
+            ],
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -31,16 +33,12 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "progress": false
+            "progress": false,
+            "buildOptimizer": false,
+            "optimization": false
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -84,7 +82,9 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "zone.js/dist/zone"
+            ],
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": [
@@ -131,17 +131,12 @@
             "outputPath": "dist/cli-elements-universal/server",
             "main": "src/main.server.ts",
             "tsConfig": "tsconfig.server.json",
-            "progress": false
+            "progress": false,
+            "optimization": false
           },
           "configurations": {
             "production": {
               "outputHashing": "media",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
               "sourceMap": false,
               "optimization": true
             }

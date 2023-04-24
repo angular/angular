@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
@@ -7,7 +7,6 @@ package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 ng_module(
     name = "ng2_switch",
     srcs = glob(["*.ts"]),
-    generate_ve_shims = True,
     tsconfig = "//modules/benchmarks:tsconfig-build.json",
     deps = [
         "//modules/benchmarks/src:util_lib",
@@ -18,20 +17,27 @@ ng_module(
     ],
 )
 
-ts_devserver(
+app_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [":ng2_switch"],
+)
+
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
+    name = "app_bundle",
+    srcs = [":bundle.debug.min.js"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $< $@",
+)
+
+http_server(
     name = "devserver",
-    bootstrap = [
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    srcs = ["index.html"],
+    deps = [
+        ":app_bundle",
         "//packages/zone.js/bundles:zone.umd.js",
     ],
-    entry_module = "angular/modules/benchmarks/src/largetable/ng2_switch/index",
-    port = 4200,
-    scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-    ],
-    static_files = ["index.html"],
-    deps = [":ng2_switch"],
 )
 
 benchmark_test(

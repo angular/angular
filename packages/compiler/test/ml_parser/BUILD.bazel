@@ -13,7 +13,7 @@ ts_library(
 
 jasmine_node_test(
     name = "ml_parser",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     deps = [
         ":ml_parser_lib",
     ],

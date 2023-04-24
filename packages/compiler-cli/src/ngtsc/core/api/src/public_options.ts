@@ -86,33 +86,6 @@ export interface LegacyNgcOptions {
 }
 
 /**
- * Options which were added to the Angular Ivy compiler to support backwards compatibility with
- * existing View Engine applications.
- *
- * These are expected to be removed at some point in the future.
- *
- * @publicApi
- */
-export interface NgcCompatibilityOptions {
-  /**
-   * Controls whether ngtsc will emit `.ngfactory.js` shims for each compiled `.ts` file.
-   *
-   * These shims support legacy imports from `ngfactory` files, by exporting a factory shim
-   * for each component or NgModule in the original `.ts` file.
-   */
-  generateNgFactoryShims?: boolean;
-
-  /**
-   * Controls whether ngtsc will emit `.ngsummary.js` shims for each compiled `.ts` file.
-   *
-   * These shims support legacy imports from `ngsummary` files, by exporting an empty object
-   * for each NgModule in the original `.ts` file. The only purpose of summaries is to feed them to
-   * `TestBed`, which is a no-op in Ivy.
-   */
-  generateNgSummaryShims?: boolean;
-}
-
-/**
  * Options related to template type-checking and its strictness.
  *
  * @publicApi
@@ -410,10 +383,13 @@ export interface TargetOptions {
    * Specifies the compilation mode to use. The following modes are available:
    * - 'full': generates fully AOT compiled code using Ivy instructions.
    * - 'partial': generates code in a stable, but intermediate form suitable for publication to NPM.
+   * - 'experimental-local': generates code based on each individual source file without using its
+   * dependencies. This mode is suitable only for fast edit/refresh during development. It will be
+   * eventually replaced by the value `local` once the feature is ready to be public.
    *
    * The default value is 'full'.
    */
-  compilationMode?: 'full'|'partial';
+  compilationMode?: 'full'|'partial'|'experimental-local';
 }
 
 /**

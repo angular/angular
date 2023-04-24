@@ -10,7 +10,7 @@ import {Call, SafeCall} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import * as ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript/lib/tsserverlibrary';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode} from './ts_utils';

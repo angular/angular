@@ -1,6 +1,6 @@
 // #docregion
 // #docregion import-input
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 // #enddocregion import-input
 // #docregion import-hero
 import { Hero } from '../hero';
@@ -11,14 +11,8 @@ import { Hero } from '../hero';
   templateUrl: './hero-detail.component.html',
   styleUrls: ['./hero-detail.component.css']
 })
-export class HeroDetailComponent implements OnInit {
+export class HeroDetailComponent {
   // #docregion input-hero
   @Input() hero?: Hero;
   // #enddocregion input-hero
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

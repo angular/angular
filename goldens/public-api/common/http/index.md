@@ -11,7 +11,7 @@ import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Provider } from '@angular/core';
-import { XhrFactory as XhrFactory_2 } from '@angular/common';
+import { XhrFactory } from '@angular/common';
 
 // @public
 export const HTTP_INTERCEPTORS: InjectionToken<HttpInterceptor[]>;
@@ -1782,7 +1782,7 @@ export class HttpHeaderResponse extends HttpResponseBase {
 // @public
 export class HttpHeaders {
     constructor(headers?: string | {
-        [name: string]: string | string[];
+        [name: string]: string | number | (string | number)[];
     });
     append(name: string, value: string | string[]): HttpHeaders;
     delete(name: string, value?: string | string[]): HttpHeaders;
@@ -2129,7 +2129,7 @@ export interface HttpUserEvent<T> {
 
 // @public
 export class HttpXhrBackend implements HttpBackend {
-    constructor(xhrFactory: XhrFactory_2);
+    constructor(xhrFactory: XhrFactory);
     handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpXhrBackend, never>;
@@ -2185,12 +2185,6 @@ export function withXsrfConfiguration({ cookieName, headerName }: {
     cookieName?: string;
     headerName?: string;
 }): HttpFeature<HttpFeatureKind.CustomXsrfConfiguration>;
-
-// @public @deprecated
-export type XhrFactory = XhrFactory_2;
-
-// @public @deprecated
-export const XhrFactory: typeof XhrFactory_2;
 
 // (No @packageDocumentation comment for this package)
 

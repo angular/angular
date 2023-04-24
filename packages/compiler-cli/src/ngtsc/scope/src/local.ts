@@ -606,15 +606,15 @@ function invalidRef(
   } else if (sf.fileName.indexOf('node_modules') !== -1) {
     // This file comes from a third-party library in node_modules.
     relatedMessage =
-        `This likely means that the library${library} which declares ${decl.debugName} has not ` +
-        'been processed correctly by ngcc, or is not compatible with Angular Ivy. Check if a ' +
-        'newer version of the library is available, and update if so. Also consider checking ' +
-        'with the library\'s authors to see if the library is expected to be compatible with Ivy.';
+        `This likely means that the library${library} which declares ${decl.debugName} is not ` +
+        'compatible with Angular Ivy. Check if a newer version of the library is available, ' +
+        'and update if so. Also consider checking with the library\'s authors to see if the ' +
+        'library is expected to be compatible with Ivy.';
   } else {
     // This is a monorepo style local dependency. Unfortunately these are too different to really
     // offer much more advice than this.
     relatedMessage = `This likely means that the dependency${library} which declares ${
-        decl.debugName} has not been processed correctly by ngcc.`;
+        decl.debugName} is not compatible with Angular Ivy.`;
   }
 
   return makeDiagnostic(

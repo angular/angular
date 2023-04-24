@@ -12,7 +12,7 @@ import { switchMap } from 'rxjs/operators';
   styleUrls: ['./crisis-list.component.css']
 })
 export class CrisisListComponent implements OnInit {
-  crises$!: Observable<Crisis[]>;
+  crises$?: Observable<Crisis[]>;
   selectedId = 0;
 
   constructor(
@@ -21,7 +21,7 @@ export class CrisisListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.crises$ = this.route.paramMap.pipe(
+    this.crises$ = this.route.firstChild?.paramMap.pipe(
       switchMap(params => {
         this.selectedId = parseInt(params.get('id')!, 10);
         return this.service.getCrises();

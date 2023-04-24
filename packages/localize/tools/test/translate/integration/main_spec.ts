@@ -7,12 +7,15 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
-import {resolve as realResolve} from 'path';
+import path from 'path';
+import url from 'url';
 
 import {Diagnostics} from '../../../src/diagnostics';
 import {translateFiles} from '../../../src/translate/index';
 import {getOutputPathFn} from '../../../src/translate/output_path';
 import {runInNativeFileSystem} from '../../helpers';
+
+const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
 runInNativeFileSystem(() => {
   describe('translateFiles()', () => {
@@ -26,9 +29,9 @@ runInNativeFileSystem(() => {
       testDir = absoluteFrom('/test');
 
       testFilesDir = fs.resolve(testDir, 'test_files');
-      loadTestDirectory(fs, realResolve(__dirname, 'test_files'), testFilesDir);
+      loadTestDirectory(fs, path.resolve(path.join(currentDir, 'test_files')), testFilesDir);
       translationFilesDir = fs.resolve(testDir, 'test_files');
-      loadTestDirectory(fs, realResolve(__dirname, 'locales'), translationFilesDir);
+      loadTestDirectory(fs, path.resolve(path.join(currentDir, 'locales')), translationFilesDir);
     });
 
     it('should copy non-code files to the destination folders', () => {

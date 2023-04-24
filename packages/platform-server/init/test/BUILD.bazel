@@ -3,7 +3,7 @@ load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 circular_dependency_test(
     name = "circular_deps_test",
-    entry_point = "angular/packages/platform-server/init/index.js",
+    entry_point = "angular/packages/platform-server/init/index.mjs",
     deps = ["//packages/platform-server/init"],
 )
 
@@ -12,13 +12,14 @@ ts_library(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
+        "//packages/platform-server:bundled_domino_lib",
         "//packages/platform-server/init",
     ],
 )
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_no_angular_es2015"],
+    bootstrap = ["//tools/testing:node_no_angular"],
     deps = [
         ":test_lib",
     ],

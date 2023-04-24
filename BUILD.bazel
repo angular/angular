@@ -27,20 +27,6 @@ alias(
 )
 
 filegroup(
-    name = "web_test_bootstrap_scripts",
-    # do not sort
-    srcs = [
-        "@npm//:node_modules/core-js-bundle/index.js",
-        "//packages/zone.js/bundles:zone.umd.js",
-        "//packages/zone.js/bundles:zone-testing.umd.js",
-        "//packages/zone.js/bundles:task-tracking.umd.js",
-        # Including systemjs because it defines `__eval`, which produces correct stack traces.
-        "@npm//:node_modules/systemjs/dist/system.src.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
-    ],
-)
-
-filegroup(
     name = "angularjs_scripts",
     srcs = [
         # We also declare the unminified AngularJS files since these can be used for

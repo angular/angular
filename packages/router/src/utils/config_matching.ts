@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injector} from '@angular/core';
+import {EnvironmentInjector} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -15,7 +15,6 @@ import {runCanMatchGuards} from '../operators/check_guards';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
-import {forEach} from './collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
 
 export interface MatchResult {
@@ -72,7 +71,7 @@ export function match(
   if (!res) return {...noMatch};
 
   const posParams: {[n: string]: string} = {};
-  forEach(res.posParams!, (v: UrlSegment, k: string) => {
+  Object.entries(res.posParams ?? {}).forEach(([k, v]) => {
     posParams[k] = v.path;
   });
   const parameters = res.consumed.length > 0 ?
@@ -97,10 +96,7 @@ export function split(
     const s = new UrlSegmentGroup(
         consumedSegments,
         createChildrenForEmptyPaths(
-            segmentGroup, consumedSegments, config,
-            new UrlSegmentGroup(slicedSegments, segmentGroup.children)));
-    s._sourceSegment = segmentGroup;
-    s._segmentIndexShift = consumedSegments.length;
+            config, new UrlSegmentGroup(slicedSegments, segmentGroup.children)));
     return {segmentGroup: s, slicedSegments: []};
   }
 
@@ -110,14 +106,10 @@ export function split(
         segmentGroup.segments,
         addEmptyPathsToChildrenIfNeeded(
             segmentGroup, consumedSegments, slicedSegments, config, segmentGroup.children));
-    s._sourceSegment = segmentGroup;
-    s._segmentIndexShift = consumedSegments.length;
     return {segmentGroup: s, slicedSegments};
   }
 
   const s = new UrlSegmentGroup(segmentGroup.segments, segmentGroup.children);
-  s._sourceSegment = segmentGroup;
-  s._segmentIndexShift = consumedSegments.length;
   return {segmentGroup: s, slicedSegments};
 }
 
@@ -129,8 +121,6 @@ function addEmptyPathsToChildrenIfNeeded(
   for (const r of routes) {
     if (emptyPathMatch(segmentGroup, slicedSegments, r) && !children[getOutlet(r)]) {
       const s = new UrlSegmentGroup([], {});
-      s._sourceSegment = segmentGroup;
-      s._segmentIndexShift = consumedSegments.length;
       res[getOutlet(r)] = s;
     }
   }
@@ -138,18 +128,13 @@ function addEmptyPathsToChildrenIfNeeded(
 }
 
 function createChildrenForEmptyPaths(
-    segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], routes: Route[],
-    primarySegment: UrlSegmentGroup): {[name: string]: UrlSegmentGroup} {
+    routes: Route[], primarySegment: UrlSegmentGroup): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
   res[PRIMARY_OUTLET] = primarySegment;
-  primarySegment._sourceSegment = segmentGroup;
-  primarySegment._segmentIndexShift = consumedSegments.length;
 
   for (const r of routes) {
     if (r.path === '' && getOutlet(r) !== PRIMARY_OUTLET) {
       const s = new UrlSegmentGroup([], {});
-      s._sourceSegment = segmentGroup;
-      s._segmentIndexShift = consumedSegments.length;
       res[getOutlet(r)] = s;
     }
   }

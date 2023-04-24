@@ -8,7 +8,7 @@
 import {FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵcomputeMsgId, ɵparseTranslation} from '@angular/localize';
 import {ɵParsedTranslation} from '@angular/localize/private';
-import {transformSync} from '../../../src/babel_core';
+import {transformSync} from '@babel/core';
 
 import {Diagnostics} from '../../../src/diagnostics';
 import {TranslatePluginOptions} from '../../../src/source_file_utils';

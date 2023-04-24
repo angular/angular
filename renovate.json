@@ -15,15 +15,8 @@
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {"enabled": true},
   "labels": ["target: patch", "area: build & ci", "action: review"],
+  "ignorePaths": ["aio/content/demos/first-app/package.json"],
   "ignoreDeps": [
-    "@angular/animations-12",
-    "@angular/common-12",
-    "@angular/core-12",
-    "@angular/forms-12",
-    "@angular/platform-browser-12",
-    "@angular/platform-browser-dynamic-12",
-    "@angular/platform-server-12",
-    "@angular/router-12",
     "@types/node",
     "@types/selenium-webdriver",
     "angular-1.5",
@@ -34,11 +27,27 @@
     "angular-mocks-1.6",
     "angular-mocks-1.7",
     "angular-mocks-1.8",
-    "puppeteer",
     "remark",
     "remark-html",
     "selenium-webdriver",
-    "watchr"
+    "watchr",
+    "rxjs",
+    "glob",
+    "chalk",
+    "convert-source-map",
+    "@rollup/plugin-node-resolve",
+    "hast-util-is-element",
+    "hast-util-has-property",
+    "hast-util-to-string",
+    "rehype-slug",
+    "rollup",
+    "systemjs",
+    "unist-util-filter",
+    "unist-util-source",
+    "unist-util-visit",
+    "unist-util-visit-parents",
+    "rules_pkg",
+    "aspect_bazel_lib"
   ],
   "packageRules": [
     {
@@ -68,7 +77,7 @@
     },
 
     {
-      "matchPackagePrefixes": ["@babel/"],
+      "matchPackagePrefixes": ["@babel/", "@types/babel__"],
       "groupName": "babel dependencies"
     },
 
@@ -87,7 +96,7 @@
       "groupName": "scorecard action dependencies",
       "groupSlug": "scorecard-action"
     },
-
+    
     {
       "matchPaths": ["aio/tools/examples/shared/*"],
       "postUpgradeTasks": {

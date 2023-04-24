@@ -14,13 +14,12 @@ set +x -eu -o pipefail
   # Install dependencies.
   echo -e "\nInstalling dependencies in '$aioDir'...\n-----"
   yarn install --frozen-lockfile --non-interactive
-  yarn update-webdriver
 
   # Run checks for target URL.
   echo -e "\nChecking '$targetUrl'...\n-----"
 
   # Run basic e2e and deployment config tests.
-  yarn protractor "$protractorConf" --baseUrl "$targetUrl"
+  yarn test-production-url --test_env=TARGET_URL="$targetUrl"
 
   # Run PWA-score tests.
   yarn test-pwa-score "$targetUrl" "$minPwaScore"

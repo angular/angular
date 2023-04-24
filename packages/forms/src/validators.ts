@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {InjectionToken, ɵisPromise as isPromise, ɵisSubscribable as isSubscribable, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -14,7 +14,6 @@ import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, Validator
 import {RuntimeErrorCode} from './errors';
 import {AbstractControl} from './model/abstract_model';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 function isEmptyInputValue(value: any): boolean {
   /**
@@ -572,7 +571,7 @@ function isPresent(o: any): boolean {
 
 export function toObservable(value: any): Observable<any> {
   const obs = isPromise(value) ? from(value) : value;
-  if (NG_DEV_MODE && !(isObservable(obs))) {
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && !(isSubscribable(obs))) {
     let errorMessage = `Expected async validator to return Promise or Observable.`;
     // A synchronous validator will return object or null.
     if (typeof value === 'object') {
@@ -586,9 +585,6 @@ export function toObservable(value: any): Observable<any> {
 
 function mergeErrors(arrayOfErrors: (ValidationErrors|null)[]): ValidationErrors|null {
   let res: {[key: string]: any} = {};
-
-  // Not using Array.reduce here due to a Chrome 80 bug
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
   arrayOfErrors.forEach((errors: ValidationErrors|null) => {
     res = errors != null ? {...res!, ...errors} : res!;
   });

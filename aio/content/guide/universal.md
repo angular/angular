@@ -1,15 +1,14 @@
 # Server-side rendering (SSR) with Angular Universal
 
-This guide describes **Angular Universal**, a technology that renders Angular applications on the server.
+This guide describes **Angular Universal**, a technology that allows Angular to render applications on the server.
 
-A normal Angular application executes in the *browser*, rendering pages in the DOM in response to user actions.
-Angular Universal executes on the *server*, generating *static* application pages that later get bootstrapped on the client.
-This means that the application generally renders more quickly, giving users a chance to view the application layout before it becomes fully interactive.
+By default, Angular renders applications only in a *browser*. Angular Universal allows Angular to render an application on the *server*, generating *static* HTML contents, which represents an application state. Once the HTML contents is rendered in a browser, Angular bootstraps an application and reuses the information available in the server-generated HTML.
 
-For a more detailed look at different techniques and concepts surrounding SSR, check out this [article](https://developers.google.com/web/updates/2019/02/rendering-on-the-web).
+With server-side rendering an application generally renders in a browser faster, giving users a chance to view the application UI before it becomes fully interactive. See ([the "Why use Server-Side Rendering?" section](#why-do-it)) below for addition information.
 
-Easily prepare an application for server-side rendering using the [Angular CLI](guide/glossary#cli).
-The CLI schematic `@nguniversal/express-engine` performs the required steps, as described.
+Also for a more detailed look at different techniques and concepts surrounding SSR, check out this [article](https://developers.google.com/web/updates/2019/02/rendering-on-the-web).
+
+You can enable server-side rendering in your Angular application using the `@nguniversal/express-engine` schematic as described below.
 
 <div class="alert is-helpful">
 
@@ -18,23 +17,24 @@ See the `engines` property in the [package.json](https://unpkg.com/browse/@angul
 
 </div>
 
-<div class="alert is-helpful">
-
-**NOTE**: <br />
-<live-example downloadOnly>Download the finished sample code</live-example>, which runs in a [Node.js® Express](https://expressjs.com) server.
-
-</div>
-
 <a id="the-example"></a>
 
 ## Universal tutorial
 
-The [Tour of Heroes tutorial](tutorial) is the foundation for this walkthrough.
+The [Tour of Heroes tutorial](tutorial/tour-of-heroes) is the foundation for this walkthrough.
 
 In this example, the Angular CLI compiles and bundles the Universal version of the application with the [Ahead-of-Time (AOT) compiler](guide/aot-compiler).
 A Node.js Express web server compiles HTML pages with Universal based on client requests.
 
-To create the server-side application module, `app.server.module.ts`, run the following CLI command.
+<div class="alert is-helpful">
+
+<live-example downloadOnly>Download the finished sample code</live-example>, which runs in a [Node.js® Express](https://expressjs.com) server.
+
+</div>
+
+### Step 1. Enable Server-Side Rendering
+
+Run the following command to add SSR support into your application:
 
 <code-example format="shell" language="shell">
 
@@ -42,7 +42,7 @@ ng add &commat;nguniversal/express-engine
 
 </code-example>
 
-The command creates the following folder structure.
+The command updates the application code to enable SSR and adds extra files to the project structure (files that are marked with the `*` symbol).
 
 <div class='filetree'>
     <div class='file'>
@@ -63,6 +63,11 @@ The command creates the following folder structure.
         </div>
         <div class='file'>
           app/ &nbsp;&hellip; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &lt;-- application code
+        </div>
+        <div class='children'>
+            <div class='file'>
+              app.module.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; client-side application module
+            </div>
         </div>
         <div class='children'>
             <div class='file'>
@@ -87,9 +92,33 @@ The command creates the following folder structure.
     </div>
 </div>
 
-The files marked with `*` are new and not in the original tutorial sample.
+### Step 2. Enable Client Hydration
 
-### Universal in action
+<div class="alert is-important">
+
+The hydration feature is available for [developer preview](https://angular.io/guide/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
+
+</div>
+
+Hydration is the process that restores the server side rendered application on the client. This includes things like reusing the server rendered DOM structures, persisting the application state, transferring application data that was retrieved already by the server, and other processes. Learn more about hydration in [this guide](guide/hydration).
+
+You can enable hydration by updating the `app.module.ts` file. Import the `provideClientHydration` function from `@angular/platform-browser` and add the function call to the `providers` section of the `AppModule` as shown below.
+
+```typescript
+import {provideClientHydration} from '@angular/platform-browser';
+// ...
+
+@NgModule({
+  // ...
+  providers: [ provideClientHydration() ],  // add this line
+  bootstrap: [ AppComponent ]
+})
+export class AppModule {
+  // ...
+}
+```
+
+### Step 3. Start the server
 
 To start rendering your application with Universal on your local system, use the following command.
 
@@ -99,7 +128,9 @@ npm run dev:ssr
 
 </code-example>
 
-Open a browser and navigate to `http://localhost:4200`.
+### Step 4. Run your application in a browser
+
+Once the web server starts, open a browser and navigate to `http://localhost:4200`.
 You should see the familiar Tour of Heroes dashboard page.
 
 Navigation using `routerLinks` works correctly because they use the built-in anchor \(`<a>`\) elements.
@@ -111,9 +142,6 @@ If you throttle your network speed so that the client-side scripts take longer t
 *   You can't add or delete a hero
 *   The search box on the Dashboard page is ignored
 *   The *Back* and *Save* buttons on the Details page don't work
-
-User events other than `routerLink` clicks aren't supported.
-You must wait for the full client application to bootstrap and run, or buffer the events using libraries like [preboot](https://github.com/angular/preboot), which lets you replay these events once the client-side scripts load.
 
 The transition from the server-rendered application to the client application happens quickly on a development machine, but you should always test your applications in real-world scenarios.
 
@@ -127,7 +155,7 @@ The server-rendered application still launches quickly but the full client appli
 
 <a id="why-do-it"></a>
 
-## Why use server-side rendering?
+## Why use Server-Side Rendering?
 
 There are three main reasons to create a Universal version of your application.
 
@@ -215,6 +243,11 @@ Similarly, without mouse or keyboard events, a server-side application can't rel
 The application must determine what to render based solely on the incoming client request.
 This is a good argument for making the application [routable](guide/router).
 
+<a id="service-worker"></a>
+### Universal and the Angular Service Worker
+
+If you are using Universal in conjunction with the Angular service worker, the behavior is different than the normal server side rendering behavior. The initial server request will be rendered on the server as expected. However, after that initial request, subsequent requests are handled by the service worker. For subsequent requests, the `index.html` file is served statically and bypasses server side rendering.
+
 <a id="universal-engine"></a>
 
 ### Universal template engine
@@ -228,7 +261,7 @@ It accepts an object with the following properties:
 
 | Properties       | Details |
 |:---              |:---     |
-| `bootstrap`      | The root `NgModule` or `NgModule` factory to use for bootstrapping the application when rendering on the server. For the example application, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application. |
+| `bootstrap`      | The root `NgModule` to use for bootstrapping the application when rendering on the server. For the example application, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application. |
 | `extraProviders` | This property is optional and lets you specify dependency providers that apply only when rendering the application on the server. Do this when your application needs information that can only be determined by the currently running server instance.       |
 
 The `ngExpressEngine()` function returns a `Promise` callback that resolves to the rendered page.
@@ -313,7 +346,7 @@ You don't need to do anything to make relative URLs work on the server.
 
 If, for some reason, you are not using an `@nguniversal/*-engine` package, you might need to handle it yourself.
 
-The recommended solution is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule) or [renderModuleFactory()](api/platform-server/renderModuleFactory) \(depending on what you use to render `AppServerModule` on the server\).
+The recommended solution is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule).
 This option is the least intrusive as it does not require any changes to the application.
 Here, "request URL" refers to the URL of the request as a response to which the application is being rendered on the server.
 For example, if the client requested `https://my-server.com/dashboard` and you are rendering the application on the server to respond to that request, `options.url` should be set to `https://my-server.com/dashboard`.

@@ -116,7 +116,7 @@ export function downgradeComponent(info: {
           validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
 
           const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
-          moduleInjector = lazyModuleRef.injector || lazyModuleRef.promise as Promise<Injector>;
+          moduleInjector = lazyModuleRef.injector ?? lazyModuleRef.promise;
         }
 
         // Notes:
@@ -178,12 +178,10 @@ export function downgradeComponent(info: {
               wrapCallback);
 
           const projectableNodes = facade.compileContents();
-          facade.createComponent(projectableNodes);
-          facade.setupInputs(isNgUpgradeLite, info.propagateDigest);
-          facade.setupOutputs();
-          facade.registerCleanup();
+          const componentRef = facade.createComponentAndSetup(
+              projectableNodes, isNgUpgradeLite, info.propagateDigest);
 
-          injectorPromise.resolve(facade.getInjector());
+          injectorPromise.resolve(componentRef.injector);
 
           if (ranAsync) {
             // If this is run async, it is possible that it is not run inside a

@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <title>Angular Upgrade 2.0</title>
   <style>
@@ -10,14 +10,16 @@
       padding: 1em;
     }
   </style>
-<body>
-  <upgrade-app ng-controller="Index" [user]="name" (reset)="name=''">
-    Your name: <input ng-model="name">
-    <hr>
-    <span class="greeting">Greetings from {{name}}!</span>
-  </upgrade-app>
+  <body>
+    <upgrade-app ng-controller="Index" [user]="name" (reset)="name=''">
+      Your name: <input ng-model="name" />
+      <hr />
+      <span class="greeting">Greetings from {{name}}!</span>
+    </upgrade-app>
 
-  <!--load location for ts_devserver-->
-  <script src="/app_bundle.js"></script>
-</body>
+    <script src="/npm/node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="/npm/node_modules/angular-1.8/angular.js"></script>
+    <script src="/angular/packages/zone.js/bundles/zone.umd.js"></script>
+    <script src="/app_bundle.js"></script>
+  </body>
 </html>

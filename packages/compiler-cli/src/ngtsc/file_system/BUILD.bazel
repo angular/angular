@@ -8,9 +8,6 @@ ts_library(
         "src/**/*.ts",
     ]),
     deps = [
-        # Allows for the `import.meta.url` constant to be used. This is
-        # a temporary interop until devmode is switched to ESM.
-        "//packages/compiler-cli:import_meta_url_types",
         "@npm//@types/node",
         "@npm//typescript",
     ],

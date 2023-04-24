@@ -21,7 +21,6 @@ of this repo.
 * `area: core & compiler` - because core, compiler, compiler-cli and
   browser-platforms are very intertwined, we will be treating them as one
 * `area: ivy` - a subset of core representing the new Ivy renderer.
-* `area: ngcc` - a subset of ivy representing the [Angular Compatibility Compiler](../packages/compiler-cli/ngcc/README.md)
 * `area: ve` - a subset of `core & compiler` representing changes specific to ViewEngine (legacy compiler/renderer).
 * `area: docs-infra` - the angular.io application and docs-related tooling
 * `area: elements`

@@ -11,13 +11,13 @@ describe('AngularJS to Angular Quick Reference Tests', () => {
   it('should display proper movie data', async () => {
     // We check only a few samples
     const expectedSamples: any[] = [
-      {row: 0, column: 0, element: 'img', attr: 'src', value: 'images/hero.png', contains: true},
+      {row: 0, column: 0, element: 'img', attr: 'src', value: 'images/hero.svg', contains: true},
       {row: 0, column: 2, value: 'Celeritas'},
       {row: 1, column: 3, matches: /Dec 1[678], 2015/}, // absorb timezone dif; we care about date format
       {row: 1, column: 5, value: '$14.95'},
       {row: 2, column: 4, value: 'PG-13'},
       {row: 2, column: 7, value: '100%'},
-      {row: 2, column: 0, element: 'img', attr: 'src', value: 'images/ng-logo.png', contains: true},
+      {row: 2, column: 0, element: 'img', attr: 'src', value: 'images/ng-logo.svg', contains: true},
     ];
 
     // Go through the samples

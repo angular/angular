@@ -25,8 +25,11 @@ http_archive(
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "c29944ba9b0b430aadcaf3bf2570fece6fc5ebfb76df145c6cdad40d65c20811",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.7.0/rules_nodejs-5.7.0.tar.gz"],
+    patches = [
+        "//tools/esm-interop:patches/bazel/nodejs_binary_esm_support.patch",
+    ],
+    sha256 = "94070eff79305be05b7699207fbac5d2608054dd53e6109f7d00d923919ff45a",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.8.2/rules_nodejs-5.8.2.tar.gz"],
 )
 
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
@@ -35,6 +38,8 @@ build_bazel_rules_nodejs_dependencies()
 
 # The PKG rules are needed to build tar packages for integration tests. The builtin
 # rule in `@bazel_tools` is not Windows compatible and outdated.
+# NOTE: We cannot move past version 0.6.0 as pkg_tar no longer works on directories, which rules_nodejs
+#       relies on for node_modules setup.
 http_archive(
     name = "rules_pkg",
     sha256 = "62eeb544ff1ef41d786e329e1536c1d541bb9bcad27ae984d57f18f314018e66",
@@ -45,37 +50,13 @@ http_archive(
 )
 
 # Fetch Aspect lib for utilities like write_source_files
+# NOTE: We cannot move past version 1.23.2 of aspect_bazel_lib because it requires us to move to bazel 6.0.0 which
+#       breaks our usage of managed_directories
 http_archive(
     name = "aspect_bazel_lib",
-    sha256 = "8860aab705fe9f427fbebe388bdfacf8a6b267cb3c0d71ebeaf1dcceedd29193",
-    strip_prefix = "bazel-lib-1.3.0",
-    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.3.0.tar.gz",
-)
-
-# Download cli source from angular/cli-builds for doc generation at a specific tag or commit.
-# If the ref is a commit sha, use the full sha instead of the abbreviated form. Tags, which
-# hold an abbreviated sha by convention in cli-builds, can continue to use the short form.
-CLI_SRC_REF = "6ccbc6b4cba4fde7898b67d2e195a1ea3bf4553e"
-
-http_archive(
-    name = "angular_cli_src",
-    build_file_content = """
-# Include files used in doc generation
-filegroup(
-    name = "files_for_docgen",
-    srcs = glob([
-        "help/**/*.json",
-        "package.json",
-    ]),
-    visibility = ["//visibility:public"],
-)
-""",
-    # Run the following command to calculate the sha256, substituting the CLI_SRC_REF
-    # wget -O- -q https://github.com/angular/cli-builds/archive/{CLI_SRC_REF}.tar.gz | sha256sum
-    # Alternatively, just remove the parameter and bazel debug will output the sha as a suggestion.
-    sha256 = "6558e1774904719d0615f01b88368d7fe3a927ea1e54cb0436e7957bc8f6d0a6",
-    strip_prefix = "cli-builds-%s" % CLI_SRC_REF,
-    url = "https://github.com/angular/cli-builds/archive/%s.tar.gz" % CLI_SRC_REF,
+    sha256 = "4b2e774387bae6242879820086b7b738d49bf3d0659522ea5d9363be01a27582",
+    strip_prefix = "bazel-lib-1.23.2",
+    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.23.2.tar.gz",
 )
 
 # Setup the Node.js toolchain.
@@ -83,7 +64,7 @@ load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
 nodejs_register_toolchains(
     name = "nodejs",
-    node_version = "16.13.0",
+    node_version = "16.14.0",
 )
 
 # Download npm dependencies.
@@ -97,9 +78,12 @@ yarn_install(
     data = [
         YARN_LABEL,
         "//:.yarnrc",
-        "//:scripts/puppeteer-chromedriver-versions.js",
-        "//:scripts/webdriver-manager-update.js",
         "//tools:postinstall-patches.js",
+        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-e859696da7af56c811b6589f1ae888222d93d797.patch",
+        "//tools/esm-interop:patches/npm/@bazel+concatjs+5.8.1.patch",
+        "//tools/esm-interop:patches/npm/@bazel+esbuild+5.7.1.patch",
+        "//tools/esm-interop:patches/npm/@bazel+protractor+5.7.1.patch",
+        "//tools/esm-interop:patches/npm/rxjs+6.6.7.patch",
     ],
     # Currently disabled due to:
     #  1. Missing Windows support currently.
@@ -210,10 +194,10 @@ cldr_xml_data_repository(
 # sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "618f0b7aae019c149ac2ff4142a66c110de116fb5c173dbeccedbaee06fc5f6d",
-    strip_prefix = "rules_sass-a2fce75bcf103750f7accbf7f966ad48bcbca2d4",
+    sha256 = "de516110be32fcce328cb93ec4bf06f7a6e978e60bfd9d628fb5571c4a0afade",
+    strip_prefix = "rules_sass-898e4dd048584152bfbd77abd9ed0c3fe28c86ac",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/a2fce75bcf103750f7accbf7f966ad48bcbca2d4.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/898e4dd048584152bfbd77abd9ed0c3fe28c86ac.zip",
     ],
 )
 

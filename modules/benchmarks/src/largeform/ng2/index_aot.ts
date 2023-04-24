@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// BEGIN-EXTERNAL
+import 'zone.js/lib/browser/rollup-main';
+
+// END-EXTERNAL
+
 import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 

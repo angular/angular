@@ -25,7 +25,7 @@
  * Ideally, we would run `yarn install` with the `--frozen-lockfile` option to verify that the
  * lockfile is in-sync with `package.json`, but we cannot do that for integration projects, because
  * we want to be able to install the locally built Angular packages). Therefore, we must manually
- * esnure that the integration project lockfiles remain in-sync, which is error-prone.
+ * ensure that the integration project lockfiles remain in-sync, which is error-prone.
  *
  * The checks performed by this script (although not full-proof) provide another line of defense
  * against indeterminism caused by unpinned dependencies.

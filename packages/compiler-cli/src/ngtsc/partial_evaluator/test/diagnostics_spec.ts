@@ -14,7 +14,7 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {Reference} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
-import {ObjectAssignBuiltinFn} from '../src/builtin';
+import {StringConcatBuiltinFn} from '../src/builtin';
 import {describeResolvedType, traceDynamicValue} from '../src/diagnostics';
 import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
@@ -49,7 +49,6 @@ runInEachFileSystem(os => {
 
       it('should describe references', () => {
         const namedFn = ts.factory.createFunctionDeclaration(
-            /* decorators */ undefined,
             /* modifiers */ undefined,
             /* asteriskToken */ undefined,
             /* name */ 'test',
@@ -61,7 +60,6 @@ runInEachFileSystem(os => {
         expect(describeResolvedType(new Reference(namedFn))).toBe('test');
 
         const anonymousFn = ts.factory.createFunctionDeclaration(
-            /* decorators */ undefined,
             /* modifiers */ undefined,
             /* asteriskToken */ undefined,
             /* name */ undefined,
@@ -75,7 +73,6 @@ runInEachFileSystem(os => {
 
       it('should describe enum values', () => {
         const decl = ts.factory.createEnumDeclaration(
-            /* decorators */ undefined,
             /* modifiers */ undefined,
             /* name */ 'MyEnum',
             /* members */[ts.factory.createEnumMember(
@@ -92,7 +89,7 @@ runInEachFileSystem(os => {
       });
 
       it('should describe known functions', () => {
-        expect(describeResolvedType(new ObjectAssignBuiltinFn())).toBe('Function');
+        expect(describeResolvedType(new StringConcatBuiltinFn('foo'))).toBe('Function');
       });
 
       it('should describe external modules', () => {

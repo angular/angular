@@ -51,6 +51,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle non-null assertions after a safe access",
+      "inputFiles": [
+        "safe_access_non_null.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_non_null_template.js",
+              "generated": "safe_access_non_null.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

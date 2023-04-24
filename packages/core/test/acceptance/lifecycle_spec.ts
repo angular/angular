@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ContentChildren, Directive, DoCheck, Input, NgModule, OnChanges, QueryList, SimpleChange, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ContentChildren, Directive, DoCheck, Input, NgModule, OnChanges, QueryList, SimpleChange, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -1561,11 +1561,8 @@ describe('onInit', () => {
     class App {
       @ViewChild('container', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
 
-      constructor(public compFactoryResolver: ComponentFactoryResolver) {}
-
       createDynamicView() {
-        const dynamicCompFactory = this.compFactoryResolver.resolveComponentFactory(DynamicComp);
-        this.viewContainerRef.createComponent(dynamicCompFactory);
+        this.viewContainerRef.createComponent(DynamicComp);
       }
     }
 

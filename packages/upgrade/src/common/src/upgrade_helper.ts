@@ -49,7 +49,7 @@ export class UpgradeHelper {
     this.element = elementRef.nativeElement;
     this.$element = angularElement(this.element);
 
-    this.directive = directive || UpgradeHelper.getDirective(this.$injector, name);
+    this.directive = directive ?? UpgradeHelper.getDirective(this.$injector, name);
   }
 
   static getDirective($injector: IInjectorService, name: string): IDirective {
@@ -106,7 +106,7 @@ export class UpgradeHelper {
     const locals = {'$scope': $scope, '$element': this.$element};
     const controller = this.$controller(controllerType, locals, null, this.directive.controllerAs);
 
-    this.$element.data!(controllerKey(this.directive.name!), controller);
+    this.$element.data?.(controllerKey(this.directive.name!), controller);
 
     return controller;
   }
@@ -246,8 +246,7 @@ export class UpgradeHelper {
     const require = this.directive.require || (this.directive.controller && this.directive.name)!;
 
     if (isMap(require)) {
-      Object.keys(require).forEach(key => {
-        const value = require[key];
+      Object.entries(require).forEach(([key, value]) => {
         const match = value.match(REQUIRE_PREFIX_RE)!;
         const name = value.substring(match[0].length);
 
@@ -260,7 +259,7 @@ export class UpgradeHelper {
     return require;
   }
 
-  private resolveRequire(require: DirectiveRequireProperty, controllerInstance?: any):
+  private resolveRequire(require: DirectiveRequireProperty):
       SingleOrListOrMap<IControllerInstance>|null {
     if (!require) {
       return null;

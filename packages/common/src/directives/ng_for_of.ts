@@ -10,7 +10,6 @@ import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, Iterab
 
 import {RuntimeErrorCode} from '../errors';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * @publicApi
@@ -167,13 +166,10 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
-    if (NG_DEV_MODE && fn != null && typeof fn !== 'function') {
-      // TODO(vicb): use a log service once there is a public one available
-      if (<any>console && <any>console.warn) {
-        console.warn(
-            `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
-            `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
-      }
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && fn != null && typeof fn !== 'function') {
+      console.warn(
+          `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
+          `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
     }
     this._trackByFn = fn;
   }
@@ -185,7 +181,9 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   private _ngForOf: U|undefined|null = null;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T>|null = null;
-  // TODO(issue/24571): remove '!'.
+  // TODO(issue/24571): remove '!'
+  // waiting for microsoft/typescript#43662 to allow the return type `TrackByFunction|undefined` for
+  // the getter
   private _trackByFn!: TrackByFunction<T>;
 
   constructor(
@@ -216,7 +214,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
       // React on ngForOf changes only once all inputs have been initialized
       const value = this._ngForOf;
       if (!this._differ && value) {
-        if (NG_DEV_MODE) {
+        if (typeof ngDevMode === 'undefined' || ngDevMode) {
           try {
             // CAUTION: this logic is duplicated for production mode below, as the try-catch
             // is only present in development builds.

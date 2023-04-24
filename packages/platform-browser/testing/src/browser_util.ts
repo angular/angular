@@ -67,31 +67,9 @@ export class BrowserDetection {
         this._ua.indexOf('Edge') == -1;
   }
 
-  get supportsCustomElements() {
-    return (typeof (<any>global).customElements !== 'undefined');
-  }
-
-  get supportsDeprecatedCustomCustomElementsV0() {
-    return (typeof (document as any).registerElement !== 'undefined');
-  }
-
-  get supportsRegExUnicodeFlag(): boolean {
-    return RegExp.prototype.hasOwnProperty('unicode');
-  }
-
   get supportsShadowDom() {
     const testEl = document.createElement('div');
     return (typeof testEl.attachShadow !== 'undefined');
-  }
-
-  get supportsDeprecatedShadowDomV0() {
-    const testEl = document.createElement('div') as any;
-    return (typeof testEl.createShadowRoot !== 'undefined');
-  }
-
-  get supportsTemplateElement() {
-    const testEl = document.createElement('template') as any;
-    return (typeof testEl.content !== 'undefined');
   }
 }
 
@@ -112,15 +90,6 @@ export function createMouseEvent(eventType: string): MouseEvent {
 
 export function el(html: string): HTMLElement {
   return <HTMLElement>getContent(createTemplate(html)).firstChild;
-}
-
-export function normalizeCSS(css: string): string {
-  return css.replace(/\s+/g, ' ')
-      .replace(/:\s/g, ':')
-      .replace(/'/g, '"')
-      .replace(/ }/g, '}')
-      .replace(/url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, (...match: string[]) => `url("${match[2]}")`)
-      .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
 }
 
 function getAttributeMap(element: any): Map<string, string> {
@@ -210,10 +179,6 @@ export function setCookie(name: string, value: string) {
   // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does
   // not clear other cookies.
   document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
-}
-
-export function supportsWebAnimation(): boolean {
-  return typeof (<any>Element).prototype['animate'] === 'function';
 }
 
 export function hasStyle(element: any, styleName: string, styleValue?: string|null): boolean {

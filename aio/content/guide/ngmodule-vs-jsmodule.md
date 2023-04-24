@@ -76,8 +76,8 @@ It then configures the `@NgModule` with the following arrays:
 *   `providers`: Providers of services that components in other NgModules can use.
   There are no providers in a newly generated root NgModule.
 
-*   `bootstrap`: The [entry component](guide/entry-components "Specifying an entry component") that Angular creates and inserts into the `index.html` host web page, thereby bootstrapping the application.
-  This entry component, `AppComponent`, appears in both the `declarations` and the `bootstrap` arrays.
+*   `bootstrap`: The component that Angular creates and inserts into the `index.html` host web page, thereby bootstrapping the application.
+  This component, `AppComponent`, appears in both the `declarations` and the `bootstrap` arrays.
 
 ## Next steps
 

@@ -567,6 +567,74 @@ describe('animation integration tests using web animations', function() {
     expect(elm.style.getPropertyValue('width')).toEqual('300px');
     expect(elm.style.getPropertyValue('font-size')).toEqual('14px');
   });
+
+  it('should apply correct state transitions for both CamelCase and kebab-case CSS properties',
+     () => {
+       @Component({
+         selector: 'ani-cmp',
+         template: `
+          <div id="camelCaseDiv" [@camelCaseTrigger]="status"></div>
+          <div id="kebab-case-div" [@kebab-case-trigger]="status"></div>
+        `,
+         animations: [
+           trigger(
+               'camelCaseTrigger',
+               [
+                 state('active', style({
+                         'backgroundColor': 'green',
+                       })),
+                 transition(
+                     'inactive => active',
+                     [
+                       style({
+                         'backgroundColor': 'red',
+                       }),
+                       animate(500),
+                     ]),
+               ]),
+           trigger(
+               'kebab-case-trigger',
+               [
+                 state('active', style({
+                         'background-color': 'green',
+                       })),
+                 transition(
+                     'inactive => active',
+                     [
+                       style({
+                         'background-color': 'red',
+                       }),
+                       animate(500),
+                     ]),
+               ]),
+         ]
+       })
+       class Cmp {
+         public status: 'active'|'inactive' = 'inactive';
+       }
+
+       TestBed.configureTestingModule({declarations: [Cmp]});
+
+       const engine = TestBed.inject(ɵAnimationEngine);
+       const fixture = TestBed.createComponent(Cmp);
+       const cmp = fixture.componentInstance;
+       fixture.detectChanges();
+
+       cmp.status = 'active';
+       fixture.detectChanges();
+       engine.flush();
+
+       expect(engine.players.length).toEqual(2);
+       const [camelCaseWebPlayer, kebabCaseWebPlayer] = engine.players.map(
+           player => (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer);
+
+       [camelCaseWebPlayer, kebabCaseWebPlayer].forEach(webPlayer => {
+         expect(webPlayer.keyframes).toEqual([
+           new Map<string, string|number>([['backgroundColor', 'red'], ['offset', 0]]),
+           new Map<string, string|number>([['backgroundColor', 'green'], ['offset', 1]])
+         ]);
+       });
+     });
 });
 })();
 

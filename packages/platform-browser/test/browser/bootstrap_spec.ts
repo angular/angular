@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, state, style, transition, trigger} from '@angular/animations';
+import {animate, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, inject as _inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, NgModuleRef, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
-import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
+import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, inject as _inject, InjectionToken, Injector, LOCALE_ID, NgModule, NgModuleRef, NgZone, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, TransferState, Type, VERSION} from '@angular/core';
+import {ApplicationRef, destroyPlatform, provideZoneChangeDetection} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
-import {BrowserModule, TransferState} from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {provideAnimations, provideNoopAnimations} from '@angular/platform-browser/animations';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -385,6 +385,31 @@ function bootstrap(
           expect(el.innerText).toBe('Hello from AnimationCmp!');
         });
       });
+
+      it('initializes modules inside the NgZone when using `provideZoneChangeDetection`',
+         async () => {
+           let moduleInitialized = false;
+           @NgModule({})
+           class SomeModule {
+             constructor() {
+               expect(NgZone.isInAngularZone()).toBe(true);
+               moduleInitialized = true;
+             }
+           }
+           @Component({
+             template: '',
+             selector: 'hello-app',
+             imports: [SomeModule],
+             standalone: true,
+           })
+           class AnimationCmp {
+           }
+
+           await bootstrapApplication(AnimationCmp, {
+             providers: [provideZoneChangeDetection({eventCoalescing: true})],
+           });
+           expect(moduleInitialized).toBe(true);
+         });
     });
 
     it('should throw if bootstrapped Directive is not a Component', done => {
@@ -437,7 +462,7 @@ function bootstrap(
       });
     });
 
-    it('should throw if no provider', done => {
+    it('should throw if no provider', async () => {
       const logger = new MockConsole();
       const errorHandler = new ErrorHandler();
       (errorHandler as any)._console = logger as any;
@@ -460,14 +485,9 @@ function bootstrap(
       class CustomModule {
       }
 
-      bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
+      await expectAsync(bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
         CustomModule
-      ]).then(null, (e: Error) => {
-        const errorMsg = `R3InjectorError(TestModule)[IDontExist -> IDontExist -> IDontExist]: \n`;
-        expect(e.message).toContain(errorMsg);
-        done();
-        return null;
-      });
+      ])).toBeRejected();
     });
 
     if (getDOM().supportsDOMEvents) {
@@ -628,41 +648,13 @@ function bootstrap(
       })();
     });
 
-    it('should remove styles when transitioning from a server render', done => {
-      @Component({
-        selector: 'root',
-        template: 'root',
-      })
-      class RootCmp {
+    it('should not allow provideZoneChangeDetection in bootstrapModule', async () => {
+      @NgModule({imports: [BrowserModule], providers: [provideZoneChangeDetection()]})
+      class SomeModule {
       }
 
-      @NgModule({
-        bootstrap: [RootCmp],
-        declarations: [RootCmp],
-        imports: [BrowserModule.withServerTransition({appId: 'my-app'})],
-      })
-      class TestModule {
-      }
-
-      // First, set up styles to be removed.
-      const dom = getDOM();
-      const platform = platformBrowserDynamic();
-      const document = platform.injector.get(DOCUMENT);
-      const style = dom.createElement('style', document);
-      style.setAttribute('ng-transition', 'my-app');
-      document.head.appendChild(style);
-
-      const root = dom.createElement('root', document);
-      document.body.appendChild(root);
-
-      platform.bootstrapModule(TestModule).then(() => {
-        const styles: HTMLElement[] =
-            Array.prototype.slice.apply(document.getElementsByTagName('style') || []);
-        styles.forEach(style => {
-          expect(style.getAttribute('ng-transition')).not.toBe('my-app');
-        });
-        done();
-      }, done.fail);
+      await expectAsync(platformBrowserDynamic().bootstrapModule(SomeModule))
+          .toBeRejectedWithError(/provideZoneChangeDetection.*BootstrapOptions/);
     });
 
     it('should register each application with the testability registry', async () => {

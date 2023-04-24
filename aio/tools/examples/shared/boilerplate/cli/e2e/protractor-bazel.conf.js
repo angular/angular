@@ -13,8 +13,12 @@ exports.config = {
     chromeOptions: {
       ...config.capabilities.chromeOptions,
       binary: process.env.CHROME_BIN,
-      // See /integration/README.md#browser-tests for more info on these args
-      args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio'],
+      // See /integration/README.md#browser-tests for more info on these args.
+      // Bazel tests run within a sandbox already and Chrome cannot have its own sandbox too.
+      args: [
+        '--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage',
+        '--hide-scrollbars', '--mute-audio'
+      ],
     },
   },
 };

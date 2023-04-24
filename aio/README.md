@@ -14,7 +14,8 @@ You should run all these tasks from the `angular/aio` folder.
 Here are the most important tasks you might need to use:
 
 * `yarn` - install all the dependencies.
-* `yarn build` - create a production build of the application.
+* `yarn build` - create a development build of the application.
+* `yarn build-prod` - create a production build of the application.
 * `yarn build-local` - same as `build`, but uses locally built Angular packages from source code rather than from npm.
 * `yarn start` - run a development web server that watches, rebuilds, and reloads the page when there are changes to the source code or docs.
 * `yarn start-local` - same as `start`, but uses local Angular packages.

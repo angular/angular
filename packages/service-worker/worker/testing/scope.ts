@@ -51,8 +51,7 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
 
   private selfMessageQueue: any[] = [];
   autoAdvanceTime = false;
-  // TODO(issue/24571): remove '!'.
-  unregistered!: boolean;
+  unregistered: boolean = false;
   readonly notifications: {title: string, options: Object}[] = [];
   readonly registration: ServiceWorkerRegistration = {
     active: {

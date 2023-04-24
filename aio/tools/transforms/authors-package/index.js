@@ -16,9 +16,14 @@ function createPackage(changedFile) {
 
   const tutorialMatch = /^aio\/content\/tutorial\/([^.]+)\.md/.exec(changedFile);
   const tutorialExampleMatch = /^aio\/content\/examples\/(toh-[^/]+)\//.exec(changedFile);
+  let tutorialName = '';
   if (tutorialMatch || tutorialExampleMatch) {
-    const tutorialName = tutorialMatch && tutorialMatch[1] || tutorialExampleMatch[1];
-    console.log('Building tutorial docs');
+    if (tutorialExampleMatch) {
+      tutorialName = 'tour-of-heroes/' + tutorialExampleMatch[1];
+    } else {
+      tutorialName = tutorialMatch[1];
+    }
+    console.log('Building tutorial docs for: ', tutorialName);
     return require('./tutorial-package').createPackage(tutorialName);
   }
 

@@ -111,7 +111,7 @@ If the topic has minor errors, you can fix them when you [make a minor change](/
 
 If the topic requires major changes, you can [make a major change](guide/contributors-guide-overview#make-a-major-change), or [open a docs issue in GitHub](https://github.com/angular/angular/issues/new?assignees=&labels=&template=3-docs-bug.yaml). You shouldn't make major changes in the GitHub user interface because it doesn't allow you to test them before you submit them.
 
-Whether you make the changes the topic needs or open a docs issue, you should still [update the **Last reviewed** date](#update-the-last-reviewed-date). You can use the GitHub user interface in the browse if you only want to update the **Last reviewed** date.
+Whether you make the changes the topic needs or open a docs issue, you should still [update the **Last reviewed** date](#update-the-last-reviewed-date). You can use the GitHub user interface in the browser if you only want to update the **Last reviewed** date.
 
 <!-- links -->
 
@@ -119,4 +119,4 @@ Whether you make the changes the topic needs or open a docs issue, you should st
 
 <!-- end links -->
 
-@reviewed 2022-10-12
+@reviewed 2022-12-11

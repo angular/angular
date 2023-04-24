@@ -6,13 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ErrorHandler, Inject, Injectable, InjectionToken, NgModule, PlatformRef} from '@angular/core';
+import {Component, destroyPlatform, ErrorHandler, Inject, Injectable, InjectionToken, NgModule, NgZone, PlatformRef} from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
+import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {withBody} from '@angular/private/testing';
 
 import {bootstrapApplication, BrowserModule} from '../../src/browser';
 
 describe('bootstrapApplication for standalone components', () => {
+  beforeEach(destroyPlatform);
+  afterEach(destroyPlatform);
+
   class SilentErrorHandler extends ErrorHandler {
     override handleError() {
       // the error is already re-thrown by the application ref.
@@ -42,13 +46,6 @@ describe('bootstrapApplication for standalone components', () => {
          constructor(@Inject(testToken) readonly testToken: String) {}
        }
 
-       class SilentErrorHandler extends ErrorHandler {
-         override handleError() {
-           // the error is already re-thrown by the application ref.
-           // we don't want to print it, but instead catch it in tests.
-         }
-       }
-
        const appRef = await bootstrapApplication(StandaloneCmp, {
          providers: [
            {provide: testToken, useValue: 'Bootstrap'},
@@ -59,6 +56,26 @@ describe('bootstrapApplication for standalone components', () => {
 
        // make sure that ambient providers "shadow" ones explicitly provided during bootstrap
        expect(document.body.textContent).toBe('(Ambient)');
+     }));
+
+  it('should be able to provide a custom zone implementation in DI',
+     withBody('<test-app></test-app>', async () => {
+       @Component({
+         selector: 'test-app',
+         standalone: true,
+         template: ``,
+       })
+       class StandaloneCmp {
+       }
+
+       class CustomZone extends NoopNgZone {}
+       const instance = new CustomZone();
+
+       const appRef = await bootstrapApplication(
+           StandaloneCmp, {providers: [{provide: NgZone, useValue: instance}]});
+
+       appRef.tick();
+       expect(appRef.injector.get(NgZone)).toEqual(instance);
      }));
 
   /*

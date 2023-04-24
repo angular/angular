@@ -70,7 +70,7 @@ describe('LiveExampleComponent', () => {
     });
 
     it('should have expected stackblitz & download hrefs', () => {
-      testPath = '/tutorial/toh-pt1';
+      testPath = '/tutorial/tour-of-heroes/toh-pt1';
       testComponent(() => {
         const hrefs = getHrefs();
         expect(hrefs[0]).toContain('/toh-pt1/stackblitz.html');
@@ -79,7 +79,7 @@ describe('LiveExampleComponent', () => {
     });
 
     it('should have expected stackblitz & download hrefs even when path has # frag', () => {
-      testPath = '/tutorial/toh-pt1#somewhere';
+      testPath = '/tutorial/tour-of-heroes/toh-pt1#somewhere';
       testComponent(() => {
         const hrefs = getHrefs();
         expect(hrefs[0]).toContain('/toh-pt1/stackblitz.html');
@@ -88,7 +88,7 @@ describe('LiveExampleComponent', () => {
     });
 
     it('should have expected stackblitz & download hrefs even when path has ? params', () => {
-      testPath = '/tutorial/toh-pt1?foo=1&bar="bar"';
+      testPath = '/tutorial/tour-of-heroes/toh-pt1?foo=1&bar="bar"';
       testComponent(() => {
         const hrefs = getHrefs();
         expect(hrefs[0]).toContain('/toh-pt1/stackblitz.html');
@@ -212,7 +212,7 @@ describe('LiveExampleComponent', () => {
     });
 
     it('should have download paragraph with expected anchor href', () => {
-      testPath = '/tutorial/toh-pt1';
+      testPath = '/tutorial/tour-of-heroes/toh-pt1';
       setHostTemplate('<live-example embedded></live-example>');
       testComponent(() => {
         expect(getDownloadAnchor().href).toContain('/toh-pt1/toh-pt1.zip');
@@ -220,7 +220,7 @@ describe('LiveExampleComponent', () => {
     });
 
     it('should not have download paragraph when has `nodownload`', () => {
-      testPath = '/tutorial/toh-pt1';
+      testPath = '/tutorial/tour-of-heroes/toh-pt1';
       setHostTemplate('<live-example embedded nodownload></live-example>');
       testComponent(() => {
         expect(getDownloadAnchor()).toBeNull();

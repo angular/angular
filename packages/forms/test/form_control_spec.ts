@@ -7,7 +7,7 @@
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AsyncValidatorFn, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
@@ -16,7 +16,7 @@ function otherAsyncValidator() {
   return Promise.resolve({'other': true});
 }
 
-function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ {
+function syncValidator() {
   return null;
 }
 
@@ -1105,7 +1105,7 @@ describe('FormControl', () => {
     it('should fire an event after the status has been updated to pending', fakeAsync(() => {
          const c = new FormControl('old', Validators.required, asyncValidator('expected'));
 
-         const log: any[] /** TODO #9100 */ = [];
+         const log: string[] = [];
          c.valueChanges.subscribe({next: (value: any) => log.push(`value: '${value}'`)});
 
          c.statusChanges.subscribe({next: (status: any) => log.push(`status: '${status}'`)});
@@ -1131,26 +1131,24 @@ describe('FormControl', () => {
          ]);
        }));
 
-    // TODO: remove the if statement after making observable delivery sync
-    it('should update set errors and status before emitting an event', done => {
-      c.valueChanges.subscribe((value: any /** TODO #9100 */) => {
-        expect(c.valid).toEqual(false);
-        expect(c.errors).toEqual({'required': true});
-        done();
-      });
-      c.setValue('');
-    });
+    it('should update set errors and status before emitting an event', fakeAsync(() => {
+         c.setValue('');
 
-    it('should return a cold observable', done => {
-      c.setValue('will be ignored');
-      c.valueChanges.subscribe({
-        next: (value: any) => {
-          expect(value).toEqual('new');
-          done();
-        }
-      });
-      c.setValue('new');
-    });
+         tick();
+         expect(c.valid).toEqual(false);
+         expect(c.errors).toEqual({'required': true});
+       }));
+
+    it('should return a cold observable', fakeAsync(() => {
+         let value: string|null = null;
+         c.setValue('will be ignored');
+         c.valueChanges.subscribe((v) => value = v);
+         c.setValue('new');
+         tick();
+
+         // @ts-expect-error see microsoft/TypeScript#9998
+         expect(value).toEqual('new');
+       }));
   });
 
   describe('setErrors', () => {
@@ -1507,7 +1505,8 @@ describe('FormControl', () => {
       });
 
       it('should throw when sync validator passed into async validator param', () => {
-        const fn = () => new FormControl('', syncValidator, syncValidator);
+        const fn = () =>
+            new FormControl('', syncValidator, syncValidator as unknown as AsyncValidatorFn);
         // test for the specific error since without the error check it would still throw an error
         // but
         // not a meaningful one

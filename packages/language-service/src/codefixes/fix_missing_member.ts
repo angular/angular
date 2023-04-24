@@ -9,7 +9,7 @@
 import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import ts from 'typescript';
-import * as tss from 'typescript/lib/tsserverlibrary';
+import tss from 'typescript/lib/tsserverlibrary';
 
 import {getTargetAtPosition, getTcbNodesOfTemplateAtPosition, TargetNodeKind} from '../template_target';
 import {getTemplateInfoAtPosition} from '../utils';

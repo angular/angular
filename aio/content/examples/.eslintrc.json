@@ -88,7 +88,7 @@
         "no-use-before-define": "off",
         "prefer-arrow/prefer-arrow-functions": "off",
         "quotes": "off",
-        "@typescript-eslint/quotes": ["off", "single", {"avoidEscape": true}], // TODO: Fix the code violating this rule and enable it.
+        "@typescript-eslint/quotes": ["error", "single", {"avoidEscape": true, "allowTemplateLiterals": true }],
         "semi": "error"
       }
     }

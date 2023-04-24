@@ -55,8 +55,8 @@
 <!-- #docregion dynamic-priority -->
 <h3>Dynamic vs static</h3>
 
-<!-- If `classExpression` has a value for the `special` class, this value overrides the `class="special"` below -->
-<div class="special" [class]="classExpression">Some text.</div>
+<!-- If `[class.special]` equals false, this value overrides the `class="special"` below -->
+<div class="special" [class.special]="false">Some text.</div>
 
 <!-- If `styleExpression` has a value for the `border` property, this value overrides the `style="border: dotted darkblue 3px"` below -->
 <div style="border: dotted darkblue 3px" [style]="styleExpression">Some text.</div>

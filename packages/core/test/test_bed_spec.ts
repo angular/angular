@@ -1020,7 +1020,7 @@ describe('TestBed', () => {
 
     it('overridden with an array', () => {
       const overrideValue = ['override'];
-      TestBed.overrideProvider(multiToken, {useValue: overrideValue, multi: true} as any);
+      TestBed.overrideProvider(multiToken, {useValue: overrideValue, multi: true});
 
       const value = TestBed.inject(multiToken);
       expect(value.length).toEqual(overrideValue.length);
@@ -1031,7 +1031,7 @@ describe('TestBed', () => {
       // This is actually invalid because multi providers return arrays. We have this here so we can
       // ensure Ivy behaves the same as VE does currently.
       const overrideValue = 'override';
-      TestBed.overrideProvider(multiToken, {useValue: overrideValue, multi: true} as any);
+      TestBed.overrideProvider(multiToken, {useValue: overrideValue, multi: true});
 
       const value = TestBed.inject(multiToken);
       expect(value.length).toEqual(overrideValue.length);
@@ -1248,7 +1248,7 @@ describe('TestBed', () => {
     });
 
     const multiOverride = {useValue: [{value: 'new provider'}], multi: true};
-    TestBed.overrideProvider(MY_TOKEN, multiOverride as any);
+    TestBed.overrideProvider(MY_TOKEN, multiOverride);
 
     const fixture = TestBed.createComponent(MyComp);
     expect(fixture.componentInstance.myProviders).toEqual([{value: 'new provider'}]);

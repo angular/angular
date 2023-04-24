@@ -6,25 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ShadowCss} from '@angular/compiler/src/shadow_css';
+import {shim} from './utils';
 
 describe('ShadowCss, keyframes and animations', () => {
-  function s(css: string, contentAttr: string, hostAttr: string = '') {
-    const shadowCss = new ShadowCss();
-    return shadowCss.shimCssText(css, contentAttr, hostAttr);
-  }
-
   it('should scope keyframes rules', () => {
     const css = '@keyframes foo {0% {transform:translate(-50%) scaleX(0);}}';
     const expected = '@keyframes host-a_foo {0% {transform:translate(-50%) scaleX(0);}}';
-    expect(s(css, 'host-a')).toEqual(expected);
+    expect(shim(css, 'host-a')).toEqual(expected);
   });
 
   it('should scope -webkit-keyframes rules', () => {
     const css = '@-webkit-keyframes foo {0% {-webkit-transform:translate(-50%) scaleX(0);}} ';
     const expected =
         '@-webkit-keyframes host-a_foo {0% {-webkit-transform:translate(-50%) scaleX(0);}}';
-    expect(s(css, 'host-a')).toEqual(expected);
+    expect(shim(css, 'host-a')).toEqual(expected);
   });
 
   it('should scope animations using local keyframes identifiers', () => {
@@ -38,7 +33,7 @@ describe('ShadowCss, keyframes and animations', () => {
             }
         }
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('animation: host-a_foo 10s ease;');
   });
 
@@ -48,7 +43,7 @@ describe('ShadowCss, keyframes and animations', () => {
             animation: foo 10s ease;
         }
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('animation: foo 10s ease;');
   });
 
@@ -63,7 +58,7 @@ describe('ShadowCss, keyframes and animations', () => {
             }
         }
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('animation-name: host-a_foo;');
   });
 
@@ -73,7 +68,7 @@ describe('ShadowCss, keyframes and animations', () => {
             animation-name: foo;
         }
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('animation-name: foo;');
   });
 
@@ -87,7 +82,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes quux {}
         @keyframes grault {}
         @keyframes waldo {}`;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     const animationNames = [
       'host-a_foo',
       ' bar',
@@ -117,7 +112,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes baz {}
         @keyframes quux {}
         @keyframes grault {}`;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     ['foo', 'baz', 'quux', 'grault'].forEach(
         scoped => expect(result).toContain(`host-a_${scoped}`));
     ['bar', 'qux', 'garply', 'waldo'].forEach(nonScoped => {
@@ -150,7 +145,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes bar {}
         @keyframes quux {}
         @keyframes "baz'" {}`;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('animation: 1s ease foo, 2s host-a_bar infinite, forwards baz 3s;');
     expect(result).toContain('animation: 1s "foo", 2s "host-a_bar";');
     expect(result).toContain(`
@@ -169,7 +164,7 @@ describe('ShadowCss, keyframes and animations', () => {
             --variable-animation: foo;
         }
         @keyframes foo {}`;
-       const result = s(css, 'host-a');
+       const result = shim(css, 'host-a');
        expect(result).toContain('--variable-animation: foo;');
      });
 
@@ -180,7 +175,7 @@ describe('ShadowCss, keyframes and animations', () => {
             --variable-animation-name: foo;
         }
         @keyframes foo {}`;
-       const result = s(css, 'host-a');
+       const result = shim(css, 'host-a');
        expect(result).toContain('--variable-animation-name: foo;');
      });
 
@@ -198,7 +193,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes foobar  {}
         @keyframes quux {}
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('animation-name : foo;');
     expect(result).toContain('animation:  5s host-a_bar   1s backwards;');
     expect(result).toContain('animation : 3s baz ;');
@@ -212,24 +207,24 @@ describe('ShadowCss, keyframes and animations', () => {
     let css = '.test{display: flex;animation:foo 1s forwards;} @keyframes foo {}';
     let expected =
         '.test[host-a]{display: flex;animation:host-a_foo 1s forwards;} @keyframes host-a_foo {}';
-    expect(s(css, 'host-a')).toEqual(expected);
+    expect(shim(css, 'host-a')).toEqual(expected);
     css = '.test{animation:foo 2s forwards;} @keyframes foo {}';
     expected = '.test[host-a]{animation:host-a_foo 2s forwards;} @keyframes host-a_foo {}';
-    expect(s(css, 'host-a')).toEqual(expected);
+    expect(shim(css, 'host-a')).toEqual(expected);
     css = 'button {display: block;animation-name: foobar;} @keyframes foobar {}';
     expected =
         'button[host-a] {display: block;animation-name: host-a_foobar;} @keyframes host-a_foobar {}';
-    expect(s(css, 'host-a')).toEqual(expected);
+    expect(shim(css, 'host-a')).toEqual(expected);
   });
 
   it('should correctly process keyframes defined without any prefixed space', () => {
     let css = '.test{display: flex;animation:bar 1s forwards;}@keyframes bar {}';
     let expected =
         '.test[host-a]{display: flex;animation:host-a_bar 1s forwards;}@keyframes host-a_bar {}';
-    expect(s(css, 'host-a')).toEqual(expected);
+    expect(shim(css, 'host-a')).toEqual(expected);
     css = '.test{animation:bar 2s forwards;}@-webkit-keyframes bar {}';
     expected = '.test[host-a]{animation:host-a_bar 2s forwards;}@-webkit-keyframes host-a_bar {}';
-    expect(s(css, 'host-a')).toEqual(expected);
+    expect(shim(css, 'host-a')).toEqual(expected);
   });
 
   it('should ignore keywords values when scoping local animations', () => {
@@ -264,7 +259,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes start {}
         @keyframes steps {}
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('animation: inherit;');
     expect(result).toContain('animation: unset;');
     expect(result).toContain('animation: 3s ease reverse host-a_foo;');
@@ -296,7 +291,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes qux {}
         @keyframes quux {}
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('@keyframes \'host-a_foo\' {}');
     expect(result).toContain('@keyframes "host-a_foz bar" {}');
     expect(result).toContain('animation: 1.5s host-a_foo;');
@@ -321,7 +316,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes "bar' 'baz" {}
         @keyframes "foz \\" baz" {}
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('@keyframes "host-a_foo\\"bar" {}');
     expect(result).toContain(`@keyframes "host-a_bar' 'baz" {}`);
     expect(result).toContain('@keyframes "host-a_foz \\" baz" {}');
@@ -348,7 +343,7 @@ describe('ShadowCss, keyframes and animations', () => {
          @keyframes "qux quux" {}
          @keyframes "bar, baz" {}
        `;
-       const result = s(css, 'host-a');
+       const result = shim(css, 'host-a');
        expect(result).toContain('@keyframes "host-a_qux quux" {}');
        expect(result).toContain('@keyframes "host-a_bar, baz" {}');
        expect(result).toContain(`animation: 1s "foo bar, baz", 2s 'host-a_qux quux';`);
@@ -376,7 +371,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes "ba\\"r" {}
         @keyframes "fo\\\\\\"o" {}
         `;
-       const result = s(css, 'host-a');
+       const result = shim(css, 'host-a');
        expect(result).toContain('@keyframes "host-a_foo" {}');
        expect(result).toContain('@keyframes "host-a_fo\\"o" {}');
        expect(result).toContain(`@keyframes 'host-a_foo"' {}`);
@@ -413,7 +408,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes 'ba\\'r' {}
         @keyframes "fo\\\\\\'o" {}
         `;
-       const result = s(css, 'host-a');
+       const result = shim(css, 'host-a');
        expect(result).toContain('@keyframes host-a_foo {}');
        expect(result).toContain('@keyframes \'host-a_fo\\\'o\' {}');
        expect(result).toContain('@keyframes \'host-a_foo\'\' {}');
@@ -451,7 +446,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes 'b"ar"' {}
         @keyframes 'ba\\'\\"\\'r' {}
         `;
-       const result = s(css, 'host-a');
+       const result = shim(css, 'host-a');
        expect(result).toContain(`@keyframes 'host-a_f"oo' {}`);
        expect(result).toContain(`@keyframes 'host-a_fo""o' {}`);
        expect(result).toContain('@keyframes \'host-a_foo\\\\\' {}');
@@ -483,7 +478,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes 'bar,, baz' {}
         @keyframes 'ease, linear , inherit' {}
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('@keyframes \'host-a_bar,, baz\' {}');
     expect(result).toContain('animation: 3s \'host-a_bar,, baz\';');
     expect(result).toContain(
@@ -503,7 +498,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes unset {}
         @keyframes forwards {}
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('@keyframes host-a_unset {}');
     expect(result).toContain('@keyframes host-a_forwards {}');
     expect(result).toContain('animation: 3s \'host-a_unset\';');
@@ -524,7 +519,7 @@ describe('ShadowCss, keyframes and animations', () => {
         @keyframes cubic-bezier {}
         @keyframes calc {}
         `;
-    const result = s(css, 'host-a');
+    const result = shim(css, 'host-a');
     expect(result).toContain('@keyframes host-a_cubic-bezier {}');
     expect(result).toContain('@keyframes host-a_calc {}');
     expect(result).toContain(

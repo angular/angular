@@ -1,0 +1,126 @@
+{
+  "name": "serve",
+  "command": "ng serve [project]",
+  "shortDescription": "Builds and serves your application, rebuilding on file changes.",
+  "aliases": [
+    "s"
+  ],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "allowed-hosts",
+      "type": "array",
+      "description": "List of hosts that are allowed to access the dev server."
+    },
+    {
+      "name": "browser-target",
+      "type": "string",
+      "description": "A browser builder target to serve in the format of `project:target[:configuration]`. You can also pass in more than one configuration name as a comma-separated list. Example: `project:target:production,staging`."
+    },
+    {
+      "name": "configuration",
+      "type": "string",
+      "aliases": [
+        "c"
+      ],
+      "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.io/guide/workspace-config#alternate-build-configurations."
+    },
+    {
+      "name": "disable-host-check",
+      "type": "boolean",
+      "default": false,
+      "description": "Don't verify connected clients are part of allowed hosts."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "hmr",
+      "type": "boolean",
+      "default": false,
+      "description": "Enable hot module replacement."
+    },
+    {
+      "name": "host",
+      "type": "string",
+      "default": "localhost",
+      "description": "Host to listen on."
+    },
+    {
+      "name": "live-reload",
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to reload the page on change, using live-reload."
+    },
+    {
+      "name": "open",
+      "type": "boolean",
+      "aliases": [
+        "o"
+      ],
+      "default": false,
+      "description": "Opens the url in default browser."
+    },
+    {
+      "name": "poll",
+      "type": "number",
+      "description": "Enable and define the file watching poll time period in milliseconds."
+    },
+    {
+      "name": "port",
+      "type": "number",
+      "default": 4200,
+      "description": "Port to listen on."
+    },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "The name of the project to build. Can be an application or a library.",
+      "positional": 0
+    },
+    {
+      "name": "proxy-config",
+      "type": "string",
+      "description": "Proxy configuration file. For more information, see https://angular.io/guide/build#proxying-to-a-backend-server."
+    },
+    {
+      "name": "public-host",
+      "type": "string",
+      "description": "The URL that the browser client (or live-reload client, if enabled) should use to connect to the development server. Use for a complex dev server setup, such as one with reverse proxies."
+    },
+    {
+      "name": "serve-path",
+      "type": "string",
+      "description": "The pathname where the application will be served."
+    },
+    {
+      "name": "ssl",
+      "type": "boolean",
+      "default": false,
+      "description": "Serve using HTTPS."
+    },
+    {
+      "name": "ssl-cert",
+      "type": "string",
+      "description": "SSL certificate to use for serving HTTPS."
+    },
+    {
+      "name": "ssl-key",
+      "type": "string",
+      "description": "SSL key to use for serving HTTPS."
+    },
+    {
+      "name": "verbose",
+      "type": "boolean",
+      "description": "Adds more details to output logging."
+    },
+    {
+      "name": "watch",
+      "type": "boolean",
+      "default": true,
+      "description": "Rebuild on change."
+    }
+  ]
+}

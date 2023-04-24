@@ -95,6 +95,16 @@
       {"type": 301, "source": "/start/forms", "destination": "/start/start-forms"},
       {"type": 301, "source": "/start/routing", "destination": "/start/start-routing"},
 
+      // Tutorials moved to subdirectories
+      {"type": 301, "source": "/tutorial/index",   "destination": "/tutorial/tour-of-heroes/index"},
+      {"type": 301, "source": "/tutorial/toh-pt0", "destination": "/tutorial/tour-of-heroes/toh-pt0"},
+      {"type": 301, "source": "/tutorial/toh-pt1", "destination": "/tutorial/tour-of-heroes/toh-pt1"},
+      {"type": 301, "source": "/tutorial/toh-pt2", "destination": "/tutorial/tour-of-heroes/toh-pt2"},
+      {"type": 301, "source": "/tutorial/toh-pt3", "destination": "/tutorial/tour-of-heroes/toh-pt3"},
+      {"type": 301, "source": "/tutorial/toh-pt4", "destination": "/tutorial/tour-of-heroes/toh-pt4"},
+      {"type": 301, "source": "/tutorial/toh-pt5", "destination": "/tutorial/tour-of-heroes/toh-pt5"},
+      {"type": 301, "source": "/tutorial/toh-pt6", "destination": "/tutorial/tour-of-heroes/toh-pt6"},
+
       // some top level guide pages on old site were moved below the guide folder
       {"type": 301, "source": "/styleguide", "destination": "/guide/styleguide"},
       {"type": 301, "source": "/docs/styleguide", "destination": "/guide/styleguide"},

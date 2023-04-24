@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runfiles} from '@bazel/runfiles';
 import {readFileSync, writeFileSync} from 'fs';
 import {dirname, join} from 'path';
-import * as shx from 'shelljs';
+import shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 waitForAsync TSLint rule', () => {
-  const rulesDirectory = dirname(require.resolve('../../migrations/google3/waitForAsyncRule'));
+  const rulesDirectory =
+      dirname(runfiles.resolvePackageRelative('../../migrations/google3/waitForAsyncCjsRule.js'));
 
   let tmpDir: string;
 
@@ -41,7 +43,7 @@ describe('Google3 waitForAsync TSLint rule', () => {
   function runTSLint(fix: boolean) {
     const program = Linter.createProgram(join(tmpDir, 'tsconfig.json'));
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
-    const config = Configuration.parseConfigFile({rules: {'wait-for-async': true}});
+    const config = Configuration.parseConfigFile({rules: {'wait-for-async-cjs': true}});
 
     program.getRootFileNames().forEach(fileName => {
       linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);

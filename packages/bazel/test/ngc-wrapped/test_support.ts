@@ -7,6 +7,7 @@
  */
 
 import {runOneBuild} from '@angular/bazel';
+import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
 import * as path from 'path';
 import ts from 'typescript';
@@ -46,14 +47,16 @@ export function setup({
 
   const basePath = makeTempDir(runfilesPath);
 
+  console.error(basePath);
+
   const bazelBinPath = path.resolve(basePath, bazelBin);
   fs.mkdirSync(bazelBinPath);
 
-  const angularCorePath = path.dirname(require.resolve('angular/packages/core'));
+  const angularCorePath = runfiles.resolve('angular/packages/core');
   const tsConfigJsonPath = path.resolve(basePath, tsconfig);
 
   const emptyTsConfig = ts.readConfigFile(
-      require.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'), read);
+      runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'), read);
   const typesRoots = (emptyTsConfig as any).config.compilerOptions.typeRoots[0];
 
   return {
@@ -134,7 +137,8 @@ export function setup({
     }
 
     const emptyTsConfig = ts.readConfigFile(
-        require.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'), read);
+        runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'),
+        read);
 
     const tsconfig = createTsConfig({
       defaultTsConfig: emptyTsConfig.config,

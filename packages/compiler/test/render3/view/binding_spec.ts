@@ -72,6 +72,16 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
                            selector: '[hasInput]',
                            animationTriggerNames: null,
                          }]);
+  matcher.addSelectables(CssSelector.parse('[sameSelectorAsInput]'), [{
+                           name: 'SameSelectorAsInput',
+                           exportAs: null,
+                           inputs: new IdentityInputMapping(['sameSelectorAsInput']),
+                           outputs: new IdentityInputMapping([]),
+                           isComponent: false,
+                           isStructural: false,
+                           selector: '[sameSelectorAsInput]',
+                           animationTriggerNames: null,
+                         }]);
   return matcher;
 }
 
@@ -174,6 +184,17 @@ describe('t2 binding', () => {
       const attr = el.attributes[1];
       const consumer = res.getConsumerOfBinding(attr) as DirectiveMeta;
       expect(consumer.name).toBe('HasInput');
+    });
+
+    it('should not match directives on attribute bindings with the same name as an input', () => {
+      const template =
+          parseTemplate('<ng-template [attr.sameSelectorAsInput]="123"></ng-template>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      const el = template.nodes[0] as a.Element;
+      const input = el.inputs[0];
+      const consumer = res.getConsumerOfBinding(input);
+      expect(consumer).toEqual(el);
     });
 
     it('should bind to the encompassing node when no directive input is matched', () => {

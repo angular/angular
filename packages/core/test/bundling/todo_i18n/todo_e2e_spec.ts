@@ -21,7 +21,7 @@ describe('functional test for todo i18n', () => {
       it('should render todo i18n', withBody('<todo-app></todo-app>', async () => {
            clearTranslations();
            // load the bundle
-           require(path.join(PACKAGE, bundle));
+           await import(path.join(PACKAGE, bundle));
            // the bundle attaches the following fields to the `window` global.
            const {appReady} = window as any;
            await appReady;

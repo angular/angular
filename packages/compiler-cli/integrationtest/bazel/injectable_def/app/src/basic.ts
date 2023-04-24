@@ -21,7 +21,7 @@ export class AppComponent {
 @NgModule({
   imports: [
     Lib2Module,
-    BrowserModule.withServerTransition({appId: 'id-app'}),
+    BrowserModule,
     ServerModule,
   ],
   declarations: [AppComponent],

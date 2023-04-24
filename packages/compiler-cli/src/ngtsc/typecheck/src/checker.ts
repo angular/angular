@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, CssSelector, DomElementSchemaRegistry, ExternalExpr, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, WrappedNodeExpr} from '@angular/compiler';
+import {AST, CssSelector, DomElementSchemaRegistry, ExternalExpr, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
-import {DirectiveMeta, MetadataReader, MetadataReaderWithIndex, MetaKind, NgModuleMeta, PipeMeta} from '../../metadata';
+import {DirectiveMeta, MetadataReader, MetadataReaderWithIndex, MetaKind, NgModuleIndex, NgModuleMeta, PipeMeta} from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
 import {ProgramDriver, UpdateMode} from '../../program_driver';
 import {ClassDeclaration, DeclarationNode, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PotentialDirective, PotentialImport, PotentialImportKind, PotentialPipe, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
+import {ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PotentialDirective, PotentialImport, PotentialImportKind, PotentialImportMode, PotentialPipe, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
@@ -86,6 +86,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>,
       private readonly metaReader: MetadataReader,
       private readonly localMetaReader: MetadataReaderWithIndex,
+      private readonly ngModuleIndex: NgModuleIndex,
       private readonly componentScopeReader: ComponentScopeReader,
       private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry,
       private readonly perf: PerfRecorder) {}
@@ -96,6 +97,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return null;
     }
     return data.template;
+  }
+
+  getUsedDirectives(component: ts.ClassDeclaration): TypeCheckableDirectiveMeta[]|null {
+    return this.getLatestComponentState(component).data?.boundTarget.getUsedDirectives() || null;
+  }
+
+  getUsedPipes(component: ts.ClassDeclaration): string[]|null {
+    return this.getLatestComponentState(component).data?.boundTarget.getUsedPipes() || null;
   }
 
   private getLatestComponentState(component: ts.ClassDeclaration):
@@ -597,6 +606,20 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return this.typeCheckScopeRegistry.getTypeCheckDirectiveMetadata(new Reference(dir));
   }
 
+  getNgModuleMetadata(module: ts.ClassDeclaration): NgModuleMeta|null {
+    if (!isNamedClassDeclaration(module)) {
+      return null;
+    }
+    return this.metaReader.getNgModuleMetadata(new Reference(module));
+  }
+
+  getPipeMetadata(pipe: ts.ClassDeclaration): PipeMeta|null {
+    if (!isNamedClassDeclaration(pipe)) {
+      return null;
+    }
+    return this.metaReader.getPipeMetadata(new Reference(pipe));
+  }
+
   getPotentialElementTags(component: ts.ClassDeclaration): Map<string, PotentialDirective|null> {
     if (this.elementTagCache.has(component)) {
       return this.elementTagCache.get(component)!;
@@ -687,46 +710,70 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return scope.ngModule;
   }
 
-  getPotentialImportsFor(toImport: PotentialDirective, inContext: ts.ClassDeclaration):
-      ReadonlyArray<PotentialImport> {
-    // Look up the original reference associated with the trait's ngModule, so we don't lose the
-    // Reference context (such as identifiers). If the trait is standalone, this will be
-    // `undefined`.
-    let ngModuleRef: Reference<ClassDeclaration<DeclarationNode>>|undefined;
-    if (toImport.ngModule !== null) {
-      ngModuleRef = this.metaReader.getNgModuleMetadata(new Reference(toImport.ngModule))?.ref;
+  private emit(
+      kind: PotentialImportKind, refTo: Reference<ClassDeclaration>,
+      inContext: ts.ClassDeclaration): PotentialImport|null {
+    const emittedRef = this.refEmitter.emit(refTo, inContext.getSourceFile());
+    if (emittedRef.kind === ReferenceEmitKind.Failed) {
+      return null;
     }
-    const kind = ngModuleRef ? PotentialImportKind.NgModule : PotentialImportKind.Standalone;
-
-    // Import the ngModule if one exists. Otherwise, import the standalone trait directly.
-    const importTarget = ngModuleRef ?? toImport.ref;
-
-    // Using the compiler's ReferenceEmitter, try to emit a reference to the trait.
-    // TODO(dylhunn): In the future, we can use a more sophisticated strategy for generating and
-    // ranking references, such as keeping a record of import specifiers used in existing code.
-    const emittedRef = this.refEmitter.emit(importTarget, inContext.getSourceFile());
-    if (emittedRef.kind === ReferenceEmitKind.Failed) return [];
-    const emittedExpression = emittedRef.expression;
-
-    // This is not be a true import if an appropriate identifier is already in scope.
-    if (emittedExpression instanceof WrappedNodeExpr) {
-      return [{kind, symbolName: emittedExpression.node.getText()}];
+    const emitted = emittedRef.expression;
+    if (emitted instanceof WrappedNodeExpr) {
+      let isForwardReference = false;
+      if (emitted.node.getStart() > inContext.getStart()) {
+        const declaration = this.programDriver.getProgram()
+                                .getTypeChecker()
+                                .getTypeAtLocation(emitted.node)
+                                .getSymbol()
+                                ?.declarations?.[0];
+        if (declaration && declaration.getSourceFile() === inContext.getSourceFile()) {
+          isForwardReference = true;
+        }
+      }
+      // An appropriate identifier is already in scope.
+      return {kind, symbolName: emitted.node.text, isForwardReference};
+    } else if (
+        emitted instanceof ExternalExpr && emitted.value.moduleName !== null &&
+        emitted.value.name !== null) {
+      return {
+        kind,
+        moduleSpecifier: emitted.value.moduleName,
+        symbolName: emitted.value.name,
+        isForwardReference: false,
+      };
     }
-    // Otherwise, it must be a genuine external expression.
-    if (!(emittedExpression instanceof ExternalExpr)) {
-      return [];
+    return null;
+  }
+
+  getPotentialImportsFor(
+      toImport: Reference<ClassDeclaration>, inContext: ts.ClassDeclaration,
+      importMode: PotentialImportMode): ReadonlyArray<PotentialImport> {
+    const imports: PotentialImport[] = [];
+
+    const meta =
+        this.metaReader.getDirectiveMetadata(toImport) ?? this.metaReader.getPipeMetadata(toImport);
+    if (meta === null) {
+      return imports;
     }
 
-    if (emittedExpression.value.moduleName === null || emittedExpression.value.name === null)
-      return [];
+    if (meta.isStandalone || importMode === PotentialImportMode.ForceDirect) {
+      const emitted = this.emit(PotentialImportKind.Standalone, toImport, inContext);
+      if (emitted !== null) {
+        imports.push(emitted);
+      }
+    }
 
-    // Extract and return the TS module and identifier names.
-    const preferredImport: PotentialImport = {
-      kind: ngModuleRef ? PotentialImportKind.NgModule : PotentialImportKind.Standalone,
-      moduleSpecifier: emittedExpression.value.moduleName,
-      symbolName: emittedExpression.value.name,
-    };
-    return [preferredImport];
+    const exportingNgModules = this.ngModuleIndex.getNgModulesExporting(meta.ref.node);
+    if (exportingNgModules !== null) {
+      for (const exporter of exportingNgModules) {
+        const emittedRef = this.emit(PotentialImportKind.NgModule, exporter, inContext);
+        if (emittedRef !== null) {
+          imports.push(emittedRef);
+        }
+      }
+    }
+
+    return imports;
   }
 
   private getScopeData(component: ts.ClassDeclaration): ScopeData|null {

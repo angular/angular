@@ -13,24 +13,6 @@ import {animationFailed} from '../error_helpers';
 
 import {ANIMATABLE_PROP_SET} from './web_animations/animatable_props_set';
 
-// We don't include ambient node types here since @angular/animations/browser
-// is meant to target the browser so technically it should not depend on node
-// types. `process` is just declared locally here as a result.
-declare const process: any;
-
-export function isBrowser(): boolean {
-  return (typeof window !== 'undefined' && typeof window.document !== 'undefined');
-}
-
-export function isNode(): boolean {
-  // Checking only for `process` isn't enough to identify whether or not we're in a Node
-  // environment, because Webpack by default will polyfill the `process`. While we can discern
-  // that Webpack polyfilled it by looking at `process.browser`, it's very Webpack-specific and
-  // might not be future-proof. Instead we look at the stringified version of `process` which
-  // is `[object process]` in Node and `[object Object]` when polyfilled.
-  return typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
-}
-
 export function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer {
   switch (players.length) {
     case 0:
@@ -140,49 +122,15 @@ export function parseTimelineCommand(command: string): [string, string] {
   return [id, action];
 }
 
-let _contains: (elm1: any, elm2: any) => boolean = (elm1: any, elm2: any) => false;
-let _query: (element: any, selector: string, multi: boolean) => any[] =
-    (element: any, selector: string, multi: boolean) => {
-      return [];
-    };
-let _documentElement: unknown|null = null;
+const documentElement: HTMLElement|null =
+    /* @__PURE__ */ (() => typeof document === 'undefined' ? null : document.documentElement)();
 
 export function getParentElement(element: any): unknown|null {
-  const parent = element.parentNode || element.host;  // consider host to support shadow DOM
-  if (parent === _documentElement) {
+  const parent = element.parentNode || element.host || null;  // consider host to support shadow DOM
+  if (parent === documentElement) {
     return null;
   }
   return parent;
-}
-
-// Define utility methods for browsers and platform-server(domino) where Element
-// and utility methods exist.
-const _isNode = isNode();
-if (_isNode || typeof Element !== 'undefined') {
-  if (!isBrowser()) {
-    _contains = (elm1, elm2) => elm1.contains(elm2);
-  } else {
-    // Read the document element in an IIFE that's been marked pure to avoid a top-level property
-    // read that may prevent tree-shaking.
-    _documentElement = /* @__PURE__ */ (() => document.documentElement)();
-    _contains = (elm1, elm2) => {
-      while (elm2) {
-        if (elm2 === elm1) {
-          return true;
-        }
-        elm2 = getParentElement(elm2);
-      }
-      return false;
-    };
-  }
-
-  _query = (element: any, selector: string, multi: boolean): any[] => {
-    if (multi) {
-      return Array.from(element.querySelectorAll(selector));
-    }
-    const elem = element.querySelector(selector);
-    return elem ? [elem] : [];
-  };
 }
 
 function containsVendorPrefix(prop: string): boolean {
@@ -222,8 +170,23 @@ export function getBodyNode(): any|null {
   return null;
 }
 
-export const containsElement = _contains;
-export const invokeQuery = _query;
+export function containsElement(elm1: any, elm2: any): boolean {
+  while (elm2) {
+    if (elm2 === elm1) {
+      return true;
+    }
+    elm2 = getParentElement(elm2);
+  }
+  return false;
+}
+
+export function invokeQuery(element: any, selector: string, multi: boolean): any[] {
+  if (multi) {
+    return Array.from(element.querySelectorAll(selector));
+  }
+  const elem = element.querySelector(selector);
+  return elem ? [elem] : [];
+}
 
 export function hypenatePropsKeys(original: ɵStyleDataMap): ɵStyleDataMap {
   const newMap: ɵStyleDataMap = new Map();

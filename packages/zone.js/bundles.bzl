@@ -7,14 +7,14 @@ _DIR = "//packages/zone.js/lib:"
 
 BUNDLES_ENTRY_POINTS = {
     "zone": {
-        "es5": _DIR + "browser/rollup-legacy-main",
+        "es5": _DIR + "browser/rollup-main",
         "es2015": _DIR + "browser/rollup-main",
     },
     "zone-mix": {
         "entrypoint": _DIR + "mix/rollup-mix",
     },
     "zone-node": {
-        "entrypoint": _DIR + "node/rollup-main",
+        "entrypoint": _DIR + "node/rollup-main-node-bundle",
     },
     "async-test": {
         "entrypoint": _DIR + "testing/async-testing",
@@ -104,7 +104,7 @@ BUNDLES_ENTRY_POINTS = {
         "entrypoint": _DIR + "testing/zone-testing",
     },
     "zone-testing-bundle": {
-        "es5": _DIR + "browser/rollup-legacy-test-main",
+        "es5": _DIR + "browser/rollup-test-main",
         "es2015": _DIR + "browser/rollup-test-main",
     },
     "zone-testing-node-bundle": {

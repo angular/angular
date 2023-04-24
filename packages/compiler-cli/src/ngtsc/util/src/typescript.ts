@@ -12,7 +12,6 @@ const D_TS = /\.d\.ts$/i;
 import ts from 'typescript';
 import {AbsoluteFsPath, getFileSystem} from '../../file_system';
 import {DeclarationNode} from '../../reflection';
-import {getModifiers} from '../../ts_compatibility';
 
 /**
  * Type describing a symbol that is guaranteed to have a value declaration.
@@ -111,7 +110,7 @@ export function isExported(node: DeclarationNode): boolean {
   if (ts.isVariableDeclaration(node) && ts.isVariableDeclarationList(node.parent)) {
     topLevel = node.parent.parent;
   }
-  const modifiers = getModifiers(topLevel);
+  const modifiers = ts.canHaveModifiers(topLevel) ? ts.getModifiers(topLevel) : undefined;
   return modifiers !== undefined &&
       modifiers.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword);
 }

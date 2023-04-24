@@ -124,13 +124,6 @@ describe('Style Guide', () => {
     expect(await lis.get(3).getText()).toBe('Tornado');
   });
 
-  it('07-03', async () => {
-    await browser.get('#/07-03');
-
-    const pre = element(by.tagName('toh-heroes > pre'));
-    expect(await pre.getText()).toContain('[]');
-  });
-
   it('07-04', async () => {
     await browser.get('#/07-04');
 

@@ -17,7 +17,7 @@ Before writing tests for your Angular application, you should have a basic under
 *   [Angular CLI](cli)
 
 The testing documentation offers tips and techniques for unit and integration testing Angular applications through a sample application created with the [Angular CLI](cli).
-This sample application is much like the one in the [*Tour of Heroes* tutorial](tutorial).
+This sample application is much like the one in the [*Tour of Heroes* tutorial](tutorial/tour-of-heroes).
 
 <div class="alert is-helpful">
 
@@ -77,72 +77,13 @@ The tests run again, the browser refreshes, and the new test results appear.
 
 The Angular CLI takes care of Jasmine and Karma configuration for you. It constructs the full configuration in memory, based on options specified in the `angular.json` file.
 
-If you require to fine-tune Karma, follow the below steps:
+If you want to customize Karma, you can create a `karma.conf.js` by running the following command:
 
-1. Create a `karma.conf.js` in the root folder of the project.
+<code-example format="shell" language="shell">
 
-    <code-example format="javascript" language="javascript" header="karma.conf.js">
+ng generate config karma
 
-    module.exports = function (config) {
-      config.set({
-        basePath: '',
-        frameworks: ['jasmine', '@angular-devkit/build-angular'],
-        plugins: [
-          require('karma-jasmine'),
-          require('karma-chrome-launcher'),
-          require('karma-jasmine-html-reporter'),
-          require('karma-coverage'),
-          require('@angular-devkit/build-angular/plugins/karma')
-        ],
-        client: {
-          jasmine: {
-            // you can add configuration options for Jasmine here
-            // the possible options are listed at https://jasmine.github.io/api/edge/Configuration.html
-            // for example, you can disable the random execution with `random: false`
-            // or set a specific seed with `seed: 4321`
-          },
-          clearContext: false // leave Jasmine Spec Runner output visible in browser
-        },
-        jasmineHtmlReporter: {
-          suppressAll: true // removes the duplicated traces
-        },
-        coverageReporter: {
-          dir: require('path').join(__dirname, './coverage/<project-name>'),
-          subdir: '.',
-          reporters: [
-            { type: 'html' },
-            { type: 'text-summary' }
-          ]
-        },
-        reporters: ['progress', 'kjhtml'],
-        port: 9876,
-        colors: true,
-        logLevel: config.LOG_INFO,
-        autoWatch: true,
-        browsers: ['Chrome'],
-        singleRun: false,
-        restartOnFileChange: true
-      });
-    };
-
-    </code-example>
-
-1. In the `angular.json`, use the [`karmaConfig`](cli/test) option to configure the Karma builder to use the created configuration file.
-
-  <code-example format="jsonc" language="jsonc">
-
-  "test": {
-    "builder": "@angular-devkit/build-angular:karma",
-    "options": {
-      "karmaConfig": "karma.conf.js",
-      "polyfills": ["zone.js", "zone.js/testing"],
-      "tsConfig": "src/tsconfig.spec.json",
-      "styles": ["src/styles.css"]
-    }
-  }
-
-  </code-example>
-
+</code-example>
 
 <div class="alert is-helpful">
 
@@ -235,4 +176,4 @@ After you've set up your application for testing, you might find the following t
 
 <!-- end links -->
 
-@reviewed 2022-11-02
+@reviewed 2023-01-17

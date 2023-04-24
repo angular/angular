@@ -18,6 +18,7 @@ import {Builders} from '@schematics/angular/utility/workspace-models';
 import {Schema} from './schema';
 
 const localizeType = `@angular/localize`;
+const localizeTripleSlashType = `/// <reference types="@angular/localize" />`;
 
 function addTypeScriptConfigTypes(projectName: string): Rule {
   return async (host: Tree) => {
@@ -28,7 +29,7 @@ function addTypeScriptConfigTypes(projectName: string): Rule {
     }
 
     // We add the root workspace tsconfig for better IDE support.
-    const tsConfigFiles = new Set<string>(['tsconfig.json']);
+    const tsConfigFiles = new Set<string>();
     for (const target of project.targets.values()) {
       switch (target.builder) {
         case Builders.Karma:
@@ -40,6 +41,13 @@ function addTypeScriptConfigTypes(projectName: string): Rule {
           }
 
           break;
+      }
+
+      if (target.builder === Builders.Browser) {
+        const value = target.options?.['main'];
+        if (typeof value === 'string') {
+          addTripleSlashType(host, value);
+        }
       }
     }
 
@@ -66,6 +74,13 @@ function addTypeScriptConfigTypes(projectName: string): Rule {
       json.modify(typesJsonPath, [...types, localizeType]);
     }
   };
+}
+
+function addTripleSlashType(host: Tree, path: string): void {
+  const content = host.readText(path);
+  if (!content.includes(localizeTripleSlashType)) {
+    host.overwrite(path, localizeTripleSlashType + '\n\n' + content);
+  }
 }
 
 function moveToDependencies(host: Tree, context: SchematicContext): void {

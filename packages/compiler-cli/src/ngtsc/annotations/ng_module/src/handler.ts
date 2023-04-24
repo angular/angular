@@ -6,22 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, Expression, ExternalExpr, FactoryTarget, FunctionExpr, InvokeFunctionExpr, LiteralArrayExpr, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, R3SelectorScopeMode, ReturnStatement, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, Expression, ExternalExpr, FactoryTarget, FunctionExpr, InvokeFunctionExpr, LiteralArrayExpr, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, R3SelectorScopeMode, ReturnStatement, SchemaMetadata, Statement, WrappedNodeExpr,} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../../imports';
-import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../../incremental/semantic_graph';
-import {MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
+import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticReference, SemanticSymbol,} from '../../../incremental/semantic_graph';
+import {ExportedProviderStatusResolver, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
-import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral,} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
 import {getDiagnosticNode} from '../../../scope/src/util';
-import {FactoryTracker} from '../../../shims/api';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {getSourceFile} from '../../../util/src/typescript';
-import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, createValueHasWrongTypeError, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getProviderDiagnostics, getValidConstructorDependencies, InjectableClassRegistry, isExpressionForwardReference, ReferencesRegistry, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
+import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, createValueHasWrongTypeError, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getProviderDiagnostics, getValidConstructorDependencies, InjectableClassRegistry, isExpressionForwardReference, ReferencesRegistry, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
 
 import {createModuleWithProvidersResolver, isResolvedModuleWithProviders} from './module_with_providers';
 
@@ -60,12 +59,32 @@ export class NgModuleSymbol extends SemanticSymbol {
     usedPipes: SemanticReference[]
   }[] = [];
 
+  /**
+   * `SemanticSymbol`s of the transitive imports of this NgModule which came from imported
+   * standalone components.
+   *
+   * Standalone components are excluded/included in the `InjectorDef` emit output of the NgModule
+   * based on whether the compiler can prove that their transitive imports may contain exported
+   * providers, so a change in this set of symbols may affect the compilation output of this
+   * NgModule.
+   */
+  private transitiveImportsFromStandaloneComponents = new Set<SemanticSymbol>();
+
+  constructor(decl: ClassDeclaration, public readonly hasProviders: boolean) {
+    super(decl);
+  }
+
   override isPublicApiAffected(previousSymbol: SemanticSymbol): boolean {
     if (!(previousSymbol instanceof NgModuleSymbol)) {
       return true;
     }
 
-    // NgModules don't have a public API that could affect emit of Angular decorated classes.
+    // Changes in the provider status of this NgModule affect downstream dependencies, which may
+    // consider provider status in their own emits.
+    if (previousSymbol.hasProviders !== this.hasProviders) {
+      return true;
+    }
+
     return false;
   }
 
@@ -103,6 +122,25 @@ export class NgModuleSymbol extends SemanticSymbol {
         return true;
       }
     }
+
+    if (previousSymbol.transitiveImportsFromStandaloneComponents.size !==
+        this.transitiveImportsFromStandaloneComponents.size) {
+      return true;
+    }
+
+    const previousImports = Array.from(previousSymbol.transitiveImportsFromStandaloneComponents);
+    for (const transitiveImport of this.transitiveImportsFromStandaloneComponents) {
+      const prevEntry =
+          previousImports.find(prevEntry => isSymbolEqual(prevEntry, transitiveImport));
+      if (prevEntry === undefined) {
+        return true;
+      }
+
+      if (transitiveImport.isPublicApiAffected(prevEntry)) {
+        return true;
+      }
+    }
+
     return false;
   }
 
@@ -119,6 +157,10 @@ export class NgModuleSymbol extends SemanticSymbol {
       usedPipes: SemanticReference[]): void {
     this.remotelyScopedComponents.push({component, usedDirectives, usedPipes});
   }
+
+  addTransitiveImportFromStandaloneComponent(importedSymbol: SemanticSymbol): void {
+    this.transitiveImportsFromStandaloneComponents.add(importedSymbol);
+  }
 }
 
 /**
@@ -130,9 +172,11 @@ export class NgModuleDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaReader: MetadataReader, private metaRegistry: MetadataRegistry,
       private scopeRegistry: LocalModuleScopeRegistry,
-      private referencesRegistry: ReferencesRegistry, private isCore: boolean,
-      private refEmitter: ReferenceEmitter, private factoryTracker: FactoryTracker|null,
-      private annotateForClosureCompiler: boolean, private onlyPublishPublicTypings: boolean,
+      private referencesRegistry: ReferencesRegistry,
+      private exportedProviderStatusResolver: ExportedProviderStatusResolver,
+      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null, private isCore: boolean,
+      private refEmitter: ReferenceEmitter, private annotateForClosureCompiler: boolean,
+      private onlyPublishPublicTypings: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -161,7 +205,7 @@ export class NgModuleDecoratorHandler implements
     const name = node.name.text;
     if (decorator.args === null || decorator.args.length > 1) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
+          ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
           `Incorrect number of arguments to @NgModule decorator`);
     }
 
@@ -269,36 +313,28 @@ export class NgModuleDecoratorHandler implements
 
     const valueContext = node.getSourceFile();
 
-    let typeContext = valueContext;
-    const typeNode = this.reflector.getDtsDeclaration(node);
-    if (typeNode !== null) {
-      typeContext = typeNode.getSourceFile();
-    }
-
-
     const exportedNodes = new Set(exportRefs.map(ref => ref.node));
     const declarations: R3Reference[] = [];
     const exportedDeclarations: Expression[] = [];
 
     const bootstrap = bootstrapRefs.map(
         bootstrap => this._toR3Reference(
-            bootstrap.getOriginForDiagnostics(meta, node.name), bootstrap, valueContext,
-            typeContext));
+            bootstrap.getOriginForDiagnostics(meta, node.name), bootstrap, valueContext));
 
     for (const ref of declarationRefs) {
-      const decl = this._toR3Reference(
-          ref.getOriginForDiagnostics(meta, node.name), ref, valueContext, typeContext);
+      const decl =
+          this._toR3Reference(ref.getOriginForDiagnostics(meta, node.name), ref, valueContext);
       declarations.push(decl);
       if (exportedNodes.has(ref.node)) {
         exportedDeclarations.push(decl.type);
       }
     }
     const imports = importRefs.map(
-        imp => this._toR3Reference(
-            imp.getOriginForDiagnostics(meta, node.name), imp, valueContext, typeContext));
+        imp =>
+            this._toR3Reference(imp.getOriginForDiagnostics(meta, node.name), imp, valueContext));
     const exports = exportRefs.map(
-        exp => this._toR3Reference(
-            exp.getOriginForDiagnostics(meta, node.name), exp, valueContext, typeContext));
+        exp =>
+            this._toR3Reference(exp.getOriginForDiagnostics(meta, node.name), exp, valueContext));
 
 
     const isForwardReference = (ref: R3Reference) =>
@@ -308,13 +344,9 @@ export class NgModuleDecoratorHandler implements
         exports.some(isForwardReference);
 
     const type = wrapTypeReference(this.reflector, node);
-    const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(node));
-    const adjacentType = new WrappedNodeExpr(this.reflector.getAdjacentNameOfClass(node));
 
     const ngModuleMetadata: R3NgModuleMetadata = {
       type,
-      internalType,
-      adjacentType,
       bootstrap,
       declarations,
       publicDeclarationTypes: this.onlyPublishPublicTypings ? exportedDeclarations : null,
@@ -383,14 +415,12 @@ export class NgModuleDecoratorHandler implements
     const injectorMetadata: Omit<R3InjectorMetadata, 'imports'> = {
       name,
       type,
-      internalType,
       providers: wrappedProviders,
     };
 
     const factoryMetadata: R3FactoryMetadata = {
       name,
       type,
-      internalType,
       typeArgumentCount: 0,
       deps: getValidConstructorDependencies(node, this.reflector, this.isCore),
       target: FactoryTarget.NgModule,
@@ -448,8 +478,8 @@ export class NgModuleDecoratorHandler implements
     };
   }
 
-  symbol(node: ClassDeclaration): NgModuleSymbol {
-    return new NgModuleSymbol(node);
+  symbol(node: ClassDeclaration, analysis: NgModuleAnalysis): NgModuleSymbol {
+    return new NgModuleSymbol(node, analysis.providers !== null);
   }
 
   register(node: ClassDeclaration, analysis: NgModuleAnalysis): void {
@@ -467,13 +497,8 @@ export class NgModuleDecoratorHandler implements
       rawImports: analysis.rawImports,
       rawExports: analysis.rawExports,
       decorator: analysis.decorator,
+      mayDeclareProviders: analysis.providers !== null,
     });
-
-    if (this.factoryTracker !== null) {
-      this.factoryTracker.track(node.getSourceFile(), {
-        name: analysis.factorySymbolName,
-      });
-    }
 
     this.injectableRegistry.registerInjectable(node, {
       ctorDeps: analysis.fac.deps,
@@ -510,11 +535,38 @@ export class NgModuleDecoratorHandler implements
       }
 
       const refsToEmit: Reference<ClassDeclaration>[] = [];
+      let symbol: NgModuleSymbol|null = null;
+      if (this.semanticDepGraphUpdater !== null) {
+        const sym = this.semanticDepGraphUpdater.getSymbol(node) as NgModuleSymbol;
+        if (sym instanceof NgModuleSymbol) {
+          symbol = sym;
+        }
+      }
+
       for (const ref of topLevelImport.resolvedReferences) {
         const dirMeta = this.metaReader.getDirectiveMetadata(ref);
-        if (dirMeta !== null && !dirMeta.isComponent) {
-          // Skip emit of directives in imports - directives can't carry providers.
-          continue;
+        if (dirMeta !== null) {
+          if (!dirMeta.isComponent) {
+            // Skip emit of directives in imports - directives can't carry providers.
+            continue;
+          }
+
+          // Check whether this component has providers.
+          const mayExportProviders =
+              this.exportedProviderStatusResolver.mayExportProviders(dirMeta.ref, (importRef) => {
+                // We need to keep track of which transitive imports were used to decide
+                // `mayExportProviders`, since if those change in a future compilation this
+                // NgModule will need to be re-emitted.
+                if (symbol !== null && this.semanticDepGraphUpdater !== null) {
+                  const importSymbol = this.semanticDepGraphUpdater.getSymbol(importRef.node);
+                  symbol.addTransitiveImportFromStandaloneComponent(importSymbol);
+                }
+              });
+
+          if (!mayExportProviders) {
+            // Skip emit of components that don't carry providers.
+            continue;
+          }
         }
 
         const pipeMeta = dirMeta === null ? this.metaReader.getPipeMetadata(ref) : null;
@@ -693,17 +745,12 @@ export class NgModuleDecoratorHandler implements
   }
 
   private _toR3Reference(
-      origin: ts.Node, valueRef: Reference<ClassDeclaration>, valueContext: ts.SourceFile,
-      typeContext: ts.SourceFile): R3Reference {
+      origin: ts.Node, valueRef: Reference<ClassDeclaration>,
+      valueContext: ts.SourceFile): R3Reference {
     if (valueRef.hasOwningModuleGuess) {
-      return toR3Reference(origin, valueRef, valueRef, valueContext, valueContext, this.refEmitter);
+      return toR3Reference(origin, valueRef, valueContext, this.refEmitter);
     } else {
-      let typeRef = valueRef;
-      let typeNode = this.reflector.getDtsDeclaration(typeRef.node);
-      if (typeNode !== null && isNamedClassDeclaration(typeNode)) {
-        typeRef = new Reference(typeNode);
-      }
-      return toR3Reference(origin, valueRef, typeRef, valueContext, typeContext, this.refEmitter);
+      return toR3Reference(origin, valueRef, valueContext, this.refEmitter);
     }
   }
 

@@ -19,7 +19,7 @@ describe('functional test for forms', () => {
     describe(`using ${bundle} bundle`, () => {
       it('should render template form', withBody('<app-root></app-root>', async () => {
            // load the bundle
-           require(path.join(PACKAGE, bundle));
+           await import(path.join(PACKAGE, bundle));
            // the bundle attaches the following fields to the `window` global.
            const {bootstrapApp} = window as any;
 

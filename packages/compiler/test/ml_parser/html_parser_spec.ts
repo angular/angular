@@ -754,7 +754,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           const p = parser.parse(
               `{messages.length, plural, =0 {<b/>}`, 'TestComp', {tokenizeExpansionForms: true});
           expect(humanizeErrors(p.errors)).toEqual([
-            ['b', 'Only void and foreign elements can be self closed "b"', '0:30']
+            ['b', 'Only void, custom and foreign elements can be self closed "b"', '0:30']
           ]);
         });
       });
@@ -1117,16 +1117,12 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           const errors = parser.parse('<p />', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
-            ['p', 'Only void and foreign elements can be self closed "p"', '0:0']
+            ['p', 'Only void, custom and foreign elements can be self closed "p"', '0:0']
           ]);
         });
 
-        it('should report self closing custom element', () => {
-          const errors = parser.parse('<my-cmp />', 'TestComp').errors;
-          expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors)).toEqual([
-            ['my-cmp', 'Only void and foreign elements can be self closed "my-cmp"', '0:0']
-          ]);
+        it('should not report self closing custom element', () => {
+          expect(parser.parse('<my-cmp />', 'TestComp').errors).toEqual([]);
         });
 
         it('should also report lexer errors', () => {

@@ -15,7 +15,6 @@ describe('NavItemComponent', () => {
     let component: NavItemComponent;
 
     let selectedNodes: NavigationNode[];
-    let setClassesSpy: jasmine.Spy;
 
     function initialize(nd: NavigationNode) {
       component.node = nd;
@@ -30,7 +29,6 @@ describe('NavItemComponent', () => {
     beforeEach(() => {
 
       component = new NavItemComponent();
-      setClassesSpy = spyOn(component, 'setClasses').and.callThrough();
 
       // Selected nodes is the selected node and its header ancestors
       selectedNodes = [
@@ -44,25 +42,19 @@ describe('NavItemComponent', () => {
     describe('should have expected classes when initialized', () => {
       it('with selected node', () => {
         initialize(selectedNodes[0]);
-        expect(component.classes).toEqual(
-          // selected node should be expanded even if is a header.
-          { 'level-1': true, collapsed: false, expanded: true, selected: true }
-        );
+        // selected node should be expanded even if is a header.
+        expect(component.classes).toBe('level-1 expanded selected');
       });
 
       it('with selected node ancestor', () => {
         initialize(selectedNodes[1]);
-        expect(component.classes).toEqual(
-          // ancestor is a header and should be expanded
-          { 'level-1': true, collapsed: false, expanded: true, selected: true }
-        );
+        // ancestor is a header and should be expanded
+        expect(component.classes).toBe('level-1 expanded selected');
       });
 
       it('with other than a selected node or ancestor', () => {
         initialize({ title: 'x' });
-        expect(component.classes).toEqual(
-          { 'level-1': true, collapsed: true, expanded: false, selected: false }
-        );
+        expect(component.classes).toBe('level-1 collapsed');
       });
     });
 
@@ -161,9 +153,10 @@ describe('NavItemComponent', () => {
         expect(component.isSelected).withContext('remains not selected').toBe(false);
       });
 
-      it('should set classes', () => {
+      it('should set expanded classes', () => {
         component.headerClicked();
-        expect(setClassesSpy).toHaveBeenCalled();
+        expect(component.classes).toContain('expanded');
+        expect(component.classes).not.toContain('collapsed');
       });
     });
   });

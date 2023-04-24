@@ -26,7 +26,7 @@ export * from './src/ngtsc/logging';
 export * from './src/ngtsc/file_system';
 
 // Exports for dealing with the `ngtsc` program.
-export {NgTscPlugin} from './src/ngtsc/tsc_plugin';
+export {NgTscPlugin, PluginCompilerHost} from './src/ngtsc/tsc_plugin';
 export {NgtscProgram} from './src/ngtsc/program';
 export {OptimizeFor} from './src/ngtsc/typecheck/api';
 

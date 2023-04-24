@@ -10,6 +10,10 @@ const fs = require('fs');
  * @returns a map of key-value pairs
  */
 module.exports = function bazelStampedProperties() {
+  if (!process.env.BAZEL_VERSION_FILE) {
+    // Bazel stamping not enabled with --stamp
+    return {};
+  }
   const volatileStatus = fs.readFileSync(process.env.BAZEL_VERSION_FILE, 'utf8');
   const properties = {};
   for (const match of `\n${volatileStatus}`.matchAll(/^([^\s]+)\s+(.*)/gm)) {

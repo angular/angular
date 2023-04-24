@@ -2,7 +2,7 @@
 
 # Find out how much code you're testing
 
-The CLI can run unit tests and create code coverage reports.
+The Angular CLI can run unit tests and create code coverage reports.
 Code coverage reports show you any parts of your code base that might not be properly tested by your unit tests.
 
 <div class="alert is-helpful">
@@ -19,10 +19,10 @@ ng test --no-watch --code-coverage
 
 </code-example>
 
-When the tests are complete, the command creates a new `/coverage` folder in the project.
+When the tests are complete, the command creates a new `/coverage` directory in the project.
 Open the `index.html` file to see a report with your source code and code coverage values.
 
-If you want to create code-coverage reports every time you test, set the following option in the CLI configuration file, `angular.json`:
+If you want to create code-coverage reports every time you test, set the following option in the Angular CLI configuration file, `angular.json`:
 
 <code-example format="json" language="json">
 
@@ -63,9 +63,17 @@ coverageReporter: {
 
 </code-example>
 
+
+<div class="alert is-helpful">
+
+Read more about creating and fine tunning Karma configuration in the [testing guide](guide/testing#configuration).
+
+</div>
+
+
 The `check` property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
 
-Find more information about the different coverage configuration options [here](https://github.com/karma-runner/karma-coverage/blob/master/docs/configuration.md).
+Read more on coverage configuration options in the [karma coverage documentation](https://github.com/karma-runner/karma-coverage/blob/master/docs/configuration.md).
 
 <!-- links -->
 
@@ -73,4 +81,4 @@ Find more information about the different coverage configuration options [here](
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-01-17

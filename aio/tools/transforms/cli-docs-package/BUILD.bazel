@@ -20,13 +20,15 @@ js_library(
         "@aio_npm//dgeni",
         "@aio_npm//json5",
         "@aio_npm//semver",
-        "@angular_cli_src//:files_for_docgen",
     ],
 )
 
 jasmine_node_test(
     name = "test",
     srcs = glob(["**/*.spec.js"]),
+    data = [
+        "//aio/content/cli",
+    ],
     env = {
         "GIT_BIN": "$(GIT_BIN_PATH)",
     },

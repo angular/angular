@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {PotentialImportMode} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {DiagnosticCategoryLabel} from '../../src/ngtsc/core/api';
@@ -34,7 +35,7 @@ runInEachFileSystem(() => {
       it('for components', () => {
         env.write('test.ts', `
 		 import {Component} from '@angular/core';
- 
+
 		 @Component({
 			 standalone: true,
 			 selector: 'test-cmp',
@@ -52,7 +53,7 @@ runInEachFileSystem(() => {
       it('for pipes', () => {
         env.write('test.ts', `
 		 import {Pipe, PipeTransform} from '@angular/core';
- 
+
 		 @Pipe({name: 'expPipe'})
 		 export class ExpPipe implements PipeTransform {
 			 transform(value: number, exponent = 1): number {
@@ -70,7 +71,7 @@ runInEachFileSystem(() => {
       it('for NgModules', () => {
         env.write('test.ts', `
 			 import {NgModule} from '@angular/core';
- 
+
 			 @NgModule({
 				 declarations: [],
 				 imports: [],
@@ -91,7 +92,7 @@ runInEachFileSystem(() => {
       it('for components', () => {
         env.write('test.ts', `
 			  import {Component, NgModule} from '@angular/core';
-  
+
 			  @NgModule({
 				  declarations: [AppCmp],
 				  imports: [],
@@ -99,7 +100,7 @@ runInEachFileSystem(() => {
 				  bootstrap: [AppCmp]
 			  })
 			  export class AppModule {}
-	
+
 			  @Component({
 				  selector: 'app-cmp',
 				  template: '<div></div>',
@@ -118,7 +119,7 @@ runInEachFileSystem(() => {
       it('for standalone components (which should be null)', () => {
         env.write('test.ts', `
 			  import {Component, NgModule} from '@angular/core';
-  
+
 			  @NgModule({
 				  declarations: [AppCmp],
 				  imports: [],
@@ -126,7 +127,7 @@ runInEachFileSystem(() => {
 				  bootstrap: [AppCmp]
 			  })
 			  export class AppModule {}
-	
+
 			  @Component({
 				  selector: 'app-cmp',
 				  template: '<div></div>',
@@ -146,14 +147,14 @@ runInEachFileSystem(() => {
       it('for pipes', () => {
         env.write('test.ts', `
 			  import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';
-  
+
 			  @NgModule({
 				  declarations: [ExpPipe],
 				  imports: [],
 				  providers: [],
 			  })
 			  export class PipeModule {}
-	
+
 			  @Pipe({name: 'expPipe'})
 			  export class ExpPipe implements PipeTransform {
 				  transform(value: number, exponent = 1): number {
@@ -175,7 +176,7 @@ runInEachFileSystem(() => {
       it('which are out of scope', () => {
         env.write('one.ts', `
 		   import {Component} from '@angular/core';
-   
+
 		   @Component({
 			   standalone: true,
 			   selector: 'one-cmp',
@@ -186,7 +187,7 @@ runInEachFileSystem(() => {
 
         env.write('two.ts', `
 		   import {Component} from '@angular/core';
-   
+
 		   @Component({
 			   standalone: true,
 			   selector: 'two-cmp',
@@ -206,7 +207,7 @@ runInEachFileSystem(() => {
       it('which are out of scope', () => {
         env.write('one.ts', `
 			 import {Pipe} from '@angular/core';
-	 
+
 			 @Pipe({
 				name: 'foo-pipe',
 				standalone: true,
@@ -217,7 +218,7 @@ runInEachFileSystem(() => {
 
         env.write('two.ts', `
 			 import {Component} from '@angular/core';
-	 
+
 			 @Component({
 				 standalone: true,
 				 selector: 'two-cmp',
@@ -237,7 +238,7 @@ runInEachFileSystem(() => {
       it('for out of scope standalone components', () => {
         env.write('one.ts', `
 			 import {Component} from '@angular/core';
-	 
+
 			 @Component({
 				 standalone: true,
 				 selector: 'one-cmp',
@@ -248,7 +249,7 @@ runInEachFileSystem(() => {
 
         env.write('two.ts', `
 			 import {Component} from '@angular/core';
-	 
+
 			 @Component({
 				 standalone: true,
 				 selector: 'two-cmp',
@@ -263,17 +264,19 @@ runInEachFileSystem(() => {
 
         const TwoCmpDir = checker.getPotentialTemplateDirectives(OneCmpClass)
                               .filter(d => d.selector === 'two-cmp')[0];
-        const imports = checker.getPotentialImportsFor(TwoCmpDir, OneCmpClass);
+        const imports =
+            checker.getPotentialImportsFor(TwoCmpDir.ref, OneCmpClass, PotentialImportMode.Normal);
 
         expect(imports.length).toBe(1);
         expect(imports[0].moduleSpecifier).toBe('./two');
         expect(imports[0].symbolName).toBe('TwoCmp');
+        expect(imports[0].isForwardReference).toBe(false);
       });
 
       it('for out of scope ngModules', () => {
         env.write('one.ts', `
 			 import {Component} from '@angular/core';
-	 
+
 			 @Component({
 				 standalone: true,
 				 selector: 'one-cmp',
@@ -284,7 +287,7 @@ runInEachFileSystem(() => {
 
         env.write('two.ts', `
 			 import {Component} from '@angular/core';
-	 
+
 			 @Component({
 				 selector: 'two-cmp',
 				 template: '<div></div>',
@@ -296,7 +299,7 @@ runInEachFileSystem(() => {
 			import { NgModule } from '@angular/core';
 			import { CommonModule } from '@angular/common';
 			import { TwoCmp } from './two';
-			
+
 			@NgModule({
 			declarations: [
 				TwoCmp
@@ -318,11 +321,47 @@ runInEachFileSystem(() => {
 
         const TwoNgMod = checker.getPotentialTemplateDirectives(OneCmpClass)
                              .filter(d => d.selector === 'two-cmp')[0];
-        const imports = checker.getPotentialImportsFor(TwoNgMod, OneCmpClass);
+        const imports =
+            checker.getPotentialImportsFor(TwoNgMod.ref, OneCmpClass, PotentialImportMode.Normal);
 
         expect(imports.length).toBe(1);
         expect(imports[0].moduleSpecifier).toBe('./twomod');
         expect(imports[0].symbolName).toBe('TwoModule');
+        expect(imports[0].isForwardReference).toBe(false);
+      });
+
+      it('for forward references in the same file', () => {
+        env.write('decls.ts', `
+					import {Component} from '@angular/core';
+
+					@Component({
+						standalone: true,
+						selector: 'one-cmp',
+						template: '<div></div>',
+					})
+					export class OneCmp {}
+
+					@Component({
+						standalone: true,
+						selector: 'two-cmp',
+						template: '<div></div>',
+					})
+					export class TwoCmp {}
+			 `);
+        const {program, checker} = env.driveTemplateTypeChecker();
+        const sfOne = program.getSourceFile(_('/decls.ts'));
+        expect(sfOne).not.toBeNull();
+        const OneCmpClass = getClass(sfOne!, 'OneCmp');
+
+        const TwoCmpDir = checker.getPotentialTemplateDirectives(OneCmpClass)
+                              .filter(d => d.selector === 'two-cmp')[0];
+        const imports =
+            checker.getPotentialImportsFor(TwoCmpDir.ref, OneCmpClass, PotentialImportMode.Normal);
+
+        expect(imports.length).toBe(1);
+        expect(imports[0].moduleSpecifier).toBeUndefined();
+        expect(imports[0].symbolName).toBe('TwoCmp');
+        expect(imports[0].isForwardReference).toBe(true);
       });
     });
   });

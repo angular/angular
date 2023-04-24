@@ -9,7 +9,7 @@
 import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
-import * as ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript/lib/tsserverlibrary';
 
 import {MockServerHost} from './host';
 import {Project, ProjectFiles, TestableOptions} from './project';

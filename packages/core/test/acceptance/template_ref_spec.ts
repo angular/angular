@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, Injector, NgModule, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, Injector, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -88,11 +88,6 @@ describe('TemplateRef', () => {
     });
 
     it('should descend into view containers on ng-template', () => {
-      /**
-       * NOTE: In VE, if `SUFFIX` text node below is _not_ present, VE will add an
-       * additional `<!---->` comment, thus being slightly different than Ivy.
-       * (resulting in 1 root node in Ivy and 2 in VE).
-       */
       const rootNodes = getRootNodes(`
       <ng-template #templateRef>
         <ng-template [ngIf]="true">text|</ng-template>SUFFIX
@@ -106,29 +101,31 @@ describe('TemplateRef', () => {
 
     it('should descend into view containers on an element', () => {
       /**
-       * NOTE: In VE, if `SUFFIX` text node below is _not_ present, VE will add an
-       * additional `<!---->` comment, thus being slightly different than Ivy.
-       * (resulting in 1 root node in Ivy and 2 in VE).
+       * Expected DOM structure:
+       * ```
+       * <div ng-reflect-ng-template-outlet="[object Object]"></div>
+       * text
+       * <!--container-->
+       * SUFFIX
+       * ```
        */
       const rootNodes = getRootNodes(`
-      <ng-template #dynamicTpl>text</ng-template>
-      <ng-template #templateRef>
-        <div [ngTemplateOutlet]="dynamicTpl"></div>SUFFIX
-      </ng-template>
-    `);
+        <ng-template #dynamicTpl>text</ng-template>
+        <ng-template #templateRef>
+          <div [ngTemplateOutlet]="dynamicTpl"></div>SUFFIX
+        </ng-template>
+      `);
 
-      expect(rootNodes.length).toBe(3);
+      expect(rootNodes.length).toBe(4);
       expect(rootNodes[0].nodeType).toBe(Node.ELEMENT_NODE);
       expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
-      expect(rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
+      // This comment node is an anchor for the `ViewContainerRef`
+      // created within the `NgTemplateOutlet` class.
+      expect(rootNodes[2].nodeType).toBe(Node.COMMENT_NODE);
+      expect(rootNodes[3].nodeType).toBe(Node.TEXT_NODE);
     });
 
     it('should descend into view containers on ng-container', () => {
-      /**
-       * NOTE: In VE, if `SUFFIX` text node below is _not_ present, VE will add an
-       * additional `<!---->` comment, thus being slightly different than Ivy.
-       * (resulting in 1 root node in Ivy and 2 in VE).
-       */
       const rootNodes = getRootNodes(`
           <ng-template #dynamicTpl>text</ng-template>
           <ng-template #templateRef><ng-container [ngTemplateOutlet]="dynamicTpl"></ng-container>SUFFIX</ng-template>
@@ -188,7 +185,7 @@ describe('TemplateRef', () => {
 
       @Component({selector: 'test', template: ''})
       class TestCmp {
-        constructor(public cfr: ComponentFactoryResolver) {}
+        constructor(public vcr: ViewContainerRef) {}
       }
 
       beforeEach(() => {
@@ -200,12 +197,12 @@ describe('TemplateRef', () => {
             DynamicCmp, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
 
         const fixture = TestBed.createComponent(TestCmp);
-        const dynamicCmptFactory =
-            fixture.componentInstance.cfr.resolveComponentFactory(DynamicCmp);
-
         // Number of projectable nodes matches the number of slots - all nodes should be returned
         const projectableNodes = [[document.createTextNode('textNode')]];
-        const cmptRef = dynamicCmptFactory.create(Injector.NULL, projectableNodes);
+
+        const cmptRef = fixture.componentInstance.vcr.createComponent(
+            DynamicCmp, {injector: Injector.NULL, projectableNodes});
+
         const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
         expect(viewRef.rootNodes.length).toBe(1);
       });
@@ -215,11 +212,10 @@ describe('TemplateRef', () => {
             DynamicCmp, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
 
         const fixture = TestBed.createComponent(TestCmp);
-        const dynamicCmptFactory =
-            fixture.componentInstance.cfr.resolveComponentFactory(DynamicCmp);
 
         // There are slots but projectable nodes were not provided - nothing should be returned
-        const cmptRef = dynamicCmptFactory.create(Injector.NULL, []);
+        const cmptRef = fixture.componentInstance.vcr.createComponent(
+            DynamicCmp, {injector: Injector.NULL, projectableNodes: []});
         const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
         expect(viewRef.rootNodes.length).toBe(0);
       });
@@ -229,12 +225,12 @@ describe('TemplateRef', () => {
            TestBed.overrideTemplate(DynamicCmp, `<ng-template #templateRef></ng-template>`);
 
            const fixture = TestBed.createComponent(TestCmp);
-           const dynamicCmptFactory =
-               fixture.componentInstance.cfr.resolveComponentFactory(DynamicCmp);
 
            // There are no slots but projectable were provided - nothing should be returned
            const projectableNodes = [[document.createTextNode('textNode')]];
-           const cmptRef = dynamicCmptFactory.create(Injector.NULL, projectableNodes);
+
+           const cmptRef = fixture.componentInstance.vcr.createComponent(
+               DynamicCmp, {injector: Injector.NULL, projectableNodes});
            const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
            expect(viewRef.rootNodes.length).toBe(0);
          });

@@ -506,6 +506,56 @@ describe('directives', () => {
       // In de-sugared version the `title` acts as a regular input, so it should be set.
       expect(desugaredDir.title).toBe('element title');
     });
+
+    it('should allow directive inputs specified using the object literal syntax in @Input', () => {
+      @Directive({selector: '[dir]'})
+      class Dir {
+        @Input() plainInput: number|undefined;
+        @Input({alias: 'alias'}) aliasedInput: number|undefined;
+      }
+
+      @Component({template: '<div dir [plainInput]="plainValue" [alias]="aliasedValue"></div>'})
+      class App {
+        @ViewChild(Dir) dirInstance!: Dir;
+        plainValue = 123;
+        aliasedValue = 321;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const {dirInstance, plainValue, aliasedValue} = fixture.componentInstance;
+
+      expect(dirInstance.plainInput).toBe(plainValue);
+      expect(dirInstance.aliasedInput).toBe(aliasedValue);
+    });
+
+    it('should allow directive inputs specified using the object literal syntax in the `inputs` array',
+       () => {
+         @Directive({
+           selector: '[dir]',
+           inputs: [{name: 'plainInput'}, {name: 'aliasedInput', alias: 'alias'}]
+         })
+         class Dir {
+           plainInput: number|undefined;
+           aliasedInput: number|undefined;
+         }
+
+         @Component({template: '<div dir [plainInput]="plainValue" [alias]="aliasedValue"></div>'})
+         class App {
+           @ViewChild(Dir) dirInstance!: Dir;
+           plainValue = 123;
+           aliasedValue = 321;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Dir]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         const {dirInstance, plainValue, aliasedValue} = fixture.componentInstance;
+
+         expect(dirInstance.plainInput).toBe(plainValue);
+         expect(dirInstance.aliasedInput).toBe(aliasedValue);
+       });
   });
 
   describe('outputs', () => {

@@ -12,6 +12,5 @@ export class ItemListComponent {
   // #docregion item-input
   @Input() items: Item[] = [];
   // #enddocregion item-input
-  constructor() { }
 
 }

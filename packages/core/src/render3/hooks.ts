@@ -7,7 +7,9 @@
  */
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
+import {setActiveConsumer} from '../signals';
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
+
 import {assertFirstCreatePass} from './assert';
 import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature';
 import {DirectiveDef} from './interfaces/definition';
@@ -38,18 +40,17 @@ export function registerPreOrderHooks(
 
   if (ngOnChanges as Function | undefined) {
     const wrappedOnChanges = NgOnChangesFeatureImpl(directiveDef);
-    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(directiveIndex, wrappedOnChanges);
-    (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = []))
-        .push(directiveIndex, wrappedOnChanges);
+    (tView.preOrderHooks ??= []).push(directiveIndex, wrappedOnChanges);
+    (tView.preOrderCheckHooks ??= []).push(directiveIndex, wrappedOnChanges);
   }
 
   if (ngOnInit) {
-    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(0 - directiveIndex, ngOnInit);
+    (tView.preOrderHooks ??= []).push(0 - directiveIndex, ngOnInit);
   }
 
   if (ngDoCheck) {
-    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(directiveIndex, ngDoCheck);
-    (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(directiveIndex, ngDoCheck);
+    (tView.preOrderHooks ??= []).push(directiveIndex, ngDoCheck);
+    (tView.preOrderCheckHooks ??= []).push(directiveIndex, ngDoCheck);
   }
 }
 
@@ -90,25 +91,25 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
     } = lifecycleHooks;
 
     if (ngAfterContentInit) {
-      (tView.contentHooks || (tView.contentHooks = [])).push(-i, ngAfterContentInit);
+      (tView.contentHooks ??= []).push(-i, ngAfterContentInit);
     }
 
     if (ngAfterContentChecked) {
-      (tView.contentHooks || (tView.contentHooks = [])).push(i, ngAfterContentChecked);
-      (tView.contentCheckHooks || (tView.contentCheckHooks = [])).push(i, ngAfterContentChecked);
+      (tView.contentHooks ??= []).push(i, ngAfterContentChecked);
+      (tView.contentCheckHooks ??= []).push(i, ngAfterContentChecked);
     }
 
     if (ngAfterViewInit) {
-      (tView.viewHooks || (tView.viewHooks = [])).push(-i, ngAfterViewInit);
+      (tView.viewHooks ??= []).push(-i, ngAfterViewInit);
     }
 
     if (ngAfterViewChecked) {
-      (tView.viewHooks || (tView.viewHooks = [])).push(i, ngAfterViewChecked);
-      (tView.viewCheckHooks || (tView.viewCheckHooks = [])).push(i, ngAfterViewChecked);
+      (tView.viewHooks ??= []).push(i, ngAfterViewChecked);
+      (tView.viewCheckHooks ??= []).push(i, ngAfterViewChecked);
     }
 
     if (ngOnDestroy != null) {
-      (tView.destroyHooks || (tView.destroyHooks = [])).push(i, ngOnDestroy);
+      (tView.destroyHooks ??= []).push(i, ngOnDestroy);
     }
   }
 }
@@ -223,9 +224,10 @@ function callHooks(
         break;
       }
     } else {
-      const isInitHook = arr[i] < 0;
-      if (isInitHook)
+      const isInitHook = (arr[i] as number) < 0;
+      if (isInitHook) {
         currentView[PREORDER_HOOK_FLAGS] += PreOrderHookFlags.NumberOfInitHooksCalledIncrementer;
+      }
       if (lastNodeIndexFound < nodeIndexLimit || nodeIndexLimit == -1) {
         callHook(currentView, initPhase, arr, i);
         currentView[PREORDER_HOOK_FLAGS] =
@@ -238,6 +240,22 @@ function callHooks(
 }
 
 /**
+ * Executes a single lifecycle hook, making sure that:
+ * - it is called in the non-reactive context;
+ * - profiling data are registered.
+ */
+function callHookInternal(directive: any, hook: () => void) {
+  profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
+  const prevConsumer = setActiveConsumer(null);
+  try {
+    hook.call(directive);
+  } finally {
+    setActiveConsumer(prevConsumer);
+    profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
+  }
+}
+
+/**
  * Execute one hook against the current `LView`.
  *
  * @param currentView The current view
@@ -246,7 +264,7 @@ function callHooks(
  * @param i The current index within the hook data array
  */
 function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, i: number) {
-  const isInitHook = arr[i] < 0;
+  const isInitHook = (arr[i] as number) < 0;
   const hook = arr[i + 1] as () => void;
   const directiveIndex = isInitHook ? -arr[i] : arr[i] as number;
   const directive = currentView[directiveIndex];
@@ -257,19 +275,9 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
             (currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift) &&
         (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
       currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
-      profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
-      try {
-        hook.call(directive);
-      } finally {
-        profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
-      }
+      callHookInternal(directive, hook);
     }
   } else {
-    profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
-    try {
-      hook.call(directive);
-    } finally {
-      profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
-    }
+    callHookInternal(directive, hook);
   }
 }

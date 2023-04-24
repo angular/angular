@@ -4,6 +4,7 @@
 
 ```ts
 
+import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -19,9 +20,12 @@ export interface NoNewVersionDetectedEvent {
     };
 }
 
+// @public
+export function provideServiceWorker(script: string, options?: SwRegistrationOptions): EnvironmentProviders;
+
 // @public (undocumented)
 export class ServiceWorkerModule {
-    static register(script: string, opts?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
+    static register(script: string, options?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ServiceWorkerModule, never>;
     // (undocumented)

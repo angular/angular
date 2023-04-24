@@ -9,4 +9,8 @@ import { NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 export class FooterComponent {
   @Input() nodes: NavigationNode[];
   @Input() versionInfo: VersionInfo | undefined;
+
+  get currentYear(): number {
+    return new Date().getFullYear();
+  }
 }

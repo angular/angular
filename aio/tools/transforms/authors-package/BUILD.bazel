@@ -9,7 +9,7 @@ js_library(
         ["**/*.js"],
         exclude = [
             "**/*/spec.js",
-            "watchr.js",
+            "watchr.mjs",
         ],
     ),
     deps = [
@@ -25,7 +25,7 @@ js_library(
 js_library(
     name = "watchdocs",
     srcs = [
-        "watchr.js",
+        "watchr.mjs",
     ],
     deps = [
         ":authors-package",

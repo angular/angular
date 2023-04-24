@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Byte, newArray, utf8Encode} from '../util';
-import {BigIntExponentiation} from './big_integer';
+import {Byte} from '../util';
 
+import {BigIntExponentiation} from './big_integer';
 import * as i18n from './i18n_ast';
+
+/**
+ * A lazily created TextEncoder instance for converting strings into UTF-8 bytes
+ */
+let textEncoder: TextEncoder|undefined;
 
 /**
  * Return the message id or compute it using the XLIFF1 digest.
@@ -109,11 +114,12 @@ class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
  *          DO NOT USE IT IN A SECURITY SENSITIVE CONTEXT.
  */
 export function sha1(str: string): string {
-  const utf8 = utf8Encode(str);
+  textEncoder ??= new TextEncoder();
+  const utf8 = [...textEncoder.encode(str)];
   const words32 = bytesToWords32(utf8, Endian.Big);
   const len = utf8.length * 8;
 
-  const w = newArray(80);
+  const w = new Uint32Array(80);
   let a = 0x67452301, b = 0xefcdab89, c = 0x98badcfe, d = 0x10325476, e = 0xc3d2e1f0;
 
   words32[len >> 5] |= 0x80 << (24 - len % 32);
@@ -146,7 +152,18 @@ export function sha1(str: string): string {
     e = add32(e, h4);
   }
 
-  return bytesToHexString(words32ToByteString([a, b, c, d, e]));
+  // Convert the output parts to a 160-bit hexadecimal string
+  return toHexU32(a) + toHexU32(b) + toHexU32(c) + toHexU32(d) + toHexU32(e);
+}
+
+/**
+ * Convert and format a number as a string representing a 32-bit unsigned hexadecimal number.
+ * @param value The value to format as a string.
+ * @returns A hexadecimal string representing the value.
+ */
+function toHexU32(value: number): string {
+  // unsigned right shift of zero ensures an unsigned 32-bit number
+  return (value >>> 0).toString(16).padStart(8, '0');
 }
 
 function fk(index: number, b: number, c: number, d: number): [number, number] {
@@ -174,10 +191,12 @@ function fk(index: number, b: number, c: number, d: number): [number, number] {
  * https://github.com/google/closure-compiler/blob/master/src/com/google/javascript/jscomp/GoogleJsMessageIdGenerator.java
  */
 export function fingerprint(str: string): [number, number] {
-  const utf8 = utf8Encode(str);
+  textEncoder ??= new TextEncoder();
+  const utf8 = textEncoder.encode(str);
+  const view = new DataView(utf8.buffer, utf8.byteOffset, utf8.byteLength);
 
-  let hi = hash32(utf8, 0);
-  let lo = hash32(utf8, 102072);
+  let hi = hash32(view, utf8.length, 0);
+  let lo = hash32(view, utf8.length, 102072);
 
   if (hi == 0 && (lo == 0 || lo == 1)) {
     hi = hi ^ 0x130f9bef;
@@ -201,40 +220,81 @@ export function computeMsgId(msg: string, meaning: string = ''): string {
   return wordsToDecimalString(hi & 0x7fffffff, lo);
 }
 
-function hash32(bytes: Byte[], c: number): number {
+function hash32(view: DataView, length: number, c: number): number {
   let a = 0x9e3779b9, b = 0x9e3779b9;
-  let i: number;
+  let index = 0;
 
-  const len = bytes.length;
-
-  for (i = 0; i + 12 <= len; i += 12) {
-    a = add32(a, wordAt(bytes, i, Endian.Little));
-    b = add32(b, wordAt(bytes, i + 4, Endian.Little));
-    c = add32(c, wordAt(bytes, i + 8, Endian.Little));
+  const end = length - 12;
+  for (; index <= end; index += 12) {
+    a += view.getUint32(index, true);
+    b += view.getUint32(index + 4, true);
+    c += view.getUint32(index + 8, true);
     const res = mix(a, b, c);
     a = res[0], b = res[1], c = res[2];
   }
 
-  a = add32(a, wordAt(bytes, i, Endian.Little));
-  b = add32(b, wordAt(bytes, i + 4, Endian.Little));
+  const remainder = length - index;
+
   // the first byte of c is reserved for the length
-  c = add32(c, len);
-  c = add32(c, wordAt(bytes, i + 8, Endian.Little) << 8);
+  c += length;
+
+  if (remainder >= 4) {
+    a += view.getUint32(index, true);
+    index += 4;
+
+    if (remainder >= 8) {
+      b += view.getUint32(index, true);
+      index += 4;
+
+      // Partial 32-bit word for c
+      if (remainder >= 9) {
+        c += view.getUint8(index++) << 8;
+      }
+      if (remainder >= 10) {
+        c += view.getUint8(index++) << 16;
+      }
+      if (remainder === 11) {
+        c += view.getUint8(index++) << 24;
+      }
+    } else {
+      // Partial 32-bit word for b
+      if (remainder >= 5) {
+        b += view.getUint8(index++);
+      }
+      if (remainder >= 6) {
+        b += view.getUint8(index++) << 8;
+      }
+      if (remainder === 7) {
+        b += view.getUint8(index++) << 16;
+      }
+    }
+  } else {
+    // Partial 32-bit word for a
+    if (remainder >= 1) {
+      a += view.getUint8(index++);
+    }
+    if (remainder >= 2) {
+      a += view.getUint8(index++) << 8;
+    }
+    if (remainder === 3) {
+      a += view.getUint8(index++) << 16;
+    }
+  }
 
   return mix(a, b, c)[2];
 }
 
 // clang-format off
 function mix(a: number, b: number, c: number): [number, number, number] {
-  a = sub32(a, b); a = sub32(a, c); a ^= c >>> 13;
-  b = sub32(b, c); b = sub32(b, a); b ^= a << 8;
-  c = sub32(c, a); c = sub32(c, b); c ^= b >>> 13;
-  a = sub32(a, b); a = sub32(a, c); a ^= c >>> 12;
-  b = sub32(b, c); b = sub32(b, a); b ^= a << 16;
-  c = sub32(c, a); c = sub32(c, b); c ^= b >>> 5;
-  a = sub32(a, b); a = sub32(a, c); a ^= c >>> 3;
-  b = sub32(b, c); b = sub32(b, a); b ^= a << 10;
-  c = sub32(c, a); c = sub32(c, b); c ^= b >>> 15;
+  a -= b; a -= c; a ^= c >>> 13;
+  b -= c; b -= a; b ^= a << 8;
+  c -= a; c -= b; c ^= b >>> 13;
+  a -= b; a -= c; a ^= c >>> 12;
+  b -= c; b -= a; b ^= a << 16;
+  c -= a; c -= b; c ^= b >>> 5;
+  a -= b; a -= c; a ^= c >>> 3;
+  b -= c; b -= a; b ^= a << 10;
+  c -= a; c -= b; c ^= b >>> 15;
   return [a, b, c];
 }
 // clang-format on
@@ -264,12 +324,6 @@ function add64(a: [number, number], b: [number, number]): [number, number] {
   const l = result[1];
   const h = add32(add32(ah, bh), carry);
   return [h, l];
-}
-
-function sub32(a: number, b: number): number {
-  const low = (a & 0xffff) - (b & 0xffff);
-  const high = (a >> 16) - (b >> 16) + (low >> 16);
-  return (high << 16) | (low & 0xffff);
 }
 
 // Rotate a 32b number left `count` position
@@ -312,27 +366,6 @@ function wordAt(bytes: Byte[], index: number, endian: Endian): number {
     }
   }
   return word;
-}
-
-function words32ToByteString(words32: number[]): Byte[] {
-  return words32.reduce((bytes, word) => bytes.concat(word32ToByteString(word)), [] as Byte[]);
-}
-
-function word32ToByteString(word: number): Byte[] {
-  let bytes: Byte[] = [];
-  for (let i = 0; i < 4; i++) {
-    bytes.push((word >>> 8 * (3 - i)) & 0xff);
-  }
-  return bytes;
-}
-
-function bytesToHexString(bytes: Byte[]): string {
-  let hex: string = '';
-  for (let i = 0; i < bytes.length; i++) {
-    const b = byteAt(bytes, i);
-    hex += (b >>> 4).toString(16) + (b & 0x0f).toString(16);
-  }
-  return hex.toLowerCase();
 }
 
 /**

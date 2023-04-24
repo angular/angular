@@ -19,7 +19,6 @@ load(
     "compile_ts",
     "js_ecma_script_module_info",
     "js_module_info",
-    "js_named_module_info",
     "node_modules_aspect",
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
@@ -40,14 +39,6 @@ def _get_ivy_compilation_mode(ctx):
     """Gets the Ivy compilation mode based on the current build settings."""
     return "partial" if _is_partial_compilation_enabled(ctx) else "full"
 
-def _basename_of(ctx, file):
-    ext_len = len(".ts")
-    if file.short_path.endswith(".ng.html"):
-        ext_len = len(".ng.html")
-    elif file.short_path.endswith(".html"):
-        ext_len = len(".html")
-    return file.short_path[len(ctx.label.package) + 1:-ext_len]
-
 # Return true if run with bazel (the open-sourced version of blaze), false if
 # run with blaze.
 def _is_bazel():
@@ -60,7 +51,7 @@ def _flat_module_out_file(ctx):
     from other attributes (name)
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       a basename used for the flat module out (no extension)
@@ -76,7 +67,7 @@ def _should_produce_flat_module_outs(ctx):
     based on the presence of the module_name attribute.
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       true iff we should run the bundle_index_host to produce flat module metadata and bundle index
@@ -93,8 +84,6 @@ def _expected_outs(ctx):
     transpilation_infos = []
     flat_module_out_prodmode_file = None
 
-    factory_basename_set = depset([_basename_of(ctx, src) for src in ctx.files.factories])
-
     for src in ctx.files.srcs + ctx.files.assets:
         package_prefix = ctx.label.package + "/" if ctx.label.package else ""
 
@@ -104,36 +93,19 @@ def _expected_outs(ctx):
 
         if short_path.endswith(".ts") and not short_path.endswith(".d.ts"):
             basename = short_path[len(package_prefix):-len(".ts")]
-            if (len(factory_basename_set.to_list()) == 0 or basename in factory_basename_set.to_list()):
-                if _generate_ve_shims(ctx):
-                    devmode_js = [
-                        ".ngfactory.js",
-                        ".ngsummary.js",
-                        ".js",
-                    ]
-                else:
-                    devmode_js = [".js"]
-
-                # Only ngc produces .json files, they're not needed in Ivy.
-            else:
-                devmode_js = [".js"]
-                if not _is_bazel():
-                    devmode_js += [".ngfactory.js"]
+            devmode_js = [".js"]
         else:
             continue
 
-        filter_summaries = ctx.attr.filter_summaries
         declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
 
         for devmode_ext in devmode_js:
             devmode_js_file = ctx.actions.declare_file(basename + devmode_ext)
             devmode_js_files.append(devmode_js_file)
-
-            if not filter_summaries or not devmode_ext.endswith(".ngsummary.js"):
-                closure_ext = devmode_ext.replace(".js", ".mjs")
-                closure_js_file = ctx.actions.declare_file(basename + closure_ext)
-                closure_js_files.append(closure_js_file)
-                transpilation_infos.append(struct(closure = closure_js_file, devmode = devmode_js_file))
+            closure_ext = devmode_ext.replace(".js", ".mjs")
+            closure_js_file = ctx.actions.declare_file(basename + closure_ext)
+            closure_js_files.append(closure_js_file)
+            transpilation_infos.append(struct(closure = closure_js_file, devmode = devmode_js_file))
 
         declaration_files += [ctx.actions.declare_file(basename + ext) for ext in declarations]
 
@@ -174,19 +146,14 @@ def _expected_outs(ctx):
         flat_module_out_prodmode_file = flat_module_out_prodmode_file,
     )
 
-# Determines if we need to generate View Engine shims (.ngfactory and .ngsummary files)
-def _generate_ve_shims(ctx):
-    return _is_bazel() and getattr(ctx.attr, "generate_ve_shims", False) == True
-
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
-    generate_ve_shims = _generate_ve_shims(ctx)
     compilation_mode = _get_ivy_compilation_mode(ctx)
     is_devmode = "devmode_manifest" in kwargs
     outs = _expected_outs(ctx)
     if is_devmode:
-        expected_outs = outs.devmode_js + outs.declarations
+        expected_outs = outs.devmode_js
     else:
-        expected_outs = outs.closure_js
+        expected_outs = outs.closure_js + outs.declarations
 
     if not ctx.attr.type_check and ctx.attr.strict_templates:
         fail("Cannot set type_check = False and strict_templates = True for ng_module()")
@@ -195,8 +162,6 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableResourceInlining": ctx.attr.inline_resources,
         "generateCodeForLibraries": False,
         "allowEmptyCodegenFiles": True,
-        "generateNgFactoryShims": True if generate_ve_shims else False,
-        "generateNgSummaryShims": True if generate_ve_shims else False,
         "fullTemplateTypeCheck": ctx.attr.type_check,
         "strictTemplates": ctx.attr.strict_templates,
         "compilationMode": compilation_mode,
@@ -237,18 +202,18 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "angularCompilerOptions": angular_compiler_options,
     })
 
-    # For prodmode, the compilation target is set to `ES2020`. `@bazel/typecript`
-    # using the `create_tsconfig` function sets `ES2015` by default.
+    # For prodmode, the compilation target is set to `ES2022`. `@bazel/typecript`
+    # using the `create_tsconfig` function sets `ES2015` by default for prodmode
+    # and uses ES5 with UMD for devmode. We want to consistenly use ES2022 ESM.
     # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
     # TODO(devversion): In the future, combine prodmode and devmode so we can get rid of the
     # ambiguous terminology and concept that can result in slow-down for development workflows.
-    if not is_devmode:
-        # Note: Keep in sync with the `prodmode_target` for `ts_library` in `tools/defaults.bzl`
-        tsconfig["compilerOptions"]["target"] = "es2020"
-    else:
-        # For devmode output, we use ES2015 to match with what `ts_library` produces by default.
-        # https://github.com/bazelbuild/rules_nodejs/blob/9b36274dba34204625579463e3da054a9f42cb47/packages/typescript/internal/build_defs.bzl#L83.
-        tsconfig["compilerOptions"]["target"] = "es2015"
+    # TODO(alanagius): The below causes a drastic size increase when enabled (4Kb in the //integration/forms:test). This is mainly due to Babel transforms for Safari 15.
+    # https://github.com/angular/angular-cli/blob/3e8bdf72d6b7e2925d2822da807b726f88a77e1a/packages/angular_devkit/build_angular/src/babel/presets/application.ts#L199-L204
+    # https://www.diffchecker.com/9Ge3pexk
+    tsconfig["compilerOptions"]["useDefineForClassFields"] = False
+    tsconfig["compilerOptions"]["target"] = "es2022"
+    tsconfig["compilerOptions"]["module"] = "esnext"
 
     return tsconfig
 
@@ -278,7 +243,7 @@ def ngc_compile_action(
     as part of the public API.
 
     Args:
-      ctx: skylark context
+      ctx: starlark context
       label: the label of the ng_module being compiled
       inputs: passed to the ngc action's inputs
       outputs: passed to the ngc action's outputs
@@ -315,7 +280,7 @@ def ngc_compile_action(
     # Two at-signs escapes the argument so it's passed through to ngc
     # rather than the contents getting expanded.
     if supports_workers == "1":
-        arguments += ["@@" + tsconfig_file.path]
+        arguments.append("@@" + tsconfig_file.path)
     else:
         arguments += ["-p", tsconfig_file.path]
 
@@ -394,11 +359,11 @@ def _compile_action(
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files, tsconfig_file, node_opts, "prodmode")
+    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files + outs.declarations, tsconfig_file, node_opts, "prodmode")
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.dev_perf_files
+    compile_action_outputs = outputs + outs.devmode_js + outs.dev_perf_files
     _compile_action(ctx, inputs, compile_action_outputs, tsconfig_file, node_opts, "devmode")
 
 # Note: We need to define `label` and `srcs_files` as `tsc_wrapped` passes
@@ -414,7 +379,7 @@ def ng_module_impl(ctx, ts_compile_actions):
     and is not meant as a public API.
 
     Args:
-      ctx: the skylark rule context
+      ctx: the starlark rule context
       ts_compile_actions: generates all the actions to run an ngc compilation
 
     Returns:
@@ -452,11 +417,7 @@ def _ng_module_impl(ctx):
     # and issue https://github.com/bazelbuild/rules_nodejs/issues/57 for more details.
     ts_providers["providers"].extend([
         js_module_info(
-            sources = ts_providers["typescript"]["es5_sources"],
-            deps = ctx.attr.deps,
-        ),
-        js_named_module_info(
-            sources = ts_providers["typescript"]["es5_sources"],
+            sources = ts_providers["typescript"]["es6_sources"],
             deps = ctx.attr.deps,
         ),
         js_ecma_script_module_info(
@@ -474,7 +435,7 @@ def _ng_module_impl(ctx):
             package_name = ctx.attr.package_name,
             package_path = ctx.attr.package_path,
             path = path,
-            files = ts_providers["typescript"]["es5_sources"],
+            files = ts_providers["typescript"]["es6_sources"],
         ))
 
     return ts_providers_dict_to_struct(ts_providers)
@@ -497,7 +458,6 @@ NG_MODULE_ATTRIBUTES = {
         allow_files = [".ts", ".html"],
         mandatory = False,
     ),
-    "filter_summaries": attr.bool(default = False),
     "type_check": attr.bool(default = True),
     "strict_templates": attr.bool(default = False),
     "inline_resources": attr.bool(default = True),
@@ -630,8 +590,6 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     # See the flatModuleOutFile documentation in
     # https://github.com/angular/angular/blob/main/packages/compiler-cli/src/transformers/api.ts
     "flat_module_out_file": attr.string(),
-    # Should the rule generate ngfactory and ngsummary shim files?
-    "generate_ve_shims": attr.bool(default = False),
 })
 
 ng_module = rule(

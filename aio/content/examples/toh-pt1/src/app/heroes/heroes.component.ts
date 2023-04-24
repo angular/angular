@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion, v1
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 // #enddocregion v1
 import { Hero } from '../hero';
 // #docregion v1
@@ -10,7 +10,7 @@ import { Hero } from '../hero';
   templateUrl: './heroes.component.html',
   styleUrls: ['./heroes.component.css']
 })
-export class HeroesComponent implements OnInit {
+export class HeroesComponent {
   // #enddocregion, v1
   /*
   // #docregion add-hero
@@ -23,11 +23,5 @@ export class HeroesComponent implements OnInit {
     name: 'Windstorm'
   };
   // #docregion v1
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }
 // #enddocregion, v1

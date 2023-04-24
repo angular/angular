@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ASTWithName} from '@angular/compiler';
 import {ErrorCode as NgCompilerErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics/index';
-import {PotentialDirective, PotentialImport, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {PotentialDirective, PotentialImportMode, PotentialPipe} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as t from '@angular/compiler/src/render3/r3_ast';  // t for template AST
 import ts from 'typescript';
 
@@ -19,6 +20,7 @@ import {CodeActionContext, CodeActionMeta, FixIdForCodeFixesAll} from './utils';
 
 const errorCodes: number[] = [
   ngErrorCode(NgCompilerErrorCode.SCHEMA_INVALID_ELEMENT),
+  ngErrorCode(NgCompilerErrorCode.MISSING_PIPE),
 ];
 
 /**
@@ -40,43 +42,67 @@ function getCodeActions(
     {templateInfo, start, compiler, formatOptions, preferences, errorCode, tsLs}:
         CodeActionContext) {
   let codeActions: ts.CodeFixAction[] = [];
-
   const checker = compiler.getTemplateTypeChecker();
   const tsChecker = compiler.programDriver.getProgram().getTypeChecker();
 
-  // The error must be an invalid element in tag, which is interpreted as an intended selector.
   const target = getTargetAtPosition(templateInfo.template, start);
-  if (target === null || target.context.kind !== TargetNodeKind.ElementInTagContext ||
-      target.context.node instanceof t.Template) {
+  if (target === null) {
     return [];
   }
-  const missingElement = target.context.node;
 
-  const importOn = standaloneTraitOrNgModule(checker, templateInfo.component);
-  if (importOn === null) {
+  let matches: Set<PotentialDirective>|Set<PotentialPipe>;
+  if (target.context.kind === TargetNodeKind.ElementInTagContext &&
+      target.context.node instanceof t.Element) {
+    const allPossibleDirectives = checker.getPotentialTemplateDirectives(templateInfo.component);
+    matches = getDirectiveMatchesForElementTag(target.context.node, allPossibleDirectives);
+  } else if (
+      target.context.kind === TargetNodeKind.RawExpression &&
+      target.context.node instanceof ASTWithName) {
+    const name = (target.context.node as any).name;
+    const allPossiblePipes = checker.getPotentialPipes(templateInfo.component);
+    matches = new Set(allPossiblePipes.filter(p => p.name === name));
+  } else {
     return [];
   }
 
   // Find all possible importable directives with a matching selector.
-  const allPossibleDirectives = checker.getPotentialTemplateDirectives(templateInfo.component);
-  const matchingDirectives =
-      getDirectiveMatchesForElementTag(missingElement, allPossibleDirectives);
-  const matches = matchingDirectives.values();
+  const importOn = standaloneTraitOrNgModule(checker, templateInfo.component);
+  if (importOn === null) {
+    return [];
+  }
+  for (const currMatch of matches.values()) {
+    const currMatchSymbol = currMatch.tsSymbol.valueDeclaration!;
+    const potentialImports =
+        checker.getPotentialImportsFor(currMatch.ref, importOn, PotentialImportMode.Normal);
+    for (const potentialImport of potentialImports) {
+      const fileImportChanges: ts.TextChange[] = [];
+      let importName: string;
+      let forwardRefName: string|null = null;
 
-  for (let currMatch of matches) {
-    const currMatchSymbol = currMatch.tsSymbol.valueDeclaration;
-    const potentialImports = checker.getPotentialImportsFor(currMatch, importOn);
-    for (let potentialImport of potentialImports) {
-      let [fileImportChanges, importName] = updateImportsForTypescriptFile(
-          tsChecker, importOn.getSourceFile(), potentialImport, currMatchSymbol.getSourceFile());
-      let traitImportChanges = updateImportsForAngularTrait(checker, importOn, importName);
-      // All quick fixes should always update the trait import; however, the TypeScript import might
-      // already be present.
-      if (traitImportChanges.length === 0) {
-        continue;
+      if (potentialImport.moduleSpecifier) {
+        const [importChanges, generatedImportName] = updateImportsForTypescriptFile(
+            tsChecker, importOn.getSourceFile(), potentialImport.symbolName,
+            potentialImport.moduleSpecifier, currMatchSymbol.getSourceFile());
+        importName = generatedImportName;
+        fileImportChanges.push(...importChanges);
+      } else {
+        if (potentialImport.isForwardReference) {
+          // Note that we pass the `importOn` file twice since we know that the potential import
+          // is within the same file, because it doesn't have a `moduleSpecifier`.
+          const [forwardRefImports, generatedForwardRefName] = updateImportsForTypescriptFile(
+              tsChecker, importOn.getSourceFile(), 'forwardRef', '@angular/core',
+              importOn.getSourceFile());
+          fileImportChanges.push(...forwardRefImports);
+          forwardRefName = generatedForwardRefName;
+        }
+        importName = potentialImport.symbolName;
       }
 
-      // Create a code action for this import.
+      // Always update the trait import, although the TS import might already be present.
+      const traitImportChanges =
+          updateImportsForAngularTrait(checker, importOn, importName, forwardRefName);
+      if (traitImportChanges.length === 0) continue;
+
       let description = `Import ${importName}`;
       if (potentialImport.moduleSpecifier !== undefined) {
         description += ` from '${potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;

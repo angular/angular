@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runfiles} from '@bazel/runfiles';
 import * as path from 'path';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
@@ -71,7 +72,7 @@ export function createTsConfig(options: TsConfigOptions) {
       // we don't copy the node_modules into our tmp dir, so we should look in
       // the original workspace directory for it
       'nodeModulesPrefix':
-          path.join(require.resolve('npm/node_modules/typescript/package.json'), '../../'),
+          path.join(runfiles.resolve('npm/node_modules/typescript/package.json'), '../../'),
     },
     'files': options.files,
     'angularCompilerOptions': {
@@ -79,14 +80,6 @@ export function createTsConfig(options: TsConfigOptions) {
       'expectedOut': [
         ...options.compilationTargetSrc.map(src => srcToExpectedOut(src, 'js', options)),
         ...options.compilationTargetSrc.map(src => srcToExpectedOut(src, 'd.ts', options)),
-        ...options.compilationTargetSrc.map(src => srcToExpectedOut(src, 'ngfactory.js', options)),
-        ...options.compilationTargetSrc.map(
-            src => srcToExpectedOut(src, 'ngfactory.d.ts', options)),
-        ...options.compilationTargetSrc.map(src => srcToExpectedOut(src, 'ngsummary.js', options)),
-        ...options.compilationTargetSrc.map(
-            src => srcToExpectedOut(src, 'ngsummary.d.ts', options)),
-        ...options.compilationTargetSrc.map(
-            src => srcToExpectedOut(src, 'ngsummary.json', options)),
       ]
     }
   };

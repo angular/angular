@@ -17,7 +17,7 @@ import {NOOP_PERF_RECORDER} from '../../../perf';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope';
 import {getDeclaration, makeProgram} from '../../../testing';
-import {InjectableClassRegistry} from '../../common';
+import {InjectableClassRegistry, NoopReferencesRegistry} from '../../common';
 import {DirectiveDecoratorHandler} from '../index';
 
 runInEachFileSystem(() => {
@@ -166,18 +166,18 @@ runInEachFileSystem(() => {
     const metaReader = new LocalMetadataRegistry();
     const dtsReader = new DtsMetadataReader(checker, reflectionHost);
     const refEmitter = new ReferenceEmitter([]);
+    const referenceRegistry = new NoopReferencesRegistry();
     const scopeRegistry = new LocalModuleScopeRegistry(
         metaReader, new CompoundMetadataReader([metaReader, dtsReader]),
         new MetadataDtsModuleScopeResolver(dtsReader, null), refEmitter, null);
     const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
     const handler = new DirectiveDecoratorHandler(
         reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader, injectableRegistry,
-        refEmitter,
+        refEmitter, referenceRegistry,
         /*isCore*/ false,
         /*strictCtorDeps*/ false,
         /*semanticDepGraphUpdater*/ null,
-        /*annotateForClosureCompiler*/ false,
-        /*detectUndecoratedClassesWithAngularFeatures*/ false, NOOP_PERF_RECORDER);
+        /*annotateForClosureCompiler*/ false, NOOP_PERF_RECORDER);
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);
 

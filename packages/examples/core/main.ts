@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import 'zone.js/lib/browser/rollup-main';
+import 'zone.js/lib/zone-spec/task-tracking';
+
+// okd
+
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {TestsAppModule} from './test_module';

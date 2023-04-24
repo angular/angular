@@ -10,9 +10,9 @@ ts_library(
     deps = [
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/logging",
+        "@npm//@jridgewell/sourcemap-codec",
         "@npm//@types/convert-source-map",
         "@npm//@types/node",
         "@npm//convert-source-map",
-        "@npm//sourcemap-codec",
     ],
 )

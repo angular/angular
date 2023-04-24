@@ -949,7 +949,8 @@ export class _ParseAST {
           values.push(new PropertyRead(
               span, sourceSpan, sourceSpan, new ImplicitReceiver(span, sourceSpan), key));
         }
-      } while (this.consumeOptionalCharacter(chars.$COMMA));
+      } while (this.consumeOptionalCharacter(chars.$COMMA) &&
+               !this.next.isCharacter(chars.$RBRACE));
       this.rbracesExpected--;
       this.expectCharacter(chars.$RBRACE);
     }

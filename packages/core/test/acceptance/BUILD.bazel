@@ -23,6 +23,7 @@ ts_library(
         "//packages/common/locales",
         "//packages/compiler",
         "//packages/core",
+        "//packages/core/src/signals",
         "//packages/core/src/util",
         "//packages/core/test/render3:matchers",
         "//packages/core/testing",
@@ -58,7 +59,7 @@ ng_module(
 
 jasmine_node_test(
     name = "acceptance",
-    bootstrap = ["//tools/testing:node_es2015"],
+    bootstrap = ["//tools/testing:node"],
     deps = [
         ":acceptance_lib",
         ":forward_ref_test_lib",

@@ -86,7 +86,7 @@ npm_package_bin(
     },
     exec_properties = ENABLE_NETWORK,
     output_dir = True,
-    stamp = "@rules_nodejs//nodejs/stamp:always",
+    stamp = "@rules_nodejs//nodejs/stamp:use_stamp_flag",
     # Makes remote git calls to get previous versions
     tags = [
         "requires-network",
@@ -125,7 +125,6 @@ copy_to_directory(
 # All source and configuration files required to build the docs app
 APPLICATION_FILES = [
     "angular.json",
-    "package.json",
     "tsconfig.app.json",
     "tsconfig.json",
     "tsconfig.worker.json",
@@ -319,6 +318,9 @@ architect_test(
         "CHROME_BIN": "../$(CHROMIUM)",
         "CHROMEDRIVER_BIN": "../$(CHROMEDRIVER)",
     },
+    # TODO: investigate why those tests became more flaky
+    #       (presumably after AIO migration to Bazel)
+    flaky = True,
     toolchains = [
         "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
     ],

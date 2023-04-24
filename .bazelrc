@@ -71,7 +71,7 @@ build:snapshot-build --stamp
 build --flag_alias=aio_build_config=//aio:flag_aio_build_config
 
 ####################################
-# AIO first party dep substitution # 
+# AIO first party dep substitution #
 # Turn on with                     #
 #  --config=aio_local_deps         #
 ####################################
@@ -134,9 +134,10 @@ build:remote --project_id=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
 
-# Ensure that tags like "no-remote-exec" get propagated to actions created by rules.
+# Ensure that tags like "no-remote-exec" get propagated to actions created by rules,
+# even if the rule implementation does not explicitly pass them to the execution requirements.
 # https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
-build --experimental_allow_tags_propagation
+common --experimental_allow_tags_propagation
 
 # Disable network access in the sandbox by default. To enable network access
 # for a particular target, use:
@@ -173,4 +174,4 @@ build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
 
 # Load any settings which are specific to the current user. Needs to be *last* statement
 # in this config, as the user configuration should be able to overwrite flags from this file.
-try-import .bazelrc.user
+try-import %workspace%/.bazelrc.user

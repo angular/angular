@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 function createListOfWarnings(warnings: string[]): string {
   const LINE_START = '\n - ';
@@ -14,22 +13,23 @@ function createListOfWarnings(warnings: string[]): string {
 }
 
 export function warnValidation(warnings: string[]): void {
-  NG_DEV_MODE && console.warn(`animation validation warnings:${createListOfWarnings(warnings)}`);
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      console.warn(`animation validation warnings:${createListOfWarnings(warnings)}`);
 }
 
 export function warnTriggerBuild(name: string, warnings: string[]): void {
-  NG_DEV_MODE &&
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
       console.warn(`The animation trigger "${name}" has built with the following warnings:${
           createListOfWarnings(warnings)}`);
 }
 
 export function warnRegister(warnings: string[]): void {
-  NG_DEV_MODE &&
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
       console.warn(`Animation built with the following warnings:${createListOfWarnings(warnings)}`);
 }
 
 export function triggerParsingWarnings(name: string, warnings: string[]): void {
-  NG_DEV_MODE &&
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
       console.warn(`Animation parsing for the ${name} trigger presents the following warnings:${
           createListOfWarnings(warnings)}`);
 }

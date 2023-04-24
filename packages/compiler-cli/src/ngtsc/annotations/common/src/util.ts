@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {assertSuccessfulReferenceEmit, ImportedFile, ImportFlags, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {attachDefaultImportDeclaration} from '../../../imports/src/default';
 import {DynamicValue, ForeignFunctionResolver, PartialEvaluator} from '../../../partial_evaluator';
-import {ClassDeclaration, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind} from '../../../reflection';
+import {ClassDeclaration, Decorator, Import, ImportedTypeValueReference, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind} from '../../../reflection';
 import {CompileResult} from '../../../transform';
 
 /**
@@ -47,13 +47,13 @@ export function valueReferenceToExpression(valueRef: TypeValueReference): Expres
 }
 
 export function toR3Reference(
-    origin: ts.Node, valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
-    typeContext: ts.SourceFile, refEmitter: ReferenceEmitter): R3Reference {
-  const emittedValueRef = refEmitter.emit(valueRef, valueContext);
+    origin: ts.Node, ref: Reference, context: ts.SourceFile,
+    refEmitter: ReferenceEmitter): R3Reference {
+  const emittedValueRef = refEmitter.emit(ref, context);
   assertSuccessfulReferenceEmit(emittedValueRef, origin, 'class');
 
-  const emittedTypeRef = refEmitter.emit(
-      typeRef, typeContext, ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports);
+  const emittedTypeRef =
+      refEmitter.emit(ref, context, ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports);
   assertSuccessfulReferenceEmit(emittedTypeRef, origin, 'class');
 
   return {
@@ -304,14 +304,11 @@ export function resolveProvidersRequiringFactory(
  * Create an R3Reference for a class.
  *
  * The `value` is the exported declaration of the class from its source file.
- * The `type` is an expression that would be used by ngcc in the typings (.d.ts) files.
+ * The `type` is an expression that would be used in the typings (.d.ts) files.
  */
 export function wrapTypeReference(reflector: ReflectionHost, clazz: ClassDeclaration): R3Reference {
-  const dtsClass = reflector.getDtsDeclaration(clazz);
   const value = new WrappedNodeExpr(clazz.name);
-  const type = dtsClass !== null && isNamedClassDeclaration(dtsClass) ?
-      new WrappedNodeExpr(dtsClass.name) :
-      value;
+  const type = value;
   return {value, type};
 }
 
@@ -354,7 +351,6 @@ export function toFactoryMetadata(
   return {
     name: meta.name,
     type: meta.type,
-    internalType: meta.internalType,
     typeArgumentCount: meta.typeArgumentCount,
     deps: meta.deps,
     target
@@ -402,6 +398,7 @@ export function getOriginNodeForDiagnostics(
 }
 
 export function isAbstractClassDeclaration(clazz: ClassDeclaration): boolean {
-  return clazz.modifiers !== undefined &&
-      clazz.modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword);
+  return ts.canHaveModifiers(clazz) && clazz.modifiers !== undefined ?
+      clazz.modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword) :
+      false;
 }

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
@@ -14,21 +14,20 @@ ng_module(
     ],
 )
 
-ts_devserver(
-    name = "devserver",
-    bootstrap = [
-        "//packages/zone.js/bundles:zone.umd.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
-    ],
-    entry_module = "angular/modules/playground/src/jsonp/index",
-    port = 4200,
-    scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-    ],
-    static_files = [
-        "people.json",
-        "index.html",
-    ],
+app_bundle(
+    name = "app_bundle",
+    entry_point = ":index.ts",
     deps = [":jsonp"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "index.html",
+        "people.json",
+    ],
+    deps = [
+        ":app_bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
 )

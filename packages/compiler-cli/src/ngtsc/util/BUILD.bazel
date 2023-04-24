@@ -12,7 +12,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/incremental:api",
         "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/ts_compatibility",
         "@npm//@types/node",
         "@npm//typescript",
     ],

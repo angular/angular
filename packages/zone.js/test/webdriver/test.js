@@ -9,8 +9,8 @@
 // TODO: @JiaLiPassion, try to add it into travis/saucelabs test after saucelabs support Firefox 52+
 // requirement, Firefox 52+, webdriver-manager 12.0.4+, selenium-webdriver 3.3.0+
 // test step,
-// webdriver-manager update
-// webdriver-manager start
+// npx webdriver-manager update
+// npx webdriver-manager start
 // http-server test/webdriver
 // node test/webdriver/test.js
 
@@ -22,7 +22,9 @@ const driver = new webdriver.Builder()
                    .withCapabilities(capabilities)
                    .build();
 driver.get('http://localhost:8080/test.html');
-driver.executeAsyncScript((cb) => {window.setTimeout(cb, 1000)});
+driver.executeAsyncScript((cb) => {
+  window.setTimeout(cb, 1000);
+});
 
 // test case2 addEventHandler in firefox cross site context
 driver.findElement(webdriver.By.css('#thetext')).getText().then(function(text) {

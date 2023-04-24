@@ -717,7 +717,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         return null;
       },
       visitNonNullAssert(ast: cdAst.NonNullAssert) {
-        return null;
+        return visit(this, ast.expression);
       },
       visitPropertyRead(ast: cdAst.PropertyRead) {
         return visit(this, ast.receiver);

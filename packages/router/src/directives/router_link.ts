@@ -190,8 +190,8 @@ export class RouterLink implements OnChanges, OnDestroy {
       @Attribute('tabindex') private readonly tabIndexAttribute: string|null|undefined,
       private readonly renderer: Renderer2, private readonly el: ElementRef,
       private locationStrategy?: LocationStrategy) {
-    const tagName = el.nativeElement.tagName;
-    this.isAnchorElement = tagName === 'A' || tagName === 'AREA';
+    const tagName = el.nativeElement.tagName?.toLowerCase();
+    this.isAnchorElement = tagName === 'a' || tagName === 'area';
 
     if (this.isAnchorElement) {
       this.subscription = router.events.subscribe((s: Event) => {

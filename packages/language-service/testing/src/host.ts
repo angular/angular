@@ -8,7 +8,7 @@
 
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import * as ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript/lib/tsserverlibrary';
 
 const NOOP_FILE_WATCHER: ts.FileWatcher = {
   close() {}

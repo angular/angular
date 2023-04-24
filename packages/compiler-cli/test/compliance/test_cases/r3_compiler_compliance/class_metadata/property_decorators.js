@@ -8,6 +8,7 @@ __decorate([
   CustomPropDecorator(),
   __metadata("design:type", String)
 ], MyDir.prototype, "mixed", void 0);
+export { MyDir };
 (function () {
   (typeof ngDevMode === "undefined" || ngDevMode) && $i0$.ɵsetClassMetadata(MyDir, [{
     type: Directive

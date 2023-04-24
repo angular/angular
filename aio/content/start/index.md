@@ -195,7 +195,7 @@ This section walks you through creating a child component, `ProductAlertsCompone
 
     <code-example format="shell" language="shell">
 
-    `ng generate component product-alerts`
+    ng generate component product-alerts
   
     </code-example>
 

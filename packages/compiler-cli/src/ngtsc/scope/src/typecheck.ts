@@ -99,6 +99,9 @@ export class TypeCheckScopeRegistry {
     for (const meta of dependencies) {
       if (meta.kind === MetaKind.Directive && meta.selector !== null) {
         const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
+        if (extMeta === null) {
+          continue;
+        }
         matcher.addSelectables(
             CssSelector.parse(meta.selector),
             [...this.hostDirectivesResolver.resolve(extMeta), extMeta]);
@@ -125,13 +128,16 @@ export class TypeCheckScopeRegistry {
     return typeCheckScope;
   }
 
-  getTypeCheckDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta {
+  getTypeCheckDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
     const clazz = ref.node;
     if (this.flattenedDirectiveMetaCache.has(clazz)) {
       return this.flattenedDirectiveMetaCache.get(clazz)!;
     }
 
     const meta = flattenInheritedDirectiveMetadata(this.metaReader, ref);
+    if (meta === null) {
+      return null;
+    }
     this.flattenedDirectiveMetaCache.set(clazz, meta);
     return meta;
   }

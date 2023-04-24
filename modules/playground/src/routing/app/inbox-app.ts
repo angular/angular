@@ -125,7 +125,7 @@ export class DraftsCmp {
 export const ROUTER_CONFIG: Routes = [
   {path: '', pathMatch: 'full', redirectTo: 'inbox'}, {path: 'inbox', component: InboxCmp},
   {path: 'drafts', component: DraftsCmp},
-  {path: 'detail', loadChildren: () => import('./inbox-detail.js').then(mod => mod.default)}
+  {path: 'detail', loadChildren: () => import('./inbox-detail').then(mod => mod.default)}
 ];
 
 @Component({selector: 'inbox-app', templateUrl: './inbox-app.html'})

@@ -34,6 +34,9 @@ export interface TypeDecorator {
   // so we cannot declare this interface as a subtype.
   // see https://github.com/angular/angular/issues/3379#issuecomment-126169417
   (target: Object, propertyKey?: string|symbol, parameterIndex?: number): void;
+  // Standard (non-experimental) Decorator signature that avoids direct usage of
+  // any TS 5.0+ specific types.
+  (target: unknown, context: unknown): void;
 }
 
 export const ANNOTATIONS = '__annotations__';
@@ -152,6 +155,12 @@ export function makePropDecorator(
       const decoratorInstance = new (<any>PropDecoratorFactory)(...args);
 
       function PropDecorator(target: any, name: string) {
+        // target is undefined with standard decorators. This case is not supported and will throw
+        // if this decorator is used in JIT mode with standard decorators.
+        if (target === undefined) {
+          throw new Error('Standard Angular field decorators are not supported in JIT mode.');
+        }
+
         const constructor = target.constructor;
         // Use of Object.defineProperty is important because it creates a non-enumerable property
         // which prevents the property from being copied during subclassing.
