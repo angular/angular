@@ -38,19 +38,19 @@ INTEGRATION_TESTS = {
     },
     "cli-hello-world": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
+        "tags": ["manual", "ivy-only"],
     },
     "cli-hello-world-ivy-compat": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
+        "tags": ["manual", "ivy-only"],
     },
     "cli-hello-world-ivy-i18n": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
+        "tags": ["manual", "ivy-only"],
     },
     "cli-hello-world-ivy-minimal": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
+        "tags": ["manual", "ivy-only"],
     },
     "cli-hello-world-lazy": {
         "commands": "payload_size_tracking",
@@ -82,7 +82,7 @@ INTEGRATION_TESTS = {
     "ng_elements": {"tags": ["no-ivy-aot"]},
     "ng_elements_schematics": {"tags": ["ivy-only"]},
     "ng_update": {},
-    "ng_update_migrations": {"tags": ["no-ivy-aot"]},
+    "ng_update_migrations": {"tags": ["manual", "no-ivy-aot"]},
     "ngcc": {"tags": ["no-ivy-aot"]},
     "platform-server": {"tags": ["no-ivy-aot"]},
     "service-worker-schema": {},
