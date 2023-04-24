@@ -140,10 +140,10 @@ export function formatRuntimeError<T extends number = RuntimeErrorCode>(
   // We also prepend `0` to non-compile-time errors.
   const fullCode = `NG0${Math.abs(code)}`;
 
-  let errorMessage = `${fullCode}${message ? ': ' + message.trim() : ''}`;
+  let errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
 
   if (ngDevMode && code < 0) {
-    const addPeriodSeparator = !errorMessage.match(/[.,;!?]$/);
+    const addPeriodSeparator = !errorMessage.match(/[.,;!?\n]$/);
     const separator = addPeriodSeparator ? '.' : '';
     errorMessage =
         `${errorMessage}${separator} Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;

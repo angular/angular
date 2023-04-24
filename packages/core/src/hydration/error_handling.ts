@@ -101,11 +101,18 @@ export function validateSiblingNodeExists(node: RNode|null): void {
 /**
  * Validates that a node exists or throws
  */
-export function validateNodeExists(node: RNode|null): void {
+export function validateNodeExists(
+    node: RNode|null, lView: LView|null = null, tNode: TNode|null = null): void {
   if (!node) {
-    throw new RuntimeError(
-        RuntimeErrorCode.HYDRATION_MISSING_NODE,
-        `Hydration expected an element to be present at this location.`);
+    const header =
+        'During hydration, Angular expected an element to be present at this location.\n\n';
+    let expected = '';
+    let footer = '';
+    if (lView !== null && tNode !== null) {
+      expected = `${describeExpectedDom(lView, tNode, false)}\n\n`;
+      footer = getHydrationErrorFooter();
+    }
+    throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_NODE, header + expected + footer);
   }
 }
 
@@ -365,6 +372,7 @@ function getHydrationErrorFooter(componentClassName?: string): string {
   const componentInfo = componentClassName ? `the "${componentClassName}"` : 'corresponding';
   return `To fix this problem:\n` +
       `  * check ${componentInfo} component for hydration-related issues\n` +
+      `  * check to see if your template has valid HTML structure\n` +
       `  * or skip hydration by adding the \`ngSkipHydration\` attribute ` +
       `to its host node in a template\n\n`;
 }

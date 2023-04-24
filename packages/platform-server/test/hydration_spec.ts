@@ -4542,6 +4542,46 @@ describe('platform-server integration', () => {
         });
       });
 
+      it('should handle a case when a node is not found (invalid DOM)', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [CommonModule],
+          template: `
+            <a>
+              <ng-container *ngTemplateOutlet="titleTemplate"></ng-container>
+              <ng-content *ngIf="true"></ng-content>
+            </a>
+
+            <ng-template #titleTemplate>
+              <ng-container *ngIf="true">
+                <a>test</a>
+              </ng-container>
+            </ng-template>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        try {
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+          await hydrate(html, SimpleComponent);
+
+          fail('Expected the hydration process to throw.');
+        } catch (e: unknown) {
+          const message = (e as Error).toString();
+          expect(message).toContain(
+              'During hydration, Angular expected an element to be present at this location.');
+          expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
+          expect(message).toContain('check to see if your template has valid HTML structure');
+        }
+      });
+
       it('should log an warning when there was no hydration info in the TransferState',
          async () => {
            @Component({

@@ -91,11 +91,18 @@ This is because Angular is unaware of these DOM changes and cannot resolve them 
 
 It is best to refactor your component to avoid this sort of DOM manipulation. Try to use Angular APIs to do this work, if you can. If you cannot refactor this behavior, use the `ngSkipHydration` attribute ([described below](#ngskiphydration)) until you can refactor into a hydration friendly solution.
 
-### Valid HTML DOM structure
+### Valid HTML structure
 
-There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration. For example, if you have a `<table>` and you did not add a `<tbody>` around your rows, the browser will automatically insert one for you when it sees this HTML structure. The hydration process will not know that the `<tbody>` exists and will result in a hydration mismatch error. The solution to this problem is to ensure your template has a valid `<tbody>` where it should be.
+There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration. 
 
-Other examples of this behavior are adding a `<div>` inside a `<p>` tag, putting a `<p>` inside of an `<a>`, and putting a `<p>` inside an `<h1>`. If you are uncertain about whether your HTML is valid, you can use a [syntax validator](https://validator.w3.org/) to check it.
+As an example, here are some of the most common cases of this issue.
+
+* `<table>` without a `<tbody>`
+* `<div>` inside a `<p>`
+* `<a>` inside an `<h1>`
+* `<a>` inside another `<a>`
+
+If you are uncertain about whether your HTML is valid, you can use a [syntax validator](https://validator.w3.org/) to check it.
 
 <a id="preserve-whitespaces"></a>
 ### Preserve Whitespaces Configuration
@@ -121,7 +128,7 @@ Providing a custom or a "noop" Zone.js implementation may lead to a different ti
 
 ## Errors
 
-There are several hydration related errors you may encounter ranging from node mismatches to cases when the `ngSkipHydration` was used on an invalid host node. The most common error case that may occur is due to direct DOM manipulation using native APIs that results in hydration being unable to find or match the expected DOM tree structure on the client that was rendered by the server. The other case you may encounter this type of error was mentioned in the prior section on Valid HTML DOM structures. So, make sure the HTML in your templates are using valid structure, and you'll avoid that error case.
+There are several hydration related errors you may encounter ranging from node mismatches to cases when the `ngSkipHydration` was used on an invalid host node. The most common error case that may occur is due to direct DOM manipulation using native APIs that results in hydration being unable to find or match the expected DOM tree structure on the client that was rendered by the server. The other case you may encounter this type of error was mentioned in the prior section on Valid HTML structures. So, make sure the HTML in your templates are using valid structure, and you'll avoid that error case.
 
 For a full reference on hydration related errors, visit the [Errors Reference Guide](/errors).
 

@@ -175,7 +175,7 @@ function locateOrCreateElementContainerNode(
 
   // Hydration mode, looking up existing elements in DOM.
   const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
-  ngDevMode && validateNodeExists(currentRNode);
+  ngDevMode && validateNodeExists(currentRNode, lView, tNode);
 
   const ngContainerSize = getNgContainerSize(hydrationInfo, index) as number;
   ngDevMode &&
