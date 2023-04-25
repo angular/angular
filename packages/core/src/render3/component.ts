@@ -120,7 +120,10 @@ export interface ComponentMirror<C> {
    * Note: an extra flag, not present in `ComponentFactory`.
    */
   get isStandalone(): boolean;
-  /** @internal */
+  /**
+   * // TODO(signals): Remove internal and add public documentation
+   * @internal
+   */
   get isSignal(): boolean;
 }
 

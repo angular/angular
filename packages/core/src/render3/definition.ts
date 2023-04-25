@@ -163,6 +163,9 @@ interface DirectiveDefinition<T> {
    */
   standalone?: boolean;
 
+  /**
+   * Whether this directive/component is signal-based.
+   */
   signals?: boolean;
 }
 

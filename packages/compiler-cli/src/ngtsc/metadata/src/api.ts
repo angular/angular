@@ -183,6 +183,10 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * Whether the directive is a standalone entity.
    */
   isStandalone: boolean;
+
+  /**
+   * Whether the directive is a signal entity.
+   */
   isSignal: boolean;
 
   /**

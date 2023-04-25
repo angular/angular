@@ -15,5 +15,5 @@ export class OtherCmp {
   template: '<other-cmp></other-cmp>',
   imports: [OtherCmp],
 })
-export class StandaloneCmp {
+export class SignalCmp {
 }

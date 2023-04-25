@@ -17,12 +17,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: '',
                 }]
         }] });
-class StandaloneCmp {
+class SignalCmp {
 }
-StandaloneCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-StandaloneCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: StandaloneCmp, isStandalone: true, isSignal: true, selector: "ng-component", ngImport: i0, template: '<other-cmp></other-cmp>', isInline: true, dependencies: [{ kind: "component", type: OtherCmp, selector: "other-cmp" }] });
-export { StandaloneCmp };
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneCmp, decorators: [{
+SignalCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SignalCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+SignalCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SignalCmp, isStandalone: true, isSignal: true, selector: "ng-component", ngImport: i0, template: '<other-cmp></other-cmp>', isInline: true, dependencies: [{ kind: "component", type: OtherCmp, selector: "other-cmp" }] });
+export { SignalCmp };
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SignalCmp, decorators: [{
             type: Component,
             args: [{
                     signals: true,
@@ -40,9 +40,9 @@ export declare class OtherCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<OtherCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<OtherCmp, "other-cmp", never, {}, {}, never, never, true, never, true>;
 }
-export declare class StandaloneCmp {
-    static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneCmp, "ng-component", never, {}, {}, never, never, true, never, true>;
+export declare class SignalCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<SignalCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SignalCmp, "ng-component", never, {}, {}, never, never, true, never, true>;
 }
 
 /****************************************************************************************************
@@ -50,12 +50,12 @@ export declare class StandaloneCmp {
  ****************************************************************************************************/
 import { Directive } from '@angular/core';
 import * as i0 from "@angular/core";
-class StandaloneDir {
+class SignalDir {
 }
-StandaloneDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-StandaloneDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: StandaloneDir, isSignal: true, ngImport: i0 });
-export { StandaloneDir };
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneDir, decorators: [{
+SignalDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SignalDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+SignalDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SignalDir, isSignal: true, ngImport: i0 });
+export { SignalDir };
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SignalDir, decorators: [{
             type: Directive,
             args: [{
                     signals: true,
@@ -66,8 +66,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  * PARTIAL FILE: directive.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
-export declare class StandaloneDir {
-    static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<StandaloneDir, never, never, {}, {}, never, never, false, never, true>;
+export declare class SignalDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<SignalDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SignalDir, never, never, {}, {}, never, never, false, never, true>;
 }
 

@@ -337,7 +337,11 @@ export interface Directive {
    */
   standalone?: boolean;
 
-  /** @internal */
+  /**
+   * // TODO(signals): Remove internal and add public documentation
+   *
+   * @internal
+   */
   signals?: boolean;
 
   /**
@@ -624,7 +628,10 @@ export interface Component extends Directive {
    */
   standalone?: boolean;
 
-  /** @internal */
+  /**
+   * // TODO(signals): Remove internal and add public documentation.
+   * @internal
+   */
   signals?: boolean;
 
   /**

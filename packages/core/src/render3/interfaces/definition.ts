@@ -312,6 +312,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;
 
+  /** Whether or not this component is signal-based. */
   readonly signals: boolean;
 
   /**
