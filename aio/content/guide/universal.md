@@ -66,18 +66,18 @@ The command updates the application code to enable SSR and adds extra files to t
         </div>
         <div class='children'>
             <div class='file'>
-              app.config.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; client-side application configuration (Only generated when the application root component is standalone)
+              app.config.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &lt; client-side application configuration (standalone app only)
             </div>
             <div class='file'>
-              app.module.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; client-side application module (Only generated when the application root component is not standalone)
+              app.module.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &lt; client-side application module (NgModule app only)
             </div>
         </div>
         <div class='children'>
             <div class='file'>
-              app.config.server.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; server-side application configuration
+              app.config.server.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &lt;-- &ast; server-side application configuration (standalone app only)
             </div>
             <div class='file'>
-              app.module.server.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; server-side application module (Only generated when the application root component is not standalone)
+              app.module.server.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; server-side application module (NgModule app only)
             </div>
         </div>
         <div class='file'>
@@ -217,7 +217,7 @@ The sample web server for this guide is based on the popular [Express](https://e
 <div class="alert is-helpful">
 
 **NOTE**: <br />
-*Any* web server technology can serve a Universal application as long as it can call Universal's `renderModule()` function.
+*Any* web server technology can serve a Universal application as long as it can call Angular `platform-server` package [`renderModule`](api/platform-server/renderModule) or [`renderApplication`](api/platform-server/renderApplication) functions.
 The principles and decision points discussed here apply to any web server technology.
 
 </div>
@@ -226,13 +226,12 @@ Universal applications use the Angular `platform-server` package \(as opposed to
 server implementations of the DOM, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 
 The server \([Node.js Express](https://expressjs.com) in this guide's example\) passes client requests for application pages to the NgUniversal `ngExpressEngine`.
-Under the hood, this calls Universal's `renderModule()` function, while providing caching and other helpful utilities.
+Under the hood, the render functions, while providing caching and other helpful utilities.
 
-The `renderModule()` function takes as inputs a *template* HTML page \(usually `index.html`\), an Angular *module* containing components, and a *route* that determines which components to display.
-The route comes from the client's request to the server.
+The render functions takes as inputs a *template* HTML page \(usually `index.html`\), and Angular *module* containing components or a function that when invoked returns a `Promise` that resolves to an `ApplicationRef`, and a *route* that determines which components to display. The route comes from the client's request to the server.
 
 Each request results in the appropriate view for the requested route.
-The `renderModule()` function renders the view within the `<app>` tag of the template, creating a finished HTML page for the client.
+The render function renders the view within the `<app>` tag of the template, creating a finished HTML page for the client.
 
 Finally, the server returns the rendered page to the client.
 
@@ -262,25 +261,18 @@ The important bit in the `server.ts` file is the `ngExpressEngine()` function.
 
 <code-example header="server.ts" path="universal/server.ts" region="ngExpressEngine"></code-example>
 
-The `ngExpressEngine()` function is a wrapper around Universal's `renderModule()` function which turns a client's requests into server-rendered HTML pages.
+The `ngExpressEngine()` function is a wrapper around the Angular `platform-server` package [`renderModule`](api/platform-server/renderModule) and [`renderApplication`](api/platform-server/renderApplication) functions which turns a client's requests into server-rendered HTML pages.
+
 It accepts an object with the following properties:
 
 | Properties       | Details |
 |:---              |:---     |
-| `bootstrap`      | The root `NgModule` to use for bootstrapping the application when rendering on the server. For the example application, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application. |
+| `bootstrap`      | The root `NgModule` or function that when invoked returns a `Promise` that resolves to an `ApplicationRef` of the application when rendering on the server. For the example application, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application. |
 | `extraProviders` | This property is optional and lets you specify dependency providers that apply only when rendering the application on the server. Do this when your application needs information that can only be determined by the currently running server instance.       |
 
 The `ngExpressEngine()` function returns a `Promise` callback that resolves to the rendered page.
 It's up to the engine to decide what to do with that page.
 This engine's `Promise` callback returns the rendered page to the web server, which then forwards it to the client in the HTTP response.
-
-<div class="alert is-helpful">
-
-**NOTE**: <br />
-These wrappers help hide the complexity of the `renderModule()` function.
-There are more wrappers for different backend technologies at the [Universal repository](https://github.com/angular/universal).
-
-</div>
 
 ### Filtering request URLs
 
@@ -352,7 +344,7 @@ You don't need to do anything to make relative URLs work on the server.
 
 If, for some reason, you are not using an `@nguniversal/*-engine` package, you might need to handle it yourself.
 
-The recommended solution is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule).
+The recommended solution is to pass the full request URL to the `options` argument of [renderModule](api/platform-server/renderModule).
 This option is the least intrusive as it does not require any changes to the application.
 Here, "request URL" refers to the URL of the request as a response to which the application is being rendered on the server.
 For example, if the client requested `https://my-server.com/dashboard` and you are rendering the application on the server to respond to that request, `options.url` should be set to `https://my-server.com/dashboard`.
