@@ -598,11 +598,8 @@ export class TestBedImpl implements TestBed {
       throw new Error(`It looks like '${stringify(type)}' has not been compiled.`);
     }
 
-    // TODO: Don't cast as `InjectionToken<boolean>`, proper type is boolean[]
-    const noNgZone = this.inject(ComponentFixtureNoNgZone as InjectionToken<boolean>, false);
-    // TODO: Don't cast as `InjectionToken<boolean>`, proper type is boolean[]
-    const autoDetect: boolean =
-        this.inject(ComponentFixtureAutoDetect as InjectionToken<boolean>, false);
+    const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
+    const autoDetect: boolean = this.inject(ComponentFixtureAutoDetect, false);
     const ngZone: NgZone|null = noNgZone ? null : this.inject(NgZone, null);
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {
