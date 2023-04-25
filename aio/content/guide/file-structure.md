@@ -75,7 +75,7 @@ Subfolders contain the application source and application-specific configuration
 | `favicon.ico`             | An icon to use for this application in the bookmark bar.                                                                                                                                                                                                                                                                                                   |
 | `index.html`              | The main HTML page that is served when someone visits your site. The CLI automatically adds all JavaScript and CSS files when building your app, so you typically don't need to add any `<script>` or` <link>` tags here manually.                                                                                                                         |
 | `main.ts`                 | The main entry point for your application. Compiles the application with the [JIT compiler](guide/glossary#jit) and bootstraps the application's root module \(AppModule\) to run in the browser. You can also use the [AOT compiler](guide/aot-compiler) without changing any code by appending the `--aot` flag to the CLI `build` and `serve` commands. |
-| `styles.sass`             | Lists CSS files that supply styles for a project. The extension reflects the style preprocessor you have configured for the project.                                                                                                                                                                                                                       |
+| `styles.css`             | Lists CSS files that supply styles for a project. The extension reflects the style preprocessor you have configured for the project.                                                                                                                                                                                                                       |
 
 <div class="alert is-helpful">
 
@@ -90,13 +90,14 @@ For more information, see [Strict mode](guide/strict-mode).
 Inside the `src` folder, the `app` folder contains your project's logic and data.
 Angular components, templates, and styles go here.
 
-| `src/app/` files            | Purpose                                                                                                                                                                                                                                                    |
-|:---                         |:---                                                                                                                                                                                                                                                        |
-| `app/app.component.ts`      | Defines the logic for the application's root component, named `AppComponent`. The view associated with this root component becomes the root of the [view hierarchy](guide/glossary#view-hierarchy) as you add components and services to your application. |
-| `app/app.component.html`    | Defines the HTML template associated with the root `AppComponent`.                                                                                                                                                                                         |
-| `app/app.component.css`     | Defines the base CSS stylesheet for the root `AppComponent`.                                                                                                                                                                                               |
-| `app/app.component.spec.ts` | Defines a unit test for the root `AppComponent`.                                                                                                                                                                                                           |
-| `app/app.module.ts`         | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here.                                             |
+| `src/app/` files | Purpose |
+|---|---|
+| `app/app.config.ts` | Defines the application config logic that tells Angular how to assemble the application. As you add more providers to the app, they must be declared here.<br><br>_Only generated when using the `--standalone` option._ |
+| `app/app.component.ts` | Defines the logic for the application's root component, named `AppComponent`. The view associated with this root component becomes the root of the [view hierarchy](guide/glossary#view-hierarchy) as you add components and services to your application. |
+| `app/app.component.html` | Defines the HTML template associated with the root `AppComponent`. |
+| `app/app.component.css` | Defines the base CSS stylesheet for the root `AppComponent`. |
+| `app/app.component.spec.ts` | Defines a unit test for the root `AppComponent`. |
+| `app/app.module.ts` | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here.<br><br>_Only generated when using the `--standalone` option._ |
 
 ### Application configuration files
 
@@ -174,7 +175,7 @@ When you create projects this way, the file structure of the workspace is entire
                   &hellip; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --(library-specific config)
                 </div>
                 <div class="file">
-                  src &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --source and support files for library)
+                  src &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --(source and support files for library)
                 </div>
             </div>
         </div>
@@ -206,4 +207,4 @@ Under the `projects/` folder, the `my-lib` folder contains your library code.
 
 <!-- end links -->
 
-@reviewed 2022-10-24
+@reviewed 2023-04-24
