@@ -972,6 +972,9 @@
     "name": "cleanUpView"
   },
   {
+    "name": "clearViewRefreshFlag"
+  },
+  {
     "name": "coerceToBoolean"
   },
   {
@@ -1677,6 +1680,9 @@
     "name": "markViewDirty"
   },
   {
+    "name": "markViewForRefresh"
+  },
+  {
     "name": "match"
   },
   {
@@ -2043,7 +2049,7 @@
     "name": "updateSegmentGroupChildren"
   },
   {
-    "name": "updateTransplantedViewCount"
+    "name": "updateViewsToRefresh"
   },
   {
     "name": "urlParsingNode"

@@ -774,6 +774,9 @@
     "name": "cleanUpView"
   },
   {
+    "name": "clearViewRefreshFlag"
+  },
+  {
     "name": "cloakAndComputeStyles"
   },
   {
@@ -1260,6 +1263,9 @@
     "name": "markViewDirty"
   },
   {
+    "name": "markViewForRefresh"
+  },
+  {
     "name": "maybeWrapInNotSelector"
   },
   {
@@ -1515,7 +1521,7 @@
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateTransplantedViewCount"
+    "name": "updateViewsToRefresh"
   },
   {
     "name": "urlParsingNode"
