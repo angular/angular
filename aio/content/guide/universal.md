@@ -66,12 +66,18 @@ The command updates the application code to enable SSR and adds extra files to t
         </div>
         <div class='children'>
             <div class='file'>
-              app.module.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; client-side application module
+              app.config.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; client-side application configuration (Only generated when the application root component is standalone)
+            </div>
+            <div class='file'>
+              app.module.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; client-side application module (Only generated when the application root component is not standalone)
             </div>
         </div>
         <div class='children'>
             <div class='file'>
-              app.server.module.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; server-side application module
+              app.config.server.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; server-side application configuration
+            </div>
+            <div class='file'>
+              app.module.server.ts &nbsp;&nbsp;&nbsp; // &lt;-- &ast; server-side application module (Only generated when the application root component is not standalone)
             </div>
         </div>
         <div class='file'>
@@ -368,4 +374,4 @@ Now, on every HTTP request made as part of rendering the application on the serv
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-04-25
