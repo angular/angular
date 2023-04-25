@@ -28,7 +28,7 @@ import {assertTNodeType} from './node_assert';
 import {profiler, ProfilerEvent} from './profiler';
 import {setUpAttributes} from './util/attrs_utils';
 import {getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, unwrapRNode, updateTransplantedViewCount} from './util/view_utils';
+import {clearViewRefreshFlag, getNativeByTNode, unwrapRNode} from './util/view_utils';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -315,12 +315,8 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
   ngDevMode && assertLContainer(insertionLContainer);
 
   // If the view was marked for refresh but then detached before it was checked (where the flag
-  // would be cleared and the counter decremented), we need to decrement the view counter here
-  // instead.
-  if (lView[FLAGS] & LViewFlags.RefreshTransplantedView) {
-    lView[FLAGS] &= ~LViewFlags.RefreshTransplantedView;
-    updateTransplantedViewCount(insertionLContainer, -1);
-  }
+  // would be cleared and the counter decremented), we need to update the status here.
+  clearViewRefreshFlag(lView);
 
   movedViews.splice(declarationViewIndex, 1);
 }
