@@ -13,7 +13,7 @@ You can enable server-side rendering in your Angular application using the `@ngu
 <div class="alert is-helpful">
 
 Angular Universal requires an [active LTS or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.
-See the `engines` property in the [package.json](https://unpkg.com/browse/@angular/platform-server/package.json) file to learn about the currently supported versions.
+For information see the [version compatibility](guide/versions) guide to learn about the currently supported versions.
 
 </div>
 
