@@ -720,6 +720,18 @@
     "name": "detachMovedView"
   },
   {
+    "name": "detectChangesInChildComponents"
+  },
+  {
+    "name": "detectChangesInComponent"
+  },
+  {
+    "name": "detectChangesInEmbeddedViews"
+  },
+  {
+    "name": "detectChangesInView"
+  },
+  {
     "name": "detectChangesInternal"
   },
   {
@@ -1146,12 +1158,6 @@
     "name": "refCount"
   },
   {
-    "name": "refreshComponent"
-  },
-  {
-    "name": "refreshContainsDirtyView"
-  },
-  {
     "name": "refreshContentQueries"
   },
   {
@@ -1282,9 +1288,6 @@
   },
   {
     "name": "urlParsingNode"
-  },
-  {
-    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"
