@@ -33,7 +33,7 @@ export const TVIEW = 1;
 export const FLAGS = 2;
 export const PARENT = 3;
 export const NEXT = 4;
-export const CHILD_VIEWS_TO_REFRESH = 5;
+export const DESCENDANT_VIEWS_TO_REFRESH = 5;
 export const T_HOST = 6;
 export const CLEANUP = 7;
 export const CONTEXT = 8;
@@ -322,7 +322,7 @@ export interface LView<T = unknown> extends Array<any> {
    * change detection we should still descend to find those children to refresh, even if the parents
    * are not `Dirty`/`CheckAlways`.
    */
-  [CHILD_VIEWS_TO_REFRESH]: number;
+  [DESCENDANT_VIEWS_TO_REFRESH]: number;
 
   /** Unique ID of the view. Used for `__ngContext__` lookups in the `LView` registry. */
   [ID]: number;

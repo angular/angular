@@ -13,7 +13,7 @@ import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {CHILD_VIEWS_TO_REFRESH, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
+import {DESCENDANT_VIEWS_TO_REFRESH, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
 
 
 
@@ -171,7 +171,7 @@ export function resetPreOrderHookFlags(lView: LView) {
 export function markViewForRefresh(lView: LView) {
   if ((lView[FLAGS] & LViewFlags.RefreshView) === 0) {
     lView[FLAGS] |= LViewFlags.RefreshView;
-    updateChildViewsToRefresh(lView, 1);
+    updateViewsToRefresh(lView, 1);
   }
 }
 
@@ -182,7 +182,7 @@ export function markViewForRefresh(lView: LView) {
 export function clearViewRefreshFlag(lView: LView) {
   if (lView[FLAGS] & LViewFlags.RefreshView) {
     lView[FLAGS] &= ~LViewFlags.RefreshView;
-    updateChildViewsToRefresh(lView, -1);
+    updateViewsToRefresh(lView, -1);
   }
 }
 
@@ -193,18 +193,18 @@ export function clearViewRefreshFlag(lView: LView) {
  *  or
  *  2. counter goes from 1 to 0, indicating there are no more descendant views to refresh
  */
-function updateChildViewsToRefresh(lView: LView, amount: 1|- 1) {
+function updateViewsToRefresh(lView: LView, amount: 1|- 1) {
   let parent: LView|LContainer|null = lView[PARENT];
   if (parent === null) {
     return;
   }
-  parent[CHILD_VIEWS_TO_REFRESH] += amount;
+  parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
   let viewOrContainer: LView|LContainer = parent;
   parent = parent[PARENT];
   while (parent !== null &&
-         ((amount === 1 && viewOrContainer[CHILD_VIEWS_TO_REFRESH] === 1) ||
-          (amount === -1 && viewOrContainer[CHILD_VIEWS_TO_REFRESH] === 0))) {
-    parent[CHILD_VIEWS_TO_REFRESH] += amount;
+         ((amount === 1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 1) ||
+          (amount === -1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 0))) {
+    parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
     viewOrContainer = parent;
     parent = parent[PARENT];
   }

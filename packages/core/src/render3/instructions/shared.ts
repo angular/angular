@@ -37,7 +37,7 @@ import {Renderer} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CHILD_VIEWS_TO_REFRESH, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, DESCENDANT_VIEWS_TO_REFRESH, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -1708,7 +1708,7 @@ function refreshComponent(hostLView: LView, componentHostIdx: number): void {
     const tView = componentView[TVIEW];
     if (componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
       refreshView(tView, componentView, tView.template, componentView[CONTEXT]);
-    } else if (componentView[CHILD_VIEWS_TO_REFRESH] > 0) {
+    } else if (componentView[DESCENDANT_VIEWS_TO_REFRESH] > 0) {
       // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
       refreshContainsDirtyView(componentView);
     }
@@ -1733,7 +1733,7 @@ function refreshContainsDirtyView(lView: LView) {
           refreshView(
               embeddedTView, embeddedLView, embeddedTView.template, embeddedLView[CONTEXT]!);
 
-        } else if (embeddedLView[CHILD_VIEWS_TO_REFRESH] > 0) {
+        } else if (embeddedLView[DESCENDANT_VIEWS_TO_REFRESH] > 0) {
           refreshContainsDirtyView(embeddedLView);
         }
       }
@@ -1748,7 +1748,7 @@ function refreshContainsDirtyView(lView: LView) {
       const componentView = getComponentLViewByIndex(components[i], lView);
       // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
       if (viewAttachedToChangeDetector(componentView) &&
-          componentView[CHILD_VIEWS_TO_REFRESH] > 0) {
+          componentView[DESCENDANT_VIEWS_TO_REFRESH] > 0) {
         refreshContainsDirtyView(componentView);
       }
     }

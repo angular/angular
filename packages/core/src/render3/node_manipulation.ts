@@ -316,7 +316,7 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
 
   // If the view was marked for refresh but then detached before it was checked (where the flag
   // would be cleared and the counter decremented), we need to update the status here.
-  clearViewRefreshFlag(lView)
+  clearViewRefreshFlag(lView);
 
   movedViews.splice(declarationViewIndex, 1);
 }

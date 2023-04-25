@@ -10,7 +10,7 @@ import {DehydratedContainerView} from '../../hydration/interfaces';
 
 import {TNode} from './node';
 import {RComment, RElement} from './renderer_dom';
-import {CHILD_VIEWS_TO_REFRESH, HOST, LView, NEXT, PARENT, T_HOST} from './view';
+import {DESCENDANT_VIEWS_TO_REFRESH, HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
 
 
@@ -106,7 +106,7 @@ export interface LContainer extends Array<any> {
    * change detection we should still descend to find those children to refresh, even if the parents
    * are not `Dirty`/`CheckAlways`.
    */
-  [CHILD_VIEWS_TO_REFRESH]: number;
+  [DESCENDANT_VIEWS_TO_REFRESH]: number;
 
   /**
    * A collection of views created based on the underlying `<ng-template>` element but inserted into
