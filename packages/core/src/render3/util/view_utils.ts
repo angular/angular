@@ -13,7 +13,7 @@ import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TView} from '../interfaces/view';
+import {CHILD_VIEWS_TO_REFRESH, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
 
 
 
@@ -165,20 +165,46 @@ export function resetPreOrderHookFlags(lView: LView) {
 }
 
 /**
- * Updates the `TRANSPLANTED_VIEWS_TO_REFRESH` counter on the `LContainer` as well as the parents
- * whose
+ * Adds the `RefreshView` flag from the lView and updates CHILD_VIEWS_TO_REFRESH counters of
+ * parents.
+ */
+export function markViewForRefresh(lView: LView) {
+  if ((lView[FLAGS] & LViewFlags.RefreshView) === 0) {
+    lView[FLAGS] |= LViewFlags.RefreshView;
+    updateChildViewsToRefresh(lView, 1);
+  }
+}
+
+/**
+ * Removes the `RefreshView` flag from the lView and updates CHILD_VIEWS_TO_REFRESH counters of
+ * parents.
+ */
+export function clearViewRefreshFlag(lView: LView) {
+  if (lView[FLAGS] & LViewFlags.RefreshView) {
+    lView[FLAGS] &= ~LViewFlags.RefreshView;
+    updateChildViewsToRefresh(lView, -1);
+  }
+}
+
+/**
+ * Updates the `CHILD_VIEWS_TO_REFRESH` counter on the parents of the `LView` as well as the parents
+ * above that whose
  *  1. counter goes from 0 to 1, indicating that there is a new child that has a view to refresh
  *  or
  *  2. counter goes from 1 to 0, indicating there are no more descendant views to refresh
  */
-export function updateTransplantedViewCount(lContainer: LContainer, amount: 1|- 1) {
-  lContainer[TRANSPLANTED_VIEWS_TO_REFRESH] += amount;
-  let viewOrContainer: LView|LContainer = lContainer;
-  let parent: LView|LContainer|null = lContainer[PARENT];
+function updateChildViewsToRefresh(lView: LView, amount: 1|- 1) {
+  let parent: LView|LContainer|null = lView[PARENT];
+  if (parent === null) {
+    return;
+  }
+  parent[CHILD_VIEWS_TO_REFRESH] += amount;
+  let viewOrContainer: LView|LContainer = parent;
+  parent = parent[PARENT];
   while (parent !== null &&
-         ((amount === 1 && viewOrContainer[TRANSPLANTED_VIEWS_TO_REFRESH] === 1) ||
-          (amount === -1 && viewOrContainer[TRANSPLANTED_VIEWS_TO_REFRESH] === 0))) {
-    parent[TRANSPLANTED_VIEWS_TO_REFRESH] += amount;
+         ((amount === 1 && viewOrContainer[CHILD_VIEWS_TO_REFRESH] === 1) ||
+          (amount === -1 && viewOrContainer[CHILD_VIEWS_TO_REFRESH] === 0))) {
+    parent[CHILD_VIEWS_TO_REFRESH] += amount;
     viewOrContainer = parent;
     parent = parent[PARENT];
   }

@@ -37,7 +37,7 @@ import {Renderer} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CHILD_VIEWS_TO_REFRESH, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, InitPhaseState, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, REACTIVE_HOST_BINDING_CONSUMER, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -49,7 +49,7 @@ import {mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {renderStringify} from '../util/stringify_utils';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
-import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector} from '../util/view_utils';
+import {clearViewRefreshFlag, getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, markViewForRefresh, resetPreOrderHookFlags, unwrapLView, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
@@ -483,10 +483,7 @@ export function refreshView<T>(
     if (!isInCheckNoChangesPass) {
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
-    if (lView[FLAGS] & LViewFlags.RefreshTransplantedView) {
-      lView[FLAGS] &= ~LViewFlags.RefreshTransplantedView;
-      updateTransplantedViewCount(lView[PARENT] as LContainer, -1);
-    }
+    clearViewRefreshFlag(lView);
   } finally {
     leaveView();
   }
@@ -1686,16 +1683,12 @@ function markTransplantedViewsForRefresh(lView: LView) {
       const movedLView = movedViews[i]!;
       const insertionLContainer = movedLView[PARENT] as LContainer;
       ngDevMode && assertLContainer(insertionLContainer);
-      // We don't want to increment the counter if the moved LView was already marked for
-      // refresh.
-      if ((movedLView[FLAGS] & LViewFlags.RefreshTransplantedView) === 0) {
-        updateTransplantedViewCount(insertionLContainer, 1);
-      }
+      markViewForRefresh(movedLView);
       // Note, it is possible that the `movedViews` is tracking views that are transplanted *and*
       // those that aren't (declaration component === insertion component). In the latter case,
       // it's fine to add the flag, as we will clear it immediately in
       // `refreshEmbeddedViews` for the view currently being refreshed.
-      movedLView[FLAGS] |= LViewFlags.RefreshTransplantedView;
+      movedLView[FLAGS] |= LViewFlags.RefreshView;
     }
   }
 }
@@ -1715,7 +1708,7 @@ function refreshComponent(hostLView: LView, componentHostIdx: number): void {
     const tView = componentView[TVIEW];
     if (componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
       refreshView(tView, componentView, tView.template, componentView[CONTEXT]);
-    } else if (componentView[TRANSPLANTED_VIEWS_TO_REFRESH] > 0) {
+    } else if (componentView[CHILD_VIEWS_TO_REFRESH] > 0) {
       // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
       refreshContainsDirtyView(componentView);
     }
@@ -1734,13 +1727,13 @@ function refreshContainsDirtyView(lView: LView) {
     for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
       const embeddedLView = lContainer[i];
       if (viewAttachedToChangeDetector(embeddedLView)) {
-        if (embeddedLView[FLAGS] & LViewFlags.RefreshTransplantedView) {
+        if (embeddedLView[FLAGS] & LViewFlags.RefreshView) {
           const embeddedTView = embeddedLView[TVIEW];
           ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
           refreshView(
               embeddedTView, embeddedLView, embeddedTView.template, embeddedLView[CONTEXT]!);
 
-        } else if (embeddedLView[TRANSPLANTED_VIEWS_TO_REFRESH] > 0) {
+        } else if (embeddedLView[CHILD_VIEWS_TO_REFRESH] > 0) {
           refreshContainsDirtyView(embeddedLView);
         }
       }
@@ -1755,7 +1748,7 @@ function refreshContainsDirtyView(lView: LView) {
       const componentView = getComponentLViewByIndex(components[i], lView);
       // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
       if (viewAttachedToChangeDetector(componentView) &&
-          componentView[TRANSPLANTED_VIEWS_TO_REFRESH] > 0) {
+          componentView[CHILD_VIEWS_TO_REFRESH] > 0) {
         refreshContainsDirtyView(componentView);
       }
     }
