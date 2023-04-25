@@ -31,13 +31,12 @@ export class TestComponentRenderer {
 /**
  * @publicApi
  */
-export const ComponentFixtureAutoDetect =
-    new InjectionToken<boolean[]>('ComponentFixtureAutoDetect');
+export const ComponentFixtureAutoDetect = new InjectionToken<boolean>('ComponentFixtureAutoDetect');
 
 /**
  * @publicApi
  */
-export const ComponentFixtureNoNgZone = new InjectionToken<boolean[]>('ComponentFixtureNoNgZone');
+export const ComponentFixtureNoNgZone = new InjectionToken<boolean>('ComponentFixtureNoNgZone');
 
 /**
  * @publicApi
