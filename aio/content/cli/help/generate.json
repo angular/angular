@@ -76,7 +76,7 @@
         {
           "name": "root-module-file-name",
           "type": "string",
-          "default": "app.server.module.ts",
+          "default": "app.module.ts",
           "description": "The name of the root module file"
         },
         {
