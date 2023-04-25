@@ -193,7 +193,7 @@
     "karma-sauce-launcher": "^4.3.6",
     "madge": "^6.0.0",
     "multimatch": "^6.0.0",
-    "patch-package": "^6.5.0",
+    "patch-package": "^7.0.0",
     "prettier": "^2.5.1",
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz",
     "semver": "^7.3.5",
