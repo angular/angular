@@ -30,7 +30,7 @@ To install Angular on your local system, you need the following:
 
 | Requirements                         | Details |
 |:---                                  |:---     |
-| Node.js <a id="nodejs"></a>          | Angular requires an [active LTS or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.  <div class="alert is-helpful"> For information about specific version requirements, see the `engines` key in the [package.json](https://unpkg.com/browse/@angular/core/package.json) file. </div> For more information on installing Node.js, see [nodejs.org](https://nodejs.org "Nodejs.org"). If you are unsure what version of Node.js runs on your system, run `node -v` in a terminal window. |
+| Node.js <a id="nodejs"></a>          | Angular requires an [active LTS or maintenance LTS](https://nodejs.org/about/releases) version of Node.js. <div class="alert is-helpful">For information see the [version compatibility](guide/versions) guide.</div> For more information on installing Node.js, see [nodejs.org](https://nodejs.org "Nodejs.org"). If you are unsure what version of Node.js runs on your system, run `node -v` in a terminal window. |
 | npm package manager <a id="npm"></a> | Angular, the Angular CLI, and Angular applications depend on [npm packages](https://docs.npmjs.com/getting-started/what-is-npm) for many features and functions. To download and install npm packages, you need an npm package manager. This guide uses the [npm client](https://docs.npmjs.com/cli/install) command line interface, which is installed with `Node.js` by default. To check that you have the npm client installed, run `npm -v` in a terminal window.                                          |
 
 <a id="install-cli"></a>
