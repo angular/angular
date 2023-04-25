@@ -165,7 +165,7 @@ export function resetPreOrderHookFlags(lView: LView) {
 }
 
 /**
- * Adds the `RefreshView` flag from the lView and updates CHILD_VIEWS_TO_REFRESH counters of
+ * Adds the `RefreshView` flag from the lView and updates DESCENDANT_VIEWS_TO_REFRESH counters of
  * parents.
  */
 export function markViewForRefresh(lView: LView) {
@@ -176,7 +176,7 @@ export function markViewForRefresh(lView: LView) {
 }
 
 /**
- * Removes the `RefreshView` flag from the lView and updates CHILD_VIEWS_TO_REFRESH counters of
+ * Removes the `RefreshView` flag from the lView and updates DESCENDANT_VIEWS_TO_REFRESH counters of
  * parents.
  */
 export function clearViewRefreshFlag(lView: LView) {
@@ -187,8 +187,8 @@ export function clearViewRefreshFlag(lView: LView) {
 }
 
 /**
- * Updates the `CHILD_VIEWS_TO_REFRESH` counter on the parents of the `LView` as well as the parents
- * above that whose
+ * Updates the `DESCENDANT_VIEWS_TO_REFRESH` counter on the parents of the `LView` as well as the
+ * parents above that whose
  *  1. counter goes from 0 to 1, indicating that there is a new child that has a view to refresh
  *  or
  *  2. counter goes from 1 to 0, indicating there are no more descendant views to refresh

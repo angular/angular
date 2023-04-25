@@ -419,7 +419,8 @@ export const enum LViewFlags {
   /**
    * Whether this moved LView was needs to be refreshed. Similar to the Dirty flag, but used for
    * transplanted and signal views where the parent/ancestor views are not marked dirty as well.
-   * i.e. "Refresh just this view". Used in conjunction with the CHILD_VIEWS_TO_REFRESH counter.
+   * i.e. "Refresh just this view". Used in conjunction with the DESCENDANT_VIEWS_TO_REFRESH
+   * counter.
    */
   RefreshView = 1 << 10,
 

@@ -37,7 +37,7 @@ export const TYPE = 1;
  */
 export const HAS_TRANSPLANTED_VIEWS = 2;
 
-// PARENT, NEXT, CHILD_VIEWS_TO_REFRESH are indices 3, 4, and 5
+// PARENT, NEXT, DESCENDANT_VIEWS_TO_REFRESH are indices 3, 4, and 5
 // As we already have these constants in LView, we don't need to re-create them.
 
 // T_HOST is index 6
