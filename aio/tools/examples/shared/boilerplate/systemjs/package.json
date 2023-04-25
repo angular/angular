@@ -56,7 +56,7 @@
     "http-server": "^14.0.0",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.1.0",
+    "karma-chrome-launcher": "~3.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "lite-server": "^2.6.1",
