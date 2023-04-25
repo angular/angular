@@ -151,7 +151,7 @@ export function textInterpolate(strings: string[], expressions: o.Expression[]):
     interpolationArgs.push(o.literal(strings[idx]));
   }
 
-  return callInterpolation(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs);
+  return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs);
 }
 
 
@@ -162,18 +162,19 @@ function call<OpT extends ir.CreateOp|ir.UpdateOp>(
 }
 
 /**
- * Describes a specific flavor of instruction used to represent interpolations, which have some
- * number of variants for specific argument counts.
+ * Describes a specific flavor of instruction used to represent variadic instructions, which have
+ * some number of variants for specific argument counts.
  */
-interface InterpolationConfig {
+interface VariadicInstructionConfig {
   constant: o.ExternalReference[];
-  variable: o.ExternalReference;
+  variable: o.ExternalReference|null;
+  mapping: (argCount: number) => number;
 }
 
 /**
  * `InterpolationConfig` for the `textInterpolate` instruction.
  */
-const TEXT_INTERPOLATE_CONFIG: InterpolationConfig = {
+const TEXT_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   constant: [
     Identifiers.textInterpolate,
     Identifiers.textInterpolate1,
@@ -186,20 +187,32 @@ const TEXT_INTERPOLATE_CONFIG: InterpolationConfig = {
     Identifiers.textInterpolate8,
   ],
   variable: Identifiers.textInterpolateV,
+  mapping: n => {
+    if (n % 2 === 0) {
+      throw new Error(`Expected odd number of arguments`);
+    }
+    return (n - 1) / 2;
+  },
 };
 
-function callInterpolation(
-    config: InterpolationConfig, baseArgs: o.Expression[],
-    interpolationArgs: o.Expression[]): ir.UpdateOp {
-  if (interpolationArgs.length % 2 === 0) {
-    throw new Error(`Expected odd number of interpolation arguments`);
-  }
-  const n = (interpolationArgs.length - 1) / 2;
+function callVariadicInstructionExpr(
+    config: VariadicInstructionConfig, baseArgs: o.Expression[],
+    interpolationArgs: o.Expression[]): o.Expression {
+  const n = config.mapping(interpolationArgs.length);
   if (n < config.constant.length) {
     // Constant calling pattern.
-    return call(config.constant[n], [...baseArgs, ...interpolationArgs]);
-  } else {
+    return o.importExpr(config.constant[n]).callFn([...baseArgs, ...interpolationArgs]);
+  } else if (config.variable !== null) {
     // Variable calling pattern.
-    return call(config.variable, [...baseArgs, o.literalArr(interpolationArgs)]);
+    return o.importExpr(config.variable).callFn([...baseArgs, o.literalArr(interpolationArgs)]);
+  } else {
+    throw new Error(`AssertionError: unable to call variadic function`);
   }
+}
+
+function callVariadicInstruction(
+    config: VariadicInstructionConfig, baseArgs: o.Expression[],
+    interpolationArgs: o.Expression[]): ir.UpdateOp {
+  return ir.createStatementOp(
+      callVariadicInstructionExpr(config, baseArgs, interpolationArgs).toStmt());
 }
