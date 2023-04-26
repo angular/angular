@@ -141,6 +141,8 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
         operator, convertAst(ast.left, cpl), convertAst(ast.right, cpl));
   } else if (ast instanceof e.ThisReceiver) {
     return new ir.ContextExpr(cpl.root.xref);
+  } else if (ast instanceof e.Chain) {
+    throw new Error(`AssertionError: Chain in unknown context`);
   } else {
     throw new Error(`Unhandled expression type: ${ast.constructor.name}`);
   }
@@ -191,8 +193,32 @@ function ingestBindings(
 
     for (const output of element.outputs) {
       const listenerOp = ir.createListenerOp(op.xref, output.name, op.tag);
-      listenerOp.handlerOps.push(
-          ir.createStatementOp(new o.ReturnStatement(convertAst(output.handler, view.tpl))));
+      // if output.handler is a chain, then push each statement from the chain separately, and
+      // return the last one?
+      let inputExprs: e.AST[];
+      let handler: e.AST = output.handler;
+      if (handler instanceof e.ASTWithSource) {
+        handler = handler.ast;
+      }
+
+      if (handler instanceof e.Chain) {
+        inputExprs = handler.expressions;
+      } else {
+        inputExprs = [handler];
+      }
+
+      if (inputExprs.length === 0) {
+        throw new Error('Expected listener to have non-empty expression list.');
+      }
+
+      const expressions = inputExprs.map(expr => convertAst(expr, view.tpl));
+      const returnExpr = expressions.pop()!;
+
+      for (const expr of expressions) {
+        const stmtOp = ir.createStatementOp<ir.UpdateOp>(new o.ExpressionStatement(expr));
+        listenerOp.handlerOps.push(stmtOp);
+      }
+      listenerOp.handlerOps.push(ir.createStatementOp(new o.ReturnStatement(returnExpr)));
       view.create.push(listenerOp);
     }
   }
