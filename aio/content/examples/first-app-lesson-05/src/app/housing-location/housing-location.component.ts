@@ -17,6 +17,6 @@ import { HousingLocation } from '../housinglocation';
 
 // #docregion add-housing-location-property
 export class HousingLocationComponent {
-  @Input() housingLocation!: HousingLocation;  
+  @Input() housingLocation!: HousingLocation;
 }
 // #enddocregion

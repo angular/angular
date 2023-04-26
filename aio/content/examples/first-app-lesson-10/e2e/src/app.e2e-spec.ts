@@ -32,7 +32,7 @@ describe('first-app-lesson-10 app', () => {
   it('should have a details page at /details/9', async () => {
     await browser.get('/details/9');
     expect(await element.all(by.css('app-details > p')).get(0)
-      .getText()).toEqual('details works! 9');
+      .getText()).toEqual('details works!');
   });
 
   afterEach(async () => {

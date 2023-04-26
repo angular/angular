@@ -38,7 +38,7 @@ export class HomeComponent {
     this.housingService.getAllHousingLocations().then((housingLocationList: HousingLocation[]) => {
       this.housingLocationList = housingLocationList;
       this.filteredLocationList = housingLocationList;
-    });    
+    });
   }
   // #enddocregion
 
