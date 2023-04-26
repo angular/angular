@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
+import {refreshView} from '../../../../src/render3/instructions/change_detection';
 import {ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
-import {refreshView} from '../../../../src/render3/instructions/shared';
 import {ɵɵtext} from '../../../../src/render3/instructions/text';
 import {ɵɵtextInterpolate} from '../../../../src/render3/instructions/text_interpolation';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';

@@ -9,7 +9,8 @@
 import {Injector} from '../di/injector';
 import {DehydratedContainerView} from '../hydration/interfaces';
 import {assertLContainer} from '../render3/assert';
-import {createLView, renderView} from '../render3/instructions/shared';
+import {renderView} from '../render3/instructions/render';
+import {createLView} from '../render3/instructions/shared';
 import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
 import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
