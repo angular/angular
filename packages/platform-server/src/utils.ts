@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, NgModuleRef, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED} from '@angular/core';
+import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED} from '@angular/core';
 import {first} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
-import {platformDynamicServer} from './server';
+import {platformDynamicServer, platformServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 
 interface PlatformOptions {
@@ -19,10 +19,14 @@ interface PlatformOptions {
   platformProviders?: Provider[];
 }
 
-function _getPlatform(
-    platformFactory: (extraProviders: StaticProvider[]) => PlatformRef,
-    options: PlatformOptions): PlatformRef {
+/**
+ * Creates an instance of a server platform (with or without JIT compiler support
+ * depending on the `ngJitMode` global const value), using provided options.
+ */
+function createServerPlatform(options: PlatformOptions): PlatformRef {
   const extraProviders = options.platformProviders ?? [];
+  const platformFactory =
+      (typeof ngJitMode === 'undefined' || ngJitMode) ? platformDynamicServer : platformServer;
   return platformFactory([
     {provide: INITIAL_CONFIG, useValue: {document: options.document, url: options.url}},
     extraProviders
@@ -137,7 +141,7 @@ export async function renderModule<T>(moduleType: Type<T>, options: {
   extraProviders?: StaticProvider[],
 }): Promise<string> {
   const {document, url, extraProviders: platformProviders} = options;
-  const platformRef = _getPlatform(platformDynamicServer, {document, url, platformProviders});
+  const platformRef = createServerPlatform({document, url, platformProviders});
   const moduleRef = await platformRef.bootstrapModule(moduleType);
   const applicationRef = moduleRef.injector.get(ApplicationRef);
   return _render(platformRef, applicationRef);
@@ -169,7 +173,7 @@ export async function renderApplication<T>(bootstrap: () => Promise<ApplicationR
   url?: string,
   platformProviders?: Provider[],
 }): Promise<string> {
-  const platformRef = _getPlatform(platformDynamicServer, options);
+  const platformRef = createServerPlatform(options);
   const applicationRef = await bootstrap();
   return _render(platformRef, applicationRef);
 }
