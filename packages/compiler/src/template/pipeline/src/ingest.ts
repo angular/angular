@@ -12,6 +12,7 @@ import * as t from '../../../render3/r3_ast';
 import * as ir from '../ir';
 
 import {ComponentCompilation, ViewCompilation} from './compilation';
+import {BINARY_OPERATORS} from './conversion';
 
 /**
  * Process a template AST and convert it into a `ComponentCompilation` in the intermediate
@@ -131,6 +132,13 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
     }
   } else if (ast instanceof e.LiteralPrimitive) {
     return o.literal(ast.value);
+  } else if (ast instanceof e.Binary) {
+    const operator = BINARY_OPERATORS.get(ast.operation);
+    if (operator === undefined) {
+      throw new Error(`AssertionError: unknown binary operator ${ast.operation}`);
+    }
+    return new o.BinaryOperatorExpr(
+        operator, convertAst(ast.left, cpl), convertAst(ast.right, cpl));
   } else if (ast instanceof e.ThisReceiver) {
     return new ir.ContextExpr(cpl.root.xref);
   } else {
@@ -154,7 +162,6 @@ function ingestAttributes(op: ir.ElementOpBase, element: t.Element|t.Template): 
   for (const output of element.outputs) {
     op.attributes.add(ir.ElementAttributeKind.Binding, output.name, null);
   }
-
   if (element instanceof t.Template) {
     for (const attr of element.templateAttrs) {
       // TODO: what do we do about the value here?
