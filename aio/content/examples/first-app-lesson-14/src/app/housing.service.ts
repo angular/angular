@@ -9,17 +9,16 @@ export class HousingService {
   url = 'http://localhost:3000/locations';
 
   // #docregion update-getAllHousingLocations
-  async getAllHousingLocations() : Promise<HousingLocation[]> {
+  async getAllHousingLocations(): Promise<HousingLocation[]> {
     const data = await fetch(this.url);
     return await data.json() ?? [];
   }
   // #enddocregion
 
   // #docregion update-getHousingLocationById
-  async getHousingLocationById(id: Number): Promise<HousingLocation | undefined> {
+  async getHousingLocationById(id: number): Promise<HousingLocation | undefined> {
     const data = await fetch(`${this.url}/${id}`);
     return await data.json() ?? {};
-    
   }
   // #enddocregion
 
