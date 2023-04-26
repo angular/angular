@@ -27,7 +27,12 @@ export const UsesSlotIndex = Symbol('UsesSlotIndex');
 /**
  * Marker symbol for `ConsumesVars` trait.
  */
-export const ConsumesVarsTrait = Symbol('UsesVars');
+export const ConsumesVarsTrait = Symbol('ConsumesVars');
+
+/**
+ * Marker symbol for `UsesVarOffset` trait.
+ */
+export const UsesVarOffset = Symbol('UsesVarOffset');
 
 /**
  * Marks an operation as requiring allocation of one or more data slots for storage.
@@ -106,6 +111,15 @@ export interface ConsumesVarsTrait {
 }
 
 /**
+ * Marker trait indicating that an expression requires knowledge of the number of variable storage
+ * slots used prior to it.
+ */
+export interface UsesVarOffsetTrait {
+  [UsesVarOffset]: true;
+
+  varOffset: number|null;
+}
+/**
  * Default values for most `ConsumesSlotOpTrait` fields (used with the spread operator to initialize
  * implementors of the trait).
  */
@@ -141,6 +155,15 @@ export const TRAIT_CONSUMES_VARS: ConsumesVarsTrait = {
 } as const;
 
 /**
+ * Default values for `UsesVarOffset` fields (used with the spread operator to initialize
+ * implementors of this trait).
+ */
+export const TRAIT_USES_VAR_OFFSET: UsesVarOffsetTrait = {
+  [UsesVarOffset]: true,
+  varOffset: null,
+} as const;
+
+/**
  * Test whether an operation implements `ConsumesSlotOpTrait`.
  */
 export function hasConsumesSlotTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&ConsumesSlotOpTrait {
@@ -163,6 +186,14 @@ export function hasConsumesVarsTrait<ExprT extends Expression>(expr: ExprT): exp
 export function hasConsumesVarsTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&ConsumesVarsTrait;
 export function hasConsumesVarsTrait(value: any): boolean {
   return (value as Partial<ConsumesVarsTrait>)[ConsumesVarsTrait] === true;
+}
+
+/**
+ * Test whether an expression implements `UsesVarOffsetTrait`.
+ */
+export function hasUsesVarOffsetTrait<ExprT extends Expression>(expr: ExprT): expr is ExprT&
+    UsesVarOffsetTrait {
+  return (expr as Partial<UsesVarOffsetTrait>)[UsesVarOffset] === true;
 }
 
 /**

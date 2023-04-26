@@ -23,6 +23,11 @@ export function phaseVarCounting(cpl: ComponentCompilation): void {
       }
 
       ir.visitExpressionsInOp(op, expr => {
+        // Some expressions require knowledge of the number of variable slots consumed.
+        if (ir.hasUsesVarOffsetTrait(expr)) {
+          expr.varOffset = varCount;
+        }
+
         if (ir.hasConsumesVarsTrait(expr)) {
           varCount += varsUsedByIrExpression(expr);
         }
