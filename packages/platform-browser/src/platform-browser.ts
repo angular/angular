@@ -47,6 +47,8 @@ export const makeStateKey = makeStateKeyFromCore;
  *     instead.
  */
 // The below is a workaround to add a deprecated message.
+export type TransferState = TransferStateFromCore;
+// The below type is needed for G3 due to JSC_CONFORMANCE_VIOLATION.
 export const TransferState: {new (): TransferStateFromCore} = TransferStateFromCore;
 
 /**

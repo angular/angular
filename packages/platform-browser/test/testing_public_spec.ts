@@ -11,6 +11,8 @@ import {Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, D
 import {fakeAsync, getTestBed, inject, TestBed, tick, waitForAsync, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {TransferState} from '../public_api';
+
 // Services, and components for the tests.
 
 @Component({selector: 'child-comp', template: `<span>Original {{childBinding}}</span>`})
@@ -44,18 +46,6 @@ class MyIfComp {
 @Component({selector: 'child-child-comp', template: `<span>ChildChild</span>`})
 @Injectable()
 class ChildChildComp {
-}
-
-@Component({
-  selector: 'child-comp',
-  template: `<span>Original {{childBinding}}(<child-child-comp></child-child-comp>)</span>`,
-})
-@Injectable()
-class ChildWithChildComp {
-  childBinding: string;
-  constructor() {
-    this.childBinding = 'Child';
-  }
 }
 
 class FancyService {
@@ -1056,6 +1046,11 @@ Did you run and wait for 'resolveComponentResources()'?`);
                .toThrowError(
                    /Cannot override template when the test module has already been instantiated/);
          });
+    });
+
+    it('TransferState re-export can be used as a type and contructor', () => {
+      const transferState: TransferState = new TransferState();
+      expect(transferState).toBeDefined();
     });
   });
 }
