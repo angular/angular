@@ -28,20 +28,10 @@ function throwNameError() {
 }
 
 /**
- * Internal-only NgModule that works as a host for the `RadioControlRegistry` tree-shakable
- * provider. Note: the `InternalFormsSharedModule` can not be used here directly, since it's
- * declared *after* the `RadioControlRegistry` class and the `providedIn` doesn't support
- * `forwardRef` logic.
- */
-@NgModule()
-export class RadioControlRegistryModule {
-}
-
-/**
  * @description
  * Class used by Angular to track radio buttons. For internal use only.
  */
-@Injectable({providedIn: RadioControlRegistryModule})
+@Injectable({providedIn: 'root'})
 export class RadioControlRegistry {
   private _accessors: any[] = [];
 

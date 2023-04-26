@@ -468,6 +468,18 @@
     "name": "RadioControlRegistryModule"
   },
   {
+    "name": "ReactiveLViewConsumer"
+  },
+  {
+    "name": "ReactiveNode"
+  },
+  {
+    "name": "RefCountOperator"
+  },
+  {
+    "name": "RefCountSubscriber"
+  },
+  {
     "name": "Renderer2"
   },
   {
