@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, refreshView, renderView} from '../../../src/render3/instructions/shared';
+import {refreshView} from '../../../src/render3/instructions/change_detection';
+import {renderView} from '../../../src/render3/instructions/render';
+import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate, DirectiveDefList} from '../../../src/render3/interfaces/definition';
 import {TAttributes, TElementNode, TNodeType} from '../../../src/render3/interfaces/node';
 import {LView, LViewEnvironment, LViewFlags, TVIEW, TView, TViewType} from '../../../src/render3/interfaces/view';
