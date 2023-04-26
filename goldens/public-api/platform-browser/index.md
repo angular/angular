@@ -235,6 +235,9 @@ export class Title {
 }
 
 // @public @deprecated
+export type TransferState = TransferState_2;
+
+// @public (undocumented)
 export const TransferState: {
     new (): TransferState_2;
 };
