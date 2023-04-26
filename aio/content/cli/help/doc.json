@@ -30,7 +30,7 @@
     {
       "name": "version",
       "type": "string",
-      "description": "Contains the version of Angular to use for the documentation. If not provided, the command uses your current Angular core version."
+      "description": "The version of Angular to use for the documentation. If not provided, the command uses your current Angular core version."
     }
   ]
 }
