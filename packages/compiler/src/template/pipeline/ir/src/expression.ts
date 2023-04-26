@@ -344,6 +344,9 @@ export function transformExpressionsInExpression(
     expr.rhs = transformExpressionsInExpression(expr.rhs, transform, flags);
   } else if (expr instanceof o.ReadPropExpr) {
     expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
+  } else if (expr instanceof o.ReadKeyExpr) {
+    expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
+    expr.index = transformExpressionsInExpression(expr.index, transform, flags);
   } else if (expr instanceof o.InvokeFunctionExpr) {
     expr.fn = transformExpressionsInExpression(expr.fn, transform, flags);
     for (let i = 0; i < expr.args.length; i++) {
