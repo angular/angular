@@ -179,12 +179,15 @@ function ingestAttributes(op: ir.ElementOpBase, element: t.Element|t.Template): 
 function ingestBindings(
     view: ViewCompilation, op: ir.ElementOpBase, element: t.Element|t.Template): void {
   if (element instanceof t.Template) {
-    for (const attr of element.templateAttrs) {
-      if (typeof attr.value === 'string') {
-        // TODO: do we need to handle static attribute bindings here?
-      } else {
-        view.update.push(ir.createPropertyOp(op.xref, attr.name, convertAst(attr.value, view.tpl)));
+    // TODO: Are ng-template inputs handled differently from element inputs?
+    // <ng-template dir [foo]="...">
+    // <item-cmp *ngFor="let item of items" [item]="item">
+    for (const input of [...element.templateAttrs, ...element.inputs]) {
+      if (!(input instanceof t.BoundAttribute)) {
+        continue;
       }
+
+      view.update.push(ir.createPropertyOp(op.xref, input.name, convertAst(input.value, view.tpl)));
     }
   } else {
     for (const input of element.inputs) {
