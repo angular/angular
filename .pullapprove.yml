@@ -205,6 +205,7 @@ groups:
           'aio/content/guide/architecture-services.md',
           'aio/content/guide/architecture.md',
           'aio/content/examples/architecture/**/{*,.*}',
+          'aio/content/guide/rxjs-interop.md',
           'aio/content/images/guide/architecture/**/{*,.*}',
           'aio/content/guide/attribute-directives.md',
           'aio/content/examples/attribute-directives/**/{*,.*}',
