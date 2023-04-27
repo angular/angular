@@ -1,3 +1,18 @@
+<a name="16.0.0-rc.3"></a>
+# 16.0.0-rc.3 (2023-04-27)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6d7be42da7](https://github.com/angular/angular/commit/6d7be42da7b77632290b935e1db7f20983bdd07b) | fix | add newline to hydration mismatch error ([#49965](https://github.com/angular/angular/pull/49965)) |
+| [9180f98f0e](https://github.com/angular/angular/commit/9180f98f0ec1707455786430d8ad022f3a1386fa) | fix | ensure takeUntilDestroyed unregisters onDestroy listener on unsubscribe ([#49901](https://github.com/angular/angular/pull/49901)) |
+| [b4531f1d82](https://github.com/angular/angular/commit/b4531f1d82dc37d00487ff862f058e2574cec318) | fix | typing of TestBed Common token. ([#49997](https://github.com/angular/angular/pull/49997)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [74c925c19c](https://github.com/angular/angular/commit/74c925c19c5a8f4823fa929700f6599970cd61d3) | fix | export deprecated `TransferState` as type ([#50015](https://github.com/angular/angular/pull/50015)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-rc.2"></a>
 # 16.0.0-rc.2 (2023-04-19)
 ### compiler-cli
