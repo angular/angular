@@ -7,8 +7,8 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DoCheck, Input, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
-import {AfterViewChecked} from '@angular/core/src/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DoCheck, inject, Input, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewChecked, EmbeddedViewRef} from '@angular/core/src/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 describe('change detection for transplanted views', () => {
@@ -306,12 +306,27 @@ describe('change detection for transplanted views', () => {
         expect(log).toEqual(['Insert', null]);
         log.length = 0;
       });
+
+      it('does not cause infinite change detection if transplanted view is dirty and destroyed before refresh',
+         () => {
+           // mark declaration point dirty
+           onPushDeclareComp.changeDetector.markForCheck();
+           // detach insertion so the transplanted view doesn't get refreshed when CD runs
+           insertForOnPushDeclareComp.changeDetectorRef.detach();
+           // run CD, which will set the `RefreshView` flag on the transplanted view
+           fixture.detectChanges(false);
+           // reattach insertion so the DESCENDANT_VIEWS counters update
+           insertForOnPushDeclareComp.changeDetectorRef.reattach();
+           // make it so the insertion is destroyed before getting refreshed
+           fixture.componentInstance.showInsertForOnPushDeclare = false;
+           // run CD again. If we didn't clear the flag/counters when destroying the view, this
+           // would cause an infinite CD because the counters will be >1 but we will never reach a
+           // view to refresh and decrement the counters.
+           fixture.detectChanges(false);
+         });
     });
   });
 
-  // Note that backwards references are not handled well in VE or Ivy at the moment.
-  // These tests assert the current behavior. Some of these would need to be updated
-  // if future work refreshes backwards referenced transplanted views.
   describe('backwards references', () => {
     @Component({
       selector: 'insertion',
@@ -383,7 +398,7 @@ describe('change detection for transplanted views', () => {
     });
 
 
-    it('should not update declaration view when there is a change in the declaration and insertion is marked dirty',
+    it('should update declaration view when there is a change in the declaration and insertion is marked dirty',
        () => {
          appComponent.declaration.name = 'new name';
          appComponent.insertion.changeDetectorRef.markForCheck();
@@ -416,33 +431,15 @@ describe('change detection for transplanted views', () => {
          expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
        });
 
-    it('should not update anything when there is a change to insertion and declaration is marked dirty',
-       () => {
-         appComponent.insertion.name = 'new name';
-         appComponent.declaration.changeDetectorRef.markForCheck();
-         fixture.detectChanges(false);
-         // Name should not update in insertion view because only declaration was marked dirty
-         // Context name also does not update in the template because the insertion view needs to be
-         // checked to update the `ngTemplateOutletContext` input.
-         expect(fixture.nativeElement.textContent)
-             .toEqual(
-                 'Insertion(initial)TemplateDeclaration(initial)TemplateContext(initial)Declaration(initial)',
-                 'Name should not update in insertion view because only declaration was marked dirty\n' +
-                     'Context name also does not update in the template because the insertion view needs to be' +
-                     'checked to update the `ngTemplateOutletContext` input.');
-         // Note here that if backwards references were better supported, we would be able to
-         // refresh the transplanted view in the first `detectChanges` call but because the
-         // insertion point was already checked, we need to call detectChanges again to refresh it.
-         expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(0);
-
-         fixture.detectChanges(false);
-         expect(fixture.nativeElement.textContent)
-             .toEqual(
-                 'Insertion(initial)TemplateDeclaration(initial)TemplateContext(initial)Declaration(initial)',
-                 'Expected bindings to still be initial values. Again, TemplateContext can only update if ' +
-                     'insertion point is dirty and updates the ngTemplateOutletContext input.');
-         expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
-       });
+    it('should not update when there is a change to insertion and declaration is marked dirty', () => {
+      appComponent.insertion.name = 'new name';
+      appComponent.declaration.changeDetectorRef.markForCheck();
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement.textContent)
+          .toEqual(
+              'Insertion(initial)TemplateDeclaration(initial)TemplateContext(initial)Declaration(initial)');
+      expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(0);
+    });
 
     it('should update insertion view and template when there is a change to insertion and insertion marked dirty',
        () => {
@@ -460,14 +457,13 @@ describe('change detection for transplanted views', () => {
       expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(0);
     });
 
-    it('should only refresh template once when declaration and insertion are marked dirty', () => {
+    it('should refresh template when declaration and insertion are marked dirty', () => {
       appComponent.declaration.changeDetectorRef.markForCheck();
       appComponent.insertion.changeDetectorRef.markForCheck();
       fixture.detectChanges(false);
       expect(appComponent.declaration.transplantedViewRefreshCount)
-          .toEqual(
-              1,
-              'Expected transplanted view to only be refreshed when insertion component is refreshed');
+          .withContext('Should refresh once because backwards references are not rechecked')
+          .toEqual(1);
     });
   });
 
@@ -498,7 +494,17 @@ describe('change detection for transplanted views', () => {
     })
     class OnPushDeclaration {
       @ViewChild(OnPushInsertionHost) onPushInsertionHost?: OnPushInsertionHost;
-      value = 'initial';
+      private _value = 'initial';
+      throwErrorInView = false;
+      get value() {
+        if (this.throwErrorInView) {
+          throw new Error('error getting value in transplanted view');
+        }
+        return this._value;
+      }
+      set value(v: string) {
+        this._value = v;
+      }
 
       constructor(readonly cdr: ChangeDetectorRef) {}
     }
@@ -522,6 +528,22 @@ describe('change detection for transplanted views', () => {
           })
           .createComponent(componentUnderTest);
     }
+
+    it('can recover from errors thrown during change detection', () => {
+      const fixture = getFixture(OnPushDeclaration);
+      fixture.detectChanges();
+      fixture.componentInstance.value = 'new';
+      fixture.componentInstance.cdr.markForCheck();
+      fixture.componentInstance.throwErrorInView = true;
+      expect(() => {
+        fixture.detectChanges();
+      }).toThrow();
+      // Ensure that the transplanted view can still get refreshed if we rerun change detection
+      // without the error
+      fixture.componentInstance.throwErrorInView = false;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toEqual('new');
+    });
 
     it('refresh when transplanted view is declared in CheckAlways component', () => {
       const fixture = getFixture(CheckAlwaysDeclaration);
@@ -593,39 +615,112 @@ describe('change detection for transplanted views', () => {
             'Expected transplanted view to be refreshed even when insertion is not dirty');
   });
 
-  it('should not fail when change detecting detached transplanted view', () => {
+  describe('ViewRef and ViewContainerRef operations', () => {
     @Component({template: '<ng-template>{{incrementChecks()}}</ng-template>'})
     class AppComponent {
       @ViewChild(TemplateRef) templateRef!: TemplateRef<{}>;
 
-      constructor(readonly rootVref: ViewContainerRef, readonly cdr: ChangeDetectorRef) {}
+      constructor(
+          readonly rootViewContainerRef: ViewContainerRef, readonly cdr: ChangeDetectorRef) {}
 
-      checks = 0;
+      templateExecutions = 0;
       incrementChecks() {
-        this.checks++;
+        this.templateExecutions++;
       }
     }
 
-    const fixture = TestBed.configureTestingModule({declarations: [AppComponent]})
-                        .createComponent(AppComponent);
-    const component = fixture.componentInstance;
-    fixture.detectChanges();
+    let fixture: ComponentFixture<AppComponent>;
+    let component: AppComponent;
+    let viewRef: EmbeddedViewRef<{}>;
+    beforeEach(() => {
+      fixture = TestBed.configureTestingModule({declarations: [AppComponent]})
+                    .createComponent(AppComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      viewRef = component.templateRef.createEmbeddedView({});
+      component.rootViewContainerRef.insert(viewRef);
+    });
 
-    const viewRef = component.templateRef.createEmbeddedView({});
-    // This `ViewContainerRef` is for the root view
-    component.rootVref.insert(viewRef);
-    // `detectChanges` on this `ChangeDetectorRef` will refresh this view and children, not the root
-    // view that has the transplanted `viewRef` inserted.
-    component.cdr.detectChanges();
-    // The template should not have been refreshed because it was inserted "above" the component so
-    // `detectChanges` will not refresh it.
-    expect(component.checks).toEqual(0);
+    it('should not fail when change detecting detached transplanted view', () => {
+      // This `ViewContainerRef` is for the root view
+      // `detectChanges` on this `ChangeDetectorRef` will refresh this view and children, not the
+      // root view that has the transplanted `viewRef` inserted.
+      component.cdr.detectChanges();
+      // The template should not have been refreshed because it was inserted "above" the component
+      // so `detectChanges` will not refresh it.
+      expect(component.templateExecutions).toEqual(0);
 
-    // Detach view, manually call `detectChanges`, and verify the template was refreshed
-    component.rootVref.detach();
-    viewRef.detectChanges();
-    expect(component.checks).toEqual(1);
+      // Detach view, manually call `detectChanges`, and verify the template was refreshed
+      component.rootViewContainerRef.detach();
+      viewRef.detectChanges();
+      expect(component.templateExecutions).toEqual(1);
+    });
+
+    it('should work when change detecting detached transplanted view already marked for refresh',
+       () => {
+         // detach the viewRef only. This just removes the LViewFlags.Attached rather than actually
+         // detaching the view from the container.
+         viewRef.detach();
+         // Calling detectChanges marks transplanted views for check
+         component.cdr.detectChanges();
+         expect(() => {
+           // Calling detectChanges on the transplanted view itself will clear the refresh flag. It
+           // _should not_ also attempt to update the parent counters because it's detached and
+           // should not affect parent counters.
+           viewRef.detectChanges();
+         }).not.toThrow();
+         expect(component.templateExecutions).toEqual(1);
+       });
+
+    it('should work when re-inserting a previously detached transplanted view marked for refresh',
+       () => {
+         // Test case for inserting a view with refresh flag
+         viewRef.detach();
+         // mark transplanted views for check but does not refresh transplanted view because it is
+         // detached
+         component.cdr.detectChanges();
+         // reattach view itself
+         viewRef.reattach();
+         expect(() => {
+           // detach and reattach view from ViewContainerRef
+           component.rootViewContainerRef.detach();
+           component.rootViewContainerRef.insert(viewRef);
+           // calling detectChanges will clear the refresh flag. If the above operations messed up
+           // the counter, this would fail when attempted to decrement.
+           fixture.detectChanges(false);
+         }).not.toThrow();
+         expect(component.templateExecutions).toBeGreaterThan(0);
+       });
+
+    it('should work when detaching an attached transplanted view with the refresh flag', () => {
+      viewRef.detach();
+      // mark transplanted views for check but does not refresh transplanted view because it is
+      // detached
+      component.cdr.detectChanges();
+      // reattach view with refresh flag should increment parent counters
+      viewRef.reattach();
+      expect(() => {
+        // detach view with refresh flag should decrement parent counters
+        viewRef.detach();
+        // detectChanges on parent should not cause infinite loop if the above counters were updated
+        // correctly both times.
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
+    it('should work when destroying a view with the refresh flag', () => {
+      viewRef.detach();
+      // mark transplanted views for check but does not refresh transplanted view because it is
+      // detached
+      component.cdr.detectChanges();
+      viewRef.reattach();
+      expect(() => {
+        viewRef.destroy();
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
   });
+
 
   describe('when detached', () => {
     @Component({
@@ -742,6 +837,96 @@ describe('change detection for transplanted views', () => {
         fixture.detectChanges(false);
         expect(appComponent.transplantedViewRefreshCount).toEqual(3);
       });
+    });
+
+    it('does not cause error if running change detection on detached view', () => {
+      @Component({
+        standalone: true,
+        selector: 'insertion',
+        template: `<ng-container #vc></ng-container>`,
+      })
+      class Insertion {
+        @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;
+        @Input() template!: TemplateRef<{}>;
+        ngOnChanges() {
+          return this.viewContainer.createEmbeddedView(this.template);
+        }
+      }
+
+      @Component({
+        standalone: true,
+        template: `
+          <ng-template #transplantedTemplate></ng-template>
+          <insertion [template]="transplantedTemplate"></insertion>
+        `,
+        imports: [Insertion]
+      })
+      class Root {
+        readonly cdr = inject(ChangeDetectorRef);
+      }
+
+      const fixture = TestBed.createComponent(Root);
+      fixture.componentInstance.cdr.detach();
+      fixture.componentInstance.cdr.detectChanges();
+    });
+
+    it('backwards reference still updated if detaching root during change detection', () => {
+      @Component({
+        standalone: true,
+        selector: 'insertion',
+        template: `<ng-container #vc></ng-container>`,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class Insertion {
+        @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;
+        @Input() template!: TemplateRef<{}>;
+        ngOnChanges() {
+          return this.viewContainer.createEmbeddedView(this.template);
+        }
+      }
+
+      @Component({
+        template: '<ng-template #template>{{value}}</ng-template>',
+        selector: 'declaration',
+        standalone: true,
+      })
+      class Declaration {
+        @ViewChild('template', {static: true}) transplantedTemplate!: TemplateRef<{}>;
+        @Input() value?: string;
+      }
+
+      @Component({
+        standalone: true,
+        template: `
+          <insertion [template]="declaration?.transplantedTemplate"></insertion>
+          <declaration [value]="value"></declaration>
+          {{incrementChecks()}}
+        `,
+        imports: [Insertion, Declaration]
+      })
+      class Root {
+        @ViewChild(Declaration, {static: true}) declaration!: Declaration;
+        readonly cdr = inject(ChangeDetectorRef);
+        value = 'initial';
+        templateExecutions = 0;
+        incrementChecks() {
+          this.templateExecutions++;
+        }
+      }
+
+      const fixture = TestBed.createComponent(Root);
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+      expect(fixture.componentInstance.templateExecutions).toEqual(1);
+
+      // Root is detached and value in transplanted view updates during CD. Because it is inserted
+      // backwards, this requires a rerun of the traversal at the root. This test ensures we still
+      // get the rerun even when the root is detached.
+      fixture.componentInstance.cdr.detach();
+      fixture.componentInstance.value = 'new';
+      fixture.componentInstance.cdr.detectChanges();
+      expect(fixture.componentInstance.templateExecutions).toEqual(2);
+      expect(fixture.nativeElement.innerText).toEqual('new');
     });
   });
 });

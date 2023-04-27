@@ -10,7 +10,7 @@ import {DehydratedContainerView} from '../../hydration/interfaces';
 
 import {TNode} from './node';
 import {RComment, RElement} from './renderer_dom';
-import {DESCENDANT_VIEWS_TO_REFRESH, HOST, LView, NEXT, PARENT, T_HOST} from './view';
+import {HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
 
 
@@ -37,17 +37,17 @@ export const TYPE = 1;
  */
 export const HAS_TRANSPLANTED_VIEWS = 2;
 
-// PARENT, NEXT, DESCENDANT_VIEWS_TO_REFRESH are indices 3, 4, and 5
+// PARENT and NEXT are indices 3 and 4
 // As we already have these constants in LView, we don't need to re-create them.
 
-// T_HOST is index 6
+// T_HOST is index 5
 // We already have this constants in LView, we don't need to re-create it.
 
+export const HAS_CHILD_VIEWS_TO_REFRESH = 6;
 export const NATIVE = 7;
 export const VIEW_REFS = 8;
 export const MOVED_VIEWS = 9;
 export const DEHYDRATED_VIEWS = 10;
-
 
 /**
  * Size of LContainer's header. Represents the index after which all views in the
@@ -101,12 +101,10 @@ export interface LContainer extends Array<any> {
   [NEXT]: LView|LContainer|null;
 
   /**
-   * The number of direct transplanted views which need a refresh or have descendants themselves
-   * that need a refresh but have not marked their ancestors as Dirty. This tells us that during
-   * change detection we should still descend to find those children to refresh, even if the parents
-   * are not `Dirty`/`CheckAlways`.
+   * Indicates that this LContainer has a view underneath it that needs to be refreshed during
+   * change detection.
    */
-  [DESCENDANT_VIEWS_TO_REFRESH]: number;
+  [HAS_CHILD_VIEWS_TO_REFRESH]: boolean;
 
   /**
    * A collection of views created based on the underlying `<ng-template>` element but inserted into
