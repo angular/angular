@@ -8,7 +8,6 @@
 import {AnimationEvent, AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
-import {AnimationDriver} from '../../src/render/animation_driver';
 import {animationFailed} from '../error_helpers';
 
 import {ANIMATABLE_PROP_SET} from './web_animations/animatable_props_set';
@@ -25,8 +24,8 @@ export function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer
 }
 
 export function normalizeKeyframes(
-    driver: AnimationDriver, normalizer: AnimationStyleNormalizer, element: any,
-    keyframes: Array<ɵStyleDataMap>, preStyles: ɵStyleDataMap = new Map(),
+    normalizer: AnimationStyleNormalizer, keyframes: Array<ɵStyleDataMap>,
+    preStyles: ɵStyleDataMap = new Map(),
     postStyles: ɵStyleDataMap = new Map()): Array<ɵStyleDataMap> {
   const errors: Error[] = [];
   const normalizedKeyframes: Array<ɵStyleDataMap> = [];
