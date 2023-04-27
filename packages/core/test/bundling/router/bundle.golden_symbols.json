@@ -1995,9 +1995,6 @@
     "name": "subsetMatchOptions"
   },
   {
-    "name": "supportsState"
-  },
-  {
     "name": "switchMap"
   },
   {
