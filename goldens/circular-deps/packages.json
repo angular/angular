@@ -1,9 +1,5 @@
 [
   [
-    "packages/animations/browser/src/render/animation_driver.ts",
-    "packages/animations/browser/src/render/shared.ts"
-  ],
-  [
     "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interface.ts",
     "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts"
   ],

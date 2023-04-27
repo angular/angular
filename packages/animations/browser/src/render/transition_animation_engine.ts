@@ -1438,8 +1438,7 @@ export class TransitionAnimationEngine {
       const postStyles = postStylesMap.get(element);
 
       const keyframes = normalizeKeyframes(
-          this.driver, this._normalizer, element, timelineInstruction.keyframes, preStyles,
-          postStyles);
+          this._normalizer, timelineInstruction.keyframes, preStyles, postStyles);
       const player = this._buildPlayer(timelineInstruction, keyframes, previousPlayers);
 
       // this means that this particular player belongs to a sub trigger. It is
