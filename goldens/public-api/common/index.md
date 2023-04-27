@@ -52,7 +52,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 
 // @public
 export class BrowserPlatformLocation extends PlatformLocation {
-    constructor(_doc: any);
+    constructor();
     // (undocumented)
     back(): void;
     // (undocumented)
