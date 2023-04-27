@@ -4,7 +4,7 @@
   <img src="aio/src/assets/images/logos/angular/angular.png" alt="angular-logo" width="120px" height="120px"/>
   <br>
   <i>Angular is a development platform for building mobile and desktop web applications
-    <br> using TypeScript/JavaScript and other languages.</i>
+    <br> using TypeScript/JavaScript and other languages created by OMAR & OTHMANE & Mehdi</i>
   <br>
 </p>
 
