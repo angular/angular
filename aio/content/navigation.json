@@ -695,6 +695,11 @@
               "url": "guide/signals",
               "title": "Signals",
               "tooltip": "Angular signals for optimized change detection"
+            },
+            {
+              "url": "guide/rxjs-interop",
+              "title": "RxJS Interop for Signals",
+              "tooltip": "Angular signals and Observable interop"
             }
           ]
         }
