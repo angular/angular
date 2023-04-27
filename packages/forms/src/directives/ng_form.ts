@@ -14,12 +14,13 @@ import {FormGroup} from '../model/form_group';
 import {composeAsyncValidators, composeValidators, NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
-import {Form} from './form_interface';
-import {NgControl} from './ng_control';
-import {NgModel} from './ng_model';
-import {NgModelGroup} from './ng_model_group';
 import {CALL_SET_DISABLED_STATE, SetDisabledStateOption, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
-import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+
+import type {Form} from './form_interface';
+import type {NgControl} from './ng_control';
+import type {NgModel} from './ng_model';
+import type {NgModelGroup} from './ng_model_group';
+import type {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 const formDirectiveProvider: Provider = {
   provide: ControlContainer,

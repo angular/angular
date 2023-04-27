@@ -10,9 +10,9 @@ import {InjectionToken, ɵisPromise as isPromise, ɵisSubscribable as isSubscrib
 import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 import {RuntimeErrorCode} from './errors';
-import {AbstractControl} from './model/abstract_model';
+import type {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
+import type {AbstractControl} from './model/abstract_model';
 
 
 function isEmptyInputValue(value: any): boolean {

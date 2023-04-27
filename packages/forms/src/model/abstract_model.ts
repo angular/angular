@@ -12,8 +12,8 @@ import {Observable} from 'rxjs';
 import {asyncValidatorsDroppedWithOptsWarning, missingControlError, missingControlValueError, noControlsError} from '../directives/reactive_errors';
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from '../directives/validators';
 import {RuntimeErrorCode} from '../errors';
-import {FormArray, FormGroup} from '../forms';
 import {addValidators, composeAsyncValidators, composeValidators, hasValidator, removeValidators, toObservable} from '../validators';
+import type {FormArray, FormGroup} from '../forms';
 
 
 /**
