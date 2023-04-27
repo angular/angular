@@ -686,6 +686,17 @@
               "tooltip": "Information about the Angular Package Format."
             }
           ]
+        },
+        {
+          "title": "Feature preview",
+          "tooltip": "Angular preview features and APIs",
+          "children": [
+            {
+              "url": "guide/signals",
+              "title": "Signals",
+              "tooltip": "Angular signals for optimized change detection"
+            }
+          ]
         }
       ]
     },
