@@ -30,10 +30,12 @@ export type Signal<T> = (() => T)&{
 };
 
 /**
- * Checks if the given `value` function is a reactive `Signal`.
+ * Checks if the given `value` is a reactive `Signal`.
+ *
+ * @developerPreview
  */
-export function isSignal(value: Function): value is Signal<unknown> {
-  return (value as Signal<unknown>)[SIGNAL] !== undefined;
+export function isSignal(value: unknown): value is Signal<unknown> {
+  return typeof value === 'function' && (value as Signal<unknown>)[SIGNAL] !== undefined;
 }
 
 /**

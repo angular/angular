@@ -838,7 +838,7 @@ export interface InputDecorator {
 export function isDevMode(): boolean;
 
 // @public
-export function isSignal(value: Function): value is Signal<unknown>;
+export function isSignal(value: unknown): value is Signal<unknown>;
 
 // @public
 export function isStandalone(type: Type<unknown>): boolean;
