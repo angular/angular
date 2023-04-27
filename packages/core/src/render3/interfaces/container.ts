@@ -10,7 +10,7 @@ import {DehydratedContainerView} from '../../hydration/interfaces';
 
 import {TNode} from './node';
 import {RComment, RElement} from './renderer_dom';
-import {DESCENDANT_VIEWS_TO_REFRESH, HOST, LView, NEXT, PARENT, T_HOST} from './view';
+import {HOST, LView, NEXT, PARENT, REFRESHED_AT_VERSION, T_HOST, VERSION} from './view';
 
 
 
@@ -37,16 +37,16 @@ export const TYPE = 1;
  */
 export const HAS_TRANSPLANTED_VIEWS = 2;
 
-// PARENT, NEXT, DESCENDANT_VIEWS_TO_REFRESH are indices 3, 4, and 5
+// PARENT, NEXT, VERSION, and REFRESHED_AT_VERSION are indices 3, 4, and 5, and 6
 // As we already have these constants in LView, we don't need to re-create them.
 
-// T_HOST is index 6
+// T_HOST is index 7
 // We already have this constants in LView, we don't need to re-create it.
 
-export const NATIVE = 7;
-export const VIEW_REFS = 8;
-export const MOVED_VIEWS = 9;
-export const DEHYDRATED_VIEWS = 10;
+export const NATIVE = 8;
+export const VIEW_REFS = 9;
+export const MOVED_VIEWS = 10;
+export const DEHYDRATED_VIEWS = 11;
 
 
 /**
@@ -55,7 +55,7 @@ export const DEHYDRATED_VIEWS = 10;
  * which views are already in the DOM (and don't need to be re-added) and so we can
  * remove views from the DOM when they are no longer required.
  */
-export const CONTAINER_HEADER_OFFSET = 11;
+export const CONTAINER_HEADER_OFFSET = 12;
 
 /**
  * The state associated with a container.
@@ -101,12 +101,13 @@ export interface LContainer extends Array<any> {
   [NEXT]: LView|LContainer|null;
 
   /**
-   * The number of direct transplanted views which need a refresh or have descendants themselves
-   * that need a refresh but have not marked their ancestors as Dirty. This tells us that during
-   * change detection we should still descend to find those children to refresh, even if the parents
-   * are not `Dirty`/`CheckAlways`.
+   * TODO
    */
-  [DESCENDANT_VIEWS_TO_REFRESH]: number;
+  [VERSION]: number;
+  /**
+   * TODO
+   */
+  [REFRESHED_AT_VERSION]: number|null;
 
   /**
    * A collection of views created based on the underlying `<ng-template>` element but inserted into

@@ -936,9 +936,6 @@
     "name": "cleanUpView"
   },
   {
-    "name": "clearViewRefreshFlag"
-  },
-  {
     "name": "collectNativeNodes"
   },
   {
@@ -2016,10 +2013,19 @@
     "name": "updateSegmentGroupChildren"
   },
   {
+    "name": "updateViewRefreshCountersBeforeAttach"
+  },
+  {
+    "name": "updateViewRefreshCountersBeforeDetach"
+  },
+  {
     "name": "updateViewsToRefresh"
   },
   {
     "name": "urlParsingNode"
+  },
+  {
+    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"

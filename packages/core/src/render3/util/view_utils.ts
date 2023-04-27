@@ -13,7 +13,7 @@ import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {DESCENDANT_VIEWS_TO_REFRESH, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TData, TView} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REFRESHED_AT_VERSION as TRAVERSED_AT_VERSION, TData, TView, VERSION} from '../interfaces/view';
 
 
 
@@ -171,7 +171,9 @@ export function resetPreOrderHookFlags(lView: LView) {
 export function markViewForRefresh(lView: LView) {
   if ((lView[FLAGS] & LViewFlags.RefreshView) === 0) {
     lView[FLAGS] |= LViewFlags.RefreshView;
-    updateViewsToRefresh(lView, 1);
+    if (viewAttachedToChangeDetector(lView)) {
+      updateViewsToRefreshInAncestors(lView[PARENT]);
+    }
   }
 }
 
@@ -182,56 +184,62 @@ export function markViewForRefresh(lView: LView) {
 export function clearViewRefreshFlag(lView: LView) {
   if (lView[FLAGS] & LViewFlags.RefreshView) {
     lView[FLAGS] &= ~LViewFlags.RefreshView;
-    updateViewsToRefresh(lView, -1);
   }
 }
 
 /**
- * Updates the `DESCENDANT_VIEWS_TO_REFRESH` counter on the parents of the `LView` as well as the
- * parents above that whose
- *  1. counter goes from 0 to 1, indicating that there is a new child that has a view to refresh
- *  or
- *  2. counter goes from 1 to 0, indicating there are no more descendant views to refresh
  */
-function updateViewsToRefresh(lView: LView, amount: 1|- 1) {
-  let parent: LView|LContainer|null = lView[PARENT];
+export function updateViewRefreshCountersBeforeAttach(lView: LView) {
+  if (!viewAttachedToChangeDetector(lView) &&
+      (lView[FLAGS] & LViewFlags.RefreshView || lView[VERSION] !== lView[TRAVERSED_AT_VERSION])) {
+    updateViewsToRefreshInAncestors(lView[PARENT]);
+  }
+}
+
+/**
+ * TODO
+ */
+function updateViewsToRefreshInAncestors(parent: LView|LContainer|null) {
   if (parent === null) {
     return;
   }
-  parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
-  let viewOrContainer: LView|LContainer = parent;
   parent = parent[PARENT];
-  while (parent !== null &&
-         ((amount === 1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 1) ||
-          (amount === -1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 0))) {
-    parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
-    viewOrContainer = parent;
-    parent = parent[PARENT];
-  }
-}
 
-/**
- * Stores a LView-specific destroy callback.
- */
-export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
-  if ((lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
-    throw new RuntimeError(
-        RuntimeErrorCode.VIEW_ALREADY_DESTROYED, ngDevMode && 'View has already been destroyed.');
+  while (parent !== null) {
+    if (parent[VERSION] === parent[TRAVERSED_AT_VERSION]) {
+      parent[VERSION]++;
+      // TODO: this only needs to happen if things can be attached during change detection?
+      // i.e., we've updated version of parents and attach a dirty view in some child that we
+      // haven't gotten to yet
+      if (!isLContainer(parent) && !viewAttachedToChangeDetector(parent)) {
+        break;
+      }
+      parent = parent[PARENT];
+    }
   }
-  if (lView[ON_DESTROY_HOOKS] === null) {
-    lView[ON_DESTROY_HOOKS] = [];
-  }
-  lView[ON_DESTROY_HOOKS].push(onDestroyCallback);
-}
 
-/**
- * Removes previously registered LView-specific destroy callback.
- */
-export function removeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
-  if (lView[ON_DESTROY_HOOKS] === null) return;
-
-  const destroyCBIdx = lView[ON_DESTROY_HOOKS].indexOf(onDestroyCallback);
-  if (destroyCBIdx !== -1) {
-    lView[ON_DESTROY_HOOKS].splice(destroyCBIdx, 1);
+  /**
+   * Stores a LView-specific destroy callback.
+   */
+  export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
+    if ((lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
+      throw new RuntimeError(
+          RuntimeErrorCode.VIEW_ALREADY_DESTROYED, ngDevMode && 'View has already been destroyed.');
+    }
+    if (lView[ON_DESTROY_HOOKS] === null) {
+      lView[ON_DESTROY_HOOKS] = [];
+    }
+    lView[ON_DESTROY_HOOKS].push(onDestroyCallback);
   }
-}
+
+  /**
+   * Removes previously registered LView-specific destroy callback.
+   */
+  export function removeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
+    if (lView[ON_DESTROY_HOOKS] === null) return;
+
+    const destroyCBIdx = lView[ON_DESTROY_HOOKS].indexOf(onDestroyCallback);
+    if (destroyCBIdx !== -1) {
+      lView[ON_DESTROY_HOOKS].splice(destroyCBIdx, 1);
+    }
+  }

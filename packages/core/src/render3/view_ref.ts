@@ -19,7 +19,7 @@ import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
 import {destroyLView, detachView, detachViewFromDOM} from './node_manipulation';
-import {storeLViewOnDestroy} from './util/view_utils';
+import {storeLViewOnDestroy, updateViewRefreshCountersBeforeAttach} from './util/view_utils';
 
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
@@ -246,6 +246,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
    * ```
    */
   reattach(): void {
+    updateViewRefreshCountersBeforeAttach(this._lView);
     this._lView[FLAGS] |= LViewFlags.Attached;
   }
 

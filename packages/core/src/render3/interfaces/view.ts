@@ -32,11 +32,15 @@ import {TStylingKey, TStylingRange} from './styling';
 export const HOST = 0;
 export const TVIEW = 1;
 export const FLAGS = 2;
+
+// Shared with LContainer
 export const PARENT = 3;
 export const NEXT = 4;
-export const DESCENDANT_VIEWS_TO_REFRESH = 5;
-export const T_HOST = 6;
-export const CLEANUP = 7;
+export const VERSION = 5;
+export const REFRESHED_AT_VERSION = 6;
+export const T_HOST = 7;
+// End shared with LContainer
+
 export const CONTEXT = 8;
 export const INJECTOR = 9;
 export const ENVIRONMENT = 10;
@@ -55,6 +59,8 @@ export const ON_DESTROY_HOOKS = 21;
 export const HYDRATION = 22;
 export const REACTIVE_TEMPLATE_CONSUMER = 23;
 export const REACTIVE_HOST_BINDING_CONSUMER = 24;
+export const CLEANUP = 25;
+
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -62,7 +68,7 @@ export const REACTIVE_HOST_BINDING_CONSUMER = 24;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 25;
+export const HEADER_OFFSET = 26;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -318,12 +324,9 @@ export interface LView<T = unknown> extends Array<any> {
   [PREORDER_HOOK_FLAGS]: PreOrderHookFlags;
 
   /**
-   * The number of direct transplanted views which need a refresh or have descendants themselves
-   * that need a refresh but have not marked their ancestors as Dirty. This tells us that during
-   * change detection we should still descend to find those children to refresh, even if the parents
-   * are not `Dirty`/`CheckAlways`.
+   * TODO
    */
-  [DESCENDANT_VIEWS_TO_REFRESH]: number;
+  [VERSION]: number;
 
   /** Unique ID of the view. Used for `__ngContext__` lookups in the `LView` registry. */
   [ID]: number;
