@@ -29,7 +29,7 @@ import {assertTNodeType} from './node_assert';
 import {profiler, ProfilerEvent} from './profiler';
 import {setUpAttributes} from './util/attrs_utils';
 import {getLViewParent} from './util/view_traversal_utils';
-import {clearViewRefreshFlag, getNativeByTNode, unwrapRNode} from './util/view_utils';
+import {getNativeByTNode, unwrapRNode, updateViewRefreshCountersBeforeAttach, updateViewRefreshCountersBeforeDetach} from './util/view_utils';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -273,6 +273,7 @@ export function insertView(tView: TView, lView: LView, lContainer: LContainer, i
     lQueries.insertView(tView);
   }
 
+  updateViewRefreshCountersBeforeAttach(lView);
   // Sets the attached flag
   lView[FLAGS] |= LViewFlags.Attached;
 }
@@ -314,11 +315,6 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
   const declarationViewIndex = movedViews.indexOf(lView);
   const insertionLContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainer(insertionLContainer);
-
-  // If the view was marked for refresh but then detached before it was checked (where the flag
-  // would be cleared and the counter decremented), we need to update the status here.
-  clearViewRefreshFlag(lView);
-
   movedViews.splice(declarationViewIndex, 1);
 }
 
@@ -339,6 +335,8 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
   const viewToDetach = lContainer[indexInContainer];
 
   if (viewToDetach) {
+    updateViewRefreshCountersBeforeDetach(viewToDetach);
+
     const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];
     if (declarationLContainer !== null && declarationLContainer !== lContainer) {
       detachMovedView(declarationLContainer, viewToDetach);
@@ -373,6 +371,12 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
  * @param lView The view to be destroyed.
  */
 export function destroyLView(tView: TView, lView: LView) {
+  // At least for transplanted views, this is is not necessary because the places that call
+  // `destroyLView` (ViewContainerRef.remove and ViewRef.destroy) first detach the view. The detach
+  // operation already updates the counters and prevents further updates.)
+  // TODO(signals): re-evaluate if a signal view can be destroyed in a way that makes this operation
+  // necessary.
+  updateViewRefreshCountersBeforeDetach(lView);
   if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
     const renderer = lView[RENDERER];
 
@@ -397,6 +401,14 @@ export function destroyLView(tView: TView, lView: LView) {
  */
 function cleanUpView(tView: TView, lView: LView): void {
   if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
+    // We don't _need_ to call `updateViewRefreshCountersBeforeDetach` because `cleanupView` is only
+    // called by `destroyViewTree`, which is in turn only called by `destroyLView`. Because the
+    // parent view is being destroyed and `updateViewRefreshCountersBeforeDetach` is called there,
+    // the views lower down in the tree can't can't affect any counters above the view being
+    // destroyed in `destroyLView`. `updateViewRefreshCountersBeforeDetach` is only called for
+    // consistency's sake -- wherever we make a change to `LViewFlags.Attached`, we update
+    // counters if applicable.
+    updateViewRefreshCountersBeforeDetach(lView);
     // Usually the Attached flag is removed when the view is detached from its parent, however
     // if it's a root view, the flag won't be unset hence why we're also removing on destroy.
     lView[FLAGS] &= ~LViewFlags.Attached;

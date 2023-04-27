@@ -24,12 +24,12 @@ import {NodeInjectorOffset} from '../render3/interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from '../render3/interfaces/node';
 import {RComment, RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
+import {FLAGS, HEADER_OFFSET, HYDRATION, LView, LViewFlags, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
 import {destroyLView, detachView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from '../render3/util/injector_utils';
-import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';
+import {getNativeByTNode, unwrapRNode, updateViewRefreshCountersBeforeDetach, viewAttachedToContainer} from '../render3/util/view_utils';
 import {addLViewToLContainer} from '../render3/view_manipulation';
 import {ViewRef as R3ViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
@@ -479,6 +479,15 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
         prevVCRef.detach(prevVCRef.indexOf(viewRef));
       }
+    } else {
+      // If this view wasn't in a different VCR it still may have been logically "attached"
+      // somewhere in the CD tree when created. `createLView` creates views with
+      // `LViewFlags.Attached` even for embedded views that aren't actually inserted anywhere. In
+      // this case, we should decrement the counters and remove the attached flag before
+      // inserting it into a VCRef, which does the reverse (insertView increments the counters and
+      // adds the attached flag).
+      updateViewRefreshCountersBeforeDetach(lView);
+      lView[FLAGS] &= ~LViewFlags.Attached;
     }
 
     // Logical operation of adding `LView` to `LContainer`

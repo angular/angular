@@ -171,7 +171,9 @@ export function resetPreOrderHookFlags(lView: LView) {
 export function markViewForRefresh(lView: LView) {
   if ((lView[FLAGS] & LViewFlags.RefreshView) === 0) {
     lView[FLAGS] |= LViewFlags.RefreshView;
-    updateViewsToRefresh(lView, 1);
+    if (viewAttachedToChangeDetector(lView) && lView[DESCENDANT_VIEWS_TO_REFRESH] === 0) {
+      updateViewsToRefreshInAncestors(lView, 1);
+    }
   }
 }
 
@@ -182,7 +184,31 @@ export function markViewForRefresh(lView: LView) {
 export function clearViewRefreshFlag(lView: LView) {
   if (lView[FLAGS] & LViewFlags.RefreshView) {
     lView[FLAGS] &= ~LViewFlags.RefreshView;
-    updateViewsToRefresh(lView, -1);
+    if (viewAttachedToChangeDetector(lView) && lView[DESCENDANT_VIEWS_TO_REFRESH] === 0) {
+      updateViewsToRefreshInAncestors(lView, -1);
+    }
+  }
+}
+
+/**
+ * If the view was previously attached and marked for refresh or has a descendant needing refresh,
+ * updates DESCENDANT_VIEWS_TO_REFRESH counters of parent LViews and LContainers.
+ */
+export function updateViewRefreshCountersBeforeDetach(lView: LView) {
+  if (viewAttachedToChangeDetector(lView) &&
+      (lView[FLAGS] & LViewFlags.RefreshView || lView[DESCENDANT_VIEWS_TO_REFRESH] > 0)) {
+    updateViewsToRefreshInAncestors(lView, -1);
+  }
+}
+
+/**
+ * If the view was previously detached and marked for refresh or has a descendants that needs
+ * refresh, updates DESCENDANT_VIEWS_TO_REFRESH counters of parent LViews and LContainers.
+ */
+export function updateViewRefreshCountersBeforeAttach(lView: LView) {
+  if (!viewAttachedToChangeDetector(lView) &&
+      (lView[FLAGS] & LViewFlags.RefreshView || lView[DESCENDANT_VIEWS_TO_REFRESH] > 0)) {
+    updateViewsToRefreshInAncestors(lView, 1);
   }
 }
 
@@ -193,20 +219,53 @@ export function clearViewRefreshFlag(lView: LView) {
  *  or
  *  2. counter goes from 1 to 0, indicating there are no more descendant views to refresh
  */
-function updateViewsToRefresh(lView: LView, amount: 1|- 1) {
+function updateViewsToRefreshInAncestors(lView: LView, amount: 1|- 1) {
   let parent: LView|LContainer|null = lView[PARENT];
   if (parent === null) {
     return;
   }
   parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
+  ngDevMode &&
+      assertGreaterThanOrEqual(
+          parent[DESCENDANT_VIEWS_TO_REFRESH], 0,
+          'Attempted to clear view refresh indicator in parent but parent was not dirty.');
+
   let viewOrContainer: LView|LContainer = parent;
-  parent = parent[PARENT];
-  while (parent !== null &&
-         ((amount === 1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 1) ||
-          (amount === -1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 0))) {
+  parent = viewOrContainer[PARENT];
+  function affectsParentCounter() {
+    // Don't increment parent counters if the current view has the `RefreshView` flag. This means
+    // that the view should already be accounted for in the parent. Incrementing the parent counter
+    // again will result in this view being counted twice.
+    const hasRefreshViewFlag =
+        !isLContainer(viewOrContainer) && (viewOrContainer[FLAGS] & LViewFlags.RefreshView);
+    if (hasRefreshViewFlag) {
+      return false;
+    }
+
+    const isAttached =
+        isLContainer(viewOrContainer) || viewAttachedToChangeDetector(viewOrContainer)
+    // Stop counting when we hit a detached view. Detached views are a change detection
+    // 'boundary' and do not affect ancestors. That is, when traversing change detection, we do
+    // not traverse to a detached view so we should not be updating counters of ancestors above
+    // a detached view.
+    if (!isAttached) {
+      return false;
+    }
+    const shouldIncrementParentCount =
+        amount === 1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 1;
+    const shouldDecrementParentCount =
+        amount === -1 && viewOrContainer[DESCENDANT_VIEWS_TO_REFRESH] === 0;
+    return shouldDecrementParentCount || shouldIncrementParentCount;
+  }
+
+  while (parent !== null && affectsParentCounter()) {
     parent[DESCENDANT_VIEWS_TO_REFRESH] += amount;
+    ngDevMode &&
+        assertGreaterThanOrEqual(
+            parent[DESCENDANT_VIEWS_TO_REFRESH], 0,
+            'Attempted to clear view refresh indicator in parent but parent was not dirty.');
     viewOrContainer = parent;
-    parent = parent[PARENT];
+    parent = viewOrContainer[PARENT];
   }
 }
 
