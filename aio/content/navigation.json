@@ -421,6 +421,11 @@
           ]
         },
         {
+          "url": "guide/esbuild",
+          "title": "esbuild-based Builds",
+          "tooltip": "Getting started with the CLI's esbuild-based build system."
+        },
+        {
           "url": "guide/http",
           "title": "HTTP client",
           "tooltip": "Use HTTP to talk to a remote server."
