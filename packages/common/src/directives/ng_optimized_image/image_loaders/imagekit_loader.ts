@@ -35,10 +35,13 @@ function isImageKitUrl(url: string): boolean {
  *
  * @publicApi
  */
-export const provideImageKitLoader = createImageLoader(
-    createImagekitUrl,
-    ngDevMode ? ['https://ik.imagekit.io/mysite', 'https://subdomain.mysite.com'] : undefined);
+export function provideImageKitLoader(path: string) {
+  let loader = createImageLoader(
+      createImagekitUrl,
+      ngDevMode ? ['https://ik.imagekit.io/mysite', 'https://subdomain.mysite.com'] : undefined);
 
+  return loader(path);
+}
 export function createImagekitUrl(path: string, config: ImageLoaderConfig) {
   // Example of an ImageKit image URL:
   // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg

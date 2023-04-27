@@ -33,9 +33,12 @@ function isImgixUrl(url: string): boolean {
  *
  * @publicApi
  */
-export const provideImgixLoader =
-    createImageLoader(createImgixUrl, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
+export function provideImgixLoader(path: string) {
+  let loader =
+      createImageLoader(createImgixUrl, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
 
+  return loader(path);
+}
 // Exported for testing purposes in backport only. Not to be accessed except in unit tests.
 export function createImgixUrl(path: string, config: ImageLoaderConfig) {
   const url = new URL(`${path}/${config.src}`);

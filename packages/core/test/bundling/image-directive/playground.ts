@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgOptimizedImageModule, provideImgixLoader} from '@angular/common';
+import {NgOptimizedImageModule} from '@angular/common';
 import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-@Component({
-  selector: 'basic',
-  styles: [`
+    @Component({
+      selector: 'basic',
+      styles: [`
     h1 {
       display: flex;
       align-items: center;
@@ -33,7 +33,7 @@ import {RouterModule} from '@angular/router';
       height: auto;
     }
   `],
-  template: `
+      template: `
     <h1> 
       <img ngSrc="a.png" width="50" height="50" priority ngSrcset="1x, 2x">
       <span>Angular image app</span>
@@ -43,10 +43,7 @@ import {RouterModule} from '@angular/router';
       <img ngSrc="hermes2.jpeg" ngSrcset="100w, 200w, 1000w, 2000w" width="1791" height="1008">
     </main>
   `,
-  providers: [provideImgixLoader('https://aurora-project.imgix.net')],
-})
-export class PlaygroundComponent {
-}
+    }) export class PlaygroundComponent {}
 
 @NgModule({
   declarations: [PlaygroundComponent],
@@ -57,7 +54,6 @@ export class PlaygroundComponent {
       component: PlaygroundComponent,
     }]),
   ],
-  providers: [provideImgixLoader('https://aurora-project.imgix.net')],
 })
 export class PlaygroundModule {
 }

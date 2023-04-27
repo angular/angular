@@ -36,15 +36,17 @@ function isCloudinaryUrl(url: string): boolean {
  *
  * @publicApi
  */
-export const provideCloudinaryLoader = createImageLoader(
-    createCloudinaryUrl,
-    ngDevMode ?
-        [
-          'https://res.cloudinary.com/mysite', 'https://mysite.cloudinary.com',
-          'https://subdomain.mysite.com'
-        ] :
-        undefined);
-
+export function provideCloudinaryLoader(path: string) {
+  let loader = createImageLoader(
+      createCloudinaryUrl,
+      ngDevMode ?
+          [
+            'https://res.cloudinary.com/mysite', 'https://mysite.cloudinary.com',
+            'https://subdomain.mysite.com'
+          ] :
+          undefined);
+  return loader(path);
+}
 // Exported for testing purposes in backport only. Not to be accessed except in unit tests.
 export function createCloudinaryUrl(path: string, config: ImageLoaderConfig) {
   // Cloudinary image URLformat:
