@@ -1,4 +1,4 @@
-# Lifecycle hooks
+# Component Lifecycle
 
 A component instance has a lifecycle that starts when Angular instantiates the component class and renders the component view along with its child views.
 The lifecycle continues with change detection, as Angular checks to see when data-bound properties change, and updates both the view and the component instance as needed.
@@ -84,7 +84,11 @@ Use the `ngOnInit()` method to perform the following initialization tasks.
 
 ## Cleaning up on instance destruction
 
-Put cleanup logic in `ngOnDestroy()`, the logic that must run before Angular destroys the directive.
+Angular provides several ways to clean up when an instance is destroyed.
+
+### `ngOnDestroy`
+
+You can put cleanup logic in `ngOnDestroy()`, the logic that must run before Angular destroys the directive.
 
 This is the place to free resources that won't be garbage-collected automatically.
 You risk memory leaks if you neglect to do so.
@@ -94,6 +98,45 @@ You risk memory leaks if you neglect to do so.
 *   Unregister all callbacks that the directive registered with global or application services
 
 The `ngOnDestroy()` method is also the time to notify another part of the application that the component is going away.
+
+### DestroyRef
+
+In addition to to `ngOnDestroy()`, you can inject Angular's `DestroyRef` and register callback functions to be called when the enclosing context is destroyed. This can be useful for building reusable utilities that require cleanup.
+
+Register a callback with the `DestroyRef`:
+
+```ts
+@Component(...)
+class Counter {
+  count = 0;
+  constructor() {
+		// Start a timer to increment the counter every second.
+		const id = setInterval(() => this.count++, 1000);
+
+		// Stop the timer when the component is destroyed.
+		const destroyRef = inject(DestroyRef);
+		destroyRef.onDestroy(() => clearInterval(id));
+	}
+}
+```
+
+Like `ngOnDestroy`, `DestroyRef` works in any Angular service, directive, component, or pipe.
+
+### `takeUntilDestroyed`
+
+<div class="alert is-important">
+
+`takeUntilDestroyed` is available for [developer preview](/guide/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
+
+</div>
+
+When using RxJS Observables in components or directives, you may want to complete any observables when the component or directive is destroyed. Angular's `@angular/core/rxjs-interop` package provides an operator, `takeUntilDestroyed`, to simply this common task:
+
+```ts
+data$ = http.get('...').pipe(takeUntilDestroyed());
+```
+
+By default, `takeUntilDestroyed` must be called in an injection context so that it can access `DestroyRef`. If an injection context isn't available, you can explicitly provide a `DestroyRef`.
 
 ## General examples
 
