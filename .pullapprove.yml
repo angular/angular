@@ -1024,6 +1024,7 @@ groups:
           'aio/content/guide/workspace-config.md',
           'aio/content/guide/migration-solution-style-tsconfig.md',
           'aio/content/guide/migration-update-libraries-tslib.md',
+          'aio/content/guide/esbuild.md',
           ])
     reviewers:
       users:
