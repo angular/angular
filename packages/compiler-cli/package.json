@@ -4,6 +4,7 @@
   "description": "Angular - the compiler CLI for Node.js",
   "typings": "index.d.ts",
   "bin": {
+    "ngcc": "./bundles/ngcc/index.js",
     "ngc": "./bundles/src/bin/ngc.js",
     "ng-xi18n": "./bundles/src/bin/ng_xi18n.js"
   },
