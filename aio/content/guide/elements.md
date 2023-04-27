@@ -12,7 +12,7 @@ For the sample application that this page describes, see the <live-example></liv
 A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code.
 The browser maintains a `CustomElementRegistry` of defined custom elements, which maps an instantiable JavaScript class to an HTML tag.
 
-The `@angular/elements` package exports a `createCustomElement()` API that provides a bridge from Angular's component interface and change detection functionality to the built-in DOM API.
+The `@angular/elements` package exports a `createCustomElement()` API function that provides a bridge from Angular's component interface and change detection functionality to the built-in DOM API.
 
 Transforming a component to a custom element makes all of the required Angular infrastructure available to the browser.
 Creating a custom element is simple and straightforward, and automatically connects your component-defined view with change detection and data binding, mapping Angular functionality to the corresponding built-in HTML equivalents.
@@ -33,7 +33,7 @@ Once a custom element is added to the DOM for any page, it looks and behaves lik
 |                                                | Details |
 |:---                                            |:---     |
 | Easy dynamic content in an Angular application | Transforming a component to a custom element provides a straightforward path to creating dynamic HTML content in your Angular application. HTML content that you add directly to the DOM in an Angular application is normally displayed without Angular processing, unless you define a *dynamic component*, adding your own code to connect the HTML tag to your application data, and participate in change detection. With a custom element, all of that wiring is taken care of automatically.                                                                                                                                        |
-| Content-rich applications                      | If you have a content-rich application, such as the Angular app that presents this documentation, custom elements let you give your content providers sophisticated Angular functionality without requiring knowledge of Angular. For example, an Angular guide like this one is added directly to the DOM by the Angular navigation tools, but can include special elements like `<code-snippet>` that perform complex operations. All you need to tell your content provider is the syntax of your custom element. They don't need to know anything about Angular, or anything about your component's data structures or implementation. |
+| Content-rich applications                      | If you have a content-rich application, such as the Angular application described in this guide, custom elements let you give your content providers sophisticated Angular functionality without requiring knowledge of Angular. For example, an Angular guide like this one is added directly to the DOM by the Angular navigation tools, but can include special elements like `<code-snippet>` that perform complex operations. All you need to tell your content provider is the syntax of your custom element. They don't need to know anything about Angular, or anything about your component's data structures or implementation. |
 
 ### How it works
 
@@ -92,8 +92,8 @@ Component properties and logic maps directly into HTML attributes and the browse
     For example, for a component with `@Input('myInputProp') inputProp`, the corresponding custom element defines an attribute `my-input-prop`.
 
 *   Component outputs are dispatched as HTML [Custom Events](https://developer.mozilla.org/docs/Web/API/CustomEvent), with the name of the custom event matching the output name.
-    For example, for a component with `@Output() valueChanged = new EventEmitter()`, the corresponding custom element dispatches events with the name "valueChanged", and the emitted data is stored on the event's `detail` property.
-    If you provide an alias, that value is used; for example, `@Output('myClick') clicks = new EventEmitter<string>();` results in dispatch events with the name "myClick".
+    For example, for a component with `@Output() valueChanged = new EventEmitter()`, the corresponding custom element dispatches events with the name `valueChanged`, and the emitted data is stored on the event's `detail` property.
+    If you provide an alias, that value will be used instead; for example, `@Output('myClick') clicks = new EventEmitter<string>();` results in dispatch events with the name `myClick`.
 
 For more information, see Web Component documentation for [Creating custom events](https://developer.mozilla.org/docs/Web/Guide/Events/Creating_and_triggering_events#Creating_custom_events).
 
@@ -124,14 +124,17 @@ npm install @angular/elements --save
 Previously, when you wanted to add a component to an application at runtime, you had to define a *dynamic component*, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling, as described in [Dynamic Component Loader](guide/dynamic-component-loader).
 
 Using an Angular custom element makes the process much simpler and more transparent, by providing all of the infrastructure and framework automatically &mdash;all you have to do is define the kind of event handling you want.
-\(You do still have to exclude the component from compilation, if you are not going to use it in your application.\)
+
+<div class="alert is-helpful">
+  You do still have to exclude the component from compilation, if you are not going to use it in your application.
+</div>
 
 The following Popup Service example application defines a component that you can either load dynamically or convert to a custom element.
 
 | Files                | Details |
 |:---                  |:---     |
 | `popup.component.ts` | Defines a simple pop-up element that displays an input message, with some animation and styling.                                                                                                                             |
-| `popup.service.ts`   | Creates an injectable service that provides two different ways to invoke the `PopupComponent`; as a dynamic component, or as a custom element Notice how much more setup is required for the dynamic-loading method.         |
+| `popup.service.ts`   | Creates an injectable service that provides two different ways to invoke the `PopupComponent`; as a dynamic component, or as a custom element. Notice how much more setup is required for the dynamic-loading method.         |
 | `app.module.ts`      | Adds the `PopupComponent` in the module's `declarations` list.                                                                                                                                                               |
 | `app.component.ts`   | Defines the application's root component, which uses the `PopupService` to add the pop-up to the DOM at run time. When the application runs, the root component's constructor converts `PopupComponent` to a custom element. |
 
@@ -159,7 +162,7 @@ Additionally, these custom elements will have a property for each input of the c
 For example, our `popup-element` has a `message` property of type `string`.
 
 There are a few options if you want to get correct types for your custom elements.
-Assume you create a `my-dialog` custom element based on the following component:
+Assuming you create a `my-dialog` custom element based on the following component:
 
 <code-example format="typescript" language="typescript">
 
@@ -216,4 +219,4 @@ document.querySelector('my-other-element')  //--&gt; NgElement &amp; WithPropert
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-04-27
