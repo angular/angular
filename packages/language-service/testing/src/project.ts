@@ -21,7 +21,7 @@ export type ProjectFiles = {
 
 function writeTsconfig(
     fs: FileSystem, tsConfigPath: AbsoluteFsPath, entryFiles: AbsoluteFsPath[],
-    options: TestableOptions): void {
+    angularCompilerOptions: TestableOptions, tsCompilerOptions: {}): void {
   fs.writeFile(
       tsConfigPath,
       JSON.stringify(
@@ -36,11 +36,12 @@ function writeTsconfig(
                 'dom',
                 'es2015',
               ],
+              ...tsCompilerOptions,
             },
             files: entryFiles,
             angularCompilerOptions: {
               strictTemplates: true,
-              ...options,
+              ...angularCompilerOptions,
             }
           },
           null, 2));
@@ -57,7 +58,7 @@ export class Project {
 
   static initialize(
       projectName: string, projectService: ts.server.ProjectService, files: ProjectFiles,
-      options: TestableOptions = {}): Project {
+      angularCompilerOptions: TestableOptions = {}, tsCompilerOptions = {}): Project {
     const fs = getFileSystem();
     const tsConfigPath = absoluteFrom(`/${projectName}/tsconfig.json`);
 
@@ -73,7 +74,7 @@ export class Project {
       }
     }
 
-    writeTsconfig(fs, tsConfigPath, entryFiles, options);
+    writeTsconfig(fs, tsConfigPath, entryFiles, angularCompilerOptions, tsCompilerOptions);
 
     // Ensure the project is live in the ProjectService.
     projectService.openClientFile(entryFiles[0]);
