@@ -840,6 +840,9 @@
     "name": "_processI18nInsertBefore"
   },
   {
+    "name": "_refreshedAView"
+  },
+  {
     "name": "_retrieveHydrationInfoImpl"
   },
   {
@@ -934,9 +937,6 @@
   },
   {
     "name": "cleanUpView"
-  },
-  {
-    "name": "clearViewRefreshFlag"
   },
   {
     "name": "collectNativeNodes"
@@ -1899,6 +1899,9 @@
     "name": "setInputsFromAttrs"
   },
   {
+    "name": "setRefreshedAView"
+  },
+  {
     "name": "setRouterState"
   },
   {
@@ -2014,9 +2017,6 @@
   },
   {
     "name": "updateSegmentGroupChildren"
-  },
-  {
-    "name": "updateViewsToRefresh"
   },
   {
     "name": "urlParsingNode"

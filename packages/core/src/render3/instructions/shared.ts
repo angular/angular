@@ -1405,7 +1405,7 @@ export function createLContainer(
     false,        // has transplanted views
     currentView,  // parent
     null,         // next
-    0,            // transplanted views to refresh count
+    false,        // has child views to refresh
     tNode,        // t_host
     native,       // native,
     null,         // view refs

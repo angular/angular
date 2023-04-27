@@ -393,6 +393,9 @@
     "name": "_platformInjector"
   },
   {
+    "name": "_refreshedAView"
+  },
+  {
     "name": "_retrieveHydrationInfoImpl"
   },
   {
@@ -445,9 +448,6 @@
   },
   {
     "name": "cleanUpView"
-  },
-  {
-    "name": "clearViewRefreshFlag"
   },
   {
     "name": "collectNativeNodes"
@@ -927,6 +927,9 @@
     "name": "setInjectImplementation"
   },
   {
+    "name": "setRefreshedAView"
+  },
+  {
     "name": "setSelectedIndex"
   },
   {
@@ -970,9 +973,6 @@
   },
   {
     "name": "updateMicroTaskStatus"
-  },
-  {
-    "name": "updateViewsToRefresh"
   },
   {
     "name": "urlParsingNode"

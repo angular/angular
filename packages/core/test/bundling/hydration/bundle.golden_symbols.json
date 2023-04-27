@@ -567,6 +567,9 @@
     "name": "_processI18nInsertBefore"
   },
   {
+    "name": "_refreshedAView"
+  },
+  {
     "name": "_retrieveHydrationInfoImpl"
   },
   {
@@ -640,9 +643,6 @@
   },
   {
     "name": "clearElementContents"
-  },
-  {
-    "name": "clearViewRefreshFlag"
   },
   {
     "name": "collectNativeNodes"
@@ -1236,6 +1236,9 @@
     "name": "setInjectImplementation"
   },
   {
+    "name": "setRefreshedAView"
+  },
+  {
     "name": "setSegmentHead"
   },
   {
@@ -1294,9 +1297,6 @@
   },
   {
     "name": "updateMicroTaskStatus"
-  },
-  {
-    "name": "updateViewsToRefresh"
   },
   {
     "name": "urlParsingNode"

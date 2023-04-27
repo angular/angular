@@ -202,6 +202,8 @@ const instructionState: InstructionState = {
  */
 let _isInCheckNoChangesMode = false;
 
+let _refreshedAView = false;
+
 /**
  * Returns true if the instruction state stack is empty.
  *
@@ -397,6 +399,13 @@ export function isInCheckNoChangesMode(): boolean {
 export function setIsInCheckNoChangesMode(mode: boolean): void {
   !ngDevMode && throwError('Must never be called in production mode');
   _isInCheckNoChangesMode = mode;
+}
+
+export function getRefreshedAView(): boolean {
+  return _refreshedAView;
+}
+export function setRefreshedAView(v: boolean): void {
+  _refreshedAView = v;
 }
 
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)

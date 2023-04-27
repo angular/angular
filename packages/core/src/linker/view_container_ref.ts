@@ -24,7 +24,7 @@ import {NodeInjectorOffset} from '../render3/interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from '../render3/interfaces/node';
 import {RComment, RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
+import {FLAGS, HEADER_OFFSET, HYDRATION, LView, LViewFlags, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
 import {destroyLView, detachView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
@@ -479,6 +479,8 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
         prevVCRef.detach(prevVCRef.indexOf(viewRef));
       }
+    } else {
+      lView[FLAGS] &= ~LViewFlags.Attached;
     }
 
     // Logical operation of adding `LView` to `LContainer`

@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLContainer} from '../assert';
 import {getComponentViewByInstance} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
-import {CONTEXT, DESCENDANT_VIEWS_TO_REFRESH, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, TVIEW, TView} from '../interfaces/view';
-import {enterView, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCheckNoChangesMode} from '../state';
+import {CONTEXT, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, TVIEW, TView} from '../interfaces/view';
+import {enterView, getRefreshedAView, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCheckNoChangesMode, setRefreshedAView} from '../state';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
 import {clearViewRefreshFlag, getComponentLViewByIndex, isCreationMode, markViewForRefresh, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
 
@@ -37,6 +38,20 @@ export function detectChangesInternal<T>(
 
   try {
     refreshView(tView, lView, tView.template, context);
+    let retries = 0;
+    do {
+      setRefreshedAView(false);
+      // If after running change detection, this view still needs to be refreshed or there are
+      // descendants views that need to be refreshed due to re-dirtying during the change detection
+      // run, detect changes on the view again. We run change detection in `Targeted` mode to only
+      // refresh views with the `RefreshView` flag.
+      retries++;
+      detectChangesInView(lView, ChangeDetectionMode.Targeted);
+    } while (getRefreshedAView() && retries < 100);
+    if (retries === 100) {
+      throw new RuntimeError(
+          RuntimeErrorCode.INFINITE_CHANGE_DETECTION, ngDevMode && 'Infinite change detection.');
+    }
   } catch (error) {
     if (notifyErrorHandler) {
       handleError(lView, error);
@@ -132,6 +147,9 @@ export function refreshView<T>(
   !isInCheckNoChangesPass && lView[ENVIRONMENT].effectManager?.flush();
 
   enterView(lView);
+  if (lView[FLAGS] & LViewFlags.RefreshView) {
+    setRefreshedAView(true);
+  }
   try {
     resetPreOrderHookFlags(lView);
 
@@ -318,7 +336,9 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
       lView[FLAGS] & LViewFlags.RefreshView ||
       mode === ChangeDetectionMode.BugToForceRefreshAndIgnoreViewFlags) {
     refreshView(tView, lView, tView.template, lView[CONTEXT]);
-  } else if (lView[DESCENDANT_VIEWS_TO_REFRESH] > 0) {
+  } else {
+    // Always traverse the whole tree to find any potential views with the `RefreshView` flag under
+    // non-dirty ancestors.
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
 
     const tView = lView[TVIEW];

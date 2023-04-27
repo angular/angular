@@ -681,6 +681,9 @@
     "name": "_processI18nInsertBefore"
   },
   {
+    "name": "_refreshedAView"
+  },
+  {
     "name": "_retrieveHydrationInfoImpl"
   },
   {
@@ -778,9 +781,6 @@
   },
   {
     "name": "cleanUpView"
-  },
-  {
-    "name": "clearViewRefreshFlag"
   },
   {
     "name": "collectNativeNodes"
@@ -1617,6 +1617,9 @@
     "name": "setInputsFromAttrs"
   },
   {
+    "name": "setRefreshedAView"
+  },
+  {
     "name": "setSelectedIndex"
   },
   {
@@ -1693,9 +1696,6 @@
   },
   {
     "name": "updateMicroTaskStatus"
-  },
-  {
-    "name": "updateViewsToRefresh"
   },
   {
     "name": "urlParsingNode"
