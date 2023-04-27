@@ -448,11 +448,18 @@ export class NgCompiler {
     const compilation = this.ensureAnalyzed();
     const ttc = compilation.templateTypeChecker;
     const diagnostics: ts.Diagnostic[] = [];
-    diagnostics.push(...ttc.getDiagnosticsForComponent(component));
+    try {
+      diagnostics.push(...ttc.getDiagnosticsForComponent(component));
 
-    const extendedTemplateChecker = compilation.extendedTemplateChecker;
-    if (this.options.strictTemplates && extendedTemplateChecker) {
-      diagnostics.push(...extendedTemplateChecker.getDiagnosticsForComponent(component));
+      const extendedTemplateChecker = compilation.extendedTemplateChecker;
+      if (this.options.strictTemplates && extendedTemplateChecker) {
+        diagnostics.push(...extendedTemplateChecker.getDiagnosticsForComponent(component));
+      }
+    } catch (err: unknown) {
+      if (!(err instanceof FatalDiagnosticError)) {
+        throw err;
+      }
+      diagnostics.push(err.toDiagnostic());
     }
     return this.addMessageTextDetails(diagnostics);
   }

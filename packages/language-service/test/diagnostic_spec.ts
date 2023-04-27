@@ -492,6 +492,49 @@ describe('getSemanticDiagnostics', () => {
        const diags = project.getDiagnosticsForFile('app.html');
        expect(diags.length).toEqual(0);
      });
+
+  it('generates diagnostic when the library does not export the host directive', () => {
+    const files = {
+      // export post module and component but not the host directive. This is not valid. We won't
+      // be able to import the host directive for template type checking.
+      'dist/post/index.d.ts': `
+      export { PostComponent, PostModule } from './lib/post.component';
+    `,
+      'dist/post/lib/post.component.d.ts': `
+      import * as i0 from "@angular/core";
+      export declare class HostBindDirective {
+          static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindDirective, never, never, {}, {}, never, never, true, never>;
+      }
+      export declare class PostComponent {
+          static ɵcmp: i0.ɵɵComponentDeclaration<PostComponent, "lib-post", never, {}, {}, never, never, false, [{ directive: typeof HostBindDirective; inputs: {}; outputs: {}; }]>;
+      }
+      export declare class PostModule {
+          static ɵmod: i0.ɵɵNgModuleDeclaration<PostModule, [typeof PostComponent], never, [typeof PostComponent]>;
+          static ɵinj: i0.ɵɵInjectorDeclaration<PostModule>;
+      }
+      `,
+      'test.ts': `
+      import {Component} from '@angular/core';
+      import {PostModule} from 'post';
+
+      @Component({
+        templateUrl: './test.ng.html',
+        imports: [PostModule],
+        standalone: true,
+      })
+      export class Main { }
+       `,
+      'test.ng.html': '<lib-post />'
+    };
+
+    const tsCompilerOptions = {paths: {'post': ['dist/post']}};
+    const project = env.addProject('test', files, {}, tsCompilerOptions);
+
+    const diags = project.getDiagnosticsForFile('test.ng.html');
+    expect(diags.length).toBe(1);
+    expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+        .toContain('HostBindDirective');
+  });
 });
 
 function getTextOfDiagnostic(diag: ts.Diagnostic): string {
