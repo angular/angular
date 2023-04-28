@@ -75,6 +75,7 @@ ng_package(
     ],
     deps = [
         ":platform-server",
+        "//packages/platform-server/dynamic",
         "//packages/platform-server/init",
         "//packages/platform-server/testing",
     ],

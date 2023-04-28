@@ -14,7 +14,8 @@ import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, Environme
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, BrowserModule, provideClientHydration, Title, withNoDomReuse, withNoHttpTransferCache} from '@angular/platform-browser';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, provideServerRendering, renderModule, ServerModule} from '@angular/platform-server';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, provideServerRendering, renderModule, ServerModule} from '@angular/platform-server';
+import {platformDynamicServer} from '@angular/platform-server/dynamic';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';

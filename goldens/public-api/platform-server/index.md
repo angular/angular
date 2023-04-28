@@ -33,9 +33,6 @@ export interface PlatformConfig {
     useAbsoluteUrl?: boolean;
 }
 
-// @public
-export const platformDynamicServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
-
 // @public (undocumented)
 export const platformServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 

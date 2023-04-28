@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "ng_module", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_module(
+    name = "dynamic",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-server",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "dynamic",
+    tsconfig = "//packages:tsec_config",
+)

@@ -30,6 +30,7 @@ ts_library(
         "//packages/localize/init",
         "//packages/platform-browser",
         "//packages/platform-server",
+        "//packages/platform-server/dynamic",
         "//packages/private/testing",
         "//packages/router",
         "@npm//rxjs",

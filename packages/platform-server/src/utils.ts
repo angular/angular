@@ -10,7 +10,7 @@ import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, Static
 import {first} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
-import {platformDynamicServer, platformServer} from './server';
+import {platformServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 
 interface PlatformOptions {
@@ -25,9 +25,7 @@ interface PlatformOptions {
  */
 function createServerPlatform(options: PlatformOptions): PlatformRef {
   const extraProviders = options.platformProviders ?? [];
-  const platformFactory =
-      (typeof ngJitMode === 'undefined' || ngJitMode) ? platformDynamicServer : platformServer;
-  return platformFactory([
+  return platformServer([
     {provide: INITIAL_CONFIG, useValue: {document: options.document, url: options.url}},
     extraProviders
   ]);
