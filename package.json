@@ -161,8 +161,8 @@
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
-    "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#414801b1253d48294087fed2bd4d7b07634c2b40",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#9c3620b19ad53b3bf3cf3a6c837663f9edb3246a",
+    "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#dcded66e5bb6a360180ee213e8e5b1c32e537dcb",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#548da6498b4ba261a52b4e5e05e1dd1239c69c7e",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^6.0.0",
     "@bazel/ibazel": "^0.16.0",

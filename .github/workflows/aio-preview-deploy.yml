@@ -34,7 +34,7 @@ jobs:
           npx -y firebase-tools@latest target:clear --project ${{env.PREVIEW_PROJECT}} hosting aio
           npx -y firebase-tools@latest target:apply --project ${{env.PREVIEW_PROJECT}} hosting aio ${{env.PREVIEW_SITE}}
 
-      - uses: angular/dev-infra/github-actions/deploy-previews/upload-artifacts-to-firebase@7b31625b050e81dcdb575c22f4ed3991922b5bbc
+      - uses: angular/dev-infra/github-actions/deploy-previews/upload-artifacts-to-firebase@e786beab0cc535c7018c28f6dce5b7111b8651ad
         with:
           github-token: '${{secrets.GITHUB_TOKEN}}'
           workflow-artifact-name: 'aio'
