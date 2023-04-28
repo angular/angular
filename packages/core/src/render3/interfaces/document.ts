@@ -19,7 +19,7 @@
  * When running ivy outside of a browser environment, it is necessary to call `setDocument()` to
  * tell ivy what the global `document` is.
  *
- * Angular does this for us in each of the standard platforms (`Browser`, `Server`, and `WebWorker`)
+ * Angular does this for us in each of the standard platforms (`Browser` and `Server`)
  * by calling `setDocument()` when providing the `DOCUMENT` token.
  */
 let DOCUMENT: Document|undefined = undefined;

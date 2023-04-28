@@ -145,7 +145,7 @@ export function isPropertyValid(
   if (schemas === null) return true;
 
   // The property is considered valid if the element matches the schema, it exists on the element,
-  // or it is synthetic, and we are in a browser context (web worker nodes should be skipped).
+  // or it is synthetic.
   if (matchingSchemas(schemas, tagName) || propName in element || isAnimationProp(propName)) {
     return true;
   }
