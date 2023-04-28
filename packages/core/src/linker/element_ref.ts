@@ -49,25 +49,14 @@ export function createElementRef(tNode: TNode, lView: LView): ElementRef {
 // and could do better codegen in the future.
 export class ElementRef<T = any> {
   /**
-   * The underlying native element or `null` if direct access to native elements is not supported
-   * (e.g. when the application runs in a web worker).
-   *
    * <div class="callout is-critical">
    *   <header>Use with caution</header>
    *   <p>
    *    Use this API as the last resort when direct access to DOM is needed. Use templating and
    *    data-binding provided by Angular instead. Alternatively you can take a look at {@link
-   * Renderer2}
-   *    which provides API that can safely be used even when direct access to native elements is not
-   *    supported.
-   *   </p>
-   *   <p>
-   *    Relying on direct DOM access creates tight coupling between your application and rendering
-   *    layers which will make it impossible to separate the two and deploy your application into a
-   *    web worker.
+   * Renderer2} which provides an API that can be safely used.
    *   </p>
    * </div>
-   *
    */
   public nativeElement: T;
 
