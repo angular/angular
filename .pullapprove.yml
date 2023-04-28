@@ -856,6 +856,7 @@ groups:
           'aio/content/images/guide/toh/**/{*,.*}',
           'aio/content/demos/first-app/**/{*,.*}',
           'aio/content/examples/first-app-*/**/{*,.*}',
+          'aio/content/images/guide/faa/**/{*,.*}',
           'aio/content/examples/toh-pt0/**/{*,.*}',
           'aio/content/examples/toh-pt1/**/{*,.*}',
           'aio/content/examples/toh-pt2/**/{*,.*}',
