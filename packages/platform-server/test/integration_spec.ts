@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import '@angular/compiler';
 
 import {animate, AnimationBuilder, state, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
@@ -14,7 +15,7 @@ import {ApplicationConfig, ApplicationRef, Component, destroyPlatform, Environme
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, BrowserModule, provideClientHydration, Title, withNoDomReuse, withNoHttpTransferCache} from '@angular/platform-browser';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, provideServerRendering, renderModule, ServerModule} from '@angular/platform-server';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformServer, PlatformState, provideServerRendering, renderModule, ServerModule} from '@angular/platform-server';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
@@ -536,7 +537,7 @@ describe('platform-server integration', () => {
 
   it('should bootstrap', async () => {
     const platform =
-        platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+        platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
 
     const moduleRef = await platform.bootstrapModule(ExampleModule);
     expect(isPlatformServer(moduleRef.injector.get(PLATFORM_ID))).toBe(true);
@@ -552,10 +553,10 @@ describe('platform-server integration', () => {
 
   it('should allow multiple platform instances', async () => {
     const platform =
-        platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+        platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
 
     const platform2 =
-        platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+        platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
 
 
     await platform.bootstrapModule(ExampleModule).then((moduleRef) => {
@@ -572,7 +573,7 @@ describe('platform-server integration', () => {
   });
 
   it('adds title to the document using Title service', async () => {
-    const platform = platformDynamicServer([{
+    const platform = platformServer([{
       provide: INITIAL_CONFIG,
       useValue: {document: '<html><head><title></title></head><body><app></app></body></html>'}
     }]);
@@ -586,7 +587,7 @@ describe('platform-server integration', () => {
   });
 
   it('should get base href from document', async () => {
-    const platform = platformDynamicServer([{
+    const platform = platformServer([{
       provide: INITIAL_CONFIG,
       useValue: {document: '<html><head><base href="/"></head><body><app></app></body></html>'}
     }]);
@@ -597,7 +598,7 @@ describe('platform-server integration', () => {
   });
 
   it('adds styles with ng-app-id attribute', async () => {
-    const platform = platformDynamicServer([{
+    const platform = platformServer([{
       provide: INITIAL_CONFIG,
       useValue: {document: '<html><head></head><body><app></app></body></html>'}
     }]);
@@ -612,7 +613,7 @@ describe('platform-server integration', () => {
 
   it('copies known properties to attributes', async () => {
     const platform =
-        platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+        platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
     const ref = await platform.bootstrapModule(ImageExampleModule);
     const appRef: ApplicationRef = ref.injector.get(ApplicationRef);
     const app = appRef.components[0].location.nativeElement;
@@ -623,14 +624,14 @@ describe('platform-server integration', () => {
   describe('PlatformLocation', () => {
     it('is injectable', async () => {
       const platform =
-          platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+          platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
       const appRef = await platform.bootstrapModule(ExampleModule);
       const location = appRef.injector.get(PlatformLocation);
       expect(location.pathname).toBe('/');
       platform.destroy();
     });
     it('is configurable via INITIAL_CONFIG', async () => {
-      const platform = platformDynamicServer([{
+      const platform = platformServer([{
         provide: INITIAL_CONFIG,
         useValue: {document: '<app></app>', url: 'http://test.com/deep/path?query#hash'}
       }]);
@@ -644,7 +645,7 @@ describe('platform-server integration', () => {
     });
 
     it('parses component pieces of a URL', async () => {
-      const platform = platformDynamicServer([{
+      const platform = platformServer([{
         provide: INITIAL_CONFIG,
         useValue: {document: '<app></app>', url: 'http://test.com:80/deep/path?query#hash'}
       }]);
@@ -661,7 +662,7 @@ describe('platform-server integration', () => {
     });
 
     it('handles empty search and hash portions of the url', async () => {
-      const platform = platformDynamicServer([{
+      const platform = platformServer([{
         provide: INITIAL_CONFIG,
         useValue: {document: '<app></app>', url: 'http://test.com/deep/path'}
       }]);
@@ -676,7 +677,7 @@ describe('platform-server integration', () => {
 
     it('pushState causes the URL to update', async () => {
       const platform =
-          platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+          platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
 
       const appRef = await platform.bootstrapModule(ExampleModule);
       const location = appRef.injector.get(PlatformLocation);
@@ -688,7 +689,7 @@ describe('platform-server integration', () => {
 
     it('allows subscription to the hash state', done => {
       const platform =
-          platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+          platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
       platform.bootstrapModule(ExampleModule).then(appRef => {
         const location: PlatformLocation = appRef.injector.get(PlatformLocation);
         expect(location.pathname).toBe('/');
@@ -715,8 +716,7 @@ describe('platform-server integration', () => {
     });
 
     it('using long form should work', async () => {
-      const platform =
-          platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
+      const platform = platformServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
 
       const moduleRef = await platform.bootstrapModule(AsyncServerModule);
       const applicationRef = moduleRef.injector.get(ApplicationRef);
@@ -1118,14 +1118,14 @@ describe('platform-server integration', () => {
   describe('HttpClient', () => {
     it('can inject HttpClient', async () => {
       const platform =
-          platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+          platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
       const ref = await platform.bootstrapModule(HttpClientExampleModule);
       expect(ref.injector.get(HttpClient) instanceof HttpClient).toBeTruthy();
     });
 
     it('can make HttpClient requests', async () => {
       const platform =
-          platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+          platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
       await platform.bootstrapModule(HttpClientExampleModule).then(ref => {
         const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
         const http = ref.injector.get(HttpClient);
@@ -1141,7 +1141,7 @@ describe('platform-server integration', () => {
 
     it('can use HttpInterceptor that injects HttpClient', async () => {
       const platform =
-          platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+          platformServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
       await platform.bootstrapModule(HttpInterceptorExampleModule).then(ref => {
         const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
         const http = ref.injector.get(HttpClient);
