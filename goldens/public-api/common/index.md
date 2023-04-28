@@ -340,10 +340,10 @@ export function isPlatformBrowser(platformId: Object): boolean;
 // @public
 export function isPlatformServer(platformId: Object): boolean;
 
-// @public
+// @public @deprecated
 export function isPlatformWorkerApp(platformId: Object): boolean;
 
-// @public
+// @public @deprecated
 export function isPlatformWorkerUi(platformId: Object): boolean;
 
 // @public
