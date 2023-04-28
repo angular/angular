@@ -30,6 +30,8 @@ export function isPlatformServer(platformId: Object): boolean {
 /**
  * Returns whether a platform id represents a web worker app platform.
  * @publicApi
+ * @deprecated This function serves no purpose since the removal of the Webworker platform. It will
+ *     always return `false`.
  */
 export function isPlatformWorkerApp(platformId: Object): boolean {
   return platformId === PLATFORM_WORKER_APP_ID;
@@ -38,6 +40,8 @@ export function isPlatformWorkerApp(platformId: Object): boolean {
 /**
  * Returns whether a platform id represents a web worker UI platform.
  * @publicApi
+ * @deprecated This function serves no purpose since the removal of the Webworker platform. It will
+ *     always return `false`.
  */
 export function isPlatformWorkerUi(platformId: Object): boolean {
   return platformId === PLATFORM_WORKER_UI_ID;
