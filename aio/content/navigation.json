@@ -887,7 +887,7 @@
       "tooltip": "Angular release practices, updating, and upgrading.",
       "children": [
         {
-          "url": "guide/update-to-version-15",
+          "url": "guide/update-to-version-16",
           "title": "Update Angular to the latest version",
           "tooltip": "Update your Angular application to the latest version."
         },
