@@ -128,22 +128,7 @@ export interface Console {
   warn(message: string): void;
 }
 
-
-declare var WorkerGlobalScope: any;
-// CommonJS / Node have global context exposed as "global" variable.
-// We don't want to include the whole node.d.ts this this compilation unit so we'll just fake
-// the global "global" var for now.
-declare var global: any;
-
-// Check `global` first, because in Node tests both `global` and `window` may be defined and our
-// `_global` variable should point to the NodeJS `global` in that case. Note: Typeof/Instanceof
-// checks are considered side-effects in Terser. We explicitly mark this as side-effect free:
-// https://github.com/terser/terser/issues/250.
-const _global: {[name: string]: any} = (/* @__PURE__ */ (
-    () => (typeof global !== 'undefined' && global) || (typeof window !== 'undefined' && window) ||
-        (typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
-         self instanceof WorkerGlobalScope && self))());
-
+const _global: {[name: string]: any} = globalThis;
 export {_global as global};
 
 export function newArray<T = any>(size: number): T[];
