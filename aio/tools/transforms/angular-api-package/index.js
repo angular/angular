@@ -116,8 +116,6 @@ module.exports =
             'platform-server/index.ts',
             'platform-server/init/index.ts',
             'platform-server/testing/index.ts',
-            'platform-webworker/index.ts',
-            'platform-webworker-dynamic/index.ts',
             'router/index.ts',
             'router/testing/index.ts',
             'router/upgrade/index.ts',
