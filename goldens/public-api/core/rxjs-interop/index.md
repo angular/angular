@@ -25,15 +25,28 @@ export interface ToObservableOptions {
 export function toSignal<T>(source: Observable<T>): Signal<T | undefined>;
 
 // @public
-export function toSignal<T, U extends T | null | undefined>(source: Observable<T>, options: {
+export function toSignal<T>(source: Observable<T>, options?: ToSignalOptions<undefined> & {
+    requireSync?: false;
+}): Signal<T | undefined>;
+
+// @public
+export function toSignal<T, U extends T | null | undefined>(source: Observable<T>, options: ToSignalOptions<U> & {
     initialValue: U;
     requireSync?: false;
 }): Signal<T | U>;
 
-// @public (undocumented)
-export function toSignal<T>(source: Observable<T>, options: {
+// @public
+export function toSignal<T>(source: Observable<T>, options: ToSignalOptions<undefined> & {
     requireSync: true;
 }): Signal<T>;
+
+// @public
+export interface ToSignalOptions<T> {
+    initialValue?: T;
+    injector?: Injector;
+    manualCleanup?: boolean;
+    requireSync?: boolean;
+}
 
 // (No @packageDocumentation comment for this package)
 
