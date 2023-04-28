@@ -5,19 +5,19 @@
   },
   "rules": {
     "array-type": false,
-    "arrow-parens": false,
+    "arrow-parens": true,
     "deprecation": {
       "severity": "warning"
     },
     "component-class-suffix": true,
-    "contextual-lifecycle": true,
+    "contextual-lifecycle": false,
     "directive-class-suffix": true,
-    "directive-selector": [true, "attribute", ["ng", "app"], "camelCase"],
+    "directive-selector": [false, "attribute", ["ng", "app"], "camelCase"],
     "component-selector": [true, "element", ["ng", "app"], "kebab-case"],
-    "interface-name": false,
-    "max-classes-per-file": false,
-    "max-line-length": [true, 140],
-    "member-access": false,
+    "interface-name": true,
+    "max-classes-per-file": true,
+    "max-line-length": [true, 20],
+    "member-access": true,
     "member-ordering": [
       true,
       {
