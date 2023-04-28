@@ -16,7 +16,7 @@ import {Observable, ReplaySubject} from 'rxjs';
  */
 export interface ToObservableOptions {
   /**
-   * The `Injector` to use when creating the effect.
+   * The `Injector` to use when creating the underlying `effect` which watches the signal.
    *
    * If this isn't specified, the current injection context will be used.
    */
@@ -28,7 +28,7 @@ export interface ToObservableOptions {
  *
  * The signal's value will be propagated into the `Observable`'s subscribers using an `effect`.
  *
- * `toObservable` must be called in an injection context.
+ * `toObservable` must be called in an injection context unless an injector is provided via options.
  *
  * @developerPreview
  */
