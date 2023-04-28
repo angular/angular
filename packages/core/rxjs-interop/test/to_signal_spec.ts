@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injector, runInInjectionContext} from '@angular/core';
+import {DestroyRef, EnvironmentInjector, Injector, runInInjectionContext} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {BehaviorSubject, ReplaySubject, Subject} from 'rxjs';
 
@@ -62,6 +62,52 @@ describe('toSignal()', () => {
        counter$.next(2);
        expect(counter()).toBe(1);
      }));
+
+
+
+  it('should unsubscribe when an explicitly provided injector is destroyed', test(() => {
+       const counter$ = new BehaviorSubject(0);
+       const injector = Injector.create({providers: []}) as EnvironmentInjector;
+       const counter = toSignal(counter$, {injector});
+
+       expect(counter()).toBe(0);
+       counter$.next(1);
+       expect(counter()).toBe(1);
+
+       // Destroying the injector should unsubscribe the Observable.
+       injector.destroy();
+
+       // The signal should have the last value observed.
+       expect(counter()).toBe(1);
+
+       // And this value should no longer be updating (unsubscribed).
+       counter$.next(2);
+       expect(counter()).toBe(1);
+     }));
+
+  it('should not require an injection context when manualCleanup is passed', () => {
+    const counter$ = new BehaviorSubject(0);
+    expect(() => toSignal(counter$, {manualCleanup: true})).not.toThrow();
+    counter$.complete();
+  });
+
+  it('should not unsubscribe when manualCleanup is passed', () => {
+    const counter$ = new BehaviorSubject(0);
+    const injector = Injector.create({providers: []}) as EnvironmentInjector;
+    const counter =
+        runInInjectionContext(injector, () => toSignal(counter$, {manualCleanup: true}));
+
+    injector.destroy();
+
+    // Destroying the injector should not have unsubscribed the Observable.
+    counter$.next(1);
+    expect(counter()).toBe(1);
+
+    counter$.complete();
+
+    // The signal should have the last value observed before the observable completed.
+    expect(counter()).toBe(1);
+  });
 
   describe('with no initial value', () => {
     it('should return `undefined` if read before a value is emitted', test(() => {
