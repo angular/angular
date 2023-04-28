@@ -56,9 +56,9 @@
 
 version: 3
 
-# availability:
-#   users_unavailable:
-#     - <name>
+availability:
+  users_unavailable:
+    - atscott
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
