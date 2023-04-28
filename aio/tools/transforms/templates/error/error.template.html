@@ -24,11 +24,13 @@
     {$ doc.description | marked $}
   </div>
 
+
+  {% if doc.debugging %}
   <br>
 
   <div class="debugging">
     <h2>Debugging the error</h2>
     {$ doc.debugging | marked $}
   </div>
-
+  {% endif%}
 </div>
