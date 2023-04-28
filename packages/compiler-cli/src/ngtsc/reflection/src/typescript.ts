@@ -164,16 +164,26 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
   getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
     if (!ts.isFunctionDeclaration(node) && !ts.isMethodDeclaration(node) &&
-        !ts.isFunctionExpression(node)) {
+        !ts.isFunctionExpression(node) && !ts.isArrowFunction(node)) {
       return null;
     }
+
+    let body: ts.Statement[]|null = null;
+
+    if (node.body !== undefined) {
+      // The body might be an expression if the node is an arrow function.
+      body = ts.isBlock(node.body) ? Array.from(node.body.statements) :
+                                     [ts.factory.createReturnStatement(node.body)];
+    }
+
     return {
       node,
-      body: node.body !== undefined ? Array.from(node.body.statements) : null,
+      body,
+      typeParameters: node.typeParameters === undefined ? null : Array.from(node.typeParameters),
       parameters: node.parameters.map(param => {
         const name = parameterName(param.name);
         const initializer = param.initializer || null;
-        return {name, node: param, initializer};
+        return {name, node: param, initializer, type: param.type || null};
       }),
     };
   }

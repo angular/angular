@@ -396,7 +396,8 @@ export interface FunctionDefinition {
   /**
    * A reference to the node which declares the function.
    */
-  node: ts.MethodDeclaration|ts.FunctionDeclaration|ts.FunctionExpression|ts.VariableDeclaration;
+  node: ts.MethodDeclaration|ts.FunctionDeclaration|ts.FunctionExpression|ts.VariableDeclaration|
+      ts.ArrowFunction;
 
   /**
    * Statements of the function body, if a body is present, or null if no body is present or the
@@ -412,6 +413,11 @@ export interface FunctionDefinition {
    * Metadata regarding the function's parameters, including possible default value expressions.
    */
   parameters: Parameter[];
+
+  /**
+   * Generic type parameters of the function.
+   */
+  typeParameters: ts.TypeParameterDeclaration[]|null;
 }
 
 /**
@@ -432,6 +438,11 @@ export interface Parameter {
    * Expression which represents the default value of the parameter, if any.
    */
   initializer: ts.Expression|null;
+
+  /**
+   * Type of the parameter.
+   */
+  type: ts.TypeNode|null;
 }
 
 /**
