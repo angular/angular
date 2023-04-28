@@ -10,7 +10,6 @@ import {DOCUMENT, PlatformLocation, ViewportScroller, ɵgetDOM as getDOM, ɵNull
 import {HttpClientModule} from '@angular/common/http';
 import {createPlatformFactory, Injector, NgModule, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, StaticProvider, Testability, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS, ɵsetDocument, ɵTESTABILITY as TESTABILITY} from '@angular/core';
 import {BrowserModule, EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
-import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 import {DominoAdapter, parseDocument} from './domino_adapter';
@@ -89,7 +88,9 @@ export const platformServer: (extraProviders?: StaticProvider[]|undefined) => Pl
 /**
  * The server platform that supports the runtime compiler.
  *
+ * @see `platformServer`
+ * @deprecated add an `import @angular/compiler` and replace the usage with `platformServer`
+ *     instead.
  * @publicApi
  */
-export const platformDynamicServer =
-    createPlatformFactory(platformCoreDynamic, 'serverDynamic', INTERNAL_SERVER_PLATFORM_PROVIDERS);
+export const platformDynamicServer = platformServer;
