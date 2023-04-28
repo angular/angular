@@ -124,8 +124,6 @@
 /docs/js/latest/api/platform-browser/index/Title-class.html --> /api/platform-browser/Title
 /docs/js/latest/api/platform-server/index/PlatformState-class --> /api/platform-server/PlatformState
 /docs/js/latest/api/platform-server/index/PlatformState-class.html --> /api/platform-server/PlatformState
-/docs/js/latest/api/platform-webworker --> /api/platform-webworker
-/docs/js/latest/api/platform-webworker/index/MessageBus-class --> /api/platform-webworker/MessageBus
 /docs/js/latest/api/router/index/ActivatedRoute-interface --> /api/router/ActivatedRoute
 /docs/js/latest/api/router/index/CanActivate-interface.html --> /api/router/CanActivate
 /docs/js/latest/api/router/index/CanActivateChild-interface --> /api/router/CanActivateChild

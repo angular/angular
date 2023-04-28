@@ -168,7 +168,6 @@
       // URLs that use the old scheme before we moved the docs to the angular/angular repo
       {"type": 301, "source": "/docs/*/latest", "destination": "/docs"},
       {"type": 301, "source": "/docs/*/latest/api/", "destination": "/api"},
-      {"type": 301, "source": "/docs/*/latest/api/:package", "destination": "/api/:package"},
       {"type": 301, "source": "/docs/*/latest/api/testing/:api-*",  "destination": "/api/core/testing/:api"},
       {"type": 301, "source": "/docs/*/latest/api/:package/:api-*", "destination": "/api/:package/:api"},
       {"type": 301, "source": "/docs/*/latest/api/:package/index/:api-*", "destination": "/api/:package/:api"},
