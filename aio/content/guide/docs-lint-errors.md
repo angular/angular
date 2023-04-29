@@ -316,7 +316,7 @@ When necessary, you can apply these exceptions to your content.
 
 <!-- links -->
 
-[AioGuideDocsStyleGuide]: https://angular.io/guide/docs-style-guide "Angular documentation style guide | Angular"
+[AioGuideDocsStyleGuide]: /guide/docs-style-guide "Angular documentation style guide | Angular"
 
 <!-- external links -->
 

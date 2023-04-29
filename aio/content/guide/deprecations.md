@@ -651,8 +651,8 @@ Projects that currently have `fullTemplateTypeCheck: true` configured can migrat
 
 ## JIT API changes due to ViewEngine deprecation
 
-In ViewEngine, [JIT compilation](https://angular.io/guide/glossary#jit) required special providers \(such as `Compiler` or `CompilerFactory`\) to be injected in the app and corresponding methods to be invoked.
-With Ivy, JIT compilation takes place implicitly if the Component, NgModule, etc. have not already been [AOT compiled](https://angular.io/guide/glossary#aot).
+In ViewEngine, [JIT compilation](/guide/glossary#jit) required special providers \(such as `Compiler` or `CompilerFactory`\) to be injected in the app and corresponding methods to be invoked.
+With Ivy, JIT compilation takes place implicitly if the Component, NgModule, etc. have not already been [AOT compiled](/guide/glossary#aot).
 Those special providers were made available in Ivy for backwards-compatibility with ViewEngine to make the transition to Ivy smoother.
 Since ViewEngine is deprecated and will soon be removed, those symbols are now deprecated as well.
 

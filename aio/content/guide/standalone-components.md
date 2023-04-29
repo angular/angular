@@ -261,7 +261,7 @@ Angular applications can configure dependency injection by specifying a set of a
 
 #### Environment injectors
 
-Making `NgModule`s optional will require new ways of configuring "module" injectors with application-wide providers (for example, [HttpClient](https://angular.io/api/common/http/HttpClient)). In the standalone application (one created with `bootstrapApplication`), “module” providers can be configured during the bootstrap process, in the `providers` option: 
+Making `NgModule`s optional will require new ways of configuring "module" injectors with application-wide providers (for example, [HttpClient](/api/common/http/HttpClient)). In the standalone application (one created with `bootstrapApplication`), “module” providers can be configured during the bootstrap process, in the `providers` option: 
 
 ```ts
 bootstrapApplication(PhotoAppComponent, {
