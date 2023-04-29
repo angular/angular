@@ -21,7 +21,7 @@ In the image above, there is a series of change detection calls triggered by eve
 
 ## Run tasks outside `NgZone`
 
-In such cases, you can instruct Angular to avoid calling change detection for tasks scheduled by a given piece of code using [NgZone](https://angular.io/guide/zone).
+In such cases, you can instruct Angular to avoid calling change detection for tasks scheduled by a given piece of code using [NgZone](/guide/zone).
 
 ```ts
 import { Component, NgZone, OnInit } from '@angular/core';
