@@ -4,7 +4,7 @@ JavaScript, by default, uses mutable data structures that you can reference from
 
 Change detection is sufficiently fast for most applications. However, when an application has an especially large component tree, running change detection across the whole application can cause performance issues. You can address this by configuring change detection to only run on a subset of the component tree.
 
-If you are confident that a part of the application is not affected by a state change, you can use [OnPush](https://angular.io/api/core/ChangeDetectionStrategy) to skip change detection in an entire component subtree.
+If you are confident that a part of the application is not affected by a state change, you can use [OnPush](/api/core/ChangeDetectionStrategy) to skip change detection in an entire component subtree.
 
 
 ## Using `OnPush`
