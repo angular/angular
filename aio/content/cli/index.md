@@ -29,6 +29,14 @@ ng generate --help
 
 </code-example>
 
+<div class="alert is-helpful">
+
+**NOTE**: <br />
+The `--help` flag is only available when running the Angular CLI inside a [workspace](guide/setup-local).
+Using the `--help` flag outside a workspace (as described above) is expected to result in an error. 
+
+</div>
+
 To create, build, and serve a new, basic Angular project on a development server, go to the parent directory of your new workspace use the following commands:
 
 <code-example format="shell" language="shell">
