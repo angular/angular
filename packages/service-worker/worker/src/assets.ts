@@ -519,13 +519,8 @@ export class PrefetchAssetGroup extends AssetGroup {
     // Open the cache which actually holds requests.
     const cache = await this.cache;
 
-    // Cache all known resources serially. As this reduce proceeds, each Promise waits
-    // on the last before starting the fetch/cache operation for the next request. Any
-    // errors cause fall-through to the final Promise which rejects.
-    await this.urls.reduce(async (previous: Promise<void>, url: string) => {
-      // Wait on all previous operations to complete.
-      await previous;
-
+    // Cache all known resources in parallel.
+    await Promise.all(this.urls.map(async (url: string) => {
       // Construct the Request for this url.
       const req = this.adapter.newRequest(url);
 
@@ -543,8 +538,8 @@ export class PrefetchAssetGroup extends AssetGroup {
       }
 
       // Otherwise, go to the network and hopefully cache the response (if successful).
-      await this.fetchAndCacheOnce(req, false);
-    }, Promise.resolve());
+      return this.fetchAndCacheOnce(req, false);
+    }));
 
     // Handle updating of unknown (unhashed) resources. This is only possible if there's
     // a source to update from.
@@ -553,37 +548,37 @@ export class PrefetchAssetGroup extends AssetGroup {
 
       // Select all of the previously cached resources. These are cached unhashed resources
       // from previous versions of the app, in any asset group.
-      await (await updateFrom.previouslyCachedResources())
-          // First, narrow down the set of resources to those which are handled by this group.
-          // Either it's a known URL, or it matches a given pattern.
-          .filter(
-              url =>
-                  this.urls.indexOf(url) !== -1 || this.patterns.some(pattern => pattern.test(url)))
-          // Finally, process each resource in turn.
-          .reduce(async (previous, url) => {
-            await previous;
-            const req = this.adapter.newRequest(url);
+      await Promise.all(
+          (await updateFrom.previouslyCachedResources())
+              // First, narrow down the set of resources to those which are handled by this group.
+              // Either it's a known URL, or it matches a given pattern.
+              .filter(
+                  url => this.urls.indexOf(url) !== -1 ||
+                      this.patterns.some(pattern => pattern.test(url)))
+              // Finally, process each resource in parallel.
+              .map(async (url) => {
+                const req = this.adapter.newRequest(url);
 
-            // It's possible that the resource in question is already cached. If so,
-            // continue to the next one.
-            const alreadyCached =
-                (await cache.match(req, this.config.cacheQueryOptions) !== undefined);
-            if (alreadyCached) {
-              return;
-            }
+                // It's possible that the resource in question is already cached. If so,
+                // continue to the next one.
+                const alreadyCached =
+                    (await cache.match(req, this.config.cacheQueryOptions) !== undefined);
+                if (alreadyCached) {
+                  return;
+                }
 
-            // Get the most recent old version of the resource.
-            const res = await updateFrom.lookupResourceWithoutHash(url);
-            if (res === null || res.metadata === undefined) {
-              // Unexpected, but not harmful.
-              return;
-            }
+                // Get the most recent old version of the resource.
+                const res = await updateFrom.lookupResourceWithoutHash(url);
+                if (res === null || res.metadata === undefined) {
+                  // Unexpected, but not harmful.
+                  return;
+                }
 
-            // Write it into the cache. It may already be expired, but it can still serve
-            // traffic until it's updated (stale-while-revalidate approach).
-            await cache.put(req, res.response);
-            await metaTable.write(req.url, {...res.metadata, used: false} as UrlMetadata);
-          }, Promise.resolve());
+                // Write it into the cache. It may already be expired, but it can still serve
+                // traffic until it's updated (stale-while-revalidate approach).
+                await cache.put(req, res.response);
+                await metaTable.write(req.url, {...res.metadata, used: false} as UrlMetadata);
+              }));
     }
   }
 }
@@ -600,10 +595,7 @@ export class LazyAssetGroup extends AssetGroup {
     const cache = await this.cache;
 
     // Loop through the listed resources, caching any which are available.
-    await this.urls.reduce(async (previous: Promise<void>, url: string) => {
-      // Wait on all previous operations to complete.
-      await previous;
-
+    await Promise.all(this.urls.map(async (url: string) => {
       // Construct the Request for this url.
       const req = this.adapter.newRequest(url);
 
@@ -632,8 +624,8 @@ export class LazyAssetGroup extends AssetGroup {
         }
 
         // Update from the network.
-        await this.fetchAndCacheOnce(req, false);
+        return this.fetchAndCacheOnce(req, false);
       }
-    }, Promise.resolve());
+    }));
   }
 }

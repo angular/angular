@@ -113,23 +113,15 @@ export class AppVersion implements UpdateSource {
 
   /**
    * Fully initialize this version of the application. If this Promise resolves successfully, all
-   * required
-   * data has been safely downloaded.
+   * required data has been safely downloaded.
    */
   async initializeFully(updateFrom?: UpdateSource): Promise<void> {
     try {
-      // Fully initialize each asset group, in series. Starts with an empty Promise,
-      // and waits for the previous groups to have been initialized before initializing
-      // the next one in turn.
-      await this.assetGroups.reduce<Promise<void>>(async (previous, group) => {
-        // Wait for the previous groups to complete initialization. If there is a
-        // failure, this will throw, and each subsequent group will throw, until the
-        // whole sequence fails.
-        await previous;
-
+      // Fully initialize each asset group, in parallel.
+      await Promise.all(this.assetGroups.map((group) => {
         // Initialize this group.
         return group.initializeFully(updateFrom);
-      }, Promise.resolve());
+      }));
     } catch (err) {
       this._okay = false;
       throw err;
