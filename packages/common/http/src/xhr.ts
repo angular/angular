@@ -7,11 +7,12 @@
  */
 
 import {XhrFactory} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {from, Observable, Observer, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {HttpBackend} from './backend';
+import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
 import {HttpRequest} from './request';
 import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpJsonParseError, HttpResponse, HttpStatusCode, HttpUploadProgressEvent} from './response';
@@ -53,8 +54,10 @@ export class HttpXhrBackend implements HttpBackend {
     // Quick check to give a better error message when a user attempts to use
     // HttpClient.jsonp() without installing the HttpClientJsonpModule
     if (req.method === 'JSONP') {
-      throw new Error(
-          `Attempted to construct Jsonp request without HttpClientJsonpModule installed.`);
+      throw new RuntimeError(
+          RuntimeErrorCode.MISSING_JSONP_MODULE,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              `Cannot make a JSONP request without JSONP support. To fix the problem, either add the \`withJsonpSupport()\` call (if \`provideHttpClient()\` is used) or import the \`HttpClientJsonpModule\` in the root NgModule.`);
     }
 
     // Check whether this factory has a special function to load an XHR implementation
