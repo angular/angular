@@ -9,16 +9,6 @@ Try this <live-example name="reactive-forms" title="Reactive Forms in Stackblitz
 
 </div>
 
-## Warning
-
-Do not access the value of a form control via its parent only. If you do so, you will not get an updated value, but rather an old value. Below is an example of code that will not work:
-<br>
-```const value = this.editForm.value.formControl;```
-<br>
-To get an updated value, use the below code:
-<br>
-```const value = this.editForm.controls.items.formControl;```
-
 ## Prerequisites
 
 Before going further into reactive forms, you should have a basic understanding of the following:
