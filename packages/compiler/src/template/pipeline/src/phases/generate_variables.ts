@@ -40,12 +40,11 @@ function recursivelyProcessView(view: ViewCompilation, parentScope: Scope|null):
   // Extract a `Scope` from this view.
   const scope = getScopeForView(view, parentScope);
 
-  // Start the view creation block with an operation to save the current view context. This may be
-  // used to restore the view context in any listeners that may be present.
-  view.create.prepend([
-    ir.createVariableOp<ir.CreateOp>(
-        view.tpl.allocateXrefId(), scope.savedViewVariable, new ir.GetCurrentViewExpr()),
-  ]);
+  // Embedded views require an operation to save/restore the view context.
+  if (view.parent !== null) {
+    // Start the view creation block with an operation to save the current view context. This may be
+    // used to restore the view context in any listeners that may be present.
+  }
 
   for (const op of view.create) {
     switch (op.kind) {
@@ -54,26 +53,8 @@ function recursivelyProcessView(view: ViewCompilation, parentScope: Scope|null):
         recursivelyProcessView(view.tpl.views.get(op.xref)!, scope);
         break;
       case ir.OpKind.Listener:
-        // Listeners get a preamble which starts with a call to restore the view.
-        const preambleOps = [
-          ir.createVariableOp<ir.UpdateOp>(
-              view.tpl.allocateXrefId(), scope.viewContextVariable,
-              new ir.RestoreViewExpr(view.xref)),
-          // And includes all variables available to this view.
-          ...generateVariablesInScopeForView(view, scope)
-        ];
-
-        op.handlerOps.prepend(preambleOps);
-
-        // The "restore view" operation in listeners requires a call to `resetView` to reset the
-        // context prior to returning from the listener operation. Find any `return` statements in
-        // the listener body and wrap them in a call to reset the view.
-        for (const handlerOp of op.handlerOps) {
-          if (handlerOp.kind === ir.OpKind.Statement &&
-              handlerOp.statement instanceof o.ReturnStatement) {
-            handlerOp.statement.value = new ir.ResetViewExpr(handlerOp.statement.value);
-          }
-        }
+        // Prepend variables to listener handler functions.
+        op.handlerOps.prepend(generateVariablesInScopeForView(view, scope));
         break;
     }
   }
@@ -93,8 +74,6 @@ interface Scope {
   view: ir.XrefId;
 
   viewContextVariable: ir.SemanticVariable;
-
-  savedViewVariable: ir.SemanticVariable;
 
   contextVariables: Map<string, ir.SemanticVariable>;
 
@@ -145,11 +124,6 @@ function getScopeForView(view: ViewCompilation, parent: Scope|null): Scope {
     view: view.xref,
     viewContextVariable: {
       kind: ir.SemanticVariableKind.Context,
-      name: null,
-      view: view.xref,
-    },
-    savedViewVariable: {
-      kind: ir.SemanticVariableKind.SavedView,
       name: null,
       view: view.xref,
     },
