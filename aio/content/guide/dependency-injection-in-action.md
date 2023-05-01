@@ -351,7 +351,7 @@ The provider factory function \(returned by `runnersUpFactory()`\) returns the a
 *   The function takes a winning `Hero` and a `HeroService` as arguments.
     Angular supplies these arguments from injected values identified by the two *tokens* in the `deps` array.
 
-*   The function returns the string of names, which Angular than injects into the `runnersUp` parameter of `HeroOfTheMonthComponent`
+*   The function returns the string of names, which Angular then injects into the `runnersUp` parameter of `HeroOfTheMonthComponent`
 
 <div class="alert is-helpful">
 
