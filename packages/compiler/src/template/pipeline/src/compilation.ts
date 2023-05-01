@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ConstantPool} from '../../../constant_pool';
 import * as o from '../../../output/output_ast';
 import * as ir from '../ir';
 
@@ -36,7 +37,7 @@ export class ComponentCompilation {
    */
   readonly root: ViewCompilation;
 
-  constructor(readonly componentName: string) {
+  constructor(readonly componentName: string, readonly pool: ConstantPool) {
     // Allocate the root view.
     const root = new ViewCompilation(this, this.allocateXrefId(), null);
     this.views.set(root.xref, root);
