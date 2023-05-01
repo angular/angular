@@ -38,9 +38,9 @@ export default async function createConfig({enableLinker, optimize}) {
         enableLinker: enableLinker
           ? {
               ensureNoPartialDeclaration: false,
-              // Only run the linker on `fesm2020/` bundles. This should not have an effect on
+              // Only run the linker on fesm2020 and fesm2022 bundles. This should not have an effect on
               // the bundle output, but helps speeding up ESBuild when it visits other modules.
-              filterPaths: /fesm2020/,
+              filterPaths: /fesm2020|fesm2022/,
               linkerOptions: {
                 // DevTools relies on angular framework packages that are consumed,
                 // locally via bazel. These packages have a version of 0.0.0-PLACEHOLDER.
