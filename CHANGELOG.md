@@ -1,3 +1,25 @@
+<a name="16.0.0-rc.4"></a>
+# 16.0.0-rc.4 (2023-05-01)
+## Breaking Changes
+### platform-server
+- Users that are using SSR with JIT mode will now need to add  `import to @angular/compiler` before bootstrapping the application.
+  
+  **NOTE:** this does not effect users using the Angular CLI.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [80ed0a4868](https://github.com/angular/angular/commit/80ed0a48684834c3e754b761de4edff4a38ce7c2) | fix | fix incorrectly reported distortion for padded images ([#49889](https://github.com/angular/angular/pull/49889)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6da1054a42](https://github.com/angular/angular/commit/6da1054a4203f1b43c3a4046347977b820c0f40b) | fix | catch fatal diagnostic when getting diagnostics for components ([#50046](https://github.com/angular/angular/pull/50046)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5ea624f313](https://github.com/angular/angular/commit/5ea624f3135c71316c36eb94445d818f9157d988) | fix | remove dependency on `@angular/platform-browser-dynamic` ([#50064](https://github.com/angular/angular/pull/50064)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0-rc.3"></a>
 # 16.0.0-rc.3 (2023-04-27)
 ### core
