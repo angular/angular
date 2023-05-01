@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ConstantPool} from '../../../constant_pool';
 import * as e from '../../../expression_parser/ast';
 import * as o from '../../../output/output_ast';
 import * as t from '../../../render3/r3_ast';
@@ -18,8 +19,9 @@ import {BINARY_OPERATORS} from './conversion';
  * Process a template AST and convert it into a `ComponentCompilation` in the intermediate
  * representation.
  */
-export function ingest(componentName: string, template: t.Node[]): ComponentCompilation {
-  const cpl = new ComponentCompilation(componentName);
+export function ingest(
+    componentName: string, template: t.Node[], constantPool: ConstantPool): ComponentCompilation {
+  const cpl = new ComponentCompilation(componentName, constantPool);
   ingestNodes(cpl.root, template);
   return cpl;
 }
