@@ -161,6 +161,15 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
         convertAst(ast.trueExp, cpl),
         convertAst(ast.falseExp, cpl),
     );
+  } else if (ast instanceof e.BindingPipe) {
+    return new ir.PipeBindingExpr(
+        cpl.allocateXrefId(),
+        ast.name,
+        [
+          convertAst(ast.exp, cpl),
+          ...ast.args.map(arg => convertAst(arg, cpl)),
+        ],
+    );
   } else {
     throw new Error(`Unhandled expression type: ${ast.constructor.name}`);
   }
