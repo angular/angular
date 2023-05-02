@@ -155,6 +155,12 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
     return new o.LiteralMapExpr(entries);
   } else if (ast instanceof e.LiteralArray) {
     return new o.LiteralArrayExpr(ast.expressions.map(expr => convertAst(expr, cpl)));
+  } else if (ast instanceof e.Conditional) {
+    return new o.ConditionalExpr(
+        convertAst(ast.condition, cpl),
+        convertAst(ast.trueExp, cpl),
+        convertAst(ast.falseExp, cpl),
+    );
   } else {
     throw new Error(`Unhandled expression type: ${ast.constructor.name}`);
   }

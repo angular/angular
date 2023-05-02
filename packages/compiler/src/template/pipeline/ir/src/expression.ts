@@ -451,6 +451,12 @@ export function transformExpressionsInExpression(
       expr.entries[i].value =
           transformExpressionsInExpression(expr.entries[i].value, transform, flags);
     }
+  } else if (expr instanceof o.ConditionalExpr) {
+    expr.condition = transformExpressionsInExpression(expr.condition, transform, flags);
+    expr.trueCase = transformExpressionsInExpression(expr.trueCase, transform, flags);
+    if (expr.falseCase !== null) {
+      expr.falseCase = transformExpressionsInExpression(expr.falseCase, transform, flags);
+    }
   } else if (
       expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
       expr instanceof o.LiteralExpr) {
