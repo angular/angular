@@ -203,7 +203,6 @@ export interface NgModule {
 }
 
 /**
- * @Annotation
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
     'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
