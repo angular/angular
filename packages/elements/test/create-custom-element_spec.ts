@@ -67,8 +67,7 @@ describe('createCustomElement', () => {
   });
 
   it('should work even if the constructor is not called (due to polyfill)', () => {
-    // Some polyfills (e.g. `document-register-element`) do not call the constructor of custom
-    // elements. Currently, all the constructor does is initialize the `injector` property. This
+    // Currently, all the constructor does is initialize the `injector` property. This
     // test simulates not having called the constructor by "unsetting" the property.
     //
     // NOTE:
@@ -256,8 +255,6 @@ describe('createCustomElement', () => {
   function createAndRegisterTestCustomElement(strategyFactory: NgElementStrategyFactory) {
     const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
 
-    // The `@webcomponents/custom-elements/src/native-shim.js` polyfill allows us to create
-    // new instances of the NgElement which extends HTMLElement, as long as we define it.
     customElements.define(selector, ElementCtor);
 
     return ElementCtor;
