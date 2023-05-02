@@ -13,7 +13,7 @@ import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
 
 /**
  * Format styles that can be used to represent numbers.
- * @see `getLocaleNumberFormat()`.
+ * @see {@link getLocaleNumberFormat}.
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
@@ -28,8 +28,8 @@ export enum NumberFormatStyle {
 /**
  * Plurality cases used for translating plurals to different languages.
  *
- * @see `NgPlural`
- * @see `NgPluralCase`
+ * @see {@link NgPlural}
+ * @see {@link NgPluralCase}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
@@ -80,9 +80,9 @@ export enum TranslationWidth {
  * The specific character widths are locale-specific.
  * Examples are given for `en-US`.
  *
- * @see `getLocaleDateFormat()`
- * @see `getLocaleTimeFormat()`
- * @see `getLocaleDateTimeFormat()`
+ * @see {@link getLocaleDateFormat}
+ * @see {@link getLocaleTimeFormat}
+ * @see {@link getLocaleDateTimeFormat}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  * @publicApi
  */
@@ -113,7 +113,7 @@ export enum FormatWidth {
  * Symbols that can be used to replace placeholders in number patterns.
  * Examples are based on `en-US` values.
  *
- * @see `getLocaleNumberSymbol()`
+ * @see {@link getLocaleNumberSymbol}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
@@ -338,7 +338,7 @@ export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay] {
  * @param locale A locale code for the locale format rules to use.
  * @param width The format type.
  * @returns The localized formatting string.
- * @see `FormatWidth`
+ * @see {@link FormatWidth}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
@@ -354,7 +354,7 @@ export function getLocaleDateFormat(locale: string, width: FormatWidth): string 
  * @param locale A locale code for the locale format rules to use.
  * @param width The format type.
  * @returns The localized formatting string.
- * @see `FormatWidth`
+ * @see {@link FormatWidth}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
 
  * @publicApi
@@ -370,7 +370,7 @@ export function getLocaleTimeFormat(locale: string, width: FormatWidth): string 
  * @param locale A locale code for the locale format rules to use.
  * @param width The format type.
  * @returns The localized formatting string.
- * @see `FormatWidth`
+ * @see {@link FormatWidth}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
@@ -386,7 +386,7 @@ export function getLocaleDateTimeFormat(locale: string, width: FormatWidth): str
  * @param locale The locale code.
  * @param symbol The symbol to localize.
  * @returns The character for the localized symbol.
- * @see `NumberSymbol`
+ * @see {@link NumberSymbol}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
@@ -433,7 +433,7 @@ export function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): str
  * @param locale A locale code for the locale format rules to use.
  * @param type The type of numeric value to be formatted (such as `Decimal` or `Currency`.)
  * @returns The localized format string.
- * @see `NumberFormatStyle`
+ * @see {@link NumberFormatStyle}
  * @see [CLDR website](http://cldr.unicode.org/translation/number-patterns)
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
@@ -532,7 +532,7 @@ function checkFullData(data: any) {
  * @returns The rules for the locale, a single time value or array of *from-time, to-time*,
  * or null if no periods are available.
  *
- * @see `getLocaleExtraDayPeriods()`
+ * @see {@link getLocaleExtraDayPeriods}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
@@ -561,7 +561,7 @@ export function getLocaleExtraDayPeriodRules(locale: string): (Time|[Time, Time]
  * @param formStyle The required grammatical form.
  * @param width The required character width.
  * @returns The translated day-period strings.
- * @see `getLocaleExtraDayPeriodRules()`
+ * @see {@link getLocaleExtraDayPeriodRules}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi

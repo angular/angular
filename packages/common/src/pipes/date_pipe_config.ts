@@ -10,7 +10,7 @@
  * An interface that describes the date pipe configuration, which can be provided using the
  * `DATE_PIPE_DEFAULT_OPTIONS` token.
  *
- * @see `DATE_PIPE_DEFAULT_OPTIONS`
+ * @see {@link DATE_PIPE_DEFAULT_OPTIONS}
  *
  * @publicApi
  */
