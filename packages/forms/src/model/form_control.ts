@@ -59,7 +59,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  *
  * See [usage examples below](#usage-notes).
  *
- * @see `AbstractControl`
+ * @see {@link AbstractControl}
  * @see [Reactive Forms Guide](guide/reactive-forms)
  * @see [Usage Notes](#usage-notes)
  *
@@ -239,7 +239,7 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
    * It exists for symmetry with {@link FormGroup#patchValue patchValue} on `FormGroups` and
    * `FormArrays`, where it does behave differently.
    *
-   * @see `setValue` for options
+   * @see {@link FormControl#setValue} for options
    */
   patchValue(value: TValue, options?: {
     onlySelf?: boolean,

@@ -164,7 +164,7 @@ export class SelectControlValueAccessor extends BuiltInControlValueAccessor impl
  * @description
  * Marks `<option>` as dynamic, so Angular can be notified when options change.
  *
- * @see `SelectControlValueAccessor`
+ * @see {@link SelectControlValueAccessor}
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
