@@ -62,7 +62,7 @@ import {ViewRef} from '../render3/view_ref';
  */
 export abstract class ChangeDetectorRef {
   /**
-   * When a view uses the {@link ChangeDetectionStrategy#OnPush OnPush} (checkOnce)
+   * When a view uses the {@link ChangeDetectionStrategy#OnPush} (checkOnce)
    * change detection strategy, explicitly marks the view as changed so that
    * it can be checked again.
    *
@@ -90,8 +90,7 @@ export abstract class ChangeDetectorRef {
   abstract detach(): void;
 
   /**
-   * Checks this view and its children. Use in combination with {@link ChangeDetectorRef#detach
-   * detach}
+   * Checks this view and its children. Use in combination with {@link ChangeDetectorRef#detach}
    * to implement local change detection checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->

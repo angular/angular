@@ -50,8 +50,8 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  * A view container instance can contain other view containers,
  * creating a [view hierarchy](guide/glossary#view-hierarchy).
  *
- * @see `ComponentRef`
- * @see `EmbeddedViewRef`
+ * @see {@link ComponentRef}
+ * @see {@link EmbeddedViewRef}
  *
  * @publicApi
  */

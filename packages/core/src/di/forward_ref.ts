@@ -57,7 +57,7 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
  *
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='resolve_forward_ref'}
  *
- * @see `forwardRef`
+ * @see {@link forwardRef}
  * @publicApi
  */
 export function resolveForwardRef<T>(type: T): T {
