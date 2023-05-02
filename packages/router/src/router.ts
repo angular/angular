@@ -65,7 +65,7 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  *
  * A service that provides navigation among views and URL manipulation capabilities.
  *
- * @see `Route`.
+ * @see {@link Route}.
  * @see [Routing and Navigation Guide](guide/router).
  *
  * @ngModule RouterModule
@@ -185,7 +185,7 @@ export class Router {
    *
    * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
    *   `provideRouter` has the `withNavigationErrorHandler` feature to make this easier.
-   * @see `withNavigationErrorHandler`
+   * @see {@link withNavigationErrorHandler}
    */
   errorHandler = this.options.errorHandler || defaultErrorHandler;
 
@@ -197,7 +197,7 @@ export class Router {
    *
    * @deprecated URI parsing errors should be handled in the `UrlSerializer`.
    *
-   * @see `RouterModule`
+   * @see {@link RouterModule}
    */
   malformedUriErrorHandler =
       this.options.malformedUriErrorHandler || defaultMalformedUriErrorHandler;
@@ -239,9 +239,9 @@ export class Router {
    *
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see `withRouterConfig`
-   * @see `provideRouter`
-   * @see `RouterModule`
+   * @see {@link withRouterConfig}
+   * @see {@link provideRouter}
+   * @see {@link RouterModule}
    */
   onSameUrlNavigation: OnSameUrlNavigation = this.options.onSameUrlNavigation || 'ignore';
 
@@ -255,9 +255,9 @@ export class Router {
    * for all child routes.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see `withRouterConfig`
-   * @see `provideRouter`
-   * @see `RouterModule`
+   * @see {@link withRouterConfig}
+   * @see {@link provideRouter}
+   * @see {@link RouterModule}
    */
   paramsInheritanceStrategy: 'emptyOnly'|'always' =
       this.options.paramsInheritanceStrategy || 'emptyOnly';
@@ -270,9 +270,9 @@ export class Router {
    * you can show an error message with the URL that failed.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see `withRouterConfig`
-   * @see `provideRouter`
-   * @see `RouterModule`
+   * @see {@link withRouterConfig}
+   * @see {@link provideRouter}
+   * @see {@link RouterModule}
    */
   urlUpdateStrategy: 'deferred'|'eager' = this.options.urlUpdateStrategy || 'deferred';
 
@@ -298,9 +298,9 @@ export class Router {
    * The default value is `replace`.
    *
    * @deprecated Configure this through `provideRouter` or `RouterModule.forRoot` instead.
-   * @see `withRouterConfig`
-   * @see `provideRouter`
-   * @see `RouterModule`
+   * @see {@link withRouterConfig}
+   * @see {@link provideRouter}
+   * @see {@link RouterModule}
    */
   canceledNavigationResolution: 'replace'|'computed' =
       this.options.canceledNavigationResolution || 'replace';
