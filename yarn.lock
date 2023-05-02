@@ -4244,10 +4244,10 @@
     "@types/node" "*"
     "@types/responselike" "*"
 
-"@types/chrome@^0.0.233":
-  version "0.0.233"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.233.tgz#c56bb845a376b69f1a8d08c28a5d76283bae72e6"
-  integrity sha512-T3HUW8LDhHfYPbUkOZilhnqX04sZqEFIQO0OIG8byZ7PBIk2jYys1AkNg56UbtKbsh3dABmOniK+0Q3oyo7Sxg==
+"@types/chrome@^0.0.235":
+  version "0.0.235"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.235.tgz#9077932147b0a7a739bc1c60c8450b82a25deb2f"
+  integrity sha512-SPj9A4E35SBJICjnL04KZEA/eVr8Km7gbnEfAxzaU2fHpLSnN64OPnfOR3EpDJXXpSORKTn3OUDwugw+rYBBXA==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
