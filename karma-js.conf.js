@@ -41,13 +41,6 @@ module.exports = function(config) {
       {pattern: 'packages/platform-browser/test/static_assets/**/*', included: false},
       {pattern: 'packages/platform-browser/test/browser/static_assets/**/*', included: false},
 
-      // Serve polyfills necessary for testing the `elements` package.
-      {
-        pattern: 'node_modules/@webcomponents/custom-elements/**/*.js',
-        included: false,
-        watched: false,
-      },
-
       'node_modules/reflect-metadata/Reflect.js',
 
       'dist/legacy-test-bundle.spec.js',
