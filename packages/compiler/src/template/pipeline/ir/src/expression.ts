@@ -352,6 +352,15 @@ export function transformExpressionsInExpression(
     for (let i = 0; i < expr.args.length; i++) {
       expr.args[i] = transformExpressionsInExpression(expr.args[i], transform, flags);
     }
+  } else if (expr instanceof o.LiteralArrayExpr) {
+    for (let i = 0; i < expr.entries.length; i++) {
+      expr.entries[i] = transformExpressionsInExpression(expr.entries[i], transform, flags);
+    }
+  } else if (expr instanceof o.LiteralMapExpr) {
+    for (let i = 0; i < expr.entries.length; i++) {
+      expr.entries[i].value =
+          transformExpressionsInExpression(expr.entries[i].value, transform, flags);
+    }
   } else if (
       expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
       expr instanceof o.LiteralExpr) {
