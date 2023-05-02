@@ -29,7 +29,7 @@ import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
  * Token to provide to allow SetDisabledState to always be called when a CVA is added, regardless of
  * whether the control is disabled or enabled.
  *
- * @see `FormsModule.withConfig`
+ * @see {@link FormsModule#withconfig}
  */
 export const CALL_SET_DISABLED_STATE = new InjectionToken(
     'CallSetDisabledState', {providedIn: 'root', factory: () => setDisabledStateDefault});
@@ -40,7 +40,7 @@ export const CALL_SET_DISABLED_STATE = new InjectionToken(
  * called when disabled, which is the legacy behavior for compatibility.
  *
  * @publicApi
- * @see `FormsModule.withConfig`
+ * @see {@link FormsModule#withconfig}
  */
 export type SetDisabledStateOption = 'whenDisabledForLegacyCode'|'always';
 

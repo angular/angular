@@ -35,7 +35,7 @@ function hasValidLength(value: any): boolean {
  * An `InjectionToken` for registering additional synchronous validators used with
  * `AbstractControl`s.
  *
- * @see `NG_ASYNC_VALIDATORS`
+ * @see {@link NG_ASYNC_VALIDATORS}
  *
  * @usageNotes
  *
@@ -65,7 +65,7 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
  * An `InjectionToken` for registering additional asynchronous validators used with
  * `AbstractControl`s.
  *
- * @see `NG_VALIDATORS`
+ * @see {@link NG_VALIDATORS}
  *
  * @usageNotes
  *
@@ -154,7 +154,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `min` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static min(min: number): ValidatorFn {
@@ -178,7 +178,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `max` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static max(max: number): ValidatorFn {
@@ -202,7 +202,7 @@ export class Validators {
    * @returns An error map with the `required` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static required(control: AbstractControl): ValidationErrors|null {
@@ -227,7 +227,7 @@ export class Validators {
    * @returns An error map that contains the `required` property
    * set to `true` if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static requiredTrue(control: AbstractControl): ValidationErrors|null {
@@ -267,7 +267,7 @@ export class Validators {
    * @returns An error map with the `email` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static email(control: AbstractControl): ValidationErrors|null {
@@ -301,7 +301,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `minlength` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static minLength(minLength: number): ValidatorFn {
@@ -332,7 +332,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `maxlength` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
@@ -385,7 +385,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `pattern` property if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static pattern(pattern: string|RegExp): ValidatorFn {
@@ -396,7 +396,7 @@ export class Validators {
    * @description
    * Validator that performs no operation.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static nullValidator(control: AbstractControl): ValidationErrors|null {
@@ -411,7 +411,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error maps of the validators if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static compose(validators: null): null;
@@ -428,7 +428,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
    *
-   * @see `updateValueAndValidity()`
+   * @see {@link updateValueAndValidity()}
    *
    */
   static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {

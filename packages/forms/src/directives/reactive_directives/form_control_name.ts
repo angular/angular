@@ -33,8 +33,8 @@ const controlNameBinding: Provider = {
  * element by name.
  *
  * @see [Reactive Forms Guide](guide/reactive-forms)
- * @see `FormControl`
- * @see `AbstractControl`
+ * @see {@link FormControl}
+ * @see {@link AbstractControl}
  *
  * @usageNotes
  *

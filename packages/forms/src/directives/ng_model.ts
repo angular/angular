@@ -72,8 +72,8 @@ const resolvedPromise = (() => Promise.resolve())();
  * for direct access. See a full list of properties directly available in
  * `AbstractControlDirective`.
  *
- * @see `RadioControlValueAccessor`
- * @see `SelectControlValueAccessor`
+ * @see {@link RadioControlValueAccessor}
+ * @see {@link SelectControlValueAccessor}
  *
  * @usageNotes
  *

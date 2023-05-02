@@ -37,7 +37,7 @@ const formDirectiveProvider: Provider = {
  * and `FormArrayName` directives.
  *
  * @see [Reactive Forms Guide](guide/reactive-forms)
- * @see `AbstractControl`
+ * @see {@link AbstractControl}
  *
  * @usageNotes
  * ### Register Form Group

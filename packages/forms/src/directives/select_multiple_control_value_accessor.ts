@@ -48,7 +48,7 @@ abstract class HTMLCollection {
  * control changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and
  * `NgModel` directives.
  *
- * @see `SelectControlValueAccessor`
+ * @see {@link SelectControlValueAccessor}
  *
  * @usageNotes
  *
@@ -196,7 +196,7 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
  * @description
  * Marks `<option>` as dynamic, so Angular can be notified when options change.
  *
- * @see `SelectMultipleControlValueAccessor`
+ * @see {@link SelectMultipleControlValueAccessor}
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule

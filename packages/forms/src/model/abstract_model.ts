@@ -19,14 +19,14 @@ import {addValidators, composeAsyncValidators, composeValidators, hasValidator, 
 /**
  * Reports that a control is valid, meaning that no errors exist in the input value.
  *
- * @see `status`
+ * @see {@link status}
  */
 export const VALID = 'VALID';
 
 /**
  * Reports that a control is invalid, meaning that an error exists in the input value.
  *
- * @see `status`
+ * @see {@link status}
  */
 export const INVALID = 'INVALID';
 
@@ -34,8 +34,8 @@ export const INVALID = 'INVALID';
  * Reports that a control is pending, meaning that that async validation is occurring and
  * errors are not yet available for the input value.
  *
- * @see `markAsPending`
- * @see `status`
+ * @see {@link markAsPending}
+ * @see {@link status}
  */
 export const PENDING = 'PENDING';
 
@@ -43,8 +43,8 @@ export const PENDING = 'PENDING';
  * Reports that a control is disabled, meaning that the control is exempt from ancestor
  * calculations of validity or value.
  *
- * @see `markAsDisabled`
- * @see `status`
+ * @see {@link markAsDisabled}
+ * @see {@link status}
  */
 export const DISABLED = 'DISABLED';
 
@@ -467,7 +467,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   /**
    * The validation status of the control.
    *
-   * @see `FormControlStatus`
+   * @see {@link FormControlStatus}
    *
    * These status values are mutually exclusive, so a control cannot be
    * both valid AND invalid or invalid AND disabled.
@@ -599,7 +599,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * A multicasting observable that emits an event every time the validation `status` of the control
    * recalculates.
    *
-   * @see `FormControlStatus`
+   * @see {@link FormControlStatus}
    * @see {@link AbstractControl.status}
    *
    */
@@ -787,9 +787,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * Marks the control as `touched`. A control is touched by focus and
    * blur events that do not change the value.
    *
-   * @see `markAsUntouched()`
-   * @see `markAsDirty()`
-   * @see `markAsPristine()`
+   * @see {@link markAsUntouched()}
+   * @see {@link markAsDirty()}
+   * @see {@link markAsPristine()}
    *
    * @param opts Configuration options that determine how the control propagates changes
    * and emits events after marking is applied.
@@ -806,7 +806,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /**
    * Marks the control and all its descendant controls as `touched`.
-   * @see `markAsTouched()`
+   * @see {@link markAsTouched()}
    */
   markAllAsTouched(): void {
     this.markAsTouched({onlySelf: true});
@@ -820,9 +820,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * If the control has any children, also marks all children as `untouched`
    * and recalculates the `touched` status of all parent controls.
    *
-   * @see `markAsTouched()`
-   * @see `markAsDirty()`
-   * @see `markAsPristine()`
+   * @see {@link markAsTouched()}
+   * @see {@link markAsDirty()}
+   * @see {@link markAsPristine()}
    *
    * @param opts Configuration options that determine how the control propagates changes
    * and emits events after the marking is applied.
@@ -846,9 +846,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * Marks the control as `dirty`. A control becomes dirty when
    * the control's value is changed through the UI; compare `markAsTouched`.
    *
-   * @see `markAsTouched()`
-   * @see `markAsUntouched()`
-   * @see `markAsPristine()`
+   * @see {@link markAsTouched()}
+   * @see {@link markAsUntouched()}
+   * @see {@link markAsPristine()}
    *
    * @param opts Configuration options that determine how the control propagates changes
    * and emits events after marking is applied.
@@ -870,9 +870,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * and recalculates the `pristine` status of all parent
    * controls.
    *
-   * @see `markAsTouched()`
-   * @see `markAsUntouched()`
-   * @see `markAsDirty()`
+   * @see {@link markAsTouched()}
+   * @see {@link markAsUntouched()}
+   * @see {@link markAsDirty()}
    *
    * @param opts Configuration options that determine how the control emits events after
    * marking is applied.
