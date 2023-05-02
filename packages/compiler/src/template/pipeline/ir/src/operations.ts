@@ -268,11 +268,14 @@ export class OpList<OpT extends Op<OpT>> {
    * Insert `op` before `before`.
    */
   static insertBefore<OpT extends Op<OpT>>(op: OpT, before: OpT): void {
-    OpList.assertIsNotEnd(before);
+    OpList.assertIsOwned(before);
+    if (before.prev === null) {
+      throw new Error(`AssertionError: illegal operation on list start`);
+    }
+
     OpList.assertIsNotEnd(op);
 
     OpList.assertIsUnowned(op);
-    OpList.assertIsOwned(before);
 
     op.debugListId = before.debugListId;
 
