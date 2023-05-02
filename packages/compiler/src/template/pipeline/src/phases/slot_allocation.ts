@@ -77,6 +77,10 @@ export function phaseSlotAllocation(cpl: ComponentCompilation): void {
 
       // Process all `ir.Expression`s within this view, and look for `usesSlotIndexExprTrait`.
       ir.visitExpressionsInOp(op, expr => {
+        if (!ir.isIrExpression(expr)) {
+          return;
+        }
+
         if (!ir.hasUsesSlotIndexTrait(expr) || expr.slot !== null) {
           return;
         }

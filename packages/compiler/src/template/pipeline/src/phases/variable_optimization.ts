@@ -281,6 +281,10 @@ function collectOpInfo(op: ir.CreateOp|ir.UpdateOp): OpInfo {
   let fences = Fence.None;
   const variablesUsed = new Set<ir.XrefId>();
   ir.visitExpressionsInOp(op, expr => {
+    if (!ir.isIrExpression(expr)) {
+      return;
+    }
+
     switch (expr.kind) {
       case ir.ExpressionKind.ReadVariable:
         variablesUsed.add(expr.xref);
@@ -300,6 +304,10 @@ function countVariableUsages(
     op: ir.CreateOp|ir.UpdateOp, varUsages: Map<ir.XrefId, number>,
     varRemoteUsage: Set<ir.XrefId>): void {
   ir.visitExpressionsInOp(op, (expr, flags) => {
+    if (!ir.isIrExpression(expr)) {
+      return;
+    }
+
     if (expr.kind !== ir.ExpressionKind.ReadVariable) {
       return;
     }
@@ -323,6 +331,10 @@ function countVariableUsages(
 function uncountVariableUsages(
     op: ir.CreateOp|ir.UpdateOp, varUsages: Map<ir.XrefId, number>): void {
   ir.visitExpressionsInOp(op, expr => {
+    if (!ir.isIrExpression(expr)) {
+      return;
+    }
+
     if (expr.kind !== ir.ExpressionKind.ReadVariable) {
       return;
     }
@@ -377,6 +389,10 @@ function tryInlineVariableInitializer(
   let inliningAllowed = true;
 
   ir.transformExpressionsInOp(target, (expr, flags) => {
+    if (!ir.isIrExpression(expr)) {
+      return expr;
+    }
+
     if (inlined || !inliningAllowed) {
       // Either the inlining has already succeeded, or we've passed a fence that disallows inlining
       // at this point, so don't try.
