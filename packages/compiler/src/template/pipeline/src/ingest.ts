@@ -145,6 +145,14 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
     return new o.ReadKeyExpr(convertAst(ast.receiver, cpl), convertAst(ast.key, cpl));
   } else if (ast instanceof e.Chain) {
     throw new Error(`AssertionError: Chain in unknown context`);
+  } else if (ast instanceof e.LiteralMap) {
+    const entries = ast.keys.map((key, idx) => {
+      const value = ast.values[idx];
+      return new o.LiteralMapEntry(key.key, convertAst(value, cpl), key.quoted);
+    });
+    return new o.LiteralMapExpr(entries);
+  } else if (ast instanceof e.LiteralArray) {
+    return new o.LiteralArrayExpr(ast.expressions.map(expr => convertAst(expr, cpl)));
   } else {
     throw new Error(`Unhandled expression type: ${ast.constructor.name}`);
   }
