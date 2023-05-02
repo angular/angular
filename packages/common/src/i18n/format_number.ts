@@ -141,8 +141,8 @@ function formatNumberToLocaleString(
  *
  * @returns The formatted currency value.
  *
- * @see `formatNumber()`
- * @see `DecimalPipe`
+ * @see {@link formatNumber}
+ * @see {@link DecimalPipe}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
@@ -182,8 +182,8 @@ export function formatCurrency(
  *
  * @returns The formatted percentage value.
  *
- * @see `formatNumber()`
- * @see `DecimalPipe`
+ * @see {@link formatNumber}
+ * @see {@link DecimalPipe}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  * @publicApi
  *
