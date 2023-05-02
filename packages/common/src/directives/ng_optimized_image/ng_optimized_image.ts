@@ -107,7 +107,7 @@ const defaultConfig: ImageConfig = {
 /**
  * Injection token that configures the image optimized image functionality.
  *
- * @see `NgOptimizedImage`
+ * @see {@link NgOptimizedImage}
  * @publicApi
  * @developerPreview
  */

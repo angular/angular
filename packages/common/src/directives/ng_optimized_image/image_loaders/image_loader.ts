@@ -14,8 +14,8 @@ import {isAbsoluteUrl, isValidPath, normalizePath, normalizeSrc} from '../url';
 /**
  * Config options recognized by the image loader function.
  *
- * @see `ImageLoader`
- * @see `NgOptimizedImage`
+ * @see {@link ImageLoader}
+ * @see {@link NgOptimizedImage}
  * @publicApi
  */
 export interface ImageLoaderConfig {
@@ -45,8 +45,8 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
  * Noop image loader that does no transformation to the original src and just returns it as is.
  * This loader is used as a default one if more specific logic is not provided in an app config.
  *
- * @see `ImageLoader`
- * @see `NgOptimizedImage`
+ * @see {@link ImageLoader}
+ * @see {@link NgOptimizedImage}
  */
 export const noopImageLoader = (config: ImageLoaderConfig) => config.src;
 
@@ -61,8 +61,8 @@ export type ImageLoaderInfo = {
 /**
  * Injection token that configures the image loader function.
  *
- * @see `ImageLoader`
- * @see `NgOptimizedImage`
+ * @see {@link ImageLoader}
+ * @see {@link NgOptimizedImage}
  * @publicApi
  */
 export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
