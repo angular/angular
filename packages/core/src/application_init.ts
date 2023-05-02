@@ -25,7 +25,7 @@ import {isPromise, isSubscribable} from './util/lang';
  * The function is executed during the application bootstrap process,
  * and the needed data is available on startup.
  *
- * @see `ApplicationInitStatus`
+ * @see {@link ApplicationInitStatus}
  *
  * @usageNotes
  *
