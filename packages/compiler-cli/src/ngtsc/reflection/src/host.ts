@@ -413,6 +413,11 @@ export interface FunctionDefinition {
    * Metadata regarding the function's parameters, including possible default value expressions.
    */
   parameters: Parameter[];
+
+  /**
+   * Generic type parameters of the function.
+   */
+  typeParameters: ts.TypeParameterDeclaration[]|null;
 }
 
 /**

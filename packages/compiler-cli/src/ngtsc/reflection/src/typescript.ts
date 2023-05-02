@@ -179,6 +179,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {
       node,
       body,
+      typeParameters: node.typeParameters === undefined ? null : Array.from(node.typeParameters),
       parameters: node.parameters.map(param => {
         const name = parameterName(param.name);
         const initializer = param.initializer || null;
