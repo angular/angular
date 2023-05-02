@@ -109,7 +109,7 @@ export class NgControlStatus extends AbstractControlStatus {
  * based on control status (valid/invalid/dirty/etc). On groups, this includes the additional
  * class ng-submitted.
  *
- * @see `NgControlStatus`
+ * @see {@link NgControlStatus}
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule

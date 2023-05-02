@@ -120,7 +120,7 @@ export const formArrayNameProvider: any = {
  * `FormGroup` instance you passed into `FormGroupDirective`.
  *
  * @see [Reactive Forms Guide](guide/reactive-forms)
- * @see `AbstractControl`
+ * @see {@link AbstractControl}
  *
  * @usageNotes
  *
