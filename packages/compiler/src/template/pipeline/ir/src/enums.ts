@@ -132,6 +132,16 @@ export enum ExpressionKind {
    * Runtime operation to reset the current view context after `RestoreView`.
    */
   ResetView,
+
+  /**
+   * Defines and calls a function with change-detected arguments.
+   */
+  PureFunctionExpr,
+
+  /**
+   * Indicates a positional parameter to a pure function definition.
+   */
+  PureFunctionParameterExpr,
 }
 
 /**

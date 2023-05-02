@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import {ExpressionKind, OpKind} from './enums';
-import {UsesSlotIndex, UsesSlotIndexTrait} from './traits';
+import {UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -19,8 +19,9 @@ import type {UpdateOp} from './ops/update';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr;
+export type Expression =
+    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
+    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr;
 
 /**
  * Transformer type which converts IR expressions into general `o.Expression`s (which may be an
@@ -263,6 +264,96 @@ export class ReadVariableExpr extends ExpressionBase {
 
   override isConstant(): boolean {
     return false;
+  }
+
+  override transformInternalExpressions(): void {}
+}
+
+export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrait,
+                                                                UsesVarOffsetTrait {
+  override readonly kind = ExpressionKind.PureFunctionExpr;
+  readonly[ConsumesVarsTrait] = true;
+  readonly[UsesVarOffset] = true;
+
+  varOffset: number|null = null;
+
+  /**
+   * The expression which should be memoized as a pure computation.
+   *
+   * This expression contains internal `PureFunctionParameterExpr`s, which are placeholders for the
+   * positional argument expressions in `args.
+   */
+  body: o.Expression|null;
+
+  /**
+   * Positional arguments to the pure function which will memoize the `body` expression, which act
+   * as memoization keys.
+   */
+  args: o.Expression[];
+
+  /**
+   * Once extracted to the `ConstantPool`, a reference to the function which defines the computation
+   * of `body`.
+   */
+  fn: o.Expression|null = null;
+
+  constructor(expression: o.Expression, args: o.Expression[]) {
+    super();
+    this.body = expression;
+    this.args = args;
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any) {
+    this.body?.visitExpression(visitor, context);
+    for (const arg of this.args) {
+      arg.visitExpression(visitor, context);
+    }
+  }
+
+  override isEquivalent(other: o.Expression): boolean {
+    if (!(other instanceof PureFunctionExpr) || other.args.length !== this.args.length) {
+      return false;
+    }
+
+    return other.body !== null && this.body !== null && other.body.isEquivalent(this.body) &&
+        other.args.every((arg, idx) => arg.isEquivalent(this.args[idx]));
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    if (this.body !== null) {
+      // TODO: figure out if this is the right flag to pass here.
+      this.body = transformExpressionsInExpression(
+          this.body, transform, flags | VisitorContextFlag.InChildOperation);
+    } else if (this.fn !== null) {
+      this.fn = transformExpressionsInExpression(this.fn, transform, flags);
+    }
+
+    for (let i = 0; i < this.args.length; i++) {
+      this.args[i] = transformExpressionsInExpression(this.args[i], transform, flags);
+    }
+  }
+}
+
+export class PureFunctionParameterExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.PureFunctionParameterExpr;
+
+  constructor(public index: number) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(other: o.Expression): boolean {
+    return other instanceof PureFunctionParameterExpr && other.index === this.index;
+  }
+
+  override isConstant(): boolean {
+    return true;
   }
 
   override transformInternalExpressions(): void {}
