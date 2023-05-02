@@ -14,9 +14,9 @@ import {scheduleMicroTask} from '../util';
  * <code>[create](api/animations/AnimationFactory#create)()</code> method instantiates and
  * initializes this interface.
  *
- * @see `AnimationBuilder`
- * @see `AnimationFactory`
- * @see `animate()`
+ * @see {@link AnimationBuilder}
+ * @see {@link AnimationFactory}
+ * @see {@link animate}
  *
  * @publicApi
  */
@@ -24,20 +24,20 @@ export interface AnimationPlayer {
   /**
    * Provides a callback to invoke when the animation finishes.
    * @param fn The callback function.
-   * @see `finish()`
+   * @see {@link #finish}
    */
   onDone(fn: () => void): void;
   /**
    * Provides a callback to invoke when the animation starts.
    * @param fn The callback function.
-   * @see `run()`
+   * @see {@link #play}
    */
   onStart(fn: () => void): void;
   /**
    * Provides a callback to invoke after the animation is destroyed.
    * @param fn The callback function.
-   * @see `destroy()`
-   * @see `beforeDestroy()`
+   * @see {@link #destroy}
+   * @see {@link #beforeDestroy}
    */
   onDestroy(fn: () => void): void;
   /**
@@ -113,9 +113,9 @@ export interface AnimationPlayer {
  * Used internally when animations are disabled, to avoid
  * checking for the null case when an animation player is expected.
  *
- * @see `animate()`
- * @see `AnimationPlayer`
- * @see `GroupPlayer`
+ * @see {@link animate}
+ * @see {@link AnimationPlayer}
+ * @see {@link ɵAnimationGroupPlayer AnimationGroupPlayer}
  *
  * @publicApi
  */
