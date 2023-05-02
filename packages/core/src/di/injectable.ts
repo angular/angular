@@ -85,7 +85,6 @@ export interface Injectable {
 /**
  * Injectable decorator and metadata.
  *
- * @Annotation
  * @publicApi
  */
 export const Injectable: InjectableDecorator = makeDecorator(
