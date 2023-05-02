@@ -83,6 +83,13 @@ export function listener(name: string, handlerFn: o.Expression): ir.CreateOp {
   ]);
 }
 
+export function pipe(slot: number, name: string): ir.CreateOp {
+  return call(Identifiers.pipe, [
+    o.literal(slot),
+    o.literal(name),
+  ]);
+}
+
 export function advance(delta: number): ir.UpdateOp {
   return call(Identifiers.advance, [
     o.literal(delta),
@@ -133,6 +140,34 @@ export function property(name: string, expression: o.Expression): ir.UpdateOp {
   ]);
 }
 
+const PIPE_BINDINGS: o.ExternalReference[] = [
+  Identifiers.pipeBind1,
+  Identifiers.pipeBind2,
+  Identifiers.pipeBind3,
+  Identifiers.pipeBind4,
+];
+
+export function pipeBind(slot: number, varOffset: number, args: o.Expression[]): o.Expression {
+  if (args.length < 1 || args.length > PIPE_BINDINGS.length) {
+    throw new Error(`pipeBind() argument count out of bounds`);
+  }
+
+  const instruction = PIPE_BINDINGS[args.length - 1];
+  return o.importExpr(instruction).callFn([
+    o.literal(slot),
+    o.literal(varOffset),
+    ...args,
+  ]);
+}
+
+export function pipeBindV(slot: number, varOffset: number, args: o.Expression): o.Expression {
+  return o.importExpr(Identifiers.pipeBindV).callFn([
+    o.literal(slot),
+    o.literal(varOffset),
+    args,
+  ]);
+}
+
 export function textInterpolate(strings: string[], expressions: o.Expression[]): ir.UpdateOp {
   if (strings.length < 1 || expressions.length !== strings.length - 1) {
     throw new Error(
@@ -165,7 +200,6 @@ export function pureFunction(
       args,
   );
 }
-
 
 function call<OpT extends ir.CreateOp|ir.UpdateOp>(
     instruction: o.ExternalReference, args: o.Expression[]): OpT {

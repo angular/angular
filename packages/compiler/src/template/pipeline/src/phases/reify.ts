@@ -79,6 +79,9 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
                 ),
         );
         break;
+      case ir.OpKind.Pipe:
+        ir.OpList.replace(op, ng.pipe(op.slot!, op.name));
+        break;
       case ir.OpKind.Listener:
         const listenerFn = reifyListenerHandler(view, op.handlerFnName!, op.handlerOps);
         ir.OpList.replace(
@@ -173,6 +176,10 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.pureFunction(expr.varOffset!, expr.fn, expr.args);
     case ir.ExpressionKind.PureFunctionParameterExpr:
       throw new Error(`AssertionError: expected PureFunctionParameterExpr to have been extracted`);
+    case ir.ExpressionKind.PipeBinding:
+      return ng.pipeBind(expr.slot!, expr.varOffset!, expr.args);
+    case ir.ExpressionKind.PipeBindingVariadic:
+      return ng.pipeBindV(expr.slot!, expr.varOffset!, expr.args);
     default:
       throw new Error(`AssertionError: Unsupported reification of ir.Expression kind: ${
           ir.ExpressionKind[(expr as ir.Expression).kind]}`);
