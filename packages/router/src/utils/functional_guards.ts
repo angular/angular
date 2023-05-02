@@ -17,7 +17,7 @@ import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanMatchFn, ResolveF
  * Usage {@example router/utils/functional_guards.ts region='CanActivate'}
  *
  * @publicApi
- * @see Route
+ * @see {@link Route}
  */
 export function mapToCanMatch(providers: Array<Type<{canMatch: CanMatchFn}>>): CanMatchFn[] {
   return providers.map(provider => (...params) => inject(provider).canMatch(...params));
@@ -30,7 +30,7 @@ export function mapToCanMatch(providers: Array<Type<{canMatch: CanMatchFn}>>): C
  * Usage {@example router/utils/functional_guards.ts region='CanActivate'}
  *
  * @publicApi
- * @see Route
+ * @see {@link Route}
  */
 export function mapToCanActivate(providers: Array<Type<{canActivate: CanActivateFn}>>):
     CanActivateFn[] {
@@ -43,7 +43,7 @@ export function mapToCanActivate(providers: Array<Type<{canActivate: CanActivate
  * Usage {@example router/utils/functional_guards.ts region='CanActivate'}
  *
  * @publicApi
- * @see Route
+ * @see {@link Route}
  */
 export function mapToCanActivateChild(
     providers: Array<Type<{canActivateChild: CanActivateChildFn}>>): CanActivateChildFn[] {
@@ -56,7 +56,7 @@ export function mapToCanActivateChild(
  * Usage {@example router/utils/functional_guards.ts region='CanActivate'}
  *
  * @publicApi
- * @see Route
+ * @see {@link Route}
  */
 export function mapToCanDeactivate<T = unknown>(
     providers: Array<Type<{canDeactivate: CanDeactivateFn<T>}>>): CanDeactivateFn<T>[] {
@@ -69,7 +69,7 @@ export function mapToCanDeactivate<T = unknown>(
  * Usage {@example router/utils/functional_guards.ts region='Resolve'}
  *
  * @publicApi
- * @see Route
+ * @see {@link Route}
  */
 export function mapToResolve<T>(provider: Type<{resolve: ResolveFn<T>}>): ResolveFn<T> {
   return (...params) => inject(provider).resolve(...params);

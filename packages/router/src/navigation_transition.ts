@@ -40,8 +40,8 @@ import {Checks, getAllRouteGuards} from './utils/preactivation';
  * Supply an object containing any of these properties to a `Router` navigation function to
  * control how the target URL should be constructed.
  *
- * @see [Router.navigate() method](api/router/Router#navigate)
- * @see [Router.createUrlTree() method](api/router/Router#createurltree)
+ * @see {@link Router#navigate}
+ * @see {@link Router#createUrlTree}
  * @see [Routing and Navigation guide](guide/router)
  *
  * @publicApi
@@ -148,12 +148,12 @@ export interface UrlCreationOptions {
  * Supply an object containing any of these properties to a `Router` navigation function to
  * control how the target URL should be constructed or interpreted.
  *
- * @see [Router.navigate() method](api/router/Router#navigate)
- * @see [Router.navigateByUrl() method](api/router/Router#navigatebyurl)
- * @see [Router.createUrlTree() method](api/router/Router#createurltree)
+ * @see {@link Router#navigate}
+ * @see {@link Router#navigateByUrl}
+ * @see {@link Router#createurltree}
  * @see [Routing and Navigation guide](guide/router)
- * @see UrlCreationOptions
- * @see NavigationBehaviorOptions
+ * @see {@link UrlCreationOptions}
+ * @see {@link NavigationBehaviorOptions}
  *
  * @publicApi
  */
