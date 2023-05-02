@@ -11623,10 +11623,10 @@ pupa@^2.1.1:
   dependencies:
     escape-goat "^2.0.0"
 
-puppeteer-core@19.11.0:
-  version "19.11.0"
-  resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-19.11.0.tgz#2b98bfa8a3fa31daa8e6f816d0014a772470cd9e"
-  integrity sha512-UBlwpyTEKcaOt7bIWWhlhIXDlFbR1wVBcxpMibBhImwagkwDB8ld8ehT5dOdfKIcCHjxXzVEaMtgDKzfwcf7Rg==
+puppeteer-core@19.11.1:
+  version "19.11.1"
+  resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-19.11.1.tgz#4c63d7a0a6cd268ff054ebcac315b646eee32667"
+  integrity sha512-qcuC2Uf0Fwdj9wNtaTZ2OvYRraXpAK+puwwVW8ofOhOgLPZyz1c68tsorfIZyCUOpyBisjr+xByu7BMbEYMepA==
   dependencies:
     "@puppeteer/browsers" "0.5.0"
     chromium-bidi "0.4.7"
