@@ -69,5 +69,11 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
 }
 
 function varsUsedByIrExpression(expr: ir.Expression&ir.ConsumesVarsTrait): number {
-  return 0;
+  switch (expr.kind) {
+    case ir.ExpressionKind.PureFunctionExpr:
+      return 1 + expr.args.length;
+    default:
+      throw new Error(
+          `AssertionError: unhandled ConsumesVarsTrait expression ${expr.constructor.name}`);
+  }
 }
