@@ -125,6 +125,14 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
     } else {
       return new o.ReadPropExpr(convertAst(ast.receiver, cpl), ast.name);
     }
+  } else if (ast instanceof e.PropertyWrite) {
+    return new o.WritePropExpr(convertAst(ast.receiver, cpl), ast.name, convertAst(ast.value, cpl));
+  } else if (ast instanceof e.KeyedWrite) {
+    return new o.WriteKeyExpr(
+        convertAst(ast.receiver, cpl),
+        convertAst(ast.key, cpl),
+        convertAst(ast.value, cpl),
+    );
   } else if (ast instanceof e.Call) {
     if (ast.receiver instanceof e.ImplicitReceiver) {
       throw new Error(`Unexpected ImplicitReceiver`);
