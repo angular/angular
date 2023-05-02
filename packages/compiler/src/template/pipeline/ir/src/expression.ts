@@ -459,6 +459,11 @@ export function transformExpressionsInOp(
     case OpKind.Property:
       op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;
+    case OpKind.InterpolateProperty:
+      for (let i = 0; i < op.expressions.length; i++) {
+        op.expressions[i] = transformExpressionsInExpression(op.expressions[i], transform, flags);
+      }
+      break;
     case OpKind.Statement:
       transformExpressionsInStatement(op.statement, transform, flags);
       break;

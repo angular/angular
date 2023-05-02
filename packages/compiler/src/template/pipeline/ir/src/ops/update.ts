@@ -16,8 +16,8 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 /**
  * An operation usable on the update side of the IR.
  */
-export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|InterpolateTextOp|
-    AdvanceOp|VariableOp<UpdateOp>;
+export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|InterpolatePropertyOp|
+    InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -101,6 +101,60 @@ export function createPropertyOp(xref: XrefId, name: string, expression: o.Expre
     ...NEW_OP,
   };
 }
+
+
+
+/**
+ * A logical operation representing binding an interpolation to a property in the update IR.
+ */
+export interface InterpolatePropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
+                                               DependsOnSlotContextOpTrait {
+  kind: OpKind.InterpolateProperty;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Name of the bound property.
+   */
+  name: string;
+
+  /**
+   * All of the literal strings in the property interpolation, in order.
+   *
+   * Conceptually interwoven around the `expressions`.
+   */
+  strings: string[];
+
+  /**
+   * All of the dynamic expressions in the property interpolation, in order.
+   *
+   * Conceptually interwoven in between the `strings`.
+   */
+  expressions: o.Expression[];
+}
+
+/**
+ * Create a `InterpolateProperty`.
+ */
+export function createInterpolatePropertyOp(
+    xref: XrefId, name: string, strings: string[],
+    expressions: o.Expression[]): InterpolatePropertyOp {
+  return {
+    kind: OpKind.InterpolateProperty,
+    target: xref,
+    name,
+    strings,
+    expressions,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+
 
 /**
  * Logical operation to advance the runtime's internal slot pointer in the update IR.
