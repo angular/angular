@@ -31,10 +31,10 @@ import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
  * (configured by `runGuardsAndResolvers`).
  *
  * @publicApi
- * @see `RouteReuseStrategy`
- * @see `RunGuardsAndResolvers`
- * @see `NavigationBehaviorOptions`
- * @see `RouterConfigOptions`
+ * @see {@link RouteReuseStrategy}
+ * @see {@link RunGuardsAndResolvers}
+ * @see {@link NavigationBehaviorOptions}
+ * @see {@link RouterConfigOptions}
  */
 export type OnSameUrlNavigation = 'reload'|'ignore';
 
@@ -45,13 +45,13 @@ export type OnSameUrlNavigation = 'reload'|'ignore';
  * using `inject`: `canActivate: [() => inject(myGuard).canActivate()]`.
  *
  * @deprecated
- * @see `CanMatchFn`
- * @see `CanLoadFn`
- * @see `CanActivateFn`
- * @see `CanActivateChildFn`
- * @see `CanDeactivateFn`
- * @see `ResolveFn`
- * @see `inject`
+ * @see {@link CanMatchFn}
+ * @see {@link CanLoadFn}
+ * @see {@link CanActivateFn}
+ * @see {@link CanActivateChildFn}
+ * @see {@link CanDeactivateFn}
+ * @see {@link ResolveFn}
+ * @see {@link core/inject}
  * @publicApi
  */
 export type DeprecatedGuard = ProviderToken<any>|any;
@@ -61,8 +61,8 @@ export type DeprecatedGuard = ProviderToken<any>|any;
  * An array of `Route` objects, used in `Router.config` and for nested route configurations
  * in `Route.children`.
  *
- * @see `Route`
- * @see `Router`
+ * @see {@link Route}
+ * @see {@link Router}
  * @see [Router configuration guide](guide/router-reference#configuration)
  * @publicApi
  */
@@ -74,7 +74,7 @@ export type Routes = Route[];
  * * `consumed` is an array of the consumed URL segments.
  * * `posParams` is a map of positional parameters.
  *
- * @see `UrlMatcher()`
+ * @see {@link UrlMatcher}
  * @publicApi
  */
 export type UrlMatchResult = {
@@ -111,7 +111,7 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  *
  * Represents static data associated with a particular route.
  *
- * @see `Route#data`
+ * @see {@link Route#data}
  *
  * @publicApi
  */
@@ -123,7 +123,7 @@ export type Data = {
  *
  * Represents the resolved data associated with a particular route.
  *
- * @see `Route#resolve`.
+ * @see {@link Route#resolve}.
  *
  * @publicApi
  */
@@ -134,8 +134,8 @@ export type ResolveData = {
 /**
  * An ES Module object with a default export of the given type.
  *
- * @see `Route#loadComponent`
- * @see `LoadChildrenCallback`
+ * @see {@link Route#loadComponent}
+ * @see {@link LoadChildrenCallback}
  *
  * @publicApi
  */
@@ -179,7 +179,7 @@ export interface DefaultExport<T> {
  * }];
  * ```
  *
- * @see [Route.loadChildren](api/router/Route#loadChildren)
+ * @see {@link Route#loadChildren}
  * @publicApi
  */
 export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Routes|
@@ -190,7 +190,7 @@ export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Routes|
  *
  * A function that returns a set of routes to load.
  *
- * @see `LoadChildrenCallback`
+ * @see {@link LoadChildrenCallback}
  * @publicApi
  */
 export type LoadChildren = LoadChildrenCallback;
@@ -203,8 +203,8 @@ export type LoadChildren = LoadChildrenCallback;
  * - `"preserve"` : Preserve current parameters.
  * - `""` : Replace current parameters with new parameters. This is the default behavior.
  *
- * @see `UrlCreationOptions#queryParamsHandling`
- * @see `RouterLink`
+ * @see {@link UrlCreationOptions#queryParamsHandling}
+ * @see {@link RouterLink}
  * @publicApi
  */
 export type QueryParamsHandling = 'merge'|'preserve'|'';
@@ -224,7 +224,7 @@ export type QueryParamsHandling = 'merge'|'preserve'|'';
  * - `pathParamsOrQueryParamsChange` : Rerun guards and resolvers when the path params
  * change or query params have changed. This does not include matrix parameters.
  *
- * @see [Route.runGuardsAndResolvers](api/router/Route#runGuardsAndResolvers)
+ * @see {@link Route#runGuardsAndResolvers}
  * @publicApi
  */
 export type RunGuardsAndResolvers =
@@ -461,7 +461,7 @@ export interface Route {
    * Used to define a page title for the route. This can be a static string or an `Injectable` that
    * implements `Resolve`.
    *
-   * @see `PageTitleStrategy`
+   * @see {@link TitleStrategy}
    */
   title?: string|Type<Resolve<string>>|ResolveFn<string>;
 
@@ -608,7 +608,7 @@ export interface Route {
    * - `pathParamsOrQueryParamsChange` : Rerun guards and resolvers when the path params
    * change or query params have changed. This does not include matrix parameters.
    *
-   * @see `RunGuardsAndResolvers`
+   * @see {@link RunGuardsAndResolvers}
    */
   runGuardsAndResolvers?: RunGuardsAndResolvers;
 
@@ -701,7 +701,7 @@ export interface LoadedRouterConfig {
  * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
  *     injectable class can be used as a functional guard using the `inject` function:
  *     `canActivate: [() => inject(myGuard).canActivate()]`.
- * @see `CanActivateFn`
+ * @see {@link CanActivateFn}
  */
 export interface CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
@@ -726,7 +726,7 @@ export interface CanActivate {
  * {@example router/route_functional_guards.ts region="CanActivateFnInRoute"}
  *
  * @publicApi
- * @see `Route`
+ * @see {@link Route}
  */
 export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
     Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
@@ -791,7 +791,7 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
  *     injectable class can be used as a functional guard using the `inject` function:
  *     `canActivateChild: [() => inject(myGuard).canActivateChild()]`.
- * @see `CanActivateChildFn`
+ * @see {@link CanActivateChildFn}
  */
 export interface CanActivateChild {
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot):
@@ -811,7 +811,7 @@ export interface CanActivateChild {
  * {@example router/route_functional_guards.ts region="CanActivateChildFn"}
  *
  * @publicApi
- * @see `Route`
+ * @see {@link Route}
  */
 export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
     Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
@@ -874,7 +874,7 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
  *     injectable class can be used as a functional guard using the `inject` function:
  *     `canDeactivate: [() => inject(myGuard).canDeactivate()]`.
- * @see `CanDeactivateFn`
+ * @see {@link CanDeactivateFn}
  */
 export interface CanDeactivate<T> {
   canDeactivate(
@@ -896,7 +896,7 @@ export interface CanDeactivate<T> {
  * {@example router/route_functional_guards.ts region="CanDeactivateFn"}
  *
  * @publicApi
- * @see `Route`
+ * @see {@link Route}
  */
 export type CanDeactivateFn<T> =
     (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
@@ -966,7 +966,7 @@ export type CanDeactivateFn<T> =
  * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
  *     injectable class can be used as a functional guard using the `inject` function:
  *     `canMatch: [() => inject(myGuard).canMatch()]`.
- * @see `CanMatchFn`
+ * @see {@link CanMatchFn}
  */
 export interface CanMatch {
   canMatch(route: Route, segments: UrlSegment[]):
@@ -986,7 +986,7 @@ export interface CanMatch {
  * {@example router/route_functional_guards.ts region="CanMatchFn"}
  *
  * @publicApi
- * @see `Route`
+ * @see {@link Route}
  */
 export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
     Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
@@ -1085,7 +1085,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
  * @deprecated Class-based `Route` resolvers are deprecated in favor of functional resolvers. An
  * injectable class can be used as a functional guard using the `inject` function: `resolve:
  * {'user': () => inject(UserResolver).resolve()}`.
- * @see `ResolveFn`
+ * @see {@link ResolveFn}
  */
 export interface Resolve<T> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T>|Promise<T>|T;
@@ -1130,7 +1130,7 @@ export interface Resolve<T> {
  * The order of execution is: baseGuard, childGuard, baseDataResolver, childDataResolver.
  *
  * @publicApi
- * @see `Route`
+ * @see {@link Route}
  */
 export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
     Observable<T>|Promise<T>|T;
@@ -1198,9 +1198,9 @@ export interface CanLoad {
  * The signature of a function used as a `canLoad` guard on a `Route`.
  *
  * @publicApi
- * @see `CanLoad`
- * @see `Route`
- * @see `CanMatchFn`
+ * @see {@link CanLoad}
+ * @see {@link Route}
+ * @see {@link CanMatchFn}
  * @deprecated Use `Route.canMatch` and `CanMatchFn` instead
  */
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
@@ -1214,8 +1214,8 @@ export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
  * Supply an object containing any of these properties to a `Router` navigation function to
  * control how the navigation should be handled.
  *
- * @see [Router.navigate() method](api/router/Router#navigate)
- * @see [Router.navigateByUrl() method](api/router/Router#navigatebyurl)
+ * @see {@link Router#navigate}
+ * @see {@link Router#navigateByUrl}
  * @see [Routing and Navigation guide](guide/router)
  *
  * @publicApi
@@ -1227,8 +1227,8 @@ export interface NavigationBehaviorOptions {
    * This value is a subset of the options available in `OnSameUrlNavigation` and
    * will take precedence over the default value set for the `Router`.
    *
-   * @see `OnSameUrlNavigation`
-   * @see `RouterConfigOptions`
+   * @see {@link OnSameUrlNavigation}
+   * @see {@link RouterConfigOptions}
    */
   onSameUrlNavigation?: Extract<OnSameUrlNavigation, 'reload'>;
 

@@ -42,7 +42,7 @@ import {Tree, TreeNode} from './utils/tree';
  * }
  * ```
  *
- * @see `ActivatedRoute`
+ * @see {@link ActivatedRoute}
  * @see [Getting route information](guide/router#getting-route-information)
  *
  * @publicApi
