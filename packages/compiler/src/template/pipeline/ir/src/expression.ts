@@ -24,15 +24,15 @@ export type Expression =
     ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr;
 
 /**
- * Transformer type which converts IR expressions into general `o.Expression`s (which may be an
+ * Transformer type which converts expressions into general `o.Expression`s (which may be an
  * identity transformation).
  */
-export type ExpressionTransform = (expr: Expression, flags: VisitorContextFlag) => o.Expression;
+export type ExpressionTransform = (expr: o.Expression, flags: VisitorContextFlag) => o.Expression;
 
 /**
  * Check whether a given `o.Expression` is a logical IR expression type.
  */
-export function isIrExpression(expr: o.Expression): boolean {
+export function isIrExpression(expr: o.Expression): expr is Expression {
   return expr instanceof ExpressionBase;
 }
 
@@ -363,7 +363,7 @@ export class PureFunctionParameterExpr extends ExpressionBase {
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
 export function visitExpressionsInOp(
-    op: CreateOp|UpdateOp, visitor: (expr: Expression, flags: VisitorContextFlag) => void): void {
+    op: CreateOp|UpdateOp, visitor: (expr: o.Expression, flags: VisitorContextFlag) => void): void {
   transformExpressionsInOp(op, (expr, flags) => {
     visitor(expr, flags);
     return expr;
@@ -429,7 +429,6 @@ export function transformExpressionsInExpression(
     expr: o.Expression, transform: ExpressionTransform, flags: VisitorContextFlag): o.Expression {
   if (expr instanceof ExpressionBase) {
     expr.transformInternalExpressions(transform, flags);
-    return transform(expr as Expression, flags);
   } else if (expr instanceof o.BinaryOperatorExpr) {
     expr.lhs = transformExpressionsInExpression(expr.lhs, transform, flags);
     expr.rhs = transformExpressionsInExpression(expr.rhs, transform, flags);
@@ -459,7 +458,7 @@ export function transformExpressionsInExpression(
   } else {
     throw new Error(`Unhandled expression kind: ${expr.constructor.name}`);
   }
-  return expr;
+  return transform(expr, flags);
 }
 
 /**

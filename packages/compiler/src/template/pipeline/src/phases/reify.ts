@@ -140,7 +140,11 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
   }
 }
 
-function reifyIrExpression(expr: ir.Expression): o.Expression {
+function reifyIrExpression(expr: o.Expression): o.Expression {
+  if (!ir.isIrExpression(expr)) {
+    return expr;
+  }
+
   switch (expr.kind) {
     case ir.ExpressionKind.NextContext:
       return ng.nextContext(expr.steps);

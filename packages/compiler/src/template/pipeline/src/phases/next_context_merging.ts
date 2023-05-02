@@ -49,6 +49,10 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
     for (let candidate = op.next!; candidate.kind !== ir.OpKind.ListEnd && tryToMerge;
          candidate = candidate.next!) {
       ir.visitExpressionsInOp(candidate, (expr, flags) => {
+        if (!ir.isIrExpression(expr)) {
+          return expr;
+        }
+
         if (!tryToMerge) {
           // Either we've already merged, or failed to merge.
           return;
