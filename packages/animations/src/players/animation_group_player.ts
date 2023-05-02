@@ -7,14 +7,15 @@
  */
 
 import {scheduleMicroTask} from '../util';
+
 import {AnimationPlayer} from './animation_player';
 
 /**
  * A programmatic controller for a group of reusable animations.
  * Used internally to control animations.
  *
- * @see `AnimationPlayer`
- * @see `{@link animations/group group()}`
+ * @see {@link AnimationPlayer}
+ * @see {@link animations/group group}
  *
  */
 export class AnimationGroupPlayer implements AnimationPlayer {

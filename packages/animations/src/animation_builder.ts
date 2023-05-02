@@ -59,7 +59,7 @@ export abstract class AnimationBuilder {
    * Builds a factory for producing a defined animation.
    * @param animation A reusable animation definition.
    * @returns A factory object that can create a player for the defined animation.
-   * @see `animate()`
+   * @see {@link animate}
    */
   abstract build(animation: AnimationMetadata|AnimationMetadata[]): AnimationFactory;
 }
