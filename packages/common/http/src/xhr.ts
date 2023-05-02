@@ -34,8 +34,8 @@ function getResponseUrl(xhr: any): string|null {
 
 /**
  * Uses `XMLHttpRequest` to send requests to a backend server.
- * @see `HttpHandler`
- * @see `JsonpClientBackend`
+ * @see {@link HttpHandler}
+ * @see {@link JsonpClientBackend}
  *
  * @publicApi
  */
