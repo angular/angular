@@ -1058,6 +1058,11 @@
                   "tooltip": "About Components, Templates, and Views."
                 },
                 {
+                  "url": "guide/architecture-services",
+                  "title": "Intro to services and DI",
+                  "tooltip": "About services and dependency injection."
+                },
+                {
                   "url": "guide/architecture-next-steps",
                   "title": "Next steps",
                   "tooltip": "Beyond the basics."
