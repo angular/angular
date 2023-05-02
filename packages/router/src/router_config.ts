@@ -39,7 +39,7 @@ export type ErrorHandler = (error: any) => any;
  * more control over when the router starts its initial navigation due to some complex
  * initialization logic.
  *
- * @see `forRoot()`
+ * @see {@link forRoot()}
  *
  * @publicApi
  */
@@ -79,7 +79,7 @@ export interface RouterConfigOptions {
    *
    * If unset, the `Router` will use `'ignore'`.
    *
-   * @see `OnSameUrlNavigation`
+   * @see {@link OnSameUrlNavigation}
    */
   onSameUrlNavigation?: OnSameUrlNavigation;
 
@@ -166,7 +166,7 @@ export interface InMemoryScrollingOptions {
  * A set of configuration options for a router module, provided in the
  * `forRoot()` method.
  *
- * @see `forRoot()`
+ * @see {@link forRoot()}
  *
  *
  * @publicApi

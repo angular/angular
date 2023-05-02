@@ -26,8 +26,8 @@ export const RouteTitleKey = Symbol('RouteTitle');
 
 /**
  * A collection of matrix and query URL parameters.
- * @see `convertToParamMap()`
- * @see `ParamMap`
+ * @see {@link convertToParamMap}
+ * @see {@link ParamMap}
  *
  * @publicApi
  */
@@ -127,8 +127,8 @@ export function convertToParamMap(params: Params): ParamMap {
  * @param segmentGroup The current segment group being matched
  * @param route The `Route` to match against.
  *
- * @see UrlMatchResult
- * @see Route
+ * @see {@link UrlMatchResult}
+ * @see {@link Route}
  *
  * @returns The resulting match information or `null` if the `route` should not match.
  * @publicApi
