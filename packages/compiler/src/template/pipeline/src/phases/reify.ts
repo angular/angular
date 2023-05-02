@@ -162,6 +162,13 @@ function reifyIrExpression(expr: ir.Expression): o.Expression {
         throw new Error(`Read of unnamed variable ${expr.xref}`);
       }
       return o.variable(expr.name);
+    case ir.ExpressionKind.PureFunctionExpr:
+      if (expr.fn === null) {
+        throw new Error(`AssertionError: expected PureFunctions to have been extracted`);
+      }
+      return ng.pureFunction(expr.varOffset!, expr.fn, expr.args);
+    case ir.ExpressionKind.PureFunctionParameterExpr:
+      throw new Error(`AssertionError: expected PureFunctionParameterExpr to have been extracted`);
     default:
       throw new Error(`AssertionError: Unsupported reification of ir.Expression kind: ${
           ir.ExpressionKind[(expr as ir.Expression).kind]}`);

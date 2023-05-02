@@ -28,6 +28,7 @@ import {phaseChaining} from './phases/chaining';
 import {phaseMergeNextContext} from './phases/next_context_merging';
 import {phaseNgContainer} from './phases/ng_container';
 import {phaseSaveRestoreView} from './phases/save_restore_view';
+import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
@@ -48,6 +49,7 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseMergeNextContext(cpl);
   phaseNgContainer(cpl);
   phaseEmptyElements(cpl);
+  phasePureFunctionExtraction(cpl);
   phaseReify(cpl);
   phaseChaining(cpl);
 }

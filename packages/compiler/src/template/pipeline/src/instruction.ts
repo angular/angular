@@ -154,6 +154,17 @@ export function textInterpolate(strings: string[], expressions: o.Expression[]):
   return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs);
 }
 
+export function pureFunction(
+    varOffset: number, fn: o.Expression, args: o.Expression[]): o.Expression {
+  return callVariadicInstructionExpr(
+      PURE_FUNCTION_CONFIG,
+      [
+        o.literal(varOffset),
+        fn,
+      ],
+      args,
+  );
+}
 
 
 function call<OpT extends ir.CreateOp|ir.UpdateOp>(
@@ -193,6 +204,22 @@ const TEXT_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     }
     return (n - 1) / 2;
   },
+};
+
+const PURE_FUNCTION_CONFIG: VariadicInstructionConfig = {
+  constant: [
+    Identifiers.pureFunction0,
+    Identifiers.pureFunction1,
+    Identifiers.pureFunction2,
+    Identifiers.pureFunction3,
+    Identifiers.pureFunction4,
+    Identifiers.pureFunction5,
+    Identifiers.pureFunction6,
+    Identifiers.pureFunction7,
+    Identifiers.pureFunction8,
+  ],
+  variable: Identifiers.pureFunctionV,
+  mapping: n => n,
 };
 
 function callVariadicInstructionExpr(
