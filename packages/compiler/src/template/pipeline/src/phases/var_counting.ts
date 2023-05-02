@@ -67,6 +67,10 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
     case ir.OpKind.InterpolateText:
       // `ir.InterpolateTextOp`s use a variable slot for each dynamic expression.
       return op.expressions.length;
+    case ir.OpKind.InterpolateProperty:
+      // `ir.InterpolatePropertyOp`s use a variable slot for each dynamic expression, plus one for
+      // the result.
+      return 1 + op.expressions.length;
     default:
       throw new Error(`Unhandled op: ${ir.OpKind[op.kind]}`);
   }

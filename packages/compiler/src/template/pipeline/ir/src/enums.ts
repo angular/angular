@@ -84,6 +84,11 @@ export enum OpKind {
   Property,
 
   /**
+   * An operation to interpolate text into a property binding.
+   */
+  InterpolateProperty,
+
+  /**
    * An operation to advance the runtime's implicit slot context during the update phase of a view.
    */
   Advance,

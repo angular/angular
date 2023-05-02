@@ -214,19 +214,15 @@ function ingestAttributes(op: ir.ElementOpBase, element: t.Element|t.Template): 
 function ingestBindings(
     view: ViewCompilation, op: ir.ElementOpBase, element: t.Element|t.Template): void {
   if (element instanceof t.Template) {
-    // TODO: Are ng-template inputs handled differently from element inputs?
-    // <ng-template dir [foo]="...">
-    // <item-cmp *ngFor="let item of items" [item]="item">
-    for (const input of [...element.templateAttrs, ...element.inputs]) {
-      if (!(input instanceof t.BoundAttribute)) {
+    for (const attr of [...element.templateAttrs, ...element.inputs]) {
+      if (!(attr instanceof t.BoundAttribute)) {
         continue;
       }
-
-      view.update.push(ir.createPropertyOp(op.xref, input.name, convertAst(input.value, view.tpl)));
+      ingestPropertyBinding(view, op.xref, attr.name, attr.value);
     }
   } else {
     for (const input of element.inputs) {
-      view.update.push(ir.createPropertyOp(op.xref, input.name, convertAst(input.value, view.tpl)));
+      ingestPropertyBinding(view, op.xref, input.name, input.value);
     }
 
     for (const output of element.outputs) {
@@ -259,6 +255,19 @@ function ingestBindings(
       listenerOp.handlerOps.push(ir.createStatementOp(new o.ReturnStatement(returnExpr)));
       view.create.push(listenerOp);
     }
+  }
+}
+
+function ingestPropertyBinding(
+    view: ViewCompilation, xref: ir.XrefId, name: string, value: e.AST): void {
+  if (value instanceof e.ASTWithSource) {
+    value = value.ast;
+  }
+  if (value instanceof e.Interpolation) {
+    view.update.push(ir.createInterpolatePropertyOp(
+        xref, name, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+  } else {
+    view.update.push(ir.createPropertyOp(xref, name, convertAst(value, view.tpl)));
   }
 }
 
