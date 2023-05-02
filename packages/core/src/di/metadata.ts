@@ -54,7 +54,6 @@ export interface Inject {
 /**
  * Inject decorator and metadata.
  *
- * @Annotation
  * @publicApi
  */
 export const Inject: InjectDecorator = attachInjectFlag(
@@ -99,7 +98,7 @@ export interface Optional {}
 /**
  * Optional decorator and metadata.
  *
- * @Annotation
+
  * @publicApi
  */
 export const Optional: OptionalDecorator =
@@ -147,7 +146,7 @@ export interface Self {}
 /**
  * Self decorator and metadata.
  *
- * @Annotation
+
  * @publicApi
  */
 export const Self: SelfDecorator =
@@ -195,7 +194,7 @@ export interface SkipSelf {}
 /**
  * `SkipSelf` decorator and metadata.
  *
- * @Annotation
+
  * @publicApi
  */
 export const SkipSelf: SkipSelfDecorator =
@@ -238,7 +237,7 @@ export interface Host {}
 /**
  * Host decorator and metadata.
  *
- * @Annotation
+
  * @publicApi
  */
 export const Host: HostDecorator =

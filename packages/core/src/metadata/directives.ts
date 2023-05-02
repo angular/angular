@@ -98,7 +98,6 @@ export interface DirectiveDecorator {
    *    accessible for components outside of the NgModule.
    *
    *
-   * @Annotation
    */
   (obj?: Directive): TypeDecorator;
 
@@ -111,7 +110,6 @@ export interface DirectiveDecorator {
 /**
  * Directive decorator and metadata.
  *
- * @Annotation
  * @publicApi
  */
 export interface Directive {
@@ -291,7 +289,6 @@ export interface Directive {
    * }
    * ```
    *
-   * @Annotation
    */
   queries?: {[key: string]: any};
 
@@ -504,7 +501,6 @@ export interface ComponentDecorator {
    * To preserve sequences of whitespace characters, use the
    * `ngPreserveWhitespaces` attribute.
    *
-   * @Annotation
    */
   (obj: Component): TypeDecorator;
   /**
@@ -650,7 +646,7 @@ export interface Component extends Directive {
 /**
  * Component decorator and metadata.
  *
- * @Annotation
+
  * @publicApi
  */
 export const Component: ComponentDecorator = makeDecorator(
@@ -728,7 +724,7 @@ export interface Pipe {
 }
 
 /**
- * @Annotation
+
  * @publicApi
  */
 export const Pipe: PipeDecorator = makeDecorator(
@@ -807,7 +803,7 @@ export interface Input {
 }
 
 /**
- * @Annotation
+
  * @publicApi
  */
 export const Input: InputDecorator =
@@ -857,7 +853,7 @@ export interface Output {
 }
 
 /**
- * @Annotation
+
  * @publicApi
  */
 export const Output: OutputDecorator = makePropDecorator('Output', (alias?: string) => ({alias}));
@@ -916,7 +912,7 @@ export interface HostBinding {
 }
 
 /**
- * @Annotation
+
  * @publicApi
  */
 export const HostBinding: HostBindingDecorator =
@@ -1020,7 +1016,7 @@ export interface HostListener {
  * The global target names that can be used to prefix an event name are
  * `document:`, `window:` and `body:`.
  *
- * @Annotation
+
  * @publicApi
  */
 export const HostListener: HostListenerDecorator =
