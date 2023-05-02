@@ -23,7 +23,7 @@ import {ProviderToken} from './provider_token';
  * dependencies of various types with [injection tokens](guide/glossary#di-token).
  *
  * @see ["DI Providers"](guide/dependency-injection-providers).
- * @see `StaticProvider`
+ * @see {@link StaticProvider}
  *
  * @usageNotes
  *

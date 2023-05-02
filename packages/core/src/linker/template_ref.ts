@@ -33,7 +33,7 @@ import {EmbeddedViewRef} from './view_ref';
  * You can also use a `Query` to find a `TemplateRef` associated with
  * a component or a directive.
  *
- * @see `ViewContainerRef`
+ * @see {@link ViewContainerRef}
  * @see [Navigate the Component Tree with DI](guide/dependency-injection-navtree)
  *
  * @publicApi

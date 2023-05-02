@@ -100,7 +100,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
   /**
    * Marks a view and all of its ancestors dirty.
    *
-   * This can be used to ensure an {@link ChangeDetectionStrategy#OnPush OnPush} component is
+   * This can be used to ensure an {@link ChangeDetectionStrategy#OnPush} component is
    * checked when it needs to be re-rendered but the two normal triggers haven't marked it
    * dirty (i.e. inputs haven't changed and events haven't fired in the view).
    *
@@ -137,7 +137,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
    *
    * Detached views will not be checked during change detection runs until they are
    * re-attached, even if they are dirty. `detach` can be used in combination with
-   * {@link ChangeDetectorRef#detectChanges detectChanges} to implement local change
+   * {@link ChangeDetectorRef#detectChanges} to implement local change
    * detection checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
@@ -193,7 +193,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
    * Re-attaches a view to the change detection tree.
    *
    * This can be used to re-attach views that were previously detached from the tree
-   * using {@link ChangeDetectorRef#detach detach}. Views are attached to the tree by default.
+   * using {@link ChangeDetectorRef#detach}. Views are attached to the tree by default.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    *
@@ -252,7 +252,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
   /**
    * Checks the view and its children.
    *
-   * This can also be used in combination with {@link ChangeDetectorRef#detach detach} to implement
+   * This can also be used in combination with {@link ChangeDetectorRef#detach} to implement
    * local change detection checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
@@ -268,7 +268,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDe
    * We can do that by detaching the component's change detector and doing a local change detection
    * check every five seconds.
    *
-   * See {@link ChangeDetectorRef#detach detach} for more information.
+   * See {@link ChangeDetectorRef#detach} for more information.
    */
   detectChanges(): void {
     detectChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});

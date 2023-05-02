@@ -11,7 +11,7 @@
  * property on a directive instance. Passed as a value in a
  * {@link SimpleChanges} object to the `ngOnChanges` hook.
  *
- * @see `OnChanges`
+ * @see {@link OnChanges}
  *
  * @publicApi
  */
@@ -30,7 +30,7 @@ export class SimpleChange {
  * at the declared property name they belong to on a Directive or Component. This is
  * the type passed to the `ngOnChanges` hook.
  *
- * @see `OnChanges`
+ * @see {@link OnChanges}
  *
  * @publicApi
  */
