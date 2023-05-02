@@ -57,7 +57,7 @@ const EVENT_NAMES = {
 
 /**
  * DI token for providing [HammerJS](https://hammerjs.github.io/) support to Angular.
- * @see `HammerGestureConfig`
+ * @see {@link HammerGestureConfig}
  *
  * @ngModule HammerModule
  * @publicApi

@@ -14,7 +14,7 @@ import {Inject, Injectable, ɵɵinject} from '@angular/core';
  * represented by the internal `HTMLMetaElement`.
  *
  * @see [HTML meta tag](https://developer.mozilla.org/docs/Web/HTML/Element/meta)
- * @see `Meta`
+ * @see {@link Meta}
  *
  * @publicApi
  */

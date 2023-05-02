@@ -67,8 +67,8 @@ function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
  * waiting for async guards and resolvers) are completed to avoid
  * clearing the DOM on the client too soon, thus causing content flicker.
  *
- * @see `provideRouter`
- * @see `withEnabledBlockingInitialNavigation`
+ * @see {@link provideRouter}
+ * @see {@link withEnabledBlockingInitialNavigation}
  *
  * @publicApi
  * @developerPreview
@@ -148,8 +148,8 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * export class AppModule {}
  * ```
  *
- * @see `withNoDomReuse`
- * @see `withNoHttpTransferCache`
+ * @see {@link withNoDomReuse}
+ * @see {@link withNoHttpTransferCache}
  *
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to enable hydration.
