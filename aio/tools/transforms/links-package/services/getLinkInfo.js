@@ -49,6 +49,7 @@ module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock, log) {
     } else if (url.indexOf('#') > 0) {
       var pathAndHash = url.split('#');
       linkInfo = getLinkInfoImpl(pathAndHash[0], title, currentDoc);
+      linkInfo.title = encodeCodeBlock(pathAndHash.slice(-2).join('#'), true);
       linkInfo.url = linkInfo.url + '#' + pathAndHash[1];
       return linkInfo;
 
