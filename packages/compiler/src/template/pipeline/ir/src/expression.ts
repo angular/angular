@@ -510,6 +510,13 @@ export function transformExpressionsInExpression(
   } else if (expr instanceof o.ReadKeyExpr) {
     expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
     expr.index = transformExpressionsInExpression(expr.index, transform, flags);
+  } else if (expr instanceof o.WritePropExpr) {
+    expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
+    expr.value = transformExpressionsInExpression(expr.value, transform, flags);
+  } else if (expr instanceof o.WriteKeyExpr) {
+    expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
+    expr.index = transformExpressionsInExpression(expr.index, transform, flags);
+    expr.value = transformExpressionsInExpression(expr.value, transform, flags);
   } else if (expr instanceof o.InvokeFunctionExpr) {
     expr.fn = transformExpressionsInExpression(expr.fn, transform, flags);
     for (let i = 0; i < expr.args.length; i++) {
