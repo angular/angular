@@ -13,8 +13,8 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 /**
  * Transforms text to all lower case.
  *
- * @see `UpperCasePipe`
- * @see `TitleCasePipe`
+ * @see {@link UpperCasePipe}
+ * @see {@link TitleCasePipe}
  * @usageNotes
  *
  * The following example defines a view that allows the user to enter
@@ -63,8 +63,8 @@ const unicodeWordMatch =
  * rest of the word to lower case.
  * Words are delimited by any whitespace character, such as a space, tab, or line-feed character.
  *
- * @see `LowerCasePipe`
- * @see `UpperCasePipe`
+ * @see {@link LowerCasePipe}
+ * @see {@link UpperCasePipe}
  *
  * @usageNotes
  * The following example shows the result of transforming various strings into title case.
@@ -98,8 +98,8 @@ export class TitleCasePipe implements PipeTransform {
 
 /**
  * Transforms text to all upper case.
- * @see `LowerCasePipe`
- * @see `TitleCasePipe`
+ * @see {@link LowerCasePipe}
+ * @see {@link TitleCasePipe}
  *
  * @ngModule CommonModule
  * @publicApi

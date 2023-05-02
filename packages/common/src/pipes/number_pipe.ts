@@ -22,7 +22,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * Locale determines group sizing and separator,
  * decimal point character, and other locale-specific configurations.
  *
- * @see `formatNumber()`
+ * @see {@link formatNumber}
  *
  * @usageNotes
  *
@@ -118,7 +118,7 @@ export class DecimalPipe implements PipeTransform {
  * separator, decimal-point character, and other locale-specific
  * configurations.
  *
- * @see `formatPercent()`
+ * @see {@link formatPercent}
  *
  * @usageNotes
  * The following code shows how the pipe transforms numbers
@@ -177,8 +177,8 @@ export class PercentPipe implements PipeTransform {
  * and other locale-specific configurations.
  *
  *
- * @see `getCurrencySymbol()`
- * @see `formatCurrency()`
+ * @see {@link getCurrencySymbol}
+ * @see {@link formatCurrency}
  *
  * @usageNotes
  * The following code shows how the pipe transforms numbers

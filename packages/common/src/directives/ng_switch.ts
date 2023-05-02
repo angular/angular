@@ -96,8 +96,8 @@ export class SwitchView {
  * ```
  *
  * @publicApi
- * @see `NgSwitchCase`
- * @see `NgSwitchDefault`
+ * @see {@link NgSwitchCase}
+ * @see {@link NgSwitchDefault}
  * @see [Structural Directives](guide/structural-directives)
  *
  */
@@ -183,8 +183,8 @@ export class NgSwitch {
  * This means that the empty string, `""` matches 0.
  *
  * @publicApi
- * @see `NgSwitch`
- * @see `NgSwitchDefault`
+ * @see {@link NgSwitch}
+ * @see {@link NgSwitchDefault}
  *
  */
 @Directive({
@@ -228,8 +228,8 @@ export class NgSwitchCase implements DoCheck {
  * This statement should be the final case in an `NgSwitch`.
  *
  * @publicApi
- * @see `NgSwitch`
- * @see `NgSwitchCase`
+ * @see {@link NgSwitch}
+ * @see {@link NgSwitchCase}
  *
  */
 @Directive({
