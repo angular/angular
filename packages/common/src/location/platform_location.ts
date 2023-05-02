@@ -71,7 +71,7 @@ export abstract class PlatformLocation {
   }
 }
 
-export function useBrowserPlatformLocation() {
+function useBrowserPlatformLocation() {
   return ɵɵinject(BrowserPlatformLocation);
 }
 
@@ -100,8 +100,6 @@ export interface LocationChangeEvent {
 export interface LocationChangeListener {
   (event: LocationChangeEvent): any;
 }
-
-
 
 /**
  * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
@@ -167,19 +165,11 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 
   override pushState(state: any, title: string, url: string): void {
-    if (supportsState()) {
-      this._history.pushState(state, title, url);
-    } else {
-      this._location.hash = url;
-    }
+    this._history.pushState(state, title, url);
   }
 
   override replaceState(state: any, title: string, url: string): void {
-    if (supportsState()) {
-      this._history.replaceState(state, title, url);
-    } else {
-      this._location.hash = url;
-    }
+    this._history.replaceState(state, title, url);
   }
 
   override forward(): void {
@@ -199,9 +189,6 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 }
 
-export function supportsState(): boolean {
-  return !!window.history.pushState;
-}
-export function createBrowserPlatformLocation() {
+function createBrowserPlatformLocation() {
   return new BrowserPlatformLocation(ɵɵinject(DOCUMENT));
 }
