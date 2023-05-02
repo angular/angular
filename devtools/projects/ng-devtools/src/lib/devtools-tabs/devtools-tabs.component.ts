@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="resize-observer-browser" />
 import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatLegacySlideToggleChange as MatSlideToggleChange} from '@angular/material/legacy-slide-toggle';
 import {MatLegacyTabNav as MatTabNav} from '@angular/material/legacy-tabs';

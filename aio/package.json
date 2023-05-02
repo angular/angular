@@ -98,7 +98,6 @@
     "@types/lunr": "^2.3.3",
     "@types/node": "^12.7.9",
     "@types/trusted-types": "^2.0.2",
-    "@types/xregexp": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "5.59.2",
     "@typescript-eslint/parser": "5.59.2",
     "archiver": "^5.3.0",
