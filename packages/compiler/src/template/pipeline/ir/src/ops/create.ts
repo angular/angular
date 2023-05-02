@@ -19,7 +19,7 @@ import type {UpdateOp} from './update';
  */
 export type CreateOp =
     ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
-    ContainerStartOp|ContainerEndOp|TemplateOp|TextOp|ListenerOp|VariableOp<CreateOp>;
+    ContainerStartOp|ContainerEndOp|TemplateOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>;
 
 /**
  * Representation of a local reference on an element.
@@ -269,6 +269,22 @@ export function createListenerOp(target: XrefId, name: string, tag: string): Lis
     handlerFnName: null,
     ...NEW_OP,
     ...TRAIT_USES_SLOT_INDEX,
+  };
+}
+
+export interface PipeOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.Pipe;
+  xref: XrefId;
+  name: string;
+}
+
+export function createPipeOp(xref: XrefId, name: string): PipeOp {
+  return {
+    kind: OpKind.Pipe,
+    xref,
+    name,
+    ...NEW_OP,
+    ...TRAIT_CONSUMES_SLOT,
   };
 }
 

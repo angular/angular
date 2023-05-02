@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import {ExpressionKind, OpKind} from './enums';
-import {UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
+import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -19,9 +19,9 @@ import type {UpdateOp} from './ops/update';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression =
-    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
-    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr;
+export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
+    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
+    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -359,6 +359,78 @@ export class PureFunctionParameterExpr extends ExpressionBase {
   override transformInternalExpressions(): void {}
 }
 
+export class PipeBindingExpr extends ExpressionBase implements UsesSlotIndexTrait,
+                                                               ConsumesVarsTrait,
+                                                               UsesVarOffsetTrait {
+  override readonly kind = ExpressionKind.PipeBinding;
+  readonly[UsesSlotIndex] = true;
+  readonly[ConsumesVarsTrait] = true;
+  readonly[UsesVarOffset] = true;
+
+  slot: number|null = null;
+  varOffset: number|null = null;
+
+  constructor(readonly target: XrefId, readonly name: string, readonly args: o.Expression[]) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): void {
+    for (const arg of this.args) {
+      arg.visitExpression(visitor, context);
+    }
+  }
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    for (let idx = 0; idx < this.args.length; idx++) {
+      this.args[idx] = transformExpressionsInExpression(this.args[idx], transform, flags);
+    }
+  }
+}
+
+export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotIndexTrait,
+                                                                       ConsumesVarsTrait,
+                                                                       UsesVarOffsetTrait {
+  override readonly kind = ExpressionKind.PipeBindingVariadic;
+  readonly[UsesSlotIndex] = true;
+  readonly[ConsumesVarsTrait] = true;
+  readonly[UsesVarOffset] = true;
+
+  slot: number|null = null;
+  varOffset: number|null = null;
+
+  constructor(
+      readonly target: XrefId, readonly name: string, public args: o.Expression,
+      public numArgs: number) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): void {
+    this.args.visitExpression(visitor, context);
+  }
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.args = transformExpressionsInExpression(this.args, transform, flags);
+  }
+}
+
 /**
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
@@ -411,6 +483,7 @@ export function transformExpressionsInOp(
     case OpKind.ContainerEnd:
     case OpKind.Template:
     case OpKind.Text:
+    case OpKind.Pipe:
     case OpKind.Advance:
       // These operations contain no expressions.
       break;

@@ -87,6 +87,11 @@ export enum OpKind {
    * An operation to advance the runtime's implicit slot context during the update phase of a view.
    */
   Advance,
+
+  /**
+   * An operation to instantiate a pipe.
+   */
+  Pipe,
 }
 
 /**
@@ -142,6 +147,16 @@ export enum ExpressionKind {
    * Indicates a positional parameter to a pure function definition.
    */
   PureFunctionParameterExpr,
+
+  /**
+   * Binding to a pipe transformation.
+   */
+  PipeBinding,
+
+  /**
+   * Binding to a pipe transformation with a variable number of arguments.
+   */
+  PipeBindingVariadic,
 }
 
 /**
