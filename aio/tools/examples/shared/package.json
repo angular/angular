@@ -32,7 +32,7 @@
     "@angular/router": "^16.0.0-next.0",
     "@angular/service-worker": "^16.0.0-next.0",
     "@angular/upgrade": "^16.0.0-next.0",
-    "@nguniversal/express-engine": "^15.0.0-next.0",
+    "@nguniversal/express-engine": "^16.0.0",
     "angular": "^1.8.3",
     "angular-in-memory-web-api": "~0.15.0",
     "angular-route": "1.8.3",
