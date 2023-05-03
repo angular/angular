@@ -948,6 +948,13 @@
     "bio": "Andrew is a software engineer using Angular and .NET. He spends most of his spare time staying up-to-date, helping other people, and experimenting with web tech.",
     "groups": ["GDE"]
   },
+  "thesmiler": {
+    "name": "Jens Kuehlers",
+    "picture": "thesmiler.jpg",
+    "twitter": "cloudjens",
+    "groups": ["Angular"],
+    "bio": "Technical Program Manager for the Angular team. Previously Networking and Cloud @ Google. Loves coffee, injera and travel."
+  },
   "toddmotto": {
     "name": "Todd Motto",
     "picture": "toddmotto.jpg",
