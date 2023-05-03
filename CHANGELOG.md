@@ -1,213 +1,19 @@
-<a name="16.0.0-rc.4"></a>
-# 16.0.0-rc.4 (2023-05-01)
-## Breaking Changes
-### platform-server
-- Users that are using SSR with JIT mode will now need to add  `import to @angular/compiler` before bootstrapping the application.
-  
-  **NOTE:** this does not effect users using the Angular CLI.
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [80ed0a4868](https://github.com/angular/angular/commit/80ed0a48684834c3e754b761de4edff4a38ce7c2) | fix | fix incorrectly reported distortion for padded images ([#49889](https://github.com/angular/angular/pull/49889)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6da1054a42](https://github.com/angular/angular/commit/6da1054a4203f1b43c3a4046347977b820c0f40b) | fix | catch fatal diagnostic when getting diagnostics for components ([#50046](https://github.com/angular/angular/pull/50046)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5ea624f313](https://github.com/angular/angular/commit/5ea624f3135c71316c36eb94445d818f9157d988) | fix | remove dependency on `@angular/platform-browser-dynamic` ([#50064](https://github.com/angular/angular/pull/50064)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-rc.3"></a>
-# 16.0.0-rc.3 (2023-04-27)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6d7be42da7](https://github.com/angular/angular/commit/6d7be42da7b77632290b935e1db7f20983bdd07b) | fix | add newline to hydration mismatch error ([#49965](https://github.com/angular/angular/pull/49965)) |
-| [9180f98f0e](https://github.com/angular/angular/commit/9180f98f0ec1707455786430d8ad022f3a1386fa) | fix | ensure takeUntilDestroyed unregisters onDestroy listener on unsubscribe ([#49901](https://github.com/angular/angular/pull/49901)) |
-| [b4531f1d82](https://github.com/angular/angular/commit/b4531f1d82dc37d00487ff862f058e2574cec318) | fix | typing of TestBed Common token. ([#49997](https://github.com/angular/angular/pull/49997)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [74c925c19c](https://github.com/angular/angular/commit/74c925c19c5a8f4823fa929700f6599970cd61d3) | fix | export deprecated `TransferState` as type ([#50015](https://github.com/angular/angular/pull/50015)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-rc.2"></a>
-# 16.0.0-rc.2 (2023-04-19)
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [49fe974501](https://github.com/angular/angular/commit/49fe974501b6f446eaedf2490f2d456a5967318f) | perf | optimize NgModule emit for standalone components ([#49837](https://github.com/angular/angular/pull/49837)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [fd9dcd36cd](https://github.com/angular/angular/commit/fd9dcd36cdf9ad92f404567f6c8c0914544b6e0d) | fix | Ensure effects can be created when Zone is not defined ([#49890](https://github.com/angular/angular/pull/49890)) |
-| [2650f1afc1](https://github.com/angular/angular/commit/2650f1afc1cf53423b433c2ee1782aae9d6117e4) | fix | execute input setters in non-reactive context ([#49906](https://github.com/angular/angular/pull/49906)) |
-| [f8b95b9da6](https://github.com/angular/angular/commit/f8b95b9da62d0c8719a38d230f389db5268c0b01) | fix | execute query setters in non-reactive context ([#49906](https://github.com/angular/angular/pull/49906)) |
-| [ef91a2e0fe](https://github.com/angular/angular/commit/ef91a2e0fe66378635d0787bd6d953eb8d31d881) | fix | execute template creation in non-reactive context ([#49883](https://github.com/angular/angular/pull/49883)) |
-| [a3c3ab757c](https://github.com/angular/angular/commit/a3c3ab757cf232c232c91e26d3dbc9b2aa04f296) | fix | handle invalid classes in class array bindings ([#49924](https://github.com/angular/angular/pull/49924)) |
-| [fedc75624c](https://github.com/angular/angular/commit/fedc75624c5dcfaaa2b5ef901e7e700309770a26) | fix | include inner ViewContainerRef anchor nodes into ViewRef.rootNodes output ([#49867](https://github.com/angular/angular/pull/49867)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [98223c11ca](https://github.com/angular/angular/commit/98223c11caab3f4fefa8530b72dcd680280afe71) | fix | canceledNavigationResolution: 'computed' with redirects to the current URL ([#49793](https://github.com/angular/angular/pull/49793)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-rc.1"></a>
-# 16.0.0-rc.1 (2023-04-14)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4721c48a24](https://github.com/angular/angular/commit/4721c48a24bf4e72fd4742097ec8505a08f87579) | fix | error if document body is null ([#49818](https://github.com/angular/angular/pull/49818)) |
-| [87549af73c](https://github.com/angular/angular/commit/87549af73c675d33b2c87d083e05a82b18332bf0) | fix | Fix capitalization of toObservableOptions ([#49832](https://github.com/angular/angular/pull/49832)) |
-| [c34d7e0822](https://github.com/angular/angular/commit/c34d7e0822c21f7b6e7dfd46d3e12cd6ebb7390e) | fix | onDestroy should be registered only on valid DestroyRef ([#49804](https://github.com/angular/angular/pull/49804)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2a580b6f0b](https://github.com/angular/angular/commit/2a580b6f0b05d917dc220c4b7b69a8b3f59e6e98) | fix | HTTP cache was being disabled prematurely ([#49826](https://github.com/angular/angular/pull/49826)) |
-| [95bc7e2c03](https://github.com/angular/angular/commit/95bc7e2c03b60c41c8dbe431a3759d2b63405753) | fix | prevent headers from throwing an error when initializing numerical values ([#49379](https://github.com/angular/angular/pull/49379)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, Andrew Scott, Danilo Bassi, Kristiyan Kostadinov, Matthieu Riegler, Pawel Kozlowski and Payam Valadkhan
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-rc.0"></a>
-# 16.0.0-rc.0 (2023-04-12)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [9de1e9da8f](https://github.com/angular/angular/commit/9de1e9da8fc7d102f74389d9a270c4608bf0dd64) | fix | incorrectly matching directives on attribute bindings ([#49713](https://github.com/angular/angular/pull/49713)) |
-| [6623810e4d](https://github.com/angular/angular/commit/6623810e4d3347edaccbbb214fa883ab6a669936) | fix | Produce diagnositc if directive used in host binding is not exported ([#49527](https://github.com/angular/angular/pull/49527)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ed817e32fe](https://github.com/angular/angular/commit/ed817e32fe0239c0f08ce342c7ad224055d56f84) | fix | Catch FatalDiagnosticError during template type checking ([#49527](https://github.com/angular/angular/pull/49527)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f8e25864e8](https://github.com/angular/angular/commit/f8e25864e8e35214a321b1c48a926d370f725e13) | fix | allow async functions in effects ([#49783](https://github.com/angular/angular/pull/49783)) |
-| [84216dabfc](https://github.com/angular/angular/commit/84216dabfcfc6e082f6042a0658fb0cb7a323525) | fix | catch errors from source signals outside of .next ([#49769](https://github.com/angular/angular/pull/49769)) |
-| [2f2ef14f9e](https://github.com/angular/angular/commit/2f2ef14f9e6b64445f76cb9e3f5958abe2439157) | fix | resolve `InitialRenderPendingTasks` promise on complete ([#49784](https://github.com/angular/angular/pull/49784)) |
-| [c7d8d3ee37](https://github.com/angular/angular/commit/c7d8d3ee3757c2540baf739001b0fc13c096a4a4) | fix | toObservable should allow writes to signals in the effect ([#49769](https://github.com/angular/angular/pull/49769)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [15c91a53ae](https://github.com/angular/angular/commit/15c91a53ae2cc1f34e05b158be69e10e9f43043b) | fix | delay accessing `pendingTasks.whenAllTasksComplete` ([#49784](https://github.com/angular/angular/pull/49784)) |
-| [9f0c6d1ed1](https://github.com/angular/angular/commit/9f0c6d1ed1d30eb5596fc68d8bd30ab132998ae6) | fix | ensure new cache state is returned on each request ([#49749](https://github.com/angular/angular/pull/49749)) |
-| [2eb9b8b402](https://github.com/angular/angular/commit/2eb9b8b402807aec817d0a58137f7d359c46d055) | fix | wait for all XHR requests to finish before stabilizing application ([#49776](https://github.com/angular/angular/pull/49776)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6193a3d406](https://github.com/angular/angular/commit/6193a3d40619c34127ec011a895e8fde3c5d8c48) | fix | fix = not parsed in router segment name ([#47332](https://github.com/angular/angular/pull/47332)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Brandon Roberts, De Wildt, Jessica Janiuk, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Nikola Kološnjaji, Paul Gschwendtner, Pawel Kozlowski and dewildt
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-next.7"></a>
-# 16.0.0-next.7 (2023-04-05)
-## Breaking Changes
-### core
-- QueryList.filter now supports type guard functions, which will result in type narrowing. Previously if you used type guard functions, it resulted in no changes to the return type. Now the type would be narrowed, which might require updates to the application code that relied on the old behavior.
-- The `ReflectiveInjector` and related symbols were removed. Please update the code to avoid references to the `ReflectiveInjector` symbol. Use `Injector.create` as a replacement to create an injector instead.
-### platform-browser
-- The deprecated `BrowserTransferStateModule` was removed, since it's no longer needed. The `TransferState` class can be injected without providing the module. The `BrowserTransferStateModule` was empty starting from v14 and you can just remove the reference to that module from your applications.
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b2327f4df1](https://github.com/angular/angular/commit/b2327f4df12ca91d7cdbc3dc5c0f5cb3ab88a30e) | feat | Allow typeguards on QueryList.filter ([#48042](https://github.com/angular/angular/pull/48042)) |
-| [b35fa73968](https://github.com/angular/angular/commit/b35fa739687a357108edaa0a57dcd033ecfcb9f2) | feat | change the URL sanitization to only block javascript: URLs ([#49659](https://github.com/angular/angular/pull/49659)) |
-| [061f3d1086](https://github.com/angular/angular/commit/061f3d1086421b921403f7d358c02f84927b699b) | feat | Drop public `factories` property for `IterableDiffers` : Breaking change ([#49598](https://github.com/angular/angular/pull/49598)) |
-| [a5f1737d1c](https://github.com/angular/angular/commit/a5f1737d1c2435b1476c1277bdc9a6827377465f) | feat | expose onDestroy on ApplicationRef ([#49677](https://github.com/angular/angular/pull/49677)) |
-| [aad05ebeb4](https://github.com/angular/angular/commit/aad05ebeb44afad29fd989019638590344ba61eb) | feat | support usage of non-experimental decorators with TypeScript 5.0 ([#49492](https://github.com/angular/angular/pull/49492)) |
-| [df1dfc4c17](https://github.com/angular/angular/commit/df1dfc4c17abc6799f2e8f3f5f8604a7bf3d173a) | fix | make sure that lifecycle hooks are not tracked ([#49701](https://github.com/angular/angular/pull/49701)) |
-| [a4e749ffca](https://github.com/angular/angular/commit/a4e749ffca5b1f726c365cecaf0f5c4f13eec8d9) | fix | When using setInput, mark view dirty in same was as `markForCheck` ([#49711](https://github.com/angular/angular/pull/49711)) |
-| [3b863ddc1e](https://github.com/angular/angular/commit/3b863ddc1e67a2fa7627ad78e172c839781e81b6) | refactor | Remove `ReflectiveInjector` symbol ([#48103](https://github.com/angular/angular/pull/48103)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [aff1512950](https://github.com/angular/angular/commit/aff15129501511569bbb4ff6dfcb16ad1c01890d) | feat | allow `HttpClient` to cache requests ([#49509](https://github.com/angular/angular/pull/49509)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [761e02d912](https://github.com/angular/angular/commit/761e02d912e4f910f9e5e915c019dc1fef0d0839) | feat | add a public API function to enable non-destructive hydration ([#49666](https://github.com/angular/angular/pull/49666)) |
-| [81e7d15ef6](https://github.com/angular/angular/commit/81e7d15ef65b70c9734ebfd2c865e70d743263dc) | feat | enable HTTP request caching when using `provideClientHydration` ([#49699](https://github.com/angular/angular/pull/49699)) |
-| [9bd9a11f4e](https://github.com/angular/angular/commit/9bd9a11f4e21e5a7cc9da18f150f6dd520e7cd1e) | refactor | remove deprecated `BrowserTransferStateModule` symbol ([#49718](https://github.com/angular/angular/pull/49718)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7870fb07fe](https://github.com/angular/angular/commit/7870fb07fe6b25f5ebb22497bff3a03b7b5fc646) | feat | rename `provideServerSupport` to `provideServerRendering` ([#49678](https://github.com/angular/angular/pull/49678)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b203e4c19d](https://github.com/angular/angular/commit/b203e4c19d4ccec09b9d1910dbc6f314070c1428) | fix | create correct URL relative to path with empty child ([#49691](https://github.com/angular/angular/pull/49691)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Charles Lyding, Dylan Hunn, Guillaume Weghsteen, Jessica Janiuk, JoostK, Matthieu Riegler, Pawel Kozlowski, Robin Richtsfeld, Sandra Limacher and vikram menon
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="15.2.6"></a>
-# 15.2.6 (2023-04-05)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d9efa1b0d7](https://github.com/angular/angular/commit/d9efa1b0d742217de1164f7904c202b2697348d9) | feat | change the URL sanitization to only block javascript: URLs ([#49659](https://github.com/angular/angular/pull/49659)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [cad7274ef9](https://github.com/angular/angular/commit/cad7274ef90914f0c24d071473a6cbae0e5b8250) | fix | create correct URL relative to path with empty child ([#49691](https://github.com/angular/angular/pull/49691)) |
-| [9b61379096](https://github.com/angular/angular/commit/9b6137909690d6cbfdd8cbef502e9e2ac0d28c4a) | fix | Ensure initial navigation clears current navigation when blocking ([#49572](https://github.com/angular/angular/pull/49572)) |
-## Special Thanks
-Andrew Scott, Guillaume Weghsteen, John Manners, Johnny Gérard, Matthieu Riegler, Robin Richtsfeld, Sandra Limacher, Sarthak Thakkar, Vinit Neogi and vikram menon
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-next.6"></a>
-# 16.0.0-next.6 (2023-04-03)
+<a name="16.0.0"></a>
+# 16.0.0 (2023-05-03)
 ## Breaking Changes
 ### 
+- Angular Compatibility Compiler (ngcc) has been removed and as a result Angular View Engine libraries will no longer work
 - Deprecated `EventManager` method `addGlobalEventListener` has been removed as it is not used by Ivy.
-### 
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2703fd6260](https://github.com/angular/angular/commit/2703fd626040c5e65401ebd776404a3b9e284724) | refactor | remove deprecated `EventManager` method `addGlobalEventListener` ([#49645](https://github.com/angular/angular/pull/49645)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d7d6514add](https://github.com/angular/angular/commit/d7d6514add2912a18c50f190aaa8afafa313bc9e) | feat | Add ability to configure `NgZone` in `bootstrapApplication` ([#49557](https://github.com/angular/angular/pull/49557)) |
-| [e883198460](https://github.com/angular/angular/commit/e8831984601da631afc29f9fd72d36f57696f936) | feat | implement `takeUntilDestroyed` in rxjs-interop ([#49154](https://github.com/angular/angular/pull/49154)) |
-| [8997bdc03b](https://github.com/angular/angular/commit/8997bdc03bd3ef0dc1ac68c913bf7d09340cee0d) | feat | prototype implementation of @angular/core/rxjs-interop ([#49154](https://github.com/angular/angular/pull/49154)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [07a1aa3004](https://github.com/angular/angular/commit/07a1aa300404969155ed1eb3cd02f4a766e07963) | feat | Improve typings form (async)Validators ([#48679](https://github.com/angular/angular/pull/48679)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f982a3f965](https://github.com/angular/angular/commit/f982a3f965995c4883780b0d48cb5d1411ebad0f) | feat | Opt-in for binding `Router` information to component inputs ([#49633](https://github.com/angular/angular/pull/49633)) |
-| [fa3909e8b4](https://github.com/angular/angular/commit/fa3909e8b4b982423357a6e3d6c1d719ea6fa378) | fix | Ensure initial navigation clears current navigation when blocking ([#49572](https://github.com/angular/angular/pull/49572)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, John Manners, Johnny Gérard, Kristiyan Kostadinov, Matthieu Riegler, Pawel Kozlowski, Sarthak Thakkar and Vinit Neogi
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-next.5"></a>
-# 16.0.0-next.5 (2023-03-29)
-## Breaking Changes
-### bazel
-- Several changes to the Angular Package Format (APF)
-  - Removal of FESM2015
-  - Replacing ES2020 with ES2022
-  - Replacing FESM2020 with FESM2022
-- Several changes to the Angular Package Format (APF)
-  - Removal of FESM2015
-  - Replacing ES2020 with ES2022
-  - Replacing FESM2020 with FESM2022
 ### common
+- `MockPlatformLocation` is now provided by default in tests.
+  Existing tests may have behaviors which rely on
+  `BrowserPlatformLocation` instead. For example, direct access to the
+  `window.history` in either the test or the component rather than going
+  through the Angular APIs (`Location.getState()`). The quickest fix is to
+  update the providers in the test suite to override the provider again
+  `TestBed.configureTestingModule({providers: [{provide: PlatformLocation, useClass: BrowserPlatformLocation}]})`.
+  The ideal fix would be to update the code to instead be compatible with
+  `MockPlatformLocation` instead.
 -  If the 'ngTemplateOutletContext' is different from the context, it will result in a compile-time error.
   
   Before the change, the following template was compiling:
@@ -238,14 +44,82 @@ Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, John Manners, Johnny 
   The solution is either:
   - add the 'xxx' property to 'MyContext' with the correct type or
   - add '$any(...)' inside the template to make the error disappear. However, adding '$any(...)' does not correct the error but only preserves the previous behavior of the code.
+- Deprecated `XhrFactory` export from `@angular/common/http` has been removed. Use `XhrFactory` from `@angular/common` instead.
+### compiler
+- Several changes to the Angular Package Format (APF)
+  - Removal of FESM2015
+  - Replacing ES2020 with ES2022
+  - Replacing FESM2020 with FESM2022
+- TypeScript 4.8 is no longer supported.
 ### core
-- * `entryComponents` has been deleted from the `@NgModule` and `@Component` public APIs. Any usages can be removed since they weren't doing anyting.
-  * `ANALYZE_FOR_ENTRY_COMPONENTS` injection token has been deleted. Any references can be removed.
+- QueryList.filter now supports type guard functions, which will result in type narrowing. Previously if you used type guard functions, it resulted in no changes to the return type. Now the type would be narrowed, which might require updates to the application code that relied on the old behavior.
+- `zone.js` versions `0.11.x` and `0.12.x` are not longer supported.
+- `entryComponents` has been deleted from the `@NgModule` and `@Component` public APIs. Any usages can be removed since they weren't doing anyting.
+  `ANALYZE_FOR_ENTRY_COMPONENTS` injection token has been deleted. Any references can be removed.
 - ComponentRef.setInput will only set the input on the
   component if it is different from the previous value (based on `Object.is`
   equality). If code relies on the input always being set, it should be
   updated to copy objects or wrap primitives in order to ensure the input
   value differs from the previous call to `setInput`.
+- `RendererType2.styles` no longer accepts a nested arrays.
+- The `APP_ID` token value is no longer randomly generated. If you are bootstrapping multiple application on the same page you will need to set to provide the `APP_ID` yourself.
+  
+  ```ts
+  bootstrapApplication(ComponentA, {
+    providers: [
+     { provide: APP_ID, useValue: 'app-a' },
+     // ... other providers ...
+    ]
+  });
+  ```
+- The `ReflectiveInjector` and related symbols were removed. Please update the code to avoid references to the `ReflectiveInjector` symbol. Use `Injector.create` as a replacement to create an injector instead.
+- Node.js v14 support has been removed
+  
+  Node.js v14 is planned to be End-of-Life on 2023-04-30. Angular will stop supporting Node.js v14 in Angular v16. Angular v16 will continue to officially support Node.js versions v16 and v18.
+### platform-browser
+- The deprecated `BrowserTransferStateModule` was removed, since it's no longer needed. The `TransferState` class can be injected without providing the module. The `BrowserTransferStateModule` was empty starting from v14 and you can just remove the reference to that module from your applications.
+### platform-server
+- Users that are using SSR with JIT mode will now need to add  `import to @angular/compiler` before bootstrapping the application.
+  
+  **NOTE:** this does not effect users using the Angular CLI.
+- `renderApplication` method no longer accepts a root component as first argument. Instead, provide a bootstrapping function that returns a `Promise<ApplicationRef>`.
+  
+  Before
+  ```ts
+  const output: string = await renderApplication(RootComponent, options);
+  ```
+  
+  Now
+  ```ts
+  const bootstrap = () => bootstrapApplication(RootComponent, appConfig);
+  const output: string = await renderApplication(bootstrap, options);
+  ```
+- `renderModuleFactory` has been removed. Use `renderModule` instead.
+### router
+- The `Scroll` event's `routerEvent` property may also be
+  a `NavigationSkipped` event. Previously, it was only a `NavigationEnd`
+  event.
+- `ComponentFactoryResolver` has been removed from Router APIs.
+  Component factories are not required to create an instance of a component
+  dynamically. Passing a factory resolver via resolver argument is no longer needed
+  and code can instead use `ViewContainerRef.createComponent` without the
+  factory resolver.
+- The `RouterEvent` type is no longer present in the `Event` union type representing all router event types. If you have code using something like `filter((e: Event): e is RouterEvent => e instanceof RouterEvent)`, you'll need to update it to `filter((e: Event|RouterEvent): e is RouterEvent => e instanceof RouterEvent)`.
+- Tests which mock `ActivatedRoute` instances may need to be adjusted
+  because Router.createUrlTree now does the right thing in more
+  scenarios. This means that tests with invalid/incomplete ActivatedRoute mocks
+  may behave differently than before. Additionally, tests may now navigate
+  to a real URL where before they would navigate to the root. Ensure that
+  tests provide expected routes to match.
+  There is rarely production impact, but it has been found that relative
+  navigations when using an `ActivatedRoute` that does not appear in the
+  current router state were effectively ignored in the past. By creating
+  the correct URLs, this sometimes resulted in different navigation
+  behavior in the application. Most often, this happens when attempting to
+  create a navigation that only updates query params using an empty
+  command array, for example `router.navigate([], {relativeTo: route,
+  queryParams: newQueryParams})`. In this case, the `relativeTo` property
+  should be removed.
 ## Deprecations
 ### core
 -  `makeStateKey`, `StateKey` and  `TransferState` exports have been moved from `@angular/platform-browser` to `@angular/core`. Please update the imports.
@@ -254,41 +128,129 @@ Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, John Manners, Johnny 
   - import {makeStateKey, StateKey, TransferState} from '@angular/platform-browser';
   + import {makeStateKey, StateKey, TransferState} from '@angular/core';
   ```
+- `EnvironmentInjector.runInContext` is now deprecated, with
+  `runInInjectionContext` functioning as a direct replacement:
+  
+  ```typescript
+  // Previous method version (deprecated):
+  envInjector.runInContext(fn);
+  // New standalone function:
+  runInInjectionContext(envInjector, fn);
+  ```
 - The `@Directive`/`@Component` `moduleId` property is now
   deprecated. It did not have any effect for multiple major versions and
   will be removed in v17.
+### platform-browser
+- `BrowserModule.withServerTransition` has been deprecated. `APP_ID` should be used instead to set the application ID.
+  NB: Unless, you render multiple Angular applications on the same page, setting an application ID is not necessary.
+  
+  Before:
+  ```ts
+  imports: [
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    ...
+  ]
+  ```
+  
+  After:
+  ```ts
+  imports: [
+    BrowserModule,
+    { provide: APP_ID, useValue: 'serverApp' },
+    ...
+  ],
+  ```
+- `ApplicationConfig` has moved, please import `ApplicationConfig` from `@angular/core` instead.
 ### platform-server
 - `PlatformConfig.baseUrl` and `PlatformConfig.useAbsoluteUrl` platform-server config options  are deprecated as these were not used.
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [48aa96ea13](https://github.com/angular/angular/commit/48aa96ea13ebfadf2f6b13516c7702dae740a7be) | refactor | remove Angular Compatibility Compiler (ngcc) ([#49101](https://github.com/angular/angular/pull/49101)) |
+| [2703fd6260](https://github.com/angular/angular/commit/2703fd626040c5e65401ebd776404a3b9e284724) | refactor | remove deprecated `EventManager` method `addGlobalEventListener` ([#49645](https://github.com/angular/angular/pull/49645)) |
 ### common
 | Commit | Type | Description |
 | -- | -- | -- |
-| [6499f5ae28](https://github.com/angular/angular/commit/6499f5ae28fbd02147e8fe4bc7f4487bad1f0198) | fix | invalid ImageKit transformation ([#49201](https://github.com/angular/angular/pull/49201)) |
+| [5dce2a5a3a](https://github.com/angular/angular/commit/5dce2a5a3a00693d835a57934b9abacce5a33dfa) | feat | Provide MockPlatformLocation by default in BrowserTestingModule ([#49137](https://github.com/angular/angular/pull/49137)) |
 | [d47fef72cb](https://github.com/angular/angular/commit/d47fef72cb497db555e67db50997b3b1cc3ee590) | fix | strict type checking for ngtemplateoutlet ([#48374](https://github.com/angular/angular/pull/48374)) |
+| [c41a21658c](https://github.com/angular/angular/commit/c41a21658c9a56044b5d7f62cab4fcad5a5732c7) | refactor | remove deprecated `XhrFactory` export from `http` entrypoint ([#49251](https://github.com/angular/angular/pull/49251)) |
 ### compiler
 | Commit | Type | Description |
 | -- | -- | -- |
-| [1829542aea](https://github.com/angular/angular/commit/1829542aeabd0e4d5dfb1790872a00d248cd52fd) | fix | do not unquote CSS values ([#49460](https://github.com/angular/angular/pull/49460)) |
-| [73d2f3c866](https://github.com/angular/angular/commit/73d2f3c8666f6456c7db9735e1e20af8c4ed328c) | fix | handle trailing comma in object literal ([#49535](https://github.com/angular/angular/pull/49535)) |
+| [1a6ca68154](https://github.com/angular/angular/commit/1a6ca68154dd73bac4b8d2e094d97952f60b3e30) | feat | add support for compile-time required inputs ([#49304](https://github.com/angular/angular/pull/49304)) |
+| [13dd614cd1](https://github.com/angular/angular/commit/13dd614cd1da65eee947fd6971b7d6e1d6def207) | feat | add support for compile-time required inputs ([#49453](https://github.com/angular/angular/pull/49453)) |
+| [8f539c11f4](https://github.com/angular/angular/commit/8f539c11f40be12207ab42bdf1f87a154a5a2d04) | feat | add support for compile-time required inputs ([#49468](https://github.com/angular/angular/pull/49468)) |
+| [79cdfeb392](https://github.com/angular/angular/commit/79cdfeb3921687dfbc8fea8d9f7ba4dbb14a7193) | feat | drop support for TypeScript 4.8 ([#49155](https://github.com/angular/angular/pull/49155)) |
+| [1407a9aeaf](https://github.com/angular/angular/commit/1407a9aeaf5edf33dfb9b52d7b2baaebef9b80ed) | feat | support multiple configuration files in `extends` ([#49125](https://github.com/angular/angular/pull/49125)) |
+| [9de1e9da8f](https://github.com/angular/angular/commit/9de1e9da8fc7d102f74389d9a270c4608bf0dd64) | fix | incorrectly matching directives on attribute bindings ([#49713](https://github.com/angular/angular/pull/49713)) |
+| [6623810e4d](https://github.com/angular/angular/commit/6623810e4d3347edaccbbb214fa883ab6a669936) | fix | Produce diagnositc if directive used in host binding is not exported ([#49527](https://github.com/angular/angular/pull/49527)) |
 ### compiler-cli
 | Commit | Type | Description |
 | -- | -- | -- |
 | [03d1d00ad9](https://github.com/angular/angular/commit/03d1d00ad9f88a2c449cceab64c1328787576162) | feat | Add an extended diagnostic for `nSkipHydration` ([#49512](https://github.com/angular/angular/pull/49512)) |
+| [ed817e32fe](https://github.com/angular/angular/commit/ed817e32fe0239c0f08ce342c7ad224055d56f84) | fix | Catch FatalDiagnosticError during template type checking ([#49527](https://github.com/angular/angular/pull/49527)) |
+| [49fe974501](https://github.com/angular/angular/commit/49fe974501b6f446eaedf2490f2d456a5967318f) | perf | optimize NgModule emit for standalone components ([#49837](https://github.com/angular/angular/pull/49837)) |
 ### core
 | Commit | Type | Description |
 | -- | -- | -- |
 | [89d291c367](https://github.com/angular/angular/commit/89d291c367e6b1b4618999c4044dcafcc1953109) | feat | add `assertInInjectionContext` ([#49529](https://github.com/angular/angular/pull/49529)) |
+| [4e9531f777](https://github.com/angular/angular/commit/4e9531f7773e7bf0d3034a36c62f34f914e4a451) | feat | add `mergeApplicationConfig` method ([#49253](https://github.com/angular/angular/pull/49253)) |
+| [d7d6514add](https://github.com/angular/angular/commit/d7d6514add2912a18c50f190aaa8afafa313bc9e) | feat | Add ability to configure `NgZone` in `bootstrapApplication` ([#49557](https://github.com/angular/angular/pull/49557)) |
+| [bc5ddabdcb](https://github.com/angular/angular/commit/bc5ddabdcb39e6ebbe2da03dc8ec49bbe26c677d) | feat | add Angular Signals to the public API ([#49150](https://github.com/angular/angular/pull/49150)) |
+| [17e9862653](https://github.com/angular/angular/commit/17e9862653758ebdbd29771cd4ec8a59436497d6) | feat | add API to provide CSP nonce for inline stylesheets ([#49444](https://github.com/angular/angular/pull/49444)) |
 | [605c536420](https://github.com/angular/angular/commit/605c5364208d9ab60041121e2ebbcfb2a1a52c1a) | feat | add migration to remove `moduleId` references ([#49496](https://github.com/angular/angular/pull/49496)) |
+| [99d874fe3b](https://github.com/angular/angular/commit/99d874fe3b486f3669b0e8f1910e31c4fa278308) | feat | add support for TypeScript 5.0 ([#49126](https://github.com/angular/angular/pull/49126)) |
+| [d1617c449d](https://github.com/angular/angular/commit/d1617c449d23c6573803cce36391134e8d0103a3) | feat | allow removal of previously registered DestroyRef callbacks ([#49493](https://github.com/angular/angular/pull/49493)) |
+| [b2327f4df1](https://github.com/angular/angular/commit/b2327f4df12ca91d7cdbc3dc5c0f5cb3ab88a30e) | feat | Allow typeguards on QueryList.filter ([#48042](https://github.com/angular/angular/pull/48042)) |
+| [061f3d1086](https://github.com/angular/angular/commit/061f3d1086421b921403f7d358c02f84927b699b) | feat | Drop public `factories` property for `IterableDiffers` : Breaking change ([#49598](https://github.com/angular/angular/pull/49598)) |
+| [fdf61974d1](https://github.com/angular/angular/commit/fdf61974d1155b771d7d53c7bbc3bd2b0f6681cb) | feat | drop support for `zone.js` versions `<=0.12.0` ([#49331](https://github.com/angular/angular/pull/49331)) |
 | [9c5fd50de4](https://github.com/angular/angular/commit/9c5fd50de4489d98b40668f7d9885c18d9a43c73) | feat | effects can optionally return a cleanup function ([#49625](https://github.com/angular/angular/pull/49625)) |
 | [c024574f46](https://github.com/angular/angular/commit/c024574f46f18c42c1e5b02afa6c1e3e4219d25b) | feat | expose `makeStateKey`, `StateKey` and  `TransferState` ([#49563](https://github.com/angular/angular/pull/49563)) |
+| [a5f1737d1c](https://github.com/angular/angular/commit/a5f1737d1c2435b1476c1277bdc9a6827377465f) | feat | expose onDestroy on ApplicationRef ([#49677](https://github.com/angular/angular/pull/49677)) |
+| [e883198460](https://github.com/angular/angular/commit/e8831984601da631afc29f9fd72d36f57696f936) | feat | implement `takeUntilDestroyed` in rxjs-interop ([#49154](https://github.com/angular/angular/pull/49154)) |
+| [0814f20594](https://github.com/angular/angular/commit/0814f2059406dff9cefdd8b210756b6fdcba15b1) | feat | introduce `runInInjectionContext` and deprecate prior version ([#49396](https://github.com/angular/angular/pull/49396)) |
+| [0f5c8003cc](https://github.com/angular/angular/commit/0f5c8003ccd1a75516d6a0e31cdb752d031ec430) | feat | introduce concept of DestroyRef ([#49158](https://github.com/angular/angular/pull/49158)) |
 | [9b65b84cb9](https://github.com/angular/angular/commit/9b65b84cb9a0392d8aef5b52b34d35c7c5b9f566) | feat | Mark components for check if they read a signal ([#49153](https://github.com/angular/angular/pull/49153)) |
+| [8997bdc03b](https://github.com/angular/angular/commit/8997bdc03bd3ef0dc1ac68c913bf7d09340cee0d) | feat | prototype implementation of @angular/core/rxjs-interop ([#49154](https://github.com/angular/angular/pull/49154)) |
 | [585e34bf6c](https://github.com/angular/angular/commit/585e34bf6c86f7b056b0aafaaca056baedaedae3) | feat | remove entryComponents ([#49484](https://github.com/angular/angular/pull/49484)) |
+| [aad05ebeb4](https://github.com/angular/angular/commit/aad05ebeb44afad29fd989019638590344ba61eb) | feat | support usage of non-experimental decorators with TypeScript 5.0 ([#49492](https://github.com/angular/angular/pull/49492)) |
+| [6d7be42da7](https://github.com/angular/angular/commit/6d7be42da7b77632290b935e1db7f20983bdd07b) | fix | add newline to hydration mismatch error ([#49965](https://github.com/angular/angular/pull/49965)) |
+| [f8e25864e8](https://github.com/angular/angular/commit/f8e25864e8e35214a321b1c48a926d370f725e13) | fix | allow async functions in effects ([#49783](https://github.com/angular/angular/pull/49783)) |
+| [84216dabfc](https://github.com/angular/angular/commit/84216dabfcfc6e082f6042a0658fb0cb7a323525) | fix | catch errors from source signals outside of .next ([#49769](https://github.com/angular/angular/pull/49769)) |
 | [be23b7ce65](https://github.com/angular/angular/commit/be23b7ce650634c95f6709a879c89bbad45c4701) | fix | ComponentRef.setInput only sets input when not equal to previous ([#49607](https://github.com/angular/angular/pull/49607)) |
 | [316c91b1a4](https://github.com/angular/angular/commit/316c91b1a47f1fb574045553288acca5fcb6e354) | fix | deprecate `moduleId` `@Component` property ([#49496](https://github.com/angular/angular/pull/49496)) |
-| [fdafdb78dc](https://github.com/angular/angular/commit/fdafdb78dce89d550426fbdbccad1dd1320cad01) | fix | set style property value to empty string instead of an invalid value ([#49460](https://github.com/angular/angular/pull/49460)) |
+| [fd9dcd36cd](https://github.com/angular/angular/commit/fd9dcd36cdf9ad92f404567f6c8c0914544b6e0d) | fix | Ensure effects can be created when Zone is not defined ([#49890](https://github.com/angular/angular/pull/49890)) |
+| [9180f98f0e](https://github.com/angular/angular/commit/9180f98f0ec1707455786430d8ad022f3a1386fa) | fix | ensure takeUntilDestroyed unregisters onDestroy listener on unsubscribe ([#49901](https://github.com/angular/angular/pull/49901)) |
+| [4721c48a24](https://github.com/angular/angular/commit/4721c48a24bf4e72fd4742097ec8505a08f87579) | fix | error if document body is null ([#49818](https://github.com/angular/angular/pull/49818)) |
+| [2650f1afc1](https://github.com/angular/angular/commit/2650f1afc1cf53423b433c2ee1782aae9d6117e4) | fix | execute input setters in non-reactive context ([#49906](https://github.com/angular/angular/pull/49906)) |
+| [f8b95b9da6](https://github.com/angular/angular/commit/f8b95b9da62d0c8719a38d230f389db5268c0b01) | fix | execute query setters in non-reactive context ([#49906](https://github.com/angular/angular/pull/49906)) |
+| [ef91a2e0fe](https://github.com/angular/angular/commit/ef91a2e0fe66378635d0787bd6d953eb8d31d881) | fix | execute template creation in non-reactive context ([#49883](https://github.com/angular/angular/pull/49883)) |
+| [87549af73c](https://github.com/angular/angular/commit/87549af73c675d33b2c87d083e05a82b18332bf0) | fix | Fix capitalization of toObservableOptions ([#49832](https://github.com/angular/angular/pull/49832)) |
+| [0e5f9ba6f4](https://github.com/angular/angular/commit/0e5f9ba6f427a79a0b741c1780cd2ff72cc3100a) | fix | generate consistent component IDs ([#48253](https://github.com/angular/angular/pull/48253)) |
+| [fedc75624c](https://github.com/angular/angular/commit/fedc75624c5dcfaaa2b5ef901e7e700309770a26) | fix | include inner ViewContainerRef anchor nodes into ViewRef.rootNodes output ([#49867](https://github.com/angular/angular/pull/49867)) |
+| [df1dfc4c17](https://github.com/angular/angular/commit/df1dfc4c17abc6799f2e8f3f5f8604a7bf3d173a) | fix | make sure that lifecycle hooks are not tracked ([#49701](https://github.com/angular/angular/pull/49701)) |
+| [c34d7e0822](https://github.com/angular/angular/commit/c34d7e0822c21f7b6e7dfd46d3e12cd6ebb7390e) | fix | onDestroy should be registered only on valid DestroyRef ([#49804](https://github.com/angular/angular/pull/49804)) |
+| [2f2ef14f9e](https://github.com/angular/angular/commit/2f2ef14f9e6b64445f76cb9e3f5958abe2439157) | fix | resolve `InitialRenderPendingTasks` promise on complete ([#49784](https://github.com/angular/angular/pull/49784)) |
+| [c7d8d3ee37](https://github.com/angular/angular/commit/c7d8d3ee3757c2540baf739001b0fc13c096a4a4) | fix | toObservable should allow writes to signals in the effect ([#49769](https://github.com/angular/angular/pull/49769)) |
+| [b4531f1d82](https://github.com/angular/angular/commit/b4531f1d82dc37d00487ff862f058e2574cec318) | fix | typing of TestBed Common token. ([#49997](https://github.com/angular/angular/pull/49997)) |
+| [a4e749ffca](https://github.com/angular/angular/commit/a4e749ffca5b1f726c365cecaf0f5c4f13eec8d9) | fix | When using setInput, mark view dirty in same was as `markForCheck` ([#49711](https://github.com/angular/angular/pull/49711)) |
+| [9b9c818f99](https://github.com/angular/angular/commit/9b9c818f99c44473e915bedd157146c88e44989a) | perf | change `RendererType2.styles` to accept a only a flat array ([#49072](https://github.com/angular/angular/pull/49072)) |
+| [82d6fbb109](https://github.com/angular/angular/commit/82d6fbb109491607bd2e4feaa35c3dace79e4576) | refactor | generate a static application ID ([#49422](https://github.com/angular/angular/pull/49422)) |
+| [3b863ddc1e](https://github.com/angular/angular/commit/3b863ddc1e67a2fa7627ad78e172c839781e81b6) | refactor | Remove `ReflectiveInjector` symbol ([#48103](https://github.com/angular/angular/pull/48103)) |
+| [f594725951](https://github.com/angular/angular/commit/f594725951fafde475ee99ffccf1175c13c48288) | refactor | remove Node.js v14 support ([#49255](https://github.com/angular/angular/pull/49255)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [07a1aa3004](https://github.com/angular/angular/commit/07a1aa300404969155ed1eb3cd02f4a766e07963) | feat | Improve typings form (async)Validators ([#48679](https://github.com/angular/angular/pull/48679)) |
 ### http
 | Commit | Type | Description |
 | -- | -- | -- |
+| [aff1512950](https://github.com/angular/angular/commit/aff15129501511569bbb4ff6dfcb16ad1c01890d) | feat | allow `HttpClient` to cache requests ([#49509](https://github.com/angular/angular/pull/49509)) |
+| [15c91a53ae](https://github.com/angular/angular/commit/15c91a53ae2cc1f34e05b158be69e10e9f43043b) | fix | delay accessing `pendingTasks.whenAllTasksComplete` ([#49784](https://github.com/angular/angular/pull/49784)) |
+| [9f0c6d1ed1](https://github.com/angular/angular/commit/9f0c6d1ed1d30eb5596fc68d8bd30ab132998ae6) | fix | ensure new cache state is returned on each request ([#49749](https://github.com/angular/angular/pull/49749)) |
 | [45a6ac09fd](https://github.com/angular/angular/commit/45a6ac09fdd2228fa4bbf5188ba8e67298754e7e) | fix | force macro task creation during HTTP request ([#49546](https://github.com/angular/angular/pull/49546)) |
+| [2a580b6f0b](https://github.com/angular/angular/commit/2a580b6f0b05d917dc220c4b7b69a8b3f59e6e98) | fix | HTTP cache was being disabled prematurely ([#49826](https://github.com/angular/angular/pull/49826)) |
+| [2eb9b8b402](https://github.com/angular/angular/commit/2eb9b8b402807aec817d0a58137f7d359c46d055) | fix | wait for all XHR requests to finish before stabilizing application ([#49776](https://github.com/angular/angular/pull/49776)) |
 ### migrations
 | Commit | Type | Description |
 | -- | -- | -- |
@@ -296,19 +258,60 @@ Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, John Manners, Johnny 
 ### platform-browser
 | Commit | Type | Description |
 | -- | -- | -- |
+| [761e02d912](https://github.com/angular/angular/commit/761e02d912e4f910f9e5e915c019dc1fef0d0839) | feat | add a public API function to enable non-destructive hydration ([#49666](https://github.com/angular/angular/pull/49666)) |
+| [630af63fae](https://github.com/angular/angular/commit/630af63fae2e279e88805aecf01db58be6dfbafb) | feat | deprecate `withServerTransition` call ([#49422](https://github.com/angular/angular/pull/49422)) |
+| [81e7d15ef6](https://github.com/angular/angular/commit/81e7d15ef65b70c9734ebfd2c865e70d743263dc) | feat | enable HTTP request caching when using `provideClientHydration` ([#49699](https://github.com/angular/angular/pull/49699)) |
+| [74c925c19c](https://github.com/angular/angular/commit/74c925c19c5a8f4823fa929700f6599970cd61d3) | fix | export deprecated `TransferState` as type ([#50015](https://github.com/angular/angular/pull/50015)) |
+| [2312eb53ef](https://github.com/angular/angular/commit/2312eb53ef5862e0866c29d11dec2a9b7b6a064c) | fix | KeyEventsPlugin should keep the same behavior ([#49330](https://github.com/angular/angular/pull/49330)) |
+| [c934a8e72b](https://github.com/angular/angular/commit/c934a8e72bec9f96ccf1a1de1a3384d40dfd2731) | fix | only add `ng-app-id` to style on server side ([#49465](https://github.com/angular/angular/pull/49465)) |
+| [9165ff2517](https://github.com/angular/angular/commit/9165ff2517448b43bb910001816108702088e93e) | fix | reuse server generated component styles ([#48253](https://github.com/angular/angular/pull/48253)) |
 | [e8e36811d5](https://github.com/angular/angular/commit/e8e36811d5700d23a6d853c78e6314b19d937e5e) | fix | set nonce attribute in a platform compatible way ([#49624](https://github.com/angular/angular/pull/49624)) |
+| [3aa85a8087](https://github.com/angular/angular/commit/3aa85a8087643ce79da6d1aeae7b925bb76315a5) | refactor | move `ApplicationConfig` to core ([#49253](https://github.com/angular/angular/pull/49253)) |
+| [9bd9a11f4e](https://github.com/angular/angular/commit/9bd9a11f4e21e5a7cc9da18f150f6dd520e7cd1e) | refactor | remove deprecated `BrowserTransferStateModule` symbol ([#49718](https://github.com/angular/angular/pull/49718)) |
 ### platform-server
 | Commit | Type | Description |
 | -- | -- | -- |
+| [b5278cc115](https://github.com/angular/angular/commit/b5278cc115ee6383a20783967b9e7da3f6184dcd) | feat | `renderApplication` now accepts a bootstrapping method ([#49248](https://github.com/angular/angular/pull/49248)) |
+| [056d68002f](https://github.com/angular/angular/commit/056d68002fbe6024b486bb7220bc77f8f9a07707) | feat | add `provideServerSupport` function to provide server capabilities to an application ([#49380](https://github.com/angular/angular/pull/49380)) |
+| [7870fb07fe](https://github.com/angular/angular/commit/7870fb07fe6b25f5ebb22497bff3a03b7b5fc646) | feat | rename `provideServerSupport` to `provideServerRendering` ([#49678](https://github.com/angular/angular/pull/49678)) |
+| [a08a8ff108](https://github.com/angular/angular/commit/a08a8ff108bba88ba4bd7f30a6a8c1bcadb13db7) | fix | bundle @angular/domino in via esbuild ([#49229](https://github.com/angular/angular/pull/49229)) |
+| [5ea624f313](https://github.com/angular/angular/commit/5ea624f3135c71316c36eb94445d818f9157d988) | fix | remove dependency on `@angular/platform-browser-dynamic` ([#50064](https://github.com/angular/angular/pull/50064)) |
 | [e99460865e](https://github.com/angular/angular/commit/e99460865e6a038be08a3436422ad129901aec8c) | refactor | deprecate `useAbsoluteUrl` and `baseUrl` ([#49546](https://github.com/angular/angular/pull/49546)) |
+| [41f27ad086](https://github.com/angular/angular/commit/41f27ad08643839d09daf4588069a3f8fe627070) | refactor | remove `renderApplication` overload that accepts a component ([#49463](https://github.com/angular/angular/pull/49463)) |
+| [17abe6dc96](https://github.com/angular/angular/commit/17abe6dc96a443de0c2f9575bb160042a031fed1) | refactor | remove deprecated `renderModuleFactory` ([#49247](https://github.com/angular/angular/pull/49247)) |
 ### router
 | Commit | Type | Description |
 | -- | -- | -- |
-| [2dbf3e0023](https://github.com/angular/angular/commit/2dbf3e0023304b0e80c274c3fb79b70a45b7b317) | fix | Ensure Router preloading works with lazy component and static children ([#49571](https://github.com/angular/angular/pull/49571)) |
-| [d3018c0ee7](https://github.com/angular/angular/commit/d3018c0ee71eab2ab35aff20d95e9fa882944d14) | fix | fix [#49457](https://github.com/angular/angular/pull/49457) outlet activating with old info ([#49459](https://github.com/angular/angular/pull/49459)) |
+| [ea32c3289a](https://github.com/angular/angular/commit/ea32c3289ad773a821b3432fb8d4c36d0d9fbd9d) | feat | Expose information about the last successful `Navigation` ([#49235](https://github.com/angular/angular/pull/49235)) |
+| [455c728525](https://github.com/angular/angular/commit/455c7285257a8def53ae6c9d14e9848d72ae2613) | feat | helper functions to convert class guards to functional ([#48709](https://github.com/angular/angular/pull/48709)) |
+| [f982a3f965](https://github.com/angular/angular/commit/f982a3f965995c4883780b0d48cb5d1411ebad0f) | feat | Opt-in for binding `Router` information to component inputs ([#49633](https://github.com/angular/angular/pull/49633)) |
+| [1f055b90b6](https://github.com/angular/angular/commit/1f055b90b65cce2d0d063ed44cb0f8fbecb9b1f6) | fix | Ensure anchor scrolling happens on ignored same URL navigations ([#48025](https://github.com/angular/angular/pull/48025)) |
+| [6193a3d406](https://github.com/angular/angular/commit/6193a3d40619c34127ec011a895e8fde3c5d8c48) | fix | fix = not parsed in router segment name ([#47332](https://github.com/angular/angular/pull/47332)) |
+| [c0b1b7becf](https://github.com/angular/angular/commit/c0b1b7becf65d5f21018a1794aafe9bbfbd5ce05) | fix | Remove deprecated ComponentFactoryResolver from APIs ([#49239](https://github.com/angular/angular/pull/49239)) |
+| [1e32709e0e](https://github.com/angular/angular/commit/1e32709e0e16f553ed3e7778705c9a0c5641d0af) | fix | remove RouterEvent from Event union type ([#46061](https://github.com/angular/angular/pull/46061)) |
+| [3c7e637374](https://github.com/angular/angular/commit/3c7e63737407287986c65136efd1f53d1215a53e) | fix | Route matching should only happen once when navigating ([#49163](https://github.com/angular/angular/pull/49163)) |
 | [1600687fe5](https://github.com/angular/angular/commit/1600687fe518e67adcc629c78857720a5118d489) | fix | Route matching should only happen once when navigating ([#49163](https://github.com/angular/angular/pull/49163)) |
+| [31f210bf2c](https://github.com/angular/angular/commit/31f210bf2cd8a5cc8245c05a30ae3b8f8b9d826a) | fix | Router.createUrlTree should work with any ActivatedRoute ([#48508](https://github.com/angular/angular/pull/48508)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5e7fc259ea](https://github.com/angular/angular/commit/5e7fc259ead62ee9b4f8a9a77a455065b6a8e2d8) | feat | add function to provide service worker ([#48247](https://github.com/angular/angular/pull/48247)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="15.2.6"></a>
+# 15.2.6 (2023-04-05)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d9efa1b0d7](https://github.com/angular/angular/commit/d9efa1b0d742217de1164f7904c202b2697348d9) | feat | change the URL sanitization to only block javascript: URLs ([#49659](https://github.com/angular/angular/pull/49659)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cad7274ef9](https://github.com/angular/angular/commit/cad7274ef90914f0c24d071473a6cbae0e5b8250) | fix | create correct URL relative to path with empty child ([#49691](https://github.com/angular/angular/pull/49691)) |
+| [9b61379096](https://github.com/angular/angular/commit/9b6137909690d6cbfdd8cbef502e9e2ac0d28c4a) | fix | Ensure initial navigation clears current navigation when blocking ([#49572](https://github.com/angular/angular/pull/49572)) |
 ## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Asaf Malin, Jan Cabadaj, Jessica Janiuk, JiaLiPassion, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Sid, Tano Abeleyra and tomalaforge
+Andrew Scott, Guillaume Weghsteen, John Manners, Johnny Gérard, Matthieu Riegler, Robin Richtsfeld, Sandra Limacher, Sarthak Thakkar, Vinit Neogi and vikram menon
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -337,50 +340,6 @@ Alan Agius, Andrew Scott, Asaf Malin, Jan Cabadaj, Kristiyan Kostadinov, Matthie
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="16.0.0-next.4"></a>
-# 16.0.0-next.4 (2023-03-22)
-## Breaking Changes
-### platform-server
-- `renderApplication` method no longer accepts a root component as first argument. Instead, provide a bootstrapping function that returns a `Promise<ApplicationRef>`.
-  
-  Before
-  ```ts
-  const output: string = await renderApplication(RootComponent, options);
-  ```
-  
-  Now
-  ```ts
-  const bootstrap = () => bootstrapApplication(RootComponent, appConfig);
-  const output: string = await renderApplication(bootstrap, options);
-  ```
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [13dd614cd1](https://github.com/angular/angular/commit/13dd614cd1da65eee947fd6971b7d6e1d6def207) | feat | add support for compile-time required inputs ([#49453](https://github.com/angular/angular/pull/49453)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [17e9862653](https://github.com/angular/angular/commit/17e9862653758ebdbd29771cd4ec8a59436497d6) | feat | add API to provide CSP nonce for inline stylesheets ([#49444](https://github.com/angular/angular/pull/49444)) |
-| [d1617c449d](https://github.com/angular/angular/commit/d1617c449d23c6573803cce36391134e8d0103a3) | feat | allow removal of previously registered DestroyRef callbacks ([#49493](https://github.com/angular/angular/pull/49493)) |
-| [230345876c](https://github.com/angular/angular/commit/230345876c2a2ff6289ca44c5a00fc6421c8d8eb) | fix | Allow `TestBed.configureTestingModule` to work with recursive cycle of standalone components. ([#49473](https://github.com/angular/angular/pull/49473)) |
-| [e655e8a603](https://github.com/angular/angular/commit/e655e8a603d923de3a6ff27edab8bae1796a71a0) | fix | more accurate matching of classes during content projection ([#48888](https://github.com/angular/angular/pull/48888)) |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [546b285ec1](https://github.com/angular/angular/commit/546b285ec1fb6c5af210549825c0ee6d9a99261e) | fix | preserve trailing commas in code generated by standalone migration ([#49533](https://github.com/angular/angular/pull/49533)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c934a8e72b](https://github.com/angular/angular/commit/c934a8e72bec9f96ccf1a1de1a3384d40dfd2731) | fix | only add `ng-app-id` to style on server side ([#49465](https://github.com/angular/angular/pull/49465)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [41f27ad086](https://github.com/angular/angular/commit/41f27ad08643839d09daf4588069a3f8fe627070) | refactor | remove `renderApplication` overload that accepts a component ([#49463](https://github.com/angular/angular/pull/49463)) |
-## Special Thanks
-Aditya Srinivasan, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Jessica Janiuk, Kristiyan Kostadinov, Masaoki Kobayashi, Matthieu Riegler, Paul Gschwendtner, Pawel Kozlowski, Peter Götz, Thomas Pischke, Virginia Dooley and avmaxim
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="15.2.4"></a>
 # 15.2.4 (2023-03-22)
 ### core
@@ -390,89 +349,6 @@ Aditya Srinivasan, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Je
 | [087f4412af](https://github.com/angular/angular/commit/087f4412afe9ccdefe7d63012af749b79f3e84d0) | fix | more accurate matching of classes during content projection ([#48888](https://github.com/angular/angular/pull/48888)) |
 ## Special Thanks
 Aditya Srinivasan, Alex Rickabaugh, Andrew Scott, Kristiyan Kostadinov, Masaoki Kobayashi, Matthieu Riegler, Paul Gschwendtner, Peter Götz, Thomas Pischke, Virginia Dooley and avmaxim
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-next.3"></a>
-# 16.0.0-next.3 (2023-03-16)
-## Breaking Changes
-### core
-- The `APP_ID` token value is no longer randomly generated. If you are bootstrapping multiple application on the same page you will need to set to provide the `APP_ID` yourself.
-  
-  ```ts
-  bootstrapApplication(ComponentA, {
-    providers: [
-     { provide: APP_ID, useValue: 'app-a' },
-     // ... other providers ...
-    ]
-  });
-  ```
-### router
-- `ComponentFactoryResolver` has been removed from Router APIs.
-  Component factories are not required to create an instance of a component
-  dynamically. Passing a factory resolver via resolver argument is no longer needed
-  and code can instead use `ViewContainerRef.createComponent` without the
-  factory resolver.
-## Deprecations
-### core
-- `EnvironmentInjector.runInContext` is now deprecated, with
-  `runInInjectionContext` functioning as a direct replacement:
-  
-  ```typescript
-  // Previous method version (deprecated):
-  envInjector.runInContext(fn);
-  // New standalone function:
-  runInInjectionContext(envInjector, fn);
-  ```
-### platform-browser
-- `BrowserModule.withServerTransition` has been deprecated. `APP_ID` should be used instead to set the application ID.
-  NB: Unless, you render multiple Angular applications on the same page, setting an application ID is not necessary.
-  
-  Before:
-  ```ts
-  imports: [
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
-    ...
-  ]
-  ```
-  
-  After:
-  ```ts
-  imports: [
-    BrowserModule,
-    { provide: APP_ID, useValue: 'serverApp' },
-    ...
-  ],
-  ```
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1a6ca68154](https://github.com/angular/angular/commit/1a6ca68154dd73bac4b8d2e094d97952f60b3e30) | feat | add support for compile-time required inputs ([#49304](https://github.com/angular/angular/pull/49304)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0814f20594](https://github.com/angular/angular/commit/0814f2059406dff9cefdd8b210756b6fdcba15b1) | feat | introduce `runInInjectionContext` and deprecate prior version ([#49396](https://github.com/angular/angular/pull/49396)) |
-| [0e5f9ba6f4](https://github.com/angular/angular/commit/0e5f9ba6f427a79a0b741c1780cd2ff72cc3100a) | fix | generate consistent component IDs ([#48253](https://github.com/angular/angular/pull/48253)) |
-| [82d6fbb109](https://github.com/angular/angular/commit/82d6fbb109491607bd2e4feaa35c3dace79e4576) | refactor | generate a static application ID ([#49422](https://github.com/angular/angular/pull/49422)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [630af63fae](https://github.com/angular/angular/commit/630af63fae2e279e88805aecf01db58be6dfbafb) | feat | deprecate `withServerTransition` call ([#49422](https://github.com/angular/angular/pull/49422)) |
-| [9165ff2517](https://github.com/angular/angular/commit/9165ff2517448b43bb910001816108702088e93e) | fix | reuse server generated component styles ([#48253](https://github.com/angular/angular/pull/48253)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [056d68002f](https://github.com/angular/angular/commit/056d68002fbe6024b486bb7220bc77f8f9a07707) | feat | add `provideServerSupport` function to provide server capabilities to an application ([#49380](https://github.com/angular/angular/pull/49380)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c0b1b7becf](https://github.com/angular/angular/commit/c0b1b7becf65d5f21018a1794aafe9bbfbd5ce05) | fix | Remove deprecated ComponentFactoryResolver from APIs ([#49239](https://github.com/angular/angular/pull/49239)) |
-### service-worker
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5e7fc259ea](https://github.com/angular/angular/commit/5e7fc259ead62ee9b4f8a9a77a455065b6a8e2d8) | feat | add function to provide service worker ([#48247](https://github.com/angular/angular/pull/48247)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Esteban Gehring, Jessica Janiuk, JiaLiPassion, Julien Saguet, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner and Virginia Dooley
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -494,53 +370,6 @@ Alex Castle, Joey Perrott and Paul Gschwendtner
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="16.0.0-next.2"></a>
-# 16.0.0-next.2 (2023-03-08)
-## Breaking Changes
-### common
-- Deprecated `XhrFactory` export from `@angular/common/http` has been removed. Use `XhrFactory` from `@angular/common` instead.
-### core
-- `zone.js` versions `0.11.x` and `0.12.x` are not longer supported.
-### platform-server
-- `renderModuleFactory` has been removed. Use `renderModule` instead.
-## Deprecations
-### platform-browser
-- `ApplicationConfig` has moved, please import `ApplicationConfig` from `@angular/core` instead.
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c41a21658c](https://github.com/angular/angular/commit/c41a21658c9a56044b5d7f62cab4fcad5a5732c7) | refactor | remove deprecated `XhrFactory` export from `http` entrypoint ([#49251](https://github.com/angular/angular/pull/49251)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1407a9aeaf](https://github.com/angular/angular/commit/1407a9aeaf5edf33dfb9b52d7b2baaebef9b80ed) | feat | support multiple configuration files in `extends` ([#49125](https://github.com/angular/angular/pull/49125)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4e9531f777](https://github.com/angular/angular/commit/4e9531f7773e7bf0d3034a36c62f34f914e4a451) | feat | add `mergeApplicationConfig` method ([#49253](https://github.com/angular/angular/pull/49253)) |
-| [fdf61974d1](https://github.com/angular/angular/commit/fdf61974d1155b771d7d53c7bbc3bd2b0f6681cb) | feat | drop support for `zone.js` versions `<=0.12.0` ([#49331](https://github.com/angular/angular/pull/49331)) |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2fbaee3cbe](https://github.com/angular/angular/commit/2fbaee3cbe0dd24fc9c03a4c3d0e0117c26acb53) | fix | add protractor support if protractor imports are detected ([#49274](https://github.com/angular/angular/pull/49274)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3aa85a8087](https://github.com/angular/angular/commit/3aa85a8087643ce79da6d1aeae7b925bb76315a5) | refactor | move `ApplicationConfig` to core ([#49253](https://github.com/angular/angular/pull/49253)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b5278cc115](https://github.com/angular/angular/commit/b5278cc115ee6383a20783967b9e7da3f6184dcd) | feat | `renderApplication` now accepts a bootstrapping method ([#49248](https://github.com/angular/angular/pull/49248)) |
-| [17abe6dc96](https://github.com/angular/angular/commit/17abe6dc96a443de0c2f9575bb160042a031fed1) | refactor | remove deprecated `renderModuleFactory` ([#49247](https://github.com/angular/angular/pull/49247)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ea32c3289a](https://github.com/angular/angular/commit/ea32c3289ad773a821b3432fb8d4c36d0d9fbd9d) | feat | Expose information about the last successful `Navigation` ([#49235](https://github.com/angular/angular/pull/49235)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, Andrew Scott, Dylan Hunn, Jessica Janiuk, JiaLiPassion, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Sai Kartheek Bommisetty and Vinit Neogi
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="15.2.2"></a>
 # 15.2.2 (2023-03-08)
 ### migrations
@@ -549,70 +378,6 @@ Alan Agius, Andrew Kushnir, Andrew Scott, Dylan Hunn, Jessica Janiuk, JiaLiPassi
 | [6207d6f1f0](https://github.com/angular/angular/commit/6207d6f1f0771ff3b74379367e65af665ef0e51c) | fix | add protractor support if protractor imports are detected ([#49274](https://github.com/angular/angular/pull/49274)) |
 ## Special Thanks
 Alan Agius, Andrew Kushnir, Andrew Scott, Kristiyan Kostadinov, Matthieu Riegler, Paul Gschwendtner, Sai Kartheek Bommisetty and Vinit Neogi
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-next.1"></a>
-# 16.0.0-next.1 (2023-03-01)
-## Breaking Changes
-### compiler
-- * TypeScript 4.8 is no longer supported.
-### core
-- Node.js v14 support has been removed
-  
-  Node.js v14 is planned to be End-of-Life on 2023-04-30. Angular will stop supporting Node.js v14 in Angular v16. Angular v16 will continue to officially support Node.js versions v16 and v18.
-### router
-- Tests which mock `ActivatedRoute` instances may need to be adjusted
-  because Router.createUrlTree now does the right thing in more
-  scenarios. This means that tests with invalid/incomplete ActivatedRoute mocks
-  may behave differently than before. Additionally, tests may now navigate
-  to a real URL where before they would navigate to the root. Ensure that
-  tests provide expected routes to match.
-  There is rarely production impact, but it has been found that relative
-  navigations when using an `ActivatedRoute` that does not appear in the
-  current router state were effectively ignored in the past. By creating
-  the correct URLs, this sometimes resulted in different navigation
-  behavior in the application. Most often, this happens when attempting to
-  create a navigation that only updates query params using an empty
-  command array, for example `router.navigate([], {relativeTo: route,
-  queryParams: newQueryParams})`. In this case, the `relativeTo` property
-  should be removed.
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3c9d49a4d7](https://github.com/angular/angular/commit/3c9d49a4d7304202d60eeed97b2bb00686c079d0) | fix | make Location.normalize() return the correct path when the base path contains characters that interfere with regex syntax. ([#49181](https://github.com/angular/angular/pull/49181)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [79cdfeb392](https://github.com/angular/angular/commit/79cdfeb3921687dfbc8fea8d9f7ba4dbb14a7193) | feat | drop support for TypeScript 4.8 ([#49155](https://github.com/angular/angular/pull/49155)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b6c6dfd278](https://github.com/angular/angular/commit/b6c6dfd2781864de51bdf4bc45636aae68ea8828) | fix | do not persist component analysis if template/styles are missing ([#49184](https://github.com/angular/angular/pull/49184)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [99d874fe3b](https://github.com/angular/angular/commit/99d874fe3b486f3669b0e8f1910e31c4fa278308) | feat | add support for TypeScript 5.0 ([#49126](https://github.com/angular/angular/pull/49126)) |
-| [0f5c8003cc](https://github.com/angular/angular/commit/0f5c8003ccd1a75516d6a0e31cdb752d031ec430) | feat | introduce concept of DestroyRef ([#49158](https://github.com/angular/angular/pull/49158)) |
-| [e9edea363c](https://github.com/angular/angular/commit/e9edea363cd2da6560c3c3ec2522d1048084461b) | fix | update zone.js peerDependencies ranges ([#49244](https://github.com/angular/angular/pull/49244)) |
-| [f594725951](https://github.com/angular/angular/commit/f594725951fafde475ee99ffccf1175c13c48288) | refactor | remove Node.js v14 support ([#49255](https://github.com/angular/angular/pull/49255)) |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [87affadb87](https://github.com/angular/angular/commit/87affadb8710bbe0f23314115065fe9cc58306da) | fix | avoid migrating the same class multiple times in standalone migration ([#49245](https://github.com/angular/angular/pull/49245)) |
-| [7dd19570e8](https://github.com/angular/angular/commit/7dd19570e8452fbdafe50636dcd18809ccea97ae) | fix | delete barrel exports in standalone migration ([#49176](https://github.com/angular/angular/pull/49176)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a08a8ff108](https://github.com/angular/angular/commit/a08a8ff108bba88ba4bd7f30a6a8c1bcadb13db7) | fix | bundle @angular/domino in via esbuild ([#49229](https://github.com/angular/angular/pull/49229)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [455c728525](https://github.com/angular/angular/commit/455c7285257a8def53ae6c9d14e9848d72ae2613) | feat | helper functions to convert class guards to functional ([#48709](https://github.com/angular/angular/pull/48709)) |
-| [7e35a917c5](https://github.com/angular/angular/commit/7e35a917c56e746cadfcd115c559853d3e632a1e) | fix | add error message when using loadComponent with a NgModule ([#49164](https://github.com/angular/angular/pull/49164)) |
-| [31f210bf2c](https://github.com/angular/angular/commit/31f210bf2cd8a5cc8245c05a30ae3b8f8b9d826a) | fix | Router.createUrlTree should work with any ActivatedRoute ([#48508](https://github.com/angular/angular/pull/48508)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Craig Spence, Doug Parker, Iván Navarro, Jessica Janiuk, JiaLiPassion, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Michael Ziluck, Paul Gschwendtner, Pawel Kozlowski, Stephanie Tuerk, Vincent and Virginia Dooley
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -641,51 +406,6 @@ Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Craig Spence, Dou
 | [3062442728](https://github.com/angular/angular/commit/30624427289ad65bdbabd865d028146753c3a97a) | fix | add error message when using loadComponent with a NgModule ([#49164](https://github.com/angular/angular/pull/49164)) |
 ## Special Thanks
 Alan Agius, Andrew Kushnir, Aristeidis Bampakos, Craig Spence, Doug Parker, Iván Navarro, Joey Perrott, Kristiyan Kostadinov, Matthieu Riegler, Michael Ziluck, Paul Gschwendtner, Stephanie Tuerk, Vincent and Virginia Dooley
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="16.0.0-next.0"></a>
-# 16.0.0-next.0 (2023-02-22)
-## Breaking Changes
-### compiler
-- Angular Compatibility Compiler (ngcc) has been removed. As a result, Angular View Engine libraries can no longer be used in v16+. Such libraries were not officially supported, but this is a hard break in compatibility.
-### common
-- `MockPlatformLocation` is now provided by default in tests.
-  Existing tests may have behaviors which rely on
-  `BrowserPlatformLocation` instead. For example, direct access to the
-  `window.history` in either the test or the component rather than going
-  through the Angular APIs (`Location.getState()`). The quickest fix is to
-  update the providers in the test suite to override the provider again
-  `TestBed.configureTestingModule({providers: [{provide: PlatformLocation, useClass: BrowserPlatformLocation}]})`.
-  The ideal fix would be to update the code to instead be compatible with
-  `MockPlatformLocation` instead.
-### core
-- `RendererType2.styles` no longer accepts a nested arrays.
-### router
-- The `Scroll` event's `routerEvent` property may also be
-  a `NavigationSkipped` event. Previously, it was only a `NavigationEnd`
-  event.
-- The `RouterEvent` type is no longer present in the `Event` union type representing all router event types. If you have code using something like `filter((e: Event): e is RouterEvent => e instanceof RouterEvent)`, you'll need to update it to `filter((e: Event|RouterEvent): e is RouterEvent => e instanceof RouterEvent)`.
-### 
-| Commit | Type | Description |
-| -- | -- | -- |
-| [48aa96ea13](https://github.com/angular/angular/commit/48aa96ea13ebfadf2f6b13516c7702dae740a7be) | refactor | remove Angular Compatibility Compiler (ngcc) ([#49101](https://github.com/angular/angular/pull/49101)) |
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5dce2a5a3a](https://github.com/angular/angular/commit/5dce2a5a3a00693d835a57934b9abacce5a33dfa) | feat | Provide MockPlatformLocation by default in BrowserTestingModule ([#49137](https://github.com/angular/angular/pull/49137)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [bc5ddabdcb](https://github.com/angular/angular/commit/bc5ddabdcb39e6ebbe2da03dc8ec49bbe26c677d) | feat | add Angular Signals to the public API ([#49150](https://github.com/angular/angular/pull/49150)) |
-| [9b9c818f99](https://github.com/angular/angular/commit/9b9c818f99c44473e915bedd157146c88e44989a) | perf | change `RendererType2.styles` to accept a only a flat array ([#49072](https://github.com/angular/angular/pull/49072)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1f055b90b6](https://github.com/angular/angular/commit/1f055b90b65cce2d0d063ed44cb0f8fbecb9b1f6) | fix | Ensure anchor scrolling happens on ignored same URL navigations ([#48025](https://github.com/angular/angular/pull/48025)) |
-| [1e32709e0e](https://github.com/angular/angular/commit/1e32709e0e16f553ed3e7778705c9a0c5641d0af) | fix | remove RouterEvent from Event union type ([#46061](https://github.com/angular/angular/pull/46061)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Cédric Exbrayat, Joey Perrott, Mladen Jakovljević and Pawel Kozlowski
 
 <!-- CHANGELOG SPLIT MARKER -->
 
