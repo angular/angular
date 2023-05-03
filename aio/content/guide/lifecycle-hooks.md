@@ -130,7 +130,7 @@ Like `ngOnDestroy`, `DestroyRef` works in any Angular service, directive, compon
 
 </div>
 
-When using RxJS Observables in components or directives, you may want to complete any observables when the component or directive is destroyed. Angular's `@angular/core/rxjs-interop` package provides an operator, `takeUntilDestroyed`, to simply this common task:
+When using RxJS Observables in components or directives, you may want to complete any observables when the component or directive is destroyed. Angular's `@angular/core/rxjs-interop` package provides an operator, `takeUntilDestroyed`, to simplify this common task:
 
 ```ts
 data$ = http.get('...').pipe(takeUntilDestroyed());
