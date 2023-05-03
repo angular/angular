@@ -48,7 +48,7 @@
     "@angular-devkit/build-angular": "^16.0.0-next.0",
     "@angular/cli": "^16.0.0-next.0",
     "@angular/compiler-cli": "^16.0.0-next.0",
-    "@nguniversal/builders": "^15.0.0",
+    "@nguniversal/builders": "^16.0.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^13.2.0",
     "@types/angular": "^1.8.4",
