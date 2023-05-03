@@ -1,5 +1,8 @@
 <a name="16.0.0"></a>
 # 16.0.0 (2023-05-03)
+
+[Blog post "Angular v16 is now available"](http://goo.gle/angular-v16).
+
 ## Breaking Changes
 ### 
 - Angular Compatibility Compiler (ngcc) has been removed and as a result Angular View Engine libraries will no longer work
