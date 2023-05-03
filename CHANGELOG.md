@@ -1,3 +1,16 @@
+<a name="15.2.9"></a>
+# 15.2.9 (2023-05-03)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9107e931ca](https://github.com/angular/angular/commit/9107e931cad6c7543f717796a75648cefee2fd12) | fix | fix incorrectly reported distortion for padded images ([#49889](https://github.com/angular/angular/pull/49889)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7c58885797](https://github.com/angular/angular/commit/7c58885797af407d8399206340e79fe3d2beffb8) | fix | catch fatal diagnostic when getting diagnostics for components ([#50046](https://github.com/angular/angular/pull/50046)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="15.2.8"></a>
 # 15.2.8 (2023-04-19)
 ### core
