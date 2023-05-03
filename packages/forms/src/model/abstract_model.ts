@@ -585,10 +585,12 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   /**
    * A multicasting observable that emits an event every time the value of the control changes, in
    * the UI or programmatically. It also emits an event each time you call enable() or disable()
-   * without passing along {emitEvent: false} as a function argument. When accessing a value, 
-   * the emit happens when a value of a given control changes. Parent controls are updated after
-   * that, so if you try to access parent control value from the valueChanges or stateChanges 
-   * callback you may recieve an old value..
+   * without passing along {emitEvent: false} as a function argument.
+   * 
+   * **Note**: the emit happens right after a value of this control is updated. The value of a parent control
+   * (for example if this FormControl is a part of a FormGroup) is updated after that, so accessing a value of
+   * a parent control (using the `value` property) from the callback of this event might result in getting a
+   * value that has not been updated yet. Subscribe to the `valueChanges` event of the parent control instead.
    */
   public readonly valueChanges!: Observable<TValue>;
 
