@@ -8,7 +8,7 @@
 
 import {animate, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, inject as _inject, InjectionToken, Injector, LOCALE_ID, NgModule, NgModuleRef, NgZone, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, TransferState, Type, VERSION} from '@angular/core';
+import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, importProvidersFrom, Inject, inject as _inject, InjectionToken, Injector, LOCALE_ID, NgModule, NgModuleRef, NgZone, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, TransferState, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform, provideZoneChangeDetection} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -288,14 +288,22 @@ function bootstrap(
         expect(el2.innerText).toBe('Hello from Updated NonStandaloneComp!');
       });
 
-      it('should throw when trying to bootstrap a non-standalone component', () => {
+      it('should throw when trying to bootstrap a non-standalone component', async () => {
         const msg = 'NG0907: The NonStandaloneComp component is not marked as standalone, ' +
             'but Angular expects to have a standalone component here. Please make sure the ' +
             'NonStandaloneComp component has the `standalone: true` flag in the decorator.';
-        expect(() => bootstrapApplication(NonStandaloneComp)).toThrowError(msg);
+        let bootstrapError: string|null = null;
+
+        try {
+          await bootstrapApplication(NonStandaloneComp);
+        } catch (e) {
+          bootstrapError = (e as Error).message;
+        }
+
+        expect(bootstrapError).toBe(msg);
       });
 
-      it('should throw when trying to bootstrap a standalone directive', () => {
+      it('should throw when trying to bootstrap a standalone directive', async () => {
         @Directive({
           standalone: true,
           selector: '[dir]',
@@ -306,15 +314,31 @@ function bootstrap(
         const msg =  //
             'NG0906: The StandaloneDirective is not an Angular component, ' +
             'make sure it has the `@Component` decorator.';
-        expect(() => bootstrapApplication(StandaloneDirective)).toThrowError(msg);
+        let bootstrapError: string|null = null;
+
+        try {
+          await bootstrapApplication(StandaloneDirective);
+        } catch (e) {
+          bootstrapError = (e as Error).message;
+        }
+
+        expect(bootstrapError).toBe(msg);
       });
 
-      it('should throw when trying to bootstrap a non-annotated class', () => {
+      it('should throw when trying to bootstrap a non-annotated class', async () => {
         class NonAnnotatedClass {}
         const msg =  //
             'NG0906: The NonAnnotatedClass is not an Angular component, ' +
             'make sure it has the `@Component` decorator.';
-        expect(() => bootstrapApplication(NonAnnotatedClass)).toThrowError(msg);
+        let bootstrapError: string|null = null;
+
+        try {
+          await bootstrapApplication(NonAnnotatedClass);
+        } catch (e) {
+          bootstrapError = (e as Error).message;
+        }
+
+        expect(bootstrapError).toBe(msg);
       });
 
       it('should have the TransferState token available', async () => {
@@ -334,14 +358,25 @@ function bootstrap(
         expect(state).toBeInstanceOf(TransferState);
       });
 
+      it('should reject the bootstrapApplication promise if an imported module throws', (done) => {
+        @NgModule()
+        class ErrorModule {
+          constructor() {
+            throw new Error('This error should be in the promise rejection');
+          }
+        }
+
+        bootstrapApplication(SimpleComp, {
+          providers: [importProvidersFrom(ErrorModule)]
+        }).then(() => done.fail('Expected bootstrap promised to be rejected'), () => done());
+      });
+
       describe('with animations', () => {
         @Component({
           standalone: true,
           selector: 'hello-app',
-          template: `
-            <div
-              @myAnimation
-              (@myAnimation.start)="onStart($event)">Hello from AnimationCmp!</div>`,
+          template:
+              '<div @myAnimation (@myAnimation.start)="onStart($event)">Hello from AnimationCmp!</div>',
           animations: [trigger(
               'myAnimation', [transition('void => *', [style({opacity: 1}), animate(5)])])],
         })
