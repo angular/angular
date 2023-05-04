@@ -151,6 +151,9 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
         operator, convertAst(ast.left, cpl), convertAst(ast.right, cpl));
   } else if (ast instanceof e.ThisReceiver) {
     return new ir.ContextExpr(cpl.root.xref);
+  } else if (ast instanceof e.NonNullAssert) {
+    // A non-null assertion shouldn't impact generated instructions, so we can just drop it.
+    return convertAst(ast.expression, cpl);
   } else if (ast instanceof e.KeyedRead) {
     return new o.ReadKeyExpr(convertAst(ast.receiver, cpl), convertAst(ast.key, cpl));
   } else if (ast instanceof e.Chain) {
