@@ -5132,6 +5132,13 @@ agent-base@6, agent-base@^6.0.0, agent-base@^6.0.2:
   dependencies:
     debug "4"
 
+agent-base@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.0.0.tgz#3424dd96658fbbcc0b090e41aaca2deb9a89f9cf"
+  integrity sha512-awaqsf16R0tAUMxWiVikaBDKrbt0im7XdzPMh3I8TFC097G4ZowjGgLBfXt+tGPsE+1U1FyLBGuWMd/EPVblWg==
+  dependencies:
+    debug "^4.3.4"
+
 agentkeepalive@^4.2.1:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/agentkeepalive/-/agentkeepalive-4.2.1.tgz#a7975cbb9f83b367f06c90cc51ff28fe7d499717"
@@ -10602,12 +10609,12 @@ http2-wrapper@^1.0.0-beta.5.2:
     quick-lru "^5.1.1"
     resolve-alpn "^1.0.0"
 
-https-proxy-agent@5, https-proxy-agent@5.0.1, https-proxy-agent@^2.2.1, https-proxy-agent@^4.0.0, https-proxy-agent@^5.0.0:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-5.0.1.tgz#c59ef224a04fe8b754f3db0063a25ea30d0005d6"
-  integrity sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==
+https-proxy-agent@5, https-proxy-agent@5.0.1, https-proxy-agent@6.0.0, https-proxy-agent@^2.2.1, https-proxy-agent@^4.0.0, https-proxy-agent@^5.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-6.0.0.tgz#036adbaba1c6810ce87216ed13cf698ec8672c17"
+  integrity sha512-g821um/ZvXlENs8tqKh96b6G0wafab6ypfkZdFZImJEGZrn47oLeRhWMKvCYxrasOgNi3Yh6Cxkws2Zn13v2QA==
   dependencies:
-    agent-base "6"
+    agent-base "^7.0.0"
     debug "4"
 
 human-signals@^2.1.0:
