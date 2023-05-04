@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID as APP_ID_TOKEN} from '@angular/core';
+import {APP_ID as APP_ID_TOKEN, PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {getDocument} from '../src/render3/interfaces/document';
@@ -44,7 +44,8 @@ describe('TransferState', () => {
   beforeEach(() => {
     doc = getDocument();
     TestBed.configureTestingModule({
-      providers: [{provide: APP_ID_TOKEN, useValue: APP_ID}],
+      providers:
+          [{provide: APP_ID_TOKEN, useValue: APP_ID}, {provide: PLATFORM_ID, useValue: 'browser'}],
     });
   });
 
