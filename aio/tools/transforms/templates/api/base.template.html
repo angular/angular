@@ -10,7 +10,7 @@
           "@type": "BreadcrumbList",
           "itemListElement": [
             {%- for crumb in doc.breadCrumbs %}{$ comma() $}
-            { "@type": "ListItem", "position": {$ loop.index $}, "item": { "@id": "https://angular.io/{$ crumb.path $}", "name": "{$ crumb.text $}" } }{% endfor %}
+            { "@type": "ListItem", "position": {$ loop.index $}, "item": { "@id": "https://angular.io{% if crumb.path.startsWith('/') %}{$ crumb.path $}{% else %}{$ '/' + crumb.path $}{% endif %}", "name": "{$ crumb.text $}" } }{% endfor %}
           ]
         }
       </script>
