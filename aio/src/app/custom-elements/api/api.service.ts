@@ -14,6 +14,7 @@ export interface ApiItem {
   docType: string;
   stability: string;
   securityRisk: boolean;
+  developerPreview: boolean;
 }
 
 export interface ApiSection {
