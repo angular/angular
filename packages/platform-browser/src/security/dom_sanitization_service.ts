@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {forwardRef, Inject, Injectable, Injector, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵBypassType as BypassType, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue, ɵXSS_SECURITY_URL as XSS_SECURITY_URL} from '@angular/core';
+import {forwardRef, Inject, Injectable, Injector, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵBypassType as BypassType, ɵunwrapSafeValue as unwrapSafeValue, ɵXSS_SECURITY_URL as XSS_SECURITY_URL} from '@angular/core';
 
 export {SecurityContext};
 
@@ -100,6 +100,42 @@ export abstract class DomSanitizer implements Sanitizer {
   abstract sanitize(context: SecurityContext, value: SafeValue|string|null): string|null;
 
   /**
+   * Sanitizes a string value containing HTML with unknown safety (e.g. may contain `<script>` tags)
+   * and wraps it into a `SafeHtml`. The sanitizer will leave safe HTML intact, so use this method
+   * in situations where  you may be dealing with unsafe values.
+   *
+   * If the value fails sanitization this method will return
+   */
+  abstract sanitizeHtml(value: string): SafeHtml|null;
+
+  /**
+   * Sanitizes a string value containing styling (CSS) with unknown safety and wrapts it into a
+   * `SafeStyle`. Use this method in situations where you may be dealing with unsafe values.
+   */
+  abstract sanitizeStyle(value: string): SafeStyle|null;
+
+  /**
+   * Sanitizes a string value containing JavaScript with unknown safety and wrapts it into a
+   * `SafeScript`. Use this method in situations where you may be dealing with unsafe values.
+   */
+  abstract sanitizeScript(value: string): SafeScript|null;
+
+  /**
+   * Sanitizes a string value containing a URL to be used in hyperlinks or `<img src>` with
+   * unknown safety and wrapts it into a `SafeUrl`. Use this method in situations where you may be
+   * dealing with unsafe values.
+   */
+  abstract sanitizeUrl(value: string): SafeUrl|null;
+
+  /**
+   * Sanitizes a string value containing a URL to be used in a location that may
+   * be used to load executable code from, like `<script src>`, or `<iframe src>` with unknown
+   * safety and wrapts it into a `SafeUrl`. Use this method in situations
+   * where you may be dealing with unsafe values.
+   */
+  abstract sanitizeResourceUrl(value: string): SafeResourceUrl|null;
+
+  /**
    * Bypass security and trust the given value to be safe HTML. Only use this when the bound HTML
    * is unsafe (e.g. contains `<script>` tags) and the code should be executed. The sanitizer will
    * leave safe HTML intact, so in most situations this method should not be used.
@@ -126,7 +162,7 @@ export abstract class DomSanitizer implements Sanitizer {
   abstract bypassSecurityTrustScript(value: string): SafeScript;
 
   /**
-   * Bypass security and trust the given value to be a safe style URL, i.e. a value that can be used
+   * Bypass security and trust the given value to be a safe URL, i.e. a value that can be used
    * in hyperlinks or `<img src>`.
    *
    * **WARNING:** calling this method with untrusted user data exposes your application to XSS
@@ -187,6 +223,36 @@ export class DomSanitizerImpl extends DomSanitizer {
       default:
         throw new Error(`Unexpected SecurityContext ${ctx} (see ${XSS_SECURITY_URL})`);
     }
+  }
+
+  override sanitizeHtml(value: string): SafeHtml|null {
+    const result = this.sanitize(SecurityContext.HTML, value);
+    if (!result) return null;
+    return this.bypassSecurityTrustHtml(result);
+  }
+  override sanitizeStyle(value: string): SafeStyle|null {
+    const result = this.sanitize(SecurityContext.STYLE, value);
+    if (!result) return null;
+    return this.bypassSecurityTrustStyle(result);
+  }
+  override sanitizeScript(value: string): SafeScript|null {
+    const result = this.sanitize(SecurityContext.SCRIPT, value);
+    if (!result) return null;
+    return this.bypassSecurityTrustScript(result);
+  }
+  override sanitizeUrl(value: string): SafeUrl|null {
+    const result = this.sanitize(SecurityContext.URL, value);
+    if (!result) return null;
+    if (result.startsWith('unsafe')) return null;
+    return this.bypassSecurityTrustUrl(result);
+  }
+  override sanitizeResourceUrl(value: string): SafeResourceUrl|null {
+    // RESOURCE_URL context sanitization does not perform actual sanitization, so use URL context
+    // instead
+    const result = this.sanitize(SecurityContext.URL, value);
+    if (!result) return null;
+    if (result.startsWith('unsafe')) return null;
+    return this.bypassSecurityTrustResourceUrl(result);
   }
 
   override bypassSecurityTrustHtml(value: string): SafeHtml {
