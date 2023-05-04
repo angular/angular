@@ -1523,6 +1523,36 @@ describe('platform-server integration', () => {
                verifyAllNodesClaimedForHydration(clientRootNode, exceptions);
                verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
              });
+
+          it('should allow injecting ViewContainerRef in the root component', async () => {
+            @Component({
+              standalone: true,
+              selector: 'app',
+              template: `Hello World!`,
+            })
+            class SimpleComponent {
+              private vcRef = inject(ViewContainerRef);
+            }
+
+            const html = await ssr(SimpleComponent);
+            const ssrContents = getAppContents(html);
+
+            expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+            resetTViewsFor(SimpleComponent);
+
+            const appRef = await hydrate(html, SimpleComponent);
+            const compRef = getComponentRef<SimpleComponent>(appRef);
+            appRef.tick();
+
+            const clientRootNode = compRef.location.nativeElement;
+            verifyAllNodesClaimedForHydration(clientRootNode);
+
+            // Replace the trailing comment node (added as a result of the
+            // `ViewContainerRef` injection) before comparing contents.
+            const _ssrContents = ssrContents.replace(/<\/app><!--container-->/, '</app>');
+            verifyClientAndSSRContentsMatch(_ssrContents, clientRootNode);
+          });
         });
 
         describe('<ng-template>', () => {
