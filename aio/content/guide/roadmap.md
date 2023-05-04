@@ -62,8 +62,6 @@ We understood and defined the problem space for the past couple of quarters. We 
 
 Over the past two quarters, we developed a new video and textual tutorial based on standalone components. They are in the final review stages, and we expect to publish them by the end of Q2.
 
-## Future
-
 ### Token-based theming APIs
 
 To provide better customization of our Angular material components and enable Material 3 capabilities, we'll be collaborating with Google's Material Design team on defining token-based theming APIs. As of Q2 2023, we're refactoring components to use the new API, finalizing the comprehensive set of tokens, and updating the Sass API based on the new tokens.
@@ -97,9 +95,9 @@ As part of this project, we'd like to implement mixed orientation support for th
    </span>
  </summary>
  <div class="details-content">
- 
- ### Non-destructive full app hydration
- 
+
+### Non-destructive full app hydration
+
 In v16, we released a developer preview of non-destructive full hydration, which allows Angular to reuse existing DOM nodes on a server-side rendered page, instead of re-creating an app from scratch. See additional information in the [hydration guide](guide/hydration).
 
 *Completed Q2 2023*
