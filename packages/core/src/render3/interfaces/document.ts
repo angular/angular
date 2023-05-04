@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
+
 /**
  * Most of the use of `document` in Angular is from within the DI system so it is possible to simply
  * inject the `DOCUMENT` token and are done.
@@ -47,10 +49,15 @@ export function getDocument(): Document {
   } else if (typeof document !== 'undefined') {
     return document;
   }
+
+  throw new RuntimeError(
+      RuntimeErrorCode.MISSING_DOCUMENT,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          `The document object is not available in this context. Make sure the DOCUMENT injection token is provided.`);
+
   // No "document" can be found. This should only happen if we are running ivy outside Angular and
   // the current platform is not a browser. Since this is not a supported scenario at the moment
   // this should not happen in Angular apps.
   // Once we support running ivy outside of Angular we will need to publish `setDocument()` as a
-  // public API. Meanwhile we just return `undefined` and let the application fail.
-  return undefined!;
+  // public API.
 }

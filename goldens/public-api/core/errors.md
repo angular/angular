@@ -69,6 +69,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_SKIP_HYDRATION_HOST = -504,
     // (undocumented)
+    MISSING_DOCUMENT = 210,
+    // (undocumented)
     MISSING_GENERATED_DEF = 906,
     // (undocumented)
     MISSING_HYDRATION_ANNOTATIONS = -505,
