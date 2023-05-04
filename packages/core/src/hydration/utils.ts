@@ -11,8 +11,8 @@ import {Injector} from '../di/injector';
 import {ViewRef} from '../linker/view_ref';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
-import {isRootView} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
+import {isLContainer, isRootView} from '../render3/interfaces/type_checks';
+import {HEADER_OFFSET, HOST, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 
@@ -141,6 +141,13 @@ export function getComponentLViewForHydration(viewRef: ViewRef): LView|null {
   // LView from the first slot after the header.
   if (isRootView(lView)) {
     lView = lView[HEADER_OFFSET];
+  }
+
+  // If a `ViewContainerRef` was injected in a component class, this resulted
+  // in an LContainer creation at that location. In this case, the component
+  // LView is in the LContainer's `HOST` slot.
+  if (isLContainer(lView)) {
+    lView = lView[HOST];
   }
   return lView;
 }
