@@ -57,13 +57,12 @@ export class HttpXhrBackend implements HttpBackend {
           `Attempted to construct Jsonp request without HttpClientJsonpModule installed.`);
     }
 
-    const xhrFactory = this.xhrFactory;
     // Check whether this factory has a special function to load an XHR implementation
     // for various non-browser environments. We currently limit it to only `ServerXhr`
     // class, which needs to load an XHR implementation.
-    const xhrFactoryWithLoader = (xhrFactory as unknown as {ɵloadImpl: () => Promise<void>});
+    const xhrFactory: XhrFactory&{ɵloadImpl?: () => Promise<void>} = this.xhrFactory;
     const source: Observable<void|null> =
-        xhrFactoryWithLoader ? from(xhrFactoryWithLoader.ɵloadImpl()) : of(null);
+        xhrFactory.ɵloadImpl ? from(xhrFactory.ɵloadImpl()) : of(null);
 
     return source.pipe(
         switchMap(() => {
