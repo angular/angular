@@ -90,6 +90,11 @@ describe('ApiListComponent', () => {
         expectFilteredResult('status: security-risk', item => item.securityRisk);
       });
 
+      it('should be visible if they have the selected developer preview status', () => {
+        component.setStatus({value: 'developer-preview', title: 'Developer Preview'});
+        expectFilteredResult('status: developer-preview', item => item.developerPreview);
+      });
+
       it('should be visible if they match the selected API type', () => {
         component.setType({value: 'class', title: 'Class'});
         expectFilteredResult('type: class', item => item.docType === 'class');
@@ -144,6 +149,12 @@ describe('ApiListComponent', () => {
       locationService.query = {status: 'security-risk'};
       fixture.detectChanges();
       expectFilteredResult('security-risk', item => item.securityRisk);
+    });
+
+    it('should filter as expected when status is developer-preview', () => {
+      locationService.query = {status: 'developer-preview'};
+      fixture.detectChanges();
+      expectFilteredResult('developer-preview', item => item.developerPreview);
     });
 
     it('should filter as expected for ?type', () => {
@@ -235,6 +246,7 @@ const apiSections: ApiSection[] = [
         docType: 'class',
         stability: 'experimental',
         securityRisk: false,
+        developerPreview: false
       },
       {
         name: 'class_2',
@@ -243,6 +255,7 @@ const apiSections: ApiSection[] = [
         docType: 'class',
         stability: 'stable',
         securityRisk: false,
+        developerPreview: false
       },
       {
         name: 'directive_1',
@@ -251,6 +264,7 @@ const apiSections: ApiSection[] = [
         docType: 'directive',
         stability: 'stable',
         securityRisk: true,
+        developerPreview: false
       },
       {
         name: 'pipe_1',
@@ -259,6 +273,7 @@ const apiSections: ApiSection[] = [
         docType: 'pipe',
         stability: 'stable',
         securityRisk: true,
+        developerPreview: false
       },
     ],
   },
@@ -275,6 +290,7 @@ const apiSections: ApiSection[] = [
         docType: 'class',
         stability: 'experimental',
         securityRisk: false,
+        developerPreview: false
       },
       {
         name: 'function_1',
@@ -283,6 +299,7 @@ const apiSections: ApiSection[] = [
         docType: 'function',
         stability: 'deprecated',
         securityRisk: true,
+        developerPreview: false
       },
       {
         name: 'const_1',
@@ -291,6 +308,7 @@ const apiSections: ApiSection[] = [
         docType: 'const',
         stability: 'stable',
         securityRisk: false,
+        developerPreview: true
       },
     ],
   },
