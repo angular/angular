@@ -9,6 +9,7 @@ import { Injector } from '@angular/core';
 import { MonoTypeOperatorFunction } from 'rxjs';
 import { Observable } from 'rxjs';
 import { Signal } from '@angular/core';
+import { Subscribable } from 'rxjs';
 
 // @public
 export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperatorFunction<T>;
@@ -22,21 +23,21 @@ export interface ToObservableOptions {
 }
 
 // @public
-export function toSignal<T>(source: Observable<T>): Signal<T | undefined>;
+export function toSignal<T>(source: Observable<T> | Subscribable<T>): Signal<T | undefined>;
 
 // @public
-export function toSignal<T>(source: Observable<T>, options?: ToSignalOptions<undefined> & {
+export function toSignal<T>(source: Observable<T> | Subscribable<T>, options?: ToSignalOptions<undefined> & {
     requireSync?: false;
 }): Signal<T | undefined>;
 
 // @public
-export function toSignal<T, U extends T | null | undefined>(source: Observable<T>, options: ToSignalOptions<U> & {
+export function toSignal<T, U extends T | null | undefined>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions<U> & {
     initialValue: U;
     requireSync?: false;
 }): Signal<T | U>;
 
 // @public
-export function toSignal<T>(source: Observable<T>, options: ToSignalOptions<undefined> & {
+export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions<undefined> & {
     requireSync: true;
 }): Signal<T>;
 
