@@ -36,3 +36,4 @@ integration/trusted-types/node_modules
 integration/typings_test_rxjs7/node_modules
 integration/typings_test_ts49/node_modules
 integration/typings_test_ts50/node_modules
+integration/typings_test_ts51/node_modules

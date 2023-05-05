@@ -18,7 +18,7 @@ import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
 import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
-import {FactoryFn, getFactoryDef} from './definition_factory';
+import {getFactoryDef} from './definition_factory';
 import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors_di';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
@@ -746,7 +746,7 @@ export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => 
     // (no Angular decorator on the superclass) or there is no constructor at all
     // in the inheritance chain. Since the two cases cannot be distinguished, the
     // latter has to be assumed.
-    return t => new t();
+    return (t: Type<T>) => new t();
   });
 }
 

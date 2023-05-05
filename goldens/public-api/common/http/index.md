@@ -1917,7 +1917,7 @@ export class HttpRequest<T> {
     readonly params: HttpParams;
     readonly reportProgress: boolean;
     readonly responseType: 'arraybuffer' | 'blob' | 'json' | 'text';
-    serializeBody(): ArrayBuffer | Blob | FormData | string | null;
+    serializeBody(): ArrayBuffer | Blob | FormData | URLSearchParams | string | null;
     // (undocumented)
     readonly url: string;
     readonly urlWithParams: string;
