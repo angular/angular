@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, Injector, NgModule} from '@angular/core';
+import {Component, Injectable, Injector, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 
@@ -42,20 +42,31 @@ export class CompleteComponent {
 @Component({
   selector: 'ng-component-outlet-complete-example',
   template: `
+    <ng-template #ahoj>Ahoj</ng-template>
+    <ng-template #svet>Svet</ng-template>
     <ng-container *ngComponentOutlet="CompleteComponent;
                                       injector: myInjector;
                                       content: myContent"></ng-container>`
 })
-export class NgComponentOutletCompleteExample {
+export class NgComponentOutletCompleteExample implements OnInit {
   // This field is necessary to expose CompleteComponent to the template.
   CompleteComponent = CompleteComponent;
   myInjector: Injector;
+  @ViewChild('ahoj', {static: true}) ahojTemplateRef!: TemplateRef<any>;
+  @ViewChild('svet', {static: true}) svetTemplateRef!: TemplateRef<any>;
+  myContent?: any[][];
 
-  myContent = [[document.createTextNode('Ahoj')], [document.createTextNode('Svet')]];
-
-  constructor(injector: Injector) {
+  constructor(injector: Injector, private vcr: ViewContainerRef) {
     this.myInjector =
         Injector.create({providers: [{provide: Greeter, deps: []}], parent: injector});
+  }
+
+  ngOnInit() {
+    // Create the projectable content from the templates
+    this.myContent = [
+      this.vcr.createEmbeddedView(this.ahojTemplateRef).rootNodes,
+      this.vcr.createEmbeddedView(this.svetTemplateRef).rootNodes
+    ];
   }
 }
 // #enddocregion
