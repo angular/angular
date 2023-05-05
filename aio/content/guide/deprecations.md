@@ -6,7 +6,9 @@ Sometimes, APIs and features become obsolete and need to be removed or replaced 
 To make these transitions as easy as possible, APIs and features are deprecated for a period of time before they are removed.
 This gives you time to update your applications to the latest APIs and best practices.
 
-This guide contains a summary of all Angular APIs and features that are currently deprecated.
+This guide contains a summary of noteworthy Angular APIs and features that are currently deprecated.
+See the [full changelog](https://github.com/angular/angular/blob/main/CHANGELOG.md) for
+comprehensive details on deprecations and breaking changes.
 
 <div class="alert is-helpful">
 
@@ -746,4 +748,4 @@ If you rely on the behavior that the same object instance should cause change de
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-05-03
