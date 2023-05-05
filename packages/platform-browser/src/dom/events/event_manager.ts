@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {Inject, Injectable, InjectionToken, NgZone, ɵRuntimeError as RuntimeError} from '@angular/core';
-
-import {RuntimeErrorCode} from '../../errors';
+import {Inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 
 /**
  * The injection token for the event-manager plug-in service.
@@ -63,22 +60,20 @@ export class EventManager {
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
-    let plugin = this._eventNameToPlugin.get(eventName);
+    const plugin = this._eventNameToPlugin.get(eventName);
     if (plugin) {
       return plugin;
     }
 
     const plugins = this._plugins;
-    plugin = plugins.find((plugin) => plugin.supports(eventName));
-    if (!plugin) {
-      throw new RuntimeError(
-          RuntimeErrorCode.NO_PLUGIN_FOR_EVENT,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
-              `No event manager plugin found for event ${eventName}`);
+    for (let i = 0; i < plugins.length; i++) {
+      const plugin = plugins[i];
+      if (plugin.supports(eventName)) {
+        this._eventNameToPlugin.set(eventName, plugin);
+        return plugin;
+      }
     }
-
-    this._eventNameToPlugin.set(eventName, plugin);
-    return plugin;
+    throw new Error(`No event manager plugin found for event ${eventName}`);
   }
 }
 
