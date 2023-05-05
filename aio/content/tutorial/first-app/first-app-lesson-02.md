@@ -114,7 +114,7 @@ Note that, this step just adds the search elements to the layout without any fun
 In the **Edit** pane of your IDE:
 
 1.  In the `first-app` directory, open `home.component.ts` in the editor.
-1.  In `app.component.ts`, in `@Component`, update the `template` property with this code.
+1.  In `home.component.ts`, in `@Component`, update the `template` property with this code.
 
     <code-example header="Replace in src/app/home/home.component.ts" path="first-app-lesson-02/src/app/home/home.component.ts" region="home-template"></code-example>
 
