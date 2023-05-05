@@ -7,7 +7,7 @@
  */
 
 import {assertInInjectionContext, computed, DestroyRef, inject, Injector, signal, Signal, WritableSignal} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, Subscribable} from 'rxjs';
 
 import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
 import {untracked} from '../../src/signals';
@@ -73,7 +73,7 @@ export interface ToSignalOptions<T> {
  * option can be specified instead, which disables the automatic subscription teardown. No injection
  * context is needed in this configuration as well.
  */
-export function toSignal<T>(source: Observable<T>): Signal<T|undefined>;
+export function toSignal<T>(source: Observable<T>|Subscribable<T>): Signal<T|undefined>;
 
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
@@ -99,7 +99,7 @@ export function toSignal<T>(source: Observable<T>): Signal<T|undefined>;
  * @developerPreview
  */
 export function toSignal<T>(
-    source: Observable<T>,
+    source: Observable<T>|Subscribable<T>,
     options?: ToSignalOptions<undefined>&{requireSync?: false}): Signal<T|undefined>;
 
 
@@ -127,7 +127,7 @@ export function toSignal<T>(
  * @developerPreview
  */
 export function toSignal<T, U extends T|null|undefined>(
-    source: Observable<T>,
+    source: Observable<T>|Subscribable<T>,
     options: ToSignalOptions<U>&{initialValue: U, requireSync?: false}): Signal<T|U>;
 
 /**
@@ -154,9 +154,10 @@ export function toSignal<T, U extends T|null|undefined>(
  * @developerPreview
  */
 export function toSignal<T>(
-    source: Observable<T>, options: ToSignalOptions<undefined>&{requireSync: true}): Signal<T>;
+    source: Observable<T>|Subscribable<T>,
+    options: ToSignalOptions<undefined>&{requireSync: true}): Signal<T>;
 export function toSignal<T, U = undefined>(
-    source: Observable<T>, options?: ToSignalOptions<U>): Signal<T|U> {
+    source: Observable<T>|Subscribable<T>, options?: ToSignalOptions<U>): Signal<T|U> {
   const requiresCleanup = !options?.manualCleanup;
   requiresCleanup && !options?.injector && assertInInjectionContext(toSignal);
   const cleanupRef =
