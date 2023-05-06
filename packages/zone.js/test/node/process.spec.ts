@@ -67,68 +67,82 @@ describe('process related test', () => {
     });
   });
 
-  it('should support process.on(unhandledRejection)', function(done) {
-    const hookSpy = jasmine.createSpy('hook');
-    (Zone as any)[zoneSymbol('ignoreConsoleErrorUncaughtError')] = true;
-    Zone.current.fork({name: 'promise'}).run(function() {
-      const listener = function(reason: any, promise: any) {
-        hookSpy(promise, reason.message);
-        process.removeListener('unhandledRejection', listener);
-      };
-      process.on('unhandledRejection', listener);
-      const p = new Promise((resolve, reject) => {
-        throw new Error('promise error');
+  it('should support process.on(unhandledRejection)', async function() {
+    return await jasmine.spyOnGlobalErrorsAsync(async () => {
+      const hookSpy = jasmine.createSpy('hook');
+      let p: any = null;
+      (Zone as any)[zoneSymbol('ignoreConsoleErrorUncaughtError')] = true;
+      Zone.current.fork({name: 'promise'}).run(function() {
+        const listener = function(reason: any, promise: any) {
+          hookSpy(promise, reason.message);
+          process.removeListener('unhandledRejection', listener);
+        };
+        process.on('unhandledRejection', listener);
+        p = new Promise((resolve, reject) => {
+          throw new Error('promise error');
+        });
       });
-
-      setTimeout(function() {
-        expect(hookSpy).toHaveBeenCalledWith(p, 'promise error');
-        done();
-      }, 10);
+      return new Promise(res => {
+        setTimeout(function() {
+          expect(hookSpy).toHaveBeenCalledWith(p, 'promise error');
+          res();
+        });
+      });
     });
   });
 
-  it('should support process.on(rejectionHandled)', function(done) {
-    (Zone as any)[zoneSymbol('ignoreConsoleErrorUncaughtError')] = true;
-    Zone.current.fork({name: 'promise'}).run(function() {
-      const listener = function(promise: any) {
-        expect(promise).toEqual(p);
-        process.removeListener('rejectionHandled', listener);
-        done();
-      };
-      process.on('rejectionHandled', listener);
-      const p = new Promise((resolve, reject) => {
-        throw new Error('promise error');
+  it('should support process.on(rejectionHandled)', async function() {
+    return await jasmine.spyOnGlobalErrorsAsync(async () => {
+      let p: any = null;
+      (Zone as any)[zoneSymbol('ignoreConsoleErrorUncaughtError')] = true;
+      let r: any = null;
+      let p1: any = new Promise(res => {
+        r = res;
       });
-
+      Zone.current.fork({name: 'promise'}).run(function() {
+        const listener = function(promise: any) {
+          expect(promise).toEqual(p);
+          process.removeListener('rejectionHandled', listener);
+          r();
+        };
+        process.on('rejectionHandled', listener);
+        p = new Promise((resolve, reject) => {
+          throw new Error('promise error');
+        });
+      });
       setTimeout(function() {
-        p.catch(reason => {});
-      }, 10);
+        p.catch((reason: any) => {});
+      });
+      return p1;
     });
   });
 
-  it('should support multiple process.on(unhandledRejection)', function(done) {
-    const hookSpy = jasmine.createSpy('hook');
-    (Zone as any)[zoneSymbol('ignoreConsoleErrorUncaughtError')] = true;
-    Zone.current.fork({name: 'promise'}).run(function() {
-      const listener1 = function(reason: any, promise: any) {
-        hookSpy(promise, reason.message);
-        process.removeListener('unhandledRejection', listener1);
-      };
-      const listener2 = function(reason: any, promise: any) {
-        hookSpy(promise, reason.message);
-        process.removeListener('unhandledRejection', listener2);
-      };
-      process.on('unhandledRejection', listener1);
-      process.on('unhandledRejection', listener2);
-      const p = new Promise((resolve, reject) => {
-        throw new Error('promise error');
+  it('should support multiple process.on(unhandledRejection)', async function() {
+    await jasmine.spyOnGlobalErrorsAsync(async () => {
+      const hookSpy = jasmine.createSpy('hook');
+      (Zone as any)[zoneSymbol('ignoreConsoleErrorUncaughtError')] = true;
+      let p: any = null;
+      Zone.current.fork({name: 'promise'}).run(function() {
+        const listener1 = function(reason: any, promise: any) {
+          hookSpy(promise, reason.message);
+          process.removeListener('unhandledRejection', listener1);
+        };
+        const listener2 = function(reason: any, promise: any) {
+          hookSpy(promise, reason.message);
+          process.removeListener('unhandledRejection', listener2);
+        };
+        process.on('unhandledRejection', listener1);
+        process.on('unhandledRejection', listener2);
+        p = new Promise((resolve, reject) => {
+          throw new Error('promise error');
+        });
       });
-
-      setTimeout(function() {
-        expect(hookSpy.calls.count()).toBe(2);
-        expect(hookSpy.calls.allArgs()).toEqual([[p, 'promise error'], [p, 'promise error']]);
-        done();
-      }, 10);
+      return new Promise(
+          res => setTimeout(function() {
+            expect(hookSpy.calls.count()).toBe(2);
+            expect(hookSpy.calls.allArgs()).toEqual([[p, 'promise error'], [p, 'promise error']]);
+            res();
+          }));
     });
   });
 });

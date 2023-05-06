@@ -15,11 +15,18 @@ describe('MutationObserver', ifEnvSupports('MutationObserver', function() {
 
            beforeEach(function() {
              elt = document.createElement('div');
+             document.body.appendChild(elt);
+           });
+
+           afterEach(function() {
+             document.body.removeChild(elt);
            });
 
            it('should run observers within the zone', function(done) {
              const testZone = Zone.current.fork({name: 'test'});
              let ob;
+             elt = document.createElement('div');
+             document.body.appendChild(elt);
 
              testZone.run(function() {
                ob = new MutationObserver(function() {
