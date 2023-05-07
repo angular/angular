@@ -33,20 +33,16 @@ For running all Saucelabs tests in the project, `bazel query` is used to gather 
 
 Running all karma tests in Saucelabs:
 
-Start the saucelabs-daemon background service in one terminal window:
-
 ``` bash
-yarn bazel run //tools/saucelabs-daemon/background-service -- <number_of_browsers>
+./scripts/test/run-saucelabs-tests.sh
 ```
 
-In a second terminal window, run all of the saucelabs test targets:
+to override the default number of parallel browsers to acquire on Saucelabs you
+pass an optional configuration parameters. For example,
 
 ``` bash
-TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
-yarn bazel test --config=saucelabs --jobs=<number_of_browsers> ${TESTS}
+./scripts/test/run-saucelabs-tests.sh 5
 ```
-
-NB: The number of parallel Bazel tests specified by `--jobs=<number_of_browsers>` must not exceed the number parallel browsers requested when starting the daemon.
 
 ## Under the hood
 
