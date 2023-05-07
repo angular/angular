@@ -29,7 +29,7 @@ const defaultCapabilities = {
 
 interface RemoteBrowser {
   id: string;
-  state: 'acquired'|'free'|'launching';
+  state: 'claimed'|'free'|'launching';
   driver: WebDriver|null;
 }
 
@@ -39,6 +39,12 @@ interface BrowserTest {
   requestedBrowserId: string;
 }
 
+/**
+ * The SaucelabsDaemon daemon service class. This class handles the logic of connecting
+ * to the Saucelabs tunnel and provisioning browsers for tests. Provisioned browsers
+ * are re-used for subsequent tests. Their states are tracked so that new test
+ * requests are assigned to browsers that are currently `free` or `launching`.
+ */
 export class SaucelabsDaemon {
   /**
    * Map of browsers and their pending tests. If a browser is acquired on the
@@ -50,7 +56,7 @@ export class SaucelabsDaemon {
   /** List of active browsers that are managed by the daemon. */
   private _activeBrowsers = new Set<RemoteBrowser>();
 
-  /** Map that contains test ids with their acquired browser. */
+  /** Map that contains test ids with their claimed browser. */
   private _runningTests = new Map<number, RemoteBrowser>();
 
   /** Server used for communication with the Karma launcher. */
@@ -62,7 +68,7 @@ export class SaucelabsDaemon {
   /** Id of the keep alive interval that ensures no remote browsers time out. */
   private _keepAliveIntervalId: NodeJS.Timeout|null = null;
 
-  /* Have we connected to Saucelabs or are in the process of connecting? */
+  /* Promise  indicating whether we the tunnel is active, or if we are still connecting. */
   private _connection: Promise<void>|undefined = undefined;
 
   constructor(
@@ -82,7 +88,7 @@ export class SaucelabsDaemon {
    * This is typically done when the first test is started so that no connection is made
    * if all tests are cache hits.
    */
-  async connect() {
+  async connectTunnel() {
     if (!this._connection) {
       this._connection = this._connect();
     }
@@ -136,8 +142,8 @@ export class SaucelabsDaemon {
    * If the daemon has not yet initiated the saucelabs tunnel creation and browser launching then
    * this initiates that process and awaits until it succeeds or fails.
    *
-   * If the daemon has already initiated the saucelabs tunnel creation and browser launching then
-   * but it is not yet complete then this until it succeeds or fails.
+   * If the daemon has already initiated the saucelabs tunnel creation and browser launching
+   * but it is not yet complete then this blocks until that succeeds or fails.
    *
    * If all matching browsers are occupied with other tests then test is not run. Promise returns
    * false.
@@ -148,7 +154,7 @@ export class SaucelabsDaemon {
    * If there is a matching browser that is available the test it started. Promise returns true.
    */
   async startTest(test: BrowserTest): Promise<boolean> {
-    await this.connect();
+    await this.connectTunnel();
 
     const browsers = this._findMatchingBrowsers(test.requestedBrowserId);
     if (!browsers.length) {
@@ -157,8 +163,8 @@ export class SaucelabsDaemon {
 
     // Find the first available browser and start the test.
     for (const browser of browsers) {
-      // If the browser is acquired, continue searching.
-      if (browser.state === 'acquired') {
+      // If the browser is claimed, continue searching.
+      if (browser.state === 'claimed') {
         continue;
       }
 
@@ -174,9 +180,11 @@ export class SaucelabsDaemon {
         }
       }
 
-      // TS21225: [tsetse] All Promises in async functions must either be awaited or used in an
-      // expression
-      const _ = this._startBrowserTest(browser, test);
+      // We're not interested in awaiting on _startBrowserTest since we only need to report back to
+      // the caller that the browser test was initiated. Failures in _startBrowserTest() are
+      // silently ignored in the daemon. The karma test itself should fail or timeout if there are
+      // issues starting the browser test.
+      this._startBrowserTest(browser, test);
       return true;
     }
 
@@ -189,7 +197,7 @@ export class SaucelabsDaemon {
    * This is typically done when the first test is started so that no connection is made
    * if all tests are cache hits.
    **/
-  async _connect() {
+  private async _connect() {
     await this._openSauceConnectTunnel();
     await this._launchBrowsers();
   }
@@ -198,7 +206,7 @@ export class SaucelabsDaemon {
    * @internal
    * Establishes the Saucelabs connect tunnel.
    **/
-  async _openSauceConnectTunnel() {
+  private async _openSauceConnectTunnel() {
     console.debug('Starting sauce connect tunnel...');
 
     const tmpFolder = await fs.mkdtemp('saucelabs-daemon-');
@@ -238,7 +246,7 @@ export class SaucelabsDaemon {
    * Launches all browsers. If there are pending tests waiting for a particular browser to launch
    * before they can start, those tests are started once the browser is launched.
    **/
-  async _launchBrowsers() {
+  private async _launchBrowsers() {
     console.debug('Launching browsers...');
 
     // Once the tunnel is established we can launch browsers
@@ -296,9 +304,11 @@ export class SaucelabsDaemon {
           // If a test has been scheduled before the browser completed launching, run
           // it now given that the browser is ready now.
           if (this._pendingTests.has(launched)) {
-            // TS21225: [tsetse] All Promises in async functions must either be awaited or used in
-            // an expression
-            const _ = this._startBrowserTest(launched, this._pendingTests.get(launched)!);
+            // We're not interested in awaiting on _startBrowserTest since that would delay starting
+            // additional browsers. Failures in _startBrowserTest() are silently ignored in the
+            // daemon. The karma test itself should fail or timeout if there are issues starting the
+            // browser test.
+            this._startBrowserTest(launched, this._pendingTests.get(launched)!);
           }
         }),
     );
@@ -307,20 +317,26 @@ export class SaucelabsDaemon {
   /**
    * @internal
    * Starts a browser test on a browser.
-   * This sets the browser's state to "acquired" and navigates the browser to the test URL.
+   * This sets the browser's state to "claimed" and navigates the browser to the test URL.
    **/
-  private async _startBrowserTest(browser: RemoteBrowser, test: BrowserTest) {
+  private _startBrowserTest(browser: RemoteBrowser, test: BrowserTest) {
     this._runningTests.set(test.testId, browser);
-    browser.state = 'acquired';
+    browser.state = 'claimed';
 
-    try {
-      console.debug(`Opening test url for #${test.testId}: ${test.pageUrl}`);
-      await browser.driver!.get(test.pageUrl);
-      const pageTitle = await browser.driver!.getTitle();
-      console.debug(`Test page loaded for #${test.testId}: "${pageTitle}".`);
-    } catch (e) {
-      console.error('Could not start browser test with id', test.testId, test.pageUrl);
-    }
+    console.debug(`Opening test url for #${test.testId}: ${test.pageUrl}`);
+    browser.driver!.get(test.pageUrl)
+        .then(() => {
+          browser.driver!.getTitle()
+              .then((pageTitle) => {
+                console.debug(`Test page loaded for #${test.testId}: "${pageTitle}".`);
+              })
+              .catch((e) => {
+                console.error('Could not start browser test with id', test.testId, test.pageUrl);
+              });
+        })
+        .catch((e) => {
+          console.error('Could not start browser test with id', test.testId, test.pageUrl);
+        });
   }
 
   /**
