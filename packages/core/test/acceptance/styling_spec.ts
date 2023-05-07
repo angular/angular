@@ -454,9 +454,7 @@ describe('styling', () => {
 
     const divs = fixture.nativeElement.querySelectorAll('div');
 
-    // TODO: Use destructuring once Domino supports native ES2015, or when jsdom is used.
-    const div1 = divs[0];
-    const div2 = divs[1];
+    const [div1, div2] = divs;
 
     // Static value `class="s1"` is always written to the DOM.
     expect(div1.className).toEqual('s1');
