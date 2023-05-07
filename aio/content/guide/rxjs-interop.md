@@ -92,7 +92,7 @@ As the `query` signal changes, the `query$` Observable emits the latest query an
 Unlike Observables, signals never provide a synchronous notification of changes. Even if your code updates a signal's value multiple times, effects which depend on its value run only after the signal has "settled".
 
 ```ts
-const obs = toObservable(mySignal);
+const obs$ = toObservable(mySignal);
 obs$.subscribe(value => console.log(value));
 
 mySignal.set(1);
