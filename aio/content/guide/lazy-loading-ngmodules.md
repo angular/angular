@@ -251,13 +251,15 @@ For more information, see the [`forRoot()` pattern](guide/singleton-services#for
 ## Preloading
 
 Preloading improves UX by loading parts of your application in the background.
-You can preload modules or component data.
+You can preload modules, standalone components or component data. 
 
-### Preloading modules
+### Preloading modules and standalone components
 
-Preloading modules improves UX by loading parts of your application in the background. By doing this, users don't have to wait for the elements to download when they activate a route.
+Preloading modules and standalone components improves UX by loading parts of your application in the background. By doing this, users don't have to wait for the elements to download when they activate a route.
 
-To enable preloading of all lazy loaded modules, import the `PreloadAllModules` token from the Angular `router`.
+To enable preloading of all lazy loaded modules and standalone components, import the `PreloadAllModules` token from the Angular `router`.
+
+### Module based application
 
 <code-example header="AppRoutingModule (excerpt)">
 
@@ -275,6 +277,32 @@ RouterModule.forRoot(
     preloadingStrategy: PreloadAllModules
   }
 )
+
+</code-example>
+
+### Standalone application
+
+For standalone applications configure preloading strategies by adding `withPreloading` to  `provideRouter`s RouterFeatures in `app.config.ts`
+
+<code-example header="`app.config.ts`">
+
+import { ApplicationConfig } from '@angular/core';
+import {
+  PreloadAllModules,
+  provideRouter
+  withPreloading,
+} from '@angular/router';
+
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(
+      routes,
+      withPreloading(PreloadAllModules)
+    ),
+  ],
+};
 
 </code-example>
 
@@ -401,4 +429,4 @@ You might also be interested in the following:
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-07
