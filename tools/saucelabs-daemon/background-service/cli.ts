@@ -26,10 +26,6 @@ if (!tunnelIdentifier) {
   throw Error('No tunnel set up. Please set the `SAUCE_TUNNEL_IDENTIFIER` variable.');
 }
 
-if (!buildName) {
-  throw Error('No build name specified.');
-}
-
 // First argument is the path to the sauce connect binary. This argument is templated into the bazel
 // binary.
 if (args.length < 1) {
@@ -63,7 +59,7 @@ const daemon = new SaucelabsDaemon(
 );
 
 if (args.includes('--connect')) {
-  daemon.connect().catch((err) => {
+  daemon.connectTunnel().catch((err) => {
     console.error(`Failed to connect to Saucelabs: ${err}`);
     process.exit(1);
   });

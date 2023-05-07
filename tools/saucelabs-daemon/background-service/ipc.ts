@@ -15,6 +15,12 @@ import {SaucelabsDaemon} from './saucelabs-daemon';
 
 let nextSocketId = 0;
 
+/**
+ * The IPC server for the Saucelabs background service. This server
+ * listens on the port IPC_PORT for `start-test` and `end-test` messages
+ * from karma tests. These messages are handled and requests are passed
+ * forward to the service SaucelabsDaemon class.
+ */
 export class IpcServer {
   private readonly _server: Server;
   private _connections = new Map<number, Socket>();
