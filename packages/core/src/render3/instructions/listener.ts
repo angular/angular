@@ -271,8 +271,6 @@ function wrapListener(
 
     if (wrapWithPreventDefault && result === false) {
       e.preventDefault();
-      // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
-      e.returnValue = false;
     }
 
     return result;
