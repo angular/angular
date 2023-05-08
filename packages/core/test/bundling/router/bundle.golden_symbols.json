@@ -1443,6 +1443,9 @@
     "name": "hasEmptyPathConfig"
   },
   {
+    "name": "hasInSkipHydrationBlockFlag"
+  },
+  {
     "name": "hasParentInjector"
   },
   {

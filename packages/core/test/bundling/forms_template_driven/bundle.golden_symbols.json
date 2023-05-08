@@ -1110,6 +1110,9 @@
     "name": "handleError"
   },
   {
+    "name": "hasInSkipHydrationBlockFlag"
+  },
+  {
     "name": "hasParentInjector"
   },
   {
