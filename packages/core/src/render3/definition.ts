@@ -593,7 +593,7 @@ export function getPipeDef<T>(type: any): PipeDef<T>|null {
 /**
  * Checks whether a given Component, Directive or Pipe is marked as standalone.
  * This will return false if passed anything other than a Component, Directive, or Pipe class
- * See this guide for additional information: https://angular.io/guide/standalone-components
+ * See [this guide](/guide/standalone-components) for additional information:
  *
  * @param type A reference to a Component, Directive or Pipe.
  * @publicApi

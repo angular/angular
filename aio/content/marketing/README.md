@@ -1,6 +1,6 @@
 # Contributors page
 
-We have an official accounting of who is on the Angular Team \(see https://angular.io/about?group=Angular\), who are "trusted collaborators" \(see https://angular.io/about?group=Collaborators\), and so on.
+We have an official accounting of who is on the Angular Team \(see [this link](/about?group=Angular)\), who are "trusted collaborators" \(see [this link](/about?group=Collaborators)\), and so on.
 
 The `contributors.json` should be maintained to keep our "org chart" in a single consistent place.
 
@@ -12,7 +12,7 @@ There are two pages:
 (Googlers: source at http://google3/googledata/devsite/content/en/experts/all/technology/angular.html) which is maintained by Dawid Ostrowski based on a spreadsheet https://docs.google.com/spreadsheets/d/1_Ls2Kle7NxPBIG8f3OEVZ4gJZ8OCTtBxGYwMPb1TUVE/edit#gid=0.
     <!-- gkalpak: That URL doesn't seem to work anymore. New URL: https://developers.google.com/programs/experts/directory/ (?) -->
 
-*   Ours: https://angular.io/about?group=GDE which is derived from `contributors.json`.
+*   [Ours](/about?group=GDE) which is derived from `contributors.json`.
 
 ## About the data
 

@@ -2,7 +2,7 @@
 
 <div class="alert is-important">
 
-The RxJS Interop package is available for [developer preview](https://angular.io/guide/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
+The RxJS Interop package is available for [developer preview](/guide/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
 
 </div>
 

@@ -50,7 +50,7 @@ The `HomeComponent` already contains an input field that you will use to capture
         &lt;input type="text" placeholder="Filter by city" #filter&gt;
     </code-example>
 
-    This example uses a [template variable](https://angular.io/guide/template-reference-variables) to get access to the input as its value.
+    This example uses a [template variable](/guide/template-reference-variables) to get access to the input as its value.
 
 1.  Next, update the component template to attach an event handler to the "search" button.
 

@@ -51,14 +51,14 @@ export interface TestModuleMetadata {
    * Whether NG0304 runtime errors should be thrown when unknown elements are present in component's
    * template. Defaults to `false`, where the error is simply logged. If set to `true`, the error is
    * thrown.
-   * @see https://angular.io/errors/NG8001 for the description of the problem and how to fix it
+   * @see [NG8001](/errors/NG8001) for the description of the problem and how to fix it
    */
   errorOnUnknownElements?: boolean;
   /**
    * Whether errors should be thrown when unknown properties are present in component's template.
    * Defaults to `false`, where the error is simply logged.
    * If set to `true`, the error is thrown.
-   * @see https://angular.io/errors/NG8002 for the description of the error and how to fix it
+   * @see [NG8002](/errors/NG8002) for the description of the error and how to fix it
    */
   errorOnUnknownProperties?: boolean;
 }
@@ -75,14 +75,14 @@ export interface TestEnvironmentOptions {
    * Whether errors should be thrown when unknown elements are present in component's template.
    * Defaults to `false`, where the error is simply logged.
    * If set to `true`, the error is thrown.
-   * @see https://angular.io/errors/NG8001 for the description of the error and how to fix it
+   * @see [NG8001](/errors/NG8001) for the description of the error and how to fix it
    */
   errorOnUnknownElements?: boolean;
   /**
    * Whether errors should be thrown when unknown properties are present in component's template.
    * Defaults to `false`, where the error is simply logged.
    * If set to `true`, the error is thrown.
-   * @see https://angular.io/errors/NG8002 for the description of the error and how to fix it
+   * @see [NG8002](/errors/NG8002) for the description of the error and how to fix it
    */
   errorOnUnknownProperties?: boolean;
 }
