@@ -11,7 +11,7 @@
 import '../../util/ng_dev_mode';
 
 import {throwInvalidWriteToSignalError} from './errors';
-import {newWeakRef, WeakRef} from './weak_ref';
+import {FinalizationRegistry, newFinalizationRegistry} from './finalization';
 
 /**
  * Counter tracking the next `ProducerId` or `ConsumerId`.
@@ -29,6 +29,8 @@ let activeConsumer: ReactiveNode|null = null;
  */
 let inNotificationPhase = false;
 
+let finalizer: FinalizationRegistry<ReactiveNode>|null = null;
+
 export function setActiveConsumer(consumer: ReactiveNode|null): ReactiveNode|null {
   const prev = activeConsumer;
   activeConsumer = consumer;
@@ -42,12 +44,12 @@ interface ReactiveEdge {
   /**
    * Weakly held reference to the consumer side of this edge.
    */
-  readonly producerNode: WeakRef<ReactiveNode>;
+  readonly producerNode: ReactiveNode;
 
   /**
    * Weakly held reference to the producer side of this edge.
    */
-  readonly consumerNode: WeakRef<ReactiveNode>;
+  readonly consumerNode: ReactiveNode;
   /**
    * `trackingVersion` of the consumer at which this dependency edge was last observed.
    *
@@ -94,11 +96,6 @@ interface ReactiveEdge {
  */
 export abstract class ReactiveNode {
   private readonly id = _nextReactiveId++;
-
-  /**
-   * A cached weak reference to this node, which will be used in `ReactiveEdge`s.
-   */
-  private readonly ref = newWeakRef(this);
 
   /**
    * Edges to producers on which this node depends (in its consumer capacity).
@@ -148,7 +145,7 @@ export abstract class ReactiveNode {
    */
   protected consumerPollProducersForChange(): boolean {
     for (const [producerId, edge] of this.producers) {
-      const producer = edge.producerNode.deref();
+      const producer = edge.producerNode;
 
       if (producer === undefined || edge.atTrackingVersion !== this.trackingVersion) {
         // This dependency edge is stale, so remove it.
@@ -177,7 +174,7 @@ export abstract class ReactiveNode {
     inNotificationPhase = true;
     try {
       for (const [consumerId, edge] of this.consumers) {
-        const consumer = edge.consumerNode.deref();
+        const consumer = edge.consumerNode;
         if (consumer === undefined || consumer.trackingVersion !== edge.atTrackingVersion) {
           this.consumers.delete(consumerId);
           consumer?.producers.delete(this.id);
@@ -210,8 +207,8 @@ export abstract class ReactiveNode {
     let edge = activeConsumer.producers.get(this.id);
     if (edge === undefined) {
       edge = {
-        consumerNode: activeConsumer.ref,
-        producerNode: this.ref,
+        consumerNode: activeConsumer,
+        producerNode: this,
         seenValueVersion: this.valueVersion,
         atTrackingVersion: activeConsumer.trackingVersion,
       };
@@ -255,5 +252,30 @@ export abstract class ReactiveNode {
 
     // At this point, we can trust `producer.valueVersion`.
     return this.valueVersion !== lastSeenValueVersion;
+  }
+
+  /**
+   * Disconnect this `ReactiveNode` from the graph (which should allow it to be garbage collected if
+   * no other references to it exist outside the graph).
+   */
+  protected destroy(): void {
+    for (const edge of this.producers.values()) {
+      edge.producerNode.consumers.delete(this.id);
+    }
+    for (const edge of this.consumers.values()) {
+      edge.consumerNode.producers.delete(this.id);
+    }
+    finalizer?.unregister(this);
+  }
+
+  /**
+   * Register `ReactiveNode` with the current finalization registry to be cleaned up when
+   * `publicObject` is garbage collected.
+   */
+  static registerCleanup(node: ReactiveNode, publicObject: object): void {
+    if (finalizer === null) {
+      finalizer = newFinalizationRegistry(node => node.destroy());
+    }
+    finalizer.register(publicObject, node, node);
   }
 }

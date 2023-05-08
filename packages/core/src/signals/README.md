@@ -83,11 +83,11 @@ Throughout the rest of this document, "producer" and "consumer" are used to desc
 
 `ReactiveNode`s keep track of dependency `ReactiveEdge`s to each other. Producers are aware of which consumers depend on their value, while consumers are aware of all of the producers on which they depend. These references are always bidirectional.
 
-A major design feature of Angular Signals is that dependency edges (`ReactiveEdge`s) are tracked using weak references (`WeakRef`). At any point, it's possible that a consumer node may go out of scope and be garbage collected, even if it is still referenced by a producer node (or vice versa). This removes the need for explicit cleanup operations that would remove these dependency edges for signals going "out of scope". Lifecycle management of signals is greatly simplified as a result, and there is no chance of memory leaks due to the dependency tracking.
+A major design feature of Angular Signals is that cleanup of graph nodes may be implicit. That is, dropping a `computed` signal should allow that node and its value to be garbage collected, even if at the time the signal is forgotten, there are references from producers in the graph to the computed's `ReactiveNode`. Lifecycle management of signals is greatly simplified as a result, and there is no chance of memory leaks due to the dependency tracking.
 
-To simplify tracking `ReactiveEdge`s via `WeakRef`s, `ReactiveNode`s have numeric IDs generated when they're created. These IDs are used as `Map` keys instead of the tracked node objects, which are instead stored in the `ReactiveEdge` as `WeakRef`s.
+To achieve this implicit cleanup, the `FinalizationRegistry` abstraction is used. `FinalizationRegistry`'s API allows the association of a target X with a cleanup operation on value Y, such that the cleanup step is performed for Y when X is garbage collected. In this signals implementation, the signal functions returned by `signal` and `computed` are registered with the `FinalizationRegistry` on creation, such that when they're garbage collected, cleanup will be performed for their underlying `ReactiveNode`s.
 
-At various points during the read or write of signal values, these `WeakRef`s are dereferenced. If a reference turns out to be `undefined` (that is, the other side of the dependency edge was reclaimed by garbage collection), then the dependency `ReactiveEdge` can be cleaned up.
+Cleaning up a `ReactiveNode` removes all references to it from the graph, allowing for it to be garbage collected.
 
 ## "Glitch Free" property
 

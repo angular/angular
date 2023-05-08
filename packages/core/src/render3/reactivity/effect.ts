@@ -1,3 +1,4 @@
+
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -58,6 +59,7 @@ export class EffectManager {
       unregisterOnDestroy?.();
       this.all.delete(watch);
       this.queue.delete(watch);
+      watch.destroy();
     };
 
     unregisterOnDestroy = destroyRef?.onDestroy(destroy);

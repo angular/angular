@@ -61,6 +61,7 @@ export function createSignalFromFunction<T, U extends Record<string, unknown>>(
 export function createSignalFromFunction<T, U extends Record<string, unknown> = {}>(
     node: ReactiveNode, fn: () => T, extraApi: U = ({} as U)): Signal<T>&U {
   (fn as any)[SIGNAL] = node;
+  ReactiveNode.registerCleanup(node, fn);
   // Copy properties from `extraApi` to `fn` to complete the desired API of the `Signal`.
   return Object.assign(fn, extraApi) as (Signal<T>& U);
 }
