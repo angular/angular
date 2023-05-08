@@ -38,6 +38,7 @@ module.exports = new Package('angular-base', [
   .processor(require('./processors/checkContentRules'))
   .processor(require('./processors/splitDescription'))
   .processor(require('./processors/disambiguateDocPaths'))
+  .processor(require('./processors/checkAbsoluteAioLinks'))
 
   // overrides base packageInfo and returns the one for the 'angular/angular' repo.
   .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
