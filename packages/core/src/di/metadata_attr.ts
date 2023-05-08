@@ -56,6 +56,7 @@ export interface Attribute {
 /**
  * Attribute decorator and metadata.
  *
+ * @Annotation
  * @publicApi
  */
 export const Attribute: AttributeDecorator = makeParamDecorator(
