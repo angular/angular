@@ -33,7 +33,7 @@ For a more in depth explanation, please refer to the [Property binding](guide/pr
 
 Perform these steps on the app code in your IDE.
 
-### Step 1 - Update <app-housing-location> tag in the `HomeComponent` tempalte
+### Step 1 - Update <app-housing-location> tag in the `HomeComponent` template
 This step adds property binding to the `<app-housing-location>` tag.
 
 In the code editor:
