@@ -14,11 +14,6 @@ import {throwInvalidWriteToSignalError} from './errors';
 import {FinalizationRegistry, newFinalizationRegistry} from './finalization';
 
 /**
- * Counter tracking the next `ProducerId` or `ConsumerId`.
- */
-let _nextReactiveId: number = 0;
-
-/**
  * Tracks the currently active reactive consumer (or `null` if there is no active
  * consumer).
  */
@@ -44,12 +39,12 @@ interface ReactiveEdge {
   /**
    * Weakly held reference to the consumer side of this edge.
    */
-  readonly producerNode: ReactiveNode;
+  readonly producer: ReactiveNode;
 
   /**
    * Weakly held reference to the producer side of this edge.
    */
-  readonly consumerNode: ReactiveNode;
+  readonly consumer: ReactiveNode;
   /**
    * `trackingVersion` of the consumer at which this dependency edge was last observed.
    *
@@ -95,17 +90,15 @@ interface ReactiveEdge {
  * last observed.
  */
 export abstract class ReactiveNode {
-  private readonly id = _nextReactiveId++;
-
   /**
    * Edges to producers on which this node depends (in its consumer capacity).
    */
-  private readonly producers = new Map<number, ReactiveEdge>();
+  private readonly producers: ReactiveEdge[] = [];
 
   /**
    * Edges to consumers on which this node depends (in its producer capacity).
    */
-  private readonly consumers = new Map<number, ReactiveEdge>();
+  private readonly consumers: ReactiveEdge[] = [];
 
   /**
    * Monotonically increasing counter representing a version of this `Consumer`'s
@@ -118,6 +111,20 @@ export abstract class ReactiveNode {
    * semantically changes.
    */
   protected valueVersion = 0;
+
+  /**
+   * Index at which to start iterating producers, used as an optimization to ensure iteration "picks
+   * up" from the previous node. This makes finding a producer in the array O(1) in the best case of
+   * a constant lookup order.
+   */
+  private lastProducerIndex = 0;
+
+  /**
+   * Index at which to start iterating consumers, used as an optimization to ensure iteration "picks
+   * up" from the previous node. This makes finding a consumer in the array O(1) in the best case of
+   * a constant lookup order.
+   */
+  private lastConsumerIndex = 0;
 
   /**
    * Whether signal writes should be allowed while this `ReactiveNode` is the current consumer.
@@ -144,13 +151,17 @@ export abstract class ReactiveNode {
    * rerun any reactions.
    */
   protected consumerPollProducersForChange(): boolean {
-    for (const [producerId, edge] of this.producers) {
-      const producer = edge.producerNode;
+    for (let idx = 0; idx < this.producers.length; idx++) {
+      const edge = this.producers[idx];
+      const producer = edge.producer;
 
-      if (producer === undefined || edge.atTrackingVersion !== this.trackingVersion) {
+      if (edge.atTrackingVersion !== this.trackingVersion) {
         // This dependency edge is stale, so remove it.
-        this.producers.delete(producerId);
-        producer?.consumers.delete(this.id);
+
+        // idx-- ensures that we'll revisit this idx on the next for loop iteration, since another
+        // node gets swapped into that position on deletion.
+        maybeDeleteByIndex(this.producers, idx--);
+        maybeDeleteByIndex(producer.consumers, producer.findConsumer(this));
         continue;
       }
 
@@ -173,11 +184,14 @@ export abstract class ReactiveNode {
     const prev = inNotificationPhase;
     inNotificationPhase = true;
     try {
-      for (const [consumerId, edge] of this.consumers) {
-        const consumer = edge.consumerNode;
-        if (consumer === undefined || consumer.trackingVersion !== edge.atTrackingVersion) {
-          this.consumers.delete(consumerId);
-          consumer?.producers.delete(this.id);
+      for (let idx = 0; idx < this.consumers.length; idx++) {
+        const edge = this.consumers[idx];
+        const consumer = edge.consumer;
+        if (consumer.trackingVersion !== edge.atTrackingVersion) {
+          // idx-- ensures that we'll revisit this idx on the next for loop iteration, since another
+          // node gets swapped into that position on deletion.
+          maybeDeleteByIndex(this.consumers, idx--);
+          maybeDeleteByIndex(consumer.producers, consumer.findProducer(this));
           continue;
         }
 
@@ -204,17 +218,18 @@ export abstract class ReactiveNode {
     }
 
     // Either create or update the dependency `Edge` in both directions.
-    let edge = activeConsumer.producers.get(this.id);
-    if (edge === undefined) {
-      edge = {
-        consumerNode: activeConsumer,
-        producerNode: this,
+    const idx = activeConsumer.findProducer(this);
+    if (idx === null) {
+      const edge: ReactiveEdge = {
+        consumer: activeConsumer,
+        producer: this,
         seenValueVersion: this.valueVersion,
         atTrackingVersion: activeConsumer.trackingVersion,
       };
-      activeConsumer.producers.set(this.id, edge);
-      this.consumers.set(activeConsumer.id, edge);
+      activeConsumer.producers.push(edge);
+      this.consumers.push(edge);
     } else {
+      const edge = activeConsumer.producers[idx];
       edge.seenValueVersion = this.valueVersion;
       edge.atTrackingVersion = activeConsumer.trackingVersion;
     }
@@ -224,7 +239,7 @@ export abstract class ReactiveNode {
    * Whether this consumer currently has any producers registered.
    */
   protected get hasProducers(): boolean {
-    return this.producers.size > 0;
+    return this.producers.length > 0;
   }
 
   /**
@@ -259,13 +274,53 @@ export abstract class ReactiveNode {
    * no other references to it exist outside the graph).
    */
   protected destroy(): void {
-    for (const edge of this.producers.values()) {
-      edge.producerNode.consumers.delete(this.id);
+    for (const edge of this.producers) {
+      maybeDeleteByIndex(edge.producer.consumers, edge.producer.findConsumer(this));
     }
-    for (const edge of this.consumers.values()) {
-      edge.consumerNode.producers.delete(this.id);
+    for (const edge of this.consumers) {
+      maybeDeleteByIndex(edge.consumer.producers, edge.consumer.findProducer(this));
     }
+    this.producers.length = 0;
+    this.consumers.length = 0;
     finalizer?.unregister(this);
+  }
+
+  /**
+   * Find the index of `producer` in `this.producers`.
+   *
+   * Iteration of `this.producers` is stateful, resuming from the stored `this.lastProducerIndex`.
+   * This ensures that when iterating the list repeatedly for producers in the same order as they
+   * were inserted, each individual lookup is O(1).
+   */
+  private findProducer(producer: ReactiveNode): number|null {
+    const length = this.producers.length;
+    const startIdx = this.lastProducerIndex < length ? this.lastProducerIndex : 0;
+    for (let offset = 0; offset < length; offset++) {
+      this.lastProducerIndex = (startIdx + offset) % length;
+      if (this.producers[this.lastProducerIndex].producer === producer) {
+        return this.lastProducerIndex;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find the index of `consumer` in `this.consumers`.
+   *
+   * Iteration of `this.consumers` is stateful, resuming from the stored `this.lastconsumerIndex`.
+   * This ensures that when iterating the list repeatedly for consumers in the same order as they
+   * were inserted, each individual lookup is O(1).
+   */
+  private findConsumer(consumer: ReactiveNode): number|null {
+    const length = this.consumers.length;
+    const startIdx = this.lastConsumerIndex < length ? this.lastConsumerIndex : 0;
+    for (let offset = 0; offset < length; offset++) {
+      this.lastConsumerIndex = (startIdx + offset) % length;
+      if (this.consumers[this.lastConsumerIndex].consumer === consumer) {
+        return this.lastConsumerIndex;
+      }
+    }
+    return null;
   }
 
   /**
@@ -278,4 +333,14 @@ export abstract class ReactiveNode {
     }
     finalizer.register(publicObject, node, node);
   }
+}
+
+function maybeDeleteByIndex(array: ReactiveEdge[], idx: number|null): void {
+  if (idx === null) {
+    return;
+  }
+  const lastIdx = array.length - 1;
+  // Might be a no-op if idx === lastIdx
+  array[idx] = array[lastIdx];
+  array.length = lastIdx;
 }
