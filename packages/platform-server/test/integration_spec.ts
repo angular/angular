@@ -842,7 +842,7 @@ describe('platform-server integration', () => {
                renderModule(MyTransferStateModule, options);
            const expectedOutput =
                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other"><div>Works!</div></app>' +
-               '<script id="ng-state" type="application/json">{&q;some-key&q;:&q;some-value&q;}</script></body></html>';
+               '<script id="ng-state" type="application/json">{"some-key":"some-value"}</script></body></html>';
            const output = await bootstrap;
            expect(output).toEqual(expectedOutput);
          });

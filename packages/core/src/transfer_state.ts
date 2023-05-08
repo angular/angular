@@ -11,28 +11,6 @@ import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
 import {getDocument} from './render3/interfaces/document';
 
-export function escapeTransferStateContent(text: string): string {
-  const escapedText: {[k: string]: string} = {
-    '&': '&a;',
-    '"': '&q;',
-    '\'': '&s;',
-    '<': '&l;',
-    '>': '&g;',
-  };
-  return text.replace(/[&"'<>]/g, s => escapedText[s]);
-}
-
-export function unescapeTransferStateContent(text: string): string {
-  const unescapedText: {[k: string]: string} = {
-    '&a;': '&',
-    '&q;': '"',
-    '&s;': '\'',
-    '&l;': '<',
-    '&g;': '>',
-  };
-  return text.replace(/&[^;]+;/g, s => unescapedText[s]);
-}
-
 /**
  * A type-safe key to use with `TransferState`.
  *
@@ -70,7 +48,7 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
   return key as StateKey<T>;
 }
 
-function initTransferState() {
+function initTransferState(): TransferState {
   const transferState = new TransferState();
   if (inject(PLATFORM_ID) === 'browser') {
     transferState.store = retrieveTransferredState(getDocument(), inject(APP_ID));
@@ -132,7 +110,7 @@ export class TransferState {
   /**
    * Test whether a key exists in the store.
    */
-  hasKey<T>(key: StateKey<T>) {
+  hasKey<T>(key: StateKey<T>): boolean {
     return this.store.hasOwnProperty(key);
   }
 
@@ -164,7 +142,10 @@ export class TransferState {
         }
       }
     }
-    return JSON.stringify(this.store);
+
+    // Escape script tag to avoid break out of <script> tag in serialized output.
+    // Encoding of `<` is the same behaviour as G3 script_builders.
+    return JSON.stringify(this.store).replace(/</g, '\\u003C');
   }
 }
 
@@ -175,7 +156,9 @@ function retrieveTransferredState(doc: Document, appId: string): Record<string, 
   if (script?.textContent) {
     try {
       // Avoid using any here as it triggers lint errors in google3 (any is not allowed).
-      return JSON.parse(unescapeTransferStateContent(script.textContent)) as {};
+      // Decoding of `<` is done of the box by browsers and node.js, same behaviour as G3
+      // script_builders.
+      return JSON.parse(script.textContent) as {};
     } catch (e) {
       console.warn('Exception while restoring TransferState for app ' + appId, e);
     }
