@@ -686,7 +686,7 @@ function getComponentId(componentDef: ComponentDef<unknown>): string {
   // https://github.com/angular/components/blob/d9f82c8f95309e77a6d82fd574c65871e91354c2/src/material/core/option/option.ts#L248
   // https://github.com/angular/components/blob/285f46dc2b4c5b127d356cb7c4714b221f03ce50/src/material/legacy-core/option/option.ts#L32
 
-  const hashSelectors = [
+  const hashSelectors = JSON.stringify([
     componentDef.selectors,
     componentDef.ngContentSelectors,
     componentDef.hostVars,
@@ -696,12 +696,16 @@ function getComponentId(componentDef: ComponentDef<unknown>): string {
     componentDef.decls,
     componentDef.encapsulation,
     componentDef.standalone,
+    componentDef.signals,
+    componentDef.exportAs,
+    componentDef.inputs,
+    componentDef.outputs,
     // We cannot use 'componentDef.type.name' as the name of the symbol will change and will not
     // match in the server and browser bundles.
     Object.getOwnPropertyNames(componentDef.type.prototype),
     !!componentDef.contentQueries,
     !!componentDef.viewQuery,
-  ].join('|');
+  ]);
 
   for (const char of hashSelectors) {
     hash = Math.imul(31, hash) + char.charCodeAt(0) << 0;
