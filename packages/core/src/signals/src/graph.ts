@@ -113,6 +113,14 @@ export abstract class ReactiveNode {
   protected valueVersion = 0;
 
   /**
+   * An edge to a producer which should be checked before iterating the full list of dependencies,
+   * as an optimization.
+   *
+   * If set, this edge is more likely to be dirty than others in `this.producers`.
+   */
+  private producerEdgeToCheckFirst: ReactiveEdge|null = null;
+
+  /**
    * Index at which to start iterating producers, used as an optimization to ensure iteration "picks
    * up" from the previous node. This makes finding a producer in the array O(1) in the best case of
    * a constant lookup order.
@@ -151,6 +159,18 @@ export abstract class ReactiveNode {
    * rerun any reactions.
    */
   protected consumerPollProducersForChange(): boolean {
+    // As an optimization, if `this.checkProducer` is set to a `ReactiveEdge`, check that edge
+    // first. There's no need to handle the case of a stale edge, since it will be cleaned up in the
+    // full check which follows anyway.
+    const recentEdge = this.producerEdgeToCheckFirst;
+    this.producerEdgeToCheckFirst = null;
+
+    if (recentEdge !== null && recentEdge.atTrackingVersion === this.trackingVersion &&
+        recentEdge.producer.producerPollStatus(recentEdge.seenValueVersion)) {
+      // The optimization edge was actually dirty.
+      return true;
+    }
+
     for (let idx = 0; idx < this.producers.length; idx++) {
       const edge = this.producers[idx];
       const producer = edge.producer;
@@ -195,6 +215,10 @@ export abstract class ReactiveNode {
           continue;
         }
 
+        // Set the edge from this producer to the consumer to be checked first - since this producer
+        // is notifying the consumer, it's more likely to be dirty than other edges into the
+        // consumer.
+        consumer.producerEdgeToCheckFirst = edge;
         consumer.onConsumerDependencyMayHaveChanged();
       }
     } finally {
@@ -278,7 +302,11 @@ export abstract class ReactiveNode {
       maybeDeleteByIndex(edge.producer.consumers, edge.producer.findConsumer(this));
     }
     for (const edge of this.consumers) {
-      maybeDeleteByIndex(edge.consumer.producers, edge.consumer.findProducer(this));
+      const node = edge.consumer;
+      maybeDeleteByIndex(node.producers, node.findProducer(this));
+      if (node.producerEdgeToCheckFirst?.producer === this) {
+        node.producerEdgeToCheckFirst = null;
+      }
     }
     this.producers.length = 0;
     this.consumers.length = 0;
