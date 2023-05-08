@@ -11,27 +11,10 @@ import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
 import {getDocument} from './render3/interfaces/document';
 
-export function escapeTransferStateContent(text: string): string {
-  const escapedText: {[k: string]: string} = {
-    '&': '&a;',
-    '"': '&q;',
-    '\'': '&s;',
-    '<': '&l;',
-    '>': '&g;',
-  };
-  return text.replace(/[&"'<>]/g, s => escapedText[s]);
-}
+const isString = (value: unknown): value is string => typeof value === 'string';
+const UNESCAPED_SCRIPT_TAG_REGEXP = /(<)(\/?script)/g;
+const ESCAPED_SCRIPT_TAG_REGEXP = /(\$lt;)(\/?script)/g;
 
-export function unescapeTransferStateContent(text: string): string {
-  const unescapedText: {[k: string]: string} = {
-    '&a;': '&',
-    '&q;': '"',
-    '&s;': '\'',
-    '&l;': '<',
-    '&g;': '>',
-  };
-  return text.replace(/&[^;]+;/g, s => unescapedText[s]);
-}
 
 /**
  * A type-safe key to use with `TransferState`.
@@ -164,8 +147,27 @@ export class TransferState {
         }
       }
     }
-    return JSON.stringify(this.store);
+
+    return JSON.stringify(this.store, escapeTransferStateContent);
   }
+}
+
+function escapeTransferStateContent(_key: string, value: unknown): unknown {
+  // Escape script tag to avoid break out of <script> tag in serialized output.
+  // Replace:
+  // - `<script` -> `$lt;script`
+  // - `</script` -> `$lt;/script`
+  return isString(value) ?
+      value.replace(UNESCAPED_SCRIPT_TAG_REGEXP, (_match, _p1, p2) => `&lt;${p2}`) :
+      value;
+}
+
+function unescapeTransferStateContent(_key: string, value: string): unknown {
+  // Replace:
+  // - `$lt;script` -> `<script`
+  // - `$lt;/script` -> `</script`
+  return isString(value) ? value.replace(ESCAPED_SCRIPT_TAG_REGEXP, (_match, _p1, p2) => `<${p2}`) :
+                           value;
 }
 
 function retrieveTransferredState(doc: Document, appId: string): Record<string, unknown|undefined> {
@@ -175,7 +177,7 @@ function retrieveTransferredState(doc: Document, appId: string): Record<string, 
   if (script?.textContent) {
     try {
       // Avoid using any here as it triggers lint errors in google3 (any is not allowed).
-      return JSON.parse(unescapeTransferStateContent(script.textContent)) as {};
+      return JSON.parse(script.textContent, unescapeTransferStateContent) as {};
     } catch (e) {
       console.warn('Exception while restoring TransferState for app ' + appId, e);
     }

@@ -10,9 +10,8 @@ import {APP_ID as APP_ID_TOKEN, PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {getDocument} from '../src/render3/interfaces/document';
-import {escapeTransferStateContent, makeStateKey, TransferState, unescapeTransferStateContent} from '../src/transfer_state';
+import {makeStateKey, TransferState} from '../src/transfer_state';
 
-(function() {
 function removeScriptTag(doc: Document, id: string) {
   const existing = doc.getElementById(id);
   if (existing) {
@@ -25,7 +24,7 @@ function addScriptTag(doc: Document, appId: string, data: {}) {
   const id = appId + '-state';
   script.id = id;
   script.setAttribute('type', 'application/json');
-  script.textContent = escapeTransferStateContent(JSON.stringify(data));
+  script.textContent = JSON.stringify(data);
 
   // Remove any stale script tags.
   removeScriptTag(doc, id);
@@ -129,19 +128,15 @@ describe('TransferState', () => {
     transferState.remove(TEST_KEY);
     expect(transferState.isEmpty).toBeTrue();
   });
-});
 
-describe('escape/unescape', () => {
-  it('works with all escaped characters', () => {
-    const testString = '</script><script>alert(\'Hello&\' + "World");';
-    const testObj = {testString};
-    const escaped = escapeTransferStateContent(JSON.stringify(testObj));
-    expect(escaped).toBe(
-        '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
-        'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}');
+  it('should encode `<` to avoid breaking out of <script> tag in serialized output', () => {
+    const transferState = TestBed.inject(TransferState);
 
-    const unescapedObj = JSON.parse(unescapeTransferStateContent(escaped)) as {testString: string};
-    expect(unescapedObj['testString']).toBe(testString);
+    // The state is empty initially.
+    expect(transferState.isEmpty).toBeTrue();
+
+    transferState.set(DELAYED_KEY, '</script><script>alert(\'Hello&\' + "World");');
+    expect(transferState.toJson())
+        .toBe(`{"delayed":"&lt;/script>&lt;script>alert('Hello&' + \\"World\\");"}`);
   });
 });
-})();

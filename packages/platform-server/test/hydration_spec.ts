@@ -14,7 +14,6 @@ import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatfor
 import {Console} from '@angular/core/src/console';
 import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {getComponentDef} from '@angular/core/src/render3/definition';
-import {unescapeTransferStateContent} from '@angular/core/src/transfer_state';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, HydrationFeature, HydrationFeatureKind, provideClientHydration, withNoDomReuse} from '@angular/platform-browser';
@@ -185,9 +184,8 @@ function resetTViewsFor(...types: Type<unknown>[]) {
   }
 }
 
-function getHydrationInfoFromTransferState(input: string): string|null {
-  const rawContents = input.match(/<script[^>]+>(.*?)<\/script>/)?.[1];
-  return rawContents ? unescapeTransferStateContent(rawContents) : null;
+function getHydrationInfoFromTransferState(input: string): string|undefined {
+  return input.match(/<script[^>]+>(.*?)<\/script>/)?.[1];
 }
 
 function withNoopErrorHandler() {
