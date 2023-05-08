@@ -318,7 +318,6 @@ class DefaultDomRenderer2 implements Renderer2 {
           eventHandler(event);
       if (allowDefaultBehavior === false) {
         event.preventDefault();
-        event.returnValue = false;
       }
 
       return undefined;
