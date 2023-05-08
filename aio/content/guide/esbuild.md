@@ -17,8 +17,8 @@ You can opt-in to use the new builder on a per application basis with minimal co
 
 ## Trying the ESM build system in an Angular CLI application
 
-A new builder named `browser-esbuild` is available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application. The build is a drop-in replacement for the existing `browser` builder that provides the current stable browser application build system.
-You can try out the new build system for applications that use the `browser` builder.
+A new builder named `browser-esbuild` is available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application. The build is a drop-in replacement for the existing <code>browser</code> builder that provides the current stable browser application build system.
+You can try out the new build system for applications that use the <code>browser</code> builder.
 
 ### Updating the application configuration
 
