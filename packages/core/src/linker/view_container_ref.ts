@@ -10,7 +10,7 @@ import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {validateMatchingNode} from '../hydration/error_handling';
 import {CONTAINERS} from '../hydration/interfaces';
-import {isInSkipHydrationBlock} from '../hydration/skip_hydration';
+import {hasInSkipHydrationBlockFlag, isInSkipHydrationBlock} from '../hydration/skip_hydration';
 import {getSegmentHead, isDisconnectedNode, markRNodeAsClaimedByHydration} from '../hydration/utils';
 import {findMatchingDehydratedView, locateDehydratedViewsInContainer} from '../hydration/views';
 import {isType, Type} from '../interface/type';
@@ -311,7 +311,11 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
     const hydrationInfo = findMatchingDehydratedView(this._lContainer, templateRef.ssrId);
     const viewRef = templateRef.createEmbeddedViewImpl(context || <any>{}, injector, hydrationInfo);
-    this.insertImpl(viewRef, index, !!hydrationInfo);
+    // If there is a matching dehydrated view, but the host TNode is located in the skip
+    // hydration block, this means that the content was detached (as a part of the skip
+    // hydration logic) and it needs to be appended into the DOM.
+    const skipDomInsertion = !!hydrationInfo && !hasInSkipHydrationBlockFlag(this._hostTNode);
+    this.insertImpl(viewRef, index, skipDomInsertion);
     return viewRef;
   }
 
@@ -428,7 +432,11 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     const rNode = dehydratedView?.firstChild ?? null;
     const componentRef =
         componentFactory.create(contextInjector, projectableNodes, rNode, environmentInjector);
-    this.insertImpl(componentRef.hostView, index, !!dehydratedView);
+    // If there is a matching dehydrated view, but the host TNode is located in the skip
+    // hydration block, this means that the content was detached (as a part of the skip
+    // hydration logic) and it needs to be appended into the DOM.
+    const skipDomInsertion = !!dehydratedView && !hasInSkipHydrationBlockFlag(this._hostTNode);
+    this.insertImpl(componentRef.hostView, index, skipDomInsertion);
     return componentRef;
   }
 
@@ -638,8 +646,13 @@ function locateOrCreateAnchorNode(
 
   const hydrationInfo = hostLView[HYDRATION];
   const noOffsetIndex = hostTNode.index - HEADER_OFFSET;
-  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock(hostTNode) ||
-      isDisconnectedNode(hydrationInfo, noOffsetIndex);
+
+  // TODO(akushnir): this should really be a single condition, refactor the code
+  // to use `hasInSkipHydrationBlockFlag` logic inside `isInSkipHydrationBlock`.
+  const skipHydration = isInSkipHydrationBlock(hostTNode) || hasInSkipHydrationBlockFlag(hostTNode);
+
+  const isNodeCreationMode =
+      !hydrationInfo || skipHydration || isDisconnectedNode(hydrationInfo, noOffsetIndex);
 
   // Regular creation mode.
   if (isNodeCreationMode) {

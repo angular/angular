@@ -918,6 +918,9 @@
     "name": "getTNodeFromLView"
   },
   {
+    "name": "hasInSkipHydrationBlockFlag"
+  },
+  {
     "name": "hostReportError"
   },
   {
