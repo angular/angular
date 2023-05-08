@@ -77,7 +77,7 @@ If you do not have a version of `node.js` installed, please follow the [directio
 
 ### Step 3 - Install the latest version of Angular
 
-With `node.js` and `npm` installed, the next step is to install the [Angular CLI](https://angular.io/cli) which provides tooling for effective Angular development.
+With `node.js` and `npm` installed, the next step is to install the [Angular CLI](/cli) which provides tooling for effective Angular development.
 
 From a **Terminal** window:
 
@@ -103,5 +103,5 @@ In this lesson, you learned about the app that you build in this tutorial and pr
 
 For more information about the topics covered in this lesson, visit:
 
-* [What is Angular](https://angular.io/guide/what-is-angular)
-* [Angular CLI Reference](https://angular.io/cli)
+* [What is Angular](/guide/what-is-angular)
+* [Angular CLI Reference](/cli)

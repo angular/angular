@@ -130,5 +130,5 @@ If have any trouble with this lesson, review the completed code for it in the <l
 
 For more information about the topics covered in this lesson, visit:
 
-* [Angular Components](https://angular.io/guide/component-overview)
-* [Creating applications with the Angular CLI](https://angular.io/cli)
+* [Angular Components](/guide/component-overview)
+* [Creating applications with the Angular CLI](/cli)

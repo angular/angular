@@ -2,7 +2,7 @@
 
 <div class="alert is-important">
 
-The esbuild-based ECMAScript module (ESM) application build system feature is available for [developer preview](guide/releases#developer-preview).
+The esbuild-based ECMAScript module (ESM) application build system feature is available for [developer preview](/guide/releases#developer-preview).
 It's ready for you to try, but it might change before it is stable and is not yet recommended for production builds.
 
 </div>
@@ -64,7 +64,7 @@ ng serve
 
 </code-example>
 
-You can continue to use the [command line options](https://angular.io/cli/serve) you have used in the past with the development server.
+You can continue to use the [command line options](/cli/serve) you have used in the past with the development server.
 
 <div class="alert is-important">
 
