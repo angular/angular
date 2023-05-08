@@ -150,6 +150,7 @@ export interface ContentChildrenDecorator {
    *
    * {@example core/di/ts/contentChildren/content_children_example.ts region='Component'}
    *
+   * @Annotation
    */
   (selector: ProviderToken<unknown>|Function|string, opts?: {
     descendants?: boolean,
@@ -164,6 +165,7 @@ export interface ContentChildrenDecorator {
  * Type of the ContentChildren metadata.
  *
  *
+ * @Annotation
  * @publicApi
  */
 export type ContentChildren = Query;
@@ -172,6 +174,7 @@ export type ContentChildren = Query;
  * ContentChildren decorator and metadata.
  *
  *
+ * @Annotation
  * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
@@ -239,6 +242,7 @@ export interface ContentChildDecorator {
    *
    * {@example core/di/ts/contentChild/content_child_example.ts region='Component'}
    *
+   * @Annotation
    */
   (selector: ProviderToken<unknown>|Function|string,
    opts?: {descendants?: boolean, read?: any, static?: boolean}): any;
@@ -257,7 +261,7 @@ export type ContentChild = Query;
  * ContentChild decorator and metadata.
  *
  *
-
+ * @Annotation
  *
  * @publicApi
  */
@@ -324,6 +328,7 @@ export interface ViewChildrenDecorator {
    *
    * {@example core/di/ts/viewChildren/view_children_example.ts region='Component'}
    *
+   * @Annotation
    */
   (selector: ProviderToken<unknown>|Function|string,
    opts?: {read?: any, emitDistinctChangesOnly?: boolean}): any;
@@ -341,7 +346,7 @@ export type ViewChildren = Query;
 /**
  * ViewChildren decorator and metadata.
  *
-
+ * @Annotation
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
@@ -405,6 +410,7 @@ export interface ViewChildDecorator {
    *
    * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
    *
+   * @Annotation
    */
   (selector: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
   new(selector: ProviderToken<unknown>|Function|string,
@@ -421,7 +427,7 @@ export type ViewChild = Query;
 /**
  * ViewChild decorator and metadata.
  *
-
+ * @Annotation
  * @publicApi
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
