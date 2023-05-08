@@ -5,7 +5,7 @@ rendering updates.
 
 <div class="alert is-important">
 
-Angular signals are available for [developer preview](https://angular.io/guide/releases#developer-preview). They're ready for you to try, but may change before they are stable.
+Angular signals are available for [developer preview](/guide/releases#developer-preview). They're ready for you to try, but may change before they are stable.
 
 </div>
 
@@ -107,7 +107,7 @@ Note that dependencies can be removed as well as added. If `showCount` is later 
 
 ## Reading signals in `OnPush` components
 
-When an `OnPush` component uses a signal's value in its template, Angular will track the signal as a dependency of that component. When that signal is updated, Angular automatically [marks](https://angular.io/api/core/ChangeDetectorRef#markforcheck) the component to ensure it gets updated the next time change detection runs. Refer to the [Skipping component subtrees](https://angular.io/guide/change-detection-skipping-subtrees) guide for more information about `OnPush` components.
+When an `OnPush` component uses a signal's value in its template, Angular will track the signal as a dependency of that component. When that signal is updated, Angular automatically [marks](/api/core/ChangeDetectorRef#markforcheck) the component to ensure it gets updated the next time change detection runs. Refer to the [Skipping component subtrees](/guide/change-detection-skipping-subtrees) guide for more information about `OnPush` components.
 
 ## Effects
 
