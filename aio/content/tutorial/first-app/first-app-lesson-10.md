@@ -81,7 +81,7 @@ In the previous step you removed the reference to the `<app-home>` component in 
     
         <code-example header="Add routes to the app" path="first-app-lesson-10/src/app/routes.ts" region="define-app-routes"></code-example>
 
-        The entries in the `routeConfig` array represent the routes in the application. The first entry navigates to the `HomeComponent` whenever the url matches `''`. The second entry uses some special formatting that will be revisted in a future lesson.
+        The entries in the `routeConfig` array represent the routes in the application. The first entry navigates to the `HomeComponent` whenever the url matches `''`. The second entry uses some special formatting that will be revisited in a future lesson.
 
 1.  Save all changes and confirm that the application works in the browser. The application should still display the list of housing locations.
 

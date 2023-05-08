@@ -35,7 +35,7 @@ For a more in depth explanation, please refer to the [Displaying values with int
 
 Perform these steps on the app code in your IDE.
 
-### Step 1 - Update `HousingLocationComponent` template to include iterpolated values
+### Step 1 - Update `HousingLocationComponent` template to include interpolated values
 This step adds new HTML structure and interpolated values in the `HousingLocationComponent` template.
 
 In the code editor:
@@ -44,9 +44,9 @@ In the code editor:
 
     <code-example header="Update HousingLocationComponent template" path="first-app-lesson-07/src/app/housing-location/housing-location.component.ts" region="add-listing-details"></code-example>
 
-    In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpoloation to give more context to the alt text of the image.
+    In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpolation to give more context to the alt text of the image.
 
-    You use interpoloation to include the values for name, city and state of the `housingLocation` property.
+    You use interpolation to include the values for name, city and state of the `housingLocation` property.
 
 ### Step 2 - Confirm the changes render in the browser
 1.  Save all changes.

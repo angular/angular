@@ -68,7 +68,7 @@ This step adds the properties to the interface that your app needs to represent 
 
 1.  Save your changes and confirm the app does not display any errors. Correct any errors before you continue to the next step.
 
-At this point, you've defined an inteface that represents data about a housing location including an id, name, and location information.
+At this point, you've defined an interface that represents data about a housing location including an id, name, and location information.
 
 ### Step 3 - Create a test house for your app
 

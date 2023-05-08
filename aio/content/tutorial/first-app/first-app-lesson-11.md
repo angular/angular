@@ -21,7 +21,7 @@ If you have any trouble during this lesson, you can review the completed code fo
 At the end of this lesson your application will have support for routing to the details page.
 
 ## Conceptual preview of routing with route parameters
-In the previous lesson, you added routing to your app and in this lesson you will expand the types of routing your app supports. Each housing location has specific details that should be displayed when a user navigates to the details page for that item. To accopmlish this goal, you will need to use route parameters.
+In the previous lesson, you added routing to your app and in this lesson you will expand the types of routing your app supports. Each housing location has specific details that should be displayed when a user navigates to the details page for that item. To accomplish this goal, you will need to use route parameters.
 
 Route parameters enable you to include dynamic information as a part of your route URL. To identify which housing location a user has clicked on you will use the `id` property of the `HousingLocation` type.
 
@@ -30,7 +30,7 @@ Route parameters enable you to include dynamic information as a part of your rou
 Perform these steps on the app code in your IDE.
 
 ### Step 1 - Create a new service for your app
-In lesson 10, you added a second route to `src/app/routes.ts`, this route includes a special segment that identifes the route parameter, `id`:
+In lesson 10, you added a second route to `src/app/routes.ts`, this route includes a special segment that identifies the route parameter, `id`:
 
     <code-example format="javascript" language="javascript">
     'details/:id'
@@ -111,7 +111,7 @@ To access the data you will add a call to the `HousingService`.
     </section>
 
 ### Step 4 - Add navigation to the `HomeComponent`
-In a previous lesson you updated the `AppComponent` template to include a `routerLink`. Adding that code updated your app to enable navigation back to the `HomeComponent` whenver the logo is clicked.
+In a previous lesson you updated the `AppComponent` template to include a `routerLink`. Adding that code updated your app to enable navigation back to the `HomeComponent` whenever the logo is clicked.
 
 1.  Confirm that your code matches the following:
 
@@ -121,9 +121,9 @@ In a previous lesson you updated the `AppComponent` template to include a `route
 
 ## Lesson Review
 In this lesson you updated your app to:
-* use route paramters to pass data to a route
+* use route parameters to pass data to a route
 * use the `routerLink` directive to use dynamic data to create a route
-* use route paramter to retrieve data from the `HousingService` to display housing location specific information.
+* use route parameter to retrieve data from the `HousingService` to display housing location specific information.
 
 Really great work so far. 
 
@@ -137,7 +137,7 @@ If you are having any trouble with this lesson, you can review the completed cod
 For more information about the topics covered in this lesson, visit:
 
 <!-- vale Angular.Google_WordListSuggestions = NO -->
-*  [Route Paremters](guide/router#accessing-query-parameters-and-fragments)
+*  [Route Parameters](guide/router#accessing-query-parameters-and-fragments)
 *  [Routing in Angular Overview](guide/routing-overview)
 *  [Common Routing Tasks](guide/router)
 *  [Optional Chaining Operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
