@@ -37,7 +37,7 @@ In this example, the method writes the data from the form to the browser's conso
 
 In the **Edit** pane of your IDE:
 
-1.  In `src/app/housing.servivce.ts`, inside the `HousingService` class, paste this method at the bottom of the class definition.
+1.  In `src/app/housing.service.ts`, inside the `HousingService` class, paste this method at the bottom of the class definition.
 
     <code-example header="Submit method in src/app/housing.service.ts" path="first-app-lesson-12/src/app/housing.service.ts" region="submit-method"></code-example>
 
