@@ -9,10 +9,10 @@
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reexport} from '../../imports';
+import {Reexport, ReferenceEmitter} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
-import {ClassDeclaration, Decorator} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
@@ -278,5 +278,6 @@ export interface DtsTransform {
       (element: ts.FunctionDeclaration, imports: ImportManager): ts.FunctionDeclaration;
   transformClass?
       (clazz: ts.ClassDeclaration, elements: ReadonlyArray<ts.ClassElement>,
+       reflector: ReflectionHost, refEmitter: ReferenceEmitter,
        imports: ImportManager): ts.ClassDeclaration;
 }
