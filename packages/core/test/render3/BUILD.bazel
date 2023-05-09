@@ -28,6 +28,7 @@ ts_library(
         "//packages/core/rxjs-interop",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",
+        "//packages/core/src/signals",
         "//packages/core/src/util",
         "//packages/core/testing",
         "//packages/platform-browser",
