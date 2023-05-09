@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/*
+I WOULD LIKE TO SUGGEST ON THE ngModel directive to do a little lazy while changing the value in ngModel, so that the value in ngModel should be changed other where on focus out
+Thank you 
+*/
+
 import {ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
 
 import {FormHooks} from '../model/abstract_model';
