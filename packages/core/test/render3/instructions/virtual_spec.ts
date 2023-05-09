@@ -12,7 +12,7 @@ import {TestBed} from '@angular/core/testing';
 
 
 describe('virtual instructions', () => {
-  fit('should work', () => {
+  it('should work', () => {
     class TestCmp {
       value = 'hello';
 

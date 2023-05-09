@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {createComputed} from './src/computed';
+export {COMPUTED_NODE, ComputedNode, COMPUTING, createComputed, ERRORED, UNSET} from './src/computed';
 export {defaultEquals, ValueEqualityFn} from './src/equality';
 export {setThrowInvalidWriteToSignalError} from './src/errors';
 export {consumerAfterComputation, consumerBeforeComputation, consumerDestroy, getActiveConsumer, isInNotificationPhase, isReactive, producerAccessed, producerNotifyConsumers, producerUpdatesAllowed, producerUpdateValueVersion, Reactive, REACTIVE_NODE, ReactiveNode, setActiveConsumer, SIGNAL} from './src/graph';
