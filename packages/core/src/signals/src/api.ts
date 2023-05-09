@@ -13,7 +13,7 @@ import {ReactiveNode} from './graph';
  *
  * This can be used to auto-unwrap signals in various cases, or to auto-wrap non-signal values.
  */
-const SIGNAL = Symbol('SIGNAL');
+export const SIGNAL = Symbol('SIGNAL');
 
 /**
  * A reactive value which notifies consumers of any changes.

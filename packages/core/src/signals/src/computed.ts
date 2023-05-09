@@ -39,29 +39,30 @@ export function computed<T>(computation: () => T, options?: CreateComputedOption
  * A dedicated symbol used before a computed value has been calculated for the first time.
  * Explicitly typed as `any` so we can use it as signal's value.
  */
-const UNSET: any = Symbol('UNSET');
+export const UNSET: any = Symbol('UNSET');
 
 /**
  * A dedicated symbol used in place of a computed signal value to indicate that a given computation
  * is in progress. Used to detect cycles in computation chains.
  * Explicitly typed as `any` so we can use it as signal's value.
  */
-const COMPUTING: any = Symbol('COMPUTING');
+export const COMPUTING: any = Symbol('COMPUTING');
 
 /**
  * A dedicated symbol used in place of a computed signal value to indicate that a given computation
  * failed. The thrown error is cached until the computation gets dirty again.
  * Explicitly typed as `any` so we can use it as signal's value.
  */
-const ERRORED: any = Symbol('ERRORED');
+export const ERRORED: any = Symbol('ERRORED');
 
 /**
  * A computation, which derives a value from a declarative reactive expression.
  *
  * `Computed`s are both producers and consumers of reactivity.
  */
-class ComputedImpl<T> extends ReactiveNode {
-  constructor(private computation: () => T, private equal: (oldValue: T, newValue: T) => boolean) {
+export class ComputedImpl<T> extends ReactiveNode {
+  constructor(
+      protected computation: () => T, protected equal: (oldValue: T, newValue: T) => boolean) {
     super();
   }
   /**
@@ -69,13 +70,13 @@ class ComputedImpl<T> extends ReactiveNode {
    *
    * This can also be one of the special values `UNSET`, `COMPUTING`, or `ERRORED`.
    */
-  private value: T = UNSET;
+  protected value: T = UNSET;
 
   /**
    * If `value` is `ERRORED`, the error caught from the last computation attempt which will
    * be re-thrown.
    */
-  private error: unknown = null;
+  protected error: unknown = null;
 
   /**
    * Flag indicating that the computation is currently stale, meaning that one of the
@@ -84,7 +85,7 @@ class ComputedImpl<T> extends ReactiveNode {
    * It's possible that no dependency has _actually_ changed, in which case the `stale`
    * state can be resolved without recomputing the value.
    */
-  private stale = true;
+  protected stale = true;
 
   protected override readonly consumerAllowSignalWrites = false;
 

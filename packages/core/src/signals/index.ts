@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {createSignalFromFunction, defaultEquals, isSignal, Signal, ValueEqualityFn} from './src/api';
-export {computed, CreateComputedOptions} from './src/computed';
+export {createSignalFromFunction, defaultEquals, isSignal, Signal, SIGNAL, ValueEqualityFn} from './src/api';
+export {computed, ComputedImpl, COMPUTING, CreateComputedOptions, ERRORED, UNSET} from './src/computed';
 export {setThrowInvalidWriteToSignalError} from './src/errors';
 export {ReactiveNode, setActiveConsumer} from './src/graph';
 export {CreateSignalOptions, setPostSignalSetFn, signal, WritableSignal, ɵɵtoWritableSignal} from './src/signal';
