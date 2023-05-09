@@ -10,6 +10,7 @@ import {EnvironmentProviders, inject, InjectionToken, makeEnvironmentProviders, 
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
+import {FetchBackend} from './fetch';
 import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, HttpInterceptorHandler, legacyInterceptorFnFactory} from './interceptor';
 import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
 import {HttpXhrBackend} from './xhr';
@@ -27,6 +28,7 @@ export enum HttpFeatureKind {
   NoXsrfProtection,
   JsonpSupport,
   RequestsMadeViaParent,
+  Fetch,
 }
 
 /**
@@ -61,6 +63,7 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * @see {@link withNoXsrfProtection}
  * @see {@link withJsonpSupport}
  * @see {@link withRequestsMadeViaParent}
+ * @see {@link withFetch}
  */
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
     EnvironmentProviders {
@@ -231,5 +234,32 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
         return handlerFromParent;
       },
     },
+  ]);
+}
+
+
+/**
+ * Configures the current `HttpClient` instance to make requests using the fetch API.
+ *
+ * This `FetchBackend` requires the support of the Fetch API which is available on all evergreen
+ * browsers and on NodeJS from v18 onward.
+ *
+ * Note: The Fetch API doesn't support progress report on uploads.
+ *
+ * @publicApi
+ * @developerPreview
+ */
+export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof fetch !== 'function') {
+    // TODO: Create a runtime error
+    // TODO: Use ENVIRONMENT_INITIALIZER to contextualize the error message (browser or server)
+    throw new Error(
+        'The `withFetch` feature of HttpClient requires the `fetch` API to be available. ' +
+        'If you run the code in a Node environment, make sure you use Node v18.10 or later.');
+  }
+
+  return makeHttpFeature(HttpFeatureKind.Fetch, [
+    FetchBackend,
+    {provide: HttpBackend, useExisting: FetchBackend},
   ]);
 }

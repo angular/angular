@@ -21,6 +21,8 @@ export enum HttpEventType {
 
   /**
    * An upload progress event was received.
+   *
+   * Note: The `FetchBackend` doesn't support progress report on uploads.
    */
   UploadProgress,
 
@@ -86,6 +88,8 @@ export interface HttpDownloadProgressEvent extends HttpProgressEvent {
 
 /**
  * An upload progress event.
+ *
+ * Note: The `FetchBackend` doesn't support progress report on uploads.
  *
  * @publicApi
  */
