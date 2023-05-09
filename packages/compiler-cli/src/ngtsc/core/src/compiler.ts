@@ -625,8 +625,9 @@ export class NgCompiler {
 
     const afterDeclarations: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (compilation.dtsTransforms !== null) {
-      afterDeclarations.push(
-          declarationTransformFactory(compilation.dtsTransforms, importRewriter));
+      afterDeclarations.push(declarationTransformFactory(
+          compilation.dtsTransforms, compilation.reflector, compilation.refEmitter,
+          importRewriter));
     }
 
     // Only add aliasing re-exports to the .d.ts output if the `AliasingHost` requests it.

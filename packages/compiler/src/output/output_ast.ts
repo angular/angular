@@ -78,6 +78,17 @@ export class MapType extends Type {
   }
 }
 
+
+export class TransplantedType<T> extends Type {
+  constructor(readonly type: T, modifiers?: TypeModifier) {
+    super(modifiers);
+  }
+  override visitType(visitor: TypeVisitor, context: any): any {
+    return visitor.visitTransplantedType(this, context);
+  }
+}
+
+
 export const DYNAMIC_TYPE = new BuiltinType(BuiltinTypeName.Dynamic);
 export const INFERRED_TYPE = new BuiltinType(BuiltinTypeName.Inferred);
 export const BOOL_TYPE = new BuiltinType(BuiltinTypeName.Bool);
@@ -92,6 +103,7 @@ export interface TypeVisitor {
   visitExpressionType(type: ExpressionType, context: any): any;
   visitArrayType(type: ArrayType, context: any): any;
   visitMapType(type: MapType, context: any): any;
+  visitTransplantedType(type: TransplantedType<unknown>, context: any): any;
 }
 
 ///// Expressions
@@ -1111,6 +1123,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitMapType(type: MapType, context: any): any {
     return this.visitType(type, context);
   }
+  visitTransplantedType(type: TransplantedType<unknown>, context: any): any {
+    return type;
+  }
   visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any {
     return ast;
   }
@@ -1274,6 +1289,10 @@ export function importType(
 export function expressionType(
     expr: Expression, typeModifiers?: TypeModifier, typeParams?: Type[]|null): ExpressionType {
   return new ExpressionType(expr, typeModifiers, typeParams);
+}
+
+export function transplantedType<T>(type: T, typeModifiers?: TypeModifier): TransplantedType<T> {
+  return new TransplantedType(type, typeModifiers);
 }
 
 export function typeofExpr(expr: Expression) {
