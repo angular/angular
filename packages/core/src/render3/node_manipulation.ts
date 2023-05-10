@@ -466,6 +466,7 @@ function processCleanups(tView: TView, lView: LView): void {
     lView[CLEANUP] = null;
   }
   const destroyHooks = lView[ON_DESTROY_HOOKS];
+  lView[ON_DESTROY_HOOKS] = null;
   if (destroyHooks !== null) {
     for (let i = 0; i < destroyHooks.length; i++) {
       const destroyHooksFn = destroyHooks[i];

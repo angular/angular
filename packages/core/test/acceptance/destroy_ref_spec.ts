@@ -260,4 +260,31 @@ describe('DestroyRef', () => {
       destroyRef.onDestroy(() => {});
     }).toThrowError('NG0911: View has already been destroyed.');
   });
+
+  it('should allow unregistration while destroying', () => {
+    const destroyedLog: string[] = [];
+
+    @Component({
+      selector: 'test',
+      standalone: true,
+      template: ``,
+    })
+    class TestCmp {
+      constructor(destroyCtx: DestroyRef) {
+        const unregister = destroyCtx.onDestroy(() => {
+          destroyedLog.push('first');
+          unregister();
+        });
+        destroyCtx.onDestroy(() => {
+          destroyedLog.push('second');
+        });
+      }
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    expect(destroyedLog).toEqual([]);
+
+    fixture.componentRef.destroy();
+    expect(destroyedLog).toEqual(['first', 'second']);
+  });
 });
