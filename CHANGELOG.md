@@ -1,3 +1,16 @@
+<a name="16.0.1"></a>
+# 16.0.1 (2023-05-10)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [52c74d3b4a](https://github.com/angular/angular/commit/52c74d3b4a8d60b60c9e572541b6ccae0d704754) | fix | add additional component metadata to component ID generation ([#50203](https://github.com/angular/angular/pull/50203)) |
+| [048b6b1e0d](https://github.com/angular/angular/commit/048b6b1e0d9d93d63e6fde2c16a9c3e2b221b581) | fix | bootstrapApplication call not rejected when error is thrown in importProvidersFrom module ([#50120](https://github.com/angular/angular/pull/50120)) |
+| [d68796782f](https://github.com/angular/angular/commit/d68796782ff4ce1f389f14dcff31d393ddaa195d) | fix | handle hydration of root components with injected ViewContainerRef ([#50136](https://github.com/angular/angular/pull/50136)) |
+| [f751ce6445](https://github.com/angular/angular/commit/f751ce64453f6ccede13b7bfd02b817eda0b40f7) | fix | handle projection of hydrated containters into components that skip hydration ([#50199](https://github.com/angular/angular/pull/50199)) |
+| [346ab73dd9](https://github.com/angular/angular/commit/346ab73dd95fd2adfd8cb4064b9f12a6171e51d5) | fix | only try to retrieve transferred state on the browser ([#50144](https://github.com/angular/angular/pull/50144)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.0"></a>
 # 16.0.0 (2023-05-03)
 
