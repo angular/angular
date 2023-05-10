@@ -116,7 +116,7 @@
     "eslint-plugin-jsdoc": "^41.0.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "find-free-port": "^2.0.0",
-    "firebase-tools": "^11.0.0",
+    "firebase-tools": "^12.0.0",
     "fs-extra": "^11.0.0",
     "get-port": "^6.1.2",
     "globby": "^13.0.0",
