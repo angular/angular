@@ -199,7 +199,11 @@ export class R3Injector extends EnvironmentInjector {
       for (const service of this._ngOnDestroyHooks) {
         service.ngOnDestroy();
       }
-      for (const hook of this._onDestroyHooks) {
+      const onDestroyHooks = this._onDestroyHooks;
+      // Reset the _onDestroyHooks array before iterating over it to prevent hooks that unregister
+      // themselves from mutating the array during iteration.
+      this._onDestroyHooks = [];
+      for (const hook of onDestroyHooks) {
         hook();
       }
     } finally {
@@ -207,7 +211,6 @@ export class R3Injector extends EnvironmentInjector {
       this.records.clear();
       this._ngOnDestroyHooks.clear();
       this.injectorDefTypes.clear();
-      this._onDestroyHooks.length = 0;
     }
   }
 
