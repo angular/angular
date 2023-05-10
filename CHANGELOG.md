@@ -1,3 +1,12 @@
+<a name="16.1.0-next.0"></a>
+# 16.1.0-next.0 (2023-05-10)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [69dadd2502](https://github.com/angular/angular/commit/69dadd25020ee84364466c0740f695984dd8c84d) | feat | support TypeScript 5.1 ([#50156](https://github.com/angular/angular/pull/50156)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.1"></a>
 # 16.0.1 (2023-05-10)
 ### core
