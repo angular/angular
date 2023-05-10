@@ -336,7 +336,6 @@ export declare class AnimationEvent {
         export class Module {}
       `);
       const diags = env.driveDiagnostics();
-      console.error(diags);
       expect(diags.length).toBe(0);
     });
 
@@ -1695,7 +1694,12 @@ export declare class AnimationEvent {
         `);
       });
 
-      it('should coerce an input using a coercion function if provided', () => {
+      function getDiagnosticLines(diag: ts.Diagnostic): string[] {
+        const separator = '~~~~~';
+        return ts.flattenDiagnosticMessageText(diag.messageText, separator).split(separator);
+      }
+
+      it('should coerce an input using a transform function if provided', () => {
         env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
           import {MatInputModule} from '@angular/material';
@@ -1810,6 +1814,509 @@ export declare class AnimationEvent {
            expect(diags[0].messageText)
                .toBe(`Type 'undefined' is not assignable to type 'string'.`);
          });
+
+      it('should type check using the first parameter type of a simple transform function', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+
+          export function toNumber(val: boolean | string) { return 1; }
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class CoercionDir {
+            @Input({transform: toNumber}) val!: number;
+          }
+
+          @Component({
+            template: '<input dir [val]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = 1;
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Type 'number' is not assignable to type 'string | boolean'.`);
+      });
+
+      it('should type checking using the first parameter type of a simple inline transform function',
+         () => {
+           env.tsconfig({strictTemplates: true});
+           env.write('test.ts', `
+            import {Component, Directive, Input} from '@angular/core';
+
+            @Directive({selector: '[dir]', standalone: true})
+            export class CoercionDir {
+              @Input({transform: (val: boolean | string) => 1}) val!: number;
+            }
+
+            @Component({
+              template: '<input dir [val]="invalidType">',
+              standalone: true,
+              imports: [CoercionDir],
+            })
+            export class FooCmp {
+              invalidType = 1;
+            }
+          `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toBe(`Type 'number' is not assignable to type 'string | boolean'.`);
+         });
+
+      it('should type check using the transform function specified in the `inputs` array', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+
+          export function toNumber(val: boolean | string) { return 1; }
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+            inputs: [{
+              name: 'val',
+              transform: toNumber
+            }]
+          })
+          export class CoercionDir {
+            val!: number;
+          }
+
+          @Component({
+            template: '<input dir [val]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = 1;
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Type 'number' is not assignable to type 'string | boolean'.`);
+      });
+
+      it('should type check using the first parameter type of a built-in function', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class CoercionDir {
+            @Input({transform: parseInt}) val!: number;
+          }
+
+          @Component({
+            template: '<input dir [val]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = 1;
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      });
+
+      it('should type check an imported transform function with a complex type', () => {
+        env.tsconfig({strictTemplates: true});
+
+        env.write('types.ts', `
+          export class ComplexObjValue {
+            foo: boolean;
+          }
+
+          export interface ComplexObj {
+            value: ComplexObjValue;
+          }
+        `);
+
+        env.write('utils.ts', `
+          import {ComplexObj} from './types';
+
+          export type ToNumberType = string | boolean | ComplexObj;
+
+          export function toNumber(val: ToNumberType) { return 1; }
+        `);
+
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+          import {toNumber} from './utils';
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class CoercionDir {
+            @Input({transform: toNumber}) val!: number;
+          }
+
+          @Component({
+            template: '<input dir [val]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = {
+              value: {
+                foo: 'hello'
+              }
+            };
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+
+        expect(getDiagnosticLines(diags[0])).toEqual([
+          `Type '{ value: { foo: string; }; }' is not assignable to type 'ToNumberType'.`,
+          `  Type '{ value: { foo: string; }; }' is not assignable to type 'ComplexObj'.`,
+          `    The types of 'value.foo' are incompatible between these types.`,
+          `      Type 'string' is not assignable to type 'boolean'.`
+        ]);
+      });
+
+      it('should type check an imported transform function with a complex type from an external library',
+         () => {
+           env.tsconfig({strictTemplates: true});
+
+           env.write('node_modules/external/index.d.ts', `
+              export class ExternalComplexObjValue {
+                foo: boolean;
+              }
+
+              export interface ExternalComplexObj {
+                value: ExternalComplexObjValue;
+              }
+
+              export type ExternalToNumberType = string | boolean | ExternalComplexObj;
+
+              export declare function externalToNumber(val: ExternalToNumberType): number;
+            `);
+
+           env.write('test.ts', `
+              import {Component, Directive, Input} from '@angular/core';
+              import {externalToNumber} from 'external';
+
+              @Directive({selector: '[dir]', standalone: true})
+              export class CoercionDir {
+                @Input({transform: externalToNumber}) val!: number;
+              }
+
+              @Component({
+                template: '<input dir [val]="invalidType">',
+                standalone: true,
+                imports: [CoercionDir],
+              })
+              export class FooCmp {
+                invalidType = {
+                  value: {
+                    foo: 'hello'
+                  }
+                };
+              }
+            `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+
+           expect(getDiagnosticLines(diags[0])).toEqual([
+             `Type '{ value: { foo: string; }; }' is not assignable to type 'ExternalToNumberType'.`,
+             `  Type '{ value: { foo: string; }; }' is not assignable to type 'ExternalComplexObj'.`,
+             `    The types of 'value.foo' are incompatible between these types.`,
+             `      Type 'string' is not assignable to type 'boolean'.`
+           ]);
+         });
+
+      it('should type check an input with a generic transform type', () => {
+        env.tsconfig({strictTemplates: true});
+
+        env.write('generics.ts', `
+          export interface GenericWrapper<T> {
+            value: T;
+          }
+        `);
+
+        env.write('types.ts', `
+          export class ExportedClass {
+            foo: boolean;
+          }
+        `);
+
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+          import {GenericWrapper} from './generics';
+          import {ExportedClass} from './types';
+
+          export interface LocalInterface {
+            foo: string;
+          }
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class CoercionDir {
+            @Input({transform: (val: GenericWrapper<ExportedClass>) => 1}) importedVal!: number;
+            @Input({transform: (val: GenericWrapper<LocalInterface>) => 1}) localVal!: number;
+          }
+
+          @Component({
+            template: '<input dir [importedVal]="invalidType" [localVal]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = {
+              value: {
+                foo: 1
+              }
+            };
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+
+        expect(getDiagnosticLines(diags[0])).toEqual([
+          `Type '{ value: { foo: number; }; }' is not assignable to type 'GenericWrapper<ExportedClass>'.`,
+          `  The types of 'value.foo' are incompatible between these types.`,
+          `    Type 'number' is not assignable to type 'boolean'.`
+        ]);
+
+        expect(getDiagnosticLines(diags[1])).toEqual([
+          `Type '{ value: { foo: number; }; }' is not assignable to type 'GenericWrapper<LocalInterface>'.`,
+          `  The types of 'value.foo' are incompatible between these types.`,
+          `    Type 'number' is not assignable to type 'string'.`
+        ]);
+      });
+
+      it('should type check an input with a generic transform union type', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('types.ts', `
+          interface GenericWrapper<T> {
+            value: T;
+          }
+
+          export type CoercionType<T> = boolean | string | GenericWrapper<T>;
+        `);
+
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+          import {CoercionType} from './types';
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class CoercionDir {
+            @Input({transform: (val: CoercionType<string>) => 1}) val!: number;
+          }
+
+          @Component({
+            template: '<input dir [val]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = {value: 1};
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+
+        expect(getDiagnosticLines(diags[0])).toEqual([
+          `Type '{ value: number; }' is not assignable to type 'CoercionType<string>'.`,
+          `  Type '{ value: number; }' is not assignable to type 'GenericWrapper<string>'.`,
+          `    Types of property 'value' are incompatible.`,
+          `      Type 'number' is not assignable to type 'string'.`
+        ]);
+      });
+
+      it('should type check an input with a generic transform type from an external library', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('node_modules/external/index.d.ts', `
+          export interface ExternalGenericWrapper<T> {
+            value: T;
+          }
+
+          export declare class ExternalClass {
+            foo: boolean;
+          }
+        `);
+
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+          import {ExternalGenericWrapper, ExternalClass} from 'external';
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class CoercionDir {
+            @Input({transform: (val: ExternalGenericWrapper<ExternalClass>) => 1}) val!: number;
+          }
+
+          @Component({
+            template: '<input dir [val]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = {
+              value: {
+                foo: 1
+              }
+            };
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getDiagnosticLines(diags[0])).toEqual([
+          `Type '{ value: { foo: number; }; }' is not assignable to type 'ExternalGenericWrapper<ExternalClass>'.`,
+          `  The types of 'value.foo' are incompatible between these types.`,
+          `    Type 'number' is not assignable to type 'boolean'.`
+        ]);
+      });
+
+      it('should allow any value to be assigned if the transform function has no parameters',
+         () => {
+           env.tsconfig({strictTemplates: true});
+           env.write('test.ts', `
+              import {Component, Directive, Input} from '@angular/core';
+
+              @Directive({selector: '[dir]', standalone: true})
+              export class CoercionDir {
+                @Input({transform: () => 1}) val!: number;
+              }
+
+              @Component({
+                template: '<input dir [val]="invalidType">',
+                standalone: true,
+                imports: [CoercionDir],
+              })
+              export class FooCmp {
+                invalidType = {};
+              }
+            `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+      it('should type check static inputs against the transform function type', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+
+          export function toNumber(val: number | boolean) { return 1; }
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class CoercionDir {
+            @Input({transform: toNumber}) val!: number;
+          }
+
+          @Component({
+            template: '<input dir val="test">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Type '"test"' is not assignable to type 'number | boolean'.`);
+      });
+
+      it('should type check inputs with a transform function coming from a host directive', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('host-dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          export interface HostDirType {
+            value: number;
+          }
+
+          @Directive({standalone: true})
+          export class HostDir {
+            @Input({transform: (val: HostDirType) => 1}) val!: number;
+          }
+        `);
+
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+          import {HostDir} from './host-dir';
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+            hostDirectives: [{
+              directive: HostDir,
+              inputs: ['val']
+            }]
+          })
+          export class CoercionDir {}
+
+          @Component({
+            template: '<input dir [val]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = {
+              value: 'hello'
+            };
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getDiagnosticLines(diags[0])).toEqual([
+          `Type '{ value: string; }' is not assignable to type 'HostDirType'.`,
+          `  Types of property 'value' are incompatible.`,
+          `    Type 'string' is not assignable to type 'number'.`
+        ]);
+      });
+
+      it('should type check inputs with a transform inherited from a parent class', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('host-dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          export interface ParentType {
+            value: number;
+          }
+
+          @Directive({standalone: true})
+          export class Parent {
+            @Input({transform: (val: ParentType) => 1}) val!: number;
+          }
+        `);
+
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+          import {Parent} from './host-dir';
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true
+          })
+          export class CoercionDir extends Parent {}
+
+          @Component({
+            template: '<input dir [val]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = {
+              value: 'hello'
+            };
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getDiagnosticLines(diags[0])).toEqual([
+          `Type '{ value: string; }' is not assignable to type 'ParentType'.`,
+          `  Types of property 'value' are incompatible.`,
+          `    Type 'string' is not assignable to type 'number'.`
+        ]);
+      });
     });
 
     describe('restricted inputs', () => {

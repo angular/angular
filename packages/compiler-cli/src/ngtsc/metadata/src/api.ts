@@ -132,7 +132,16 @@ export enum MatchSource {
 }
 
 /** Metadata for a single input mapping. */
-export type InputMapping = InputOrOutput&{required: boolean};
+export type InputMapping = InputOrOutput&{
+  required: boolean;
+  transform: InputTransform|null
+};
+
+/** Metadata for an input's transform function. */
+export interface InputTransform {
+  node: ts.Node;
+  type: ts.TypeNode;
+}
 
 /**
  * Metadata collected for a directive within an NgModule's scope.

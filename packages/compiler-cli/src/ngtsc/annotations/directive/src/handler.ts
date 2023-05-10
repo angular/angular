@@ -17,7 +17,7 @@ import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry} from '../../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, InjectableClassRegistry, isAngularDecorator, readBaseClass, ReferencesRegistry, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
+import {compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, InjectableClassRegistry, isAngularDecorator, readBaseClass, ReferencesRegistry, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
 
 import {extractDirectiveMetadata} from './shared';
 import {DirectiveSymbol} from './symbol';
@@ -207,10 +207,11 @@ export class DirectiveDecoratorHandler implements
       resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
     const fac = compileNgFactoryDefField(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
+    const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata = analysis.classMetadata !== null ?
         compileClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵdir');
+    return compileResults(fac, def, classMetadata, 'ɵdir', inputTransformFields);
   }
 
   compilePartial(
@@ -218,10 +219,12 @@ export class DirectiveDecoratorHandler implements
       resolution: Readonly<unknown>): CompileResult[] {
     const fac = compileDeclareFactory(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDeclareDirectiveFromMetadata(analysis.meta);
+    const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata = analysis.classMetadata !== null ?
         compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵdir');
+
+    return compileResults(fac, def, classMetadata, 'ɵdir', inputTransformFields);
   }
 
   /**

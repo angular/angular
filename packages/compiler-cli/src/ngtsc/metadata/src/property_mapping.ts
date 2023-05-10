@@ -170,10 +170,10 @@ export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> imple
    *
    * This object format is used when mappings are serialized (for example into .d.ts files).
    */
-  toJointMappedObject(): {[classPropertyName: string]: T} {
-    const obj: {[classPropertyName: string]: T} = {};
+  toJointMappedObject<O = T>(transform?: (value: T) => O): {[classPropertyName: string]: O} {
+    const obj: {[classPropertyName: string]: O} = {};
     for (const [classPropertyName, inputOrOutput] of this.forwardMap) {
-      obj[classPropertyName] = inputOrOutput;
+      obj[classPropertyName] = transform ? transform(inputOrOutput) : inputOrOutput as unknown as O;
     }
     return obj;
   }

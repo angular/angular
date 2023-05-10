@@ -330,8 +330,8 @@ export function createSourceSpan(node: ts.Node): ParseSourceSpan {
  * Collate the factory and definition compiled results into an array of CompileResult objects.
  */
 export function compileResults(
-    fac: CompileResult, def: R3CompiledExpression, metadataStmt: Statement|null,
-    propName: string): CompileResult[] {
+    fac: CompileResult, def: R3CompiledExpression, metadataStmt: Statement|null, propName: string,
+    additionalFields: CompileResult[] = []): CompileResult[] {
   const statements = def.statements;
   if (metadataStmt !== null) {
     statements.push(metadataStmt);
@@ -342,7 +342,8 @@ export function compileResults(
       initializer: def.expression,
       statements: def.statements,
       type: def.type,
-    }
+    },
+    ...additionalFields
   ];
 }
 

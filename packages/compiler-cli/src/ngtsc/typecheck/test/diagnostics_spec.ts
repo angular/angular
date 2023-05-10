@@ -870,7 +870,12 @@ class TestComponent {
             name: 'Dir',
             selector: '[dir]',
             inputs: {
-              input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+              input: {
+                classPropertyName: 'input',
+                bindingPropertyName: 'input',
+                required: true,
+                transform: null,
+              },
             },
           }]);
 
@@ -897,11 +902,17 @@ class TestComponent {
               name: 'Dir',
               selector: '[dir]',
               inputs: {
-                input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+                input: {
+                  classPropertyName: 'input',
+                  bindingPropertyName: 'input',
+                  required: true,
+                  transform: null,
+                },
                 otherInput: {
                   classPropertyName: 'otherInput',
                   bindingPropertyName: 'otherInput',
-                  required: true
+                  required: true,
+                  transform: null,
                 }
               }
             },
@@ -913,7 +924,8 @@ class TestComponent {
                 otherDirInput: {
                   classPropertyName: 'otherDirInput',
                   bindingPropertyName: 'otherDirInput',
-                  required: true
+                  required: true,
+                  transform: null,
                 }
               },
             }
@@ -938,7 +950,12 @@ class TestComponent {
             name: 'Dir',
             selector: '[dir]',
             inputs: {
-              input: {classPropertyName: 'input', bindingPropertyName: 'inputAlias', required: true}
+              input: {
+                classPropertyName: 'input',
+                bindingPropertyName: 'inputAlias',
+                required: true,
+                transform: null,
+              }
             }
           }]);
 
@@ -962,7 +979,12 @@ class TestComponent {
             name: 'Dir',
             selector: '[dir]',
             inputs: {
-              input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+              input: {
+                classPropertyName: 'input',
+                bindingPropertyName: 'input',
+                required: true,
+                transform: null,
+              },
             }
           }]);
 
@@ -988,7 +1010,8 @@ class TestComponent {
                  input: {
                    classPropertyName: 'input',
                    bindingPropertyName: 'inputAlias',
-                   required: true
+                   required: true,
+                   transform: null,
                  },
                },
              }]);
@@ -1009,7 +1032,12 @@ class TestComponent {
             name: 'Dir',
             selector: '[dir]',
             inputs: {
-              input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+              input: {
+                classPropertyName: 'input',
+                bindingPropertyName: 'input',
+                required: true,
+                transform: null,
+              },
             }
           }]);
 
@@ -1032,7 +1060,12 @@ class TestComponent {
             name: 'Dir',
             selector: '[dir]',
             inputs: {
-              input: {classPropertyName: 'input', bindingPropertyName: 'input', required: true},
+              input: {
+                classPropertyName: 'input',
+                bindingPropertyName: 'input',
+                required: true,
+                transform: null,
+              },
             },
             outputs: {inputChange: 'inputChange'},
           }]);
@@ -1053,7 +1086,14 @@ class TestComponent {
                type: 'directive',
                name: 'Dir',
                selector: '[dir]',
-               inputs: {dir: {classPropertyName: 'dir', bindingPropertyName: 'dir', required: true}}
+               inputs: {
+                 dir: {
+                   classPropertyName: 'dir',
+                   bindingPropertyName: 'dir',
+                   required: true,
+                   transform: null,
+                 }
+               }
              }]);
 
          expect(messages).toEqual([]);
@@ -1080,7 +1120,8 @@ class TestComponent {
                   input: {
                     classPropertyName: 'input',
                     bindingPropertyName: 'hostAlias',
-                    required: true
+                    required: true,
+                    transform: null,
                   },
                 },
                 isStandalone: true,
@@ -1111,7 +1152,8 @@ class TestComponent {
                  maxlength: {
                    classPropertyName: 'maxlength',
                    bindingPropertyName: 'maxlength',
-                   required: true
+                   required: true,
+                   transform: null,
                  },
                },
              }]);

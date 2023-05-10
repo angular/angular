@@ -77,8 +77,7 @@ export class Environment implements ReferenceEmitEnvironment {
         fnName,
         body: true,
         fields: {
-          inputs: dir.inputs.classPropertyNames,
-          outputs: dir.outputs.classPropertyNames,
+          inputs: dir.inputs,
           // TODO: support queries
           queries: dir.queries,
         },
