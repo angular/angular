@@ -467,12 +467,14 @@ function processCleanups(tView: TView, lView: LView): void {
   }
   const destroyHooks = lView[ON_DESTROY_HOOKS];
   if (destroyHooks !== null) {
+    // Reset the ON_DESTROY_HOOKS array before iterating over it to prevent hooks that unregister
+    // themselves from mutating the array during iteration.
+    lView[ON_DESTROY_HOOKS] = null;
     for (let i = 0; i < destroyHooks.length; i++) {
       const destroyHooksFn = destroyHooks[i];
       ngDevMode && assertFunction(destroyHooksFn, 'Expecting destroy hook to be a function.');
       destroyHooksFn();
     }
-    lView[ON_DESTROY_HOOKS] = null;
   }
 }
 
