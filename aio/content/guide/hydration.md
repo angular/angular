@@ -107,7 +107,7 @@ If you are uncertain about whether your HTML is valid, you can use a [syntax val
 <a id="preserve-whitespaces"></a>
 ### Preserve Whitespaces Configuration
 
-When using the hydration feature, we recommend using the default setting of `false` for `preserveWhitespaces`. If this setting is not in your tsconfig, the value will be `false` and no changes are required. If you choose to enable preserving whitespaces by adding `preserveWhitespaces: true` to you tsconfig, it is possible you may encounter issues with hydration. This is not yet a fully supported configuration.
+When using the hydration feature, we recommend using the default setting of `false` for `preserveWhitespaces`. If this setting is not in your tsconfig, the value will be `false` and no changes are required. If you choose to enable preserving whitespaces by adding `preserveWhitespaces: true` to your tsconfig, it is possible you may encounter issues with hydration. This is not yet a fully supported configuration.
 
 <div class="alert is-helpful">
 
