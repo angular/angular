@@ -327,6 +327,9 @@ export class Identifiers {
   static HostDirectivesFeature:
       o.ExternalReference = {name: 'ɵɵHostDirectivesFeature', moduleName: CORE};
 
+  static InputTransformsFeatureFeature:
+      o.ExternalReference = {name: 'ɵɵInputTransformsFeature', moduleName: CORE};
+
   static listener: o.ExternalReference = {name: 'ɵɵlistener', moduleName: CORE};
 
   static getInheritedFactory: o.ExternalReference = {

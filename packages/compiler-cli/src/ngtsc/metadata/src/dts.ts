@@ -187,24 +187,31 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
       }
 
       const stringValue = readStringType(member.type);
+      const classPropertyName = member.name.text;
 
       // Before v16 the inputs map has the type of `{[field: string]: string}`.
       // After v16 it has the type of `{[field: string]: {alias: string, required: boolean}}`.
       if (stringValue != null) {
-        inputsMap[member.name.text] = {
+        inputsMap[classPropertyName] = {
           bindingPropertyName: stringValue,
-          classPropertyName: member.name.text,
-          required: false
+          classPropertyName,
+          required: false,
+          // Input transform are only tracked for locally-compiled directives. Directives coming
+          // from the .d.ts already have them included through `ngAcceptInputType` class members.
+          transform: null,
         };
       } else {
         const config = readMapType(member.type, innerValue => {
                          return readStringType(innerValue) ?? readBooleanType(innerValue);
                        }) as {alias: string, required: boolean};
 
-        inputsMap[member.name.text] = {
-          classPropertyName: member.name.text,
+        inputsMap[classPropertyName] = {
+          classPropertyName,
           bindingPropertyName: config.alias,
-          required: config.required
+          required: config.required,
+          // Input transform are only tracked for locally-compiled directives. Directives coming
+          // from the .d.ts already have them included through `ngAcceptInputType` class members.
+          transform: null,
         };
       }
     }

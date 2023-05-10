@@ -261,7 +261,7 @@ export interface AnalysisOutput<A> {
  */
 export interface CompileResult {
   name: string;
-  initializer: Expression;
+  initializer: Expression|null;
   statements: Statement[];
   type: Type;
 }
