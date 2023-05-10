@@ -19,12 +19,12 @@ function removeScriptTag(doc: Document, id: string) {
   }
 }
 
-function addScriptTag(doc: Document, appId: string, data: {}) {
+function addScriptTag(doc: Document, appId: string, data: object|string) {
   const script = doc.createElement('script');
   const id = appId + '-state';
   script.id = id;
   script.setAttribute('type', 'application/json');
-  script.textContent = JSON.stringify(data);
+  script.textContent = typeof data === 'string' ? data : JSON.stringify(data);
 
   // Remove any stale script tags.
   removeScriptTag(doc, id);
@@ -137,6 +137,17 @@ describe('TransferState', () => {
 
     transferState.set(DELAYED_KEY, '</script><script>alert(\'Hello&\' + "World");');
     expect(transferState.toJson())
-        .toBe(`{"delayed":"&lt;/script>&lt;script>alert('Hello&' + \\"World\\");"}`);
+        .toBe(`{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`);
+  });
+
+  it('should decode `\\u003C` (<) when restoring stating', () => {
+    const encodedState =
+        `{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`;
+    addScriptTag(doc, APP_ID, encodedState);
+    const transferState = TestBed.inject(TransferState);
+
+    expect(transferState.toJson()).toBe(encodedState);
+    expect(transferState.get(DELAYED_KEY, null))
+        .toBe('</script><script>alert(\'Hello&\' + "World");');
   });
 });

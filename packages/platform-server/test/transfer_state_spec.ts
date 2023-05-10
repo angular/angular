@@ -58,7 +58,7 @@ describe('transfer_state', () => {
     expect(output).toBe(
         '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</esc-app>' +
         '<script id="ng-state" type="application/json">' +
-        `{"testString":"&lt;/script>&lt;script>alert('Hello&' + \\"World\\");"}` +
+        `{"testString":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}` +
         '</script></body></html>');
   });
 

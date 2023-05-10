@@ -141,9 +141,6 @@
     "name": "ERROR_ORIGINAL_ERROR"
   },
   {
-    "name": "ESCAPED_SCRIPT_TAG_REGEXP"
-  },
-  {
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
@@ -516,9 +513,6 @@
     "name": "TransferState"
   },
   {
-    "name": "UNESCAPED_SCRIPT_TAG_REGEXP"
-  },
-  {
     "name": "USE_VALUE"
   },
   {
@@ -757,9 +751,6 @@
   },
   {
     "name": "enterView"
-  },
-  {
-    "name": "escapeTransferStateContent"
   },
   {
     "name": "executeCheckHooks"
@@ -1050,9 +1041,6 @@
     "name": "isStableFactory"
   },
   {
-    "name": "isString"
-  },
-  {
     "name": "isTemplateNode"
   },
   {
@@ -1288,9 +1276,6 @@
   },
   {
     "name": "transferCacheInterceptorFn"
-  },
-  {
-    "name": "unescapeTransferStateContent"
   },
   {
     "name": "uniqueIdCounter"
