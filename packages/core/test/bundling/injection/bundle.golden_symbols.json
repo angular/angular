@@ -3,9 +3,6 @@
     "name": "CIRCULAR"
   },
   {
-    "name": "DI_DECORATOR_FLAG"
-  },
-  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -54,16 +51,7 @@
     "name": "NG_PROV_DEF"
   },
   {
-    "name": "NG_TEMP_TOKEN_PATH"
-  },
-  {
-    "name": "NG_TOKEN_PATH"
-  },
-  {
     "name": "NOT_YET"
-  },
-  {
-    "name": "NO_NEW_LINE"
   },
   {
     "name": "NULL_INJECTOR"
@@ -76,9 +64,6 @@
   },
   {
     "name": "RuntimeError"
-  },
-  {
-    "name": "SOURCE"
   },
   {
     "name": "ScopedService"

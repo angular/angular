@@ -171,9 +171,6 @@
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
-    "name": "ERROR_ORIGINAL_ERROR"
-  },
-  {
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
@@ -348,12 +345,6 @@
     "name": "NG_TEMPLATE_SELECTOR"
   },
   {
-    "name": "NG_TEMP_TOKEN_PATH"
-  },
-  {
-    "name": "NG_TOKEN_PATH"
-  },
-  {
     "name": "NG_VALIDATORS"
   },
   {
@@ -373,9 +364,6 @@
   },
   {
     "name": "NO_CHANGE"
-  },
-  {
-    "name": "NO_NEW_LINE"
   },
   {
     "name": "NO_PARENT_INJECTOR"
@@ -438,9 +426,6 @@
     "name": "Optional"
   },
   {
-    "name": "PARAMETERS"
-  },
-  {
     "name": "PLATFORM_DESTROY_LISTENERS"
   },
   {
@@ -450,13 +435,7 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
-    "name": "PLATFORM_SERVER_ID"
-  },
-  {
     "name": "PRESERVE_HOST_CONTENT"
-  },
-  {
-    "name": "PRESERVE_HOST_CONTENT_DEFAULT"
   },
   {
     "name": "PlatformRef"
@@ -517,9 +496,6 @@
   },
   {
     "name": "SIMPLE_CHANGES_STORE"
-  },
-  {
-    "name": "SOURCE"
   },
   {
     "name": "SafeSubscriber"
@@ -603,9 +579,6 @@
     "name": "VE_ViewContainerRef"
   },
   {
-    "name": "VIEW_REFS"
-  },
-  {
     "name": "Validators"
   },
   {
@@ -649,9 +622,6 @@
   },
   {
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
-  },
-  {
-    "name": "_findMatchingDehydratedViewImpl"
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"
@@ -957,9 +927,6 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "findMatchingDehydratedView"
-  },
-  {
     "name": "findStylingValue"
   },
   {
@@ -1156,9 +1123,6 @@
   },
   {
     "name": "handleError"
-  },
-  {
-    "name": "hasInSkipHydrationBlockFlag"
   },
   {
     "name": "hasParentInjector"
