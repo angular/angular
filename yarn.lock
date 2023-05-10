@@ -8275,10 +8275,10 @@ fined@^1.0.1:
     object.pick "^1.2.0"
     parse-filepath "^1.0.1"
 
-firebase-tools@^11.0.0:
-  version "11.30.0"
-  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-11.30.0.tgz#37caa55f43f6bd2cc1868c4982266dd50db6781c"
-  integrity sha512-rNMhtsFKy35AZqfy0obY2Kgsfmg8N1duEx2UDT14NsMHB7xt2Z7cUd92bkAoQAfD0jAOd7LhRT/7E6J5yB+kGw==
+firebase-tools@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-12.0.0.tgz#6732f014593faeb99c93e7bb22f663112121e584"
+  integrity sha512-4d+GjyB0opAfuTuFEN8Zcw/0aX3nDZGkKfVo8PmpDIolEt67Q0u6gMER7Rus2wCr6dmyiMur/2LWuGMU765Xyg==
   dependencies:
     "@google-cloud/pubsub" "^3.0.1"
     abort-controller "^3.0.0"

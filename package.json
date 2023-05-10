@@ -169,7 +169,7 @@
     "cldr": "7.4.0",
     "cldrjs": "0.5.5",
     "conventional-changelog": "^3.1.24",
-    "firebase-tools": "^11.0.0",
+    "firebase-tools": "^12.0.0",
     "glob": "8.1.0",
     "gulp": "^4.0.2",
     "gulp-conventional-changelog": "^2.0.35",
