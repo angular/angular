@@ -7,7 +7,7 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, InputMap, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, InputMap, InputTransformFunction, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
 import {compileInjectable} from './injectable_compiler_2';
@@ -324,7 +324,9 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
           inputsFromType[field] = {
             bindingPropertyName: ann.alias || field,
             classPropertyName: field,
-            required: ann.required || false
+            required: ann.required || false,
+            // TODO(crisbeto): resolve transform function reference here.
+            transformFunction: null,
           };
         } else if (isOutput(ann)) {
           outputsFromType[field] = ann.alias || field;
@@ -646,26 +648,45 @@ function isOutput(value: any): value is Output {
   return value.ngMetadataName === 'Output';
 }
 
-function inputsMappingToInputMetadata(inputs: Record<string, string|[string, string]>) {
+function inputsMappingToInputMetadata(
+    inputs: Record<string, string|[string, string, InputTransformFunction?]>) {
   return Object.keys(inputs).reduce<InputMap>((result, key) => {
     const value = inputs[key];
-    result[key] = typeof value === 'string' ?
-        {bindingPropertyName: value, classPropertyName: value, required: false} :
-        {bindingPropertyName: value[0], classPropertyName: value[1], required: false};
+
+    // TODO(crisbeto): resolve transform function reference here.
+    if (typeof value === 'string') {
+      result[key] = {
+        bindingPropertyName: value,
+        classPropertyName: value,
+        required: false,
+        transformFunction: null
+      };
+    } else {
+      result[key] = {
+        bindingPropertyName: value[0],
+        classPropertyName: value[1],
+        required: false,
+        transformFunction: null
+      };
+    }
+
     return result;
   }, {});
 }
 
 function parseInputsArray(values: (string|{name: string, alias?: string, required?: boolean})[]) {
   return values.reduce<InputMap>((results, value) => {
+    // TODO(crisbeto): resolve transform function reference here.
     if (typeof value === 'string') {
       const [bindingPropertyName, classPropertyName] = parseMappingString(value);
-      results[classPropertyName] = {bindingPropertyName, classPropertyName, required: false};
+      results[classPropertyName] =
+          {bindingPropertyName, classPropertyName, required: false, transformFunction: null};
     } else {
       results[value.name] = {
         bindingPropertyName: value.alias || value.name,
         classPropertyName: value.name,
-        required: value.required || false
+        required: value.required || false,
+        transformFunction: null
       };
     }
     return results;

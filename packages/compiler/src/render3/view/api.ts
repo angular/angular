@@ -253,6 +253,7 @@ export interface R3InputMetadata {
   classPropertyName: string;
   bindingPropertyName: string;
   required: boolean;
+  transformFunction: o.Expression|null;
 }
 
 export enum R3TemplateDependencyKind {

@@ -102,6 +102,8 @@ function addFeatures(
 
   const providers = meta.providers;
   const viewProviders = (meta as R3ComponentMetadata<R3TemplateDependency>).viewProviders;
+  const inputKeys = Object.keys(meta.inputs);
+
   if (providers || viewProviders) {
     const args = [providers || new o.LiteralArrayExpr([])];
     if (viewProviders) {
@@ -126,6 +128,12 @@ function addFeatures(
   if (meta.hostDirectives?.length) {
     features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
         meta.hostDirectives)]));
+  }
+  for (const key of inputKeys) {
+    if (meta.inputs[key].transformFunction !== null) {
+      features.push(o.importExpr(R3.InputTransformsFeatureFeature));
+      break;
+    }
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));

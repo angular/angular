@@ -13,7 +13,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} f
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, InputMapping, MatchSource, MetadataReaderWithIndex, MetaKind, NgModuleIndex} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, InputMapping, InputTransform, MatchSource, MetadataReaderWithIndex, MetaKind, NgModuleIndex} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -236,7 +236,10 @@ export interface TestDirective extends Partial<Pick<
   inputs?: {
     [fieldName: string]:
         string|{
-          classPropertyName: string, bindingPropertyName: string, required: boolean
+          classPropertyName: string;
+          bindingPropertyName: string;
+          required: boolean;
+          transform: InputTransform|null;
         }
   };
   outputs?: {[fieldName: string]: string};

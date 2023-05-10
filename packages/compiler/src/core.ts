@@ -33,6 +33,7 @@ export enum ChangeDetectionStrategy {
 export interface Input {
   alias?: string;
   required?: boolean;
+  transform?: (value: any) => any;
 }
 
 export interface Output {

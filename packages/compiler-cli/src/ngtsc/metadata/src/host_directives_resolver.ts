@@ -99,7 +99,8 @@ function resolveInput(bindingName: string, binding: InputMapping): InputMapping 
   return {
     bindingPropertyName: bindingName,
     classPropertyName: binding.classPropertyName,
-    required: binding.required
+    required: binding.required,
+    transform: binding.transform,
   };
 }
 

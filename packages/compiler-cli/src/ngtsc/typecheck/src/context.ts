@@ -247,8 +247,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           // it comes from a .d.ts file. .d.ts declarations don't have bodies.
           body: !dirNode.getSourceFile().isDeclarationFile,
           fields: {
-            inputs: dir.inputs.classPropertyNames,
-            outputs: dir.outputs.classPropertyNames,
+            inputs: dir.inputs,
             // TODO(alxhub): support queries
             queries: dir.queries,
           },

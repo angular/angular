@@ -166,6 +166,7 @@ export function conditionallyCreateDirectiveBindingLiteral(
     map: Record<string, string|{
       classPropertyName: string;
       bindingPropertyName: string;
+      transformFunction: o.Expression|null;
     }>, keepDeclared?: boolean): o.Expression|null {
   const keys = Object.getOwnPropertyNames(map);
 
@@ -178,26 +179,37 @@ export function conditionallyCreateDirectiveBindingLiteral(
     let declaredName: string;
     let publicName: string;
     let minifiedName: string;
-    let needsDeclaredName: boolean;
+    let expressionValue: o.Expression;
+
     if (typeof value === 'string') {
       // canonical syntax: `dirProp: publicProp`
       declaredName = key;
       minifiedName = key;
       publicName = value;
-      needsDeclaredName = false;
+      expressionValue = asLiteral(publicName);
     } else {
       minifiedName = key;
       declaredName = value.classPropertyName;
       publicName = value.bindingPropertyName;
-      needsDeclaredName = publicName !== declaredName;
+
+      if (keepDeclared && (publicName !== declaredName || value.transformFunction != null)) {
+        const expressionKeys = [asLiteral(publicName), asLiteral(declaredName)];
+
+        if (value.transformFunction != null) {
+          expressionKeys.push(value.transformFunction);
+        }
+
+        expressionValue = o.literalArr(expressionKeys);
+      } else {
+        expressionValue = asLiteral(publicName);
+      }
     }
+
     return {
       key: minifiedName,
       // put quotes around keys that contain potentially unsafe characters
       quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
-      value: (keepDeclared && needsDeclaredName) ?
-          o.literalArr([asLiteral(publicName), asLiteral(declaredName)]) :
-          asLiteral(publicName)
+      value: expressionValue,
     };
   }));
 }

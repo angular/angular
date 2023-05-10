@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -706,7 +706,7 @@ class TcbDirectiveInputsOp extends TcbOp {
 
       let assignment: ts.Expression = wrapForDiagnostics(expr);
 
-      for (const {fieldName, required} of attr.inputs) {
+      for (const {fieldName, required, transformType} of attr.inputs) {
         let target: ts.LeftHandSideExpression;
 
         if (required) {
@@ -714,18 +714,26 @@ class TcbDirectiveInputsOp extends TcbOp {
         }
 
         if (this.dir.coercedInputFields.has(fieldName)) {
-          // The input has a coercion declaration which should be used instead of assigning the
-          // expression into the input field directly. To achieve this, a variable is declared
-          // with a type of `typeof Directive.ngAcceptInputType_fieldName` which is then used as
-          // target of the assignment.
-          const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
-          if (!ts.isTypeReferenceNode(dirTypeRef)) {
-            throw new Error(
-                `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
+          let type: ts.TypeNode;
+
+          if (transformType) {
+            type = this.tcb.env.referenceTransplantedType(new TransplantedType(transformType));
+          } else {
+            // The input has a coercion declaration which should be used instead of assigning the
+            // expression into the input field directly. To achieve this, a variable is declared
+            // with a type of `typeof Directive.ngAcceptInputType_fieldName` which is then used as
+            // target of the assignment.
+            const dirTypeRef: ts.TypeNode = this.tcb.env.referenceType(this.dir.ref);
+
+            if (!ts.isTypeReferenceNode(dirTypeRef)) {
+              throw new Error(
+                  `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`);
+            }
+
+            type = tsCreateTypeQueryForCoercedInput(dirTypeRef.typeName, fieldName);
           }
 
           const id = this.tcb.allocateId();
-          const type = tsCreateTypeQueryForCoercedInput(dirTypeRef.typeName, fieldName);
           this.scope.addStatement(tsDeclareVariable(id, type));
 
           target = id;
@@ -1664,7 +1672,7 @@ class Scope {
 
 interface TcbBoundAttribute {
   attribute: TmplAstBoundAttribute|TmplAstTextAttribute;
-  inputs: {fieldName: ClassPropertyName, required: boolean}[];
+  inputs: {fieldName: ClassPropertyName, required: boolean, transformType: ts.TypeNode|null}[];
 }
 
 /**
@@ -1874,8 +1882,11 @@ function getBoundAttributes(
     if (inputs !== null) {
       boundInputs.push({
         attribute: attr,
-        inputs:
-            inputs.map(input => ({fieldName: input.classPropertyName, required: input.required}))
+        inputs: inputs.map(input => ({
+                             fieldName: input.classPropertyName,
+                             required: input.required,
+                             transformType: input.transform?.type || null
+                           }))
       });
     }
   };

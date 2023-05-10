@@ -2336,6 +2336,242 @@ function allTests(os: string) {
         verifyThrownError(
             ErrorCode.DECORATOR_ARG_NOT_LITERAL, '@Injectable argument must be an object literal');
       });
+
+      it('should produce a diangostic if the transform value is not a function', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          const NOT_A_FUNCTION = 1;
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class Dir {
+            @Input({transform: NOT_A_FUNCTION}) value!: number;
+          }
+        `);
+
+        verifyThrownError(ErrorCode.VALUE_HAS_WRONG_TYPE, `Input transform must be a function`);
+      });
+
+      it('should produce a diangostic if the transform value in the inputs array is not a function',
+         () => {
+           env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          const NOT_A_FUNCTION = 1;
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+            inputs: [{
+              name: 'value',
+              transform: NOT_A_FUNCTION
+            }]
+          })
+          export class Dir {
+            value!: number;
+          }
+        `);
+
+           verifyThrownError(
+               ErrorCode.VALUE_HAS_WRONG_TYPE,
+               `Transform of value at position 0 of @Directive.inputs array must be a function Value is of type 'number'.`);
+         });
+
+      it('should produce a diangostic if the transform function first parameter has no arguments',
+         () => {
+           env.tsconfig({noImplicitAny: false});
+           env.write('/test.ts', `
+              import {Directive, Input} from '@angular/core';
+
+              @Directive({selector: '[dir]', standalone: true})
+              export class Dir {
+                @Input({transform: (val) => 1}) value!: number;
+              }
+            `);
+
+           verifyThrownError(
+               ErrorCode.VALUE_HAS_WRONG_TYPE,
+               `Input transform function first parameter must have a type`);
+         });
+
+      it('should produce a diangostic if the transform function is generic', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class Dir {
+            @Input({transform: <T>(val: T) => 1}) value!: number;
+          }
+        `);
+
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, `Input transform function cannot be generic`);
+      });
+
+      it('should produce a diangostic if there is a conflicting coercion member', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class Dir {
+            @Input({transform: (val: string) => 1}) value!: number;
+
+            static ngAcceptInputType_value: boolean;
+          }
+        `);
+
+        verifyThrownError(
+            ErrorCode.CONFLICTING_INPUT_TRANSFORM,
+            `Class cannot have both a transform function on Input value and a static member called ngAcceptInputType_value`);
+      });
+
+      it('should produce a diangostic if the transform function type cannot be referenced from the source file',
+         () => {
+           env.write('/util.ts', `
+            interface InternalType {
+              foo: boolean;
+            }
+
+            export function toNumber(val: InternalType) { return 1; }
+          `);
+
+           env.write('/test.ts', `
+            import {Directive, Input} from '@angular/core';
+            import {toNumber} from './util';
+
+            @Directive({selector: '[dir]', standalone: true})
+            export class Dir {
+              @Input({transform: toNumber}) value!: number;
+            }
+          `);
+
+           verifyThrownError(
+               ErrorCode.IMPORT_GENERATION_FAILURE, 'Unable to import type InternalType.');
+         });
+
+      it('should produce a diangostic if a sub-type of the transform function cannot be referenced from the source file',
+         () => {
+           env.write('/util.ts', `
+              interface InternalType {
+                foo: boolean;
+              }
+
+              export function toNumber(val: {value: InternalType}) { return 1; }
+            `);
+
+           env.write('/test.ts', `
+              import {Directive, Input} from '@angular/core';
+              import {toNumber} from './util';
+
+              @Directive({selector: '[dir]', standalone: true})
+              export class Dir {
+                @Input({transform: toNumber}) value!: number;
+              }
+            `);
+
+           verifyThrownError(
+               ErrorCode.IMPORT_GENERATION_FAILURE, 'Unable to import type InternalType.');
+         });
+
+      it('should produce a diangostic if a generic parameter of the transform function cannot be referenced from the source file',
+         () => {
+           env.write('/util.ts', `
+              export interface GenericWrapper<T> {
+                value: T;
+              }
+
+              interface InternalType {
+                foo: boolean;
+              }
+
+              export function toNumber(val: GenericWrapper<InternalType>) { return 1; }
+            `);
+
+           env.write('/test.ts', `
+              import {Directive, Input} from '@angular/core';
+              import {toNumber} from './util';
+
+              @Directive({selector: '[dir]', standalone: true})
+              export class Dir {
+                @Input({transform: toNumber}) value!: number;
+              }
+            `);
+
+           verifyThrownError(
+               ErrorCode.IMPORT_GENERATION_FAILURE, 'Unable to import type InternalType.');
+         });
+
+      it('should produce a diangostic if transform type is not exported', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          interface InternalType {
+            foo: boolean;
+          }
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class Dir {
+            @Input({transform: (val: InternalType) => 1}) val!: number;
+          }
+        `);
+
+        verifyThrownError(
+            ErrorCode.SYMBOL_NOT_EXPORTED,
+            'Symbol must be exported in order to be used as the type of an Input transform function');
+      });
+
+      it('should produce a diangostic if the transform value is not a function', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          function createTransform(outerValue: number) {
+            return (innerValue: string) => outerValue;
+          }
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class Dir {
+            @Input({transform: createTransform(1)}) value!: number;
+          }
+        `);
+
+        verifyThrownError(ErrorCode.VALUE_HAS_WRONG_TYPE, `Input transform must be a function`);
+      });
+
+      it('should produce a diangostic if the first parameter of a transform is a spread', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          function toNumber(...value: (string | boolean)[]) { return 1; }
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: toNumber}) value!: number;
+          }
+        `);
+
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE,
+            `Input transform function first parameter cannot be a spread parameter`);
+      });
+
+      it('should produce a diangostic if a transform function has multiple signatures', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          function toNumber(value: boolean): number;
+          function toNumber(value: string): number;
+          function toNumber(value: boolean | string) { return 1; }
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: toNumber}) value!: number;
+          }
+        `);
+
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE,
+            `Input transform function cannot have multiple signatures`);
+      });
     });
 
     describe('multiple decorators on classes', () => {
@@ -8284,6 +8520,233 @@ function allTests(os: string) {
         expect(jsContents.replace(/\s/g, ''))
             .toContain(`Module.ɵinj=/*@__PURE__*/i0.ɵɵdefineInjector({imports:[${
                 expectedImports.replace(/\s/g, '')}]});`);
+      });
+    });
+
+    describe('input transforms', () => {
+      it('should compile a directive input with a transform function', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          function toNumber(value: boolean | string) { return 1; }
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: toNumber}) value!: number;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
+      });
+
+      it('should compile a component input with a transform function', () => {
+        env.write('/test.ts', `
+          import {Component, Input} from '@angular/core';
+
+          function toNumber(value: boolean | string) { return 1; }
+
+          @Component({standalone: true, template: 'hello'})
+          export class Dir {
+            @Input({transform: toNumber}) value!: number;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+        expect(jsContents)
+            .toContain('features: [i0.ɵɵStandaloneFeature, i0.ɵɵInputTransformsFeature]');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
+      });
+
+      it('should compile an input with a transform function that contains a generic parameter',
+         () => {
+           env.write('/types.ts', `
+            export interface GenericWrapper<T> {
+              value: T;
+            }
+          `);
+           env.write('/test.ts', `
+            import {Directive, Input} from '@angular/core';
+            import {GenericWrapper} from './types';
+
+            function toNumber(value: boolean | string | GenericWrapper<string>) { return 1; }
+
+            @Directive({standalone: true})
+            export class Dir {
+              @Input({transform: toNumber}) value!: number;
+            }
+          `);
+
+           env.driveMain();
+
+           const jsContents = env.getContents('test.js');
+           const dtsContents = env.getContents('test.d.ts');
+
+           expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+           expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+           expect(dtsContents).toContain('import * as i1 from "./types"');
+           expect(dtsContents)
+               .toContain(
+                   'static ngAcceptInputType_value: boolean | string | i1.GenericWrapper<string>;');
+         });
+
+      it('should compile an input with a transform function that contains nested generic parameters',
+         () => {
+           env.write('/types.ts', `
+              export interface GenericWrapper<T> {
+                value: T;
+              }
+            `);
+           env.write('/other-types.ts', `
+              export class GenericClass<T> {
+                foo: T;
+              }
+            `);
+
+           env.write('/test.ts', `
+              import {Directive, Input} from '@angular/core';
+              import {GenericWrapper} from './types';
+              import {GenericClass} from './other-types';
+
+              function toNumber(value: boolean | string | GenericWrapper<GenericClass<string>>) { return 1; }
+
+              @Directive({standalone: true})
+              export class Dir {
+                @Input({transform: toNumber}) value!: number;
+              }
+            `);
+
+           env.driveMain();
+
+           const jsContents = env.getContents('test.js');
+           const dtsContents = env.getContents('test.d.ts');
+
+           expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+           expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+           expect(dtsContents).toContain('import * as i1 from "./types"');
+           expect(dtsContents).toContain('import * as i2 from "./other-types"');
+           expect(dtsContents)
+               .toContain(
+                   'static ngAcceptInputType_value: boolean | string | i1.GenericWrapper<i2.GenericClass<string>>;');
+         });
+
+      it('should compile an input with an external transform function', () => {
+        env.write('node_modules/external/index.d.ts', `
+          export interface ExternalObj {
+            foo: boolean;
+          }
+
+          export type ExternalToNumberType = string | boolean | ExternalObj;
+
+          export declare function externalToNumber(val: ExternalToNumberType): number;
+        `);
+
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+          import {externalToNumber} from 'external';
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: externalToNumber}) value!: number;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain(`import { externalToNumber } from 'external';`);
+        expect(jsContents).toContain('inputs: { value: ["value", "value", externalToNumber] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+        expect(dtsContents).toContain('import * as i1 from "./node_modules/external/index";');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
+      });
+
+      it('should compile an input with an inline transform function', () => {
+        env.write('node_modules/external/index.d.ts', `
+          export interface ExternalObj {
+            foo: boolean;
+          }
+
+          export type ExternalToNumberType = string | boolean | ExternalObj;
+        `);
+
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+          import {ExternalToNumberType} from 'external';
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: (value: ExternalToNumberType) => value ? 1 : 0}) value!: number;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents)
+            .toContain('inputs: { value: ["value", "value", (value) => value ? 1 : 0] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+        expect(dtsContents).toContain('import * as i1 from "./node_modules/external/index";');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
+      });
+
+      it('should compile a directive input with a transform function with a `this` typing', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          function toNumber(this: Dir, value: boolean | string) { return 1; }
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: toNumber}) value!: number;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
+      });
+
+      it('should treat an input transform function only with a `this` parameter as unknown', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          function toNumber(this: Dir) { return 1; }
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: toNumber}) value!: number;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: unknown;');
       });
     });
   });

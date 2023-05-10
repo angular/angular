@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileDirectiveFromMetadata, ConstantPool, ForwardRefHandling, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareHostDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
+import {compileDirectiveFromMetadata, ConstantPool, ForwardRefHandling, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareHostDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
@@ -81,19 +81,29 @@ export function toR3DirectiveMeta<TExpression>(
  * Decodes the AST value for a single input to its representation as used in the metadata.
  */
 function toInputMapping<TExpression>(
-    value: AstValue<string|[string, string], TExpression>,
-    key: string): {bindingPropertyName: string, classPropertyName: string, required: boolean} {
+    value: AstValue<string|[string, string], TExpression>, key: string): R3InputMetadata {
   if (value.isString()) {
-    return {bindingPropertyName: value.getString(), classPropertyName: key, required: false};
+    return {
+      bindingPropertyName: value.getString(),
+      classPropertyName: key,
+      required: false,
+      transformFunction: null,
+    };
   }
 
-  const values = value.getArray().map(innerValue => innerValue.getString());
-  if (values.length !== 2) {
+  const values = value.getArray();
+  if (values.length !== 2 && values.length !== 3) {
     throw new FatalLinkerError(
         value.expression,
-        'Unsupported input, expected a string or an array containing exactly two strings');
+        'Unsupported input, expected a string or an array containing two strings and an optional function');
   }
-  return {bindingPropertyName: values[0], classPropertyName: values[1], required: false};
+
+  return {
+    bindingPropertyName: values[0].getString(),
+    classPropertyName: values[1].getString(),
+    transformFunction: values.length > 2 ? values[2].getOpaque() : null,
+    required: false,
+  };
 }
 
 /**

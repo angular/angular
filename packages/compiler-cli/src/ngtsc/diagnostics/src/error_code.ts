@@ -107,6 +107,13 @@ export enum ErrorCode {
    */
   HOST_DIRECTIVE_MISSING_REQUIRED_BINDING = 2019,
 
+  /**
+   * Raised when a component specifies both a `transform` function on an input
+   * and has a corresponding `ngAcceptInputType_` member for the same input.
+   */
+  CONFLICTING_INPUT_TRANSFORM = 2020,
+
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
