@@ -57,9 +57,6 @@
     "name": "ConnectableSubscriber"
   },
   {
-    "name": "DI_DECORATOR_FLAG"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -76,9 +73,6 @@
   },
   {
     "name": "ENVIRONMENT_INITIALIZER"
-  },
-  {
-    "name": "ERROR_ORIGINAL_ERROR"
   },
   {
     "name": "EffectManager"
@@ -186,12 +180,6 @@
     "name": "NG_TEMPLATE_SELECTOR"
   },
   {
-    "name": "NG_TEMP_TOKEN_PATH"
-  },
-  {
-    "name": "NG_TOKEN_PATH"
-  },
-  {
     "name": "NOOP_CLEANUP_FN"
   },
   {
@@ -205,9 +193,6 @@
   },
   {
     "name": "NO_CHANGE"
-  },
-  {
-    "name": "NO_NEW_LINE"
   },
   {
     "name": "NO_PARENT_INJECTOR"
@@ -261,9 +246,6 @@
     "name": "PRESERVE_HOST_CONTENT"
   },
   {
-    "name": "PRESERVE_HOST_CONTENT_DEFAULT"
-  },
-  {
     "name": "PlatformRef"
   },
   {
@@ -292,9 +274,6 @@
   },
   {
     "name": "SIMPLE_CHANGES_STORE"
-  },
-  {
-    "name": "SOURCE"
   },
   {
     "name": "SafeSubscriber"
