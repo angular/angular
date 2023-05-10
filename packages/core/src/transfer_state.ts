@@ -144,8 +144,7 @@ export class TransferState {
     }
 
     // Escape script tag to avoid break out of <script> tag in serialized output.
-    // This is the same as
-    // http://google3/third_party/javascript/safevalues/builders/script_builders.ts?rcl=527450674&l=43
+    // Encoding of `<` is the same behaviour as G3 script_builders.
     return JSON.stringify(this.store).replace(/</g, '\\u003C');
   }
 }
