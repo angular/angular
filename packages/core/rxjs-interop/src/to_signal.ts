@@ -48,7 +48,7 @@ export interface ToSignalOptions<T> {
    * `toObservable`'s creation context is destroyed.
    *
    * If manual cleanup is enabled, then `DestroyRef` is not used, and the subscription will persist
-   * until the `Observable` itself completes.
+   * until the `Observable` itself completes or errors.
    */
   manualCleanup?: boolean;
 }
@@ -56,45 +56,26 @@ export interface ToSignalOptions<T> {
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
  *
- * `toSignal` returns a `Signal` which provides synchronous reactive access to values produced
- * by the given `Observable`, by subscribing to that `Observable`. The returned `Signal` will always
- * have the most recent value emitted by the subscription, and will throw an error if the
- * `Observable` errors.
- *
  * Before the `Observable` emits its first value, the `Signal` will return `undefined`. To avoid
  * this, either an `initialValue` can be passed or the `requireSync` option enabled.
  *
- * By default, the subscription will be automatically cleaned up when the current injection context
- * is destroyed. For example, when `toObservable` is called during the construction of a component,
- * the subscription will be cleaned up when the component is destroyed. If an injection context is
- * not available, an explicit `Injector` can be passed instead.
+ * @param source The `Observable` that will be converted to a `Signal`.
+ * @return A reactive `Signal` composed of the passed in `Observable`.
  *
- * If the subscription should persist until the `Observable` itself completes, the `manualCleanup`
- * option can be specified instead, which disables the automatic subscription teardown. No injection
- * context is needed in this configuration as well.
+ * @developerPreview
  */
 export function toSignal<T>(source: Observable<T>|Subscribable<T>): Signal<T|undefined>;
 
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
  *
- * `toSignal` returns a `Signal` which provides synchronous reactive access to values produced
- * by the given `Observable`, by subscribing to that `Observable`. The returned `Signal` will always
- * have the most recent value emitted by the subscription, and will throw an error if the
- * `Observable` errors.
- *
  * Before the `Observable` emits its first value, the `Signal` will return the configured
  * `initialValue`, or `undefined` if no `initialValue` is provided. If the `Observable` is
  * guaranteed to emit synchronously, then the `requireSync` option can be passed instead.
  *
- * By default, the subscription will be automatically cleaned up when the current injection context
- * is destroyed. For example, when `toObservable` is called during the construction of a component,
- * the subscription will be cleaned up when the component is destroyed. If an injection context is
- * not available, an explicit `Injector` can be passed instead.
- *
- * If the subscription should persist until the `Observable` itself completes, the `manualCleanup`
- * option can be specified instead, which disables the automatic subscription teardown. No injection
- * context is needed in this configuration as well.
+ * @param source The `Observable` that will be converted to a `Signal`.
+ * @param options The options object used to configure conversion behavior.
+ * @return A reactive `Signal` composed of the passed in `Observable`.
  *
  * @developerPreview
  */
@@ -106,23 +87,13 @@ export function toSignal<T>(
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
  *
- * `toSignal` returns a `Signal` which provides synchronous reactive access to values produced
- * by the given `Observable`, by subscribing to that `Observable`. The returned `Signal` will always
- * have the most recent value emitted by the subscription, and will throw an error if the
- * `Observable` errors.
- *
  * Before the `Observable` emits its first value, the `Signal` will return the configured
  * `initialValue`. If the `Observable` is guaranteed to emit synchronously, then the `requireSync`
  * option can be passed instead.
  *
- * By default, the subscription will be automatically cleaned up when the current injection context
- * is destroyed. For example, when `toObservable` is called during the construction of a component,
- * the subscription will be cleaned up when the component is destroyed. If an injection context is
- * not available, an explicit `Injector` can be passed instead.
- *
- * If the subscription should persist until the `Observable` itself completes, the `manualCleanup`
- * option can be specified instead, which disables the automatic subscription teardown. No injection
- * context is needed in this configuration as well.
+ * @param source The `Observable` that will be converted to a `Signal`.
+ * @param options The options object used to configure conversion behavior.
+ * @return A reactive `Signal` composed of the passed in `Observable`.
  *
  * @developerPreview
  */
@@ -133,14 +104,27 @@ export function toSignal<T, U extends T|null|undefined>(
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
  *
+ * With `requireSync` set to `true`, `toSignal` will assert that the `Observable` produces a value
+ * immediately upon subscription. No `initialValue` is needed in this case, and the returned signal
+ * does not include an `undefined` type.
+ *
+ * @param source The `Observable` that will be converted to a `Signal`.
+ * @param options The options object used to configure conversion behavior.
+ * @return A reactive `Signal` composed of the passed in `Observable`.
+ *
+ * @developerPreview
+ */
+export function toSignal<T>(
+    source: Observable<T>|Subscribable<T>,
+    options: ToSignalOptions<undefined>&{requireSync: true}): Signal<T>;
+
+/**
+ * Get the current value of an `Observable` as a reactive `Signal`.
+ *
  * `toSignal` returns a `Signal` which provides synchronous reactive access to values produced
  * by the given `Observable`, by subscribing to that `Observable`. The returned `Signal` will always
  * have the most recent value emitted by the subscription, and will throw an error if the
  * `Observable` errors.
- *
- * With `requireSync` set to `true`, `toSignal` will assert that the `Observable` produces a value
- * immediately upon subscription. No `initialValue` is needed in this case, and the returned signal
- * does not include an `undefined` type.
  *
  * By default, the subscription will be automatically cleaned up when the current injection context
  * is destroyed. For example, when `toObservable` is called during the construction of a component,
@@ -151,11 +135,12 @@ export function toSignal<T, U extends T|null|undefined>(
  * option can be specified instead, which disables the automatic subscription teardown. No injection
  * context is needed in this configuration as well.
  *
+ * @param source The `Observable` that will be converted to a `Signal`.
+ * @param options The options object used to configure conversion behavior.
+ * @return A reactive `Signal` composed of the passed in `Observable`.
+ *
  * @developerPreview
  */
-export function toSignal<T>(
-    source: Observable<T>|Subscribable<T>,
-    options: ToSignalOptions<undefined>&{requireSync: true}): Signal<T>;
 export function toSignal<T, U = undefined>(
     source: Observable<T>|Subscribable<T>, options?: ToSignalOptions<U>): Signal<T|U> {
   const requiresCleanup = !options?.manualCleanup;
