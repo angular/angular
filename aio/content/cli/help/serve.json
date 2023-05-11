@@ -32,6 +32,12 @@
       "description": "Don't verify connected clients are part of allowed hosts."
     },
     {
+      "name": "force-esbuild",
+      "type": "boolean",
+      "default": false,
+      "description": "Force the development server to use the 'browser-esbuild' builder when building. This is a developer preview option for the esbuild-based build system."
+    },
+    {
       "name": "help",
       "type": "boolean",
       "description": "Shows a help message for this command in the console."
