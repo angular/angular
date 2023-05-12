@@ -59,7 +59,7 @@ As an example, in the diagram below, Angular handles an event in `LoginComponent
 
 ## New inputs to component with OnPush
 
-Angular will run change detection within a child component with `OnPush` setting an input property as result of a template binding.
+Angular will run change detection within a child component with `OnPush` when setting an input property as result of a template binding.
 
 For example, in the diagram below, `AppComponent` passes a new input to `MainComponent`, which has `OnPush`. Angular will run change detection in `MainComponent` but will not run change detection in `LoginComponent`, which also has `OnPush`, unless it receives new inputs as well.
 
