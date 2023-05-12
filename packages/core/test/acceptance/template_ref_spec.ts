@@ -276,7 +276,7 @@ describe('TemplateRef', () => {
 
       expect(fixture.nativeElement.textContent).toBe('Frodo');
 
-      viewRef.context = {name: 'Bilbo'};
+      viewRef.context.name = 'Bilbo';
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
@@ -313,7 +313,7 @@ describe('TemplateRef', () => {
       button.click();
       expect(events).toEqual(['Frodo']);
 
-      viewRef.context = {name: 'Bilbo'};
+      viewRef.context.name = 'Bilbo';
       fixture.detectChanges();
       button.click();
       expect(events).toEqual(['Frodo', 'Bilbo']);

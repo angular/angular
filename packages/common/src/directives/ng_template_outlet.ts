@@ -80,7 +80,13 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
       }
     } else if (
         this._viewRef && changes['ngTemplateOutletContext'] && this.ngTemplateOutletContext) {
-      this._viewRef.context = this.ngTemplateOutletContext;
+      this._updateExistingContext(this.ngTemplateOutletContext);
+    }
+  }
+
+  private _updateExistingContext(ctx: Object): void {
+    for (let propName of Object.keys(ctx)) {
+      (<any>this._viewRef!.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
     }
   }
 }

@@ -248,27 +248,6 @@ describe('NgTemplateOutlet', () => {
        }).not.toThrow();
      }));
 
-  it('should not mutate context object if two contexts with an identical shape are swapped', () => {
-    fixture = TestBed.createComponent(MultiContextComponent);
-    const {componentInstance, nativeElement} = fixture;
-    componentInstance.context1 = {name: 'one'};
-    componentInstance.context2 = {name: 'two'};
-    fixture.detectChanges();
-
-    expect(nativeElement.textContent.trim()).toBe('one | two');
-    expect(componentInstance.context1).toEqual({name: 'one'});
-    expect(componentInstance.context2).toEqual({name: 'two'});
-
-    const temp = componentInstance.context1;
-    componentInstance.context1 = componentInstance.context2;
-    componentInstance.context2 = temp;
-    fixture.detectChanges();
-
-    expect(nativeElement.textContent.trim()).toBe('two | one');
-    expect(componentInstance.context1).toEqual({name: 'two'});
-    expect(componentInstance.context2).toEqual({name: 'one'});
-  });
-
   it('should be able to specify an injector', waitForAsync(() => {
        const template = `<ng-template #tpl><inject-value></inject-value></ng-template>` +
            `<ng-container *ngTemplateOutlet="tpl; injector: injector"></ng-container>`;
