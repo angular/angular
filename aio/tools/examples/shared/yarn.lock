@@ -2214,10 +2214,10 @@ ajv@^6.12.3, ajv@^6.12.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-angular-in-memory-web-api@~0.15.0:
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/angular-in-memory-web-api/-/angular-in-memory-web-api-0.15.0.tgz#9152af3d0ddb674d4e64b56fdbe5fdb8bc57b38b"
-  integrity sha512-T07vQTeBEGWfwZRM+jIooYgK4c8LR25I27otIthUkFINAREoPiBNogWDxlnROIeu1k2RrY3QJjMOYq7f62UcgA==
+angular-in-memory-web-api@~0.16.0:
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/angular-in-memory-web-api/-/angular-in-memory-web-api-0.16.0.tgz#04e380798a4c96682e7fa9de6f9a1d5254e6ad19"
+  integrity sha512-+1HAyB35V0VrCSbQHBdDi5V9M/9x3SXfOyh3pyL2Hg+ZmVBqosETElxRagRY3QsXCAb3YvxYiJaBSSmFlkxOMQ==
   dependencies:
     tslib "^2.3.0"
 
