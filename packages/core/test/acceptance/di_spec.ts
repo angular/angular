@@ -4517,6 +4517,38 @@ describe('di', () => {
       expect(fixture.componentInstance.menu.tokenValue).toBe('hello');
     });
 
+    it('should check only the current node with @Self when providing an injection token through an embedded view injector',
+       () => {
+         @Directive({selector: 'menu'})
+         class Menu {
+           constructor(@Inject(token) @Self() @Optional() public tokenValue: string) {}
+         }
+
+         @Component({
+           template: `
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <ng-template #menuTemplate>
+            <menu></menu>
+          </ng-template>
+        `,
+           providers: [{provide: token, useValue: 'root'}]
+         })
+         class App {
+           @ViewChild(MenuTrigger) trigger!: MenuTrigger;
+           @ViewChild(Menu) menu!: Menu;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, MenuTrigger, Menu]});
+         const injector = Injector.create({providers: [{provide: token, useValue: 'hello'}]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         fixture.componentInstance.trigger.open(injector);
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.menu.tokenValue).toBeNull();
+       });
+
     it('should be able to provide an injection token to a nested template through a custom injector',
        () => {
          @Directive({selector: 'menu'})

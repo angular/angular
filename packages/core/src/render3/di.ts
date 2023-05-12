@@ -399,7 +399,10 @@ export function getOrCreateInjectable<T>(
   if (tNode !== null) {
     // If the view or any of its ancestors have an embedded
     // view injector, we have to look it up there first.
-    if (lView[FLAGS] & LViewFlags.HasEmbeddedViewInjector) {
+    if (lView[FLAGS] & LViewFlags.HasEmbeddedViewInjector &&
+        // The token must be present on the current node injector when the `Self`
+        // flag is set, so the lookup on embedded view injector(s) can be skipped.
+        !(flags & InjectFlags.Self)) {
       const embeddedInjectorValue =
           lookupTokenUsingEmbeddedInjector(tNode, lView, token, flags, NOT_FOUND);
       if (embeddedInjectorValue !== NOT_FOUND) {
