@@ -160,7 +160,7 @@ The data source has been configured, the next step is to update your web app to 
 
 1.  In `src/app/housing.service.ts`, make the following changes:
 
-    1.  Update the code to remove `housingLocations` property and the array containing the data.
+    1.  Update the code to remove `housingLocationList` property and the array containing the data.
 
     1.  Add a string property called and set the value to `'http://localhost:3000/locations'`
         
