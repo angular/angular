@@ -39,7 +39,7 @@ describe('NgOptimizedImage directive', () => {
             'with the \`ngSrc=\\"/e2e/b.png\\"`) has detected that ' +
             'the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
-            '\\nSupplied width and height attributes: 26w x 30h (aspect-ratio: 0.8666666666666667). ' +
+            '\\nSupplied width and height attributes: 26w x 30h (aspect-ratio: 0.87). ' +
             '\\nTo fix this, update the width and height attributes.');
 
     expectErrorMessageInLogs(
@@ -48,7 +48,7 @@ describe('NgOptimizedImage directive', () => {
             'with the \`ngSrc=\\"/e2e/b.png\\"`) has detected that ' +
             'the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
-            '\\nSupplied width and height attributes: 24w x 240h (aspect-ratio: 0.1). ' +
+            '\\nSupplied width and height attributes: 24w x 240h (aspect-ratio: 0.10). ' +
             '\\nTo fix this, update the width and height attributes.');
 
     // Images with incorrect styling
@@ -58,7 +58,7 @@ describe('NgOptimizedImage directive', () => {
             'with the \`ngSrc=\\"/e2e/b.png\\"`) has detected that ' +
             'the aspect ratio of the rendered image does not match the image\'s intrinsic aspect ratio. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
-            '\\nRendered image size: 250w x 30h (aspect-ratio: 8.333333333333334). ' +
+            '\\nRendered image size: 250w x 30h (aspect-ratio: 8.33). ' +
             '\\nThis issue can occur if \\"width\\" and \\"height\\" attributes are added to an image ' +
             'without updating the corresponding image styling. To fix this, adjust image styling. In most cases, ' +
             'adding \\"height: auto\\" or \\"width: auto\\" to the image styling will fix this issue.');
@@ -81,7 +81,7 @@ describe('NgOptimizedImage directive', () => {
             'with the \`ngSrc=\\"/e2e/logo-500w.jpg\\"`) has detected that ' +
             'the aspect ratio of the rendered image does not match the image\'s intrinsic aspect ratio. ' +
             '\\nIntrinsic image size: 500w x 500h (aspect-ratio: 1). ' +
-            '\\nRendered image size: 100w x 500h (aspect-ratio: 0.2). ' +
+            '\\nRendered image size: 100w x 500h (aspect-ratio: 0.20). ' +
             '\\nThis issue can occur if \\"width\\" and \\"height\\" attributes are added to an image ' +
             'without updating the corresponding image styling. To fix this, adjust image styling. In most cases, ' +
             'adding \\"height: auto\\" or \\"width: auto\\" to the image styling will fix this issue.');
@@ -91,7 +91,7 @@ describe('NgOptimizedImage directive', () => {
             'with the \`ngSrc=\\"/e2e/logo-500w.jpg\\"`) has detected that ' +
             'the aspect ratio of the rendered image does not match the image\'s intrinsic aspect ratio. ' +
             '\\nIntrinsic image size: 500w x 500h (aspect-ratio: 1). ' +
-            '\\nRendered image size: 200w x 400h (aspect-ratio: 0.5). ' +
+            '\\nRendered image size: 200w x 400h (aspect-ratio: 0.50). ' +
             '\\nThis issue can occur if \\"width\\" and \\"height\\" attributes are added to an image ' +
             'without updating the corresponding image styling. To fix this, adjust image styling. In most cases, ' +
             'adding \\"height: auto\\" or \\"width: auto\\" to the image styling will fix this issue.');
@@ -105,7 +105,7 @@ describe('NgOptimizedImage directive', () => {
             'with the \`ngSrc=\\"/e2e/b.png\\"`) has detected that ' +
             'the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes. ' +
             '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
-            '\\nSupplied width and height attributes: 150w x 250h (aspect-ratio: 0.6). ' +
+            '\\nSupplied width and height attributes: 150w x 250h (aspect-ratio: 0.60). ' +
             '\\nTo fix this, update the width and height attributes.');
   });
 });
