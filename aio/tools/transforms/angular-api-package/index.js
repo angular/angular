@@ -37,7 +37,7 @@ module.exports =
         .processor(require('./processors/computeSearchTitle'))
         .processor(require('./processors/simplifyMemberAnchors'))
         .processor(require('./processors/computeStability'))
-        .processor(require('./processors/removeInjectableConstructors'))
+        .processor(require('./processors/removeInjectableAndInternalConstructors'))
         .processor(require('./processors/processSpecialElements'))
         .processor(require('./processors/collectPackageContentDocs'))
         .processor(require('./processors/processPackages'))
