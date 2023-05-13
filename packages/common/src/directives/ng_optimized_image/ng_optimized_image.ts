@@ -834,8 +834,10 @@ function assertNoImageDistortion(
           `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the image does not match ` +
               `the aspect ratio indicated by the width and height attributes. ` +
               `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
-              `(aspect-ratio: ${intrinsicAspectRatio}). \nSupplied width and height attributes: ` +
-              `${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${suppliedAspectRatio}). ` +
+              `(aspect-ratio: ${
+                  round(intrinsicAspectRatio)}). \nSupplied width and height attributes: ` +
+              `${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${
+                  round(suppliedAspectRatio)}). ` +
               `\nTo fix this, update the width and height attributes.`));
     } else if (stylingDistortion) {
       console.warn(formatRuntimeError(
@@ -843,9 +845,9 @@ function assertNoImageDistortion(
           `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the rendered image ` +
               `does not match the image's intrinsic aspect ratio. ` +
               `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
-              `(aspect-ratio: ${intrinsicAspectRatio}). \nRendered image size: ` +
+              `(aspect-ratio: ${round(intrinsicAspectRatio)}). \nRendered image size: ` +
               `${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ` +
-              `${renderedAspectRatio}). \nThis issue can occur if "width" and "height" ` +
+              `${round(renderedAspectRatio)}). \nThis issue can occur if "width" and "height" ` +
               `attributes are added to an image without updating the corresponding ` +
               `image styling. To fix this, adjust image styling. In most cases, ` +
               `adding "height: auto" or "width: auto" to the image styling will fix ` +
@@ -1011,4 +1013,9 @@ function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: I
             `which means that the loaderParams data will not be consumed and will not affect the URL. ` +
             `To fix this, provide a custom loader or remove the \`loaderParams\` attribute from the image.`));
   }
+}
+
+
+function round(input: number): number|string {
+  return Number.isInteger(input) ? input : input.toFixed(2);
 }
