@@ -57,7 +57,7 @@ In this step, you add the new component, `HousingLocationComponent` to your app'
 In the **Edit** pane of your IDE:
 
 1.  Open `home.component.ts` in the editor.
-1.  In `app.component.ts`, import `HousingLocationComponent` by adding this line to the file level imports.
+1.  In `home.component.ts`, import `HousingLocationComponent` by adding this line to the file level imports.
 
     <code-example header="Import HousingLocationComponent in src/app/home/home.component.ts" path="first-app-lesson-03/src/app/home/home.component.ts" region="import-housingLocation"></code-example>
 
