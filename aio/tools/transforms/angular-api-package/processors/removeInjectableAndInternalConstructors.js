@@ -1,4 +1,4 @@
-module.exports = function removeInjectableConstructors() {
+module.exports = function removeInjectableAndInternalConstructors() {
   return {
     $runAfter: ['processing-docs', 'splitDescription'],
     $runBefore: ['docs-processed'],
@@ -10,6 +10,9 @@ module.exports = function removeInjectableConstructors() {
           !doc.constructorDoc.shortDescription &&
           doc.decorators &&
           doc.decorators.some(decorator => this.injectableDecorators.indexOf(decorator.name) !== -1)) {
+          delete doc.constructorDoc;
+        }
+        if(doc.constructorDoc && doc.constructorDoc.internal) {
           delete doc.constructorDoc;
         }
       });

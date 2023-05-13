@@ -1,4 +1,4 @@
-const processorFactory = require('./removeInjectableConstructors');
+const processorFactory = require('./removeInjectableAndInternalConstructors');
 const testPackage = require('../../helpers/test-package');
 const Dgeni = require('dgeni');
 
@@ -7,7 +7,7 @@ describe('removeInjectableConstructors processor', () => {
   it('should be available on the injector', () => {
     const dgeni = new Dgeni([testPackage('angular-api-package')]);
     const injector = dgeni.configureInjector();
-    const processor = injector.get('removeInjectableConstructors');
+    const processor = injector.get('removeInjectableAndInternalConstructors');
     expect(processor.$process).toBeDefined();
     expect(processor.$runAfter).toEqual(['processing-docs', 'splitDescription']);
     expect(processor.$runBefore).toEqual(['docs-processed']);
@@ -23,6 +23,7 @@ describe('removeInjectableConstructors processor', () => {
       { constructorDoc: {}, decorators: [{ name: 'Directive' }] },
       { constructorDoc: {}, decorators: [{ name: 'Pipe' }] },
       { constructorDoc: {}, decorators: [{ name: 'Other' }, { name: 'Injectable' }] },
+
       { constructorDoc: {}, decorators: [{ name: 'Other' }] },
 
       { constructorDoc: { shortDescription: 'Blah' } },
@@ -33,6 +34,8 @@ describe('removeInjectableConstructors processor', () => {
       { constructorDoc: { shortDescription: 'Blah' }, decorators: [{ name: 'Pipe' }] },
       { constructorDoc: { shortDescription: 'Blah' }, decorators: [{ name: 'Other' }, { name: 'Injectable' }] },
       { constructorDoc: { shortDescription: 'Blah' }, decorators: [{ name: 'Other' }] },
+
+      { constructorDoc: { internal: true } },
     ];
 
     processor.$process(docs);
@@ -54,5 +57,7 @@ describe('removeInjectableConstructors processor', () => {
     expect(docs[13].constructorDoc).toBeDefined();
     expect(docs[14].constructorDoc).toBeDefined();
     expect(docs[15].constructorDoc).toBeDefined();
+
+    expect(docs[16].constructorDoc).toBeUndefined();
   });
 });
