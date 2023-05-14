@@ -677,9 +677,6 @@ workflows:
       - build-npm-packages:
           requires:
             - setup
-      - saucelabs:
-          requires:
-            - setup
       - legacy-unit-tests-saucelabs:
           requires:
             - setup
