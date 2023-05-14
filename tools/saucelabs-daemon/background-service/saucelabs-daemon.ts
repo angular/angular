@@ -7,14 +7,12 @@
  */
 
 import chalk from 'chalk';
-import {spawn} from 'node:child_process';
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import {Builder, WebDriver} from 'selenium-webdriver4';
 
 import {Browser, getUniqueId} from '../browser';
 
 import {IpcServer} from './ipc';
+import {openSauceConnectTunnel} from './sauce-connect-tunnel';
 
 const defaultCapabilities = {
   recordVideo: false,
@@ -180,11 +178,8 @@ export class SaucelabsDaemon {
         }
       }
 
-      // We're not interested in awaiting on _startBrowserTest since we only need to report back to
-      // the caller that the browser test was initiated. Failures in _startBrowserTest() are
-      // silently ignored in the daemon. The karma test itself should fail or timeout if there are
-      // issues starting the browser test.
       this._startBrowserTest(browser, test);
+
       return true;
     }
 
@@ -198,47 +193,9 @@ export class SaucelabsDaemon {
    * if all tests are cache hits.
    **/
   private async _connect() {
-    await this._openSauceConnectTunnel();
+    await openSauceConnectTunnel(
+        (this._userCapabilities as any).tunnelIdentifier, this._sauceConnect);
     await this._launchBrowsers();
-  }
-
-  /**
-   * @internal
-   * Establishes the Saucelabs connect tunnel.
-   **/
-  private async _openSauceConnectTunnel() {
-    console.debug('Starting sauce connect tunnel...');
-
-    const tmpFolder = await fs.mkdtemp('saucelabs-daemon-');
-
-    await new Promise<void>((resolve, reject) => {
-      // First we need to start the sauce connect tunnel
-      const sauceConnectArgs = [
-        '--readyfile',
-        `${tmpFolder}/readyfile`,
-        '--pidfile',
-        `${tmpFolder}/pidfile`,
-        '--tunnel-identifier',
-        (this._userCapabilities as any).tunnelIdentifier || path.basename(tmpFolder),
-      ];
-      const sc = spawn(this._sauceConnect, sauceConnectArgs);
-
-      sc.stdout!.on('data', (data) => {
-        if (data.includes('Sauce Connect is up, you may start your tests.')) {
-          resolve();
-        }
-      });
-
-      sc.on('close', (code) => {
-        reject(new Error(`sauce connect closed all stdio with code ${code}`));
-      });
-
-      sc.on('exit', (code) => {
-        reject(new Error(`sauce connect exited with code ${code}`));
-      });
-    });
-
-    console.debug('Starting sauce connect tunnel established');
   }
 
   /**
@@ -304,10 +261,6 @@ export class SaucelabsDaemon {
           // If a test has been scheduled before the browser completed launching, run
           // it now given that the browser is ready now.
           if (this._pendingTests.has(launched)) {
-            // We're not interested in awaiting on _startBrowserTest since that would delay starting
-            // additional browsers. Failures in _startBrowserTest() are silently ignored in the
-            // daemon. The karma test itself should fail or timeout if there are issues starting the
-            // browser test.
             this._startBrowserTest(launched, this._pendingTests.get(launched)!);
           }
         }),
@@ -320,23 +273,23 @@ export class SaucelabsDaemon {
    * This sets the browser's state to "claimed" and navigates the browser to the test URL.
    **/
   private _startBrowserTest(browser: RemoteBrowser, test: BrowserTest) {
-    this._runningTests.set(test.testId, browser);
-    browser.state = 'claimed';
+    // We're not interested in awaiting on starting the browser test since that would delay
+    // starting additional browsers. Failures in browser test starts are silently ignored in
+    // the daemon. The karma test itself should fail or timeout if there are issues starting
+    // the browser test.
+    (async () => {
+      this._runningTests.set(test.testId, browser);
+      browser.state = 'claimed';
 
-    console.debug(`Opening test url for #${test.testId}: ${test.pageUrl}`);
-    browser.driver!.get(test.pageUrl)
-        .then(() => {
-          browser.driver!.getTitle()
-              .then((pageTitle) => {
-                console.debug(`Test page loaded for #${test.testId}: "${pageTitle}".`);
-              })
-              .catch((e) => {
-                console.error('Could not start browser test with id', test.testId, test.pageUrl);
-              });
-        })
-        .catch((e) => {
-          console.error('Could not start browser test with id', test.testId, test.pageUrl);
-        });
+      try {
+        console.debug(`Opening test url for #${test.testId}: ${test.pageUrl}`);
+        await browser.driver!.get(test.pageUrl);
+        const pageTitle = await browser.driver!.getTitle();
+        console.debug(`Test page loaded for #${test.testId}: "${pageTitle}".`);
+      } catch (e) {
+        console.error('Could not start browser test with id', test.testId, test.pageUrl);
+      }
+    })();
   }
 
   /**
@@ -367,6 +320,7 @@ export class SaucelabsDaemon {
       }
     });
     await Promise.all(pendingCommands);
-    console.debug(`${Date().toLocaleString()}: Refreshed ${pendingCommands.length} browsers.`);
+    console.debug(`${Date().toLocaleString()}: Refreshed ${pendingCommands.length} browsers (pid ${
+        process.pid}).`);
   }
 }
