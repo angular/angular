@@ -11,6 +11,7 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 
 import {getComponentDef} from './definition';
+import {getDeclarationComponentDef} from './instructions/element_validation';
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';
@@ -52,11 +53,15 @@ export function throwMultipleComponentError(
 
 /** Throws an ExpressionChangedAfterChecked error if checkNoChanges mode is on. */
 export function throwErrorIfNoChangesMode(
-    creationMode: boolean, oldValue: any, currValue: any, propName?: string): never {
+    creationMode: boolean, oldValue: any, currValue: any, propName: string|undefined,
+    lView: LView): never {
+  const hostComponentDef = getDeclarationComponentDef(lView);
+  const componentClassName = hostComponentDef?.type?.name;
   const field = propName ? ` for '${propName}'` : '';
   let msg =
       `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${
-          field}: '${oldValue}'. Current value: '${currValue}'.`;
+          field}: '${oldValue}'. Current value: '${currValue}'.${
+          componentClassName ? ` Expression location: ${componentClassName} component` : ''}`;
   if (creationMode) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
