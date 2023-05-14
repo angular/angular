@@ -21,7 +21,7 @@ if [[ -z "${SAUCE_TUNNEL_IDENTIFIER:-}" ]]; then
 fi
 
 # First build the background-service binary target so the build runs in the foreground
-yarn bazel build //tools/saucelabs-daemon/background-service
+yarn bazel build //tools/saucelabs-daemon/background-service --build_runfile_links
 
 # Query for the test targets to run
 TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
@@ -29,15 +29,19 @@ TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test,
 # Build all test targets so the build can fan out to all CPUs
 yarn bazel build ${TESTS}
 
-# Start the saucelabs-daemon background service in the background
-yarn bazel run //tools/saucelabs-daemon/background-service -- "$NUMBER_OF_PARALLEL_BROWSERS" &
+# Start the saucelabs-daemon background service in the background. Run directly from the generated
+# bash script instead of using bazel run so we get the PID of the node process. Otherwise killing
+# the child process in kill_background_service doesn't kill the spawn node process.
+cd dist/bin/tools/saucelabs-daemon/background-service/background-service.sh.runfiles/angular
+../../background-service.sh "$NUMBER_OF_PARALLEL_BROWSERS" &
 BACKGROUND_SERVICE_PID=$!
+cd - > /dev/null
 
 # Trap on exit so we always kill the background service
 function kill_background_service {
-  echo "Killing background service..."
+  echo "Killing background service (pid $BACKGROUND_SERVICE_PID)..."
   kill $BACKGROUND_SERVICE_PID  # Kill the backgound service
-  sleep 2  # Let the output of the background service flush
+  wait $BACKGROUND_SERVICE_PID  # Let the output of the background service flush
   echo "All done"
 }
 trap kill_background_service INT TERM
