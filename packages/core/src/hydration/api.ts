@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {first} from 'rxjs/operators';
+import {NEVER, Observable, race, timer} from 'rxjs';
+import {first, switchMap, tap} from 'rxjs/operators';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application_ref';
 import {ENABLED_SSR_FEATURES, PLATFORM_ID} from '../application_tokens';
@@ -22,6 +23,7 @@ import {enableApplyRootElementTransformImpl} from '../render3/instructions/share
 import {enableLocateOrCreateContainerAnchorImpl} from '../render3/instructions/template';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
 import {TransferState} from '../transfer_state';
+import {NgZone} from '../zone';
 
 import {cleanupDehydratedViews} from './cleanup';
 import {IS_HYDRATION_DOM_REUSE_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
@@ -88,8 +90,25 @@ function printHydrationStats(injector: Injector) {
  * Returns a Promise that is resolved when an application becomes stable.
  */
 function whenStable(
-    appRef: ApplicationRef, pendingTasks: InitialRenderPendingTasks): Promise<unknown> {
-  const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
+    appRef: ApplicationRef, pendingTasks: InitialRenderPendingTasks,
+    ngZone: NgZone): Promise<unknown> {
+  let isStablePromise: Promise<boolean>;
+  const firstStable = appRef.isStable.pipe(first((isStable: boolean) => isStable));
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    const timeoutTime = 10 * 1000;  // could be provided via token
+    let timeoutId: NodeJS.Timeout;
+
+    // The following call should not and does not prevent the app to become stable
+    // We cannot use RxJS timer here because the app would remain unstable.
+    ngZone.runOutsideAngular(() => timeoutId = setTimeout(() => {
+                               logWarningOnStableTimedout(timeoutTime);
+                             }, timeoutTime));
+
+    isStablePromise = firstStable.pipe(tap(() => clearTimeout(timeoutId))).toPromise();
+  } else {
+    isStablePromise = firstStable.toPromise();
+  }
+
   const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
   return Promise.allSettled([isStablePromise, pendingTasksPromise]);
 }
@@ -165,8 +184,9 @@ export function withDomHydration(): EnvironmentProviders {
           const appRef = inject(ApplicationRef);
           const pendingTasks = inject(InitialRenderPendingTasks);
           const injector = inject(Injector);
+          const ngZone = inject(NgZone);
           return () => {
-            whenStable(appRef, pendingTasks).then(() => {
+            whenStable(appRef, pendingTasks, ngZone).then(() => {
               // Wait until an app becomes stable and cleanup all views that
               // were not claimed during the application bootstrap process.
               // The timing is similar to when we start the serialization process
@@ -184,4 +204,15 @@ export function withDomHydration(): EnvironmentProviders {
       multi: true,
     }
   ]);
+}
+
+/**
+ *
+ * @param time The time in ms until the stable timedout warning message is logged
+ */
+function logWarningOnStableTimedout(time: number): void {
+  const message = `ApplicationRef.isStable() has not emitted true after ${time}ms. 
+  Angular hydration logic depends on the application being stable. If you encounter hydration issues, it might be related to an unreached stable state.`;
+
+  console.warn(formatRuntimeError(RuntimeErrorCode.HYDRATION_STABLE_TIMEDOUT, message));
 }
