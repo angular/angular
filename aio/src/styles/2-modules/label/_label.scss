@@ -9,6 +9,7 @@ label.api-status-label {
   margin-right: 8px;
   font-weight: 500;
   text-transform: uppercase;
+  line-height: initial;
 
   @media screen and (max-width: 600px) {
     display: block;
