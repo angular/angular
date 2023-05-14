@@ -27,7 +27,8 @@ export class IpcServer {
 
   constructor(private _service: SaucelabsDaemon) {
     this._server = createServer(this._connectionHandler.bind(this));
-    this._server.listen(IPC_PORT, () => console.info('Daemon IPC server listening.'));
+    this._server.listen(
+        IPC_PORT, () => console.info(`Daemon IPC server listening (pid ${process.pid}).`));
   }
 
   private _connectionHandler(socket: Socket) {
