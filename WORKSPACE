@@ -67,6 +67,11 @@ nodejs_register_toolchains(
     node_version = "16.14.0",
 )
 
+nodejs_register_toolchains(
+    name = "node18",
+    node_version = "18.10.0",
+)
+
 # Download npm dependencies.
 load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 load("//integration:npm_package_archives.bzl", "npm_package_archives")
