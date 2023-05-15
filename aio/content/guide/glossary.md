@@ -485,6 +485,14 @@ Angular runs these hook methods in the following order:
 
 To learn more, see [Lifecycle Hooks][AioGuideLifecycleHooks].
 
+## macrotask
+
+A macrotask refers to a block of asynchronous code that is scheduled to be executed later in the time. These tasks are queued and executed in the order they were scheduled, after the current execution context and any pending microtasks have been completed. Once macrotask is finished, all [microtask][AioGuideGlossaryMicrotask] will be processed.
+
+## microtask
+
+A microtask refers to a block of asynchronous code that is scheduled to be executed as soon as the JavaScript execution stack is empty, but before the browser's next rendering update. While these microtasks are processed, they can queue even more microtasks, which will all be run one by one.
+
 ## module
 
 In general, a module collects a block of code dedicated to a single purpose.
@@ -1078,7 +1086,9 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 [AioGuideGlossaryL]: guide/glossary#lazy-loading "L - Glossary | Angular"
 [AioGuideGlossaryLazyLoading]: guide/glossary#lazy-loading "lazy loading - Glossary | Angular"
 [AioGuideGlossaryLibrary]: guide/glossary#library "library - Glossary | Angular"
-[AioGuideGlossaryM]: guide/glossary#module "M - Glossary | Angular"
+[AioGuideGlossaryM]: guide/glossary#macrotask "M - Glossary | Angular"
+[AioGuideGlossaryMacrotask]: guide/glossary#macrotask "macrotask - Glossary | Angular"
+[AioGuideGlossaryMicrotask]: guide/glossary#microtask "microtask - Glossary | Angular"
 [AioGuideGlossaryModule]: guide/glossary#module "module - Glossary | Angular"
 [AioGuideGlossaryN]: guide/glossary#ngmodule "N - Glossary | Angular"
 [AioGuideGlossaryNgmodule]: guide/glossary#ngmodule "NgModule - Glossary | Angular"
