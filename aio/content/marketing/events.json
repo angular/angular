@@ -1171,6 +1171,12 @@
   },
   {
     "date": {
+      "start": "2023-04-03"
+    },
+    "name": "Angular Athens"
+  },
+  {
+    "date": {
       "start": "2023-05-04"
     },
     "name": "Devoxx Greece"
