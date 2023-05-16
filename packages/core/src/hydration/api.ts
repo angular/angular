@@ -99,20 +99,18 @@ function whenStable(
     injector: Injector): Promise<unknown> {
   const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;  // could be provided via token
+    const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
     const console = injector.get(Console);
     const ngZone = injector.get(NgZone);
-    let clearOnStableTimeout: VoidFunction;
 
     // The following call should not and does not prevent the app to become stable
     // We cannot use RxJS timer here because the app would remain unstable.
-    ngZone.runOutsideAngular(() => {
-      const timeoutId =
-          setTimeout(() => logWarningOnStableTimedout(timeoutTime, console), timeoutTime);
-      clearOnStableTimeout = () => clearTimeout(timeoutId);
+    // This also avoids an extra change detection cycle.
+    const timeoutId = ngZone.runOutsideAngular(() => {
+      return setTimeout(() => logWarningOnStableTimedout(timeoutTime, console), timeoutTime);
     });
 
-    isStablePromise.finally(() => clearOnStableTimeout());
+    isStablePromise.finally(() => clearTimeout(timeoutId));
   }
 
   const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
@@ -218,7 +216,7 @@ export function withDomHydration(): EnvironmentProviders {
 function logWarningOnStableTimedout(time: number, console: Console): void {
   const message =
       `Angular hydration expected the ApplicationRef.isStable() to emit \`true\`, but it ` +
-      `didn't happen after ${
+      `didn't happen within ${
           time}ms. Angular hydration logic depends on the application becoming stable ` +
       `as a signal to complete hydration process.`;
 
