@@ -689,6 +689,7 @@ function getComponentId(componentDef: ComponentDef<unknown>): string {
     componentDef.decls,
     componentDef.encapsulation,
     componentDef.standalone,
+    componentDef.signals,
     componentDef.exportAs,
     componentDef.inputs,
     componentDef.outputs,
