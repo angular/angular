@@ -22,7 +22,7 @@ If you have any trouble during this lesson, you can review the completed code fo
    At the end of this lesson, the service reads data from local, static data.
    In a later lesson, you update the service to get data from a web service.
 
-## Conceptual preview of interfaces
+## Conceptual preview of services
 
 This tutorial introduces Angular services and dependency injection.
 
