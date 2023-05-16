@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /* tslint:disable:no-console  */
+import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
@@ -15,6 +16,8 @@ import {FormsModule} from '@angular/forms';
   selector: 'app-root',
   template: `Number of ticks: {{numberOfTicks}}`,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [CommonModule]
 })
 
 class AppComponent {
@@ -104,6 +107,6 @@ class App1 {
 // #enddocregion reattach
 
 
-@NgModule({declarations: [AppComponent, GiantList, App, LiveData, App1], imports: [FormsModule]})
+@NgModule({declarations: [GiantList, App, LiveData, App1], imports: [FormsModule, AppComponent]})
 class CoreExamplesModule {
 }
