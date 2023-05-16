@@ -34,7 +34,7 @@ class HeroListComponent {}
 
 When you register a provider at the component level, you get a new instance of the service with each new instance of that component.
 
-* At the NgModule level, using the `providers` field of the `@NgModule` decorator. In this scenario, the `HeroService` is available to all components, directives, and pipes declared in this NgModule or other NgModule which is within same ModuleInjector applicable for this NgModule. When you register a provider with a specific NgModule, the same instance of a service is available to all applicable components, directives and pipes.
+* At the NgModule level, using the `providers` field of the `@NgModule` decorator. In this scenario, the `HeroService` is available to all components, directives, and pipes declared in this NgModule or other NgModule which is within the same ModuleInjector applicable for this NgModule. When you register a provider with a specific NgModule, the same instance of a service is available to all applicable components, directives and pipes.
 To understand all edge-cases, see [Hierarchical injectors](guide/hierarchical-dependency-injection). For example:
 
 
@@ -81,4 +81,4 @@ When all requested services have been resolved and returned, Angular can call th
 * [Creating and injecting services](guide/creating-injectable-service)
 * [Dependency Injection in Action](guide/dependency-injection-in-action)
 
-@reviewed 2022-08-02
+@reviewed 2023-05-16
