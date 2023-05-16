@@ -696,6 +696,10 @@ function getComponentId(componentDef: ComponentDef<unknown>): string {
     componentDef.decls,
     componentDef.encapsulation,
     componentDef.standalone,
+    componentDef.signals,
+    componentDef.exportAs,
+    JSON.stringify(componentDef.inputs),
+    JSON.stringify(componentDef.outputs),
     // We cannot use 'componentDef.type.name' as the name of the symbol will change and will not
     // match in the server and browser bundles.
     Object.getOwnPropertyNames(componentDef.type.prototype),
