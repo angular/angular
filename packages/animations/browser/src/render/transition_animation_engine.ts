@@ -744,7 +744,7 @@ export class TransitionAnimationEngine {
     }
   }
 
-  removeNode(namespaceId: string, element: any, isHostElement: boolean, context: any): void {
+  removeNode(namespaceId: string, element: any, context: any): void {
     if (isElementNode(element)) {
       const ns = namespaceId ? this._fetchNamespace(namespaceId) : null;
       if (ns) {
@@ -753,11 +753,9 @@ export class TransitionAnimationEngine {
         this.markElementAsRemoved(namespaceId, element, false, context);
       }
 
-      if (isHostElement) {
-        const hostNS = this.namespacesByHostElement.get(element);
-        if (hostNS && hostNS.id !== namespaceId) {
-          hostNS.removeNode(element, context);
-        }
+      const hostNS = this.namespacesByHostElement.get(element);
+      if (hostNS && hostNS.id !== namespaceId) {
+        hostNS.removeNode(element, context);
       }
     } else {
       this._onRemovalComplete(element, context);

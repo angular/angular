@@ -180,7 +180,7 @@ export class BaseAnimationRenderer implements Renderer2 {
   }
 
   removeChild(parent: any, oldChild: any, isHostElement: boolean): void {
-    this.engine.onRemove(this.namespaceId, oldChild, this.delegate, isHostElement);
+    this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
   }
 
   selectRootElement(selectorOrNode: any, preserveContent?: boolean) {
