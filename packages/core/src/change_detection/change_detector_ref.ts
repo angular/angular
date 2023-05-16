@@ -33,7 +33,7 @@ import {ViewRef} from '../render3/view_ref';
  *
  * The following example sets the `OnPush` change-detection strategy for a component
  * (`CheckOnce`, rather than the default `CheckAlways`), then forces a second check
- * after an interval. See [live demo](https://plnkr.co/edit/GC512b?p=preview).
+ * after an interval. See [live demo](https://stackblitz.com/edit/angular-myjuxd?file=src/main.ts).
  *
  * <code-example path="core/ts/change_detect/change-detection.ts"
  * region="mark-for-check"></code-example>

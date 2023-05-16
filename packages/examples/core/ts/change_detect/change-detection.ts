@@ -15,6 +15,8 @@ import {FormsModule} from '@angular/forms';
   selector: 'app-root',
   template: `Number of ticks: {{numberOfTicks}}`,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [CommonModule]
 })
 
 class AppComponent {
