@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NEVER, Observable, race, timer} from 'rxjs';
-import {first, switchMap, tap} from 'rxjs/operators';
+import {first} from 'rxjs/operators';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application_ref';
 import {ENABLED_SSR_FEATURES, PLATFORM_ID} from '../application_tokens';
@@ -36,6 +35,12 @@ import {enableFindMatchingDehydratedViewImpl} from './views';
  * prevents adding it multiple times.
  */
 let isHydrationSupportEnabled = false;
+
+/**
+ * Defines a period of time that Angular waits for the `ApplicationRef.isStable` to emit `true`.
+ * If there was no event with the `true` value during this time, Angular reports a warning.
+ */
+const APPLICATION_IS_STABLE_TIMEOUT = 10_000;
 
 /**
  * Brings the necessary hydration code in tree-shakable manner.
@@ -94,7 +99,7 @@ function whenStable(
     injector: Injector): Promise<unknown> {
   const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    const timeoutTime = 20_000;  // could be provided via token
+    const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;  // could be provided via token
     const console = injector.get(Console);
     const ngZone = injector.get(NgZone);
     let clearOnStableTimeout: VoidFunction;
@@ -211,8 +216,11 @@ export function withDomHydration(): EnvironmentProviders {
  * @param time The time in ms until the stable timedout warning message is logged
  */
 function logWarningOnStableTimedout(time: number, console: Console): void {
-  const message = `ApplicationRef.isStable() has not emitted true after ${time}ms. 
-  Angular hydration logic depends on the application being stable. If you encounter hydration issues, it might be related to an unreached stable state.`;
+  const message =
+      `Angular hydration expected the ApplicationRef.isStable() to emit \`true\`, but it ` +
+      `didn't happen after ${
+          time}ms. Angular hydration logic depends on the application becoming stable ` +
+      `as a signal to complete hydration process.`;
 
   console.warn(formatRuntimeError(RuntimeErrorCode.HYDRATION_STABLE_TIMEDOUT, message));
 }
