@@ -12,7 +12,7 @@ This topic uses the following pictographs.
 |:---         |:--- |
 | <code>&#x1F33A;</code> | red hibiscus \(`🌺`\)  |
 | <code>&#x1F33B;</code> | sunflower \(`🌻`\)     |
-| <code>&#x1F33C;</code> | yellow flower \(`🌼`\) |
+| <code>&#x1F337;</code> | tulip \(`🌷`\)         |
 | <code>&#x1F33F;</code> | fern \(`🌿`\)          |
 | <code>&#x1F341;</code> | maple leaf \(`🍁`\)    |
 | <code>&#x1F433;</code> | whale \(`🐳`\)         |
@@ -235,7 +235,7 @@ For example, in the following `SelfComponent`, notice the injected `LeafService`
 In this example, there is a parent provider and injecting the service will return the value, however, injecting the service with `@Self()` and `@Optional()` will return `null` because `@Self()` tells the injector to stop searching in the current host element.
 
 Another example shows the component class with a provider for `FlowerService`.
-In this case, the injector looks no further than the current `ElementInjector` because it finds the `FlowerService` and returns the yellow flower <code>&#x1F33C;</code>.
+In this case, the injector looks no further than the current `ElementInjector` because it finds the `FlowerService` and returns the tulip <code>&#x1F337;</code>.
 
 <code-example header="resolution-modifiers/src/app/self/self.component.ts" path="resolution-modifiers/src/app/self/self.component.ts" region="self-component"></code-example>
 
@@ -278,7 +278,7 @@ Use `@Host()` as follows:
 
 <code-example header="resolution-modifiers/src/app/host/host.component.ts" path="resolution-modifiers/src/app/host/host.component.ts" region="host-component"></code-example>
 
-Since `HostComponent` has `@Host()` in its constructor, no matter what the parent of `HostComponent` might have as a `flower.emoji` value, the `HostComponent` will use yellow flower <code>&#x1F33C;</code>.
+Since `HostComponent` has `@Host()` in its constructor, no matter what the parent of `HostComponent` might have as a `flower.emoji` value, the `HostComponent` will use tulip <code>&#x1F337;</code>.
 
 ## Logical structure of the template
 
