@@ -6,7 +6,7 @@ import { FlowerService } from '../flower.service';
   selector: 'app-self',
   templateUrl: './self.component.html',
   styleUrls: ['./self.component.css'],
-  providers: [{ provide: FlowerService, useValue: { emoji: '🌼' } }]
+  providers: [{ provide: FlowerService, useValue: { emoji: '🌷' } }]
 
 })
 export class SelfComponent {
