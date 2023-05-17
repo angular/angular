@@ -1,3 +1,14 @@
+<a name="16.0.2"></a>
+# 16.0.2 (2023-05-17)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c1016d4e57](https://github.com/angular/angular/commit/c1016d4e578152dcdfe7c4a4673f27e12bfabf8d) | fix | add additional component metadata to component ID generation ([#50340](https://github.com/angular/angular/pull/50340)) |
+| [cc41758b59](https://github.com/angular/angular/commit/cc41758b595da46a3fd14a58b3832c77b251b940) | fix | allow onDestroy unregistration while destroying ([#50237](https://github.com/angular/angular/pull/50237)) |
+| [7d679bdb59](https://github.com/angular/angular/commit/7d679bdb59815e7e816337532d069d68cf45a6d8) | fix | allow passing value of any type to `isSignal` function ([#50035](https://github.com/angular/angular/pull/50035)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.1"></a>
 # 16.0.1 (2023-05-10)
 ### core
