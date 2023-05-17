@@ -11829,10 +11829,10 @@ next-tick@^1.1.0:
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.1.0.tgz#1836ee30ad56d67ef281b22bd199f709449b35eb"
   integrity sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==
 
-ngx-flamegraph@0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/ngx-flamegraph/-/ngx-flamegraph-0.0.11.tgz#485a04df4fc6700c0324739864f62d4c2e3bc69c"
-  integrity sha512-0BzP/k3nGftwNNt4nURV8s9JuCEN6xS83GdZynwqD+JdlawKKiMcXQ4KbY8C+wMk13VkUH3NiR+9hihQ2d1k+w==
+ngx-flamegraph@0.0.12:
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/ngx-flamegraph/-/ngx-flamegraph-0.0.12.tgz#2e1661979f01d605467539b26ec28b3bc74b9f1a"
+  integrity sha512-YoxrqlL36Bg5Ca9fu10kuSUmaWHAvx7jkxINF4/4cXn9bBPRfu78FqnZ5LIULC0+iScZcSDSWDAnUdn8H7+wGw==
   dependencies:
     tslib "^2.0.0"
 
