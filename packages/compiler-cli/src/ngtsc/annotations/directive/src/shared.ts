@@ -701,6 +701,11 @@ function parseInputTransformFunction(
         value.node, value, 'Input transform function cannot be generic');
   }
 
+  if (definition.signatureCount > 1) {
+    throw createValueHasWrongTypeError(
+        value.node, value, 'Input transform function cannot have multiple signatures');
+  }
+
   const members = reflector.getMembersOfClass(clazz);
 
   for (const member of members) {
@@ -741,30 +746,14 @@ function parseInputTransformFunction(
         value.node, value, 'Input transform function first parameter must have a type');
   }
 
-  let type: ts.TypeNode;
-
-  // If the first parameter isn't a spread, use the type directly.
-  if (!firstParam.node.dotDotDotToken) {
-    type = firstParam.type;
-  } else {
-    // If it is a spread, make a best effort to resolve the possible type. We can easily resolve
-    // an array type (e.g. `(...param: Foo[])`) or a tuple (e.g. `(...paramg: [Foo, Bar])`),
-    // but anything more mayb be tricky, e.g. something like:
-    // `export type Foo = number[]; (...param: Foo)`.
-    if (ts.isArrayTypeNode(firstParam.type)) {
-      type = firstParam.type.elementType;
-    } else if (ts.isTupleTypeNode(firstParam.type) && firstParam.type.elements.length > 0) {
-      type = firstParam.type.elements[0];
-    } else {
-      throw createValueHasWrongTypeError(
-          value.node, value,
-          'Input transform function spread parameter type cannot not be resolved');
-    }
+  if (firstParam.node.dotDotDotToken) {
+    throw createValueHasWrongTypeError(
+        value.node, value, 'Input transform function first parameter cannot be a spread parameter');
   }
 
   assertEmittableInputType(firstParam.type, clazz.getSourceFile(), reflector, refEmitter);
 
-  return {node, type};
+  return {node, type: firstParam.type};
 }
 
 /**

@@ -176,9 +176,13 @@ export class TypeScriptReflectionHost implements ReflectionHost {
                                      [ts.factory.createReturnStatement(node.body)];
     }
 
+    const type = this.checker.getTypeAtLocation(node);
+    const signatures = this.checker.getSignaturesOfType(type, ts.SignatureKind.Call);
+
     return {
       node,
       body,
+      signatureCount: signatures.length,
       typeParameters: node.typeParameters === undefined ? null : Array.from(node.typeParameters),
       parameters: node.parameters.map(param => {
         const name = parameterName(param.name);

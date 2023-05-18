@@ -118,6 +118,7 @@ export {
   ɵɵi18nPostprocess,
   ɵɵi18nStart,
   ɵɵInheritDefinitionFeature,
+  ɵɵInputTransformsFeature,
   ɵɵinjectAttribute,
   ɵɵInjectorDeclaration,
   ɵɵinvalidFactory,

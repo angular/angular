@@ -2537,21 +2537,40 @@ function allTests(os: string) {
         verifyThrownError(ErrorCode.VALUE_HAS_WRONG_TYPE, `Input transform must be a function`);
       });
 
-      it('should produce a diangostic if the spread parameter is not an array literal type', () => {
+      it('should produce a diangostic if the first parameter of a transform is a spread', () => {
         env.write('/test.ts', `
           import {Directive, Input} from '@angular/core';
 
-          export type TransformType = number[];
+          function toNumber(...value: (string | boolean)[]) { return 1; }
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({standalone: true})
           export class Dir {
-            @Input({transform: (...params: TransformType) => 1}) value!: number;
+            @Input({transform: toNumber}) value!: number;
           }
         `);
 
         verifyThrownError(
             ErrorCode.VALUE_HAS_WRONG_TYPE,
-            `Input transform function spread parameter type cannot not be resolved`);
+            `Input transform function first parameter cannot be a spread parameter`);
+      });
+
+      it('should produce a diangostic if a transform function has multiple signatures', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          function toNumber(value: boolean): number;
+          function toNumber(value: string): number;
+          function toNumber(value: boolean | string) { return 1; }
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: toNumber}) value!: number;
+          }
+        `);
+
+        verifyThrownError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE,
+            `Input transform function cannot have multiple signatures`);
       });
     });
 
@@ -8523,6 +8542,7 @@ function allTests(os: string) {
         const dtsContents = env.getContents('test.d.ts');
 
         expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
 
@@ -8544,6 +8564,8 @@ function allTests(os: string) {
         const dtsContents = env.getContents('test.d.ts');
 
         expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+        expect(jsContents)
+            .toContain('features: [i0.ɵɵStandaloneFeature, i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
 
@@ -8572,6 +8594,7 @@ function allTests(os: string) {
            const dtsContents = env.getContents('test.d.ts');
 
            expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+           expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
            expect(dtsContents).toContain('import * as i1 from "./types"');
            expect(dtsContents)
                .toContain(
@@ -8610,6 +8633,7 @@ function allTests(os: string) {
            const dtsContents = env.getContents('test.d.ts');
 
            expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+           expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
            expect(dtsContents).toContain('import * as i1 from "./types"');
            expect(dtsContents).toContain('import * as i2 from "./other-types"');
            expect(dtsContents)
@@ -8645,6 +8669,7 @@ function allTests(os: string) {
 
         expect(jsContents).toContain(`import { externalToNumber } from 'external';`);
         expect(jsContents).toContain('inputs: { value: ["value", "value", externalToNumber] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('import * as i1 from "./node_modules/external/index";');
         expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
       });
@@ -8675,6 +8700,7 @@ function allTests(os: string) {
 
         expect(jsContents)
             .toContain('inputs: { value: ["value", "value", (value) => value ? 1 : 0] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('import * as i1 from "./node_modules/external/index";');
         expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
       });
@@ -8697,6 +8723,7 @@ function allTests(os: string) {
         const dtsContents = env.getContents('test.d.ts');
 
         expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
 
@@ -8718,49 +8745,8 @@ function allTests(os: string) {
         const dtsContents = env.getContents('test.d.ts');
 
         expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: unknown;');
-      });
-
-      it('should compile a directive input with a rest parameter using an array type', () => {
-        env.write('/test.ts', `
-          import {Directive, Input} from '@angular/core';
-
-          function toNumber(...value: (string | boolean)[]) { return 1; }
-
-          @Directive({standalone: true})
-          export class Dir {
-            @Input({transform: toNumber}) value!: number;
-          }
-        `);
-
-        env.driveMain();
-
-        const jsContents = env.getContents('test.js');
-        const dtsContents = env.getContents('test.d.ts');
-
-        expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
-        expect(dtsContents).toContain('static ngAcceptInputType_value: (string | boolean);');
-      });
-
-      it('should compile a directive input with a rest parameter using a tuple type', () => {
-        env.write('/test.ts', `
-          import {Directive, Input} from '@angular/core';
-
-          function toNumber(...value: [string | boolean, number]) { return 1; }
-
-          @Directive({standalone: true})
-          export class Dir {
-            @Input({transform: toNumber}) value!: number;
-          }
-        `);
-
-        env.driveMain();
-
-        const jsContents = env.getContents('test.js');
-        const dtsContents = env.getContents('test.d.ts');
-
-        expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
-        expect(dtsContents).toContain('static ngAcceptInputType_value: string | boolean;');
       });
     });
   });

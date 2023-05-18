@@ -196,6 +196,8 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
           bindingPropertyName: stringValue,
           classPropertyName,
           required: false,
+          // Input transform are only tracked for locally-compiled directives. Directives coming
+          // from the .d.ts already have them included through `ngAcceptInputType` class members.
           transform: null,
         };
       } else {
@@ -207,6 +209,8 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
           classPropertyName,
           bindingPropertyName: config.alias,
           required: config.required,
+          // Input transform are only tracked for locally-compiled directives. Directives coming
+          // from the .d.ts already have them included through `ngAcceptInputType` class members.
           transform: null,
         };
       }

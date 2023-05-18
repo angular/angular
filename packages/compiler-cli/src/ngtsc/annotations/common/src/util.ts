@@ -331,20 +331,27 @@ export function createSourceSpan(node: ts.Node): ParseSourceSpan {
  */
 export function compileResults(
     fac: CompileResult, def: R3CompiledExpression, metadataStmt: Statement|null, propName: string,
-    additionalFields: CompileResult[] = []): CompileResult[] {
+    additionalFields: CompileResult[]|null): CompileResult[] {
   const statements = def.statements;
   if (metadataStmt !== null) {
     statements.push(metadataStmt);
   }
-  return [
-    fac, {
+
+  const results = [
+    fac,
+    {
       name: propName,
       initializer: def.expression,
       statements: def.statements,
       type: def.type,
     },
-    ...additionalFields
   ];
+
+  if (additionalFields !== null) {
+    results.push(...additionalFields);
+  }
+
+  return results;
 }
 
 export function toFactoryMetadata(

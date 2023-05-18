@@ -95,7 +95,7 @@ function toInputMapping<TExpression>(
   if (values.length !== 2 && values.length !== 3) {
     throw new FatalLinkerError(
         value.expression,
-        'Unsupported input, expected a string or an array containing two or three strings');
+        'Unsupported input, expected a string or an array containing two strings and an optional function');
   }
 
   return {
