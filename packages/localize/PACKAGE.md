@@ -26,7 +26,7 @@ warning = $localize`${this.process} is not right`;
 could be replaced with:
 
 ```ts
-warning = "" + this.process + ", ce n'est pas bon.";
+warning = "" + this.process + ", n'est pas bon.";
 ```
 
 The result is that all references to `$localize` are removed, and there is **zero runtime cost** to rendering
