@@ -43,6 +43,12 @@ export const SOURCE = '__source';
  */
 let _currentInjector: Injector|undefined|null = undefined;
 
+/**
+ * Get current injector value
+ *
+ * @see _currentInjector
+ * @publicApi
+ */
 export function getCurrentInjector(): Injector|undefined|null {
   return _currentInjector;
 }

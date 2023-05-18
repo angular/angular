@@ -23,7 +23,7 @@ export {EnvironmentInjector} from './r3_injector';
 export {importProvidersFrom, ImportProvidersSource, makeEnvironmentProviders} from './provider_collection';
 export {ENVIRONMENT_INITIALIZER} from './initializer_token';
 export {ProviderToken} from './provider_token';
-export {ɵɵinject, inject, ɵɵinvalidFactoryDep} from './injector_compatibility';
+export {ɵɵinject, inject, ɵɵinvalidFactoryDep, getCurrentInjector} from './injector_compatibility';
 export {InjectOptions} from './interface/injector';
 export {INJECTOR} from './injector_token';
 export {ClassProvider, ModuleWithProviders, ClassSansProvider, ImportedNgModuleProviders, ConstructorProvider, EnvironmentProviders, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, Provider, StaticClassProvider, StaticClassSansProvider, StaticProvider, TypeProvider, ValueProvider, ValueSansProvider} from './interface/provider';
