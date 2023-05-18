@@ -88,7 +88,7 @@ export const platformServer: (extraProviders?: StaticProvider[]|undefined) => Pl
 /**
  * The server platform that supports the runtime compiler.
  *
- * @see `platformServer`
+ * @see {@link platformServer}
  * @deprecated add an `import @angular/compiler` and replace the usage with `platformServer`
  *     instead.
  * @publicApi
