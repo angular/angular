@@ -10,7 +10,6 @@
 // global `ngDevMode` type is defined.
 import '../../util/ng_dev_mode';
 
-import {throwInvalidWriteToSignalError} from './errors';
 import {newWeakRef, WeakRef} from './weak_ref';
 
 /**
