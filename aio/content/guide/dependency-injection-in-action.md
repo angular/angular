@@ -484,14 +484,14 @@ These complications argue for *avoiding component inheritance*.
 
 <a id="forwardref"></a>
 
-## Break circularities with a forward class reference (*forwardRef*)
+## Resolve circular dependencies with a forward class reference (*forwardRef*)
 
 The order of class declaration matters in TypeScript.
 You can't refer directly to a class until it's been defined.
 
 This isn't usually a problem, especially if you adhere to the recommended *one class per file* rule.
 But sometimes circular references are unavoidable.
-You're in a bind when class 'A' refers to class 'B' and 'B' refers to 'A'.
+For example, when class 'A' refers to class 'B' and 'B' refers to 'A'.
 One of them has to be defined first.
 
 The Angular `forwardRef()` function creates an *indirect* reference that Angular can resolve later.

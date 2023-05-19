@@ -341,3 +341,42 @@ In the above example, the component `DateModalComponent` is standalone - it can 
 When Angular creates a standalone component, it needs to know that the current injector has all of the necessary services for the standalone component's dependencies, including those based on NgModules. To guarantee that, in some cases Angular will create a new "standalone injector" as a child of the current environment injector. Today, this happens for all bootstrapped standalone components: it will be a child of the root environment injector. The same rule applies to the dynamically created (for example, by the router or the `ViewContainerRef` API) standalone components. 
 
 A separate standalone injector is created to ensure that providers imported by a standalone component are “isolated” from the rest of the application. This lets us think of standalone components as truly self-contained pieces that can’t “leak” their implementation details to the rest of the application.
+
+#### Resolve circular dependencies with a forward class reference
+
+The order of class declaration matters in TypeScript. You can't refer directly to a class until it's been defined.
+
+This isn't usually a problem but sometimes circular references are unavoidable. For example, when class 'A' refers to class 'B' and 'B' refers to 'A'. One of them has to be defined first.
+
+The Angular `forwardRef()` function creates an indirect reference that Angular can resolve later. 
+
+For example, this situation happens when a standalone parent component imports a standalone child component and vice-versa. You can resolve this circular dependency issue by using the `forwardRef` function.
+
+```ts
+@Component({
+  standalone: true, 
+  imports: [ChildComponent],
+  selector: 'app-parent',
+  template: `<app-child [hideParent]="hideParent"></app-child>`,
+})
+export class ParentComponent {
+  @Input() hideParent: boolean;
+}
+
+
+@Component({
+  standalone: true,
+  imports: [CommonModule, forwardRef(() => ParentComponent)],
+  selector: 'app-child',
+  template: `<app-parent *ngIf="!hideParent"></app-parent>`,
+})
+export class ChildComponent {
+  @Input() hideParent: boolean;
+}
+```
+
+<div class="alert is-important">
+
+This kind of imports may result in an infinite recursion during component instantiation. Make sure that this recursion has an exit condition that stops it at some point.
+
+</div>
