@@ -944,6 +944,59 @@ runInEachFileSystem(() => {
 
            expect(messages).toEqual([]);
          });
+
+      it('should not produce a diagnostic when exposing an aliased binding', () => {
+        env.write('test.ts', `
+          import {Directive, EventEmitter} from '@angular/core';
+
+          @Directive({
+            outputs: ['opened: triggerOpened'],
+            selector: '[trigger]',
+            standalone: true,
+          })
+          export class Trigger {
+            opened = new EventEmitter();
+          }
+
+          @Directive({
+            standalone: true,
+            selector: '[host]',
+            hostDirectives: [{directive: Trigger, outputs: ['triggerOpened']}]
+          })
+          export class Host {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not produce a diagnostic when exposing an inherited aliased binding', () => {
+        env.write('test.ts', `
+          import {Directive, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true})
+          export abstract class Base {
+            opened = new EventEmitter();
+          }
+
+          @Directive({
+            outputs: ['opened: triggerOpened'],
+            selector: '[trigger]',
+            standalone: true,
+          })
+          export class Trigger extends Base {}
+
+          @Directive({
+            standalone: true,
+            selector: '[host]',
+            hostDirectives: [{directive: Trigger, outputs: ['triggerOpened: hostOpened']}]
+          })
+          export class Host {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
   });
 });
