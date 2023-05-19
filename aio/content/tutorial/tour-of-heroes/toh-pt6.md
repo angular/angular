@@ -51,16 +51,6 @@ npm install angular-in-memory-web-api --save
 
 </code-example>
 
-In the `AppModule`, import the `HttpClientInMemoryWebApiModule` and the `InMemoryDataService` class, which you create next.
-
-<code-example header="src/app/app.module.ts (In-memory Web API imports)" path="toh-pt6/src/app/app.module.ts" region="import-in-mem-stuff"></code-example>
-
-After the `HttpClientModule`, add the `HttpClientInMemoryWebApiModule` to the `AppModule` `imports` array and configure it with the `InMemoryDataService`.
-
-<code-example header="src/app/app.module.ts (imports array excerpt)" path="toh-pt6/src/app/app.module.ts" region="in-mem-web-api-imports"></code-example>
-
-The `forRoot()` configuration method takes an `InMemoryDataService` class that primes the in-memory database.
-
 Generate the class `src/app/in-memory-data.service.ts` with the following command:
 
 <code-example format="shell" language="shell">
@@ -72,6 +62,16 @@ ng generate service InMemoryData
 Replace the default contents of `in-memory-data.service.ts` with the following:
 
 <code-example header="src/app/in-memory-data.service.ts" path="toh-pt6/src/app/in-memory-data.service.ts" region="init"></code-example>
+
+In the `AppModule`, import the `HttpClientInMemoryWebApiModule` and the `InMemoryDataService` class, which you create next.
+
+<code-example header="src/app/app.module.ts (In-memory Web API imports)" path="toh-pt6/src/app/app.module.ts" region="import-in-mem-stuff"></code-example>
+
+After the `HttpClientModule`, add the `HttpClientInMemoryWebApiModule` to the `AppModule` `imports` array and configure it with the `InMemoryDataService`.
+
+<code-example header="src/app/app.module.ts (imports array excerpt)" path="toh-pt6/src/app/app.module.ts" region="in-mem-web-api-imports"></code-example>
+
+The `forRoot()` configuration method takes an `InMemoryDataService` class that primes the in-memory database.
 
 The `in-memory-data.service.ts` file takes over the function of `mock-heroes.ts`.
 Don't delete `mock-heroes.ts` yet. You still need it for a few more steps of this tutorial.
