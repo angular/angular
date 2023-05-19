@@ -7,7 +7,7 @@
  */
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, Directive, DoCheck, OnChanges, OnInit} from '@angular/core';
-import {inject, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 
 describe('directive lifecycle integration spec', () => {
@@ -24,11 +24,8 @@ describe('directive lifecycle integration spec', () => {
           providers: [Log]
         })
         .overrideComponent(MyComp5, {set: {template: '<div [field]="123" lifecycle></div>'}});
+    log = TestBed.inject(Log);
   });
-
-  beforeEach(inject([Log], (_log: any) => {
-    log = _log;
-  }));
 
   it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
      () => {

@@ -20,7 +20,7 @@ import type {ServerModule} from '@angular/platform-server';
 
 import {ApplicationRef} from '../src/application_ref';
 import {NoopNgZone} from '../src/zone/ng_zone';
-import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
+import {ComponentFixtureNoNgZone, TestBed, waitForAsync, withModule} from '../testing';
 
 let serverPlatformModule: Promise<Type<ServerModule>>|null = null;
 if (isNode) {
@@ -85,65 +85,64 @@ class SomeComponent {
       return MyModule;
     }
 
-    it('should bootstrap a component from a child module',
-       waitForAsync(
-           inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-             @Component({
-               selector: 'bootstrap-app',
-               template: '',
-             })
-             class SomeComponent {
-             }
+    it('should bootstrap a component from a child module', waitForAsync(() => {
+         const app = TestBed.inject(ApplicationRef);
+         const compiler = TestBed.inject(Compiler);
 
-             const helloToken = new InjectionToken<string>('hello');
+         @Component({
+           selector: 'bootstrap-app',
+           template: '',
+         })
+         class SomeComponent {
+         }
 
-             @NgModule({
-               providers: [{provide: helloToken, useValue: 'component'}],
-               declarations: [SomeComponent],
-             })
-             class SomeModule {
-             }
+         const helloToken = new InjectionToken<string>('hello');
 
-             createRootEl();
-             const modFactory = compiler.compileModuleSync(SomeModule);
-             const module = modFactory.create(TestBed);
-             const cmpFactory =
-                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
-             const component = app.bootstrap(cmpFactory);
+         @NgModule({
+           providers: [{provide: helloToken, useValue: 'component'}],
+           declarations: [SomeComponent],
+         })
+         class SomeModule {
+         }
 
-             // The component should see the child module providers
-             expect(component.injector.get(helloToken)).toEqual('component');
-           })));
+         createRootEl();
+         const modFactory = compiler.compileModuleSync(SomeModule);
+         const module = modFactory.create(TestBed);
+         const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
+         const component = app.bootstrap(cmpFactory);
 
-    it('should bootstrap a component with a custom selector',
-       waitForAsync(
-           inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-             @Component({
-               selector: 'bootstrap-app',
-               template: '',
-             })
-             class SomeComponent {
-             }
+         // The component should see the child module providers
+         expect(component.injector.get(helloToken)).toEqual('component');
+       }));
 
-             const helloToken = new InjectionToken<string>('hello');
+    it('should bootstrap a component with a custom selector', waitForAsync(() => {
+         const app = TestBed.inject(ApplicationRef);
+         const compiler = TestBed.inject(Compiler);
+         @Component({
+           selector: 'bootstrap-app',
+           template: '',
+         })
+         class SomeComponent {
+         }
 
-             @NgModule({
-               providers: [{provide: helloToken, useValue: 'component'}],
-               declarations: [SomeComponent],
-             })
-             class SomeModule {
-             }
+         const helloToken = new InjectionToken<string>('hello');
 
-             createRootEl('custom-selector');
-             const modFactory = compiler.compileModuleSync(SomeModule);
-             const module = modFactory.create(TestBed);
-             const cmpFactory =
-                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
-             const component = app.bootstrap(cmpFactory, 'custom-selector');
+         @NgModule({
+           providers: [{provide: helloToken, useValue: 'component'}],
+           declarations: [SomeComponent],
+         })
+         class SomeModule {
+         }
 
-             // The component should see the child module providers
-             expect(component.injector.get(helloToken)).toEqual('component');
-           })));
+         createRootEl('custom-selector');
+         const modFactory = compiler.compileModuleSync(SomeModule);
+         const module = modFactory.create(TestBed);
+         const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
+         const component = app.bootstrap(cmpFactory, 'custom-selector');
+
+         // The component should see the child module providers
+         expect(component.injector.get(helloToken)).toEqual('component');
+       }));
 
     describe('ApplicationRef', () => {
       beforeEach(async () => {
@@ -193,12 +192,12 @@ class SomeComponent {
           });
         });
 
-        it('should be called when a component is bootstrapped',
-           inject([ApplicationRef], (ref: ApplicationRef) => {
-             createRootEl();
-             const compRef = ref.bootstrap(SomeComponent);
-             expect(capturedCompRefs).toEqual([compRef]);
-           }));
+        it('should be called when a component is bootstrapped', () => {
+          createRootEl();
+          const appRef = TestBed.inject(ApplicationRef);
+          const compRef = appRef.bootstrap(SomeComponent);
+          expect(capturedCompRefs).toEqual([compRef]);
+        });
       });
 
       describe('bootstrap', () => {
@@ -209,12 +208,13 @@ class SomeComponent {
                    {provide: APP_INITIALIZER, useValue: () => new Promise(() => {}), multi: true}
                  ]
                },
-               inject([ApplicationRef], (ref: ApplicationRef) => {
+               () => {
+                 const appRef = TestBed.inject(ApplicationRef);
                  createRootEl();
-                 expect(() => ref.bootstrap(SomeComponent))
+                 expect(() => appRef.bootstrap(SomeComponent))
                      .toThrowError(
                          'NG0405: Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
-               })));
+               }));
       });
     });
 
@@ -243,31 +243,30 @@ class SomeComponent {
       }
 
       it('should cleanup the DOM',
-         withModule(
-             {providers},
-             waitForAsync(inject(
-                 [EnvironmentInjector, DOCUMENT],
-                 (parentInjector: EnvironmentInjector, doc: Document) => {
-                   createRootEl();
+         withModule({providers}, waitForAsync(() => {
+                      const parentInjector = TestBed.inject(EnvironmentInjector);
+                      const doc = TestBed.inject(DOCUMENT);
 
-                   const appRef = createApplicationRef(parentInjector);
-                   appRef.bootstrap(SomeComponent);
+                      createRootEl();
 
-                   // The component template content (`hello`) is present in the document body.
-                   expect(doc.body.textContent!.indexOf('hello') > -1).toBeTrue();
+                      const appRef = createApplicationRef(parentInjector);
+                      appRef.bootstrap(SomeComponent);
 
-                   appRef.destroy();
+                      // The component template content (`hello`) is present in the document body.
+                      expect(doc.body.textContent!.indexOf('hello') > -1).toBeTrue();
 
-                   // The component template content (`hello`) is *not* present in the document
-                   // body, i.e. the DOM has been cleaned up.
-                   expect(doc.body.textContent!.indexOf('hello') === -1).toBeTrue();
-                 }))));
+                      appRef.destroy();
+
+                      // The component template content (`hello`) is *not* present in the document
+                      // body, i.e. the DOM has been cleaned up.
+                      expect(doc.body.textContent!.indexOf('hello') === -1).toBeTrue();
+                    })));
 
       it('should throw when trying to call `destroy` method on already destroyed ApplicationRef',
          withModule(
-             {providers},
-             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
+             {providers}, waitForAsync(() => {
                createRootEl();
+               const parentInjector = TestBed.inject(EnvironmentInjector);
                const appRef = createApplicationRef(parentInjector);
                appRef.bootstrap(SomeComponent);
                appRef.destroy();
@@ -275,101 +274,101 @@ class SomeComponent {
                expect(() => appRef.destroy())
                    .toThrowError(
                        'NG0406: This instance of the `ApplicationRef` has already been destroyed.');
-             }))));
+             })));
 
       it('should invoke all registered `onDestroy` callbacks (internal API)',
-         withModule(
-             {providers},
-             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
-               const onDestroyA = jasmine.createSpy('onDestroyA');
-               const onDestroyB = jasmine.createSpy('onDestroyB');
-               createRootEl();
+         withModule({providers}, waitForAsync(() => {
+                      const onDestroyA = jasmine.createSpy('onDestroyA');
+                      const onDestroyB = jasmine.createSpy('onDestroyB');
+                      createRootEl();
 
-               const appRef = createApplicationRef(parentInjector) as unknown as ApplicationRef &
-                   {onDestroy: Function};
-               appRef.bootstrap(SomeComponent);
-               appRef.onDestroy(onDestroyA);
-               appRef.onDestroy(onDestroyB);
-               appRef.destroy();
+                      const parentInjector = TestBed.inject(EnvironmentInjector);
+                      const appRef =
+                          createApplicationRef(parentInjector) as unknown as ApplicationRef &
+                          {onDestroy: Function};
+                      appRef.bootstrap(SomeComponent);
+                      appRef.onDestroy(onDestroyA);
+                      appRef.onDestroy(onDestroyB);
+                      appRef.destroy();
 
-               expect(onDestroyA).toHaveBeenCalledTimes(1);
-               expect(onDestroyB).toHaveBeenCalledTimes(1);
-             }))));
+                      expect(onDestroyA).toHaveBeenCalledTimes(1);
+                      expect(onDestroyB).toHaveBeenCalledTimes(1);
+                    })));
 
       it('should allow to unsubscribe a registered `onDestroy` callback (internal API)',
-         withModule(
-             {providers},
-             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
-               createRootEl();
+         withModule({providers}, waitForAsync(() => {
+                      createRootEl();
 
-               const appRef = createApplicationRef(parentInjector) as unknown as ApplicationRef &
-                   {onDestroy: Function};
-               appRef.bootstrap(SomeComponent);
+                      const parentInjector = TestBed.inject(EnvironmentInjector);
+                      const appRef =
+                          createApplicationRef(parentInjector) as unknown as ApplicationRef &
+                          {onDestroy: Function};
+                      appRef.bootstrap(SomeComponent);
 
-               const onDestroyA = jasmine.createSpy('onDestroyA');
-               const onDestroyB = jasmine.createSpy('onDestroyB');
-               const unsubscribeOnDestroyA = appRef.onDestroy(onDestroyA);
-               const unsubscribeOnDestroyB = appRef.onDestroy(onDestroyB);
+                      const onDestroyA = jasmine.createSpy('onDestroyA');
+                      const onDestroyB = jasmine.createSpy('onDestroyB');
+                      const unsubscribeOnDestroyA = appRef.onDestroy(onDestroyA);
+                      const unsubscribeOnDestroyB = appRef.onDestroy(onDestroyB);
 
-               // Unsubscribe registered listeners.
-               unsubscribeOnDestroyA();
-               unsubscribeOnDestroyB();
+                      // Unsubscribe registered listeners.
+                      unsubscribeOnDestroyA();
+                      unsubscribeOnDestroyB();
 
-               appRef.destroy();
+                      appRef.destroy();
 
-               expect(onDestroyA).not.toHaveBeenCalled();
-               expect(onDestroyB).not.toHaveBeenCalled();
-             }))));
+                      expect(onDestroyA).not.toHaveBeenCalled();
+                      expect(onDestroyB).not.toHaveBeenCalled();
+                    })));
 
       it('should correctly update the `destroyed` flag',
-         withModule(
-             {providers},
-             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
-               createRootEl();
+         withModule({providers}, waitForAsync(() => {
+                      createRootEl();
 
-               const appRef = createApplicationRef(parentInjector);
-               appRef.bootstrap(SomeComponent);
 
-               expect(appRef.destroyed).toBeFalse();
+                      const parentInjector = TestBed.inject(EnvironmentInjector);
+                      const appRef = createApplicationRef(parentInjector);
+                      appRef.bootstrap(SomeComponent);
 
-               appRef.destroy();
+                      expect(appRef.destroyed).toBeFalse();
 
-               expect(appRef.destroyed).toBeTrue();
-             }))));
+                      appRef.destroy();
+
+                      expect(appRef.destroyed).toBeTrue();
+                    })));
 
       it('should also destroy underlying injector',
-         withModule(
-             {providers},
-             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
-               // This is a temporary type to represent an instance of an R3Injector, which
-               // can be destroyed.
-               // The type will be replaced with a different one once destroyable injector
-               // type is available.
-               type DestroyableInjector = EnvironmentInjector&{destroyed?: boolean};
+         withModule({providers}, waitForAsync(() => {
+                      // This is a temporary type to represent an instance of an R3Injector, which
+                      // can be destroyed.
+                      // The type will be replaced with a different one once destroyable injector
+                      // type is available.
+                      type DestroyableInjector = EnvironmentInjector&{destroyed?: boolean};
 
-               createRootEl();
+                      createRootEl();
 
-               const injector = createApplicationRefInjector(parentInjector) as DestroyableInjector;
+                      const parentInjector = TestBed.inject(EnvironmentInjector);
+                      const injector =
+                          createApplicationRefInjector(parentInjector) as DestroyableInjector;
 
-               const appRef = injector.get(ApplicationRef);
-               appRef.bootstrap(SomeComponent);
+                      const appRef = injector.get(ApplicationRef);
+                      appRef.bootstrap(SomeComponent);
 
-               expect(appRef.destroyed).toBeFalse();
-               expect(injector.destroyed).toBeFalse();
+                      expect(appRef.destroyed).toBeFalse();
+                      expect(injector.destroyed).toBeFalse();
 
-               appRef.destroy();
+                      appRef.destroy();
 
-               expect(appRef.destroyed).toBeTrue();
-               expect(injector.destroyed).toBeTrue();
-             }))));
+                      expect(appRef.destroyed).toBeTrue();
+                      expect(injector.destroyed).toBeTrue();
+                    })));
     });
 
     describe('bootstrapModule', () => {
       let defaultPlatform: PlatformRef;
-      beforeEach(inject([PlatformRef], (_platform: PlatformRef) => {
+      beforeEach(() => {
         createRootEl();
-        defaultPlatform = _platform;
-      }));
+        defaultPlatform = TestBed.inject(PlatformRef);
+      });
 
       it('should wait for asynchronous app initializers', waitForAsync(async () => {
            let resolve: (result: any) => void;
@@ -529,10 +528,10 @@ class SomeComponent {
 
     describe('bootstrapModuleFactory', () => {
       let defaultPlatform: PlatformRef;
-      beforeEach(inject([PlatformRef], (_platform: PlatformRef) => {
+      beforeEach(() => {
         createRootEl();
-        defaultPlatform = _platform;
-      }));
+        defaultPlatform = TestBed.inject(PlatformRef);
+      });
       it('should wait for asynchronous app initializers', waitForAsync(async () => {
            let resolve: (result: any) => void;
            const promise: Promise<any> = new Promise((res) => {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ApplicationRef, NgZone} from '@angular/core';
-import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {EventManager} from '@angular/platform-browser';
 import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-browser/src/dom/events/hammer_gestures';
 
@@ -59,9 +59,9 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       // Inject the NgZone so that we can make it available to the plugin through a fake
       // EventManager.
       let ngZone: NgZone;
-      beforeEach(inject([NgZone], (z: NgZone) => {
-        ngZone = z;
-      }));
+      beforeEach(() => {
+        ngZone = TestBed.inject(NgZone);
+      });
 
       let loaderCalled = 0;
       let loaderIsCalledInAngularZone: boolean|null = null;

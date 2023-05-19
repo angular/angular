@@ -7,7 +7,7 @@
  */
 
 import {EventEmitter, NgZone} from '@angular/core';
-import {fakeAsync, flushMicrotasks, inject, waitForAsync} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed, waitForAsync} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -873,10 +873,10 @@ function commonTests() {
     describe('#10503', () => {
       let ngZone: NgZone;
 
-      beforeEach(inject([NgZone], (_ngZone: NgZone) => {
+      beforeEach(() => {
         // Create a zone outside the fakeAsync.
-        ngZone = _ngZone;
-      }));
+        ngZone = TestBed.inject(NgZone);
+      });
 
       it('should fakeAsync even if the NgZone was created outside.', fakeAsync(() => {
            let result: string = null!;

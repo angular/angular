@@ -774,6 +774,7 @@ export const TestBed: TestBedStatic = TestBedImpl;
  * })
  * ```
  *
+ * @deprecated use `TestBed.inject` instead
  * @publicApi
  */
 export function inject(tokens: any[], fn: Function): () => any {

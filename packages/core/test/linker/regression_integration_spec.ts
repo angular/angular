@@ -8,7 +8,7 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {ApplicationRef, Component, ComponentRef, ContentChild, createComponent, destroyPlatform, Directive, EnvironmentInjector, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
-import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {BrowserModule, By} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -354,15 +354,16 @@ describe('regressions using bootstrap', () => {
   let logger: MockConsole;
   let errorHandler: ErrorHandler;
 
-  beforeEach(inject([DOCUMENT], (doc: any) => {
+  beforeEach(() => {
     destroyPlatform();
+    const doc = TestBed.inject(DOCUMENT);
     const el = getDOM().createElement(COMP_SELECTOR, doc);
     doc.body.appendChild(el);
 
     logger = new MockConsole();
     errorHandler = new ErrorHandler();
     (errorHandler as any)._console = logger as any;
-  }));
+  });
 
   afterEach(() => {
     destroyPlatform();

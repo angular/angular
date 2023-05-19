@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, inject, tick} from '@angular/core/testing';
+import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -32,10 +32,14 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
       })('foo', 'bar');
     });
 
-    it('should work with inject()',
-       fakeAsync(inject([EventManager], (eventManager: EventManager) => {
+    it('should work with inject()', fakeAsync(() => {
+         const eventManager = TestBed.inject(EventManager);
          expect(eventManager).toBeAnInstanceOf(EventManager);
-       })));
+       }));
+
+    it('should work with inject()', fakeAsync(() => {
+         expect(TestBed.inject(EventManager)).toBeAnInstanceOf(EventManager);
+       }));
 
     it('should throw on nested calls', () => {
       expect(() => {

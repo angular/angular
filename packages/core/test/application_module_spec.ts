@@ -7,7 +7,6 @@
  */
 
 import {DEFAULT_CURRENCY_CODE, LOCALE_ID} from '@angular/core';
-import {inject} from '@angular/core/testing';
 
 import {DEFAULT_LOCALE_ID} from '../src/i18n/localization';
 import {getLocaleId, setLocaleId} from '../src/render3';
@@ -20,14 +19,15 @@ import {TestBed} from '../testing';
       setLocaleId(DEFAULT_LOCALE_ID);
     });
 
-    it('should set the default locale to "en-US"', inject([LOCALE_ID], (defaultLocale: string) => {
-         expect(defaultLocale).toEqual('en-US');
-       }));
+    it('should set the default locale to "en-US"', () => {
+      const defaultLocale = TestBed.inject(LOCALE_ID);
+      expect(defaultLocale).toEqual('en-US');
+    });
 
-    it('should set the default currency code to "USD"',
-       inject([DEFAULT_CURRENCY_CODE], (defaultCurrencyCode: string) => {
-         expect(defaultCurrencyCode).toEqual('USD');
-       }));
+    it('should set the default currency code to "USD"', () => {
+      const defaultCurrencyCode = TestBed.inject(DEFAULT_CURRENCY_CODE);
+      expect(defaultCurrencyCode).toEqual('USD');
+    });
 
     it('should set the ivy locale with the configured LOCALE_ID', () => {
       TestBed.configureTestingModule({providers: [{provide: LOCALE_ID, useValue: 'fr'}]});

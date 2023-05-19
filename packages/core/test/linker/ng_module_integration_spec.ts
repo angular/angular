@@ -10,7 +10,7 @@ import {Compiler, Component, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getM
 import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {NgModuleType} from '@angular/core/src/render3';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
-import {ComponentFixture, inject} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
@@ -78,10 +78,10 @@ describe('NgModule', () => {
   let compiler: Compiler;
   let injector: Injector;
 
-  beforeEach(inject([Compiler, Injector], (_compiler: Compiler, _injector: Injector) => {
-    compiler = _compiler;
-    injector = _injector;
-  }));
+  beforeEach(() => {
+    compiler = TestBed.inject(Compiler);
+    injector = TestBed.inject(Injector);
+  });
 
   function createModuleFactory<T>(moduleType: Type<T>): NgModuleFactory<T> {
     return compiler.compileModuleSync(moduleType);

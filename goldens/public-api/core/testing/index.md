@@ -69,7 +69,7 @@ export function flushMicrotasks(): void;
 // @public
 export function getTestBed(): TestBed;
 
-// @public
+// @public @deprecated
 export function inject(tokens: any[], fn: Function): () => any;
 
 // @public (undocumented)

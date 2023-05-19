@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {EnvironmentInjector} from '@angular/core';
-import {inject, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {RouterModule} from '@angular/router';
 import {of} from 'rxjs';
 
@@ -85,20 +85,22 @@ describe('Router', () => {
       TestBed.configureTestingModule({imports: [RouterModule.forRoot([])]});
     });
 
-    it('should be idempotent', inject([Router, Location], (r: Router, location: Location) => {
-         r.setUpLocationChangeListener();
-         const a = (<any>r).locationSubscription;
-         r.setUpLocationChangeListener();
-         const b = (<any>r).locationSubscription;
+    it('should be idempotent', () => {
+      const r = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      r.setUpLocationChangeListener();
+      const a = (<any>r).locationSubscription;
+      r.setUpLocationChangeListener();
+      const b = (<any>r).locationSubscription;
 
-         expect(a).toBe(b);
+      expect(a).toBe(b);
 
-         r.dispose();
-         r.setUpLocationChangeListener();
-         const c = (<any>r).locationSubscription;
+      r.dispose();
+      r.setUpLocationChangeListener();
+      const c = (<any>r).locationSubscription;
 
-         expect(c).not.toBe(b);
-       }));
+      expect(c).not.toBe(b);
+    });
   });
 
   describe('PreActivation', () => {
@@ -144,11 +146,12 @@ describe('Router', () => {
       });
     });
 
-    beforeEach(inject([Logger], (_logger: Logger) => {
+    beforeEach(() => {
+      const _logger = TestBed.inject(Logger);
       empty = createEmptyStateSnapshot(serializer.parse('/'), null!);
       logger = _logger;
       events = [];
-    }));
+    });
 
     describe('ChildActivation', () => {
       it('should run', () => {

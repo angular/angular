@@ -12,7 +12,7 @@ import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatf
 import {ApplicationRef, destroyPlatform, provideZoneChangeDetection} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
-import {inject, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -129,8 +129,9 @@ function bootstrap(
       TestBed.configureTestingModule({providers: [Log]});
     });
 
-    beforeEach(inject([DOCUMENT], (doc: any) => {
+    beforeEach(() => {
       destroyPlatform();
+      const doc = TestBed.inject(DOCUMENT);
       compilerConsole = new DummyConsole();
       testProviders = [{provide: Console, useValue: compilerConsole}];
 
@@ -146,7 +147,7 @@ function bootstrap(
       doc.body.appendChild(el2);
       el.appendChild(lightDom);
       lightDom.textContent = 'loading';
-    }));
+    });
 
     afterEach(destroyPlatform);
 
@@ -476,13 +477,14 @@ function bootstrap(
       expect(state).toBeInstanceOf(TransferState);
     });
 
-    it('should retrieve sanitizer', inject([Injector], (injector: Injector) => {
-         const sanitizer: Sanitizer|null = injector.get(Sanitizer, null);
-         // We don't want to have sanitizer in DI. We use DI only to overwrite the
-         // sanitizer, but not for default one. The default one is pulled in by the Ivy
-         // instructions as needed.
-         expect(sanitizer).toBe(null);
-       }));
+    it('should retrieve sanitizer', () => {
+      const injector = TestBed.inject(Injector);
+      const sanitizer: Sanitizer|null = injector.get(Sanitizer, null);
+      // We don't want to have sanitizer in DI. We use DI only to overwrite the
+      // sanitizer, but not for default one. The default one is pulled in by the Ivy
+      // instructions as needed.
+      expect(sanitizer).toBe(null);
+    });
 
     it('should throw if no element is found', done => {
       const logger = new MockConsole();
@@ -658,30 +660,29 @@ function bootstrap(
        });
 
     it('should run platform initializers', done => {
-      inject([Log], (log: Log) => {
-        const p = createPlatformFactory(platformBrowserDynamic, 'someName', [
-          {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init1'), multi: true},
-          {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init2'), multi: true}
-        ])();
+      const log = TestBed.inject(Log);
+      const p = createPlatformFactory(platformBrowserDynamic, 'someName', [
+        {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init1'), multi: true},
+        {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init2'), multi: true}
+      ])();
 
-        @NgModule({
-          imports: [BrowserModule],
-          providers: [
-            {provide: APP_INITIALIZER, useValue: log.fn('app_init1'), multi: true},
-            {provide: APP_INITIALIZER, useValue: log.fn('app_init2'), multi: true}
-          ]
-        })
-        class SomeModule {
-          ngDoBootstrap() {}
-        }
+      @NgModule({
+        imports: [BrowserModule],
+        providers: [
+          {provide: APP_INITIALIZER, useValue: log.fn('app_init1'), multi: true},
+          {provide: APP_INITIALIZER, useValue: log.fn('app_init2'), multi: true}
+        ]
+      })
+      class SomeModule {
+        ngDoBootstrap() {}
+      }
 
-        expect(log.result()).toEqual('platform_init1; platform_init2');
-        log.clear();
-        p.bootstrapModule(SomeModule).then(() => {
-          expect(log.result()).toEqual('app_init1; app_init2');
-          done();
-        }, done.fail);
-      })();
+      expect(log.result()).toEqual('platform_init1; platform_init2');
+      log.clear();
+      p.bootstrapModule(SomeModule).then(() => {
+        expect(log.result()).toEqual('app_init1; app_init2');
+        done();
+      }, done.fail);
     });
 
     it('should not allow provideZoneChangeDetection in bootstrapModule', async () => {

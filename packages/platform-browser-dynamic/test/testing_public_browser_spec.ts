@@ -8,7 +8,7 @@
 
 import {ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, NgModule} from '@angular/core';
-import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
 
 // Components for the tests.
@@ -59,20 +59,20 @@ if (isBrowser) {
               {providers: [{provide: FancyService, useValue: new FancyService()}]});
         });
 
-        it('provides a real ResourceLoader instance',
-           inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
-             expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
-           }));
+        it('provides a real ResourceLoader instance', () => {
+          const resourceLoader = TestBed.inject(ResourceLoader);
+          expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+        });
 
-        it('should allow the use of fakeAsync',
-           fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
+        it('should allow the use of fakeAsync', fakeAsync(() => {
+             const service = TestBed.inject(FancyService);
              let value: any /** TODO #9100 */;
              service.getAsyncValue().then(function(val: any /** TODO #9100 */) {
                value = val;
              });
              tick();
              expect(value).toEqual('async value');
-           })));
+           }));
       });
     });
 

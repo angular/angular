@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component, Directive, forwardRef, Inject, Injectable, InjectionToken, Injector, NgModule, Optional} from '@angular/core';
 import {leaveView, specOnlyIsInstructionStateEmpty} from '@angular/core/src/render3/state';
-import {inject, TestBed, waitForAsync} from '@angular/core/testing';
+import {TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -567,10 +567,10 @@ describe('providers', () => {
         TestBed.configureTestingModule({declarations: [MyComp], providers: [MyComp, MyService]});
       });
 
-      it('should support injecting without bootstrapping',
-         waitForAsync(inject([MyComp, MyService], (comp: MyComp, service: MyService) => {
+      it('should support injecting without bootstrapping', waitForAsync(() => {
+           const comp = TestBed.inject(MyComp);
            expect(comp.svc.value).toEqual('some value');
-         })));
+         }));
     });
   });
 
