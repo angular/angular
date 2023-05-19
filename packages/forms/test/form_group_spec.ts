@@ -925,6 +925,11 @@ describe('FormGroup', () => {
       expect(c.getError('required')).toEqual(true);
       expect(g1.getError('required', ['one', 0, 'two'])).toEqual(true);
     });
+
+    it('should return true when the erorr is not null but falsy', () => {
+      const c = new FormControl('', () => ({'min': 0}));
+      expect(c.hasError('min')).toEqual(true);
+    });
   });
 
   describe('validator', () => {

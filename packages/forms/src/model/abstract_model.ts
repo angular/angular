@@ -1261,7 +1261,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * If the control is not present, false is returned.
    */
   hasError(errorCode: string, path?: Array<string|number>|string): boolean {
-    return !!this.getError(errorCode, path);
+    return this.getError(errorCode, path) !== null;
   }
 
   /**
