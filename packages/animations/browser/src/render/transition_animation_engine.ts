@@ -1168,9 +1168,7 @@ export class TransitionAnimationEngine {
     replaceNodes.forEach(node => {
       const post = postStylesMap.get(node);
       const pre = preStylesMap.get(node);
-      postStylesMap.set(
-          node,
-          new Map([...Array.from(post?.entries() ?? []), ...Array.from(pre?.entries() ?? [])]));
+      postStylesMap.set(node, new Map([...(post?.entries() ?? []), ...(pre?.entries() ?? [])]));
     });
 
     const rootPlayers: TransitionAnimationPlayer[] = [];
