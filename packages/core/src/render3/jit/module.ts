@@ -424,7 +424,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
     return [type];
   }
 
-  return [...flatten(maybeUnwrapFn(ngModuleDef.exports).map((type) => {
+  return flatten(maybeUnwrapFn(ngModuleDef.exports).map((type) => {
     const ngModuleDef = getNgModuleDef(type);
     if (ngModuleDef) {
       verifySemanticsOfNgModuleDef(type as any as NgModuleType, false);
@@ -432,7 +432,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
     } else {
       return type;
     }
-  }))];
+  }));
 }
 
 /**
