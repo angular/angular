@@ -293,6 +293,7 @@ export interface ViewChildrenDecorator {
    *
    * * **selector** - The directive type or the name used for querying.
    * * **read** - Used to read a different token from the queried elements.
+   * * **static** - True to resolve query results before change detection runs,
    * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
    *   if the QueryList result has changed. When `false` the `changes` observable might emit even
    *   if the QueryList has not changed.
@@ -331,9 +332,9 @@ export interface ViewChildrenDecorator {
    * @Annotation
    */
   (selector: ProviderToken<unknown>|Function|string,
-   opts?: {read?: any, emitDistinctChangesOnly?: boolean}): any;
+   opts?: {read?: any, emitDistinctChangesOnly?: boolean, static?: boolean}): any;
   new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {read?: any, emitDistinctChangesOnly?: boolean}): ViewChildren;
+      opts?: {read?: any, emitDistinctChangesOnly?: boolean, static?: boolean}): ViewChildren;
 }
 
 /**

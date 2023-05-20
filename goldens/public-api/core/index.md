@@ -1538,11 +1538,13 @@ export interface ViewChildrenDecorator {
     (selector: ProviderToken<unknown> | Function | string, opts?: {
         read?: any;
         emitDistinctChangesOnly?: boolean;
+        static?: boolean;
     }): any;
     // (undocumented)
     new (selector: ProviderToken<unknown> | Function | string, opts?: {
         read?: any;
         emitDistinctChangesOnly?: boolean;
+        static?: boolean;
     }): ViewChildren;
 }
 

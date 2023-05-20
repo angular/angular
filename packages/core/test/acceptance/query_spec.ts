@@ -121,6 +121,8 @@ describe('query logic', () => {
       // static ViewChild query should be set in creation mode, before CD runs
       expect(component.textDir).toBeAnInstanceOf(TextDirective);
       expect(component.textDir.text).toEqual('');
+      expect(component.textDirectives.length).toEqual(2);
+      expect(component.textDirectives.get(0)).toBeAnInstanceOf(TextDirective);
       expect(component.setEvents).toEqual(['textDir set']);
 
       // dynamic ViewChild query should not have been resolved yet
@@ -2710,6 +2712,7 @@ class TextDirective {
   selector: 'static-view-query-comp',
   template: `
     <div [text]="text"></div>
+    <div [text]="text"></div>
     <span #foo></span>
   `
 })
@@ -2717,6 +2720,8 @@ class StaticViewQueryComp {
   private _textDir!: TextDirective;
   private _foo!: ElementRef;
   setEvents: string[] = [];
+
+  @ViewChildren(TextDirective, {static: true}) textDirectives!: QueryList<TextDirective>;
 
   @ViewChild(TextDirective, {static: true})
   get textDir(): TextDirective {
