@@ -26,13 +26,6 @@ For more information, see the [TypeScript Handbook](https://www.typescriptlang.o
 
 The following options are available for configuring the AOT template compiler.
 
-### `allowEmptyCodegenFiles`
-
-When `true`, create all possible files even if they are empty.
-Default is `false`.
-Used by the Bazel build rules to simplify how Bazel rules track file dependencies.
-Do not use this option outside of the Bazel rules.
-
 ### `annotationsAs`
 
 Modifies how Angular-specific annotations are emitted to improve tree-shaking.
