@@ -9,7 +9,7 @@
 import {computed, setPostSignalSetFn, signal} from '@angular/core/src/signals';
 
 describe('signals', () => {
-  it('should be a getter which reflect the set value', () => {
+  it('should be a getter which reflects the set value', () => {
     const state = signal(false);
     expect(state()).toBeFalse();
     state.set(true);
