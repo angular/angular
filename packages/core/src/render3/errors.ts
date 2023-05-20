@@ -17,6 +17,11 @@ import {LView, TVIEW} from './interfaces/view';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';
 import {stringifyForError} from './util/stringify_utils';
 
+/**
+ * The max length of the string representation of a value in an error message
+ */
+const VALUE_STRING_LENGTH_LIMIT = 200;
+
 /** Verifies that a given type is a Standalone Component. */
 export function assertStandaloneComponentType(type: Type<unknown>) {
   assertComponentDef(type);
@@ -60,7 +65,7 @@ export function throwErrorIfNoChangesMode(
   const field = propName ? ` for '${propName}'` : '';
   let msg =
       `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${
-          field}: '${oldValue}'. Current value: '${currValue}'.${
+          field}: '${formatValue(oldValue)}'. Current value: '${formatValue(currValue)}'.${
           componentClassName ? ` Expression location: ${componentClassName} component` : ''}`;
   if (creationMode) {
     msg +=
@@ -68,6 +73,21 @@ export function throwErrorIfNoChangesMode(
         ` Has it been created in a change detection hook?`;
   }
   throw new RuntimeError(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED, msg);
+}
+
+function formatValue(value: unknown): string {
+  let strValue: string = String(value);
+
+  // JSON.stringify will throw on circular references
+  try {
+    if (Array.isArray(value) || strValue === '[object Object]') {
+      strValue = JSON.stringify(value);
+    }
+  } catch (error) {
+  }
+  return strValue.length > VALUE_STRING_LENGTH_LIMIT ?
+      (strValue.substring(0, VALUE_STRING_LENGTH_LIMIT) + '…') :
+      strValue;
 }
 
 function constructDetailsForInterpolation(
