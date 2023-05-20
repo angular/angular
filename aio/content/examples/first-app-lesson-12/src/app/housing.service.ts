@@ -118,7 +118,7 @@ export class HousingService {
   }
   // #docregion submit-method
   submitApplication(firstName: string, lastName: string, email: string) {
-    console.log(`Homes application recieved: firstName: ${firstName}, lastName: ${lastName}, email: ${email}.`);
+    console.log(`Homes application received: firstName: ${firstName}, lastName: ${lastName}, email: ${email}.`);
   }
   // #enddocregion
 }
