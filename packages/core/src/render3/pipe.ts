@@ -8,7 +8,7 @@
 
 import {PipeTransform} from '../change_detection/pipe_transform';
 import {setInjectImplementation} from '../di/inject_switch';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 
 import {getFactoryDef} from './definition_factory';
@@ -76,6 +76,14 @@ export function ɵɵpipe(index: number, pipeName: string): any {
  */
 function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any>|undefined {
   if (registry) {
+    if (ngDevMode) {
+      const pipes = registry.filter(pipe => pipe.name === name);
+      // TODO: Throw an error in the next major
+      if (pipes.length > 1) {
+        console.warn(formatRuntimeError(
+            RuntimeErrorCode.MULTIPLE_MATCHING_PIPES, getMultipleMatchingPipesMessage(name)));
+      }
+    }
     for (let i = registry.length - 1; i >= 0; i--) {
       const pipeDef = registry[i];
       if (name === pipeDef.name) {
@@ -86,6 +94,26 @@ function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any>|unde
   if (ngDevMode) {
     throw new RuntimeError(RuntimeErrorCode.PIPE_NOT_FOUND, getPipeNotFoundErrorMessage(name));
   }
+}
+
+/**
+ * Generates a helpful error message for the user when multiple pipes match the name.
+ *
+ * @param name Name of the pipe
+ * @returns The error message
+ */
+function getMultipleMatchingPipesMessage(name: string) {
+  const lView = getLView();
+  const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
+  const context = declarationLView[CONTEXT];
+  const hostIsStandalone = isHostComponentStandalone(lView);
+  const componentInfoMessage = context ? ` in the '${context.constructor.name}' component` : '';
+  const verifyMessage = `check ${
+      hostIsStandalone ? '\'@Component.imports\' of this component' :
+                         'the imports of this module'}`;
+  const errorMessage =
+      `Multiple pipes match the name \`${name}\`${componentInfoMessage}. ${verifyMessage}`;
+  return errorMessage;
 }
 
 /**

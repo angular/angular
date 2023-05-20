@@ -89,6 +89,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
     // (undocumented)
+    MULTIPLE_MATCHING_PIPES = 313,
+    // (undocumented)
     MULTIPLE_PLATFORMS = 400,
     // (undocumented)
     NO_SUPPORTING_DIFFER_FACTORY = 901,
