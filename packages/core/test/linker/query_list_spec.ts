@@ -50,8 +50,9 @@ import {fakeAsync, tick} from '@angular/core/testing';
       expect(queryList.length).toEqual(2);
     });
 
-    it('should support get', () => {
+    it('should support at/get', () => {
       queryList.reset(['one', 'two']);
+      expect(queryList.at(1)).toEqual('two');
       expect(queryList.get(1)).toEqual('two');
     });
 

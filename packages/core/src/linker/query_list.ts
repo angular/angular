@@ -75,8 +75,16 @@ export class QueryList<T> implements Iterable<T> {
 
   /**
    * Returns the QueryList entry at `index`.
+   * @deprecated Use at instead
    */
   get(index: number): T|undefined {
+    return this.at(index);
+  }
+
+  /**
+   * Returns the QueryList entry at `index`.
+   */
+  at(index: number): T|undefined {
     return this._results[index];
   }
 

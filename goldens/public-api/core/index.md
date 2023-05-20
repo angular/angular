@@ -1194,6 +1194,7 @@ export class QueryList<T> implements Iterable<T> {
     // (undocumented)
     [Symbol.iterator]: () => Iterator<T>;
     constructor(_emitDistinctChangesOnly?: boolean);
+    at(index: number): T | undefined;
     get changes(): Observable<any>;
     destroy(): void;
     // (undocumented)
@@ -1205,6 +1206,7 @@ export class QueryList<T> implements Iterable<T> {
     // (undocumented)
     readonly first: T;
     forEach(fn: (item: T, index: number, array: T[]) => void): void;
+    // @deprecated
     get(index: number): T | undefined;
     // (undocumented)
     readonly last: T;
