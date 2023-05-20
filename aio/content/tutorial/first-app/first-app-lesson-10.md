@@ -38,7 +38,7 @@ Perform these steps on the app code in your IDE.
 
     <code-example format="shell" language="shell">
 
-    ng generate component details --standalone --inline-style --inline-template
+    ng generate component details --standalone --inline-template --skip-tests
 
     </code-example>
 
