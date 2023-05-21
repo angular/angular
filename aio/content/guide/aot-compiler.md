@@ -74,7 +74,7 @@ There are three phases of AOT compilation.
 |:--- |:---                    |:---     |
 | 1   | code analysis          | In this phase, the TypeScript compiler and *AOT collector* create a representation of the source. The collector does not attempt to interpret the metadata it collects. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.                        |
 | 2   | code generation        | In this phase, the compiler's `StaticReflector` interprets the metadata collected in phase 1, performs additional validation of the metadata, and throws an error if it detects a metadata restriction violation.                                                                                        |
-| 3   | template type checking | In this optional phase, the Angular *template compiler* uses the TypeScript compiler to validate the binding expressions in templates. You can enable this phase explicitly by setting the `fullTemplateTypeCheck` configuration option; see [Angular compiler options](guide/angular-compiler-options). |
+| 3   | template type checking | In this optional phase, the Angular *template compiler* uses the TypeScript compiler to validate the binding expressions in templates. You can enable this phase explicitly by setting the `strictTemplates` configuration option; see [Angular compiler options](guide/angular-compiler-options). |
 
 ### Metadata restrictions
 
@@ -83,7 +83,8 @@ You write metadata in a *subset* of TypeScript that must conform to the followin
 *   Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript
 *   Only reference exported symbols after [code folding](#code-folding)
 *   Only call [functions supported](#supported-functions) by the compiler
-*   Decorated and data-bound class members must be public
+*   Input/Outputs and data-bound class members must be public or protected.
+
 
 For additional guidelines and instructions on preparing an application for AOT compilation, see [Angular: Writing AOT-friendly applications](https://medium.com/sparkles-blog/angular-writing-aot-friendly-applications-7b64c8afbe3f).
 
@@ -310,27 +311,14 @@ It's the compiler's job to interpret the `.metadata.json` in the code generation
 
 The compiler understands all syntax forms that the collector supports, but it may reject *syntactically* correct metadata if the *semantics* violate compiler rules.
 
-### Public symbols
+### Public or protected symbols
 
 The compiler can only reference *exported symbols*.
 
-*   Decorated component class members must be public.
-    You cannot make an `@Input()` property private or protected.
+*   Decorated component class members must be public or protected.
+    You cannot make an `@Input()` property private.
 
-*   Data bound properties must also be public
-
-<!--<code-example format="typescript" language="typescript">
-
-// BAD CODE - title is private
-&commat;Component({
-  selector: 'app-root',
-  template: '&lt;h1&gt;{{title}}&lt;/h1&gt;'
-})
-export class AppComponent {
-  private title = 'My App'; // Bad
-}
-
-</code-example>-->
+*   Data bound properties must also be public or protected
 
 <a id="supported-functions"></a>
 
