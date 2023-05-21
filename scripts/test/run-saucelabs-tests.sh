@@ -6,6 +6,7 @@
 set -eu -o pipefail
 
 NUMBER_OF_PARALLEL_BROWSERS="${1:-2}"
+shift
 
 if [[ -z "${SAUCE_USERNAME:-}" ]]; then
   echo "ERROR: SAUCE_USERNAME environment variable must be set; see tools/saucelabs-daemon/README.md for more info."
@@ -50,6 +51,6 @@ trap kill_background_service INT TERM
 sleep 2
 
 # Run all of the saucelabs test targets
-yarn bazel test --config=saucelabs --jobs="$NUMBER_OF_PARALLEL_BROWSERS" ${TESTS}
+yarn bazel test --config=saucelabs --jobs="$NUMBER_OF_PARALLEL_BROWSERS" ${TESTS} "$@"
 
 kill_background_service
