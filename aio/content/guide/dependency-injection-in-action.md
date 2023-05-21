@@ -23,7 +23,7 @@ This is called *sandboxing* because each service and component instance has its 
 
 In this example, `HeroBiosComponent` presents three instances of `HeroBioComponent`.
 
-<code-example header="app/hero-bios.component.ts" path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="simple"></code-example>
+<code-example header="src/app/hero-bios.component.ts" path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="simple"></code-example>
 
 Each `HeroBioComponent` can edit a single hero's biography.
 `HeroBioComponent` relies on `HeroCacheService` to fetch, cache, and perform other persistence operations on that hero.
