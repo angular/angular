@@ -86,7 +86,7 @@ This `HeroBiosAndContactsComponent` is a revision of `HeroBiosComponent` which y
 
 Focus on the template:
 
-<code-example header="dependency-injection-in-action/src/app/hero-bios.component.ts" path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="template"></code-example>
+<code-example header="src/app/hero-bios.component.ts" path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="template"></code-example>
 
 Now there's a new `<hero-contact>` element between the `<hero-bio>` tags.
 Angular *projects*, or *transcludes*, the corresponding `HeroContactComponent` into the `HeroBioComponent` view, placing it in the `<ng-content>` slot of the `HeroBioComponent` template.
@@ -230,7 +230,7 @@ You can also use a value provider in a unit test to provide mock data in place o
 
 The `HeroOfTheMonthComponent` example has two value providers.
 
-<code-example header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-value"></code-example>
+<code-example header="src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-value"></code-example>
 
 *   The first provides an existing instance of the `Hero` class to use for the `Hero` token, rather than requiring the injector to create a new instance with `new` or use its own cached instance.
     Here, the token is the class itself.
@@ -245,7 +245,7 @@ The title string literal is immediately available.
 The `someHero` variable in this example was set earlier in the file as shown below.
 You can't use a variable whose value will be defined later.
 
-<code-example header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="some-hero"></code-example>
+<code-example header="src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="some-hero"></code-example>
 
 Other types of providers can create their values *lazily*; that is, when they're needed for injection.
 
@@ -260,7 +260,7 @@ The alternative implementation could, for example, implement a different strateg
 
 The following code shows two examples in `HeroOfTheMonthComponent`.
 
-<code-example header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class"></code-example>
+<code-example header="src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class"></code-example>
 
 The first provider is the *de-sugared*, expanded form of the most typical case in which the class to be created \(`HeroService`\) is also the provider's dependency injection token.
 The short form is generally preferred; this long form makes the details explicit.
@@ -287,7 +287,7 @@ Components outside the tree continue to receive the original `LoggerService` ins
 The `useExisting` provider key lets you map one token to another.
 In effect, the first token is an *alias* for the service associated with the second token, creating two ways to access the same service object.
 
-<code-example header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing"></code-example>
+<code-example header="src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing"></code-example>
 
 You can use this technique to narrow an API through an aliasing interface.
 The following example shows an alias introduced for that purpose.
@@ -330,7 +330,7 @@ This is illustrated in the following image, which displays the logging date.
 
 The `useFactory` provider key lets you create a dependency object by calling a factory function, as in the following example.
 
-<code-example header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-factory"></code-example>
+<code-example header="src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-factory"></code-example>
 
 The injector provides the dependency value by invoking a factory function, that you provide as the value of the `useFactory` key.
 Notice that this form of provider has a third key, `deps`, which specifies dependencies for the `useFactory` function.
@@ -375,11 +375,11 @@ That's the subject of the next section.
 
 The previous *Hero of the Month* example used the `MinimalLogger` class as the token for a provider of `LoggerService`.
 
-<code-example header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing"></code-example>
+<code-example header="src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing"></code-example>
 
 `MinimalLogger` is an abstract class.
 
-<code-example header="dependency-injection-in-action/src/app/minimal-logger.service.ts" path="dependency-injection-in-action/src/app/minimal-logger.service.ts"></code-example>
+<code-example header="src/app/minimal-logger.service.ts" path="dependency-injection-in-action/src/app/minimal-logger.service.ts"></code-example>
 
 An abstract class is usually a base class that you can extend.
 In this app, however there is no class that inherits from `MinimalLogger`.
@@ -403,7 +403,7 @@ Using a class as an interface gives you the characteristics of an interface in a
 To minimize memory cost, however, the class should have *no implementation*.
 The `MinimalLogger` transpiles to this unoptimized, pre-minified JavaScript for a constructor function.
 
-<code-example header="dependency-injection-in-action/src/app/minimal-logger.service.ts" path="dependency-injection-in-action/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled"></code-example>
+<code-example header="src/app/minimal-logger.service.ts" path="dependency-injection-in-action/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled"></code-example>
 
 **NOTE**: <br />
 It doesn't have any members.
@@ -425,11 +425,11 @@ They're better represented by a token that is both unique and symbolic, a JavaSc
 `InjectionToken` has these characteristics.
 You encountered them twice in the *Hero of the Month* example, in the *title* value provider and in the *runnersUp* factory provider.
 
-<code-example header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token"></code-example>
+<code-example header="src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token"></code-example>
 
 You created the `TITLE` token like this:
 
-<code-example header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="injection-token"></code-example>
+<code-example header="src/app/hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="injection-token"></code-example>
 
 The type parameter, while optional, conveys the dependency's type to developers and tooling.
 The token description is another developer aid.
