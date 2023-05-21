@@ -43,17 +43,13 @@ if (!parallelExecutions) {
   throw Error(`Please specify a non-zero number of parallel browsers to start.`);
 }
 
-const browserInstances: Browser[] = [];
-for (let i = 0; i < parallelExecutions; i++) {
-  browserInstances.push(...Object.values(customLaunchers) as any);
-}
-
 // Start the daemon and launch the given browser
 const daemon = new SaucelabsDaemon(
     username,
     accessKey,
     process.env.CIRCLE_BUILD_NUM!,
-    browserInstances,
+    Object.values(customLaunchers) as Browser[],
+    parallelExecutions,
     sauceConnect,
     {tunnelIdentifier},
 );
