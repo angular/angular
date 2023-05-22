@@ -7,7 +7,7 @@
  */
 import {AnimationEvent, AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleDataMap} from '@angular/animations';
 
-import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
+import {AnimationStyleNormalizer} from '../../src/dsl/animation_style_normalizer';
 import {animationFailed} from '../error_helpers';
 
 import {ANIMATABLE_PROP_SET} from './web_animations/animatable_props_set';

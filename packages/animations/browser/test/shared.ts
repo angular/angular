@@ -10,8 +10,8 @@ import {trigger} from '@angular/animations';
 
 import {TriggerAst} from '../src/dsl/animation_ast';
 import {buildAnimationAst} from '../src/dsl/animation_ast_builder';
+import {NoopAnimationStyleNormalizer} from '../src/dsl/animation_style_normalizer';
 import {AnimationTrigger, buildTrigger} from '../src/dsl/animation_trigger';
-import {NoopAnimationStyleNormalizer} from '../src/dsl/style_normalization/animation_style_normalizer';
 import {triggerParsingFailed} from '../src/error_helpers';
 import {triggerParsingWarnings} from '../src/warning_helpers';
 import {MockAnimationDriver} from '../testing/src/mock_animation_driver';

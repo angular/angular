@@ -8,8 +8,8 @@
 import {AnimationMetadataType, ɵStyleDataMap} from '@angular/animations';
 
 import {SequenceAst, TransitionAst, TriggerAst} from './animation_ast';
+import {AnimationStyleNormalizer} from './animation_style_normalizer';
 import {AnimationStateStyles, AnimationTransitionFactory} from './animation_transition_factory';
-import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer';
 
 
 

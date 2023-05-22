@@ -5,10 +5,39 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {invalidCssUnitValue} from '../../error_helpers';
-import {dashCaseToCamelCase} from '../../util';
 
-import {AnimationStyleNormalizer} from './animation_style_normalizer';
+import {forwardRef, Injectable} from '@angular/core';
+
+import {invalidCssUnitValue} from '../error_helpers';
+import {dashCaseToCamelCase} from '../util';
+
+
+/**
+ * @publicApi
+ */
+// Keep in mind that all browser test environments are init with the NoopAnimationsModule
+// Effectively overwriting this providedIn:'root'. See /tools/browser_tests.init.ts
+// So everytime the WebAnimationsStyleNormalizer is expected, it must me provided explicitly.
+@Injectable({providedIn: 'root', useClass: forwardRef(() => NoopAnimationStyleNormalizer)})
+export abstract class AnimationStyleNormalizer {
+  abstract normalizePropertyName(propertyName: string, errors: Error[]): string;
+  abstract normalizeStyleValue(
+      userProvidedProperty: string, normalizedProperty: string, value: string|number,
+      errors: Error[]): string;
+}
+
+@Injectable()
+export class NoopAnimationStyleNormalizer implements AnimationStyleNormalizer {
+  normalizePropertyName(propertyName: string, errors: Error[]): string {
+    return propertyName;
+  }
+
+  normalizeStyleValue(
+      userProvidedProperty: string, normalizedProperty: string, value: string|number,
+      errors: Error[]): string {
+    return <any>value;
+  }
+}
 
 const DIMENSIONAL_PROP_SET = new Set([
   'width',
@@ -42,7 +71,12 @@ const DIMENSIONAL_PROP_SET = new Set([
   'perspective'
 ]);
 
+@Injectable()
 export class WebAnimationsStyleNormalizer extends AnimationStyleNormalizer {
+  constructor() {
+    super();
+  }
+
   override normalizePropertyName(propertyName: string, errors: Error[]): string {
     return dashCaseToCamelCase(propertyName);
   }

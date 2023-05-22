@@ -7,6 +7,7 @@
  */
 import {animate, animateChild, animation, AnimationEvent, AnimationMetadata, AnimationOptions, AUTO_STYLE, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
+import {AnimationStyleNormalizer, WebAnimationsStyleNormalizer} from '@angular/animations/browser/src/dsl/animation_style_normalizer';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
@@ -33,7 +34,10 @@ describe('animation tests', function() {
   beforeEach(() => {
     resetLog();
     TestBed.configureTestingModule({
-      providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+      providers: [
+        {provide: AnimationDriver, useClass: MockAnimationDriver},
+        {provide: AnimationStyleNormalizer, useClass: WebAnimationsStyleNormalizer}
+      ],
       imports: [BrowserAnimationsModule]
     });
   });
@@ -67,6 +71,7 @@ describe('animation tests', function() {
 
          const fixture = TestBed.createComponent(SharedAnimationCmp);
          expect(fixture.componentInstance.animationType).toEqual('NoopAnimations');
+         TestBed.resetTestingModule();
        });
   });
 

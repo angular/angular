@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, AnimationEvent, AnimationMetadata, AnimationTriggerMetadata, NoopAnimationPlayer, state, style, transition, trigger} from '@angular/animations';
+import {animate, AnimationEvent, AnimationMetadata, AnimationTriggerMetadata, state, style, transition, trigger} from '@angular/animations';
 
 import {TriggerAst} from '../../src/dsl/animation_ast';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
+import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/animation_style_normalizer';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
-import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {getBodyNode} from '../../src/render/shared';
 import {TransitionAnimationEngine, TransitionAnimationPlayer} from '../../src/render/transition_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';

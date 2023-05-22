@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {animate, query, state, style, transition, trigger} from '@angular/animations';
-import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimationsPlayer} from '@angular/animations/browser';
+import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsPlayer} from '@angular/animations/browser';
+import {AnimationStyleNormalizer, WebAnimationsStyleNormalizer} from '@angular/animations/browser/src/dsl/animation_style_normalizer';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
 import {Component, ViewChild} from '@angular/core';
@@ -22,8 +23,8 @@ if (isNode) return;
 describe('animation integration tests using web animations', function() {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [{provide: AnimationDriver, useClass: ɵWebAnimationsDriver}],
-      imports: [BrowserAnimationsModule]
+      imports: [BrowserAnimationsModule],
+      providers: [{provide: AnimationStyleNormalizer, useClass: WebAnimationsStyleNormalizer}]
     });
   });
 

@@ -21,16 +21,10 @@
     "name": "AnimationAstBuilderVisitor"
   },
   {
-    "name": "AnimationBuilder"
-  },
-  {
     "name": "AnimationDriver"
   },
   {
     "name": "AnimationEngine"
-  },
-  {
-    "name": "AnimationFactory"
   },
   {
     "name": "AnimationGroupPlayer"
@@ -72,19 +66,10 @@
     "name": "BLOOM_MASK"
   },
   {
-    "name": "BROWSER_ANIMATIONS_PROVIDERS"
-  },
-  {
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
     "name": "BaseAnimationRenderer"
-  },
-  {
-    "name": "BrowserAnimationBuilder"
-  },
-  {
-    "name": "BrowserAnimationFactory"
   },
   {
     "name": "BrowserDomAdapter"
@@ -142,9 +127,6 @@
   },
   {
     "name": "DEFAULT_STATE_VALUE"
-  },
-  {
-    "name": "DIMENSIONAL_PROP_SET"
   },
   {
     "name": "DOCUMENT"
@@ -250,6 +232,9 @@
   },
   {
     "name": "Injector"
+  },
+  {
+    "name": "LAZY_LOADED_ANIMATIONS_PROVIDERS"
   },
   {
     "name": "LEAVE_TOKEN_REGEX"
@@ -378,6 +363,9 @@
     "name": "NoopAnimationPlayer"
   },
   {
+    "name": "NoopAnimationStyleNormalizer"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -423,9 +411,6 @@
     "name": "RefCountSubscriber"
   },
   {
-    "name": "RendererAnimationPlayer"
-  },
-  {
     "name": "RendererFactory2"
   },
   {
@@ -463,9 +448,6 @@
   },
   {
     "name": "SimpleOuterSubscriber"
-  },
-  {
-    "name": "SpecialCasedStyles"
   },
   {
     "name": "StandaloneService"
@@ -532,12 +514,6 @@
   },
   {
     "name": "WeakRefImpl"
-  },
-  {
-    "name": "WebAnimationsPlayer"
-  },
-  {
-    "name": "WebAnimationsStyleNormalizer"
   },
   {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
@@ -705,9 +681,6 @@
     "name": "computeStaticStyling"
   },
   {
-    "name": "computeStyle"
-  },
-  {
     "name": "concatStringsWithSpace"
   },
   {
@@ -718,9 +691,6 @@
   },
   {
     "name": "connectableObservableDescriptor"
-  },
-  {
-    "name": "containsElement"
   },
   {
     "name": "convertToBitFlags"
@@ -838,9 +808,6 @@
   },
   {
     "name": "extractStyleParams"
-  },
-  {
-    "name": "filterNonAnimatableStyles"
   },
   {
     "name": "findAttrIndexInNode"
@@ -1038,6 +1005,9 @@
     "name": "insertBloom"
   },
   {
+    "name": "instantiateRendererFactory"
+  },
+  {
     "name": "instructionState"
   },
   {
@@ -1057,9 +1027,6 @@
   },
   {
     "name": "invokeHostBindingsInCreationMode"
-  },
-  {
-    "name": "invokeQuery"
   },
   {
     "name": "isArray"
@@ -1132,9 +1099,6 @@
   },
   {
     "name": "isValueProvider"
-  },
-  {
-    "name": "issueAnimationCommand"
   },
   {
     "name": "iterator"
@@ -1224,7 +1188,7 @@
     "name": "normalizeAnimationOptions"
   },
   {
-    "name": "normalizeKeyframes"
+    "name": "normalizeKeyframes2"
   },
   {
     "name": "notFoundValueOrThrow"

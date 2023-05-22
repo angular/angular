@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
+import {DOCUMENT} from '@angular/common';
+import {ApplicationRef, Inject, Injectable, OnDestroy} from '@angular/core';
 
 import {TriggerAst} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
+import {AnimationStyleNormalizer} from '../dsl/animation_style_normalizer';
 import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger';
-import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
 import {triggerBuildFailed} from '../error_helpers';
 import {warnTriggerBuild} from '../warning_helpers';
 
@@ -19,7 +21,9 @@ import {parseTimelineCommand} from './shared';
 import {TimelineAnimationEngine} from './timeline_animation_engine';
 import {TransitionAnimationEngine} from './transition_animation_engine';
 
-export class AnimationEngine {
+
+@Injectable({providedIn: 'root'})
+export class AnimationEngine implements OnDestroy {
   private _transitionEngine: TransitionAnimationEngine;
   private _timelineEngine: TimelineAnimationEngine;
 
@@ -28,14 +32,21 @@ export class AnimationEngine {
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
 
+  // The `ApplicationRef` is injected here explicitly to force the dependency ordering.
+  // Since the `ApplicationRef` should be created earlier before the `AnimationEngine`, they
+  // both have `ngOnDestroy` hooks and `flush()` must be called after all views are destroyed.
   constructor(
-      private bodyNode: any, private _driver: AnimationDriver,
-      private _normalizer: AnimationStyleNormalizer) {
-    this._transitionEngine = new TransitionAnimationEngine(bodyNode, _driver, _normalizer);
-    this._timelineEngine = new TimelineAnimationEngine(bodyNode, _driver, _normalizer);
+      @Inject(DOCUMENT) doc: Document, private _driver: AnimationDriver,
+      private _normalizer: AnimationStyleNormalizer, appRef: ApplicationRef) {
+    this._transitionEngine = new TransitionAnimationEngine(doc.body, _driver, _normalizer);
+    this._timelineEngine = new TimelineAnimationEngine(doc.body, _driver, _normalizer);
 
     this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
         this.onRemovalComplete(element, context);
+  }
+
+  ngOnDestroy(): void {
+    this.flush();
   }
 
   registerTrigger(

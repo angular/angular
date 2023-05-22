@@ -41,6 +41,9 @@ export class NoopAnimationsModule {
 // @public
 export function provideAnimations(): Provider[];
 
+// @public (undocumented)
+export function provideLazyLoadedAnimations(): Provider[];
+
 // @public
 export function provideNoopAnimations(): Provider[];
 

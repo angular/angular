@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, AnimationPlayer, AnimationTriggerMetadata, state, style, transition, trigger} from '@angular/animations';
+import {animate, AnimationPlayer, AnimationTriggerMetadata, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
 import {APP_INITIALIZER, Component, destroyPlatform, importProvidersFrom, Injectable, NgModule, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {withBody} from '@angular/private/testing';
 
@@ -133,6 +133,10 @@ describe('AnimationRenderer', () => {
   });
 
   describe('flushing animations', () => {
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+    });
+
     // these tests are only meant to be run within the DOM
     if (isNode) return;
 
@@ -153,10 +157,7 @@ describe('AnimationRenderer', () => {
         }
       }
 
-      TestBed.configureTestingModule({
-        providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-        declarations: [Cmp]
-      });
+      TestBed.configureTestingModule({declarations: [Cmp]});
 
       const engine = TestBed.inject(AnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
@@ -189,10 +190,7 @@ describe('AnimationRenderer', () => {
            @ViewChild('elm') public element: any;
          }
 
-         TestBed.configureTestingModule({
-           providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-           declarations: [Cmp]
-         });
+         TestBed.configureTestingModule({declarations: [Cmp]});
 
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
@@ -238,10 +236,7 @@ describe('AnimationRenderer', () => {
            @ViewChild('elm3') public elm3: any;
          }
 
-         TestBed.configureTestingModule({
-           providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-           declarations: [Cmp]
-         });
+         TestBed.configureTestingModule({declarations: [Cmp]});
 
          const engine = TestBed.inject(AnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
@@ -308,10 +303,7 @@ describe('AnimationRendererFactory', () => {
       public exp: any;
     }
 
-    TestBed.configureTestingModule({
-      providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-      declarations: [Cmp]
-    });
+    TestBed.configureTestingModule({declarations: [Cmp]});
 
     const renderer = TestBed.inject(RendererFactory2) as ExtendedAnimationRendererFactory;
     const fixture = TestBed.createComponent(Cmp);
@@ -454,7 +446,7 @@ describe('destroy', () => {
 })();
 
 @Injectable()
-class MockAnimationEngine extends InjectableAnimationEngine {
+class MockAnimationEngine extends AnimationEngine {
   captures: {[method: string]: any[]} = {};
   triggers: AnimationTriggerMetadata[] = [];
 

@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
-import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {NgZone, RendererFactory2, RendererType2} from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {EventManager, ɵDomRendererFactory2, ɵSharedStylesHost} from '@angular/platform-browser';
-import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -50,15 +47,6 @@ export function getRendererFactory2(document: any): RendererFactory2 {
     return renderer;
   };
   return rendererFactory;
-}
-
-export function getAnimationRendererFactory2(document: any): RendererFactory2 {
-  const fakeNgZone: NgZone = new NoopNgZone();
-  return new ɵAnimationRendererFactory(
-      getRendererFactory2(document),
-      new ɵAnimationEngine(
-          document.body, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
-      fakeNgZone);
 }
 
 // TODO: code duplicated from ../linker/change_detection_integration_spec.ts, to be removed

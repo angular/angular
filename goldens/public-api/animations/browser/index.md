@@ -4,6 +4,8 @@
 
 ```ts
 
+import * as i0 from '@angular/core';
+
 // @public (undocumented)
 export abstract class AnimationDriver {
     // (undocumented)
@@ -23,6 +25,10 @@ export abstract class AnimationDriver {
     abstract validateAnimatableStyleProperty?: (prop: string) => boolean;
     // (undocumented)
     abstract validateStyleProperty(prop: string): boolean;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<AnimationDriver, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<AnimationDriver>;
 }
 
 // (No @packageDocumentation comment for this package)

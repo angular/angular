@@ -7,7 +7,7 @@
  */
 import {animate, AnimationMetadata, style} from '@angular/animations';
 
-import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
+import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
 import {getBodyNode} from '../../src/render/shared';
 import {TimelineAnimationEngine} from '../../src/render/timeline_animation_engine';

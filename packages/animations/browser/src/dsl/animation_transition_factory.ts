@@ -12,12 +12,12 @@ import {getOrSetDefaultValue} from '../render/shared';
 import {copyObj, interpolateParams, iteratorToArray} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
+import {AnimationStyleNormalizer} from './animation_style_normalizer';
 import {buildAnimationTimelines} from './animation_timeline_builder';
 import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 import {TransitionMatcherFn} from './animation_transition_expr';
 import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
 import {ElementInstructionMap} from './element_instruction_map';
-import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer';
 
 const EMPTY_OBJECT = {};
 

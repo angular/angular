@@ -11,12 +11,12 @@ import {Inject, Injectable, RendererFactory2, RendererType2, ViewEncapsulation} 
 
 import {AnimationRenderer} from './animation_renderer';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class BrowserAnimationBuilder extends AnimationBuilder {
   private _nextAnimationId = 0;
   private _renderer: AnimationRenderer;
 
-  constructor(rootRenderer: RendererFactory2, @Inject(DOCUMENT) doc: any) {
+  constructor(rootRenderer: RendererFactory2, @Inject(DOCUMENT) doc: Document) {
     super();
     const typeData =
         {id: '0', encapsulation: ViewEncapsulation.None, styles: [], data: {animation: []}} as

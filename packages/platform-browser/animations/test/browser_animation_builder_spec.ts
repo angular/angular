@@ -10,7 +10,7 @@ import {AnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {Component, ViewChild} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
-import {NoopAnimationsModule, ɵBrowserAnimationBuilder as BrowserAnimationBuilder} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule, NoopAnimationsModule, ɵBrowserAnimationBuilder as BrowserAnimationBuilder} from '@angular/platform-browser/animations';
 
 {
   describe('BrowserAnimationBuilder', () => {
@@ -22,12 +22,17 @@ import {NoopAnimationsModule, ɵBrowserAnimationBuilder as BrowserAnimationBuild
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [NoopAnimationsModule],
+        imports: [BrowserAnimationsModule],
         providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]
       });
     });
 
     it('should inject AnimationBuilder into a component', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [NoopAnimationsModule],
+        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]
+      });
       @Component({
         selector: 'ani-cmp',
         template: '...',

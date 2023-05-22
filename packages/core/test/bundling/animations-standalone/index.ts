@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {animate, style, transition, trigger} from '@angular/animations';
-import {Component, NgModule, ɵNgModuleFactory as NgModuleFactory} from '@angular/core';
-import {bootstrapApplication, BrowserModule, platformBrowser} from '@angular/platform-browser';
-import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-browser/animations';
+import {Component} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {provideLazyLoadedAnimations} from '@angular/platform-browser/animations';
 
 @Component({
   selector: 'app-animations',
@@ -35,4 +35,5 @@ class RootComponent {
 }
 
 
-(window as any).waitForApp = bootstrapApplication(RootComponent, {providers: provideAnimations()});
+(window as any).waitForApp =
+    bootstrapApplication(RootComponent, {providers: provideLazyLoadedAnimations()});

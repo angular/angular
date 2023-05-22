@@ -7,6 +7,7 @@
  */
 import {animate, animateChild, AnimationPlayer, AUTO_STYLE, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵnormalizeKeyframes as normalizeKeyframes} from '@angular/animations/browser';
+import {AnimationStyleNormalizer, WebAnimationsStyleNormalizer} from '@angular/animations/browser/src/dsl/animation_style_normalizer';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
@@ -33,7 +34,10 @@ describe('animation query tests', function() {
   beforeEach(() => {
     resetLog();
     TestBed.configureTestingModule({
-      providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+      providers: [
+        {provide: AnimationDriver, useClass: MockAnimationDriver},
+        {provide: AnimationStyleNormalizer, useClass: WebAnimationsStyleNormalizer}
+      ],
       imports: [BrowserAnimationsModule, CommonModule]
     });
   });

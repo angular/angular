@@ -8,7 +8,7 @@
 import {ModuleWithProviders, NgModule, Provider} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from './providers';
+import {BROWER_ANIMATION_BUILDER_PROVIDER, BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS, LAZY_LOADED_ANIMATIONS_PROVIDERS} from './providers';
 
 /**
  * Object used to configure the behavior of {@link BrowserAnimationsModule}
@@ -85,6 +85,24 @@ export function provideAnimations(): Provider[] {
   // alterations are performed to the `provideAnimations` call results in app code.
   return [...BROWSER_ANIMATIONS_PROVIDERS];
 }
+
+
+/**
+ *
+ * @publicApi
+ */
+export function provideLazyLoadedAnimations(): Provider[] {
+  return [...LAZY_LOADED_ANIMATIONS_PROVIDERS];
+}
+
+/**
+ *
+ * @publicApi
+ */
+export function provideAnimationBuilder(): Provider {
+  return BROWER_ANIMATION_BUILDER_PROVIDER;
+}
+
 
 /**
  * A null player that must be imported to allow disabling of animations.

@@ -9,10 +9,10 @@ import {AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationPla
 
 import {Ast} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
+import {AnimationStyleNormalizer} from '../dsl/animation_style_normalizer';
 import {buildAnimationTimelines} from '../dsl/animation_timeline_builder';
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
-import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
 import {createAnimationFailed, missingOrDestroyedAnimation, missingPlayer, registerFailed} from '../error_helpers';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../util';
 import {warnRegister} from '../warning_helpers';

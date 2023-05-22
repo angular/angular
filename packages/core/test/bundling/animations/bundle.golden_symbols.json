@@ -414,6 +414,9 @@
     "name": "NoopAnimationPlayer"
   },
   {
+    "name": "NoopAnimationStyleNormalizer"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -1293,7 +1296,7 @@
     "name": "normalizeAnimationOptions"
   },
   {
-    "name": "normalizeKeyframes"
+    "name": "normalizeKeyframes2"
   },
   {
     "name": "notFoundValueOrThrow"
