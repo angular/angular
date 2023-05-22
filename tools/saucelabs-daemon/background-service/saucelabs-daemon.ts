@@ -8,7 +8,6 @@
 
 import chalk from 'chalk';
 import {Builder, WebDriver} from 'selenium-webdriver4';
-import type {CustomLaunchers} from '../../../browser-providers.conf';
 
 import {Browser, getUniqueId} from '../browser';
 
@@ -77,7 +76,7 @@ export class SaucelabsDaemon {
       private _username: string,
       private _accessKey: string,
       private _buildName: string,
-      private _customLaunchers: CustomLaunchers,
+      private _browsers: Browser[],
       private _maxParallelExecutions: number,
       private _sauceConnect: string,
       private _userCapabilities: object = {},
@@ -159,21 +158,17 @@ export class SaucelabsDaemon {
   async startTest(test: BrowserTest): Promise<boolean> {
     await this.connectTunnel();
 
+    if (this._parallelExecutions < this._maxParallelExecutions) {
+      // Start additional browsers on each test start until the max parallel executions are
+      // reached to avoid the race condition of starting a browser and then having another test
+      // start steal it before is claimed by this test.
+      await this.launchBrowserSet();
+    }
+
     let browser = this._findAvailableBrowser(test.requestedBrowserId);
     if (!browser) {
-      if (this._parallelExecutions >= this._maxParallelExecutions) {
-        // Maximum number of parallel browsers reached
-        return false;
-      }
-
-      await this.launchBrowsers();
-
-      browser = this._findAvailableBrowser(test.requestedBrowserId);
-      if (!browser) {
-        // Still no browser means we are likely not requesting a browser type that is being
-        // launched. Logic error?
-        return false;
-      }
+      console.error(`No available browser ${test.requestedBrowserId} for test ${test.testId}!`);
+      return false;
     }
 
     if (browser.state == 'launching') {
@@ -202,16 +197,14 @@ export class SaucelabsDaemon {
    * pending tests waiting for a particular browser to launch before they can start, those tests are
    * started once the browser is launched.
    **/
-  private async launchBrowsers() {
+  private async launchBrowserSet() {
     this._parallelExecutions++;
     console.debug(
         `Launching browsers set ${this._parallelExecutions} of ${this._maxParallelExecutions}...`);
 
-    const browserInstances: Browser[] = Object.values(this._customLaunchers) as any;
-
     // Once the tunnel is established we can launch browsers
     await Promise.all(
-        browserInstances.map(async (browser, id) => {
+        this._browsers.map(async (browser, id) => {
           const browserId = getUniqueId(browser);
           const launched: RemoteBrowser = {state: 'launching', driver: null, id: browserId};
           const browserDescription = `${this._buildName} - ${browser.browserName} - #${id + 1}`;
@@ -301,29 +294,30 @@ export class SaucelabsDaemon {
    * @internal
    * Given a browserId, returns a browser that matches the browserId and is free
    * or launching with no pending test. If no such browser if found, returns
-   * undefined.
+   * null.
    **/
-  private _findAvailableBrowser(browserId: string): RemoteBrowser|undefined {
-    let match: RemoteBrowser|undefined = undefined;
+  private _findAvailableBrowser(browserId: string): RemoteBrowser|null {
     for (const browser of this._activeBrowsers) {
-      if (browser.id === browserId) {
-        // If the browser is claimed, continue searching.
-        if (browser.state === 'claimed') {
-          continue;
-        }
-
-        // If the browser is launching, check if it can be pre-claimed so that
-        // the test starts once the browser is ready. If it's already claimed,
-        // continue searching.
-        if (browser.state === 'launching' && this._pendingTests.has(browser)) {
-          continue;
-        }
-
-        match = browser;
-        break;
+      // If the browser ID doesn't match, continue searching.
+      if (browser.id !== browserId) {
+        continue;
       }
+
+      // If the browser is claimed, continue searching.
+      if (browser.state === 'claimed') {
+        continue;
+      }
+
+      // If the browser is launching, check if it can be pre-claimed so that
+      // the test starts once the browser is ready. If it's already claimed,
+      // continue searching.
+      if (browser.state === 'launching' && this._pendingTests.has(browser)) {
+        continue;
+      }
+
+      return browser;
     }
-    return match;
+    return null;
   }
 
   /**

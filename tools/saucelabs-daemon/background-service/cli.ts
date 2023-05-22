@@ -48,7 +48,7 @@ const daemon = new SaucelabsDaemon(
     username,
     accessKey,
     process.env.CIRCLE_BUILD_NUM!,
-    customLaunchers,
+    Object.values(customLaunchers) as Browser[],
     parallelExecutions,
     sauceConnect,
     {tunnelIdentifier},
