@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-
 import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
 import {isDOMParserAvailable} from '../../src/sanitization/inert_body';
 
@@ -251,13 +249,11 @@ function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
                      '<p></p>');
        });
 
-    if (browserDetection.isWebkit) {
-      it('should prevent mXSS attacks', function() {
-        // In Chrome Canary 62, the ideographic space character is kept as a stringified HTML entity
-        expect(sanitizeHtml(defaultDoc, '<a href="&#x3000;javascript:alert(1)">CLICKME</a>'))
-            .toMatch(/<a href="unsafe:(&#12288;)?javascript:alert\(1\)">CLICKME<\/a>/);
-      });
-    }
+    it('should prevent mXSS attacks', function() {
+      // In Chrome Canary 62, the ideographic space character is kept as a stringified HTML entity
+      expect(sanitizeHtml(defaultDoc, '<a href="&#x3000;javascript:alert(1)">CLICKME</a>'))
+          .toMatch(/<a href="unsafe:(&#12288;)?javascript:alert\(1\)">CLICKME<\/a>/);
+    });
 
     if (isDOMParserAvailable()) {
       it('should work even if DOMParser returns a null body', () => {

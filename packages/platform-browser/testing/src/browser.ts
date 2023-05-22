@@ -10,11 +10,8 @@ import {MockPlatformLocation} from '@angular/common/testing';
 import {APP_ID, createPlatformFactory, NgModule, PLATFORM_INITIALIZER, platformCore, provideZoneChangeDetection, StaticProvider} from '@angular/core';
 import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
-import {BrowserDetection, createNgZone} from './browser_util';
-
 function initBrowserTests() {
   BrowserDomAdapter.makeCurrent();
-  BrowserDetection.setup();
 }
 
 const _TEST_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] =

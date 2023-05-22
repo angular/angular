@@ -8,7 +8,6 @@
 
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {Element} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
@@ -185,7 +184,7 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
       });
     });
 
-    if (browserDetection.isChromeDesktop) {
+    if (!isNode) {
       it('generate a new schema', () => {
         let schema = '\n';
         extractSchema()!.forEach((props, name) => {

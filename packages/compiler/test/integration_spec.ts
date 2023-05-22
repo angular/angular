@@ -9,7 +9,6 @@
 import {Component, Directive, Input} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
@@ -39,26 +38,20 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     describe('ng-container', () => {
-      if (browserDetection.isChromeDesktop) {
-        it('should work regardless the namespace', waitForAsync(() => {
-             @Component({
-               selector: 'comp',
-               template:
-                   '<svg><ng-container *ngIf="1"><rect x="10" y="10" width="30" height="30"></rect></ng-container></svg>',
-             })
-             class MyCmp {
-             }
+      it('should work regardless the namespace', waitForAsync(() => {
+           @Component({
+             selector: 'comp',
+             template:
+                 '<svg><ng-container *ngIf="1"><rect x="10" y="10" width="30" height="30"></rect></ng-container></svg>',
+           })
+           class MyCmp {
+           }
 
-             const f =
-                 TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
-             f.detectChanges();
+           const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+           f.detectChanges();
 
-             expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
-           }));
-      } else {
-        // Jasmine will throw if there are no tests.
-        it('should pass', () => {});
-      }
+           expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
+         }));
     });
   });
 }

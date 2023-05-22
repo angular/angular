@@ -10,7 +10,6 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, ComponentRef, createComponent, Directive, ElementRef, EnvironmentInjector, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, reflectComponentType, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('projection', () => {
@@ -442,7 +441,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
   });
 
-  if (browserDetection.supportsShadowDom) {
+  if (!isNode) {
     it('should support shadow dom content projection and isolate styles per component', () => {
       TestBed.configureTestingModule({declarations: [SimpleShadowDom1, SimpleShadowDom2]});
       TestBed.overrideComponent(MainComp, {
