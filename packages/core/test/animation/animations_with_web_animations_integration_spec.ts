@@ -12,7 +12,6 @@ import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_gr
 import {Component, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 (function() {
 // these tests are only meant to be run within the DOM (for now)
@@ -70,20 +69,18 @@ describe('animation integration tests using web animations', function() {
 
     webPlayer.finish();
 
-    if (!browserDetection.isOldChrome) {
-      cmp.exp = false;
-      fixture.detectChanges();
-      engine.flush();
+    cmp.exp = false;
+    fixture.detectChanges();
+    engine.flush();
 
-      expect(engine.players.length).toEqual(1);
-      webPlayer =
-          (engine.players[0] as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
+    expect(engine.players.length).toEqual(1);
+    webPlayer =
+        (engine.players[0] as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
-      expect(webPlayer.keyframes).toEqual([
-        new Map<string, string|number>([['height', '100px'], ['offset', 0]]),
-        new Map<string, string|number>([['height', '0px'], ['offset', 1]])
-      ]);
-    }
+    expect(webPlayer.keyframes).toEqual([
+      new Map<string, string|number>([['height', '100px'], ['offset', 0]]),
+      new Map<string, string|number>([['height', '0px'], ['offset', 1]])
+    ]);
   });
 
   it('should compute (!) animation styles for a container that is being inserted', () => {
