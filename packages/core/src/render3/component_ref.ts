@@ -87,8 +87,8 @@ function getNamespace(elementName: string): string|null {
  * Injector that looks up a value using a specific injector, before falling back to the module
  * injector. Used primarily when creating components or embedded views dynamically.
  */
-class ChainedInjector implements Injector {
-  constructor(private injector: Injector, private parentInjector: Injector) {}
+export class ChainedInjector implements Injector {
+  constructor(public injector: Injector, public parentInjector: Injector) {}
 
   get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags|InjectOptions): T {
     flags = convertToBitFlags(flags);
