@@ -219,7 +219,7 @@ Additionally, you can combine all of the modifiers except `@Host()` and `@Self()
 This way, if it can't be resolved at runtime, Angular resolves the service as `null`, rather than throwing an error.
 In the following example, the service, `OptionalService`, isn't provided in the service, `@NgModule()`, or component class, so it isn't available anywhere in the app.
 
-<code-example header="resolution-modifiers/src/app/optional/optional.component.ts" path="resolution-modifiers/src/app/optional/optional.component.ts" region="optional-component"></code-example>
+<code-example header="src/app/optional/optional.component.ts" path="resolution-modifiers/src/app/optional/optional.component.ts" region="optional-component"></code-example>
 
 ### `@Self()`
 
@@ -230,14 +230,14 @@ To avoid errors in this situation, combine `@Self()` with `@Optional()`.
 
 For example, in the following `SelfComponent`, notice the injected `LeafService` in the constructor.
 
-<code-example header="resolution-modifiers/src/app/self-no-data/self-no-data.component.ts" path="resolution-modifiers/src/app/self-no-data/self-no-data.component.ts" region="self-no-data-component"></code-example>
+<code-example header="src/app/self-no-data/self-no-data.component.ts" path="resolution-modifiers/src/app/self-no-data/self-no-data.component.ts" region="self-no-data-component"></code-example>
 
 In this example, there is a parent provider and injecting the service will return the value, however, injecting the service with `@Self()` and `@Optional()` will return `null` because `@Self()` tells the injector to stop searching in the current host element.
 
 Another example shows the component class with a provider for `FlowerService`.
 In this case, the injector looks no further than the current `ElementInjector` because it finds the `FlowerService` and returns the tulip <code>&#x1F337;</code>.
 
-<code-example header="resolution-modifiers/src/app/self/self.component.ts" path="resolution-modifiers/src/app/self/self.component.ts" region="self-component"></code-example>
+<code-example header="src/app/self/self.component.ts" path="resolution-modifiers/src/app/self/self.component.ts" region="self-component"></code-example>
 
 ### `@SkipSelf()`
 
@@ -247,12 +247,12 @@ So if the parent `ElementInjector` were using the fern <code>&#x1F33F;</code> va
 
 To see this in code, assume that the following value for `emoji` is what the parent component were using, as in this service:
 
-<code-example header="resolution-modifiers/src/app/leaf.service.ts" path="resolution-modifiers/src/app/leaf.service.ts" region="leafservice"></code-example>
+<code-example header="src/app/leaf.service.ts" path="resolution-modifiers/src/app/leaf.service.ts" region="leafservice"></code-example>
 
 Imagine that in the child component, you had a different value, maple leaf <code>&#x1F341;</code> but you wanted to use the parent's value instead.
 This is when you'd use `@SkipSelf()`:
 
-<code-example header="resolution-modifiers/src/app/skipself/skipself.component.ts" path="resolution-modifiers/src/app/skipself/skipself.component.ts" region="skipself-component"></code-example>
+<code-example header="src/app/skipself/skipself.component.ts" path="resolution-modifiers/src/app/skipself/skipself.component.ts" region="skipself-component"></code-example>
 
 In this case, the value you'd get for `emoji` would be fern <code>&#x1F33F;</code>, not maple leaf <code>&#x1F341;</code>.
 
@@ -276,7 +276,7 @@ class Person {
 Even if there is a service instance further up the tree, Angular won't continue looking
 Use `@Host()` as follows:
 
-<code-example header="resolution-modifiers/src/app/host/host.component.ts" path="resolution-modifiers/src/app/host/host.component.ts" region="host-component"></code-example>
+<code-example header="src/app/host/host.component.ts" path="resolution-modifiers/src/app/host/host.component.ts" region="host-component"></code-example>
 
 Since `HostComponent` has `@Host()` in its constructor, no matter what the parent of `HostComponent` might have as a `flower.emoji` value, the `HostComponent` will use tulip <code>&#x1F337;</code>.
 
@@ -355,7 +355,7 @@ In the logical tree, you'll see `@Provide`, `@Inject`, and `@NgModule`, which ar
 
 The example application has a `FlowerService` provided in `root` with an `emoji` value of red hibiscus <code>&#x1F33A;</code>.
 
-<code-example header="providers-viewproviders/src/app/flower.service.ts" path="providers-viewproviders/src/app/flower.service.ts" region="flowerservice"></code-example>
+<code-example header="src/app/flower.service.ts" path="providers-viewproviders/src/app/flower.service.ts" region="flowerservice"></code-example>
 
 Consider an application with only an `AppComponent` and a `ChildComponent`.
 The most basic rendered view would look like nested HTML elements such as the following:
@@ -391,11 +391,11 @@ Knowledge of this structure can inform how you provide and inject your services,
 
 Now, consider that `<app-root>` injects the `FlowerService`:
 
-<code-example header="providers-viewproviders/src/app/app.component.ts" path="providers-viewproviders/src/app/app.component.1.ts" region="injection"></code-example>
+<code-example header="src/app/app.component.ts" path="providers-viewproviders/src/app/app.component.1.ts" region="injection"></code-example>
 
 Add a binding to the `<app-root>` template to visualize the result:
 
-<code-example header="providers-viewproviders/src/app/app.component.html" path="providers-viewproviders/src/app/app.component.html" region="binding-flower"></code-example>
+<code-example header="src/app/app.component.html" path="providers-viewproviders/src/app/app.component.html" region="binding-flower"></code-example>
 
 The output in the view would be:
 
@@ -447,14 +447,14 @@ In the example case, the constraints are:
 
 Now, in the `ChildComponent` class, add a provider for `FlowerService` to demonstrate more complex resolution rules in the upcoming sections:
 
-<code-example header="providers-viewproviders/src/app/child.component.ts" path="providers-viewproviders/src/app/child/child.component.1.ts" region="flowerservice"></code-example>
+<code-example header="src/app/child.component.ts" path="providers-viewproviders/src/app/child/child.component.1.ts" region="flowerservice"></code-example>
 
 Now that the `FlowerService` is provided in the `@Component()` decorator, when the `<app-child>` requests the service, the injector has only to look as far as the `ElementInjector` in the `<app-child>`.
 It won't have to continue the search any further through the injector tree.
 
 The next step is to add a binding to the `ChildComponent` template.
 
-<code-example header="providers-viewproviders/src/app/child.component.html" path="providers-viewproviders/src/app/child/child.component.html" region="flower-binding"></code-example>
+<code-example header="src/app/child.component.html" path="providers-viewproviders/src/app/child/child.component.html" region="flower-binding"></code-example>
 
 To render the new values, add `<app-child>` to the bottom of the `AppComponent` template so the view also displays the sunflower:
 
@@ -510,11 +510,11 @@ The example application features a second service, the `AnimalService` to demons
 
 First, create an `AnimalService` with an `emoji` property of whale <code>&#x1F433;</code>:
 
-<code-example header="providers-viewproviders/src/app/animal.service.ts" path="providers-viewproviders/src/app/animal.service.ts" region="animal-service"></code-example>
+<code-example header="src/app/animal.service.ts" path="providers-viewproviders/src/app/animal.service.ts" region="animal-service"></code-example>
 
 Following the same pattern as with the `FlowerService`, inject the `AnimalService` in the `AppComponent` class:
 
-<code-example header="providers-viewproviders/src/app/app.component.ts" path="providers-viewproviders/src/app/app.component.ts" region="inject-animal-service"></code-example>
+<code-example header="src/app/app.component.ts" path="providers-viewproviders/src/app/app.component.ts" region="inject-animal-service"></code-example>
 
 <div class="alert is-helpful">
 
@@ -526,16 +526,16 @@ You can leave all the `FlowerService` related code in place as it will allow a c
 Add a `viewProviders` array and inject the `AnimalService` in the `<app-child>` class, too, but give `emoji` a different value.
 Here, it has a value of dog <code>&#x1F436;</code>.
 
-<code-example header="providers-viewproviders/src/app/child.component.ts" path="providers-viewproviders/src/app/child/child.component.ts" region="provide-animal-service"></code-example>
+<code-example header="src/app/child.component.ts" path="providers-viewproviders/src/app/child/child.component.ts" region="provide-animal-service"></code-example>
 
 Add bindings to the `ChildComponent` and the `AppComponent` templates.
 In the `ChildComponent` template, add the following binding:
 
-<code-example header="providers-viewproviders/src/app/child.component.html" path="providers-viewproviders/src/app/child/child.component.html" region="animal-binding"></code-example>
+<code-example header="src/app/child.component.html" path="providers-viewproviders/src/app/child/child.component.html" region="animal-binding"></code-example>
 
 Additionally, add the same to the `AppComponent` template:
 
-<code-example header="providers-viewproviders/src/app/app.component.html" path="providers-viewproviders/src/app/app.component.html" region="binding-animal"></code-example>
+<code-example header="src/app/app.component.html" path="providers-viewproviders/src/app/app.component.html" region="binding-animal"></code-example>
 
 Now you should see both values in the browser:
 
@@ -578,20 +578,20 @@ To see the difference between using `providers` and `viewProviders`, add another
 `InspectorComponent` will be a child of the `ChildComponent`.
 In `inspector.component.ts`, inject the `FlowerService` and `AnimalService` in the constructor:
 
-<code-example header="providers-viewproviders/src/app/inspector/inspector.component.ts" path="providers-viewproviders/src/app/inspector/inspector.component.ts" region="injection"></code-example>
+<code-example header="src/app/inspector/inspector.component.ts" path="providers-viewproviders/src/app/inspector/inspector.component.ts" region="injection"></code-example>
 
 You do not need a `providers` or `viewProviders` array.
 Next, in `inspector.component.html`, add the same markup from previous components:
 
-<code-example header="providers-viewproviders/src/app/inspector/inspector.component.html" path="providers-viewproviders/src/app/inspector/inspector.component.html" region="binding"></code-example>
+<code-example header="src/app/inspector/inspector.component.html" path="providers-viewproviders/src/app/inspector/inspector.component.html" region="binding"></code-example>
 
 Remember to add the `InspectorComponent` to the `AppModule` `declarations` array.
 
-<code-example header="providers-viewproviders/src/app/app.module.ts" path="providers-viewproviders/src/app/app.module.ts" region="appmodule"></code-example>
+<code-example header="src/app/app.module.ts" path="providers-viewproviders/src/app/app.module.ts" region="appmodule"></code-example>
 
 Next, make sure your `child.component.html` contains the following:
 
-<code-example header="providers-viewproviders/src/app/child/child.component.html" path="providers-viewproviders/src/app/child/child.component.html" region="child-component"></code-example>
+<code-example header="src/app/child/child.component.html" path="providers-viewproviders/src/app/child/child.component.html" region="child-component"></code-example>
 
 The first two lines, with the bindings, are there from previous steps.
 The new parts are  `<ng-content>` and `<app-inspector>`.
@@ -599,7 +599,7 @@ The new parts are  `<ng-content>` and `<app-inspector>`.
 
 Next, add the following to `app.component.html` to take advantage of content projection.
 
-<code-example header="providers-viewproviders/src/app/app.component.html" path="providers-viewproviders/src/app/app.component.html" region="content-projection"></code-example>
+<code-example header="src/app/app.component.html" path="providers-viewproviders/src/app/app.component.html" region="content-projection"></code-example>
 
 The browser now renders the following, omitting the previous examples for brevity:
 
