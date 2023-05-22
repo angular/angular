@@ -10,6 +10,7 @@ import '../util/ng_dev_mode';
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
+import {emitInjectEvent} from '../render3/debug/injector_profiler';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
@@ -65,7 +66,10 @@ export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFla
   } else if (_currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
-    return _currentInjector.get(token, flags & InjectFlags.Optional ? null : undefined, flags);
+    const value =
+        _currentInjector.get(token, flags & InjectFlags.Optional ? null : undefined, flags);
+    ngDevMode && emitInjectEvent(token as Type<unknown>, value, flags);
+    return value;
   }
 }
 
