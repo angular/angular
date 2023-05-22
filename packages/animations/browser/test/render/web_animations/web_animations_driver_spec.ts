@@ -5,8 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-
 import {WebAnimationsDriver} from '../../../src/render/web_animations/web_animations_driver';
 import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player';
 
