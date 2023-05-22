@@ -6,7 +6,7 @@ See: https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines
 
 
 Classes:
-  - Example: `Compiler`and `ApplicationMetadata`
+  - Example: `Compiler` and `ApplicationMetadata`
   - Camel case with first letter uppercase
   - In general prefer single words. (This is so that when appending `Proto` or `Factory` the class 
     is still reasonable to work with.)
