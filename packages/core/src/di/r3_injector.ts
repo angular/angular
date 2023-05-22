@@ -11,6 +11,7 @@ import '../util/ng_dev_mode';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
+import {emitInstanceCreatedByInjectorEvent, emitProviderConfiguredEvent, InjectorProfilerContext, runInInjectorProfilerContext, setInjectorProfilerContext} from '../render3/debug/injector_profiler';
 import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
 import {NG_ENV_ID} from '../render3/fields';
@@ -225,11 +226,18 @@ export class R3Injector extends EnvironmentInjector {
 
     const previousInjector = setCurrentInjector(this);
     const previousInjectImplementation = setInjectImplementation(undefined);
+
+    let prevInjectContext: InjectorProfilerContext|undefined;
+    if (ngDevMode) {
+      prevInjectContext = setInjectorProfilerContext({injector: this, token: null});
+    }
+
     try {
       return fn();
     } finally {
       setCurrentInjector(previousInjector);
       setInjectImplementation(previousInjectImplementation);
+      ngDevMode && setInjectorProfilerContext(prevInjectContext!);
     }
   }
 
@@ -245,6 +253,10 @@ export class R3Injector extends EnvironmentInjector {
     flags = convertToBitFlags(flags) as InjectFlags;
 
     // Set the injection context.
+    let prevInjectContext: InjectorProfilerContext;
+    if (ngDevMode) {
+      prevInjectContext = setInjectorProfilerContext({injector: this, token: token as Type<T>});
+    }
     const previousInjector = setCurrentInjector(this);
     const previousInjectImplementation = setInjectImplementation(undefined);
     try {
@@ -298,6 +310,7 @@ export class R3Injector extends EnvironmentInjector {
       // Lastly, restore the previous injection context.
       setInjectImplementation(previousInjectImplementation);
       setCurrentInjector(previousInjector);
+      ngDevMode && setInjectorProfilerContext(prevInjectContext!);
     }
   }
 
@@ -305,6 +318,11 @@ export class R3Injector extends EnvironmentInjector {
   resolveInjectorInitializers() {
     const previousInjector = setCurrentInjector(this);
     const previousInjectImplementation = setInjectImplementation(undefined);
+    let prevInjectContext: InjectorProfilerContext|undefined;
+    if (ngDevMode) {
+      prevInjectContext = setInjectorProfilerContext({injector: this, token: null});
+    }
+
     try {
       const initializers = this.get(ENVIRONMENT_INITIALIZER.multi, EMPTY_ARRAY, InjectFlags.Self);
       if (ngDevMode && !Array.isArray(initializers)) {
@@ -321,6 +339,7 @@ export class R3Injector extends EnvironmentInjector {
     } finally {
       setCurrentInjector(previousInjector);
       setInjectImplementation(previousInjectImplementation);
+      ngDevMode && setInjectorProfilerContext(prevInjectContext!);
     }
   }
 
@@ -353,6 +372,18 @@ export class R3Injector extends EnvironmentInjector {
 
     // Construct a `Record` for the provider.
     const record = providerToRecord(provider);
+    if (ngDevMode) {
+      runInInjectorProfilerContext(this, token, () => {
+        // Emit InjectorProfilerEventType.Create if provider is a value provider because
+        // these are the only providers that do not go through the value hydration logic
+        // where this event would normally be emitted from.
+        if (isValueProvider(provider)) {
+          emitInstanceCreatedByInjectorEvent(provider.useValue);
+        }
+
+        emitProviderConfiguredEvent(provider);
+      });
+    }
 
     if (!isTypeProvider(provider) && provider.multi === true) {
       // If the provider indicates that it's a multi-provider, process it specially.
@@ -384,7 +415,15 @@ export class R3Injector extends EnvironmentInjector {
       throwCyclicDependencyError(stringify(token));
     } else if (record.value === NOT_YET) {
       record.value = CIRCULAR;
-      record.value = record.factory!();
+
+      if (ngDevMode) {
+        runInInjectorProfilerContext(this, token as Type<T>, () => {
+          record.value = record.factory!();
+          emitInstanceCreatedByInjectorEvent(record.value);
+        });
+      } else {
+        record.value = record.factory!();
+      }
     }
     if (typeof record.value === 'object' && record.value && hasOnDestroy(record.value)) {
       this._ngOnDestroyHooks.add(record.value);

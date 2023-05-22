@@ -11,14 +11,16 @@ import {setInjectImplementation} from '../di/inject_switch';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 
+import {InjectorProfilerContext, setInjectorProfilerContext} from './debug/injector_profiler';
 import {getFactoryDef} from './definition_factory';
-import {setIncludeViewProviders} from './di';
+import {NodeInjector, setIncludeViewProviders} from './di';
 import {store, ɵɵdirectiveInject} from './instructions/all';
 import {isHostComponentStandalone} from './instructions/element_validation';
 import {PipeDef, PipeDefList} from './interfaces/definition';
+import {TTextNode} from './interfaces/node';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
 import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
-import {getBindingRoot, getLView, getTView} from './state';
+import {getBindingRoot, getCurrentTNode, getLView, getTView} from './state';
 import {load} from './util/view_utils';
 
 
@@ -50,6 +52,14 @@ export function ɵɵpipe(index: number, pipeName: string): any {
   }
 
   const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
+
+  let previousInjectorProfilerContext: InjectorProfilerContext;
+  if (ngDevMode) {
+    previousInjectorProfilerContext = setInjectorProfilerContext({
+      injector: new NodeInjector(getCurrentTNode() as TTextNode, getLView()),
+      token: pipeDef.type
+    });
+  }
   const previousInjectImplementation = setInjectImplementation(ɵɵdirectiveInject);
   try {
     // DI for pipes is supposed to behave like directives when placed on a component
@@ -63,6 +73,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
     // we have to restore the injector implementation in finally, just in case the creation of the
     // pipe throws an error.
     setInjectImplementation(previousInjectImplementation);
+    ngDevMode && setInjectorProfilerContext(previousInjectorProfilerContext!);
   }
 }
 
