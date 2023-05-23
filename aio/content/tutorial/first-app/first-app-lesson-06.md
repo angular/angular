@@ -1,4 +1,4 @@
-# Lesson 6 - Add a property binding to an component’s template
+# Lesson 6 - Add a property binding to a component’s template
 
 This tutorial lesson demonstrates how to add property binding to a template and use it to pass dynamic data to components.
 
