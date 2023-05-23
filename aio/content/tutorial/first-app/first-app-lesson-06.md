@@ -1,4 +1,4 @@
-# Lesson 6 - Add a property binding to an component’s template
+# Lesson 6 - Add a property binding to a component’s template
 
 This tutorial lesson demonstrates how to add property binding to a template and use it to pass dynamic data to components.
 
@@ -51,7 +51,7 @@ In the code editor:
 
 ## Lesson review
 
-In this lesson, you added a new property binding and passed in a reference to a class property. Now, the `HousingLocationComponent` has access to data that it can use to customize the the component's display.
+In this lesson, you added a new property binding and passed in a reference to a class property. Now, the `HousingLocationComponent` has access to data that it can use to customize the component's display.
 
 If you are having any trouble with this lesson, you can review the completed code for it in the <live-example></live-example>.
 
