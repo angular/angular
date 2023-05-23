@@ -17,12 +17,16 @@ import {AbstractControl} from './model/abstract_model';
 
 function isEmptyInputValue(value: any): boolean {
   /**
-   * Check if the object is a string or array before evaluating the length attribute.
+   * Check if the object is a string or array or FileList before evaluating the length attribute.
    * This avoids falsely rejecting objects that contain a custom length attribute.
    * For example, the object {id: 1, length: 0, width: 0} should not be returned as empty.
    */
-  return value == null ||
-      ((typeof value === 'string' || Array.isArray(value)) && value.length === 0);
+  return (
+      value == null ||
+      ((typeof value === 'string' || Array.isArray(value) ||
+        // Need to use check of FileList in globalThis to prevent crashing on browser environments
+        ((globalThis as any).FileList != null && value instanceof (globalThis as any).FileList)) &&
+       value.length === 0));
 }
 
 function hasValidLength(value: any): boolean {
