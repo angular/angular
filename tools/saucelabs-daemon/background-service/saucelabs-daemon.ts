@@ -165,7 +165,7 @@ export class SaucelabsDaemon {
       await this.launchBrowserSet();
     }
 
-    let browser = this._findAvailableBrowser(test.requestedBrowserId);
+    const browser = this._findAvailableBrowser(test.requestedBrowserId);
     if (!browser) {
       console.error(`No available browser ${test.requestedBrowserId} for test ${test.testId}!`);
       return false;
