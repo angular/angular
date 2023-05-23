@@ -32,24 +32,22 @@ async function main(outputDir: string|undefined) {
   const extraLocaleDir = join(outputDir, 'extra');
   const globalLocaleDir = join(outputDir, 'global');
 
-  console.info(`Writing locales to: ${outputDir}`);
-
   // Generate locale files for all locales we have data for.
-  await Promise.all(cldrData.availableLocales.map(async (localeData) => {
+  await Promise.all(cldrData.availableLocales.flatMap(async (localeData) => {
     const locale = localeData.locale;
     const localeFile = generateLocale(locale, localeData, baseCurrencies);
     const localeExtraFile = generateLocaleExtra(locale, localeData);
     const localeGlobalFile = generateLocaleGlobalFile(locale, localeData, baseCurrencies);
 
-    await Promise.all([
+    return [
       fs.promises.writeFile(join(outputDir, `${locale}.ts`), localeFile),
       fs.promises.writeFile(join(extraLocaleDir, `${locale}.ts`), localeExtraFile),
       fs.promises.writeFile(join(globalLocaleDir, `${locale}.js`), localeGlobalFile),
-    ]);
+    ];
   }));
 }
 
 main(process.argv[2]).catch(err => {
   console.error(err);
   process.exitCode = 1;
-})
+});
