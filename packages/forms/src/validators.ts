@@ -24,8 +24,8 @@ function isEmptyInputValue(value: any): boolean {
   return (
       value == null ||
       ((typeof value === 'string' || Array.isArray(value) ||
-        // Need to use check of FileList in globalThis to prevent crashing on browser environments
-        ((globalThis as any).FileList != null && value instanceof (globalThis as any).FileList)) &&
+        // FileList might not be defined on non-browser environments
+        (typeof FileList !== 'undefined' && value instanceof FileList)) &&
        value.length === 0));
 }
 
