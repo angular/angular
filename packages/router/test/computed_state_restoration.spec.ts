@@ -275,7 +275,7 @@ describe('`restoredState#ɵrouterPageId`', () => {
      }));
 
 
-  it('should work when an error occured during navigation', fakeAsync(() => {
+  it('should work when an error occurred during navigation', fakeAsync(() => {
        const location = TestBed.inject(Location);
        const router = TestBed.inject(Router);
 

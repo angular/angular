@@ -1122,7 +1122,7 @@ describe('onChanges', () => {
   });
 });
 
-describe('meta-programing', () => {
+describe('meta-programming', () => {
   it('should allow adding lifecycle hook methods any time before first instance creation', () => {
     const events: any[] = [];
 
