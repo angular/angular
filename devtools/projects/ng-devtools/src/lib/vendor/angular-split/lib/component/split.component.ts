@@ -328,15 +328,15 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       return false;
     }
 
-    const formatedSizes = sizes.map((s) => getInputPositiveNumber(s, null));
-    const isValid = isUserSizesValid(this.unit, formatedSizes);
+    const formattedSizes = sizes.map((s) => getInputPositiveNumber(s, null));
+    const isValid = isUserSizesValid(this.unit, formattedSizes);
 
     if (isValid === false) {
       return false;
     }
 
     // @ts-ignore
-    this.displayedAreas.forEach((area, i) => (area.component._size = formatedSizes[i]));
+    this.displayedAreas.forEach((area, i) => (area.component._size = formattedSizes[i]));
 
     this.build(false, true);
     return true;
@@ -395,7 +395,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
                 area.maxSize = i === 0 ? null : getAreaMaxSize(area);
               });
             }
-            // More than one wildcard area > Need to keep only one arbitrarly > first
+            // More than one wildcard area > Need to keep only one arbitrarily > first
             else if (wildcardSizeAreas.length > 1) {
               let alreadyGotOne = false;
               this.displayedAreas.forEach((area) => {
