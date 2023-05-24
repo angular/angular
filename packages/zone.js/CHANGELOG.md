@@ -600,7 +600,7 @@ import 'zone.js/dist/zone';
 - **patch:** fix [#744](https://github.com/angular/zone.js/issues/744), add namespace to load patch name ([#774](https://github.com/angular/zone.js/issues/774)) ([89f990a](https://github.com/angular/zone.js/commit/89f990a))
 - **task:** fix [#778](https://github.com/angular/zone.js/issues/778), sometimes task will run after being canceled ([#780](https://github.com/angular/zone.js/issues/780)) ([b7238c8](https://github.com/angular/zone.js/commit/b7238c8))
 - **webcomponents:** fix [#782](https://github.com/angular/zone.js/issues/782), fix conflicts with shadydom of webcomponents ([#784](https://github.com/angular/zone.js/issues/784)) ([245f8e9](https://github.com/angular/zone.js/commit/245f8e9))
-- **webpack:** access `process` through `_global` so that WebPack does not accidently browserify ([#786](https://github.com/angular/zone.js/issues/786)) ([1919b36](https://github.com/angular/zone.js/commit/1919b36))
+- **webpack:** access `process` through `_global` so that WebPack does not accidentally browserify ([#786](https://github.com/angular/zone.js/issues/786)) ([1919b36](https://github.com/angular/zone.js/commit/1919b36))
 
 <a name="0.8.10"></a>
 
@@ -903,7 +903,7 @@ import 'zone.js/dist/zone';
 
 ### Bug Fixes
 
-- provide a more usefull error when configuring properties ([1fe4df0](https://github.com/angular/zone.js/commit/1fe4df0))
+- provide a more useful error when configuring properties ([1fe4df0](https://github.com/angular/zone.js/commit/1fe4df0))
 - **jasmine:** propagate all arguments of it/describe/etc... ([a85fd68](https://github.com/angular/zone.js/commit/a85fd68))
 - **long-stack:** Safer writing of stack traces. ([6767ff5](https://github.com/angular/zone.js/commit/6767ff5))
 - **promise:** support more aggressive optimization. ([#431](https://github.com/angular/zone.js/issues/431)) ([26fc3da](https://github.com/angular/zone.js/commit/26fc3da))
