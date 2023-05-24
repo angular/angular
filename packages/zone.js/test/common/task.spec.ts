@@ -908,7 +908,7 @@ describe('task lifecycle', () => {
   });
 
   // Test specific to https://github.com/angular/angular/issues/45711
-  it('should not throw an error when the task has been canceled previously and is attemped to be canceled again',
+  it('should not throw an error when the task has been canceled previously and is attempted to be canceled again',
      () => {
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testCancelZone'}).run(() => {
