@@ -1,3 +1,17 @@
+<a name="16.1.0-next.2"></a>
+# 16.1.0-next.2 (2023-05-24)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [75fdbcb8f2](https://github.com/angular/angular/commit/75fdbcb8f285ef17b5a73fb820b983137e40cab7) | fix | fix `Self` flag inside embedded views with custom injectors ([#50270](https://github.com/angular/angular/pull/50270)) |
+| [8b44ba3170](https://github.com/angular/angular/commit/8b44ba31701a1c1cf1ec92d2a26f9cf657f5408b) | fix | host directives incorrectly validating aliased bindings ([#50364](https://github.com/angular/angular/pull/50364)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2cdb4c5911](https://github.com/angular/angular/commit/2cdb4c5911965aa273f11432e04502e52b5e1b9b) | fix | create macrotask during request handling instead of load start ([#50406](https://github.com/angular/angular/pull/50406)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.3"></a>
 # 16.0.3 (2023-05-24)
 ### core
