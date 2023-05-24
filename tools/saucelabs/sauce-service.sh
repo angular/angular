@@ -360,7 +360,7 @@ service-post-stop() {
     touch "${SERVICE_PID_FILE}" >/dev/null 2>&1 || @fail "Can not touch ${SERVICE_PID_FILE} file"
 
     service-pre-stop
-    @echo "Stopping sevice (pid $(cat "${SERVICE_PID_FILE}"))..."
+    @echo "Stopping service (pid $(cat "${SERVICE_PID_FILE}"))..."
     @kill $(cat "${SERVICE_PID_FILE}")
 
     if @serviceStatus >/dev/null 2>&1; then
