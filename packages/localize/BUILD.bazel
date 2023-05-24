@@ -38,7 +38,7 @@ ng_package(
     ],
     skip_type_bundling = [
         # For the primary entry-point we disable automatic type bundling because API extractor
-        # does not properly handle module augumentation.
+        # does not properly handle module augmentation.
         # To workaround this issue, type bundling is done as a separate step for all types
         # except the main `index.d.ts` file which contains the module augmentation. The main
         # file is reference in the package.json and also imports the bundle types. The bundled
