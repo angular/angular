@@ -9,7 +9,7 @@
 import {EMPTY_ARRAY} from '../util/empty';
 import {stringify} from '../util/stringify';
 
-import {Injector} from './injector';
+import type {Injector} from './injector';
 import {StaticProvider} from './interface/provider';
 import {importProvidersFrom} from './provider_collection';
 import {getNullInjector, R3Injector} from './r3_injector';

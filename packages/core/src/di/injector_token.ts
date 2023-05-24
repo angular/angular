@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from './injection_token';
-import {Injector} from './injector';
+import type {Injector} from './injector';
 import {InjectorMarkers} from './injector_marker';
 
 

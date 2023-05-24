@@ -11,7 +11,7 @@ import {TStylingRange} from '../interfaces/styling';
 import {TIcu} from './i18n';
 import {CssSelector} from './projection';
 import {RNode} from './renderer_dom';
-import {LView, TView} from './view';
+import type {LView, TView} from './view';
 
 
 /**

@@ -13,7 +13,7 @@ import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 import {ActivationStart, ChildActivationStart, Event} from '../events';
 import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchFn, Route} from '../models';
 import {redirectingNavigationError} from '../navigation_canceling_error';
-import {NavigationTransition} from '../navigation_transition';
+import type {NavigationTransition} from '../navigation_transition';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
 import {isUrlTree, UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
 import {wrapIntoObservable} from '../utils/collection';

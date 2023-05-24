@@ -18,8 +18,8 @@ import {missingFormException} from '../reactive_errors';
 import {CALL_SET_DISABLED_STATE, cleanUpControl, cleanUpFormContainer, cleanUpValidators, removeListItem, SetDisabledStateOption, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
-import {FormControlName} from './form_control_name';
-import {FormArrayName, FormGroupName} from './form_group_name';
+import type {FormControlName} from './form_control_name';
+import type {FormArrayName, FormGroupName} from './form_group_name';
 
 const formDirectiveProvider: Provider = {
   provide: ControlContainer,

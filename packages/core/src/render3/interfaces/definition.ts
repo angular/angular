@@ -7,15 +7,15 @@
  */
 
 import {ProcessProvidersFunction} from '../../di/interface/provider';
-import {EnvironmentInjector} from '../../di/r3_injector';
+import type {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {FactoryFn} from '../definition_factory';
 
-import {TAttributes, TConstantsOrFactory} from './node';
+import type {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
-import {TView} from './view';
+import type {TView} from './view';
 
 
 /**

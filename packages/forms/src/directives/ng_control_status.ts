@@ -8,7 +8,7 @@
 
 import {Directive, Optional, Self} from '@angular/core';
 
-import {AbstractControlDirective} from './abstract_control_directive';
+import type {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 

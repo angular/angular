@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormControl} from '../model/form_control';
-import {FormGroup} from '../model/form_group';
+import type {FormControl} from '../model/form_control';
+import type {FormGroup} from '../model/form_group';
 
-import {AbstractFormGroupDirective} from './abstract_form_group_directive';
-import {NgControl} from './ng_control';
+import type {AbstractFormGroupDirective} from './abstract_form_group_directive';
+import type {NgControl} from './ng_control';
 
 
 

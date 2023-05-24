@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Route, UrlMatchResult} from './models';
-import {UrlSegment, UrlSegmentGroup} from './url_tree';
+import type {Route, UrlMatchResult} from './models';
+import type {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 
 /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../../di/injector';
+import type {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';
 import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
@@ -14,11 +14,11 @@ import {Sanitizer} from '../../sanitization/sanitizer';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
 import type {EffectManager} from '../reactivity/effect';
 
-import {LContainer} from './container';
+import type {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
-import {TConstants, TNode} from './node';
-import {LQueries, TQueries} from './query';
+import type {TConstants, TNode} from './node';
+import type {LQueries, TQueries} from './query';
 import {Renderer, RendererFactory} from './renderer';
 import {RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';

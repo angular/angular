@@ -9,15 +9,15 @@
 import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Provider, Self} from '@angular/core';
 
 import {AbstractControl, FormHooks} from '../model/abstract_model';
-import {FormControl} from '../model/form_control';
+import type {FormControl} from '../model/form_control';
 import {FormGroup} from '../model/form_group';
 import {composeAsyncValidators, composeValidators, NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
-import {Form} from './form_interface';
-import {NgControl} from './ng_control';
-import {NgModel} from './ng_model';
-import {NgModelGroup} from './ng_model_group';
+import type {Form} from './form_interface';
+import type {NgControl} from './ng_control';
+import type {NgModel} from './ng_model';
+import type {NgModelGroup} from './ng_model_group';
 import {CALL_SET_DISABLED_STATE, SetDisabledStateOption, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 

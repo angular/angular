@@ -9,7 +9,7 @@
 import {Directive, forwardRef, Input, OnChanges, Provider, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {AbstractControl} from '../model/abstract_model';
+import type {AbstractControl} from '../model/abstract_model';
 import {emailValidator, maxLengthValidator, maxValidator, minLengthValidator, minValidator, NG_VALIDATORS, nullValidator, patternValidator, requiredTrueValidator, requiredValidator} from '../validators';
 
 /**

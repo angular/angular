@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import type {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {EmbeddedViewRef, InternalViewRef, ViewRefTracker} from '../linker/view_ref';
+import type {EmbeddedViewRef, InternalViewRef, ViewRefTracker} from '../linker/view_ref';
 import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 

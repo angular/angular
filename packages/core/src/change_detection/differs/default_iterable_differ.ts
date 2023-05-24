@@ -10,7 +10,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {isListLikeIterable, iterateListLike} from '../../util/iterable';
 import {stringify} from '../../util/stringify';
 
-import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
+import type {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
 
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {

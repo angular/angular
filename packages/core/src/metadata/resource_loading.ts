@@ -7,7 +7,7 @@
  */
 
 import {Type} from '../interface/type';
-import {Component} from './directives';
+import type {Component} from './directives';
 
 
 /**

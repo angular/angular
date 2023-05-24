@@ -10,7 +10,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {isJsObject} from '../../util/iterable';
 import {stringify} from '../../util/stringify';
 
-import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
+import type {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 
 
 export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory {

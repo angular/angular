@@ -7,7 +7,7 @@
  */
 
 import {stringify} from '../util/stringify';
-import {Injector} from './injector';
+import type {Injector} from './injector';
 import {THROW_IF_NOT_FOUND} from './injector_compatibility';
 
 export class NullInjector implements Injector {

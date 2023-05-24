@@ -9,7 +9,7 @@
 import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
-import {ComponentFactory} from './component_factory';
+import type {ComponentFactory} from './component_factory';
 
 export function noComponentFactoryError(component: Function) {
   const error = Error(`No component factory found for ${stringify(component)}.`);
