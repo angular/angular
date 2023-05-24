@@ -150,7 +150,7 @@ To test your Angular CLI application in Continuous integration \(CI\) run the fo
 
 <code-example format="shell" language="shell">
 
-ng test --no-watch --no-progress
+ng test --no-watch --no-progress --browsers=ChromeHeadless
 
 </code-example>
 
