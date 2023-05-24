@@ -38,7 +38,11 @@ In lesson 10, you added a second route to `src/app/routes.ts`, this route includ
 
 In this case, `:id` is dynamic and will change based on how the route is requested by the code.
 
-1.  In `src/app/housing-location/housing-location.component.ts`, add an anchor tag to the `section` element and include the `routerLink` directive:
+1.  In `src/app/housing-location/housing-location.component.ts` update the template to import `RouterModule`:
+
+    <code-example header="Update file level imports before using routerLink directive" path="first-app-lesson-11/src/app/housing-location/housing-location.component.ts" region="add-router-module"></code-example>
+
+1. Add an anchor tag to the `section` element and include the `routerLink` directive:
 
     <code-example header="Add anchor with a routerLink directive to housing-location.component.ts" path="first-app-lesson-11/src/app/housing-location/housing-location.component.ts" region="add-router-link"></code-example>
 

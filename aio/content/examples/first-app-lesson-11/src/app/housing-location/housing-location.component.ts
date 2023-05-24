@@ -1,7 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HousingLocation } from '../housinglocation';
+// #docregion add-router-module
 import { RouterModule } from '@angular/router';
+// #enddocregion
 
 @Component({
   selector: 'app-housing-location',
