@@ -115,10 +115,11 @@ export const Optional: OptionalDecorator =
 export interface SelfDecorator {
   /**
    * Parameter decorator to be used on constructor parameters,
-   * which tells the DI framework to start dependency resolution from the local injector.
+   * which tells the DI framework to only use the local injector for dependency resolution.
    *
-   * Resolution works upward through the injector hierarchy, so the children
-   * of this class must configure their own providers or be prepared for a `null` result.
+   * Resolution would normally work upward through the injector hierarchy, so when using 
+   * `@Self` the children of this class must configure their own providers or be prepared 
+   * for a `null` result.
    *
    * @usageNotes
    *
