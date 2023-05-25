@@ -3245,10 +3245,10 @@
     "@types/node" "*"
     "@types/responselike" "^1.0.0"
 
-"@types/chrome@^0.0.236":
-  version "0.0.236"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.236.tgz#f967769015c458718d4328a54682fa24f0c62c92"
-  integrity sha512-ArQoxO9WtDY6GWcT2cpo+D+hyASPeFt7PHQEUDXwQhRS00Rbop07rnEOA046yws0HkM83Tcew/hW6Dgvnj4iMQ==
+"@types/chrome@^0.0.237":
+  version "0.0.237"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.237.tgz#20a38e1d1134e2725fc7eb43c881e55e1b24ddd7"
+  integrity sha512-krsRmyfMlck5r+H1EapsrrucDRq6iRm0NAi5fapr93CgnpVMDdK+h2+z4x79GegdW7BNH9Vb//gkptORwwwVIQ==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -3602,11 +3602,10 @@
     "@types/glob" "*"
     "@types/node" "*"
 
-"@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.14", "@types/selenium-webdriver@^4.0.18":
-  name "@types/selenium-webdriver4"
-  version "4.1.14"
-  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.14.tgz#4ce2839c35f751f5d497ae4e25989734a16dd555"
-  integrity sha512-3vy3tbKfMWLhKMoZSnFAMZRf4Z1e8/zgpxIqXG7G2Coc8Rvf1QBvgpJDxxdnTuDFL6ZfymiGUHd8itwTmuEpeA==
+"@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.15":
+  version "4.1.15"
+  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.15.tgz#d346b674b96f5ba43f1ad5343f997030559e5b23"
+  integrity sha512-oQ15G3q3EZ0dS049SB/5zx2tQkIS2kmDQWC/TSfAHJYKvXLZoUiLaPXnfSwbLP8Q5lcJeu5oYjKVSEV0t3H6Bg==
   dependencies:
     "@types/ws" "*"
 
@@ -3619,6 +3618,14 @@
   version "3.0.21"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-3.0.21.tgz#af7a272e7f92a89cd432005dd1cb80956ebe4d9b"
   integrity sha512-DRHyGEr25ra2C4+eU7eiCSto2j9eUa9pR4z5uiLRBXWFlmfMCAeXwecZnAhuB3eOOCA8OkwcNlb6QUkVZFlKTA==
+
+"@types/selenium-webdriver@^4.0.18":
+  name "@types/selenium-webdriver4"
+  version "4.1.14"
+  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.14.tgz#4ce2839c35f751f5d497ae4e25989734a16dd555"
+  integrity sha512-3vy3tbKfMWLhKMoZSnFAMZRf4Z1e8/zgpxIqXG7G2Coc8Rvf1QBvgpJDxxdnTuDFL6ZfymiGUHd8itwTmuEpeA==
+  dependencies:
+    "@types/ws" "*"
 
 "@types/semver@^7.3.4":
   version "7.5.0"
