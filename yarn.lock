@@ -3603,6 +3603,7 @@
     "@types/node" "*"
 
 "@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.14", "@types/selenium-webdriver@^4.0.18":
+  name "@types/selenium-webdriver4"
   version "4.1.14"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.14.tgz#4ce2839c35f751f5d497ae4e25989734a16dd555"
   integrity sha512-3vy3tbKfMWLhKMoZSnFAMZRf4Z1e8/zgpxIqXG7G2Coc8Rvf1QBvgpJDxxdnTuDFL6ZfymiGUHd8itwTmuEpeA==
@@ -4153,10 +4154,10 @@ agent-base@6, agent-base@^6.0.0, agent-base@^6.0.2:
   dependencies:
     debug "4"
 
-agent-base@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.0.1.tgz#ec4df4e6406bdf71490ade302ea45f86bf365ea9"
-  integrity sha512-V9to8gr2GK7eA+xskWGAFUX/TLSQKuH2TI06c/jGLL6yLp3oEjtnqM7a5tPV9fC1rabLeAgThZeBwsYX+WWHpw==
+agent-base@^7.0.2:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.0.tgz#536802b76bc0b34aa50195eb2442276d613e3434"
+  integrity sha512-o/zjMZRhJxny7OyEF+Op8X+efiELC7k7yOjMzgfzVqOzXqkBkWI79YoTdOtsuWd5BWhAGAuOY/Xa6xpiaWXiNg==
   dependencies:
     debug "^4.3.4"
 
@@ -9453,12 +9454,12 @@ http2-wrapper@^1.0.0-beta.5.2:
     quick-lru "^5.1.1"
     resolve-alpn "^1.0.0"
 
-https-proxy-agent@5, https-proxy-agent@5.0.1, https-proxy-agent@6.1.0, https-proxy-agent@^2.2.1, https-proxy-agent@^4.0.0, https-proxy-agent@^5.0.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-6.1.0.tgz#e00f1efb849171ea349721481d3bcbef03ab4d13"
-  integrity sha512-rvGRAlc3y+iS7AC9Os2joN91mX8wHpJ4TEklmHHxr7Gz2Juqa7fJmJ8wWxXNpTaRt56MQTwojxV5d82UW/+jwg==
+https-proxy-agent@5, https-proxy-agent@5.0.1, https-proxy-agent@7.0.0, https-proxy-agent@^2.2.1, https-proxy-agent@^4.0.0, https-proxy-agent@^5.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-7.0.0.tgz#75cb70d04811685667183b31ab158d006750418a"
+  integrity sha512-0euwPCRyAPSgGdzD1IVN9nJYHtBhJwb6XPfbpQcYbPCwrBidX6GzxmchnaF4sfF/jPb74Ojx5g4yTg3sixlyPw==
   dependencies:
-    agent-base "^7.0.1"
+    agent-base "^7.0.2"
     debug "4"
 
 human-signals@^2.1.0:
