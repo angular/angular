@@ -96,30 +96,6 @@ describe('ShadowCss', () => {
     expect(css).toEqualCss('div[contenta] {height:calc(100% - 55px);}');
   });
 
-  it('should strip comments', () => {
-    expect(shim('/* x */b {c}', 'contenta')).toEqualCss('b[contenta] {c}');
-  });
-
-  it('should ignore special characters in comments', () => {
-    expect(shim('/* {;, */b {c}', 'contenta')).toEqualCss('b[contenta] {c}');
-  });
-
-  it('should support multiline comments', () => {
-    expect(shim('/* \n */b {c}', 'contenta')).toEqualCss('b[contenta] {c}');
-  });
-
-  it('should keep sourceMappingURL comments', () => {
-    expect(shim('b {c}/*# sourceMappingURL=data:x */', 'contenta'))
-        .toEqualCss('b[contenta] {c} /*# sourceMappingURL=data:x */');
-    expect(shim('b {c}/* #sourceMappingURL=data:x */', 'contenta'))
-        .toEqualCss('b[contenta] {c} /* #sourceMappingURL=data:x */');
-  });
-
-  it('should keep sourceURL comments', () => {
-    expect(shim('/*# sourceMappingURL=data:x */b {c}/*# sourceURL=xxx */', 'contenta'))
-        .toEqualCss('b[contenta] {c} /*# sourceMappingURL=data:x */ /*# sourceURL=xxx */');
-  });
-
   it('should shim rules with quoted content', () => {
     const styleStr = 'div {background-image: url("a.jpg"); color: red;}';
     const css = shim(styleStr, 'contenta');
@@ -136,5 +112,34 @@ describe('ShadowCss', () => {
     const styleStr = 'div::after { content: "{}" }';
     const css = shim(styleStr, 'contenta');
     expect(css).toEqualCss('div[contenta]::after { content:"{}"}');
+  });
+
+  describe('comments', () => {
+    // Comments should be kept in the same position as otherwise inline sourcemaps break due to
+    // shift in lines.
+    it('should replace multiline comments with newline', () => {
+      expect(shim('/* b {c} */ b {c}', 'contenta')).toBe('\n b[contenta] {c}');
+    });
+
+    it('should replace multiline comments with newline in the original position', () => {
+      expect(shim('/* b {c}\n */ b {c}', 'contenta')).toBe('\n\n b[contenta] {c}');
+    });
+
+    it('should replace comments with newline in the original position', () => {
+      expect(shim('/* b {c} */ b {c} /* a {c} */ a {c}', 'contenta'))
+          .toBe('\n b[contenta] {c} \n a[contenta] {c}');
+    });
+
+    it('should keep sourceMappingURL comments', () => {
+      expect(shim('b {c} /*# sourceMappingURL=data:x */', 'contenta'))
+          .toBe('b[contenta] {c} /*# sourceMappingURL=data:x */');
+      expect(shim('b {c}/* #sourceMappingURL=data:x */', 'contenta'))
+          .toBe('b[contenta] {c}/* #sourceMappingURL=data:x */');
+    });
+
+    it('should handle adjacent comments', () => {
+      expect(shim('/* comment 1 */ /* comment 2 */ b {c}', 'contenta'))
+          .toBe('\n \n b[contenta] {c}');
+    });
   });
 });
