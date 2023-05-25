@@ -9,6 +9,7 @@
 import './node_util';
 import './events';
 import './fs';
+import '../common/queue-microtask';
 
 import {findEventTasks} from '../common/events';
 import {patchTimer} from '../common/timers';
