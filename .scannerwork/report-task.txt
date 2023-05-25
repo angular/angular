@@ -1,0 +1,6 @@
+projectKey=angular-official
+serverUrl=http://localhost:9000
+serverVersion=9.3.0.51899
+dashboardUrl=http://localhost:9000/dashboard?id=angular-official
+ceTaskId=AYh31T6KEKkNqSv19dlh
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYh31T6KEKkNqSv19dlh
