@@ -147,44 +147,7 @@ def ts_library(
         **kwargs
     )
 
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, **kwargs):
-    """Default values for ng_module"""
-    deps = deps + ["@npm//tslib"]
-    if testonly:
-        # Match the types[] in //packages:tsconfig-test.json
-        deps.append("@npm//@types/jasmine")
-        deps.append("@npm//@types/node")
-    if not tsconfig and testonly:
-        tsconfig = _DEFAULT_TSCONFIG_TEST
-
-    if not module_name:
-        module_name = _default_module_name(testonly)
-
-    # If no `package_name` is explicitly set, we use the default module name as package
-    # name, so that the target can be resolved within NodeJS executions, by activating
-    # the Bazel NodeJS linker. See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
-    if not package_name:
-        package_name = _default_module_name(testonly)
-
-    if not entry_point:
-        entry_point = "public_api.ts"
-    _ng_module(
-        name = name,
-        flat_module_out_file = name,
-        tsconfig = tsconfig,
-        entry_point = entry_point,
-        testonly = testonly,
-        deps = deps,
-        compiler = _INTERNAL_NG_MODULE_COMPILER,
-        ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
-        # `module_name` is used for AMD module names within emitted JavaScript files.
-        module_name = module_name,
-        # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
-        # allows for resolution of the given target within the `node_modules/`.
-        package_name = package_name,
-        perf_flag = "//packages/compiler-cli:ng_perf",
-        **kwargs
-    )
+ng_module = _ng_module
 
 def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwargs):
     """Default values for ng_package"""

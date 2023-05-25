@@ -2,7 +2,8 @@
 #
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
-"""Run Angular's AOT template compiler
+
+"""Build rules to compile Angular sources in AoT mode.
 """
 
 load("//packages/bazel/src/ng_module:partial_compilation.bzl", "NgPartialCompilationInfo")
@@ -10,8 +11,6 @@ load(
     "//packages/bazel/src:external.bzl",
     "COMMON_ATTRIBUTES",
     "COMMON_OUTPUTS",
-    "DEFAULT_NG_COMPILER",
-    "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
     "LinkablePackageInfo",
     "NpmPackageInfo",
@@ -35,8 +34,14 @@ def _is_partial_compilation_enabled(ctx):
     """Whether partial compilation is enabled for this target."""
     return ctx.attr._partial_compilation_flag[NgPartialCompilationInfo].enabled
 
+def _is_local_compilation_enabled(ctx):
+    """Whether local compilation is enabled for this target."""
+    return getattr(ctx.attr, "local_compilation_mode", False)
+
 def _get_ivy_compilation_mode(ctx):
     """Gets the Ivy compilation mode based on the current build settings."""
+    if _is_local_compilation_enabled(ctx):
+        return "experimental-local"
     return "partial" if _is_partial_compilation_enabled(ctx) else "full"
 
 # Return true if run with bazel (the open-sourced version of blaze), false if
@@ -198,7 +203,9 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
             [ctx.workspace_name] + ctx.label.package.split("/") + [ctx.label.name, ""],
         )
 
-    tsconfig = dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
+    base_tsconfig = tsc_wrapped_tsconfig(ctx, srcs, srcs, **kwargs) if _is_local_compilation_enabled(ctx) else tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs)
+
+    tsconfig = dict(base_tsconfig, **{
         "angularCompilerOptions": angular_compiler_options,
     })
 
@@ -265,11 +272,15 @@ def ngc_compile_action(
         label,
     )
 
+    supports_workers = "0"
+    local = "1"
+
     if locale:
         mnemonic = "AngularI18NMerging"
-        supports_workers = "0"
         progress_message = ("Recompiling Angular templates (ngc - %s) %s for locale %s" %
                             (target_flavor, label, locale))
+    elif _is_local_compilation_enabled(ctx):
+        mnemonic = "AngularTemplateCompileLCM"
     else:
         supports_workers = str(int(ctx.attr._supports_workers))
 
@@ -295,6 +306,7 @@ def ngc_compile_action(
         executable = ctx.executable.compiler,
         execution_requirements = {
             "supports-workers": supports_workers,
+            "local": local,
         },
     )
 
@@ -318,6 +330,49 @@ def _filter_ts_inputs(all_inputs):
         if f.path.endswith(".js") or f.path.endswith(".ts") or f.path.endswith(".json")
     ]
 
+def _get_short_path_without_ext(file):
+    ext = ".".join(file.basename.split(".")[1::])
+    return file.short_path[:-len(ext)]
+
+def _is_output_of(input_file, output_file):
+    if _is_non_js_file(output_file):
+        return False
+
+    return _get_short_path_without_ext(input_file) == _get_short_path_without_ext(output_file)
+
+def _create_dummy_file_for_non_js_files(ctx, outputs):
+    for f in outputs:
+        if _is_non_js_file(f):
+            ctx.actions.write(f, "Void content")
+
+def _is_non_js_file(f):
+    return f.extension != "ts" and f.extension != "js" and f.extension != "mjs"
+
+def _compile_action_lcm(
+        ctx,
+        inputs,
+        outputs,
+        tsconfig_file,
+        node_opts,
+        target_flavor):
+    """Compiles in local mode by creating the compile action only for the single source file and its corresponding outputs"""
+
+    # Unfortunately this is needed since the upstream tool declares some non-js files and if we don't output them the build will break.
+    _create_dummy_file_for_non_js_files(ctx, outputs)
+
+    # Recall that in local compilation mode there is at most one source file which is guranteed to be a proper .ts file
+    if len(ctx.files.srcs) > 0:
+        input_file = ctx.files.srcs[0]
+
+        lcm_inputs = [input_file, tsconfig_file] + ctx.files.assets
+        lcm_outputs = [f for f in outputs if _is_output_of(input_file, f)]
+
+        # additional deps
+        if hasattr(ctx.attr, "node_modules"):
+            lcm_inputs.extend(_filter_ts_inputs(ctx.files.node_modules))
+
+        ngc_compile_action(ctx, ctx.label, lcm_inputs, lcm_outputs, tsconfig_file, node_opts, None, [], target_flavor)
+
 def _compile_action(
         ctx,
         inputs,
@@ -325,6 +380,8 @@ def _compile_action(
         tsconfig_file,
         node_opts,
         target_flavor):
+    """Compiles in full/partial mode"""
+
     # Give the Angular compiler all the user-listed assets
     file_inputs = list(ctx.files.assets)
 
@@ -359,12 +416,14 @@ def _compile_action(
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files + outs.declarations, tsconfig_file, node_opts, "prodmode")
+    _compile_action_helper = _compile_action_lcm if _is_local_compilation_enabled(ctx) else _compile_action
+    return _compile_action_helper(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files + outs.declarations, tsconfig_file, node_opts, "prodmode")
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
+    _compile_action_helper = _compile_action_lcm if _is_local_compilation_enabled(ctx) else _compile_action
     compile_action_outputs = outputs + outs.devmode_js + outs.dev_perf_files
-    _compile_action(ctx, inputs, compile_action_outputs, tsconfig_file, node_opts, "devmode")
+    _compile_action_helper(ctx, inputs, compile_action_outputs, tsconfig_file, node_opts, "devmode")
 
 # Note: We need to define `label` and `srcs_files` as `tsc_wrapped` passes
 # them and Starlark would otherwise error at runtime.
@@ -410,6 +469,16 @@ def ng_module_impl(ctx, ts_compile_actions):
     return providers
 
 def _ng_module_impl(ctx):
+    # In local compilation mode we should have only a single source file. The ng_module_macro ensures to make a separate call to this rule for each of its source files.
+    if _is_local_compilation_enabled(ctx):
+        if len(ctx.files.srcs) > 1:
+            fail("In local compilation mode at most one source file should be passed to ng_module_rule")
+        if len(ctx.files.srcs) == 1:
+            if ctx.files.srcs[0].extension != "ts":
+                fail("Non ts file passed as source")
+            if ctx.files.srcs[0].short_path.endswith(".d.ts"):
+                fail("Cannot pass .d.ts file as input to ng_module")
+
     ts_providers = ng_module_impl(ctx, compile_ts)
 
     # Add in new JS providers
@@ -469,12 +538,13 @@ NG_MODULE_ATTRIBUTES = {
         target which is setup for projects that use bazel managed npm deps that
         fetch the @angular/bazel npm package.
         """,
-        default = Label(DEFAULT_NG_COMPILER),
+        default = "//packages/bazel/src/ngc-wrapped",
         executable = True,
         cfg = "exec",
     ),
+    "local_compilation_mode": attr.bool(default = False),
     "ng_xi18n": attr.label(
-        default = Label(DEFAULT_NG_XI18N),
+        default = "//packages/bazel/src/ngc-wrapped:xi18n",
         executable = True,
         cfg = "exec",
     ),
@@ -490,6 +560,7 @@ NG_MODULE_ATTRIBUTES = {
     # * committing to the flag and its semantics (including the format of perf JSON files)
     #   as something users can depend upon.
     "perf_flag": attr.label(
+        default = "//packages/compiler-cli:ng_perf",
         providers = [NgPerfInfo],
         doc = "Private API to control production of performance metric JSON files",
     ),
@@ -592,33 +663,123 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     "flat_module_out_file": attr.string(),
 })
 
-ng_module = rule(
+ng_module_rule = rule(
     implementation = _ng_module_impl,
     attrs = NG_MODULE_RULE_ATTRS,
     outputs = COMMON_OUTPUTS,
 )
 """
-Run the Angular AOT template compiler.
-
-This rule extends the [ts_library] rule.
-
-[ts_library]: https://bazelbuild.github.io/rules_nodejs/TypeScript.html#ts_library
+This rule runs Ivy compiler in AoT mode.
 """
 
-def ng_module_macro(tsconfig = None, **kwargs):
-    """Wraps `ng_module` to set the default for the `tsconfig` attribute.
+def ng_module_macro(name, srcs = None, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, local_compilation_mode = False, **kwargs):
+    """Builds compiled angular artifacts in AoT or local mode. """
 
-    This must be a macro so that the string is converted to a label in the context of the
-    workspace that declares the `ng_module` target, rather than the workspace that defines
-    `ng_module`, or the workspace where the build is taking place.
+    deps = deps + ["@npm//tslib"]
+    if testonly:
+        # Match the types[] in //packages:tsconfig-test.json
+        deps.append("@npm//@types/jasmine")
+        deps.append("@npm//@types/node")
 
-    This macro is re-exported as `ng_module` in the public API.
-
-    Args:
-      tsconfig: the label pointing to a tsconfig.json file
-      **kwargs: remaining args to pass to the ng_module rule
-    """
     if not tsconfig:
-        tsconfig = "//:tsconfig.json"
+        tsconfig = "//packages:tsconfig-test" if testonly else "//:tsconfig.json"
 
-    ng_module(tsconfig = tsconfig, **kwargs)
+    if not module_name:
+        module_name = _default_module_name(testonly)
+
+    # If no `package_name` is explicitly set, we use the default module name as package
+    # name, so that the target can be resolved within NodeJS executions, by activating
+    # the Bazel NodeJS linker. See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
+    if not package_name:
+        package_name = _default_module_name(testonly)
+
+    if not entry_point:
+        entry_point = "public_api.ts"
+
+    if not local_compilation_mode:
+        ng_module_rule(
+            name = name,
+            srcs = srcs,
+            flat_module_out_file = name,
+            tsconfig = tsconfig,
+            entry_point = entry_point,
+            testonly = testonly,
+            deps = deps,
+            # `module_name` is used for AMD module names within emitted JavaScript files.
+            module_name = module_name,
+            # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
+            # allows for resolution of the given target within the `node_modules/`.
+            package_name = package_name,
+            local_compilation_mode = False,
+            **kwargs
+        )
+    else:
+        subs = [{"name": _to_lcm_target_name(name, f), "file": f} for f in srcs if f.endswith(".ts") and (not f.endswith(".d.ts"))]
+        for sub in subs:
+            ng_module_rule(
+                name = sub["name"],
+                srcs = [sub["file"]],
+                flat_module_out_file = sub["name"],
+                tsconfig = tsconfig,
+                entry_point = entry_point,
+                testonly = testonly,
+                deps = deps,
+                # `module_name` is used for AMD module names within emitted JavaScript files.
+                module_name = module_name,
+                # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
+                # allows for resolution of the given target within the `node_modules/`.
+                package_name = package_name,
+                local_compilation_mode = True,
+                **kwargs
+            )
+
+        ng_module_rule(
+            name = name,
+            srcs = [],
+            flat_module_out_file = name,
+            tsconfig = tsconfig,
+            entry_point = entry_point,
+            testonly = testonly,
+            deps = [":" + sub["name"] for sub in subs],
+            # `module_name` is used for AMD module names within emitted JavaScript files.
+            module_name = module_name,
+            # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
+            # allows for resolution of the given target within the `node_modules/`.
+            package_name = package_name,
+            local_compilation_mode = local_compilation_mode,
+            **kwargs
+        )
+
+def _to_lcm_target_name(name, filename):
+    return name + "--" + filename.replace("/", "__")
+
+def _default_module_name(testonly):
+    """ Provide better defaults for package names.
+
+    e.g. rather than angular/packages/core/testing we want @angular/core/testing
+
+    TODO(alexeagle): we ought to supply a default module name for every library in the repo.
+    But we short-circuit below in cases that are currently not working.
+    """
+    pkg = native.package_name()
+
+    if testonly:
+        # Some tests currently rely on the long-form package names
+        return None
+
+    if pkg.startswith("packages/bazel"):
+        # Avoid infinite recursion in the ViewEngine compiler. Error looks like:
+        #  Compiling Angular templates (ngc) //packages/bazel/test/ngc-wrapped/empty:empty failed (Exit 1)
+        # : RangeError: Maximum call stack size exceeded
+        #    at normalizeString (path.js:57:25)
+        #    at Object.normalize (path.js:1132:12)
+        #    at Object.join (path.js:1167:18)
+        #    at resolveModule (execroot/angular/bazel-out/host/bin/packages/bazel/src/ngc-wrapped/ngc-wrapped.runfiles/angular/packages/compiler-cli/src/metadata/bundler.js:582:50)
+        #    at MetadataBundler.exportAll (execroot/angular/bazel-out/host/bin/packages/bazel/src/ngc-wrapped/ngc-wrapped.runfiles/angular/packages/compiler-cli/src/metadata/bundler.js:119:42)
+        #    at MetadataBundler.exportAll (execroot/angular/bazel-out/host/bin/packages/bazel/src/ngc-wrapped/ngc-wrapped.runfiles/angular/packages/compiler-cli/src/metadata/bundler.js:121:52)
+        return None
+
+    if pkg.startswith("packages/"):
+        return "@angular/" + pkg[len("packages/"):]
+
+    return None
