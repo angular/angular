@@ -60,10 +60,6 @@ export class HttpXhrBackend implements HttpBackend {
               `Cannot make a JSONP request without JSONP support. To fix the problem, either add the \`withJsonpSupport()\` call (if \`provideHttpClient()\` is used) or import the \`HttpClientJsonpModule\` in the root NgModule.`);
     }
 
-    // Schedule a macrotask. This will cause NgZone.isStable to be set to false,
-    // Which delays server rendering until the request is completed.
-    const macroTaskCanceller = createBackgroundMacroTask();
-
     // Check whether this factory has a special function to load an XHR implementation
     // for various non-browser environments. We currently limit it to only `ServerXhr`
     // class, which needs to load an XHR implementation.
@@ -235,11 +231,7 @@ export class HttpXhrBackend implements HttpBackend {
                 statusText: xhr.statusText || 'Unknown Error',
                 url: url || undefined,
               });
-
               observer.error(res);
-
-              // Cancel the background macrotask.
-              macroTaskCanceller();
             };
 
             // The sentHeaders flag tracks whether the HttpResponseHeaders event
@@ -317,31 +309,35 @@ export class HttpXhrBackend implements HttpBackend {
               }
             }
 
-            /** Tear down logic to cancel the backround macrotask. */
-            const onLoadEnd = () => macroTaskCanceller();
+            let macroTaskCanceller: VoidFunction|undefined;
 
+            /** Tear down logic to cancel the backround macrotask. */
+            const onLoadStart = () => {
+              macroTaskCanceller ??= createBackgroundMacroTask();
+            };
+            const onLoadEnd = () => {
+              macroTaskCanceller?.();
+            };
+
+            xhr.addEventListener('loadstart', onLoadStart);
             xhr.addEventListener('loadend', onLoadEnd);
 
             // Fire the request, and notify the event stream that it was fired.
-            try {
-              xhr.send(reqBody!);
-            } catch (e: any) {
-              onError(e);
-            }
-
+            xhr.send(reqBody!);
             observer.next({type: HttpEventType.Sent});
             // This is the return from the Observable function, which is the
             // request cancellation handler.
             return () => {
               // On a cancellation, remove all registered event listeners.
+              xhr.removeEventListener('loadstart', onLoadStart);
               xhr.removeEventListener('loadend', onLoadEnd);
               xhr.removeEventListener('error', onError);
               xhr.removeEventListener('abort', onError);
               xhr.removeEventListener('load', onLoad);
               xhr.removeEventListener('timeout', onError);
 
-              // Cancel the background macrotask.
-              macroTaskCanceller();
+              //  Cancel the background macrotask.
+              macroTaskCanceller?.();
 
               if (req.reportProgress) {
                 xhr.removeEventListener('progress', onDownProgress);
@@ -361,8 +357,11 @@ export class HttpXhrBackend implements HttpBackend {
   }
 }
 
+// Cannot use `Number.MAX_VALUE` as it does not fit into a 32-bit signed integer.
+const MAX_INT = 2147483647;
+
 /**
- * A method that creates a background macrotask using Zone.js.
+ * A method that creates a background macrotask of up to Number.MAX_VALUE.
  *
  * This is so that Zone.js can intercept HTTP calls, this is important for server rendering,
  * as the application is only rendered once the application is stabilized, meaning there are pending
@@ -371,15 +370,7 @@ export class HttpXhrBackend implements HttpBackend {
  * @returns a callback method to cancel the macrotask.
  */
 function createBackgroundMacroTask(): VoidFunction {
-  // We use Zone.js when it's defined as otherwise a `setTimeout` will leave open timers which
-  // causes `fakeAsync` tests to fail.
-  const noop = () => {};
-  if (typeof Zone !== 'undefined') {
-    const zoneCurrent = Zone.current;
-    const task = zoneCurrent.scheduleMacroTask('httpMacroTask', noop, undefined, noop, noop);
+  const timeout = setTimeout(() => void 0, MAX_INT);
 
-    return () => zoneCurrent.cancelTask(task);
-  }
-
-  return noop;
+  return () => clearTimeout(timeout);
 }
