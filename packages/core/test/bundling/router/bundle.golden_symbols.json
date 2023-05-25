@@ -897,6 +897,9 @@
     "name": "bloomHasToken"
   },
   {
+    "name": "booleanAttribute"
+  },
+  {
     "name": "callHook"
   },
   {
@@ -919,9 +922,6 @@
   },
   {
     "name": "clearViewRefreshFlag"
-  },
-  {
-    "name": "coerceToBoolean"
   },
   {
     "name": "collectNativeNodes"

@@ -21,7 +21,7 @@ export function getClosureSafeProperty<T>(objWithPropertyToExtract: T): string {
  * @param target The target to set properties on
  * @param source The source of the property keys and values to set
  */
-export function fillProperties(target: {[key: string]: string}, source: {[key: string]: string}) {
+export function fillProperties(target: Record<string, unknown>, source: Record<string, unknown>) {
   for (const key in source) {
     if (source.hasOwnProperty(key) && !target.hasOwnProperty(key)) {
       target[key] = source[key];

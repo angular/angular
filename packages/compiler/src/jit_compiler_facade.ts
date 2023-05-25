@@ -325,8 +325,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
             bindingPropertyName: ann.alias || field,
             classPropertyName: field,
             required: ann.required || false,
-            // TODO(crisbeto): resolve transform function reference here.
-            transformFunction: null,
+            transformFunction: ann.transform != null ? new WrappedNodeExpr(ann.transform) : null,
           };
         } else if (isOutput(ann)) {
           outputsFromType[field] = ann.alias || field;
@@ -648,25 +647,23 @@ function isOutput(value: any): value is Output {
   return value.ngMetadataName === 'Output';
 }
 
-function inputsMappingToInputMetadata(
-    inputs: Record<string, string|[string, string, InputTransformFunction?]>) {
+function inputsMappingToInputMetadata(inputs: Record<string, string|[string, string, InputTransformFunction?]>) {
   return Object.keys(inputs).reduce<InputMap>((result, key) => {
     const value = inputs[key];
 
-    // TODO(crisbeto): resolve transform function reference here.
     if (typeof value === 'string') {
       result[key] = {
         bindingPropertyName: value,
         classPropertyName: value,
+        transformFunction: null,
         required: false,
-        transformFunction: null
       };
     } else {
       result[key] = {
         bindingPropertyName: value[0],
         classPropertyName: value[1],
+        transformFunction: value[2] || null,
         required: false,
-        transformFunction: null
       };
     }
 
@@ -674,19 +671,23 @@ function inputsMappingToInputMetadata(
   }, {});
 }
 
-function parseInputsArray(values: (string|{name: string, alias?: string, required?: boolean})[]) {
+function parseInputsArray(
+    values: (string|{name: string, alias?: string, required?: boolean, transform?: Function})[]) {
   return values.reduce<InputMap>((results, value) => {
-    // TODO(crisbeto): resolve transform function reference here.
     if (typeof value === 'string') {
       const [bindingPropertyName, classPropertyName] = parseMappingString(value);
-      results[classPropertyName] =
-          {bindingPropertyName, classPropertyName, required: false, transformFunction: null};
+      results[classPropertyName] = {
+        bindingPropertyName,
+        classPropertyName,
+        required: false,
+        transformFunction: null,
+      };
     } else {
       results[value.name] = {
         bindingPropertyName: value.alias || value.name,
         classPropertyName: value.name,
         required: value.required || false,
-        transformFunction: null
+        transformFunction: value.transform != null ? new WrappedNodeExpr(value.transform) : null,
       };
     }
     return results;

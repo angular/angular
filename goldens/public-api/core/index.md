@@ -122,6 +122,9 @@ export interface AttributeDecorator {
 }
 
 // @public
+export function booleanAttribute(value: unknown): boolean;
+
+// @public
 export interface BootstrapOptions {
     ngZone?: NgZone | 'zone.js' | 'noop';
     ngZoneEventCoalescing?: boolean;
@@ -481,6 +484,7 @@ export interface Directive {
         name: string;
         alias?: string;
         required?: boolean;
+        transform?: (value: any) => any;
     } | string)[];
     jit?: true;
     outputs?: string[];
@@ -822,6 +826,7 @@ export interface InjectorType<T> extends Type<T> {
 export interface Input {
     alias?: string;
     required?: boolean;
+    transform?: (value: any) => any;
 }
 
 // @public (undocumented)
@@ -1058,6 +1063,9 @@ export interface NgZoneOptions {
 
 // @public
 export const NO_ERRORS_SCHEMA: SchemaMetadata;
+
+// @public
+export function numberAttribute(value: unknown, fallbackValue?: number): number;
 
 // @public
 export interface OnChanges {

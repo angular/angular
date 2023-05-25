@@ -8565,7 +8565,7 @@ function allTests(os: string) {
 
         expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
         expect(jsContents)
-            .toContain('features: [i0.ɵɵStandaloneFeature, i0.ɵɵInputTransformsFeature]');
+            .toContain('features: [i0.ɵɵInputTransformsFeature, i0.ɵɵStandaloneFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
 
@@ -8747,6 +8747,32 @@ function allTests(os: string) {
         expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: unknown;');
+      });
+
+      it('should insert the InputTransformsFeature before the InheritDefinitionFeature', () => {
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          function toNumber(value: boolean | string) { return 1; }
+
+          @Directive()
+          export class ParentDir {}
+
+          @Directive()
+          export class Dir extends ParentDir {
+            @Input({transform: toNumber}) value!: number;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { value: ["value", "value", toNumber] }');
+        expect(jsContents)
+            .toContain('features: [i0.ɵɵInputTransformsFeature, i0.ɵɵInheritDefinitionFeature]');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
     });
   });

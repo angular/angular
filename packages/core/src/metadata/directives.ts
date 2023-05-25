@@ -182,7 +182,12 @@ export interface Directive {
    * ```
    *
    */
-  inputs?: ({name: string, alias?: string, required?: boolean}|string)[];
+  inputs?: ({
+    name: string,
+    alias?: string,
+    required?: boolean,
+    transform?: (value: any) => any,
+  }|string)[];
 
   /**
    * Enumerates the set of event-bound output properties.
@@ -817,6 +822,11 @@ export interface Input {
    * Whether the input is required for the directive to function.
    */
   required?: boolean;
+
+  /**
+   * Function with which to transform the input value before assigning it to the directive instance.
+   */
+  transform?: (value: any) => any;
 }
 
 /**
