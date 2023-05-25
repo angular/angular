@@ -11,6 +11,7 @@ import './common/zone.spec';
 import './common/task.spec';
 import './common/util.spec';
 import './common/Promise.spec';
+import './common/queue-microtask.spec';
 import './common/fetch.spec';
 import './common/Error.spec';
 import './common/setInterval.spec';

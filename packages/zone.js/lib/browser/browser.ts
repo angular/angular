@@ -11,6 +11,7 @@
  */
 
 import {findEventTasks} from '../common/events';
+import {patchQueueMicrotask} from '../common/queue-microtask';
 import {patchTimer} from '../common/timers';
 import {patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils';
 
@@ -24,15 +25,6 @@ Zone.__load_patch('legacy', (global: any) => {
     legacyPatch();
   }
 });
-
-Zone.__load_patch('queueMicrotask', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  api.patchMethod(global, 'queueMicrotask', delegate => {
-    return function(self: any, args: any[]) {
-      Zone.current.scheduleMicroTask('queueMicrotask', args[0]);
-    }
-  });
-});
-
 
 Zone.__load_patch('timers', (global: any) => {
   const set = 'set';
@@ -299,4 +291,8 @@ Zone.__load_patch('PromiseRejectionEvent', (global: any, Zone: ZoneType) => {
     (Zone as any)[zoneSymbol('rejectionHandledHandler')] =
         findPromiseRejectionHandler('rejectionhandled');
   }
+});
+
+Zone.__load_patch('queueMicrotask', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+  patchQueueMicrotask(global, api);
 });

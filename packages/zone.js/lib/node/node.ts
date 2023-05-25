@@ -11,6 +11,7 @@ import './events';
 import './fs';
 
 import {findEventTasks} from '../common/events';
+import {patchQueueMicrotask} from '../common/queue-microtask';
 import {patchTimer} from '../common/timers';
 import {ArraySlice, isMix, patchMacroTask, patchMicroTask} from '../common/utils';
 
@@ -151,4 +152,8 @@ Zone.__load_patch('console', (global: any, Zone: ZoneType) => {
       };
     }
   });
+});
+
+Zone.__load_patch('queueMicrotask', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+  patchQueueMicrotask(global, api);
 });
