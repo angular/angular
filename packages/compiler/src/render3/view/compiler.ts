@@ -111,7 +111,12 @@ function addFeatures(
     }
     features.push(o.importExpr(R3.ProvidersFeature).callFn(args));
   }
-
+  for (const key of inputKeys) {
+    if (meta.inputs[key].transformFunction !== null) {
+      features.push(o.importExpr(R3.InputTransformsFeatureFeature));
+      break;
+    }
+  }
   if (meta.usesInheritance) {
     features.push(o.importExpr(R3.InheritDefinitionFeature));
   }
@@ -128,12 +133,6 @@ function addFeatures(
   if (meta.hostDirectives?.length) {
     features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
         meta.hostDirectives)]));
-  }
-  for (const key of inputKeys) {
-    if (meta.inputs[key].transformFunction !== null) {
-      features.push(o.importExpr(R3.InputTransformsFeatureFeature));
-      break;
-    }
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));

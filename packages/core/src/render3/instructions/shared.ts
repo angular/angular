@@ -1311,6 +1311,10 @@ function writeToDirectiveInput<T>(
     def: DirectiveDef<T>, instance: T, publicName: string, privateName: string, value: string) {
   const prevConsumer = setActiveConsumer(null);
   try {
+    const inputTransforms = def.inputTransforms;
+    if (inputTransforms !== null && inputTransforms.hasOwnProperty(privateName)) {
+      value = inputTransforms[privateName].call(instance, value);
+    }
     if (def.setInput !== null) {
       def.setInput(instance, value, publicName, privateName);
     } else {

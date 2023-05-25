@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean, ɵɵsanitizeUrlOrResourceUrl} from '@angular/core';
+import {Attribute, booleanAttribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵɵsanitizeUrlOrResourceUrl} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
 import {Event, NavigationEnd} from '../events';
@@ -212,7 +212,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    */
   @Input()
   set preserveFragment(preserveFragment: boolean|string|null|undefined) {
-    this._preserveFragment = coerceToBoolean(preserveFragment);
+    this._preserveFragment = booleanAttribute(preserveFragment);
   }
 
   get preserveFragment(): boolean {
@@ -227,7 +227,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    */
   @Input()
   set skipLocationChange(skipLocationChange: boolean|string|null|undefined) {
-    this._skipLocationChange = coerceToBoolean(skipLocationChange);
+    this._skipLocationChange = booleanAttribute(skipLocationChange);
   }
 
   get skipLocationChange(): boolean {
@@ -242,7 +242,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    */
   @Input()
   set replaceUrl(replaceUrl: boolean|string|null|undefined) {
-    this._replaceUrl = coerceToBoolean(replaceUrl);
+    this._replaceUrl = booleanAttribute(replaceUrl);
   }
 
   get replaceUrl(): boolean {
