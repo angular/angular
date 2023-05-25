@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, ElementRef, EventEmitter, Input, NgModule, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, Input, NgModule, OnChanges, Output, SimpleChange, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -556,6 +556,243 @@ describe('directives', () => {
          expect(dirInstance.plainInput).toBe(plainValue);
          expect(dirInstance.aliasedInput).toBe(aliasedValue);
        });
+
+    it('should transform incoming input values', () => {
+      @Directive({selector: '[dir]'})
+      class Dir {
+        @Input({transform: (value: string) => value ? 1 : 0}) value = -1;
+      }
+
+      @Component({template: '<div dir [value]="assignedValue"></div>'})
+      class TestComp {
+        @ViewChild(Dir) dir!: Dir;
+        assignedValue = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, Dir]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(0);
+
+      fixture.componentInstance.assignedValue = 'hello';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(1);
+    });
+
+    it('should transform incoming input values when declared through the `inputs` array', () => {
+      @Directive({
+        selector: '[dir]',
+        inputs: [{name: 'value', transform: (value: string) => value ? 1 : 0}]
+      })
+      class Dir {
+        value = -1;
+      }
+
+      @Component({template: '<div dir [value]="assignedValue"></div>'})
+      class TestComp {
+        @ViewChild(Dir) dir!: Dir;
+        assignedValue = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, Dir]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(0);
+
+      fixture.componentInstance.assignedValue = 'hello';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(1);
+    });
+
+    it('should transform incoming static input values', () => {
+      @Directive({selector: '[dir]'})
+      class Dir {
+        @Input({transform: (value: string) => value ? 1 : 0}) value = -1;
+      }
+
+      @Component({template: '<div dir value="staticValue"></div>'})
+      class TestComp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, Dir]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(1);
+    });
+
+    it('should transform incoming values for aliased inputs', () => {
+      @Directive({selector: '[dir]'})
+      class Dir {
+        @Input({alias: 'valueAlias', transform: (value: string) => value ? 1 : 0}) value = -1;
+      }
+
+      @Component({template: '<div dir [valueAlias]="assignedValue"></div>'})
+      class TestComp {
+        @ViewChild(Dir) dir!: Dir;
+        assignedValue = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, Dir]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(0);
+
+      fixture.componentInstance.assignedValue = 'hello';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(1);
+    });
+
+    it('should transform incoming inherited input values', () => {
+      @Directive()
+      class Parent {
+        @Input({transform: (value: string) => value ? 1 : 0}) value = -1;
+      }
+
+      @Directive({selector: '[dir]'})
+      class Dir extends Parent {
+      }
+
+      @Component({template: '<div dir [value]="assignedValue"></div>'})
+      class TestComp {
+        @ViewChild(Dir) dir!: Dir;
+        assignedValue = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, Dir]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(0);
+
+      fixture.componentInstance.assignedValue = 'hello';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(1);
+    });
+
+    it('should transform aliased inputs coming from host directives', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input({transform: (value: string) => value ? 1 : 0}) value = -1;
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['value: valueAlias']}]
+      })
+      class Dir {
+      }
+
+      @Component({template: '<div dir [valueAlias]="assignedValue"></div>'})
+      class TestComp {
+        @ViewChild(HostDir) hostDir!: HostDir;
+        assignedValue = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, Dir]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.hostDir.value).toBe(0);
+
+      fixture.componentInstance.assignedValue = 'hello';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.hostDir.value).toBe(1);
+    });
+
+    it('should use the transformed input values in ngOnChanges', () => {
+      const trackedChanges: SimpleChange[] = [];
+
+      @Directive({selector: '[dir]'})
+      class Dir implements OnChanges {
+        @Input({transform: (value: string) => value ? 1 : 0}) value = -1;
+
+        ngOnChanges(changes: SimpleChanges): void {
+          if (changes.value) {
+            trackedChanges.push(changes.value);
+          }
+        }
+      }
+
+      @Component({template: '<div dir [value]="assignedValue"></div>'})
+      class TestComp {
+        @ViewChild(Dir) dir!: Dir;
+        assignedValue = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, Dir]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(trackedChanges).toEqual([jasmine.objectContaining(
+          {previousValue: undefined, currentValue: 0})]);
+
+      fixture.componentInstance.assignedValue = 'hello';
+      fixture.detectChanges();
+
+      expect(trackedChanges).toEqual([
+        jasmine.objectContaining({previousValue: undefined, currentValue: 0}),
+        jasmine.objectContaining({previousValue: 0, currentValue: 1})
+      ]);
+    });
+
+    it('should invoke the transform function with the directive instance as the context', () => {
+      let instance: Dir|undefined;
+
+      function transform(this: Dir, _value: string) {
+        instance = this;
+        return 0;
+      }
+
+      @Directive({selector: '[dir]'})
+      class Dir {
+        @Input({transform}) value: any;
+      }
+
+      @Component({template: '<div dir value="foo"></div>'})
+      class TestComp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, Dir]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(instance).toBe(fixture.componentInstance.dir);
+    });
+
+    it('should transform value assigned using setInput', () => {
+      @Component({selector: 'comp', template: ''})
+      class Comp {
+        @Input({transform: (value: string) => value ? 1 : 0}) value = -1;
+      }
+
+      @Component({template: '<ng-container #location/>'})
+      class TestComp {
+        @ViewChild('location', {read: ViewContainerRef}) vcr!: ViewContainerRef;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, Comp]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      const ref = fixture.componentInstance.vcr.createComponent(Comp);
+
+      ref.setInput('value', '');
+      expect(ref.instance.value).toBe(0);
+
+      ref.setInput('value', 'hello');
+      expect(ref.instance.value).toBe(1);
+    });
   });
 
   describe('outputs', () => {

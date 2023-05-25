@@ -30,7 +30,7 @@ export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from './signals';
 export {TESTABILITY as ɵTESTABILITY, TESTABILITY_GETTER as ɵTESTABILITY_GETTER} from './testability/testability';
-export {coerceToBoolean as ɵcoerceToBoolean} from './util/coercion';
+export {booleanAttribute, numberAttribute} from './util/coercion';
 export {devModeEqual as ɵdevModeEqual} from './util/comparison';
 export {global as ɵglobal} from './util/global';
 export {isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './util/lang';
