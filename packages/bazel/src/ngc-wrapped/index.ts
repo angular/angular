@@ -433,7 +433,13 @@ function gatherDiagnosticsForInputsOnly(
     // Note: We only get the diagnostics for individual files
     // to e.g. not check libraries.
     diagnostics.push(...tsProgram.getSyntacticDiagnostics(sf));
-    diagnostics.push(...tsProgram.getSemanticDiagnostics(sf));
+
+    // In local mode compilation the TS semantic check issues tons of diagnostics due to the fact
+    // that the file dependencies (.d.ts files) are not available in the program. So it needs to be
+    // disabled.
+    if (options.compilationMode !== 'experimental-local') {
+      diagnostics.push(...tsProgram.getSemanticDiagnostics(sf));
+    }
   }
 
   if (ngProgram instanceof ng.NgtscProgram) {
