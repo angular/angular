@@ -2,6 +2,7 @@
 // #docregion imports
 import { Component } from '@angular/core';
 import { CartService } from '../cart.service';
+import { Product } from '../products';
 // #enddocregion imports
 
 @Component({
@@ -13,7 +14,7 @@ import { CartService } from '../cart.service';
 export class CartComponent {
 
 // #enddocregion inject-cart
-  items = this.cartService.getItems();
+  items: Product[] = this.cartService.getItems();
 // #docregion inject-cart
 
   constructor(
