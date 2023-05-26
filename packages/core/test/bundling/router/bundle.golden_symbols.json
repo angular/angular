@@ -162,6 +162,9 @@
     "name": "DefaultUrlSerializer"
   },
   {
+    "name": "DistinctUntilChangedSubscriber"
+  },
+  {
     "name": "DoOperator"
   },
   {

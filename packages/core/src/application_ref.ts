@@ -9,7 +9,7 @@
 import './util/ng_jit_mode';
 
 import {Observable, of, Subscription} from 'rxjs';
-import {share, switchMap} from 'rxjs/operators';
+import {distinctUntilChanged, mergeMap, share} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
 import {PLATFORM_INITIALIZER} from './application_tokens';
@@ -821,7 +821,7 @@ export class ApplicationRef {
   /** @internal */
   _views: InternalViewRef[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
-  private readonly pendingTasks = inject(InitialRenderPendingTasks);
+  private readonly zoneIsStable = inject(ZONE_IS_STABLE_OBSERVABLE);
 
   /**
    * Indicates whether this instance was destroyed.
@@ -841,16 +841,16 @@ export class ApplicationRef {
    */
   public readonly components: ComponentRef<any>[] = [];
 
-  private readonly ngZoneStable = inject(ZONE_IS_STABLE_OBSERVABLE);
-
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable: Observable<boolean> = this.pendingTasks.hasPendingTasks.pipe(
-      switchMap((hasPendingTasks) => {
-        return hasPendingTasks ? of(false) : this.ngZoneStable;
-      }),
-      share());
+  public readonly isStable: Observable<boolean> =
+      inject(InitialRenderPendingTasks)
+          .hasPendingTasks.pipe(
+              mergeMap(hasPendingTasks => hasPendingTasks ? of(false) : this.zoneIsStable),
+              distinctUntilChanged(),
+              share(),
+          );
 
   private readonly _injector = inject(EnvironmentInjector);
   /**
