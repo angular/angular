@@ -54,13 +54,9 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
 
 async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
   const environmentInjector = applicationRef.injector;
-  const isStablePromise =
-      applicationRef.isStable.pipe((first((isStable: boolean) => isStable))).toPromise();
-  const pendingTasks = environmentInjector.get(InitialRenderPendingTasks);
-  const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
 
   // Block until application is stable.
-  await Promise.allSettled([isStablePromise, pendingTasksPromise]);
+  await applicationRef.isStable.pipe((first((isStable: boolean) => isStable))).toPromise();
 
   const platformState = platformRef.injector.get(PlatformState);
   if (applicationRef.injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {

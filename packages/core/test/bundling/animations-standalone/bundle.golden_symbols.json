@@ -243,6 +243,9 @@
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
+    "name": "InitialRenderPendingTasks"
+  },
+  {
     "name": "InjectFlags"
   },
   {
@@ -1171,6 +1174,9 @@
   },
   {
     "name": "makeTimingAst"
+  },
+  {
+    "name": "map"
   },
   {
     "name": "markAsComponentHost"
