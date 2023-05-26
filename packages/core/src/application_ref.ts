@@ -8,7 +8,8 @@
 
 import './util/ng_jit_mode';
 
-import {Subscription} from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
+import {distinctUntilChanged, mergeMap, share} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
 import {PLATFORM_INITIALIZER} from './application_tokens';
@@ -25,6 +26,7 @@ import {ErrorHandler} from './error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from './errors';
 import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
+import {InitialRenderPendingTasks} from './initial_render_pending_tasks';
 import {Type} from './interface/type';
 import {COMPILER_OPTIONS, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
@@ -38,7 +40,7 @@ import {isStandalone} from './render3/definition';
 import {assertStandaloneComponentType} from './render3/errors';
 import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
-import {createEnvironmentInjector, createNgModuleRefWithProviders, EnvironmentNgModuleRefAdapter, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
+import {createNgModuleRefWithProviders, EnvironmentNgModuleRefAdapter, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {setThrowInvalidWriteToSignalError} from './signals';
 import {TESTABILITY} from './testability/testability';
@@ -819,6 +821,7 @@ export class ApplicationRef {
   /** @internal */
   _views: InternalViewRef[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
+  private readonly zoneIsStable = inject(ZONE_IS_STABLE_OBSERVABLE);
 
   /**
    * Indicates whether this instance was destroyed.
@@ -841,7 +844,13 @@ export class ApplicationRef {
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable = inject(ZONE_IS_STABLE_OBSERVABLE);
+  public readonly isStable: Observable<boolean> =
+      inject(InitialRenderPendingTasks)
+          .hasPendingTasks.pipe(
+              mergeMap(hasPendingTasks => hasPendingTasks ? of(false) : this.zoneIsStable),
+              distinctUntilChanged(),
+              share(),
+          );
 
   private readonly _injector = inject(EnvironmentInjector);
   /**

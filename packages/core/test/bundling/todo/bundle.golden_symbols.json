@@ -36,6 +36,9 @@
     "name": "BROWSER_MODULE_PROVIDERS_MARKER"
   },
   {
+    "name": "BehaviorSubject"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -105,6 +108,9 @@
     "name": "DefaultIterableDifferFactory"
   },
   {
+    "name": "DistinctUntilChangedSubscriber"
+  },
+  {
     "name": "DomAdapter"
   },
   {
@@ -169,6 +175,9 @@
   },
   {
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
+  },
+  {
+    "name": "InitialRenderPendingTasks"
   },
   {
     "name": "InjectFlags"
@@ -816,6 +825,9 @@
     "name": "forwardRef"
   },
   {
+    "name": "fromArray"
+  },
+  {
     "name": "generateInitialInputs"
   },
   {
@@ -1119,6 +1131,9 @@
     "name": "isPromise2"
   },
   {
+    "name": "isScheduler"
+  },
+  {
     "name": "isStableFactory"
   },
   {
@@ -1372,6 +1387,9 @@
   },
   {
     "name": "setupStaticAttributes"
+  },
+  {
+    "name": "share"
   },
   {
     "name": "shareSubjectFactory"

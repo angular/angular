@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BehaviorSubject} from 'rxjs';
+
 import {Injectable} from './di';
-import {inject} from './di/injector_compatibility';
 import {OnDestroy} from './interface/lifecycle_hooks';
-import {NgZone} from './zone/ng_zone';
 
 /**
  * *Internal* service that keeps track of pending tasks happening in the system
@@ -23,59 +23,25 @@ import {NgZone} from './zone/ng_zone';
 @Injectable({providedIn: 'root'})
 export class InitialRenderPendingTasks implements OnDestroy {
   private taskId = 0;
-  private collection = new Set<number>();
-  private ngZone = inject(NgZone);
-
-  private resolve!: VoidFunction;
-  private promise!: Promise<void>;
-
-  get whenAllTasksComplete(): Promise<void> {
-    if (this.collection.size === 0) {
-      this.complete();
-    }
-
-    return this.promise;
-  }
-
-  completed = false;
-
-  constructor() {
-    // Run outside of the Angular zone to avoid triggering
-    // extra change detection cycles.
-    this.ngZone.runOutsideAngular(() => {
-      this.promise = new Promise<void>((resolve) => {
-        this.resolve = resolve;
-      });
-    });
-  }
+  private pendingTasks = new Set<number>();
+  hasPendingTasks = new BehaviorSubject<boolean>(false);
 
   add(): number {
-    if (this.completed) {
-      // Indicates that the task was added after
-      // the task queue completion, so it's a noop.
-      return -1;
-    }
+    this.hasPendingTasks.next(true);
     const taskId = this.taskId++;
-    this.collection.add(taskId);
+    this.pendingTasks.add(taskId);
     return taskId;
   }
 
-  remove(taskId: number) {
-    if (this.completed) return;
-
-    this.collection.delete(taskId);
-    if (this.collection.size === 0) {
-      this.complete();
+  remove(taskId: number): void {
+    this.pendingTasks.delete(taskId);
+    if (this.pendingTasks.size === 0) {
+      this.hasPendingTasks.next(false);
     }
   }
 
-  ngOnDestroy() {
-    this.complete();
-    this.collection.clear();
-  }
-
-  private complete(): void {
-    this.completed = true;
-    this.resolve();
+  ngOnDestroy(): void {
+    this.pendingTasks.clear();
+    this.hasPendingTasks.next(false);
   }
 }

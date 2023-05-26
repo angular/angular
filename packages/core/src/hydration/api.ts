@@ -14,7 +14,6 @@ import {Console} from '../console';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironmentProviders} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
-import {InitialRenderPendingTasks} from '../initial_render_pending_tasks';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';
 import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructions/element_container';
@@ -94,9 +93,7 @@ function printHydrationStats(injector: Injector) {
 /**
  * Returns a Promise that is resolved when an application becomes stable.
  */
-function whenStable(
-    appRef: ApplicationRef, pendingTasks: InitialRenderPendingTasks,
-    injector: Injector): Promise<unknown> {
+function whenStable(appRef: ApplicationRef, injector: Injector): Promise<void> {
   const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
@@ -113,8 +110,7 @@ function whenStable(
     isStablePromise.finally(() => clearTimeout(timeoutId));
   }
 
-  const pendingTasksPromise = pendingTasks.whenAllTasksComplete;
-  return Promise.allSettled([isStablePromise, pendingTasksPromise]);
+  return isStablePromise.then(() => {});
 }
 
 /**
@@ -186,10 +182,9 @@ export function withDomHydration(): EnvironmentProviders {
       useFactory: () => {
         if (isBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
           const appRef = inject(ApplicationRef);
-          const pendingTasks = inject(InitialRenderPendingTasks);
           const injector = inject(Injector);
           return () => {
-            whenStable(appRef, pendingTasks, injector).then(() => {
+            whenStable(appRef, injector).then(() => {
               // Wait until an app becomes stable and cleanup all views that
               // were not claimed during the application bootstrap process.
               // The timing is similar to when we start the serialization process

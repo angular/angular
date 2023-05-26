@@ -81,6 +81,9 @@
     "name": "BaseAnimationRenderer"
   },
   {
+    "name": "BehaviorSubject"
+  },
+  {
     "name": "BrowserAnimationBuilder"
   },
   {
@@ -154,6 +157,9 @@
   },
   {
     "name": "DefaultDomRenderer2"
+  },
+  {
+    "name": "DistinctUntilChangedSubscriber"
   },
   {
     "name": "DomAdapter"
@@ -241,6 +247,9 @@
   },
   {
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
+  },
+  {
+    "name": "InitialRenderPendingTasks"
   },
   {
     "name": "InjectFlags"
@@ -855,6 +864,9 @@
     "name": "forwardRef"
   },
   {
+    "name": "fromArray"
+  },
+  {
     "name": "generateInitialInputs"
   },
   {
@@ -1122,6 +1134,9 @@
     "name": "isPromise2"
   },
   {
+    "name": "isScheduler"
+  },
+  {
     "name": "isStableFactory"
   },
   {
@@ -1378,6 +1393,9 @@
   },
   {
     "name": "setupStaticAttributes"
+  },
+  {
+    "name": "share"
   },
   {
     "name": "shareSubjectFactory"

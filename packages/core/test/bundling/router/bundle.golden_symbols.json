@@ -162,6 +162,9 @@
     "name": "DefaultUrlSerializer"
   },
   {
+    "name": "DistinctUntilChangedSubscriber"
+  },
+  {
     "name": "DoOperator"
   },
   {
@@ -1897,6 +1900,9 @@
   },
   {
     "name": "shallowEqual"
+  },
+  {
+    "name": "share"
   },
   {
     "name": "shareSubjectFactory"

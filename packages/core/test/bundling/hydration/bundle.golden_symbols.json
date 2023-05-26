@@ -33,6 +33,9 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
+    "name": "BehaviorSubject"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -106,6 +109,9 @@
   },
   {
     "name": "DefaultIfEmptySubscriber"
+  },
+  {
+    "name": "DistinctUntilChangedSubscriber"
   },
   {
     "name": "DomAdapter"
@@ -1110,6 +1116,9 @@
     "name": "observable"
   },
   {
+    "name": "of"
+  },
+  {
     "name": "onEnter"
   },
   {
@@ -1210,6 +1219,9 @@
   },
   {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "share"
   },
   {
     "name": "shareSubjectFactory"
