@@ -27,6 +27,9 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
+    "name": "BehaviorSubject"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -82,6 +85,9 @@
   },
   {
     "name": "DefaultDomRenderer2"
+  },
+  {
+    "name": "DistinctUntilChangedSubscriber"
   },
   {
     "name": "DomAdapter"
@@ -151,6 +157,9 @@
   },
   {
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
+  },
+  {
+    "name": "InitialRenderPendingTasks"
   },
   {
     "name": "InjectFlags"
@@ -618,6 +627,9 @@
     "name": "forwardRef"
   },
   {
+    "name": "fromArray"
+  },
+  {
     "name": "generateInitialInputs"
   },
   {
@@ -825,6 +837,9 @@
     "name": "isPromise2"
   },
   {
+    "name": "isScheduler"
+  },
+  {
     "name": "isStableFactory"
   },
   {
@@ -997,6 +1012,9 @@
   },
   {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "share"
   },
   {
     "name": "shareSubjectFactory"

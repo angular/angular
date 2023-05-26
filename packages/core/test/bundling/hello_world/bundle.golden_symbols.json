@@ -24,6 +24,9 @@
     "name": "BLOOM_MASK"
   },
   {
+    "name": "BehaviorSubject"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -58,6 +61,9 @@
   },
   {
     "name": "DOCUMENT2"
+  },
+  {
+    "name": "DistinctUntilChangedSubscriber"
   },
   {
     "name": "DomAdapter"
@@ -109,6 +115,9 @@
   },
   {
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
+  },
+  {
+    "name": "InitialRenderPendingTasks"
   },
   {
     "name": "InjectFlags"
@@ -540,6 +549,9 @@
     "name": "forwardRef"
   },
   {
+    "name": "fromArray"
+  },
+  {
     "name": "generateInitialInputs"
   },
   {
@@ -735,6 +747,9 @@
     "name": "isPromise2"
   },
   {
+    "name": "isScheduler"
+  },
+  {
     "name": "isStableFactory"
   },
   {
@@ -898,6 +913,9 @@
   },
   {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "share"
   },
   {
     "name": "shareSubjectFactory"

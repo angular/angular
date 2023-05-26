@@ -99,10 +99,8 @@ function stripExcessiveSpaces(html: string): string {
 }
 
 /** Returns a Promise that resolves when the ApplicationRef becomes stable. */
-function whenStable(appRef: ApplicationRef): Promise<unknown> {
-  const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
-  const pendingTasksPromise = appRef.injector.get(InitialRenderPendingTasks).whenAllTasksComplete;
-  return Promise.allSettled([isStablePromise, pendingTasksPromise]);
+function whenStable(appRef: ApplicationRef): Promise<void> {
+  return appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise().then(() => {});
 }
 
 function verifyClientAndSSRContentsMatch(ssrContents: string, clientAppRootElement: HTMLElement) {
