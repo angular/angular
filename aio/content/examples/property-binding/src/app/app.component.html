@@ -46,21 +46,21 @@
   <hr />
 
   <h2>Property binding and interpolation</h2>
-  <p><img alt="Interpolated item" src="{{itemImageUrl}}"> is the <i>interpolated</i> image.</p>
-  <p><img alt="Property Bound item" [src]="itemImageUrl"> is the <i>property bound</i> image.</p>
+  <p><img alt="Interpolated item" src="{{itemImageUrl}}"> is the <em>interpolated</em> image.</p>
+  <p><img alt="Property Bound item" [src]="itemImageUrl"> is the <em>property bound</em> image.</p>
 
-  <p><span>"{{interpolationTitle}}" is the <i>interpolated</i> title.</span></p>
-  <p>"<span [innerHTML]="propertyTitle"></span>" is the <i>property bound</i> title.</p>
+  <p><span>"{{interpolationTitle}}" is the <em>interpolated</em> title.</span></p>
+  <p>"<span [innerHTML]="propertyTitle"></span>" is the <em>property bound</em> title.</p>
 
   <hr />
 
   <h2>Malicious content</h2>
 
-  <p><span>"{{evilTitle}}" is the <i>interpolated</i> evil title.</span></p>
+  <p><span>"{{evilTitle}}" is the <em>interpolated</em> evil title.</span></p>
 
   <!--
   Angular generates a warning for the following line as it sanitizes them
   WARNING: sanitizing HTML stripped some content (see https://g.co/ng/security#xss).
  -->
-  <p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i> evil title.</p>
+  <p>"<span [innerHTML]="evilTitle"></span>" is the <em>property bound</em> evil title.</p>
 </div>

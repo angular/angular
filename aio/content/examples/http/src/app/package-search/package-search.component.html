@@ -1,6 +1,6 @@
 <!-- #docplaster -->
 <h2>Search Npm Packages</h2>
-<p><i>Searches when typing stops. Caches for 30 seconds.</i></p>
+<p><em>Searches when typing stops. Caches for 30 seconds.</em></p>
 <!-- #docregion search -->
 <input type="text" (keyup)="search(getValue($event))" id="name" placeholder="Search"/>
 <!-- #enddocregion search -->
@@ -10,8 +10,8 @@
 
 <ul>
   <li *ngFor="let package of packages$ | async">
-    <b>{{package.name}} v.{{package.version}}</b> -
-    <i>{{package.description}}</i>
+    <strong>{{package.name}} v.{{package.version}}</strong> -
+    <em>{{package.description}}</em>
   </li>
 </ul>
 <!-- #enddocregion search -->
