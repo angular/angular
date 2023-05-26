@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵInitialRenderPendingTasks as InitialRenderPendingTasks} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef, inject, InjectionToken, makeStateKey, Provider, StateKey, TransferState, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {first, tap} from 'rxjs/operators';
 
@@ -165,16 +165,13 @@ export function withHttpTransferCache(): Provider[] {
       useFactory: () => {
         const appRef = inject(ApplicationRef);
         const cacheState = inject(CACHE_STATE);
-        const pendingTasks = inject(InitialRenderPendingTasks);
 
         return () => {
-          const isStablePromise = appRef.isStable.pipe(first((isStable) => isStable)).toPromise();
-          isStablePromise.then(() => pendingTasks.whenAllTasksComplete).then(() => {
+          appRef.isStable.pipe(first((isStable) => isStable)).toPromise().then(() => {
             cacheState.isCacheActive = false;
           });
         };
-      },
-      deps: [ApplicationRef, CACHE_STATE, InitialRenderPendingTasks]
+      }
     }
   ];
 }

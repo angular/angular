@@ -51,6 +51,9 @@
     "name": "BaseControlValueAccessor"
   },
   {
+    "name": "BehaviorSubject"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -145,6 +148,9 @@
   },
   {
     "name": "DefaultValueAccessor"
+  },
+  {
+    "name": "DistinctUntilChangedSubscriber"
   },
   {
     "name": "DomAdapter"
@@ -244,6 +250,9 @@
   },
   {
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
+  },
+  {
+    "name": "InitialRenderPendingTasks"
   },
   {
     "name": "InjectFlags"
@@ -942,6 +951,9 @@
     "name": "from"
   },
   {
+    "name": "fromArray"
+  },
+  {
     "name": "generateInitialInputs"
   },
   {
@@ -1287,6 +1299,9 @@
     "name": "isPromise2"
   },
   {
+    "name": "isScheduler"
+  },
+  {
     "name": "isStableFactory"
   },
   {
@@ -1363,9 +1378,6 @@
   },
   {
     "name": "maybeWrapInNotSelector"
-  },
-  {
-    "name": "mergeAll"
   },
   {
     "name": "mergeErrors"
@@ -1609,6 +1621,9 @@
   },
   {
     "name": "setupStaticAttributes"
+  },
+  {
+    "name": "share"
   },
   {
     "name": "shareSubjectFactory"
