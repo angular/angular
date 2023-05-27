@@ -361,6 +361,7 @@ export function createPlatformFactory(parentPlatformFactory: ((extraProviders?: 
 // @public
 export interface CreateSignalOptions<T> {
     equal?: ValueEqualityFn<T>;
+    id?: string;
 }
 
 // @public
@@ -1593,6 +1594,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
 // @public
 export interface WritableSignal<T> extends Signal<T> {
     asReadonly(): Signal<T>;
+    id?: string;
     mutate(mutatorFn: (value: T) => void): void;
     set(value: T): void;
     update(updateFn: (value: T) => T): void;

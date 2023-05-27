@@ -116,6 +116,14 @@ describe('signals', () => {
     expect(double()).toBe(4);
   });
 
+  it('should define signal names in its prototype', () => {
+    const s1 = signal(1);
+    const s2 = signal(2, {id: 'second signal'});
+
+    expect(s1.id).toBeUndefined();
+    expect(s2.id).toBe('second signal');
+  });
+
   describe('post-signal-set functions', () => {
     let prevPostSignalSetFn: (() => void)|null = null;
     let log: number;

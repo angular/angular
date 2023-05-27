@@ -39,6 +39,20 @@ If the equality function determines that 2 values are equal it will:
 * block update of signal’s value;
 * skip change propagation.
 
+#### Identification
+
+One can specify an string identification (`id`) in the creation of the signal. This will provide better logging and debugging for the developer. Simply define its id in the `CreateSignalOptions` configuration:
+
+```typescript
+const counter = signal(0, { id: 'my-counter' });
+```
+
+The id can be read after by calling the attribute of the signal prototype:
+
+```typescript
+console.log(counter.id); // => my-counter
+```
+
 ### Declarative derived values: `computed()`
 
 `computed()` creates a memoizing signal, which calculates its value from the values of some number of input signals.

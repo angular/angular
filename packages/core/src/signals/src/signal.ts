@@ -25,6 +25,11 @@ let postSignalSetFn: (() => void)|null = null;
  */
 export interface WritableSignal<T> extends Signal<T> {
   /**
+   * String identifier of the given signal.
+   */
+  id?: string;
+
+  /**
    * Directly set the signal to a new value, and notify any dependents.
    */
   set(value: T): void;
@@ -134,6 +139,11 @@ class WritableSignalImpl<T> extends ReactiveNode {
  */
 export interface CreateSignalOptions<T> {
   /**
+   * Identifier of the signal.
+   */
+  id?: string;
+
+  /**
    * A comparison function which defines equality for signal values.
    */
   equal?: ValueEqualityFn<T>;
@@ -150,6 +160,7 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
   // Casting here is required for g3, as TS inference behavior is slightly different between our
   // version/options and g3's.
   const signalFn = createSignalFromFunction(signalNode, signalNode.signal.bind(signalNode), {
+                     id: options?.id,
                      set: signalNode.set.bind(signalNode),
                      update: signalNode.update.bind(signalNode),
                      mutate: signalNode.mutate.bind(signalNode),
