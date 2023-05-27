@@ -419,6 +419,13 @@
     "mentor": "dgp1130",
     "picture": "jbedard.jpg"
   },
+  "jeanmeche": {
+    "name": "Matthieu Riegler",
+    "picture":"jeanmeche.jpg",
+    "twitter": "jean__meche",
+    "bio": "Software engineer from the french Alps. Matthieu was born and raised with the web and now he love's building it! He currently works for Viseo.",
+    "groups": ["Collaborators"]
+  },
   "jecelynyeen": {
     "name": "Jecelyn Yeen",
     "picture": "jecelynyeen.jpg",
