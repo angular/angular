@@ -18,7 +18,7 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, NgModuleScopeInfoFromDecorator, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
 import {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
@@ -420,19 +420,7 @@ export function ɵɵdefineNgModule<T>(def: {
  *
  * @codeGenApi
  */
-export function ɵɵsetNgModuleScope(type: any, scope: {
-  /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[]|(() => Type<any>[]);
-
-  /** List of modules or `ModuleWithProviders` imported by this module. */
-  imports?: Type<any>[] | (() => Type<any>[]);
-
-  /**
-   * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
-   * module.
-   */
-  exports?: Type<any>[] | (() => Type<any>[]);
-}): unknown {
+export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDecorator): unknown {
   return noSideEffects(() => {
     const ngModuleDef = getNgModuleDef(type, true);
     ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;

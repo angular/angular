@@ -515,3 +515,20 @@ export type PipeTypeList =
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
+
+/**
+ * NgModule scope info as provided by NgModule decorator.
+ */
+export interface NgModuleScopeInfoFromDecorator {
+  /** List of components, directives, and pipes declared by this module. */
+  declarations?: Type<any>[]|(() => Type<any>[]);
+
+  /** List of modules or `ModuleWithProviders` imported by this module. */
+  imports?: Type<any>[]|(() => Type<any>[]);
+
+  /**
+   * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
+   * module.
+   */
+  exports?: Type<any>[]|(() => Type<any>[]);
+}
