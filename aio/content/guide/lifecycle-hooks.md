@@ -110,13 +110,13 @@ Register a callback with the `DestroyRef`:
 class Counter {
   count = 0;
   constructor() {
-		// Start a timer to increment the counter every second.
-		const id = setInterval(() => this.count++, 1000);
+    // Start a timer to increment the counter every second.
+    const id = setInterval(() => this.count++, 1000);
 
-		// Stop the timer when the component is destroyed.
-		const destroyRef = inject(DestroyRef);
-		destroyRef.onDestroy(() => clearInterval(id));
-	}
+    // Stop the timer when the component is destroyed.
+    const destroyRef = inject(DestroyRef);
+    destroyRef.onDestroy(() => clearInterval(id));
+  }
 }
 ```
 
