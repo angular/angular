@@ -6,11 +6,21 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
         "//packages/core/schematics/migrations/compiler-options",
+        "//packages/core/schematics/migrations/router-navigate-null",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
         "@npm//typescript",
     ],
+)
+
+esbuild(
+    name = "router_navigate_null_cjs",
+    entry_point = ":routerNavigateNullRule.ts",
+    format = "cjs",
+    output = "routerNavigateNullCjsRule.js",
+    platform = "node",
+    deps = [":google3"],
 )
 
 esbuild(
@@ -25,6 +35,7 @@ esbuild(
 filegroup(
     name = "google3_cjs",
     srcs = [
+        ":router_navigate_null_cjs",
         ":wait_for_async_rule_cjs",
     ],
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],

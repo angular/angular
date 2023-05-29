@@ -720,8 +720,8 @@ export class Router {
     isActive(url: string | UrlTree, exact: boolean): boolean;
     isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
     get lastSuccessfulNavigation(): Navigation | null;
-    navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
-    navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
+    navigate(commands: any[], extras?: NavigationExtras): Promise<boolean | null>;
+    navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean | null>;
     navigated: boolean;
     // (undocumented)
     ngOnDestroy(): void;

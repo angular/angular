@@ -498,8 +498,15 @@ export class Router {
    *     current URL.
    * @param extras An object containing properties that modify the navigation strategy.
    *
-   * @returns A Promise that resolves to 'true' when navigation succeeds,
-   * to 'false' when navigation fails, or is rejected on error.
+   * @returns A Promise that resolves to:
+   *
+   * * `true` - when navigation succeeds.
+   * * `false` - when navigation fails or is rejected on error.
+   * * `null` - when navigation was skipped because requested URL is same as the current one or the
+   * navigation was ignored by `UrlHandlingStrategy`.
+   *
+   * The Promise is rejected when an error occurs if `resolveNavigationPromiseOnError` is not
+   * `true`.
    *
    * @usageNotes
    *
@@ -520,7 +527,7 @@ export class Router {
     extras: NavigationBehaviorOptions = {
       skipLocationChange: false,
     },
-  ): Promise<boolean> {
+  ): Promise<boolean | null> {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
         this.console.warn(
@@ -547,9 +554,15 @@ export class Router {
    * @param extras An options object that determines how the URL should be constructed or
    *     interpreted.
    *
-   * @returns A Promise that resolves to `true` when navigation succeeds, or `false` when navigation
-   *     fails. The Promise is rejected when an error occurs if `resolveNavigationPromiseOnError` is
-   * not `true`.
+   * @returns A Promise that resolves to:
+   *
+   * * `true` - when navigation succeeds.
+   * * `false` - when navigation fails or is rejected on error.
+   * * `null` - when navigation was skipped because requested URL is same as the current one or the
+   * navigation was ignored by `UrlHandlingStrategy`.
+   *
+   * The Promise is rejected when an error occurs if `resolveNavigationPromiseOnError` is not
+   * `true`.
    *
    * @usageNotes
    *
@@ -568,7 +581,7 @@ export class Router {
   navigate(
     commands: any[],
     extras: NavigationExtras = {skipLocationChange: false},
-  ): Promise<boolean> {
+  ): Promise<boolean | null> {
     validateCommands(commands);
     return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
   }
@@ -636,21 +649,21 @@ export class Router {
     source: NavigationTrigger,
     restoredState: RestoredState | null,
     extras: NavigationExtras,
-    priorPromise?: {resolve: any; reject: any; promise: Promise<boolean>},
-  ): Promise<boolean> {
+    priorPromise?: {resolve: any; reject: any; promise: Promise<boolean | null>},
+  ): Promise<boolean | null> {
     if (this.disposed) {
       return Promise.resolve(false);
     }
 
     let resolve: any;
     let reject: any;
-    let promise: Promise<boolean>;
+    let promise: Promise<boolean | null>;
     if (priorPromise) {
       resolve = priorPromise.resolve;
       reject = priorPromise.reject;
       promise = priorPromise.promise;
     } else {
-      promise = new Promise<boolean>((res, rej) => {
+      promise = new Promise<boolean | null>((res, rej) => {
         resolve = res;
         reject = rej;
       });

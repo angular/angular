@@ -173,14 +173,14 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         const events: (NavigationStart | NavigationEnd)[] = [];
         router.events.subscribe((e) => onlyNavigationStartAndEnd(e) && events.push(e));
 
-        await router.navigateByUrl('/simple');
-        await router.navigateByUrl('/simple');
+        const firstNav = await router.navigateByUrl('/simple');
+        const secondNav = await router.navigateByUrl('/simple');
         // By default, the second navigation is ignored
         expectEvents(events, [
           [NavigationStart, '/simple'],
           [NavigationEnd, '/simple'],
         ]);
-        await router.navigateByUrl('/simple', {onSameUrlNavigation: 'reload'});
+        const thirdNav = await router.navigateByUrl('/simple', {onSameUrlNavigation: 'reload'});
         // We overrode the `onSameUrlNavigation` value. This navigation should be processed.
         expectEvents(events, [
           [NavigationStart, '/simple'],
@@ -188,6 +188,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           [NavigationStart, '/simple'],
           [NavigationEnd, '/simple'],
         ]);
+
+        expect(firstNav).toBe(true);
+        // The second navigation was skipped, returning null
+        expect(secondNav).toBeNull();
+        expect(thirdNav).toBe(true);
       });
 
       it('should override default onSameUrlNavigation with extras', async () => {
@@ -203,8 +208,8 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         const events: (NavigationStart | NavigationEnd)[] = [];
         router.events.subscribe((e) => onlyNavigationStartAndEnd(e) && events.push(e));
 
-        await router.navigateByUrl('/simple');
-        await router.navigateByUrl('/simple');
+        const firstNav = await router.navigateByUrl('/simple');
+        const secondNav = await router.navigateByUrl('/simple');
         expectEvents(events, [
           [NavigationStart, '/simple'],
           [NavigationEnd, '/simple'],
@@ -213,8 +218,13 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         ]);
 
         events.length = 0;
-        await router.navigateByUrl('/simple', {onSameUrlNavigation: 'ignore'});
+        const thirdNav = await router.navigateByUrl('/simple', {onSameUrlNavigation: 'ignore'});
         expectEvents(events, []);
+
+        expect(firstNav).toBe(true);
+        expect(secondNav).toBe(true);
+        // The third navigation was skipped, returning null
+        expect(thirdNav).toBeNull();
       });
 
       it('should set transient navigation info', async () => {
@@ -4485,13 +4495,13 @@ for (const browserAPI of ['navigation', 'history'] as const) {
               advance(fixture);
               expect(location.path()).toEqual('/team/22');
 
-              let successStatus: boolean = false;
+              let successStatus: boolean | null = false;
               router.navigateByUrl('/team/33')!.then((res) => (successStatus = res));
               advance(fixture);
               expect(location.path()).toEqual('/team/33');
               expect(successStatus).toEqual(true);
 
-              let canceledStatus: boolean = false;
+              let canceledStatus: boolean | null = false;
               router.navigateByUrl('/team/44')!.then((res) => (canceledStatus = res));
               advance(fixture);
               expect(location.path()).toEqual('/team/33');
@@ -5196,8 +5206,8 @@ for (const browserAPI of ['navigation', 'history'] as const) {
               {path: 'lazy-true', canLoad: ['alwaysTrue'], loadChildren: () => LazyLoadedModule},
             ]);
 
-            let navFalseResult = true;
-            let navTrueResult = false;
+            let navFalseResult = true as boolean | null;
+            let navTrueResult = false as boolean | null;
             router.navigateByUrl('/lazy-false').then((v) => {
               navFalseResult = v;
             });
@@ -5989,7 +5999,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         inject([Router], (router: Router) => {
           const fixture = createRoot(router, RootCmp);
           let result = null as boolean | null;
-          const callback = (r: boolean) => (result = r);
+          const callback = (r: boolean | null) => (result = r);
           router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
           router.navigateByUrl('/user/frodo').then(callback);

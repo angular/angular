@@ -19,6 +19,11 @@
       "version": "17.3.0",
       "description": "Updates two-way bindings that have an invalid expression to use the longform expression instead.",
       "factory": "./migrations/invalid-two-way-bindings/bundle"
+    },
+    "migration-router-navigate-null": {
+      "version": "18.0.0",
+      "description": "As of Angular v18, the `Router.navigate` and `Router.navigateByUrl` functions may return `null` when navigation is skipped. This migration automatically identifies previous usages and adds a type cast from `Promise<boolean|null>` to `Promise<boolean>` in places where type error would occur in Angular v18.",
+      "factory": "./migrations/router-navigate-null/bundle"
     }
   }
 }

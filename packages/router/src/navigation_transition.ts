@@ -287,9 +287,9 @@ export interface NavigationTransition {
   urlAfterRedirects?: UrlTree;
   rawUrl: UrlTree;
   extras: NavigationExtras;
-  resolve: any;
-  reject: any;
-  promise: Promise<boolean>;
+  resolve: (value: boolean|null) => void;
+  reject: (reason?: any) => void;
+  promise: Promise<boolean|null>;
   source: NavigationTrigger;
   restoredState: RestoredState | null;
   currentSnapshot: RouterStateSnapshot;
@@ -404,8 +404,8 @@ export class NavigationTransitions {
       urlAfterRedirects: this.urlHandlingStrategy.extract(initialUrlTree),
       rawUrl: initialUrlTree,
       extras: {},
-      resolve: null,
-      reject: null,
+      resolve: () => {},
+      reject: () => {},
       promise: Promise.resolve(true),
       source: IMPERATIVE_NAVIGATION,
       restoredState: null,

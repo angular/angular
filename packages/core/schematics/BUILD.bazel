@@ -22,6 +22,7 @@ pkg_npm(
         "//packages/core/schematics/migrations/compiler-options:bundle",
         "//packages/core/schematics/migrations/invalid-two-way-bindings:bundle",
         "//packages/core/schematics/migrations/transfer-state:bundle",
+        "//packages/core/schematics/migrations/router-navigate-null:bundle",
         "//packages/core/schematics/ng-generate/control-flow-migration:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration:bundle",
     ],
