@@ -46,6 +46,10 @@ export interface InjectableDecorator {
    *
    * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
    *
+   * Note: Using `@Injectable` is vital when dependencies are injected
+   * through a `constructor`, as demonstrated in the `NeedsService`
+   * example above. However, when dependencies are acquired using the
+   * `inject` function, this decorator is not required.
    */
   (): TypeDecorator;
   (options?: {providedIn: Type<any>|'root'|'platform'|'any'|null}&
