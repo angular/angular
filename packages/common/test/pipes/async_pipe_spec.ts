@@ -7,9 +7,9 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {ChangeDetectorRef, Component, EventEmitter} from '@angular/core';
+import {ChangeDetectorRef, Component, computed, EventEmitter, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {of, Subscribable, Unsubscribable} from 'rxjs';
+import {Observable, of, Subscribable, Unsubscribable} from 'rxjs';
 
 {
   describe('AsyncPipe', () => {
@@ -113,6 +113,29 @@ import {of, Subscribable, Unsubscribable} from 'rxjs';
           const secondResult = pipe.transform(subscribable);
           expect(firstResult).toBeNaN();
           expect(secondResult).toBeNaN();
+        });
+
+        it('should not track signal reads in subscriptions', () => {
+          const trigger = signal(false);
+
+          const obs = new Observable(() => {
+            // Whenever `obs` is subscribed, synchronously read `trigger`.
+            trigger();
+          });
+
+          let trackCount = 0;
+          const tracker = computed(() => {
+            // Subscribe to `obs` within this `computed`. If the subscription side effect runs
+            // within the computed, then changes to `trigger` will invalidate this computed.
+            pipe.transform(obs);
+
+            // The computed returns how many times it's run.
+            return ++trackCount;
+          });
+
+          expect(tracker()).toBe(1);
+          trigger.set(true);
+          expect(tracker()).toBe(1);
         });
       });
 

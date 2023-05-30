@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, ɵisPromise, ɵisSubscribable} from '@angular/core';
+import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, untracked, ɵisPromise, ɵisSubscribable} from '@angular/core';
 import {Observable, Subscribable, Unsubscribable} from 'rxjs';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
@@ -19,16 +19,24 @@ interface SubscriptionStrategy {
 
 class SubscribableStrategy implements SubscriptionStrategy {
   createSubscription(async: Subscribable<any>, updateLatestValue: any): Unsubscribable {
-    return async.subscribe({
+    // Subscription can be side-effectful, and we don't want any signal reads which happen in the
+    // side effect of the subscription to be tracked by a component's template when that
+    // subscription is triggered via the async pipe. So we wrap the subscription in `untracked` to
+    // decouple from the current reactive context.
+    //
+    // `untracked` also prevents signal _writes_ which happen in the subscription side effect from
+    // being treated as signal writes during the template evaluation (which throws errors).
+    return untracked(() => async.subscribe({
       next: updateLatestValue,
       error: (e: any) => {
         throw e;
       }
-    });
+    }));
   }
 
   dispose(subscription: Unsubscribable): void {
-    subscription.unsubscribe();
+    // See the comment in `createSubscription` above on the use of `untracked`.
+    untracked(() => subscription.unsubscribe());
   }
 }
 
