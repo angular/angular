@@ -229,7 +229,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
-  private readonly preloadLinkChecker = inject(PreloadLinkCreator);
+  private readonly preloadLinkCreator = inject(PreloadLinkCreator);
 
   // a LCP image observer - should be injected only in the dev mode
   private lcpObserver = ngDevMode ? this.injector.get(LCPImageObserver) : null;
@@ -451,7 +451,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     }
 
     if (this.isServer && this.priority) {
-      this.preloadLinkChecker.createPreloadLinkTag(
+      this.preloadLinkCreator.createPreloadLinkTag(
           this.renderer, rewrittenSrc, rewrittenSrcset, this.sizes);
     }
   }
