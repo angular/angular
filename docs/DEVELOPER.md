@@ -111,7 +111,7 @@ When making changes to Angular packages and testing in a local library/project y
 The Angular CLI needs to be invoked using Node.js [`--preserve-symlinks`](https://nodejs.org/api/cli.html#--preserve-symlinks) flag. Otherwise the symbolic links will be resolved using their real path which causes node module resolution to fail.
 
 ```sh
-node --preserve-symlinks node_modules/@angular/cli/lib/init.js serve
+node --preserve-symlinks --preserve-symlinks-main node_modules/@angular/cli/lib/init.js serve
 ```
 
 ## Formatting your source code
