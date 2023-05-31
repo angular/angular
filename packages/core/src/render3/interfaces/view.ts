@@ -11,6 +11,7 @@ import {ProviderToken} from '../../di/provider_token';
 import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
+
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
 import type {FlushableEffectRunner} from '../reactivity/effect';
 import type {AfterRenderEventManager} from '../after_render_hooks';
@@ -841,6 +842,8 @@ export interface TView {
    *                        (see `getComponentId` function for details)
    */
   ssrId: string|null;
+
+  virtualUpdate: TVirtualInstruction[]|null;
 }
 
 /** Single hook callback function. */
@@ -916,6 +919,11 @@ export type DestroyHookData = (HookEntry|HookData)[];
 export type TData =
     (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
      ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string|TDeferBlockDetails)[];
+
+export interface TVirtualInstruction {
+  slot: number;
+  instruction: () => void;
+}
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

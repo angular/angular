@@ -13,11 +13,11 @@ import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} fr
 import {CONTAINER_HEADER_OFFSET, HAS_CHILD_VIEWS_TO_REFRESH, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
 import {CONTEXT, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, TVIEW, TView} from '../interfaces/view';
-import {enterView, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCheckNoChangesMode} from '../state';
+import {enterView, getVirtualInstructionIndex, isInCheckNoChangesMode, leaveView, setBindingIndex, setIsInCheckNoChangesMode} from '../state';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
 
-import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCodes, refreshContentQueries} from './shared';
+import {executeTemplate, executeViewQueryFn, flushVirtualInstructionsBefore, handleError, processHostBindingOpCodes, refreshContentQueries} from './shared';
 
 export function detectChangesInternal<T>(
     tView: TView, lView: LView, context: T, notifyErrorHandler = true) {
@@ -126,6 +126,13 @@ export function refreshView<T>(
     setBindingIndex(tView.bindingStartIndex);
     if (templateFn !== null) {
       executeTemplate(tView, lView, templateFn, RenderFlags.Update, context);
+    }
+
+    // Flush remaining virtual instructions.
+    if (tView.virtualUpdate) {
+      for (let idx = getVirtualInstructionIndex(); idx < tView.virtualUpdate.length; idx++) {
+        tView.virtualUpdate[idx].instruction();
+      }
     }
 
     const hooksInitPhaseCompleted =

@@ -9,7 +9,7 @@ import {assertGreaterThan} from '../../util/assert';
 import {assertIndexInDeclRange} from '../assert';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
 import {FLAGS, InitPhaseState, LView, LViewFlags, TVIEW, TView} from '../interfaces/view';
-import {getLView, getSelectedIndex, getTView, isInCheckNoChangesMode, setSelectedIndex} from '../state';
+import {getLView, getSelectedIndex, getTView, getVirtualInstructionIndex, incrementVirtualInstructionIndex, isInCheckNoChangesMode, setSelectedIndex} from '../state';
 
 
 /**
@@ -44,6 +44,16 @@ export function ɵɵadvance(delta: number): void {
 export function selectIndexInternal(
     tView: TView, lView: LView, index: number, checkNoChangesMode: boolean) {
   ngDevMode && assertIndexInDeclRange(lView[TVIEW], index);
+
+  // Flush virtual instructions up to this point.
+  const {virtualUpdate} = tView;
+  if (virtualUpdate) {
+    for (let idx = getVirtualInstructionIndex();
+         idx < virtualUpdate.length && virtualUpdate[idx].slot < index;
+         idx = incrementVirtualInstructionIndex()) {
+      virtualUpdate[idx].instruction();
+    }
+  }
 
   // Flush the initial hooks for elements in the view that have been added up to this point.
   // PERF WARNING: do NOT extract this to a separate function without running benchmarks

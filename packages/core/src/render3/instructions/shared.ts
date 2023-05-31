@@ -398,7 +398,7 @@ export function createTView(
   const initialViewLength = bindingStartIndex + vars;
   const blueprint = createViewBlueprint(bindingStartIndex, initialViewLength);
   const consts = typeof constsOrFactory === 'function' ? constsOrFactory() : constsOrFactory;
-  const tView = blueprint[TVIEW as any] = {
+  const tView: TView = blueprint[TVIEW as any] = {
     type: type,
     blueprint: blueprint,
     template: templateFn,
@@ -429,6 +429,7 @@ export function createTView(
     schemas: schemas,
     consts: consts,
     incompleteFirstPass: false,
+    virtualUpdate: null,
     ssrId,
   };
   if (ngDevMode) {
@@ -748,7 +749,7 @@ function initializeInputAndOutputAliases(
  * Note: this mapping has to be kept in sync with the equally named mapping in the template
  * type-checking machinery of ngtsc.
  */
-function mapPropName(name: string): string {
+export function mapPropName(name: string): string {
   if (name === 'class') return 'className';
   if (name === 'for') return 'htmlFor';
   if (name === 'formaction') return 'formAction';
@@ -1600,3 +1601,5 @@ export function textBindingInternal(lView: LView, index: number, value: string):
   ngDevMode && assertDefined(element, 'native element should exist');
   updateTextNode(lView[RENDERER], element, value);
 }
+
+export function flushVirtualInstructionsBefore() {}
