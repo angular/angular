@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, Expression, ExternalExpr, FactoryTarget, FunctionExpr, InvokeFunctionExpr, LiteralArrayExpr, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, R3SelectorScopeMode, ReturnStatement, SchemaMetadata, Statement, WrappedNodeExpr,} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, Expression, ExternalExpr, FactoryTarget, FunctionExpr, InvokeFunctionExpr, LiteralArrayExpr, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3NgModuleMetadataKind, R3Reference, R3SelectorScopeMode, ReturnStatement, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
@@ -349,24 +349,43 @@ export class NgModuleDecoratorHandler implements
 
     const type = wrapTypeReference(this.reflector, node);
 
-    const ngModuleMetadata: R3NgModuleMetadata = {
-      type,
-      bootstrap,
-      declarations,
-      publicDeclarationTypes: this.onlyPublishPublicTypings ? exportedDeclarations : null,
-      exports,
-      imports,
-      // Imported types are generally private, so include them unless restricting the .d.ts emit to
-      // only public types.
-      includeImportTypes: !this.onlyPublishPublicTypings,
-      containsForwardDecls,
-      id,
-      // Use `ɵɵsetNgModuleScope` to patch selector scopes onto the generated definition in a
-      // tree-shakeable way.
-      selectorScopeMode: R3SelectorScopeMode.SideEffect,
-      // TODO: to be implemented as a part of FW-1004.
-      schemas: [],
-    };
+    let ngModuleMetadata: R3NgModuleMetadata;
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      ngModuleMetadata = {
+        kind: R3NgModuleMetadataKind.Local,
+        type,
+        bootstrapExpression: rawBootstrap ? new WrappedNodeExpr(rawBootstrap) : null,
+        declarationsExpression: rawDeclarations ? new WrappedNodeExpr(rawDeclarations) : null,
+        exportsExpression: rawExports ? new WrappedNodeExpr(rawExports) : null,
+        importsExpression: rawImports ? new WrappedNodeExpr(rawImports) : null,
+        id,
+        // Use `ɵɵsetNgModuleScope` to patch selector scopes onto the generated definition in a
+        // tree-shakeable way.
+        selectorScopeMode: R3SelectorScopeMode.SideEffect,
+        // TODO: to be implemented as a part of FW-1004.
+        schemas: [],
+      };
+    } else {
+      ngModuleMetadata = {
+        kind: R3NgModuleMetadataKind.Global,
+        type,
+        bootstrap,
+        declarations,
+        publicDeclarationTypes: this.onlyPublishPublicTypings ? exportedDeclarations : null,
+        exports,
+        imports,
+        // Imported types are generally private, so include them unless restricting the .d.ts emit
+        // to only public types.
+        includeImportTypes: !this.onlyPublishPublicTypings,
+        containsForwardDecls,
+        id,
+        // Use `ɵɵsetNgModuleScope` to patch selector scopes onto the generated definition in a
+        // tree-shakeable way.
+        selectorScopeMode: R3SelectorScopeMode.SideEffect,
+        // TODO: to be implemented as a part of FW-1004.
+        schemas: [],
+      };
+    }
 
     const rawProviders = ngModule.has('providers') ? ngModule.get('providers')! : null;
     let wrappedProviders: WrappedNodeExpr<ts.Expression>|null = null;
