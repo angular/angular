@@ -119,6 +119,8 @@ interface LFrame {
    */
   currentDirectiveIndex: number;
 
+  currentVirtualInstruction: number;
+
   /**
    * Are we currently in i18n block as denoted by `ɵɵelementStart` and `ɵɵelementEnd`.
    *
@@ -421,6 +423,14 @@ export function nextBindingIndex(): number {
   return instructionState.lFrame.bindingIndex++;
 }
 
+export function getVirtualInstructionIndex(): number {
+  return instructionState.lFrame.currentVirtualInstruction;
+}
+
+export function incrementVirtualInstructionIndex(): number {
+  return ++instructionState.lFrame.currentVirtualInstruction;
+}
+
 export function incrementBindingIndex(count: number): number {
   const lFrame = instructionState.lFrame;
   const index = lFrame.bindingIndex;
@@ -637,6 +647,7 @@ function createLFrame(parent: LFrame|null): LFrame {
     currentDirectiveIndex: -1,
     bindingRootIndex: -1,
     bindingIndex: -1,
+    currentVirtualInstruction: 0,
     currentQueryIndex: 0,
     parent: parent!,
     child: null,
@@ -687,6 +698,7 @@ export function leaveView() {
   oldLFrame.contextLView = null;
   oldLFrame.elementDepthCount = 0;
   oldLFrame.currentDirectiveIndex = -1;
+  oldLFrame.currentVirtualInstruction = 0;
   oldLFrame.currentNamespace = null;
   oldLFrame.bindingRootIndex = -1;
   oldLFrame.bindingIndex = -1;
