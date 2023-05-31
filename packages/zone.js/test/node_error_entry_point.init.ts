@@ -11,7 +11,6 @@ import './test_fake_polyfill';
 // Setup tests for Zone without microtask support
 import '../lib/zone';
 import '../lib/common/promise';
-import '../lib/common/queue-microtask';
 import '../lib/common/to-string';
 import './test-env-setup-jasmine';
 import './wtf_mock';

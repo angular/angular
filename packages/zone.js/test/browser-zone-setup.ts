@@ -11,7 +11,6 @@ if (typeof window !== 'undefined') {
   (window as any)[zoneSymbol('fakeAsyncAutoFakeAsyncWhenClockPatched')] = true;
 }
 import '../lib/common/to-string';
-import '../lib/common/queue-microtask';
 import '../lib/browser/api-util';
 import '../lib/browser/browser-legacy';
 import '../lib/browser/browser';
