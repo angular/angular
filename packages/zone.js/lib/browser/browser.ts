@@ -25,6 +25,15 @@ Zone.__load_patch('legacy', (global: any) => {
   }
 });
 
+Zone.__load_patch('queueMicrotask', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+  api.patchMethod(global, 'queueMicrotask', delegate => {
+    return function(self: any, args: any[]) {
+      Zone.current.scheduleMicroTask('queueMicrotask', args[0]);
+    }
+  });
+});
+
+
 Zone.__load_patch('timers', (global: any) => {
   const set = 'set';
   const clear = 'clear';
