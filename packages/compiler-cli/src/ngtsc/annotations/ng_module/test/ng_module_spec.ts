@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {WrappedNodeExpr} from '@angular/compiler';
+import {R3NgModuleMetadataGlobal, WrappedNodeExpr} from '@angular/compiler';
 import {R3Reference} from '@angular/compiler/src/compiler';
 import ts from 'typescript';
 
@@ -102,7 +102,8 @@ runInEachFileSystem(() => {
           getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
 
       const detected = detectNgModule(TestModule, handler, reflectionHost);
-      const moduleDef = handler.analyze(TestModule, detected.metadata).analysis!.mod;
+      const moduleDef =
+          handler.analyze(TestModule, detected.metadata).analysis!.mod as R3NgModuleMetadataGlobal;
 
       expect(getReferenceIdentifierTexts(moduleDef.declarations)).toEqual(['TestComp']);
       expect(getReferenceIdentifierTexts(moduleDef.exports)).toEqual(['TestComp']);
