@@ -13,6 +13,5 @@ module.exports = function(config) {
   config.files.push('build/test/test_fake_polyfill.js');
   config.files.push('build/lib/zone.js');
   config.files.push('build/lib/common/promise.js');
-  config.files.push('build/lib/common/queue-microtask.js');
   config.files.push('build/test/main.js');
 };
