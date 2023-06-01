@@ -1,3 +1,20 @@
+<a name="16.0.4"></a>
+# 16.0.4 (2023-06-01)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [df65c4fc8f](https://github.com/angular/angular/commit/df65c4fc8f71ab9bf59ec4e5e820d136b12fb570) | fix | Trigger leave animation when ViewContainerRef is injected ([#48705](https://github.com/angular/angular/pull/48705)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7e1bc513de](https://github.com/angular/angular/commit/7e1bc513dead7d809f5ba2e6edc45b85af12f828) | fix | untrack subscription and unsubscription in async pipe ([#50522](https://github.com/angular/angular/pull/50522)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9970b29ace](https://github.com/angular/angular/commit/9970b29acef11f1dfedd2640520b4bca4b996f81) | fix | update `ApplicationRef.isStable` to account for rendering pending tasks ([#50425](https://github.com/angular/angular/pull/50425)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.0-next.2"></a>
 # 16.1.0-next.2 (2023-05-24)
 ### core
