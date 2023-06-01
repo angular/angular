@@ -77,9 +77,15 @@ export function extractDirectiveMetadata(
   // Construct the map of inputs both from the @Directive/@Component
   // decorator, and the decorated fields.
   const inputsFromMeta = parseInputsArray(clazz, directive, evaluator, reflector, refEmitter);
-  const inputsFromFields = parseInputFields(
+  let inputsFromFields = parseInputFields(
       clazz, filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), evaluator,
       reflector, refEmitter);
+
+  // TODO(signals)
+  inputsFromFields = {
+    ...inputsFromFields,
+    ...findAndParseSignalInputs(reflector, evaluator, refEmitter, coreModule, clazz, members)
+  };
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
 
   // And outputs.
@@ -902,6 +908,86 @@ function evaluateHostExpressionBindings(
   }
 
   return bindings;
+}
+
+function getOptionsExpressionForInputCall(call: ts.CallExpression): ts.Expression|null {
+  if (call.arguments.length === 0) {
+    return null;
+  }
+
+  if (call.arguments.length === 2) {
+    return call.arguments[1];
+  }
+
+  // If the first argument is not an object expression, it's an initial value-
+  // but not the options argument.
+  // TODO(signals): Might be able to use partial evaluator here.. need to decide on that.
+  if (!ts.isObjectLiteralExpression(unwrapExpression(call.arguments[0]))) {
+    return null;
+  }
+
+  return call.arguments[0];
+}
+
+// TODO(signals)
+function findAndParseSignalInputs(
+    reflector: ReflectionHost, evaluator: PartialEvaluator, refEmitter: ReferenceEmitter,
+    coreModule: string|undefined, clazz: ClassDeclaration,
+    members: ClassMember[]): Record<string, InputMapping> {
+  const res: Record<string, InputMapping> = {};
+
+  for (const m of members) {
+    if (m.value === null) {
+      continue;
+    }
+    const value = unwrapExpression(m.value);
+    if (!ts.isCallExpression(value)) {
+      continue;
+    }
+    const callTarget = unwrapExpression(value.expression);
+    if (!ts.isIdentifier(callTarget)) {
+      continue;
+    }
+
+    const valueImport = reflector.getImportOfIdentifier(callTarget);
+    const refersToInput = valueImport !== null ?
+        valueImport.from === coreModule && valueImport.name === 'input' :
+        callTarget.text === 'input' && coreModule === undefined;
+
+    if (!refersToInput) {
+      continue;
+    }
+
+
+    const optionsNode = getOptionsExpressionForInputCall(value);
+    const options = optionsNode === null ? null : evaluator.evaluate(optionsNode);
+
+    if (options !== null && !(options instanceof Map)) {
+      // TODO(signals): proper diagnostic
+      throw new Error('Input options are not an object..');
+    }
+
+    let transform: InputTransform|null = null;
+
+    if (options?.has('transform')) {
+      const transformValue = options.get('transform');
+
+      if (!(transformValue instanceof DynamicValue) && !(transformValue instanceof Reference)) {
+        throw createValueHasWrongTypeError(
+            optionsNode!, transformValue, `Input transform must be a function`);
+      }
+
+      transform = parseInputTransformFunction(clazz, m.name, transformValue, reflector, refEmitter);
+    }
+
+    res[m.name] = {
+      classPropertyName: m.name,
+      bindingPropertyName: options?.get('alias')?.toString() /* TODO */ ?? m.name,
+      required: !!options?.get('required'),
+      transform,
+    };
+  }
+  return res;
 }
 
 /**
