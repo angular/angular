@@ -123,6 +123,12 @@ export class InjectableDecoratorHandler implements
         node, analysis);
   }
 
+  compileLocal(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
+    return this.compile(
+        compileNgFactoryDefField, meta => compileInjectable(meta, false), compileClassMetadata,
+        node, analysis);
+  }
+
   private compile(
       compileFactoryFn: CompileFactoryFn,
       compileInjectableFn: (meta: R3InjectableMetadata) => R3CompiledExpression,

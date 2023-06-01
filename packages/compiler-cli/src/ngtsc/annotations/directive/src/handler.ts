@@ -230,6 +230,18 @@ export class DirectiveDecoratorHandler implements
     return compileResults(fac, def, classMetadata, 'ɵdir', inputTransformFields);
   }
 
+  compileLocal(
+      node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
+      pool: ConstantPool): CompileResult[] {
+    const fac = compileNgFactoryDefField(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
+    const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
+    const inputTransformFields = compileInputTransformFields(analysis.inputs);
+    const classMetadata = analysis.classMetadata !== null ?
+        compileClassMetadata(analysis.classMetadata).toStmt() :
+        null;
+    return compileResults(fac, def, classMetadata, 'ɵdir', inputTransformFields);
+  }
+
   /**
    * Checks if a given class uses Angular features and returns the TypeScript node
    * that indicated the usage. Classes are considered using Angular features if they

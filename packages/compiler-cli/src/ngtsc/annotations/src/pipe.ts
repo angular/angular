@@ -196,4 +196,13 @@ export class PipeDecoratorHandler implements
         null;
     return compileResults(fac, def, classMetadata, 'ɵpipe', null);
   }
+
+  compileLocal(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
+    const fac = compileNgFactoryDefField(toFactoryMetadata(analysis.meta, FactoryTarget.Pipe));
+    const def = compilePipeFromMetadata(analysis.meta);
+    const classMetadata = analysis.classMetadata !== null ?
+        compileClassMetadata(analysis.classMetadata).toStmt() :
+        null;
+    return compileResults(fac, def, classMetadata, 'ɵpipe', null);
+  }
 }

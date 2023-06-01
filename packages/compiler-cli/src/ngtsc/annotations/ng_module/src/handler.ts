@@ -698,6 +698,25 @@ export class NgModuleDecoratorHandler implements
     return this.compileNgModule(factoryFn, injectorDef, ngModuleDef);
   }
 
+  compileLocal(
+      node: ClassDeclaration,
+      {inj, mod, fac, classMetadata, declarations, remoteScopesMayRequireCycleProtection}:
+          Readonly<NgModuleAnalysis>): CompileResult[] {
+    const factoryFn = compileNgFactoryDefField(fac);
+    const ngInjectorDef = compileInjector({
+      ...inj,
+      imports: [],
+    });
+    const ngModuleDef = compileNgModule(mod);
+    const statements = ngModuleDef.statements;
+    const metadata = classMetadata !== null ? compileClassMetadata(classMetadata) : null;
+    this.insertMetadataStatement(statements, metadata);
+    this.appendRemoteScopingStatements(
+        statements, node, declarations, remoteScopesMayRequireCycleProtection);
+
+    return this.compileNgModule(factoryFn, ngInjectorDef, ngModuleDef);
+  }
+
   /**
    * Add class metadata statements, if provided, to the `ngModuleStatements`.
    */
