@@ -704,7 +704,7 @@ class TcbDirectiveInputsOp extends TcbOp {
       // For bound inputs, the property is assigned the binding expression.
       const expr = widenBinding(translateInput(attr.attribute, this.tcb, this.scope), this.tcb);
 
-      let assignment: ts.Expression = wrapForDiagnostics(expr);
+      const statements: ts.Statement[] = [];
 
       for (const {fieldName, required, transformType} of attr.inputs) {
         let target: ts.LeftHandSideExpression;
@@ -783,19 +783,34 @@ class TcbDirectiveInputsOp extends TcbOp {
         if (attr.attribute.keySpan !== undefined) {
           addParseSpanInfo(target, attr.attribute.keySpan);
         }
-        // Finally the assignment is extended by assigning it into the target expression.
-        assignment =
-            ts.factory.createBinaryExpression(target, ts.SyntaxKind.EqualsToken, assignment);
+
+        // TODO(signals)
+        if (this.dir.isSignal) {
+          const toWritableSignalExpr =
+              this.tcb.env.referenceExternalSymbol('@angular/core', 'ɵɵtoWritableSignal')
+
+          statements.push(ts.factory.createExpressionStatement(ts.factory.createCallExpression(
+              ts.factory.createPropertyAccessExpression(
+                  ts.factory.createCallExpression(toWritableSignalExpr, undefined, [target]),
+                  ts.factory.createIdentifier('set')),
+              undefined, [wrapForDiagnostics(expr)])))
+        } else {
+          // Finally the assignment is extended by assigning it into the target expression.
+          statements.push(ts.factory.createExpressionStatement(ts.factory.createBinaryExpression(
+              target, ts.SyntaxKind.EqualsToken, wrapForDiagnostics(expr))));
+        }
       }
 
-      addParseSpanInfo(assignment, attr.attribute.sourceSpan);
-      // Ignore diagnostics for text attributes if configured to do so.
-      if (!this.tcb.env.config.checkTypeOfAttributes &&
-          attr.attribute instanceof TmplAstTextAttribute) {
-        markIgnoreDiagnostics(assignment);
-      }
+      for (const st of statements) {
+        addParseSpanInfo(st, attr.attribute.sourceSpan);
+        // Ignore diagnostics for text attributes if configured to do so.
+        if (!this.tcb.env.config.checkTypeOfAttributes &&
+            attr.attribute instanceof TmplAstTextAttribute) {
+          markIgnoreDiagnostics(st);
+        }
 
-      this.scope.addStatement(ts.factory.createExpressionStatement(assignment));
+        this.scope.addStatement(st);
+      }
     }
 
     this.checkRequiredInputs(seenRequiredInputs);
@@ -1557,7 +1572,7 @@ class Scope {
 
       if (!dir.isGeneric) {
         // The most common case is that when a directive is not generic, we use the normal
-        // `TcbNonDirectiveTypeOp`.
+        // `TcbNonGenericDirectiveTypeOp`.
         directiveOp = new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
       } else if (
           !requiresInlineTypeCtor(dirRef.node, host, this.tcb.env) ||
@@ -1844,7 +1859,13 @@ function tcbCallTypeCtor(
 
     if (input.type === 'binding') {
       // For bound inputs, the property is assigned the binding expression.
-      const expr = widenBinding(input.expression, tcb);
+      let expr = widenBinding(input.expression, tcb);
+
+      // TODO(signals)
+      if (dir.isSignal) {
+        const signalCtor = tcb.env.referenceExternalSymbol('@angular/core', 'signal');
+        expr = ts.factory.createCallExpression(signalCtor, undefined, [expr]);
+      }
 
       const assignment =
           ts.factory.createPropertyAssignment(propertyName, wrapForDiagnostics(expr));

@@ -17,6 +17,7 @@ export {
   untracked,
   ValueEqualityFn,
   WritableSignal,
+  ɵɵtoWritableSignal,
 } from './signals';
 export {
   CreateEffectOptions,
@@ -24,4 +25,4 @@ export {
   EffectRef,
   EffectCleanupFn,
 } from './render3/reactivity/effect';
-// clang-format on    
+// clang-format on
