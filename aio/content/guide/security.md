@@ -75,7 +75,7 @@ Angular defines the following security contexts:
 | URL               | Used for URL properties, such as `<a href>`.                                      |
 | Resource URL      | A URL that is loaded and executed as code, for example, in `<script src>`.        |
 
-Angular sanitizes untrusted values for HTML, styles, and URLs. Sanitizing resource URLs isn't possible because they contain arbitrary code.
+Angular sanitizes untrusted values for HTML and URLs; modern web browser sanitizes untrusted values for styles; sanitizing resource URLs isn't possible because they contain arbitrary code.
 In development mode, Angular prints a console warning when it has to change a value during sanitization.
 
 ### Sanitization example
