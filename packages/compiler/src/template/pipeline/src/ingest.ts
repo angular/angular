@@ -119,6 +119,8 @@ function ingestBoundText(view: ViewCompilation, text: t.BoundText): void {
 function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
   if (ast instanceof e.ASTWithSource) {
     return convertAst(ast.ast, cpl);
+  } else if (ast instanceof e.SafePropertyRead) {
+    return new ir.SafePropertyReadExpr(convertAst(ast.receiver, cpl), ast.name);
   } else if (ast instanceof e.PropertyRead) {
     if (ast.receiver instanceof e.ImplicitReceiver) {
       return new ir.LexicalReadExpr(ast.name);
@@ -133,6 +135,9 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
         convertAst(ast.key, cpl),
         convertAst(ast.value, cpl),
     );
+  } else if (ast instanceof e.SafeCall) {
+    return new ir.SafeInvokeFunctionExpr(
+        convertAst(ast.receiver, cpl), ast.args.map(a => convertAst(a, cpl)));
   } else if (ast instanceof e.Call) {
     if (ast.receiver instanceof e.ImplicitReceiver) {
       throw new Error(`Unexpected ImplicitReceiver`);
@@ -154,6 +159,8 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
   } else if (ast instanceof e.NonNullAssert) {
     // A non-null assertion shouldn't impact generated instructions, so we can just drop it.
     return convertAst(ast.expression, cpl);
+  } else if (ast instanceof e.SafeKeyedRead) {
+    return new ir.SafeKeyedReadExpr(convertAst(ast.receiver, cpl), convertAst(ast.key, cpl));
   } else if (ast instanceof e.KeyedRead) {
     return new o.ReadKeyExpr(convertAst(ast.receiver, cpl), convertAst(ast.key, cpl));
   } else if (ast instanceof e.Chain) {

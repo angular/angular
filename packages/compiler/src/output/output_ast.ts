@@ -424,6 +424,10 @@ export class InvokeFunctionExpr extends Expression {
   override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitInvokeFunctionExpr(this, context);
   }
+
+  get receiver(): Expression {
+    return this.fn;
+  }
 }
 
 

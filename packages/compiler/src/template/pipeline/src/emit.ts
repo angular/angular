@@ -33,6 +33,7 @@ import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
+import {phaseExpandSafeReads} from './phases/expand_safe_reads';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
@@ -43,6 +44,7 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phasePipeVariadic(cpl);
   phasePureLiteralStructures(cpl);
   phaseGenerateVariables(cpl);
+  phaseExpandSafeReads(cpl);
   phaseSaveRestoreView(cpl);
   phaseResolveNames(cpl);
   phaseResolveContexts(cpl);

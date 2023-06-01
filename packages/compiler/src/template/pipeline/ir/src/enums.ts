@@ -109,6 +109,21 @@ export enum ExpressionKind {
   LexicalRead,
 
   /**
+   * A safe read of a property, which needs to be expanded into a null check.
+   */
+  SafePropertyRead,
+
+  /**
+   * A safe keyed read, which needs to be expanded into a null check.
+   */
+  SafeKeyedRead,
+
+  /**
+   * A safe keyed function call, which needs to be expanded into a null check.
+   */
+  SafeInvokeFunctionExpr,
+
+  /**
    * A reference to the current view context.
    */
   Context,

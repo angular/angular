@@ -19,9 +19,10 @@ import type {UpdateOp} from './ops/update';
 /**
  * Expressions defined by the intermediate representation, as opposed to an `o.Expression`.
  */
-export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
-    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr;
+export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|SafePropertyReadExpr|
+    SafeKeyedReadExpr|SafeInvokeFunctionExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
+    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
+    PipeBindingVariadicExpr;
 
 /**
  * A supplemented version of the output expression visitor, which also allows us to visit IR
@@ -29,6 +30,9 @@ export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextEx
  */
 export interface ExpressionVisitor extends o.ExpressionVisitor {
   visitLexicalReadExpr(ast: LexicalReadExpr, context: any): any;
+  visitSafeKeyedReadExpr(ast: SafeKeyedReadExpr, context: any): any;
+  visitSafePropertyReadExpr(ast: SafePropertyReadExpr, context: any): any;
+  visitSafeInvokeFunctionExpr(ast: SafeInvokeFunctionExpr, context: any): any;
   visitReferenceExpr(ast: ReferenceExpr, context: any): any;
   visitContextExpr(ast: ContextExpr, context: any): any;
   visitNextContextExpr(ast: NextContextExpr, context: any): any;
@@ -79,6 +83,9 @@ export abstract class NullExpressionVisitor implements ExpressionVisitor {
   visitWrappedNodeExpr = (ast: o.WrappedNodeExpr<any>, context: any) => null;
   visitTypeofExpr = (ast: o.TypeofExpr, context: any) => null;
   visitLexicalReadExpr = (ast: LexicalReadExpr, context: any) => null;
+  visitSafeKeyedReadExpr = (ast: SafeKeyedReadExpr, context: any) => null;
+  visitSafePropertyReadExpr = (ast: SafePropertyReadExpr, context: any) => null;
+  visitSafeInvokeFunctionExpr = (ast: SafeInvokeFunctionExpr, context: any) => null;
   visitReferenceExpr = (ast: ReferenceExpr, context: any) => null;
   visitContextExpr = (ast: ContextExpr, context: any) => null;
   visitNextContextExpr = (ast: NextContextExpr, context: any) => null;
@@ -135,8 +142,10 @@ export class EverythingVisitor implements ExpressionVisitor {
   visitFunctionExpr = (ast: o.FunctionExpr, context: any) => this.visitAll(ast, context);
   visitUnaryOperatorExpr = (ast: o.UnaryOperatorExpr, context: any) =>
       this.visitAll(ast, context, ast.expr);
-  visitBinaryOperatorExpr = (ast: o.BinaryOperatorExpr, context: any) =>
-      this.visitAll(ast, context, ast.lhs, ast.rhs);
+  visitBinaryOperatorExpr = (ast: o.BinaryOperatorExpr, context: any) => {
+    // TODO: requires update
+    return transformExpressionsInExpression(ast, ast => ast, VisitorContextFlag.None);
+  };
   visitReadPropExpr = (ast: o.ReadPropExpr, context: any) =>
       this.visitAll(ast, context, ast.receiver);
   visitReadKeyExpr = (ast: o.ReadKeyExpr, context: any) =>
@@ -150,6 +159,12 @@ export class EverythingVisitor implements ExpressionVisitor {
   visitTypeofExpr = (ast: o.TypeofExpr, context: any) => this.visitAll(ast, context, ast.expr);
   // IR expression types.
   visitLexicalReadExpr = (ast: LexicalReadExpr, context: any) => this.visitAll(ast, context);
+  visitSafeKeyedReadExpr = (ast: SafeKeyedReadExpr, context: any) =>
+      this.visitAll(ast, context, ast.receiver, ast.index);
+  visitSafePropertyReadExpr = (ast: SafePropertyReadExpr, context: any) =>
+      this.visitAll(ast, context, ast.receiver);
+  visitSafeInvokeFunctionExpr = (ast: SafeInvokeFunctionExpr, context: any) =>
+      this.visitAll(ast, context, ast.receiver, ...ast.args);
   visitReferenceExpr = (ast: ReferenceExpr, context: any) => this.visitAll(ast, context);
   visitContextExpr = (ast: ContextExpr, context: any) => this.visitAll(ast, context);
   visitNextContextExpr = (ast: NextContextExpr, context: any) => this.visitAll(ast, context);
@@ -224,6 +239,94 @@ export class LexicalReadExpr extends ExpressionBase {
   }
 
   override transformInternalExpressions(): void {}
+}
+
+/**
+ * A safe property read expression that needs to be expanded into a null check.
+ */
+export class SafePropertyReadExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SafePropertyRead;
+
+  constructor(public receiver: o.Expression, public readonly name: string) {
+    super();
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitSafePropertyReadExpr(this, context);
+  }
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
+  }
+}
+
+/**
+ * A safe keyed read expression that needs to be expanded into a null check.
+ */
+export class SafeKeyedReadExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SafeKeyedRead;
+
+  constructor(public receiver: o.Expression, public index: o.Expression) {
+    super();
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitSafeKeyedReadExpr(this, context);
+  }
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
+    this.index = transformExpressionsInExpression(this.index, transform, flags);
+  }
+}
+
+/**
+ * A safe keyed read expression that needs to be expanded into a null check.
+ */
+export class SafeInvokeFunctionExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SafeInvokeFunctionExpr;
+
+  constructor(public receiver: o.Expression, public args: o.Expression[], public pure?: boolean) {
+    super();
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitSafeInvokeFunctionExpr(this, context);
+  }
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
+    for (let i = 0; i < this.args.length; i++) {
+      this.args[i] = transformExpressionsInExpression(this.args[i], transform, flags);
+    }
+  }
 }
 
 /**
@@ -640,7 +743,8 @@ export function visitTopLevelExpressionsInOp(
       // These operations contain no expressions.
       break;
     default:
-      throw new Error(`AssertionError: expressionsInOp doesn't handle ${OpKind[op.kind]}`);
+      throw new Error(
+          `AssertionError: visitTopLevelExpressionsInOp doesn't handle ${OpKind[op.kind]}`);
   }
 }
 

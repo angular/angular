@@ -6,6 +6,7 @@
       "inputFiles": [
         "safe_keyed_read.ts"
       ],
+      "focusTest": true,
       "expectations": [
         {
           "files": [
