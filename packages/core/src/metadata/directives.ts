@@ -345,7 +345,7 @@ export interface Directive {
   /**
    * // TODO(signals): Remove internal and add public documentation
    *
-   * @internal
+   * //TODO-internal
    */
   signals?: boolean;
 
@@ -640,7 +640,7 @@ export interface Component extends Directive {
 
   /**
    * // TODO(signals): Remove internal and add public documentation.
-   * @internal
+   * TODO- internal
    */
   signals?: boolean;
 

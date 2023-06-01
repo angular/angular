@@ -11,6 +11,10 @@
  * @description
  * Entry point from which you should import all public core APIs.
  */
+
+// TODO(signal)
+export * from './signals-wip/index';
+
 export * from './metadata';
 export * from './version';
 export {TypeDecorator} from './util/decorators';
