@@ -974,6 +974,13 @@ export class ComponentDecoratorHandler implements
     return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
   }
 
+  compileLocal(
+      node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
+      constantPool: ConstantPool): CompileResult[] {
+    // TODO(pmvald): implement this method.
+    return [];
+  }
+
   /**
    * Check whether adding an import from `origin` to the source-file corresponding to `expr` would
    * create a cyclic import.
