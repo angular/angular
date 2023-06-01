@@ -1,3 +1,25 @@
+<a name="16.1.0-next.3"></a>
+# 16.1.0-next.3 (2023-06-01)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bada9199f5](https://github.com/angular/angular/commit/bada9199f53cb631d065a961427a3a1a8d9762f1) | fix | Trigger leave animation when ViewContainerRef is injected ([#48705](https://github.com/angular/angular/pull/48705)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [72b4ff4b9e](https://github.com/angular/angular/commit/72b4ff4b9ea8bd77ab74f9834727390c82acb28d) | fix | untrack subscription and unsubscription in async pipe ([#50522](https://github.com/angular/angular/pull/50522)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [721bc72649](https://github.com/angular/angular/commit/721bc72649b7d73f730298e04a4606a8bfd53011) | fix | resolve deprecation warning with TypeScript 5.1 ([#50460](https://github.com/angular/angular/pull/50460)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [68017d4e75](https://github.com/angular/angular/commit/68017d4e75abed78b378dce54f860cfa0d0fa42f) | feat | add ability to transform input values ([#50420](https://github.com/angular/angular/pull/50420)) |
+| [28c68f709c](https://github.com/angular/angular/commit/28c68f709cdc930e12bac51a266e7bf790656034) | fix | update `ApplicationRef.isStable` to account for rendering pending tasks ([#50425](https://github.com/angular/angular/pull/50425)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.4"></a>
 # 16.0.4 (2023-06-01)
 ### animations
