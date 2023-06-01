@@ -1,5 +1,5 @@
 diff --git a/node_modules/@bazel/concatjs/internal/build_defs.bzl b/node_modules/@bazel/concatjs/internal/build_defs.bzl
-index 9e5cda6..71abdb4 100755
+index 9e5cda6..cdbcf71 100755
 --- a/node_modules/@bazel/concatjs/internal/build_defs.bzl
 +++ b/node_modules/@bazel/concatjs/internal/build_defs.bzl
 @@ -15,7 +15,7 @@
@@ -11,7 +11,7 @@ index 9e5cda6..71abdb4 100755
 
  # pylint: disable=unused-argument
  # pylint: disable=missing-docstring
-@@ -72,7 +72,6 @@ my_rule(
+@@ -72,11 +72,10 @@ my_rule(
  _DEFAULT_COMPILER = "//@bazel/concatjs/bin:tsc_wrapped"
 
  _TYPESCRIPT_TYPINGS = Label(
@@ -19,6 +19,11 @@ index 9e5cda6..71abdb4 100755
      "//typescript:typescript__typings",
  )
 
+-_TYPESCRIPT_SCRIPT_TARGETS = ["es3", "es5", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "esnext"]
++_TYPESCRIPT_SCRIPT_TARGETS = ["es3", "es5", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2022", "esnext"]
+ _TYPESCRIPT_MODULE_KINDS = ["none", "commonjs", "amd", "umd", "system", "es2015", "esnext"]
+
+ _DEVMODE_TARGET_DEFAULT = "es2015"
 @@ -331,11 +330,7 @@ def _ts_library_impl(ctx):
      # and issue https://github.com/bazelbuild/rules_nodejs/issues/57 for more details.
      ts_providers["providers"].extend([

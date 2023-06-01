@@ -9,8 +9,7 @@
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router, RouterLink} from '@angular/router';
-import {RouterTestingModule} from '@angular/router/testing';
+import {Router, RouterLink, RouterModule} from '@angular/router';
 
 describe('RouterLink', () => {
   it('does not modify tabindex if already set on non-anchor element', () => {
@@ -18,7 +17,8 @@ describe('RouterLink', () => {
     class LinkComponent {
       link: string|null|undefined = '/';
     }
-    TestBed.configureTestingModule({imports: [RouterTestingModule], declarations: [LinkComponent]});
+    TestBed.configureTestingModule(
+        {imports: [RouterModule.forRoot([])], declarations: [LinkComponent]});
     const fixture = TestBed.createComponent(LinkComponent);
     fixture.detectChanges();
     const link = fixture.debugElement.query(By.css('div')).nativeElement;
@@ -40,7 +40,7 @@ describe('RouterLink', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
+        imports: [RouterModule.forRoot([])],
         declarations: [LinkComponent],
       });
       fixture = TestBed.createComponent(LinkComponent);
@@ -106,7 +106,7 @@ describe('RouterLink', () => {
 
       beforeEach(() => {
         TestBed.configureTestingModule({
-          imports: [RouterTestingModule],
+          imports: [RouterModule.forRoot([])],
           declarations: [LinkComponent],
         });
         fixture = TestBed.createComponent(LinkComponent);
@@ -157,7 +157,7 @@ describe('RouterLink', () => {
       }
 
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
+        imports: [RouterModule.forRoot([])],
         declarations: [LinkComponent],
       });
       const fixture = TestBed.createComponent(LinkComponent);

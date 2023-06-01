@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, state, style, transition, trigger} from '@angular/animations';
+import {animate, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, inject as _inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, NgModuleRef, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
-import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
+import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, importProvidersFrom, Inject, inject as _inject, InjectionToken, Injector, LOCALE_ID, NgModule, NgModuleRef, NgZone, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, TransferState, Type, VERSION} from '@angular/core';
+import {ApplicationRef, destroyPlatform, provideZoneChangeDetection} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
-import {BrowserModule, TransferState} from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {provideAnimations, provideNoopAnimations} from '@angular/platform-browser/animations';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -288,14 +288,22 @@ function bootstrap(
         expect(el2.innerText).toBe('Hello from Updated NonStandaloneComp!');
       });
 
-      it('should throw when trying to bootstrap a non-standalone component', () => {
+      it('should throw when trying to bootstrap a non-standalone component', async () => {
         const msg = 'NG0907: The NonStandaloneComp component is not marked as standalone, ' +
             'but Angular expects to have a standalone component here. Please make sure the ' +
             'NonStandaloneComp component has the `standalone: true` flag in the decorator.';
-        expect(() => bootstrapApplication(NonStandaloneComp)).toThrowError(msg);
+        let bootstrapError: string|null = null;
+
+        try {
+          await bootstrapApplication(NonStandaloneComp);
+        } catch (e) {
+          bootstrapError = (e as Error).message;
+        }
+
+        expect(bootstrapError).toBe(msg);
       });
 
-      it('should throw when trying to bootstrap a standalone directive', () => {
+      it('should throw when trying to bootstrap a standalone directive', async () => {
         @Directive({
           standalone: true,
           selector: '[dir]',
@@ -306,15 +314,31 @@ function bootstrap(
         const msg =  //
             'NG0906: The StandaloneDirective is not an Angular component, ' +
             'make sure it has the `@Component` decorator.';
-        expect(() => bootstrapApplication(StandaloneDirective)).toThrowError(msg);
+        let bootstrapError: string|null = null;
+
+        try {
+          await bootstrapApplication(StandaloneDirective);
+        } catch (e) {
+          bootstrapError = (e as Error).message;
+        }
+
+        expect(bootstrapError).toBe(msg);
       });
 
-      it('should throw when trying to bootstrap a non-annotated class', () => {
+      it('should throw when trying to bootstrap a non-annotated class', async () => {
         class NonAnnotatedClass {}
         const msg =  //
             'NG0906: The NonAnnotatedClass is not an Angular component, ' +
             'make sure it has the `@Component` decorator.';
-        expect(() => bootstrapApplication(NonAnnotatedClass)).toThrowError(msg);
+        let bootstrapError: string|null = null;
+
+        try {
+          await bootstrapApplication(NonAnnotatedClass);
+        } catch (e) {
+          bootstrapError = (e as Error).message;
+        }
+
+        expect(bootstrapError).toBe(msg);
       });
 
       it('should have the TransferState token available', async () => {
@@ -334,14 +358,25 @@ function bootstrap(
         expect(state).toBeInstanceOf(TransferState);
       });
 
+      it('should reject the bootstrapApplication promise if an imported module throws', (done) => {
+        @NgModule()
+        class ErrorModule {
+          constructor() {
+            throw new Error('This error should be in the promise rejection');
+          }
+        }
+
+        bootstrapApplication(SimpleComp, {
+          providers: [importProvidersFrom(ErrorModule)]
+        }).then(() => done.fail('Expected bootstrap promised to be rejected'), () => done());
+      });
+
       describe('with animations', () => {
         @Component({
           standalone: true,
           selector: 'hello-app',
-          template: `
-            <div
-              @myAnimation
-              (@myAnimation.start)="onStart($event)">Hello from AnimationCmp!</div>`,
+          template:
+              '<div @myAnimation (@myAnimation.start)="onStart($event)">Hello from AnimationCmp!</div>',
           animations: [trigger(
               'myAnimation', [transition('void => *', [style({opacity: 1}), animate(5)])])],
         })
@@ -385,6 +420,31 @@ function bootstrap(
           expect(el.innerText).toBe('Hello from AnimationCmp!');
         });
       });
+
+      it('initializes modules inside the NgZone when using `provideZoneChangeDetection`',
+         async () => {
+           let moduleInitialized = false;
+           @NgModule({})
+           class SomeModule {
+             constructor() {
+               expect(NgZone.isInAngularZone()).toBe(true);
+               moduleInitialized = true;
+             }
+           }
+           @Component({
+             template: '',
+             selector: 'hello-app',
+             imports: [SomeModule],
+             standalone: true,
+           })
+           class AnimationCmp {
+           }
+
+           await bootstrapApplication(AnimationCmp, {
+             providers: [provideZoneChangeDetection({eventCoalescing: true})],
+           });
+           expect(moduleInitialized).toBe(true);
+         });
     });
 
     it('should throw if bootstrapped Directive is not a Component', done => {
@@ -489,7 +549,8 @@ function bootstrap(
             bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);
         refPromise.then(null, (reason) => {
           expect(logger.res[0].join('#'))
-              .toContain('ERROR#Error: The selector "non-existent" did not match any elements');
+              .toContain(
+                  'ERROR#Error: NG05104: The selector "non-existent" did not match any elements');
           done();
           return null;
         });
@@ -530,7 +591,7 @@ function bootstrap(
                return compiler.compileModuleAsync(AsyncModule).then(factory => {
                  expect(() => factory.create(ref.injector))
                      .toThrowError(
-                         'Providers from the `BrowserModule` have already been loaded. ' +
+                         'NG05100: Providers from the `BrowserModule` have already been loaded. ' +
                          'If you need access to common directives such as NgIf and NgFor, ' +
                          'import the `CommonModule` instead.');
                });
@@ -621,6 +682,15 @@ function bootstrap(
           done();
         }, done.fail);
       })();
+    });
+
+    it('should not allow provideZoneChangeDetection in bootstrapModule', async () => {
+      @NgModule({imports: [BrowserModule], providers: [provideZoneChangeDetection()]})
+      class SomeModule {
+      }
+
+      await expectAsync(platformBrowserDynamic().bootstrapModule(SomeModule))
+          .toBeRejectedWithError(/provideZoneChangeDetection.*BootstrapOptions/);
     });
 
     it('should register each application with the testability registry', async () => {

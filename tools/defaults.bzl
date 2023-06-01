@@ -103,6 +103,8 @@ def ts_library(
         deps = [],
         module_name = None,
         package_name = None,
+        devmode_target = "es2022",
+        prodmode_target = "es2022",
         **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@npm//tslib"]
@@ -122,7 +124,6 @@ def ts_library(
     if not package_name:
         package_name = _default_module_name(testonly)
 
-    default_target = "es2020"
     default_module = "esnext"
 
     _ts_library(
@@ -130,13 +131,13 @@ def ts_library(
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
-        devmode_target = default_target,
+        devmode_target = devmode_target,
         devmode_module = default_module,
-        # For prodmode, the target is set to `ES2020`. `@bazel/typecript` sets `ES2015` by
+        # For prodmode, the target is set to `ES2022`. `@bazel/typecript` sets `ES2015` by
         # default. Note that this should be in sync with the `ng_module` tsconfig generation.
         # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
         # https://github.com/bazelbuild/rules_nodejs/blob/9b36274dba34204625579463e3da054a9f42cb47/packages/typescript/internal/build_defs.bzl#L85.
-        prodmode_target = default_target,
+        prodmode_target = prodmode_target,
         prodmode_module = default_module,
         # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,
@@ -320,7 +321,7 @@ def karma_web_test_suite(
     # Add a saucelabs target for Karma tests in `//packages/`.
     if native.package_name().startswith("packages/"):
         _karma_web_test(
-            name = "saucelabs_%s" % name,
+            name = "{}_saucelabs".format(name),
             # Default timeout is moderate (5min). This causes the test to be terminated while
             # Saucelabs browsers keep running. Ultimately resulting in failing tests and browsers
             # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
@@ -328,15 +329,13 @@ def karma_web_test_suite(
             timeout = "long",
             config_file = "//:karma-js.conf.js",
             deps = [
-                "@npm//karma-sauce-launcher",
                 ":%s_bundle" % name,
             ],
             data = data + [
                 "//:browser-providers.conf.js",
+                "//tools/saucelabs-daemon/launcher:launcher_cjs",
             ],
-            karma = "//tools/saucelabs:karma-saucelabs",
             tags = tags + [
-                "exclusive",
                 "manual",
                 "no-remote-exec",
                 "saucelabs",

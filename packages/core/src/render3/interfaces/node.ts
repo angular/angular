@@ -115,7 +115,7 @@ export const enum TNodeFlags {
   /** Bit #5 - This bit is set if the node has any "style" inputs */
   hasStyleInput = 0x10,
 
-  /** Bit #6 This bit is set if the node has been detached by i18n */
+  /** Bit #6 - This bit is set if the node has been detached by i18n */
   isDetached = 0x20,
 
   /**
@@ -125,6 +125,11 @@ export const enum TNodeFlags {
    * that actually have directives with host bindings.
    */
   hasHostBindings = 0x40,
+
+  /**
+   * Bit #8 - This bit is set if the node is a located inside skip hydration block.
+   */
+  inSkipHydrationBlock = 0x80,
 }
 
 /**

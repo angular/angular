@@ -459,6 +459,54 @@ runInEachFileSystem(() => {
       expect(written).toContain('/foo_module.js');
     });
 
+    it('should re-emit an NgModule when the provider status of its imports changes', () => {
+      env.write('provider-dep.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        @Injectable()
+        export class Service {}
+
+        @NgModule({
+          providers: [Service],
+        })
+        export class DepModule {}
+      `);
+      env.write('standalone-cmp.ts', `
+        import {Component} from '@angular/core';
+        import {DepModule} from './provider-dep';
+
+        @Component({
+          standalone: true,
+          template: '',
+          imports: [DepModule],
+        })
+        export class Cmp {}
+      `);
+      env.write('module.ts', `
+        import {NgModule} from '@angular/core';
+        import {Cmp} from './standalone-cmp';
+
+        @NgModule({
+          imports: [Cmp],
+        })
+        export class Module {}
+      `);
+
+      env.driveMain();
+
+      env.write('provider-dep.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class DepModule {}
+      `);
+
+      env.flushWrittenFileTracking();
+      env.driveMain();
+      const written = env.getFilesWrittenSinceLastFlush();
+      expect(written).toContain('/module.js');
+    });
+
     it('should compile incrementally with template type-checking turned on', () => {
       env.tsconfig({fullTemplateTypeCheck: true});
       env.write('main.ts', `

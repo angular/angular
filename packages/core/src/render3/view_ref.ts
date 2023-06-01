@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef, ViewRefTracker} from '../linker/view_ref';
+import {EmbeddedViewRef, InternalViewRef, ViewRefTracker} from '../linker/view_ref';
 import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 
 import {collectNativeNodes} from './collect_native_nodes';
-import {checkNoChangesInternal, detectChangesInternal, markViewDirty} from './instructions/shared';
+import {checkNoChangesInternal, detectChangesInternal} from './instructions/change_detection';
+import {markViewDirty} from './instructions/mark_view_dirty';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
@@ -21,14 +22,12 @@ import {destroyLView, detachView, renderDetachView} from './node_manipulation';
 import {storeLViewOnDestroy} from './util/view_utils';
 
 
-
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
 // multiple @extends in Closure annotations, which is illegal. This workaround fixes
 // the multiple @extends by making the annotation @implements instead
-export interface viewEngine_ChangeDetectorRef_interface extends viewEngine_ChangeDetectorRef {}
+interface ChangeDetectorRefInterface extends ChangeDetectorRef {}
 
-export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_InternalViewRef,
-                                   viewEngine_ChangeDetectorRef_interface {
+export class ViewRef<T> implements EmbeddedViewRef<T>, InternalViewRef, ChangeDetectorRefInterface {
   private _appRef: ViewRefTracker|null = null;
   private _attachedToViewContainer = false;
 

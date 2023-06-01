@@ -102,16 +102,14 @@ function createEmitCallback(options: api.CompilerOptions, tsickle?: TsickleModul
   const tsickleHost: Pick<
       TsickleHost,
       'shouldSkipTsickleProcessing'|'pathToModuleName'|'shouldIgnoreWarningsForPath'|
-      'fileNameToModuleId'|'googmodule'|'untyped'|'convertIndexImportShorthand'|
-      'transformDecorators'|'transformTypesToClosure'|'generateExtraSuppressions'|
-      'rootDirsRelative'> = {
+      'fileNameToModuleId'|'googmodule'|'untyped'|'transformDecorators'|'transformTypesToClosure'|
+      'generateExtraSuppressions'|'rootDirsRelative'> = {
     shouldSkipTsickleProcessing: (fileName) => fileName.endsWith('.d.ts'),
     pathToModuleName: (context, importPath) => '',
     shouldIgnoreWarningsForPath: (filePath) => false,
     fileNameToModuleId: (fileName) => fileName,
     googmodule: false,
     untyped: true,
-    convertIndexImportShorthand: false,
     // Decorators are transformed as part of the Angular compiler programs. To avoid
     // conflicts, we disable decorator transformations for tsickle.
     transformDecorators: false,

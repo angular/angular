@@ -666,14 +666,15 @@ describe('providers', () => {
     class OtherService {}
 
     it('should support Optional flag in deps', () => {
-      const injector =
-          Injector.create([{provide: MyService, deps: [[new Optional(), OtherService]]}]);
+      const injector = Injector.create(
+          {providers: [{provide: MyService, deps: [[new Optional(), OtherService]]}]});
 
       expect(injector.get(MyService).value).toBe(null);
     });
 
     it('should support Optional flag in deps without instantiating it', () => {
-      const injector = Injector.create([{provide: MyService, deps: [[Optional, OtherService]]}]);
+      const injector =
+          Injector.create({providers: [{provide: MyService, deps: [[Optional, OtherService]]}]});
 
       expect(injector.get(MyService).value).toBe(null);
     });

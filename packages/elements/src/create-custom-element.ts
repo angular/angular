@@ -140,11 +140,6 @@ export function createCustomElement<P>(
     static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
     protected override get ngElementStrategy(): NgElementStrategy {
-      // NOTE:
-      // Some polyfills (e.g. `document-register-element`) do not call the constructor, therefore
-      // it is not safe to set `ngElementStrategy` in the constructor and assume it will be
-      // available inside the methods.
-      //
       // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
       // now this is tested using a Google internal test suite.
       if (!this._ngElementStrategy) {

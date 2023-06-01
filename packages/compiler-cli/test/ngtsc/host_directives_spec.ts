@@ -24,6 +24,10 @@ runInEachFileSystem(() => {
       env.tsconfig({strictTemplates: true});
     });
 
+    function extractMessage(diag: ts.Diagnostic) {
+      return typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
+    }
+
     it('should generate a basic hostDirectives definition', () => {
       env.write('test.ts', `
         import {Directive, Component} from '@angular/core';
@@ -61,7 +65,7 @@ runInEachFileSystem(() => {
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, {}, never, never, false, ' +
               '[{ directive: typeof DirectiveA; inputs: {}; outputs: {}; }, ' +
-              '{ directive: typeof DirectiveB; inputs: {}; outputs: {}; }]>;');
+              '{ directive: typeof DirectiveB; inputs: {}; outputs: {}; }], false>;');
     });
 
     it('should generate a hostDirectives definition that has inputs and outputs', () => {
@@ -107,7 +111,7 @@ runInEachFileSystem(() => {
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof HostDir; ' +
               'inputs: { "value": "value"; "color": "colorAlias"; }; ' +
-              'outputs: { "opened": "opened"; "closed": "closedAlias"; }; }]>;');
+              'outputs: { "opened": "opened"; "closed": "closedAlias"; }; }], false>;');
     });
 
     it('should generate a hostDirectives definition that has aliased inputs and outputs', () => {
@@ -153,7 +157,7 @@ runInEachFileSystem(() => {
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof HostDir; ' +
               'inputs: { "valueAlias": "valueAlias"; "colorAlias": "customColorAlias"; }; ' +
-              'outputs: { "openedAlias": "openedAlias"; "closedAlias": "customClosedAlias"; }; }]>;');
+              'outputs: { "openedAlias": "openedAlias"; "closedAlias": "customClosedAlias"; }; }], false>;');
     });
 
     it('should generate hostDirectives definitions for a chain of host directives', () => {
@@ -209,22 +213,22 @@ runInEachFileSystem(() => {
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveA, never, never, {}, ' +
-              '{}, never, never, true, never>;');
+              '{}, never, never, true, never, false>;');
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, ' +
               '{}, never, never, true, [{ directive: typeof DirectiveA; ' +
-              'inputs: {}; outputs: {}; }]>;');
+              'inputs: {}; outputs: {}; }], false>;');
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveC, never, never, {}, ' +
               '{}, never, never, true, [{ directive: typeof DirectiveB; ' +
-              'inputs: {}; outputs: {}; }]>;');
+              'inputs: {}; outputs: {}; }], false>;');
       expect(dtsContents)
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof DirectiveC; ' +
-              'inputs: {}; outputs: {}; }]>;');
+              'inputs: {}; outputs: {}; }], false>;');
     });
 
     it('should generate a hostDirectives definition with forward references', () => {
@@ -272,18 +276,18 @@ runInEachFileSystem(() => {
           .toContain(
               'ɵɵComponentDeclaration<MyComponent, "my-component", ' +
               'never, {}, {}, never, never, false, [{ directive: typeof DirectiveB; ' +
-              'inputs: {}; outputs: {}; }]>;');
+              'inputs: {}; outputs: {}; }], false>;');
 
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, ' +
               '{}, never, never, true, [{ directive: typeof DirectiveA; ' +
-              'inputs: { "value": "value"; }; outputs: {}; }]>;');
+              'inputs: { "value": "value"; }; outputs: {}; }], false>;');
 
       expect(dtsContents)
           .toContain(
               'ɵɵDirectiveDeclaration<DirectiveA, never, never, ' +
-              '{ "value": "value"; }, {}, never, never, true, never>;');
+              '{ "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never, false>;');
     });
 
     it('should generate a definition if the host directives are imported from other files', () => {
@@ -349,7 +353,7 @@ runInEachFileSystem(() => {
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof i1.DirectiveA; ' +
               'inputs: {}; outputs: {}; }, { directive: typeof i2.DirectiveB; ' +
-              'inputs: { "input": "inputAlias"; }; outputs: {}; }]>;');
+              'inputs: { "input": "inputAlias"; }; outputs: {}; }], false>;');
     });
 
     it('should generate a hostDirectives definition referring to external directives', () => {
@@ -358,7 +362,7 @@ runInEachFileSystem(() => {
 
         export declare class ExternalDir {
           static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never,
-            {input: "input"}, {output: "output"}, never, never, true, never>;
+            {input: "input"}, {output: "output"}, never, never, true, never, false>;
         }
       `);
 
@@ -388,7 +392,7 @@ runInEachFileSystem(() => {
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof i1.ExternalDir; ' +
-              'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }]>;');
+              'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }], false>;');
     });
 
     it('should reference host directives by their external name', () => {
@@ -425,15 +429,74 @@ runInEachFileSystem(() => {
       expect(dtsContents)
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, {}, ' +
-              'never, never, false, [{ directive: typeof i1.ExternalDir; inputs: {}; outputs: {}; }]>;');
+              'never, never, false, [{ directive: typeof i1.ExternalDir; inputs: {}; outputs: {}; }], false>;');
     });
 
-    describe('validations', () => {
-      function extractMessage(diag: ts.Diagnostic) {
-        return typeof diag.messageText === 'string' ? diag.messageText :
-                                                      diag.messageText.messageText;
-      }
+    it('should produce a template diagnostic if a required input from a host directive is missing',
+       () => {
+         env.write('test.ts', `
+            import {Directive, Component, Input} from '@angular/core';
 
+            @Directive({standalone: true})
+            export class HostDir {
+              @Input({alias: 'inputAlias', required: true})
+              input: any;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}],
+              standalone: true
+            })
+            export class Dir {}
+
+            @Component({
+              template: '<div dir></div>',
+              standalone: true,
+              imports: [Dir]
+            })
+            class App {}
+          `);
+
+         const messages = env.driveDiagnostics().map(extractMessage);
+
+         expect(messages).toEqual(
+             [`Required input 'customAlias' from directive HostDir must be specified.`]);
+       });
+
+    it('should not produce a template diagnostic if a required input from a host directive is bound',
+       () => {
+         env.write('test.ts', `
+            import {Directive, Component, Input} from '@angular/core';
+
+            @Directive({standalone: true})
+            export class HostDir {
+              @Input({alias: 'inputAlias', required: true})
+              input: any;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}],
+              standalone: true
+            })
+            export class Dir {}
+
+            @Component({
+              template: '<div dir [customAlias]="value"></div>',
+              standalone: true,
+              imports: [Dir]
+            })
+            class App {
+              value = 123;
+            }
+          `);
+
+         const messages = env.driveDiagnostics().map(extractMessage);
+         expect(messages).toEqual([]);
+       });
+
+    describe('validations', () => {
       it('should produce a diagnostic if a host directive is not standalone', () => {
         env.write('test.ts', `
           import {Directive, Component, NgModule} from '@angular/core';
@@ -777,6 +840,163 @@ runInEachFileSystem(() => {
            const messages = env.driveDiagnostics().map(extractMessage);
            expect(messages).toEqual([]);
          });
+
+      it('should produce a diagnostic if a required input is not exposed on the host', () => {
+        env.write('test.ts', `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir-a]',
+            standalone: true
+          })
+          export class HostDir {
+            @Input({required: true}) input: any;
+          }
+
+          @Component({
+            selector: 'my-comp',
+            template: '',
+            hostDirectives: [HostDir]
+          })
+          export class MyComp {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+
+        expect(messages).toEqual(
+            [`Required input 'input' from host directive HostDir must be exposed.`]);
+      });
+
+      it('should use the public name when producing diagnostics about missing required inputs',
+         () => {
+           env.write('test.ts', `
+              import {Directive, Component, Input} from '@angular/core';
+
+              @Directive({
+                selector: '[dir-a]',
+                standalone: true
+              })
+              export class HostDir {
+                @Input({required: true, alias: 'inputAlias'}) input: any;
+              }
+
+              @Component({
+                selector: 'my-comp',
+                template: '',
+                hostDirectives: [HostDir]
+              })
+              export class MyComp {}
+            `);
+
+           const messages = env.driveDiagnostics().map(extractMessage);
+
+           expect(messages).toEqual(
+               [`Required input 'inputAlias' from host directive HostDir must be exposed.`]);
+         });
+
+      it('should not produce required input diagnostic when exposed through alias', () => {
+        env.write('test.ts', `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir-a]',
+            standalone: true
+          })
+          export class HostDir {
+            @Input({required: true, alias: 'inputAlias'}) input: any;
+          }
+
+          @Component({
+            selector: 'my-comp',
+            template: '',
+            hostDirectives: [{directive: HostDir, inputs: ['inputAlias']}]
+          })
+          export class MyComp {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+
+        expect(messages).toEqual([]);
+      });
+
+      it('should not produce required input diagnostic when exposed through alias to another alias',
+         () => {
+           env.write('test.ts', `
+              import {Directive, Component, Input} from '@angular/core';
+
+              @Directive({
+                selector: '[dir-a]',
+                standalone: true
+              })
+              export class HostDir {
+                @Input({required: true, alias: 'inputAlias'}) input: any;
+              }
+
+              @Component({
+                selector: 'my-comp',
+                template: '',
+                hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}]
+              })
+              export class MyComp {}
+            `);
+
+           const messages = env.driveDiagnostics().map(extractMessage);
+
+           expect(messages).toEqual([]);
+         });
+
+      it('should not produce a diagnostic when exposing an aliased binding', () => {
+        env.write('test.ts', `
+          import {Directive, EventEmitter} from '@angular/core';
+
+          @Directive({
+            outputs: ['opened: triggerOpened'],
+            selector: '[trigger]',
+            standalone: true,
+          })
+          export class Trigger {
+            opened = new EventEmitter();
+          }
+
+          @Directive({
+            standalone: true,
+            selector: '[host]',
+            hostDirectives: [{directive: Trigger, outputs: ['triggerOpened']}]
+          })
+          export class Host {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not produce a diagnostic when exposing an inherited aliased binding', () => {
+        env.write('test.ts', `
+          import {Directive, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true})
+          export abstract class Base {
+            opened = new EventEmitter();
+          }
+
+          @Directive({
+            outputs: ['opened: triggerOpened'],
+            selector: '[trigger]',
+            standalone: true,
+          })
+          export class Trigger extends Base {}
+
+          @Directive({
+            standalone: true,
+            selector: '[host]',
+            hostDirectives: [{directive: Trigger, outputs: ['triggerOpened: hostOpened']}]
+          })
+          export class Host {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
   });
 });

@@ -20,7 +20,7 @@ For the example application that this page describes, see the <live-example name
 When structural directives are applied they generally are prefixed by an asterisk, `*`,  such as `*ngIf`. This convention is shorthand that Angular interprets and converts into a longer form.
 Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
 
-For example, let's take the following code which uses an `*ngIf` to displays the hero's name if `hero` exists:
+For example, let's take the following code which uses an `*ngIf` to display the hero's name if `hero` exists:
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (asterisk)" region="asterisk"></code-example>
 
@@ -59,7 +59,7 @@ named `$implicit`.
 
 Angular sets `let-hero` to the value of the context's `$implicit` property, which `NgFor` has initialized with the hero for the current iteration.
 
-For more information, see the [NgFor API](api/common/NgForOf "API: NgFor") and [NgForOf API](api/common/NgForOf) documentation.
+For more information, see the [NgFor API](api/common/NgFor "API: NgFor") and [NgForOf API](api/common/NgForOf) documentation.
 
 <div class="alert is-helpful">
 

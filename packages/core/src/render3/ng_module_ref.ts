@@ -120,25 +120,30 @@ export function createNgModuleRefWithProviders<T>(
   return new NgModuleRef(moduleType, parentInjector, additionalProviders);
 }
 
-class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
-  override readonly injector: EnvironmentInjector;
+export class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
+  override readonly injector: R3Injector;
   override readonly componentFactoryResolver: ComponentFactoryResolver =
       new ComponentFactoryResolver(this);
   override readonly instance = null;
 
-  constructor(
-      providers: Array<Provider|EnvironmentProviders>, parent: EnvironmentInjector|null,
-      source: string|null) {
+  constructor(config: {
+    providers: Array<Provider|EnvironmentProviders>,
+    parent: EnvironmentInjector|null,
+    debugName: string|null,
+    runEnvironmentInitializers: boolean
+  }) {
     super();
     const injector = new R3Injector(
         [
-          ...providers,
+          ...config.providers,
           {provide: viewEngine_NgModuleRef, useValue: this},
           {provide: viewEngine_ComponentFactoryResolver, useValue: this.componentFactoryResolver},
         ],
-        parent || getNullInjector(), source, new Set(['environment']));
+        config.parent || getNullInjector(), config.debugName, new Set(['environment']));
     this.injector = injector;
-    injector.resolveInjectorInitializers();
+    if (config.runEnvironmentInitializers) {
+      injector.resolveInjectorInitializers();
+    }
   }
 
   override destroy(): void {
@@ -166,6 +171,7 @@ class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
 export function createEnvironmentInjector(
     providers: Array<Provider|EnvironmentProviders>, parent: EnvironmentInjector,
     debugName: string|null = null): EnvironmentInjector {
-  const adapter = new EnvironmentNgModuleRefAdapter(providers, parent, debugName);
+  const adapter = new EnvironmentNgModuleRefAdapter(
+      {providers, parent, debugName, runEnvironmentInitializers: true});
   return adapter.injector;
 }

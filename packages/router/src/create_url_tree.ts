@@ -9,12 +9,11 @@
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
-import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
+import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {last, shallowEqual} from './utils/collection';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
  * Creates a `UrlTree` relative to an `ActivatedRouteSnapshot`.
@@ -123,38 +122,6 @@ export function createUrlTreeFromSegmentGroup(
   return tree(root, position.segmentGroup, newSegmentGroup, queryParams, fragment);
 }
 
-export function createUrlTree(
-    route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params|null,
-    fragment: string|null): UrlTree {
-  if (commands.length === 0) {
-    return tree(urlTree.root, urlTree.root, urlTree.root, queryParams, fragment);
-  }
-
-  const nav = computeNavigation(commands);
-
-  if (nav.toRoot()) {
-    return tree(urlTree.root, urlTree.root, new UrlSegmentGroup([], {}), queryParams, fragment);
-  }
-
-  function createTreeUsingPathIndex(lastPathIndex: number) {
-    const startingPosition =
-        findStartingPosition(nav, urlTree, route.snapshot?._urlSegment, lastPathIndex);
-
-    const segmentGroup = startingPosition.processChildren ?
-        updateSegmentGroupChildren(
-            startingPosition.segmentGroup, startingPosition.index, nav.commands) :
-        updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
-    return tree(urlTree.root, startingPosition.segmentGroup, segmentGroup, queryParams, fragment);
-  }
-  // Note: The types should disallow `snapshot` from being `undefined` but due to test mocks, this
-  // may be the case. Since we try to access it at an earlier point before the refactor to add the
-  // warning for `relativeLinkResolution: 'legacy'`, this may cause failures in tests where it
-  // didn't before.
-  const result = createTreeUsingPathIndex(route.snapshot?._lastPathIndex);
-
-  return result;
-}
-
 function isMatrixParams(command: any): boolean {
   return typeof command === 'object' && command != null && !command.outlets && !command.segmentPath;
 }
@@ -215,14 +182,16 @@ class Navigation {
     if (isAbsolute && commands.length > 0 && isMatrixParams(commands[0])) {
       throw new RuntimeError(
           RuntimeErrorCode.ROOT_SEGMENT_MATRIX_PARAMS,
-          NG_DEV_MODE && 'Root segment cannot have matrix parameters');
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              'Root segment cannot have matrix parameters');
     }
 
     const cmdWithOutlet = commands.find(isCommandWithOutlets);
     if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
       throw new RuntimeError(
           RuntimeErrorCode.MISPLACED_OUTLETS_COMMAND,
-          NG_DEV_MODE && '{outlets:{}} has to be the last command');
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              '{outlets:{}} has to be the last command');
     }
   }
 
@@ -309,26 +278,6 @@ function findStartingPositionForTargetGroup(
   return createPositionApplyingDoubleDots(target, index, nav.numberOfDoubleDots);
 }
 
-function findStartingPosition(
-    nav: Navigation, tree: UrlTree, segmentGroup: UrlSegmentGroup,
-    lastPathIndex: number): Position {
-  if (nav.isAbsolute) {
-    return new Position(tree.root, true, 0);
-  }
-
-  if (lastPathIndex === -1) {
-    // Pathless ActivatedRoute has _lastPathIndex === -1 but should not process children
-    // see issue #26224, #13011, #35687
-    // However, if the ActivatedRoute is the root we should process children like above.
-    const processChildren = segmentGroup === tree.root;
-    return new Position(segmentGroup, processChildren, 0);
-  }
-
-  const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
-  const index = lastPathIndex + modifier;
-  return createPositionApplyingDoubleDots(segmentGroup, index, nav.numberOfDoubleDots);
-}
-
 function createPositionApplyingDoubleDots(
     group: UrlSegmentGroup, index: number, numberOfDoubleDots: number): Position {
   let g = group;
@@ -339,7 +288,8 @@ function createPositionApplyingDoubleDots(
     g = g.parent!;
     if (!g) {
       throw new RuntimeError(
-          RuntimeErrorCode.INVALID_DOUBLE_DOTS, NG_DEV_MODE && 'Invalid number of \'../\'');
+          RuntimeErrorCode.INVALID_DOUBLE_DOTS,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && 'Invalid number of \'../\'');
     }
     ci = g.segments.length;
   }
@@ -389,8 +339,9 @@ function updateSegmentGroupChildren(
     const outlets = getOutlets(commands);
     const children: {[key: string]: UrlSegmentGroup} = {};
     // If the set of commands does not apply anything to the primary outlet and the child segment is
-    // an empty path primary segment on its own, we want to skip applying the commands at this
-    // level. Imagine the following config:
+    // an empty path primary segment on its own, we want to apply the commands to the empty child
+    // path rather than here. The outcome is that the empty primary child is effectively removed
+    // from the final output UrlTree. Imagine the following config:
     //
     // {path: '', children: [{path: '**', outlet: 'popup'}]}.
     //
@@ -411,8 +362,9 @@ function updateSegmentGroupChildren(
     if (!outlets[PRIMARY_OUTLET] && segmentGroup.children[PRIMARY_OUTLET] &&
         segmentGroup.numberOfChildren === 1 &&
         segmentGroup.children[PRIMARY_OUTLET].segments.length === 0) {
-      return updateSegmentGroupChildren(
-          segmentGroup.children[PRIMARY_OUTLET], startIndex, commands);
+      const childrenOfEmptyChild =
+          updateSegmentGroupChildren(segmentGroup.children[PRIMARY_OUTLET], startIndex, commands);
+      return new UrlSegmentGroup(segmentGroup.segments, childrenOfEmptyChild.children);
     }
 
     Object.entries(outlets).forEach(([outlet, commands]) => {

@@ -12,8 +12,8 @@ describe('Resolution-modifiers-example', () => {
     expect(await element.all(by.css('p')).get(1).getText()).toContain('🌿');
   });
 
-  it('shows yellow flower in host child', async () => {
-    expect(await element.all(by.css('p')).get(9).getText()).toContain('🌼');
+  it('shows tulip in host child', async () => {
+    expect(await element.all(by.css('p')).get(9).getText()).toContain('🌷');
   });
 
 });

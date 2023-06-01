@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken, ɵɵinject} from '@angular/core';
+import {inject, Injectable, InjectionToken} from '@angular/core';
 
 import {getDOM} from '../dom_adapter';
 import {DOCUMENT} from '../dom_tokens';
@@ -33,11 +33,7 @@ import {DOCUMENT} from '../dom_tokens';
  *
  * @publicApi
  */
-@Injectable({
-  providedIn: 'platform',
-  // See #23917
-  useFactory: useBrowserPlatformLocation
-})
+@Injectable({providedIn: 'platform', useFactory: () => inject(BrowserPlatformLocation)})
 export abstract class PlatformLocation {
   abstract getBaseHrefFromDOM(): string;
   abstract getState(): unknown;
@@ -69,10 +65,6 @@ export abstract class PlatformLocation {
   historyGo?(relativePosition: number): void {
     throw new Error('Not implemented');
   }
-}
-
-export function useBrowserPlatformLocation() {
-  return ɵɵinject(BrowserPlatformLocation);
 }
 
 /**
@@ -112,14 +104,14 @@ export interface LocationChangeListener {
  */
 @Injectable({
   providedIn: 'platform',
-  // See #23917
-  useFactory: createBrowserPlatformLocation,
+  useFactory: () => new BrowserPlatformLocation(),
 })
 export class BrowserPlatformLocation extends PlatformLocation {
   private _location: Location;
   private _history: History;
+  private _doc = inject(DOCUMENT);
 
-  constructor(@Inject(DOCUMENT) private _doc: any) {
+  constructor() {
     super();
     this._location = window.location;
     this._history = window.history;
@@ -167,19 +159,11 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 
   override pushState(state: any, title: string, url: string): void {
-    if (supportsState()) {
-      this._history.pushState(state, title, url);
-    } else {
-      this._location.hash = url;
-    }
+    this._history.pushState(state, title, url);
   }
 
   override replaceState(state: any, title: string, url: string): void {
-    if (supportsState()) {
-      this._history.replaceState(state, title, url);
-    } else {
-      this._location.hash = url;
-    }
+    this._history.replaceState(state, title, url);
   }
 
   override forward(): void {
@@ -197,11 +181,4 @@ export class BrowserPlatformLocation extends PlatformLocation {
   override getState(): unknown {
     return this._history.state;
   }
-}
-
-export function supportsState(): boolean {
-  return !!window.history.pushState;
-}
-export function createBrowserPlatformLocation() {
-  return new BrowserPlatformLocation(ɵɵinject(DOCUMENT));
 }

@@ -87,7 +87,6 @@ export class DirectiveSymbol extends SemanticSymbol {
   }
 }
 
-// TODO(required-inputs): add a test for this logic in `incremental_semantic_changes_spec.ts`
 function isInputMappingEqual(current: InputMapping, previous: InputMapping): boolean {
   return isInputOrOutputEqual(current, previous) && current.required === previous.required;
 }

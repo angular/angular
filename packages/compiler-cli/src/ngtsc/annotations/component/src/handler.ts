@@ -26,7 +26,7 @@ import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/a
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
-import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, validateHostDirectives, wrapFunctionExpressionsInParens,} from '../../common';
+import {combineResolvers, compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, ReferencesRegistry, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, validateHostDirectives, wrapFunctionExpressionsInParens,} from '../../common';
 import {extractDirectiveMetadata, parseFieldStringArrayValue} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
@@ -56,11 +56,17 @@ export class ComponentDecoratorHandler implements
       private usePoisonedData: boolean, private i18nNormalizeLineEndingsInICUs: boolean,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
       private cycleHandlingStrategy: CycleHandlingStrategy, private refEmitter: ReferenceEmitter,
-      private depTracker: DependencyTracker|null,
+      private referencesRegistry: ReferencesRegistry, private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
-      private hostDirectivesResolver: HostDirectivesResolver) {}
+      private hostDirectivesResolver: HostDirectivesResolver) {
+    this.extractTemplateOptions = {
+      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+      i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
+      usePoisonedData: this.usePoisonedData,
+    };
+  }
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -73,10 +79,9 @@ export class ComponentDecoratorHandler implements
   private preanalyzeTemplateCache = new Map<DeclarationNode, ParsedTemplateWithSource>();
   private preanalyzeStylesCache = new Map<DeclarationNode, string[]|null>();
 
-  private extractTemplateOptions = {
-    enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-    i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
-    usePoisonedData: this.usePoisonedData,
+  private extractTemplateOptions: {
+    enableI18nLegacyMessageIdFormat: boolean; i18nNormalizeLineEndingsInICUs: boolean;
+    usePoisonedData: boolean;
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -189,8 +194,8 @@ export class ComponentDecoratorHandler implements
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
     const directiveResult = extractDirectiveMetadata(
-        node, decorator, this.reflector, this.evaluator, this.refEmitter, this.isCore, flags,
-        this.annotateForClosureCompiler,
+        node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
+        this.isCore, flags, this.annotateForClosureCompiler,
         this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
@@ -494,10 +499,12 @@ export class ComponentDecoratorHandler implements
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
       isStandalone: analysis.meta.isStandalone,
+      isSignal: analysis.meta.isSignal,
       imports: analysis.resolvedImports,
       animationTriggerNames: analysis.animationTriggerNames,
       schemas: analysis.schemas,
       decorator: analysis.decorator,
+      assumedToExportProviders: false,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
@@ -933,10 +940,11 @@ export class ComponentDecoratorHandler implements
     const meta: R3ComponentMetadata<R3TemplateDependency> = {...analysis.meta, ...resolution};
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata = analysis.classMetadata !== null ?
         compileClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵcmp');
+    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
   }
 
   compilePartial(
@@ -956,11 +964,12 @@ export class ComponentDecoratorHandler implements
     const meta:
         R3ComponentMetadata<R3TemplateDependencyMetadata> = {...analysis.meta, ...resolution};
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
+    const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const def = compileDeclareComponentFromMetadata(meta, analysis.template, templateInfo);
     const classMetadata = analysis.classMetadata !== null ?
         compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
         null;
-    return compileResults(fac, def, classMetadata, 'ɵcmp');
+    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields);
   }
 
   /**

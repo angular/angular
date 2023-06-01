@@ -54,8 +54,7 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
    * Tracks the name of the `NgModelGroup` bound to the directive. The name corresponds
    * to a key in the parent `NgForm`.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input('ngModelGroup') override name!: string;
+  @Input('ngModelGroup') override name: string = '';
 
   constructor(
       @Host() @SkipSelf() parent: ControlContainer,

@@ -239,7 +239,6 @@ function verifySemanticsOfNgModuleDef(
   ];
   exports.forEach(verifyExportsAreDeclaredOrReExported);
   declarations.forEach(decl => verifyDeclarationIsUnique(decl, allowDuplicateDeclarationsInRoot));
-  declarations.forEach(verifyComponentEntryComponentsIsPartOfNgModule);
 
   const ngModule = getAnnotation<NgModule>(moduleType, 'NgModule');
   if (ngModule) {
@@ -250,8 +249,6 @@ function verifySemanticsOfNgModuleDef(
         });
     ngModule.bootstrap && deepForEach(ngModule.bootstrap, verifyCorrectBootstrapType);
     ngModule.bootstrap && deepForEach(ngModule.bootstrap, verifyComponentIsPartOfNgModule);
-    ngModule.entryComponents &&
-        deepForEach(ngModule.entryComponents, verifyComponentIsPartOfNgModule);
   }
 
   // Throw Error if any errors were detected.
@@ -346,17 +343,6 @@ function verifySemanticsOfNgModuleDef(
     }
   }
 
-  function verifyComponentEntryComponentsIsPartOfNgModule(type: Type<any>) {
-    type = resolveForwardRef(type);
-    if (getComponentDef(type)) {
-      // We know we are component
-      const component = getAnnotation<Component>(type, 'Component');
-      if (component && component.entryComponents) {
-        deepForEach(component.entryComponents, verifyComponentIsPartOfNgModule);
-      }
-    }
-  }
-
   function verifySemanticsOfNgModuleImport(type: Type<any>, importingModule: Type<any>) {
     type = resolveForwardRef(type);
 
@@ -438,7 +424,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
     return [type];
   }
 
-  return [...flatten(maybeUnwrapFn(ngModuleDef.exports).map((type) => {
+  return flatten(maybeUnwrapFn(ngModuleDef.exports).map((type) => {
     const ngModuleDef = getNgModuleDef(type);
     if (ngModuleDef) {
       verifySemanticsOfNgModuleDef(type as any as NgModuleType, false);
@@ -446,7 +432,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
     } else {
       return type;
     }
-  }))];
+  }));
 }
 
 /**

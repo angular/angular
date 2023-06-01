@@ -17,7 +17,7 @@ describe('MessagePort onproperties', () => {
       <script>
       window.addEventListener('message', onMessage);
       function onMessage(e) {
-        // Use the transfered port to post a message back to the main frame
+        // Use the transferred port to post a message back to the main frame
   	    e.ports[0].postMessage('Message back from the IFrame');
       }
       </script>

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
+import {invalidSkipHydrationHost, validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {hasNgSkipHydrationAttr} from '../../hydration/skip_hydration';
-import {getSerializedContainerViews, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
+import {getSerializedContainerViews, isDisconnectedNode, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -17,7 +17,7 @@ import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
+import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild, clearElementContents, createElementNode, setupStaticAttributes} from '../node_manipulation';
@@ -203,7 +203,8 @@ function locateOrCreateElementNodeImpl(
     tView: TView, lView: LView, tNode: TNode, renderer: Renderer, name: string,
     index: number): RElement {
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock();
+  const isNodeCreationMode =
+      !hydrationInfo || isInSkipHydrationBlock() || isDisconnectedNode(hydrationInfo, index);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
@@ -224,18 +225,26 @@ function locateOrCreateElementNodeImpl(
     // `<div #vcrTarget>` is represented in the DOM as `<div></div>...<!--container-->`,
     // so while processing a `<div>` instruction, point to the next sibling as a
     // start of a segment.
-    ngDevMode && validateNodeExists(native.nextSibling);
+    ngDevMode && validateNodeExists(native.nextSibling, lView, tNode);
     setSegmentHead(hydrationInfo, index, native.nextSibling);
   }
 
   // Checks if the skip hydration attribute is present during hydration so we know to
   // skip attempting to hydrate this block.
   if (hydrationInfo && hasNgSkipHydrationAttr(tNode)) {
-    enterSkipHydrationBlock(tNode);
+    if (isComponentHost(tNode)) {
+      enterSkipHydrationBlock(tNode);
 
-    // Since this isn't hydratable, we need to empty the node
-    // so there's no duplicate content after render
-    clearElementContents(renderer, native);
+      // Since this isn't hydratable, we need to empty the node
+      // so there's no duplicate content after render
+      clearElementContents(native);
+
+      ngDevMode && ngDevMode.componentsSkippedHydration++;
+    } else if (ngDevMode) {
+      // If this is not a component host, throw an error.
+      // Hydration can be skipped on per-component basis only.
+      throw invalidSkipHydrationHost(native);
+    }
   }
   return native;
 }

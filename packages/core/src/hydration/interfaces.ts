@@ -8,6 +8,22 @@
 
 import {RNode} from '../render3/interfaces/renderer_dom';
 
+
+/** Encodes that the node lookup should start from the host node of this component. */
+export const REFERENCE_NODE_HOST = 'h';
+
+/** Encodes that the node lookup should start from the document body node. */
+export const REFERENCE_NODE_BODY = 'b';
+
+/**
+ * Describes navigation steps that the runtime logic need to perform,
+ * starting from a given (known) element.
+ */
+export enum NodeNavigationStep {
+  FirstChild = 'f',
+  NextSibling = 'n',
+}
+
 /**
  * Keys within serialized view data structure to represent various
  * parts. See the `SerializedView` interface below for additional information.
@@ -15,8 +31,11 @@ import {RNode} from '../render3/interfaces/renderer_dom';
 export const ELEMENT_CONTAINERS = 'e';
 export const TEMPLATES = 't';
 export const CONTAINERS = 'c';
+export const MULTIPLIER = 'x';
 export const NUM_ROOT_NODES = 'r';
 export const TEMPLATE_ID = 'i';  // as it's also an "id"
+export const NODES = 'n';
+export const DISCONNECTED_NODES = 'd';
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -55,6 +74,24 @@ export interface SerializedView {
    * of serialized information about views within this container.
    */
   [CONTAINERS]?: Record<number, SerializedContainerView[]>;
+
+  /**
+   * Serialized information about nodes in a template.
+   * Key-value pairs where a key is an index of the corresponding
+   * DOM node in an LView and the value is a path that describes
+   * the location of this node (as a set of navigation instructions).
+   */
+  [NODES]?: Record<number, string>;
+
+  /**
+   * A list of ids which represents a set of nodes disconnected
+   * from the DOM tree at the serialization time, but otherwise
+   * present in the internal data structures.
+   *
+   * This information is used to avoid triggering the hydration
+   * logic for such nodes and instead use a regular "creation mode".
+   */
+  [DISCONNECTED_NODES]?: number[];
 }
 
 /**
@@ -78,6 +115,13 @@ export interface SerializedContainerView extends SerializedView {
    * and identify segments that belong to different views.
    */
   [NUM_ROOT_NODES]: number;
+
+  /**
+   * Number of times this view is repeated.
+   * This is used to avoid serializing and sending the same hydration
+   * information about similar views (for example, produced by *ngFor).
+   */
+  [MULTIPLIER]?: number;
 }
 
 /**
@@ -103,6 +147,19 @@ export interface DehydratedView {
    * represent either an <ng-container> or a view container.
    */
   segmentHeads?: {[index: number]: RNode|null};
+
+  /**
+   * An instance of a Set that represents nodes disconnected from
+   * the DOM tree at the serialization time, but otherwise present
+   * in the internal data structures.
+   *
+   * The Set is based on the `SerializedView[DISCONNECTED_NODES]` data
+   * and is needed to have constant-time lookups.
+   *
+   * If the value is `null`, it means that there were no disconnected
+   * nodes detected in this view at serialization time.
+   */
+  disconnectedNodes?: Set<number>|null;
 }
 
 /**

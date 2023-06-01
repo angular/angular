@@ -9,8 +9,7 @@
 import {Location} from '@angular/common';
 import {$locationShim, UrlCodec} from '@angular/common/upgrade';
 import {fakeAsync, flush, TestBed} from '@angular/core/testing';
-import {Router} from '@angular/router';
-import {RouterTestingModule} from '@angular/router/testing';
+import {Router, RouterModule} from '@angular/router';
 import {setUpLocationSync} from '@angular/router/upgrade';
 import {UpgradeModule} from '@angular/upgrade/static';
 
@@ -76,7 +75,7 @@ describe('setUpLocationSync', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes([{path: '1', children: []}, {path: '2', children: []}]),
+        RouterModule.forRoot([{path: '1', children: []}, {path: '2', children: []}]),
         UpgradeModule,
         LocationUpgradeTestModule.config(),
       ],

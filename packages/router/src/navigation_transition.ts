@@ -11,11 +11,11 @@ import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rx
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
+import {INPUT_BINDER} from './directives/router_outlet';
 import {Event, GuardsCheckEnd, GuardsCheckStart, IMPERATIVE_NAVIGATION, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
 import {isNavigationCancelingError, isRedirectingNavigationCancelingError, redirectingNavigationError} from './navigation_canceling_error';
 import {activateRoutes} from './operators/activate_routes';
-import {applyRedirects} from './operators/apply_redirects';
 import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
@@ -32,7 +32,6 @@ import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * @description
@@ -236,7 +235,6 @@ export interface Navigation {
 
 export interface NavigationTransition {
   id: number;
-  targetPageId: number;
   currentUrlTree: UrlTree;
   extractedUrl: UrlTree;
   currentRawUrl: UrlTree;
@@ -294,6 +292,7 @@ export class NavigationTransitions {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
+  private readonly inputBindingEnabled = inject(INPUT_BINDER, {optional: true}) !== null;
   navigationId = 0;
   get hasRequestedNavigation() {
     return this.navigationId !== 0;
@@ -323,8 +322,8 @@ export class NavigationTransitions {
   handleNavigationRequest(
       request: Pick<
           NavigationTransition,
-          'targetPageId'|'source'|'restoredState'|'currentUrlTree'|'currentRawUrl'|'rawUrl'|
-          'extras'|'resolve'|'reject'|'promise'|'currentSnapshot'|'currentRouterState'>) {
+          'source'|'restoredState'|'currentUrlTree'|'currentRawUrl'|'rawUrl'|'extras'|'resolve'|
+          'reject'|'promise'|'currentSnapshot'|'currentRouterState'>) {
     const id = ++this.navigationId;
     this.transitions?.next({...this.transitions.value, ...request, id});
   }
@@ -332,7 +331,6 @@ export class NavigationTransitions {
   setupNavigations(router: InternalRouterInterface): Observable<NavigationTransition> {
     this.transitions = new BehaviorSubject<NavigationTransition>({
       id: 0,
-      targetPageId: 0,
       currentUrlTree: router.currentUrlTree,
       currentRawUrl: router.currentUrlTree,
       extractedUrl: router.urlHandlingStrategy.extract(router.currentUrlTree),
@@ -393,7 +391,7 @@ export class NavigationTransitions {
                            const onSameUrlNavigation =
                                t.extras.onSameUrlNavigation ?? router.onSameUrlNavigation;
                            if (!urlTransition && onSameUrlNavigation !== 'reload') {
-                             const reason = NG_DEV_MODE ?
+                             const reason = (typeof ngDevMode === 'undefined' || ngDevMode) ?
                                  `Navigation to ${
                                      t.rawUrl} was ignored because it is the same as the current Router URL.` :
                                  '';
@@ -427,30 +425,21 @@ export class NavigationTransitions {
                                    return Promise.resolve(t);
                                  }),
 
-                                 // ApplyRedirects
-                                 applyRedirects(
-                                     this.environmentInjector, this.configLoader,
-                                     this.urlSerializer, router.config),
-
-                                 // Update the currentNavigation
-                                 // `urlAfterRedirects` is guaranteed to be set after this point
-                                 tap(t => {
-                                   this.currentNavigation = {
-                                     ...this.currentNavigation!,
-                                     finalUrl: t.urlAfterRedirects
-                                   };
-                                   overallTransitionState.urlAfterRedirects = t.urlAfterRedirects;
-                                 }),
-
                                  // Recognize
                                  recognize(
-                                     this.environmentInjector, this.rootComponentType,
-                                     router.config, this.urlSerializer,
+                                     this.environmentInjector, this.configLoader,
+                                     this.rootComponentType, router.config, this.urlSerializer,
                                      router.paramsInheritanceStrategy),
 
                                  // Update URL if in `eager` update mode
                                  tap(t => {
                                    overallTransitionState.targetSnapshot = t.targetSnapshot;
+                                   overallTransitionState.urlAfterRedirects = t.urlAfterRedirects;
+                                   this.currentNavigation = {
+                                     ...this.currentNavigation!,
+                                     finalUrl: t.urlAfterRedirects
+                                   };
+
                                    if (router.urlUpdateStrategy === 'eager') {
                                      if (!t.extras.skipLocationChange) {
                                        const rawUrl = router.urlHandlingStrategy.merge(
@@ -494,7 +483,7 @@ export class NavigationTransitions {
                               * current "settled" URL. This way the next navigation will be coming
                               * from the current URL in the browser.
                               */
-                             const reason = NG_DEV_MODE ?
+                             const reason = (typeof ngDevMode === 'undefined' || ngDevMode) ?
                                  `Navigation was ignored because the UrlHandlingStrategy` +
                                      ` indicated neither the current URL ${
                                          router.rawUrlTree} nor target URL ${
@@ -576,7 +565,7 @@ export class NavigationTransitions {
                                              router.restoreHistory(t);
                                              this.cancelNavigationTransition(
                                                  t,
-                                                 NG_DEV_MODE ?
+                                                 (typeof ngDevMode === 'undefined' || ngDevMode) ?
                                                      `At least one route resolver didn't emit any value.` :
                                                      '',
                                                  NavigationCancellationCode.NoDataFromResolver);
@@ -652,7 +641,12 @@ export class NavigationTransitions {
 
                          activateRoutes(
                              this.rootContexts, router.routeReuseStrategy,
-                             (evt: Event) => this.events.next(evt)),
+                             (evt: Event) => this.events.next(evt), this.inputBindingEnabled),
+
+                         // Ensure that if some observable used to drive the transition doesn't
+                         // complete, the navigation still finalizes This should never happen, but
+                         // this is done as a safety measure to avoid surfacing this error (#49567).
+                         take(1),
 
                          tap({
                            next: (t: NavigationTransition) => {
@@ -677,7 +671,8 @@ export class NavigationTransitions {
                             * catch-all to make sure the NavigationCancel event is fired when a
                             * navigation gets cancelled but not caught by other means. */
                            if (!completed && !errored) {
-                             const cancelationReason = NG_DEV_MODE ?
+                             const cancelationReason =
+                                 (typeof ngDevMode === 'undefined' || ngDevMode) ?
                                  `Navigation ID ${
                                      overallTransitionState
                                          .id} is not equal to the current navigation id ${

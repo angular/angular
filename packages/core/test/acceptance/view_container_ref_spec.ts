@@ -8,7 +8,7 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, Renderer2, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {ChangeDetectorRef, Compiler, Component, createComponent, createEnvironmentInjector, Directive, DoCheck, ElementRef, EmbeddedViewRef, EnvironmentInjector, ErrorHandler, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, Renderer2, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -93,7 +93,7 @@ describe('ViewContainerRef', () => {
 
       TestBed.configureTestingModule({declarations: [TestComp, VCRefDirective, HelloComp]});
       const fixture = TestBed.createComponent(TestComp);
-      const {vcref, cfr, elementRef} = fixture.componentInstance.vcRefDir;
+      const {vcref, elementRef} = fixture.componentInstance.vcRefDir;
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML)
@@ -108,7 +108,7 @@ describe('ViewContainerRef', () => {
 
       // Add a test component to the view container ref to ensure that
       // the "ng-container" comment was used as marker for the insertion.
-      vcref.createComponent(cfr.resolveComponentFactory(HelloComp));
+      vcref.createComponent(HelloComp);
       fixture.detectChanges();
 
       expect(testParent.textContent).toBe('hello');
@@ -131,11 +131,8 @@ describe('ViewContainerRef', () => {
       class TestComp {
         @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
 
-        constructor(public cfr: ComponentFactoryResolver) {}
-
         createComponent() {
-          const factory = this.cfr.resolveComponentFactory(HelloComp);
-          this.vcRef.createComponent(factory);
+          this.vcRef.createComponent(HelloComp);
         }
       }
 
@@ -201,14 +198,11 @@ describe('ViewContainerRef', () => {
             @ViewChild('svg', {read: ViewContainerRef}) svgVCRef!: ViewContainerRef;
             @ViewChild('mathml', {read: ViewContainerRef}) mathMLVCRef!: ViewContainerRef;
 
-            constructor(public cfr: ComponentFactoryResolver) {}
+            constructor() {}
 
             createDynamicComponents() {
-              const svgFactory = this.cfr.resolveComponentFactory(SvgComp);
-              this.svgVCRef.createComponent(svgFactory);
-
-              const mathMLFactory = this.cfr.resolveComponentFactory(MathMLComp);
-              this.mathMLVCRef.createComponent(mathMLFactory);
+              this.svgVCRef.createComponent(SvgComp);
+              this.mathMLVCRef.createComponent(MathMLComp);
             }
           }
 
@@ -262,16 +256,18 @@ describe('ViewContainerRef', () => {
       class TestComp {
         @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
 
-        private helloCompFactory = this.cfr.resolveComponentFactory(HelloComp);
 
-        constructor(public cfr: ComponentFactoryResolver, public injector: Injector) {}
+        constructor(public injector: EnvironmentInjector, private elementRef: ElementRef) {}
 
         createComponentViaVCRef() {
-          this.vcRef.createComponent(this.helloCompFactory);  //
+          this.vcRef.createComponent(HelloComp);
         }
 
         createComponentViaFactory() {
-          this.helloCompFactory.create(this.injector, undefined, '#factory');
+          createComponent(HelloComp, {
+            environmentInjector: this.injector,
+            hostElement: this.elementRef.nativeElement.querySelector('#factory')
+          });
         }
       }
 
@@ -1255,8 +1251,7 @@ describe('ViewContainerRef', () => {
       expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
       expect(templateExecutionCounter).toEqual(0);
 
-      const componentRef =
-          vcRefDir.vcref.createComponent(vcRefDir.cfr.resolveComponentFactory(EmbeddedComponent));
+      const componentRef = vcRefDir.vcref.createComponent(EmbeddedComponent);
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement))
           .toEqual('<p vcref=""></p><embedded-cmp>foo</embedded-cmp>');
@@ -1328,7 +1323,7 @@ describe('ViewContainerRef', () => {
       expect(templateExecutionCounter).toEqual(0);
 
       let componentRef = vcRefDir.vcref.createComponent(
-          vcRefDir.cfr.resolveComponentFactory(EmbeddedComponent), 0, someModuleRef.injector);
+          EmbeddedComponent, {index: 0, injector: someModuleRef.injector});
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement))
@@ -1336,9 +1331,8 @@ describe('ViewContainerRef', () => {
       expect(templateExecutionCounter).toEqual(2);
       expect(componentRef.instance.s).toEqual('some_module');
 
-      componentRef = vcRefDir.vcref.createComponent(
-          vcRefDir.cfr.resolveComponentFactory(EmbeddedComponent), 0, undefined, undefined,
-          appModuleRef);
+      componentRef =
+          vcRefDir.vcref.createComponent(EmbeddedComponent, {index: 0, ngModuleRef: appModuleRef});
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement))
           .toEqual(
@@ -1365,8 +1359,7 @@ describe('ViewContainerRef', () => {
       myNode.appendChild(myText2);
 
       vcRefDir.vcref.createComponent(
-          vcRefDir.cfr.resolveComponentFactory(EmbeddedComponentWithNgContent), 0, undefined,
-          [[myNode]]);
+          EmbeddedComponentWithNgContent, {index: 0, projectableNodes: [[myNode]]});
       fixture.detectChanges();
 
 
@@ -1402,8 +1395,7 @@ describe('ViewContainerRef', () => {
       myNode.appendChild(myText);
       myNode.appendChild(myText2);
 
-      vcRefDir.vcref.createComponent(
-          vcRefDir.cfr.resolveComponentFactory(Reprojector), 0, undefined, [[myNode]]);
+      vcRefDir.vcref.createComponent(Reprojector, {index: 0, projectableNodes: [[myNode]]});
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement))
@@ -1422,11 +1414,13 @@ describe('ViewContainerRef', () => {
 
       expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
 
-      vcRefDir.vcref.createComponent(
-          vcRefDir.cfr.resolveComponentFactory(EmbeddedComponentWithNgContent), 0, undefined, [
-            [document.createTextNode('1'), document.createTextNode('2')],
-            [document.createTextNode('3'), document.createTextNode('4')]
-          ]);
+      vcRefDir.vcref.createComponent(EmbeddedComponentWithNgContent, {
+        index: 0,
+        projectableNodes: [
+          [document.createTextNode('1'), document.createTextNode('2')],
+          [document.createTextNode('3'), document.createTextNode('4')]
+        ]
+      });
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement))
@@ -1456,9 +1450,7 @@ describe('ViewContainerRef', () => {
         `
       })
       class TestComp {
-        constructor(
-            public viewContainerRef: ViewContainerRef,
-            public componentFactoryResolver: ComponentFactoryResolver) {}
+        constructor(public viewContainerRef: ViewContainerRef) {}
       }
 
       @Component({selector: 'dynamic-comp', template: ''})
@@ -1472,9 +1464,8 @@ describe('ViewContainerRef', () => {
       // the component being created, because running change detection will reset Ivy's
       // namespace state which will make the test pass.
 
-      const {viewContainerRef, componentFactoryResolver} = fixture.componentInstance;
-      const componentRef = viewContainerRef.createComponent(
-          componentFactoryResolver.resolveComponentFactory(DynamicComponent));
+      const componentRef =
+          fixture.componentInstance.viewContainerRef.createComponent(DynamicComponent);
       const element = componentRef.location.nativeElement;
       expect((element.namespaceURI || '').toLowerCase()).not.toContain('svg');
     });
@@ -1494,13 +1485,13 @@ describe('ViewContainerRef', () => {
          })
          class Comp {
            @ViewChild('ref', {read: ViewContainerRef, static: true})
-           viewContainerRef?: ViewContainerRef;
+           viewContainerRef!: ViewContainerRef;
 
            ngOnInit() {
              const makeComponentFactory = (componentType: any) => ({
                create: () => TestBed.createComponent(componentType).componentRef,
              });
-             this.viewContainerRef!.createComponent(makeComponentFactory(Child) as any);
+             this.viewContainerRef.createComponent(makeComponentFactory(Child) as any);
            }
          }
 
@@ -1524,16 +1515,12 @@ describe('ViewContainerRef', () => {
 
       @Component({template: ``})
       class TestCmp {
-        constructor(
-            public viewContainerRef: ViewContainerRef,
-            public componentFactoryResolver: ComponentFactoryResolver) {}
+        constructor(public viewContainerRef: ViewContainerRef) {}
       }
 
       const fixture = TestBed.createComponent(TestCmp);
       const testCmpInstance = fixture.componentInstance;
-      const cmpFactory =
-          testCmpInstance.componentFactoryResolver.resolveComponentFactory(DynamicCmp);
-      const dynamicCmpRef = testCmpInstance.viewContainerRef.createComponent(cmpFactory);
+      const dynamicCmpRef = testCmpInstance.viewContainerRef.createComponent(DynamicCmp);
 
       // change detection didn't run at all
       expect(dynamicCmpRef.instance.doCheckCount).toBe(0);
@@ -1593,7 +1580,7 @@ describe('ViewContainerRef', () => {
       class App {
         constructor(
             public viewContainerRef: ViewContainerRef, public ngModuleRef: NgModuleRef<unknown>,
-            public injector: Injector, public cfr: ComponentFactoryResolver) {}
+            public injector: Injector) {}
       }
 
       @NgModule({
@@ -1619,15 +1606,14 @@ describe('ViewContainerRef', () => {
 
       it('should maintain connection with module injector when custom injector is provided', () => {
         const comp = fixture.componentInstance;
-        const customInjector = Injector.create({
-          providers: [
-            {provide: TOKEN_B, useValue: '[TokenB - CustomValue]'},
-          ]
-        });
+        const environmentInjector = createEnvironmentInjector(
+            [
+              {provide: TOKEN_B, useValue: '[TokenB - CustomValue]'},
+            ],
+            TestBed.inject(EnvironmentInjector));
 
         // Use factory-less way of creating a component.
-        const factorylessChildB =
-            comp.viewContainerRef.createComponent(ChildB, {injector: customInjector});
+        comp.viewContainerRef.createComponent(ChildB, {injector: environmentInjector});
         fixture.detectChanges();
 
         // Custom injector provides only `TOKEN_B`,
@@ -1636,9 +1622,7 @@ describe('ViewContainerRef', () => {
             .toContain('[TokenA - Value] [TokenB - CustomValue]');
 
         // Use factory-based API to compare the output with the factory-less one.
-        const childBFactory = comp.cfr.resolveComponentFactory(ChildB);
-        const factoryBasedChildB = comp.viewContainerRef.createComponent(
-            childBFactory, undefined, customInjector /* injector */);
+        const factoryBasedChildB = createComponent(ChildB, {environmentInjector});
         fixture.detectChanges();
 
         // Custom injector provides only `TOKEN_B`,
@@ -2128,8 +2112,7 @@ describe('ViewContainerRef', () => {
       ]);
 
       log.length = 0;
-      const componentRef =
-          vcRefDir.vcref.createComponent(vcRefDir.cfr.resolveComponentFactory(ComponentWithHooks));
+      const componentRef = vcRefDir.vcref.createComponent(ComponentWithHooks);
       expect(getElementHtml(fixture.nativeElement))
           .toEqual('<hooks vcref="">A</hooks><hooks></hooks><hooks>B</hooks>');
       expect(log).toEqual([]);
@@ -2199,8 +2182,7 @@ describe('ViewContainerRef', () => {
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toBe('');
 
-      const componentRef =
-          vcRefDir.vcref.createComponent(vcRefDir.cfr.resolveComponentFactory(HostBindingCmpt));
+      const componentRef = vcRefDir.vcref.createComponent(HostBindingCmpt);
       fixture.detectChanges();
 
       expect(fixture.nativeElement.children[0].tagName).toBe('HOST-BINDINGS');
@@ -2489,7 +2471,7 @@ describe('ViewContainerRef', () => {
 
       @Component({template: ``})
       class TestComp {
-        constructor(public vcRef: ViewContainerRef, public cfResolver: ComponentFactoryResolver) {}
+        constructor(public vcRef: ViewContainerRef) {}
       }
 
 
@@ -2498,7 +2480,7 @@ describe('ViewContainerRef', () => {
         providers: [TEST_COMPONENT_RENDERER]
       });
       const fixture = TestBed.createComponent(TestComp);
-      const {vcRef, cfResolver} = fixture.componentInstance;
+      const {vcRef} = fixture.componentInstance;
       fixture.detectChanges();
 
       expect(containerEl!.childNodes.length).toBe(2);
@@ -2506,7 +2488,7 @@ describe('ViewContainerRef', () => {
 
       expect((containerEl!.childNodes[0] as Element).tagName).toBe('DIV');
 
-      vcRef.createComponent(cfResolver.resolveComponentFactory(DynamicCompWithBindings));
+      vcRef.createComponent(DynamicCompWithBindings);
       fixture.detectChanges();
 
       expect(containerEl!.childNodes.length).toBe(3);
@@ -2521,7 +2503,7 @@ describe('ViewContainerRef', () => {
     it('should create deep DOM tree immediately for dynamically created components', () => {
       @Component({template: ``})
       class TestComp {
-        constructor(public vcRef: ViewContainerRef, public cfResolver: ComponentFactoryResolver) {}
+        constructor(public vcRef: ViewContainerRef) {}
       }
 
       @Component({selector: 'child', template: `<div>{{name}}</div>`})
@@ -2540,7 +2522,7 @@ describe('ViewContainerRef', () => {
       });
 
       const fixture = TestBed.createComponent(TestComp);
-      const {vcRef, cfResolver} = fixture.componentInstance;
+      const {vcRef} = fixture.componentInstance;
       fixture.detectChanges();
 
       expect(containerEl!.childNodes.length).toBe(2);
@@ -2548,7 +2530,7 @@ describe('ViewContainerRef', () => {
 
       expect((containerEl!.childNodes[0] as Element).tagName).toBe('DIV');
 
-      vcRef.createComponent(cfResolver.resolveComponentFactory(DynamicCompWithChildren));
+      vcRef.createComponent(DynamicCompWithChildren);
 
       expect(containerEl!.childNodes.length).toBe(3);
       expect(getElementHtml(containerEl!.childNodes[1] as Element))
@@ -2581,9 +2563,7 @@ class VCRefDirective {
 
   // Injecting the ViewContainerRef to create a dynamic container in which
   // embedded views will be created
-  constructor(
-      public vcref: ViewContainerRef, public cfr: ComponentFactoryResolver,
-      public elementRef: ElementRef) {}
+  constructor(public vcref: ViewContainerRef, public elementRef: ElementRef) {}
 
   createView(s: string, index?: number): EmbeddedViewRef<any> {
     if (!this.tplRef) {

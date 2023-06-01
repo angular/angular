@@ -9,10 +9,10 @@
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reexport} from '../../imports';
+import {Reexport, ReferenceEmitter} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
-import {ClassDeclaration, Decorator} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
@@ -31,6 +31,12 @@ export enum CompilationMode {
    * Generates code using a stable, but intermediate format suitable to be published to NPM.
    */
   PARTIAL,
+
+  /**
+   * Generates code based on each individual source file without using its
+   * dependencies (suitable for local dev edit/refresh workflow).
+   */
+  LOCAL,
 }
 
 export enum HandlerPrecedence {
@@ -255,7 +261,7 @@ export interface AnalysisOutput<A> {
  */
 export interface CompileResult {
   name: string;
-  initializer: Expression;
+  initializer: Expression|null;
   statements: Statement[];
   type: Type;
 }
@@ -272,5 +278,6 @@ export interface DtsTransform {
       (element: ts.FunctionDeclaration, imports: ImportManager): ts.FunctionDeclaration;
   transformClass?
       (clazz: ts.ClassDeclaration, elements: ReadonlyArray<ts.ClassElement>,
+       reflector: ReflectionHost, refEmitter: ReferenceEmitter,
        imports: ImportManager): ts.ClassDeclaration;
 }

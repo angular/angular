@@ -166,4 +166,23 @@ describe('ApplicationInitStatus', () => {
       }
     });
   });
+
+  describe('wrong initializers', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule(
+          {providers: [{provide: APP_INITIALIZER, useValue: 'notAnArray'}]});
+    });
+
+    it('should throw', () => {
+      try {
+        TestBed.inject(ApplicationInitStatus);
+      } catch (e: any) {
+        expect(e.message).toBe(
+            'NG0209: Unexpected type of the `APP_INITIALIZER` token value ' +
+            `(expected an array, but got string). ` +
+            'Please check that the `APP_INITIALIZER` token is configured as a ' +
+            '`multi: true` provider. Find more at https://angular.io/errors/NG0209');
+      }
+    });
+  });
 });

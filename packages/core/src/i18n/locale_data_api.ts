@@ -88,7 +88,7 @@ export function getLocaleCurrencyCode(locale: string): string|null {
  * @param locale A locale code for the locale format rules to use.
  * @returns The plural function for the locale.
  * @see `NgPlural`
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  */
 export function getLocalePluralCase(locale: string): (value: number) => number {
   const data = findLocaleData(locale);

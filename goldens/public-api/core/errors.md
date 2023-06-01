@@ -23,6 +23,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     BOOTSTRAP_COMPONENTS_NOT_FOUND = -403,
     // (undocumented)
+    COMPONENT_ID_COLLISION = -912,
+    // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
     DUPLICATE_DIRECTITVE = 309,
@@ -40,6 +42,14 @@ export const enum RuntimeErrorCode {
     HOST_DIRECTIVE_UNDEFINED_BINDING = 311,
     // (undocumented)
     HOST_DIRECTIVE_UNRESOLVABLE = 307,
+    // (undocumented)
+    HYDRATION_MISSING_NODE = -502,
+    // (undocumented)
+    HYDRATION_MISSING_SIBLINGS = -501,
+    // (undocumented)
+    HYDRATION_NODE_MISMATCH = -500,
+    // (undocumented)
+    HYDRATION_STABLE_TIMEDOUT = -506,
     // (undocumented)
     IMPORT_PROVIDERS_FROM_STANDALONE = 800,
     // (undocumented)
@@ -59,7 +69,13 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_MULTI_PROVIDER = -209,
     // (undocumented)
+    INVALID_SKIP_HYDRATION_HOST = -504,
+    // (undocumented)
+    MISSING_DOCUMENT = 210,
+    // (undocumented)
     MISSING_GENERATED_DEF = 906,
+    // (undocumented)
+    MISSING_HYDRATION_ANNOTATIONS = -505,
     // (undocumented)
     MISSING_INJECTION_CONTEXT = -203,
     // (undocumented)
@@ -91,6 +107,10 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     RENDERER_NOT_FOUND = 407,
     // (undocumented)
+    REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
+    // (undocumented)
+    SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
+    // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
     // (undocumented)
     TYPE_IS_NOT_STANDALONE = 907,
@@ -107,7 +127,11 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNSAFE_VALUE_IN_SCRIPT = 905,
     // (undocumented)
-    VIEW_ALREADY_ATTACHED = 902
+    UNSUPPORTED_PROJECTION_DOM_NODES = -503,
+    // (undocumented)
+    VIEW_ALREADY_ATTACHED = 902,
+    // (undocumented)
+    VIEW_ALREADY_DESTROYED = 911
 }
 
 // (No @packageDocumentation comment for this package)

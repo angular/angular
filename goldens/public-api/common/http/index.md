@@ -1782,7 +1782,7 @@ export class HttpHeaderResponse extends HttpResponseBase {
 // @public
 export class HttpHeaders {
     constructor(headers?: string | {
-        [name: string]: string | string[];
+        [name: string]: string | number | (string | number)[];
     });
     append(name: string, value: string | string[]): HttpHeaders;
     delete(name: string, value?: string | string[]): HttpHeaders;
@@ -1917,7 +1917,7 @@ export class HttpRequest<T> {
     readonly params: HttpParams;
     readonly reportProgress: boolean;
     readonly responseType: 'arraybuffer' | 'blob' | 'json' | 'text';
-    serializeBody(): ArrayBuffer | Blob | FormData | string | null;
+    serializeBody(): ArrayBuffer | Blob | FormData | URLSearchParams | string | null;
     // (undocumented)
     readonly url: string;
     readonly urlWithParams: string;

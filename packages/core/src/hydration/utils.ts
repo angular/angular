@@ -11,12 +11,12 @@ import {Injector} from '../di/injector';
 import {ViewRef} from '../linker/view_ref';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
-import {isRootView} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
+import {isLContainer, isRootView} from '../render3/interfaces/type_checks';
+import {HEADER_OFFSET, HOST, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 
-import {CONTAINERS, DehydratedView, ELEMENT_CONTAINERS, NUM_ROOT_NODES, SerializedContainerView, SerializedView} from './interfaces';
+import {CONTAINERS, DehydratedView, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NUM_ROOT_NODES, SerializedContainerView, SerializedView} from './interfaces';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -142,6 +142,13 @@ export function getComponentLViewForHydration(viewRef: ViewRef): LView|null {
   if (isRootView(lView)) {
     lView = lView[HEADER_OFFSET];
   }
+
+  // If a `ViewContainerRef` was injected in a component class, this resulted
+  // in an LContainer creation at that location. In this case, the component
+  // LView is in the LContainer's `HOST` slot.
+  if (isLContainer(lView)) {
+    lView = lView[HOST];
+  }
   return lView;
 }
 
@@ -260,7 +267,21 @@ export function calcSerializedContainerSize(hydrationInfo: DehydratedView, index
   const views = getSerializedContainerViews(hydrationInfo, index) ?? [];
   let numNodes = 0;
   for (let view of views) {
-    numNodes += view[NUM_ROOT_NODES];
+    numNodes += view[NUM_ROOT_NODES] * (view[MULTIPLIER] ?? 1);
   }
   return numNodes;
+}
+
+/**
+ * Checks whether a node is annotated as "disconnected", i.e. not present
+ * in the DOM at serialization time. We should not attempt hydration for
+ * such nodes and instead, use a regular "creation mode".
+ */
+export function isDisconnectedNode(hydrationInfo: DehydratedView, index: number): boolean {
+  // Check if we are processing disconnected info for the first time.
+  if (typeof hydrationInfo.disconnectedNodes === 'undefined') {
+    const nodeIds = hydrationInfo.data[DISCONNECTED_NODES];
+    hydrationInfo.disconnectedNodes = nodeIds ? (new Set(nodeIds)) : null;
+  }
+  return !!hydrationInfo.disconnectedNodes?.has(index);
 }

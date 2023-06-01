@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 // #docregion activated-route-and-parammap
 import { ActivatedRoute, ParamMap } from '@angular/router';
 // #enddocregion activated-route-and-parammap
@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent {
 // #docregion subscribe
   username$ = this.route.paramMap
     .pipe(
@@ -21,7 +21,5 @@ export class ProfileComponent implements OnInit {
 // #docregion activatedroute
   constructor(private route: ActivatedRoute) { }
 // #enddocregion activatedroute
-  ngOnInit() {
-  }
 
 }

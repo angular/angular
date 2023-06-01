@@ -64,7 +64,12 @@ esbuild(
     minify = True,
     platform = "browser",
     splitting = False,
-    target = "esnext",
+    # todo(aleksanderbodurri): here we target es2020 explicitly.
+    # We do this because of a bug caused by https://github.com/evanw/esbuild/issues/2950 and an Angular v16 change
+    # to how angular static properties are attached to class constructors.
+    # Targeting esnext or es2022 will cause the static initializer blocks that attach these static properties on class
+    # constructors to reference a class constructor variable that they do not have access to.
+    target = "es2020",
     deps = LINKER_PROCESSED_FW_PACKAGES + [":src"],
 )
 
@@ -76,7 +81,12 @@ esbuild(
     minify = True,
     platform = "browser",
     splitting = False,
-    target = "esnext",
+    # todo(aleksanderbodurri): here we target es2020 explicitly.
+    # We do this because of a bug caused by https://github.com/evanw/esbuild/issues/2950 and an Angular v16 change
+    # to how angular static properties are attached to class constructors.
+    # Targeting esnext or es2022 will cause the static initializer blocks that attach these static properties on class
+    # constructors to reference a class constructor variable that they do not have access to.
+    target = "es2020",
     deps = [":devtools"],
 )
 

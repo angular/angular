@@ -9,7 +9,6 @@ ts_library(
         exclude = ["*.spec.ts"],
     ),
     deps = [
-        "@npm//@types/xregexp",
         "@npm//xregexp",
     ],
 )

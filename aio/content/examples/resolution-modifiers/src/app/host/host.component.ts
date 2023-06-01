@@ -7,7 +7,7 @@ import { FlowerService } from '../flower.service';
   templateUrl: './host.component.html',
   styleUrls: ['./host.component.css'],
   //  provide the service
-  providers: [{ provide: FlowerService, useValue: { emoji: '🌼' } }]
+  providers: [{ provide: FlowerService, useValue: { emoji: '🌷' } }]
 })
 export class HostComponent {
   // use @Host() in the constructor when injecting the service

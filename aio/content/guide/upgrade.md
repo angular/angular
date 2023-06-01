@@ -1215,7 +1215,7 @@ If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manual
         <code-example language="javascript">
 
         export default {
-          input: 'node_modules/&commat;angular/core/fesm2015/core.js',
+          input: 'node_modules/&commat;angular/core/fesm2022/core.js',
           output: {
             file: 'bundle.js',
             format: 'umd',

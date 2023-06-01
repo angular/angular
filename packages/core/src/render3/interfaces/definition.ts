@@ -105,6 +105,20 @@ export interface DirectiveDef<T> {
   readonly inputs: {[P in keyof T]: string};
 
   /**
+   * A dictionary mapping the private names of inputs to their transformation functions.
+   * Note: the private names are used for the keys, rather than the public ones, because public
+   * names can be re-aliased in host directives which would invalidate the lookup.
+   */
+  readonly inputTransforms: {[classPropertyName: string]: InputTransformFunction}|null;
+
+  /**
+   * Contains the raw input information produced by the compiler. Can be
+   * used to do further processing after the `inputs` have been inverted.
+   */
+  readonly inputConfig:
+      {[classPropertyName: string]: string|[string, string, InputTransformFunction?]};
+
+  /**
    * @deprecated This is only here because `NgOnChanges` incorrectly uses declared name instead of
    * public or minified name.
    */
@@ -194,6 +208,11 @@ export interface DirectiveDef<T> {
    * Whether this directive (or component) is standalone.
    */
   readonly standalone: boolean;
+
+  /**
+   * Whether this directive (or component) uses the signals authoring experience.
+   */
+  readonly signals: boolean;
 
   /**
    * Factory function used to create a new directive instance. Will be null initially.
@@ -306,6 +325,9 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
 
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;
+
+  /** Whether or not this component is signal-based. */
+  readonly signals: boolean;
 
   /**
    * Registry of directives and components that may be found in this view.
@@ -451,6 +473,8 @@ export interface ComponentDefFeature {
   ngInherit?: true;
 }
 
+/** Function that can be used to transform incoming input values. */
+export type InputTransformFunction = (value: any) => any;
 
 /**
  * Type used for directiveDefs on component definition.

@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationConfig as ApplicationConfigFromCore, ApplicationModule, ApplicationRef, createPlatformFactory, CSP_NONCE, ErrorHandler, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalCreateApplication as internalCreateApplication, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
+import {APP_ID, ApplicationConfig as ApplicationConfigFromCore, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalCreateApplication as internalCreateApplication, ɵRuntimeError as RuntimeError, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from './browser/testability';
@@ -16,9 +16,9 @@ import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
-import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
+import {SharedStylesHost} from './dom/shared_styles_host';
+import {RuntimeErrorCode} from './errors';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * Set of config options available during the application bootstrap operation.
@@ -175,8 +175,8 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
  * `BrowserModule` presence itself, since the standalone-based bootstrap just imports
  * `BrowserModule` providers without referencing the module itself.
  */
-const BROWSER_MODULE_PROVIDERS_MARKER =
-    new InjectionToken(NG_DEV_MODE ? 'BrowserModule Providers Marker' : '');
+const BROWSER_MODULE_PROVIDERS_MARKER = new InjectionToken(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'BrowserModule Providers Marker' : '');
 
 const TESTABILITY_PROVIDERS = [
   {
@@ -207,9 +207,10 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
   DomRendererFactory2, SharedStylesHost, EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
-  {provide: DomSharedStylesHost, useExisting: SharedStylesHost},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
-  NG_DEV_MODE ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} : []
+  (typeof ngDevMode === 'undefined' || ngDevMode) ?
+      {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} :
+      []
 ];
 
 /**
@@ -228,10 +229,11 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
 export class BrowserModule {
   constructor(@Optional() @SkipSelf() @Inject(BROWSER_MODULE_PROVIDERS_MARKER)
               providersAlreadyPresent: boolean|null) {
-    if (NG_DEV_MODE && providersAlreadyPresent) {
-      throw new Error(
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && providersAlreadyPresent) {
+      throw new RuntimeError(
+          RuntimeErrorCode.BROWER_MODULE_ALREADY_LOADED,
           `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
-          `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`);
+              `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`);
     }
   }
 

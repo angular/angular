@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {ApplicationRef, Component, DoCheck, NgModule, OnInit, TestabilityRegistry} from '@angular/core';
 import {getTestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -34,6 +35,7 @@ describe('ApplicationRef bootstrap', () => {
     declarations: [HelloWorldComponent],
     bootstrap: [HelloWorldComponent],
     imports: [BrowserModule],
+    providers: [{provide: DOCUMENT, useFactory: () => document}]
   })
   class MyAppModule {
   }

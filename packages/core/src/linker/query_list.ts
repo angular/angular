@@ -92,6 +92,8 @@ export class QueryList<T> implements Iterable<T> {
    * See
    * [Array.filter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
    */
+  filter<S extends T>(predicate: (value: T, index: number, array: readonly T[]) => value is S): S[];
+  filter(predicate: (value: T, index: number, array: readonly T[]) => unknown): T[];
   filter(fn: (item: T, index: number, array: T[]) => boolean): T[] {
     return this._results.filter(fn);
   }

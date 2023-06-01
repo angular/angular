@@ -16,7 +16,7 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^16.13.0 || >=18.10.0"
+    "node": "^16.14.0 || >=18.10.0"
   },
   "repository": {
     "type": "git",
@@ -30,12 +30,11 @@
     "save": "devDependencies"
   },
   "sideEffects": [
-    "./esm2020/init/**",
-    "./fesm2015/init.mjs",
-    "./fesm2020/init.mjs"
+    "./esm2022/init/**",
+    "./fesm2022/init.mjs"
   ],
   "dependencies": {
-    "@babel/core": "7.19.3",
+    "@babel/core": "7.21.8",
     "glob": "8.1.0",
     "yargs": "^17.2.1"
   },

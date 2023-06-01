@@ -7,7 +7,8 @@
  */
 
 import {computed, signal, untracked} from '@angular/core/src/signals';
-import {effect, effectsDone as flush, resetEffects} from '@angular/core/src/signals/src/effect';
+
+import {flushEffects, resetEffects, testingEffect} from './effect_util';
 
 describe('non-reactive reads', () => {
   afterEach(() => {
@@ -43,74 +44,62 @@ describe('non-reactive reads', () => {
     expect(untracked(double)).toEqual(4);
   });
 
-  it('should not make surrounding effect depend on the signal', async () => {
+  it('should not make surrounding effect depend on the signal', () => {
     const s = signal(1);
 
     const runLog: number[] = [];
-    effect(() => {
+    testingEffect(() => {
       runLog.push(untracked(s));
     });
 
     // an effect will run at least once
-    await flush();
+    flushEffects();
     expect(runLog).toEqual([1]);
 
     // subsequent signal changes should not trigger effects as signal is untracked
     s.set(2);
-    await flush();
+    flushEffects();
     expect(runLog).toEqual([1]);
   });
 
-  it('should schedule effects on dependencies (computed) change', async () => {
+  it('should schedule on dependencies (computed) change', () => {
     const count = signal(0);
     const double = computed(() => count() * 2);
 
     let runLog: number[] = [];
-    const effectRef = effect(() => {
+    testingEffect(() => {
       runLog.push(double());
     });
 
-    await flush();
+    flushEffects();
     expect(runLog).toEqual([0]);
 
     count.set(1);
-    await flush();
-    expect(runLog).toEqual([0, 2]);
-
-    effectRef.destroy();
-    count.set(2);
-    await flush();
+    flushEffects();
     expect(runLog).toEqual([0, 2]);
   });
 
-  it('should non-reactively read all signals accessed inside untrack', async () => {
+  it('should non-reactively read all signals accessed inside untrack', () => {
     const first = signal('John');
     const last = signal('Doe');
 
     let runLog: string[] = [];
-    const effectRef = effect(() => {
+    const effectRef = testingEffect(() => {
       untracked(() => runLog.push(`${first()} ${last()}`));
     });
 
     // effects run at least once
-    await flush();
+    flushEffects();
     expect(runLog).toEqual(['John Doe']);
 
     // change one of the signals - should not update as not read reactively
     first.set('Patricia');
-    await flush();
+    flushEffects();
     expect(runLog).toEqual(['John Doe']);
 
     // change one of the signals - should not update as not read reactively
     last.set('Garcia');
-    await flush();
-    expect(runLog).toEqual(['John Doe']);
-
-    // destroy effect, should not respond to changes
-    effectRef.destroy();
-    first.set('Robert');
-    last.set('Smith');
-    await flush();
+    flushEffects();
     expect(runLog).toEqual(['John Doe']);
   });
 });

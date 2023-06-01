@@ -62,12 +62,12 @@ import {assertComponentDef} from './errors';
  * @param component Component class reference.
  * @param options Set of options to use:
  *  * `environmentInjector`: An `EnvironmentInjector` instance to be used for the component, see
- * additional info about it at https://angular.io/guide/standalone-components#environment-injectors.
+ * additional info about it [here](/guide/standalone-components#environment-injectors).
  *  * `hostElement` (optional): A DOM node that should act as a host node for the component. If not
  * provided, Angular creates one based on the tag name used in the component selector (and falls
  * back to using `div` if selector doesn't have tag name info).
- *  * `elementInjector` (optional): An `ElementInjector` instance, see additional info about it at
- * https://angular.io/guide/hierarchical-dependency-injection#elementinjector.
+ *  * `elementInjector` (optional): An `ElementInjector` instance, see additional info about it
+ * [here](/guide/hierarchical-dependency-injection#elementinjector).
  *  * `projectableNodes` (optional): A list of DOM nodes that should be projected through
  *                      [`<ng-content>`](api/core/ng-content) of the new component instance.
  * @returns ComponentRef instance that represents a given Component.
@@ -120,6 +120,11 @@ export interface ComponentMirror<C> {
    * Note: an extra flag, not present in `ComponentFactory`.
    */
   get isStandalone(): boolean;
+  /**
+   * // TODO(signals): Remove internal and add public documentation
+   * @internal
+   */
+  get isSignal(): boolean;
 }
 
 /**
@@ -184,6 +189,9 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|
     },
     get isStandalone(): boolean {
       return componentDef.standalone;
+    },
+    get isSignal(): boolean {
+      return componentDef.signals;
     },
   };
 }

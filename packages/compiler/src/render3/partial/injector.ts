@@ -10,6 +10,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {createInjectorType, R3InjectorMetadata} from '../r3_injector_compiler';
 import {R3CompiledExpression} from '../util';
 import {DefinitionMap} from '../view/util';
+
 import {R3DeclareInjectorMetadata} from './api';
 
 /**
@@ -41,7 +42,7 @@ function createInjectorDefinitionMap(meta: R3InjectorMetadata):
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
   definitionMap.set('ngImport', o.importExpr(R3.core));
 
-  definitionMap.set('type', meta.internalType);
+  definitionMap.set('type', meta.type.value);
   definitionMap.set('providers', meta.providers);
   if (meta.imports.length > 0) {
     definitionMap.set('imports', o.literalArr(meta.imports));

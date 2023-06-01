@@ -1,1 +1,1 @@
-Module.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [StandaloneCmp] });
+Module.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});

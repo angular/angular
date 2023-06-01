@@ -118,6 +118,7 @@ export {
   ɵɵi18nPostprocess,
   ɵɵi18nStart,
   ɵɵInheritDefinitionFeature,
+  ɵɵInputTransformsFeature,
   ɵɵinjectAttribute,
   ɵɵInjectorDeclaration,
   ɵɵinvalidFactory,
@@ -219,7 +220,6 @@ export {
 export {
   setDocument as ɵsetDocument
 } from './render3/interfaces/document';
-export { getComponentDef as ɵgetComponentDef} from './render3/definition';
 export {
   compileComponent as ɵcompileComponent,
   compileDirective as ɵcompileDirective,

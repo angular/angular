@@ -32,7 +32,7 @@ import {Injector, JsonFileReporter, MeasureValues, Options, SampleDescription} f
           }
         }
       ];
-      return Injector.create(providers).get<JsonFileReporter>(JsonFileReporter);
+      return Injector.create({providers}).get<JsonFileReporter>(JsonFileReporter);
     }
 
     it('should write all data into a file', done => {

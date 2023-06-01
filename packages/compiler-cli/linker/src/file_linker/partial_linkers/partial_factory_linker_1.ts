@@ -40,7 +40,6 @@ export function toR3FactoryMeta<TExpression>(
   return {
     name: typeName,
     type: wrapReference(typeExpr.getOpaque()),
-    internalType: metaObj.getOpaque('type'),
     typeArgumentCount: 0,
     target: parseEnum(metaObj.getValue('target'), FactoryTarget),
     deps: getDependencies(metaObj, 'deps'),

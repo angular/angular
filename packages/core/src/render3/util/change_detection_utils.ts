@@ -9,7 +9,7 @@
 import {assertDefined} from '../../util/assert';
 import {getComponentViewByInstance} from '../context_discovery';
 import {detectChanges} from '../instructions/change_detection';
-import {markViewDirty} from '../instructions/shared';
+import {markViewDirty} from '../instructions/mark_view_dirty';
 
 import {getRootComponents} from './discovery_utils';
 

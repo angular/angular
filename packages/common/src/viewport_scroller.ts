@@ -209,8 +209,7 @@ function findAnchorFromDocument(document: Document, target: string): HTMLElement
   // `getElementById` and `getElementsByName` won't pierce through the shadow DOM so we
   // have to traverse the DOM manually and do the lookup through the shadow roots.
   if (typeof document.createTreeWalker === 'function' && document.body &&
-      ((document.body as any).createShadowRoot ||
-       typeof document.body.attachShadow === 'function')) {
+      typeof document.body.attachShadow === 'function') {
     const treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
     let currentNode = treeWalker.currentNode as HTMLElement | null;
 

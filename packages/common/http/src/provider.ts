@@ -55,12 +55,12 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * feature functions to `provideHttpClient`. For example, HTTP interceptors can be added using the
  * `withInterceptors(...)` feature.
  *
- * @see withInterceptors
- * @see withInterceptorsFromDi
- * @see withXsrfConfiguration
- * @see withNoXsrfProtection
- * @see withJsonpSupport
- * @see withRequestsMadeViaParent
+ * @see {@link withInterceptors}
+ * @see {@link withInterceptorsFromDi}
+ * @see {@link withXsrfConfiguration}
+ * @see {@link withNoXsrfProtection}
+ * @see {@link withJsonpSupport}
+ * @see {@link withRequestsMadeViaParent}
  */
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
     EnvironmentProviders {
@@ -101,8 +101,8 @@ export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
  * Adds one or more functional-style HTTP interceptors to the configuration of the `HttpClient`
  * instance.
  *
- * @see HttpInterceptorFn
- * @see provideHttpClient
+ * @see {@link HttpInterceptorFn}
+ * @see {@link provideHttpClient}
  * @publicApi
  */
 export function withInterceptors(interceptorFns: HttpInterceptorFn[]):
@@ -125,9 +125,9 @@ const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>('LEGACY_INTE
  * Prefer `withInterceptors` and functional interceptors instead, as support for DI-provided
  * interceptors may be phased out in a later release.
  *
- * @see HttpInterceptor
- * @see HTTP_INTERCEPTORS
- * @see provideHttpClient
+ * @see {@link HttpInterceptor}
+ * @see {@link HTTP_INTERCEPTORS}
+ * @see {@link provideHttpClient}
  */
 export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInterceptors> {
   // Note: the legacy interceptor function is provided here via an intermediate token
@@ -153,7 +153,7 @@ export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInte
  *
  * This feature is incompatible with the `withNoXsrfProtection` feature.
  *
- * @see provideHttpClient
+ * @see {@link provideHttpClient}
  */
 export function withXsrfConfiguration(
     {cookieName, headerName}: {cookieName?: string, headerName?: string}):
@@ -174,7 +174,7 @@ export function withXsrfConfiguration(
  *
  * This feature is incompatible with the `withXsrfConfiguration` feature.
  *
- * @see provideHttpClient
+ * @see {@link provideHttpClient}
  */
 export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtection> {
   return makeHttpFeature(HttpFeatureKind.NoXsrfProtection, [
@@ -188,7 +188,7 @@ export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtec
 /**
  * Add JSONP support to the configuration of the current `HttpClient` instance.
  *
- * @see provideHttpClient
+ * @see {@link provideHttpClient}
  */
 export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
   return makeHttpFeature(HttpFeatureKind.JsonpSupport, [
@@ -215,7 +215,7 @@ export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
  * "bubble up" until either reaching the root level or an `HttpClient` which was not configured with
  * this option.
  *
- * @see provideHttpClient
+ * @see {@link provideHttpClient}
  * @developerPreview
  */
 export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.RequestsMadeViaParent> {

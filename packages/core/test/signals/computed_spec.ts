@@ -142,7 +142,8 @@ describe('computed', () => {
         },
         () => {
           watchCount++;
-        });
+        },
+        false);
 
     watch.run();
     expect(watchCount).toEqual(0);
@@ -162,5 +163,15 @@ describe('computed', () => {
     // expecting another notification at this point
     source.set('d');
     expect(watchCount).toEqual(2);
+  });
+
+  it('should disallow writing to signals within computeds', () => {
+    const source = signal(0);
+    const illegal = computed(() => {
+      source.set(1);
+      return 0;
+    });
+
+    expect(illegal).toThrow();
   });
 });

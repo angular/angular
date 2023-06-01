@@ -229,7 +229,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
-  private readonly preloadLinkChecker = inject(PreloadLinkCreator);
+  private readonly preloadLinkCreator = inject(PreloadLinkCreator);
 
   // a LCP image observer - should be injected only in the dev mode
   private lcpObserver = ngDevMode ? this.injector.get(LCPImageObserver) : null;
@@ -451,7 +451,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     }
 
     if (this.isServer && this.priority) {
-      this.preloadLinkChecker.createPreloadLinkTag(
+      this.preloadLinkCreator.createPreloadLinkTag(
           this.renderer, rewrittenSrc, rewrittenSrcset, this.sizes);
     }
   }
@@ -793,8 +793,20 @@ function assertNoImageDistortion(
     dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
   const removeListenerFn = renderer.listen(img, 'load', () => {
     removeListenerFn();
-    const renderedWidth = img.clientWidth;
-    const renderedHeight = img.clientHeight;
+    const computedStyle = window.getComputedStyle(img);
+    let renderedWidth = parseFloat(computedStyle.getPropertyValue('width'));
+    let renderedHeight = parseFloat(computedStyle.getPropertyValue('height'));
+    const boxSizing = computedStyle.getPropertyValue('box-sizing');
+
+    if (boxSizing === 'border-box') {
+      const paddingTop = computedStyle.getPropertyValue('padding-top');
+      const paddingRight = computedStyle.getPropertyValue('padding-right');
+      const paddingBottom = computedStyle.getPropertyValue('padding-bottom');
+      const paddingLeft = computedStyle.getPropertyValue('padding-left');
+      renderedWidth -= parseFloat(paddingRight) + parseFloat(paddingLeft);
+      renderedHeight -= parseFloat(paddingTop) + parseFloat(paddingBottom);
+    }
+
     const renderedAspectRatio = renderedWidth / renderedHeight;
     const nonZeroRenderedDimensions = renderedWidth !== 0 && renderedHeight !== 0;
 
@@ -822,8 +834,10 @@ function assertNoImageDistortion(
           `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the image does not match ` +
               `the aspect ratio indicated by the width and height attributes. ` +
               `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
-              `(aspect-ratio: ${intrinsicAspectRatio}). \nSupplied width and height attributes: ` +
-              `${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${suppliedAspectRatio}). ` +
+              `(aspect-ratio: ${
+                  round(intrinsicAspectRatio)}). \nSupplied width and height attributes: ` +
+              `${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${
+                  round(suppliedAspectRatio)}). ` +
               `\nTo fix this, update the width and height attributes.`));
     } else if (stylingDistortion) {
       console.warn(formatRuntimeError(
@@ -831,9 +845,9 @@ function assertNoImageDistortion(
           `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the rendered image ` +
               `does not match the image's intrinsic aspect ratio. ` +
               `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
-              `(aspect-ratio: ${intrinsicAspectRatio}). \nRendered image size: ` +
+              `(aspect-ratio: ${round(intrinsicAspectRatio)}). \nRendered image size: ` +
               `${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ` +
-              `${renderedAspectRatio}). \nThis issue can occur if "width" and "height" ` +
+              `${round(renderedAspectRatio)}). \nThis issue can occur if "width" and "height" ` +
               `attributes are added to an image without updating the corresponding ` +
               `image styling. To fix this, adjust image styling. In most cases, ` +
               `adding "height: auto" or "width: auto" to the image styling will fix ` +
@@ -999,4 +1013,9 @@ function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: I
             `which means that the loaderParams data will not be consumed and will not affect the URL. ` +
             `To fix this, provide a custom loader or remove the \`loaderParams\` attribute from the image.`));
   }
+}
+
+
+function round(input: number): number|string {
+  return Number.isInteger(input) ? input : input.toFixed(2);
 }

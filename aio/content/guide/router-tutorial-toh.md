@@ -1858,13 +1858,11 @@ Write a `canActivate()` guard method to redirect anonymous users to the login pa
 
 Create a new file named `auth.guard.ts` in the `auth` folder. The `auth.guard.ts` file will contain the `authGuard` function.
 
-<!-- TODO(atscott): update schematics to generate functional guards
 <code-example format="shell" language="shell">
 
 ng generate guard auth/auth
 
 </code-example>
- -->
 
 To demonstrate the fundamentals, this example only logs to the console, returns `true` immediately, and lets navigation proceed:
 
@@ -2017,13 +2015,11 @@ It returns an `Observable` that resolves when the user eventually decides what t
 
 Create a guard that checks for the presence of a `canDeactivate()` method in a component —any component.
 
-<!-- TODO: Update CLI schematic for guards
 <code-example format="shell" language="shell">
 
 ng generate guard can-deactivate
 
 </code-example>
--->
 
 Paste the following code into your guard.
 
@@ -2080,13 +2076,11 @@ A `crisisDetailResolver` could retrieve a `Crisis` or navigate away, if the `Cri
 
 Create a `crisis-detail-resolver.ts` file within the `Crisis Center` feature area. This file will contain the `crisisDetailResolver` function.
 
-<!-- TODO: Update CLI schematic for resolvers
 <code-example format="shell" language="shell">
 
-ng generate service crisis-center/crisis-detail-resolver
+ng generate resolver crisis-center/crisis-detail-resolver
 
 </code-example>
- -->
 
 <code-example header="src/app/crisis-center/crisis-detail-resolver.ts" path="router/src/app/crisis-center/crisis-detail-resolver.1.ts"></code-example>
 

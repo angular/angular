@@ -34,9 +34,6 @@ export interface AfterViewInit {
     ngAfterViewInit(): void;
 }
 
-// @public @deprecated
-export const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
-
 // @public
 export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
 
@@ -56,6 +53,7 @@ export interface ApplicationConfig {
 
 // @public
 export class ApplicationInitStatus {
+    constructor();
     // (undocumented)
     readonly done = false;
     // (undocumented)
@@ -90,6 +88,7 @@ export class ApplicationRef {
     detachView(viewRef: ViewRef): void;
     get injector(): EnvironmentInjector;
     readonly isStable: Observable<boolean>;
+    onDestroy(callback: () => void): VoidFunction;
     tick(): void;
     get viewCount(): number;
     // (undocumented)
@@ -100,6 +99,9 @@ export class ApplicationRef {
 
 // @public (undocumented)
 export function asNativeElements(debugEls: DebugElement[]): any;
+
+// @public
+export function assertInInjectionContext(debugFn: Function): void;
 
 // @public
 export function assertPlatform(requiredToken: any): PlatformRef;
@@ -118,6 +120,9 @@ export interface AttributeDecorator {
     // (undocumented)
     new (name: string): Attribute;
 }
+
+// @public
+export function booleanAttribute(value: unknown): boolean;
 
 // @public
 export interface BootstrapOptions {
@@ -190,10 +195,9 @@ export interface Component extends Directive {
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
-    // @deprecated
-    entryComponents?: Array<Type<any> | any[]>;
     imports?: (Type<any> | ReadonlyArray<any>)[];
     interpolation?: [string, string];
+    // @deprecated
     moduleId?: string;
     preserveWhitespaces?: boolean;
     schemas?: SchemaMetadata[];
@@ -267,7 +271,7 @@ export abstract class ComponentRef<C> {
 }
 
 // @public
-export function computed<T>(computation: () => T, equal?: ValueEqualityFn<T>): Signal<T>;
+export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T>;
 
 // @public
 export interface ConstructorProvider extends ConstructorSansProvider {
@@ -331,6 +335,18 @@ export function createComponent<C>(component: Type<C>, options: {
 }): ComponentRef<C>;
 
 // @public
+export interface CreateComputedOptions<T> {
+    equal?: ValueEqualityFn<T>;
+}
+
+// @public
+export interface CreateEffectOptions {
+    allowSignalWrites?: boolean;
+    injector?: Injector;
+    manualCleanup?: boolean;
+}
+
+// @public
 export function createEnvironmentInjector(providers: Array<Provider | EnvironmentProviders>, parent: EnvironmentInjector, debugName?: string | null): EnvironmentInjector;
 
 // @public
@@ -344,6 +360,11 @@ export function createPlatform(injector: Injector): PlatformRef;
 
 // @public
 export function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;
+
+// @public
+export interface CreateSignalOptions<T> {
+    equal?: ValueEqualityFn<T>;
+}
 
 // @public
 export const CSP_NONCE: InjectionToken<string | null>;
@@ -445,7 +466,7 @@ export function destroyPlatform(): void;
 
 // @public
 export abstract class DestroyRef {
-    abstract onDestroy(callback: () => void): void;
+    abstract onDestroy(callback: () => void): () => void;
 }
 
 // @public
@@ -459,7 +480,12 @@ export interface Directive {
         inputs?: string[];
         outputs?: string[];
     })[];
-    inputs?: string[];
+    inputs?: ({
+        name: string;
+        alias?: string;
+        required?: boolean;
+        transform?: (value: any) => any;
+    } | string)[];
     jit?: true;
     outputs?: string[];
     providers?: Provider[];
@@ -491,14 +517,15 @@ export interface DoCheck {
 }
 
 // @public
-export interface Effect {
-    readonly consumer: Consumer;
-    destroy(): void;
-    schedule(): void;
-}
+export function effect(effectFn: (onCleanup: EffectCleanupRegisterFn) => void, options?: CreateEffectOptions): EffectRef;
 
 // @public
-export function effect(effectFn: () => void): Effect;
+export type EffectCleanupFn = () => void;
+
+// @public
+export interface EffectRef {
+    destroy(): void;
+}
 
 // @public
 export class ElementRef<T = any> {
@@ -797,7 +824,9 @@ export interface InjectorType<T> extends Type<T> {
 
 // @public
 export interface Input {
-    bindingPropertyName?: string;
+    alias?: string;
+    required?: boolean;
+    transform?: (value: any) => any;
 }
 
 // @public (undocumented)
@@ -805,16 +834,16 @@ export const Input: InputDecorator;
 
 // @public (undocumented)
 export interface InputDecorator {
-    (bindingPropertyName?: string): any;
+    (arg?: string | Input): any;
     // (undocumented)
-    new (bindingPropertyName?: string): any;
+    new (arg?: string | Input): any;
 }
 
 // @public
 export function isDevMode(): boolean;
 
 // @public
-export function isSignal(value: Function): value is Signal<unknown>;
+export function isSignal(value: unknown): value is Signal<unknown>;
 
 // @public
 export function isStandalone(type: Type<unknown>): boolean;
@@ -857,8 +886,6 @@ export class IterableDiffers {
     // (undocumented)
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
     static extend(factories: IterableDifferFactory[]): StaticProvider;
-    // @deprecated (undocumented)
-    factories: IterableDifferFactory[];
     // (undocumented)
     find(iterable: any): IterableDifferFactory;
     // (undocumented)
@@ -916,6 +943,9 @@ export const LOCALE_ID: InjectionToken<string>;
 export function makeEnvironmentProviders(providers: (Provider | EnvironmentProviders)[]): EnvironmentProviders;
 
 // @public
+export function makeStateKey<T = void>(key: string): StateKey<T>;
+
+// @public
 export function mergeApplicationConfig(...configs: ApplicationConfig[]): ApplicationConfig;
 
 // @public
@@ -952,8 +982,6 @@ export type NgIterable<T> = Array<T> | Iterable<T>;
 export interface NgModule {
     bootstrap?: Array<Type<any> | any[]>;
     declarations?: Array<Type<any> | any[]>;
-    // @deprecated
-    entryComponents?: Array<Type<any> | any[]>;
     exports?: Array<Type<any> | any[]>;
     id?: string;
     imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
@@ -1028,7 +1056,16 @@ export class NgZone {
 }
 
 // @public
+export interface NgZoneOptions {
+    eventCoalescing?: boolean;
+    runCoalescing?: boolean;
+}
+
+// @public
 export const NO_ERRORS_SCHEMA: SchemaMetadata;
+
+// @public
+export function numberAttribute(value: unknown, fallbackValue?: number): number;
 
 // @public
 export interface OnChanges {
@@ -1061,7 +1098,7 @@ export interface OptionalDecorator {
 
 // @public
 export interface Output {
-    bindingPropertyName?: string;
+    alias?: string;
 }
 
 // @public (undocumented)
@@ -1069,9 +1106,9 @@ export const Output: OutputDecorator;
 
 // @public
 export interface OutputDecorator {
-    (bindingPropertyName?: string): any;
+    (alias?: string): any;
     // (undocumented)
-    new (bindingPropertyName?: string): any;
+    new (alias?: string): any;
 }
 
 // @public
@@ -1136,6 +1173,9 @@ export type Provider = TypeProvider | ValueProvider | ClassProvider | Constructo
 export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
 
 // @public
+export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;
+
+// @public
 export interface Query {
     // (undocumented)
     descendants: boolean;
@@ -1166,7 +1206,9 @@ export class QueryList<T> implements Iterable<T> {
     destroy(): void;
     // (undocumented)
     readonly dirty = true;
-    filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
+    filter<S extends T>(predicate: (value: T, index: number, array: readonly T[]) => value is S): S[];
+    // (undocumented)
+    filter(predicate: (value: T, index: number, array: readonly T[]) => unknown): T[];
     find(fn: (item: T, index: number, array: T[]) => boolean): T | undefined;
     // (undocumented)
     readonly first: T;
@@ -1189,34 +1231,6 @@ export class QueryList<T> implements Iterable<T> {
 
 // @public
 export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> | null;
-
-// @public @deprecated
-export abstract class ReflectiveInjector implements Injector {
-    abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
-    static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector): ReflectiveInjector;
-    // (undocumented)
-    abstract get(token: any, notFoundValue?: any): any;
-    abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
-    abstract get parent(): Injector | null;
-    static resolve(providers: Provider[]): ResolvedReflectiveProvider[];
-    static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector;
-    abstract resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
-    abstract resolveAndInstantiate(provider: Provider): any;
-}
-
-// @public @deprecated
-export class ReflectiveKey {
-    constructor(token: Object, id: number);
-    // (undocumented)
-    readonly displayName: string;
-    static get(token: Object): ReflectiveKey;
-    // (undocumented)
-    id: number;
-    // (undocumented)
-    static get numberOfKeys(): number;
-    // (undocumented)
-    token: Object;
-}
 
 // @public
 export abstract class Renderer2 {
@@ -1270,22 +1284,6 @@ export interface RendererType2 {
 }
 
 // @public
-export class ResolvedReflectiveFactory {
-    constructor(
-    factory: Function,
-    dependencies: ReflectiveDependency[]);
-    dependencies: ReflectiveDependency[];
-    factory: Function;
-}
-
-// @public
-export interface ResolvedReflectiveProvider {
-    key: ReflectiveKey;
-    multiProvider: boolean;
-    resolvedFactories: ResolvedReflectiveFactory[];
-}
-
-// @public
 export function resolveForwardRef<T>(type: T): T;
 
 // @public
@@ -1336,22 +1334,15 @@ export interface SelfDecorator {
 }
 
 // @public
-export interface SettableSignal<T> extends Signal<T> {
-    mutate(mutatorFn: (value: T) => void): void;
-    set(value: T): void;
-    update(updateFn: (value: T) => T): void;
-}
-
-// @public
 export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
 export type Signal<T> = (() => T) & {
-    [SIGNAL]: true;
+    [SIGNAL]: unknown;
 };
 
 // @public
-export function signal<T>(initialValue: T, equal?: ValueEqualityFn<T>): SettableSignal<T>;
+export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
 
 // @public
 export class SimpleChange {
@@ -1384,6 +1375,12 @@ export interface SkipSelfDecorator {
     // (undocumented)
     new (): SkipSelf;
 }
+
+// @public
+export type StateKey<T> = string & {
+    __not_a_string: never;
+    __value_type?: T;
+};
 
 // @public
 export interface StaticClassProvider extends StaticClassSansProvider {
@@ -1446,6 +1443,19 @@ export interface TrackByFunction<T> {
 }
 
 // @public
+export class TransferState {
+    get<T>(key: StateKey<T>, defaultValue: T): T;
+    hasKey<T>(key: StateKey<T>): boolean;
+    get isEmpty(): boolean;
+    onSerialize<T>(key: StateKey<T>, callback: () => T): void;
+    remove<T>(key: StateKey<T>): void;
+    set<T>(key: StateKey<T>, value: T): void;
+    toJson(): string;
+    // (undocumented)
+    static ɵprov: unknown;
+}
+
+// @public
 export const TRANSLATIONS: InjectionToken<string>;
 
 // @public
@@ -1465,6 +1475,8 @@ export interface TypeDecorator {
     <T extends Type<any>>(type: T): T;
     // (undocumented)
     (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
+    // (undocumented)
+    (target: unknown, context: unknown): void;
 }
 
 // @public
@@ -1583,7 +1595,15 @@ export enum ViewEncapsulation {
 export abstract class ViewRef extends ChangeDetectorRef {
     abstract destroy(): void;
     abstract get destroyed(): boolean;
-    abstract onDestroy(callback: Function): any /** TODO #9100, replace by void in a major release*/;
+    abstract onDestroy(callback: Function): void;
+}
+
+// @public
+export interface WritableSignal<T> extends Signal<T> {
+    asReadonly(): Signal<T>;
+    mutate(mutatorFn: (value: T) => void): void;
+    set(value: T): void;
+    update(updateFn: (value: T) => T): void;
 }
 
 // @public

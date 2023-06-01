@@ -10,7 +10,6 @@ ts_library(
         "//packages:types",
         "//packages/core",
         "//packages/core/src/di/interface",
-        "@npm//reflect-metadata",
     ],
 )
 

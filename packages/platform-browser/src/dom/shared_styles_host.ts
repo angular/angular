@@ -147,8 +147,7 @@ export class SharedStylesHost implements OnDestroy {
       const styleEl = this.doc.createElement('style');
 
       if (this.nonce) {
-        // Uses a keyed write to avoid issues with property minification.
-        styleEl['nonce'] = this.nonce;
+        styleEl.setAttribute('nonce', this.nonce);
       }
 
       styleEl.textContent = style;
@@ -181,12 +180,4 @@ export class SharedStylesHost implements OnDestroy {
     // Re-add the head element back since this is the default host.
     hostNodes.add(this.doc.head);
   }
-}
-
-/**
- * Interm G3 workaround for usages of private `DomSharedStylesHost`.
- * TODO(alanagius): delete once all usages in G3 are removed.
- */
-@Injectable()
-export class DomSharedStylesHost extends SharedStylesHost {
 }

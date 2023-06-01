@@ -9,15 +9,15 @@
 import {EnvironmentInjector, Injectable, NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Observable, of} from 'rxjs';
-import {delay, tap} from 'rxjs/operators';
+import {delay, map, tap} from 'rxjs/operators';
 
-import {applyRedirects} from '../src/apply_redirects';
 import {Route, Routes} from '../src/models';
+import {recognize} from '../src/recognize';
 import {RouterConfigLoader} from '../src/router_config_loader';
 import {DefaultUrlSerializer, equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
 
-describe('applyRedirects', () => {
+describe('redirects', () => {
   const serializer = new DefaultUrlSerializer();
   let testModule: NgModuleRef<unknown>;
 
@@ -72,11 +72,15 @@ describe('applyRedirects', () => {
   });
 
   it('should throw when cannot handle a positional parameter', () => {
-    applyRedirects(testModule.injector, null!, serializer, tree('/a/1'), [
-      {path: 'a/:id', redirectTo: 'a/:other'}
-    ]).subscribe(() => {}, (e) => {
-      expect(e.message).toContain('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
-    });
+    recognize(
+        testModule.injector, null!, null,
+        [
+          {path: 'a/:id', redirectTo: 'a/:other'},
+        ],
+        tree('/a/1'), serializer)
+        .subscribe(() => {}, (e) => {
+          expect(e.message).toContain('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
+        });
   });
 
   it('should pass matrix parameters', () => {
@@ -213,7 +217,7 @@ describe('applyRedirects', () => {
       },
       {path: 'doesNotMatch', providers: []},
     ];
-    applyRedirects(testModule.injector, null!, serializer, tree('a/b/c'), routes).subscribe({
+    recognize(testModule.injector, null!, null, routes, tree('a/b/c'), serializer).subscribe({
       next: () => {
         throw 'Should not be reached';
       },
@@ -247,7 +251,7 @@ describe('applyRedirects', () => {
         providers: [],
       }
     ];
-    applyRedirects(testModule.injector, null!, serializer, tree('a'), routes).subscribe({
+    recognize(testModule.injector, null!, null, routes, tree('a'), serializer).subscribe({
       next: () => {
         // The 'a' segment matched, so we needed to create the injector for the `Route`
         expect(getProvidersInjector(routes[0])).toBeDefined();
@@ -276,9 +280,9 @@ describe('applyRedirects', () => {
       const config: Routes =
           [{path: 'a', component: ComponentA, loadChildren: jasmine.createSpy('children')}];
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
-          .forEach(r => {
-            expectTreeToBe(r, '/a/b');
+      recognize(testModule.injector, <any>loader, null, config, tree('a/b'), serializer)
+          .forEach(({tree}) => {
+            expectTreeToBe(tree, '/a/b');
             expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
           });
     });
@@ -290,7 +294,7 @@ describe('applyRedirects', () => {
       const config =
           [{path: 'a', component: ComponentA, loadChildren: jasmine.createSpy('children')}];
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
+      recognize(testModule.injector, <any>loader, null, config, tree('a/b'), serializer)
           .subscribe(() => {}, (e) => {
             expect(e.message).toEqual('Loading Error');
           });
@@ -312,9 +316,9 @@ describe('applyRedirects', () => {
         loadChildren: jasmine.createSpy('children')
       }];
 
-      applyRedirects(
-          TestBed.inject(EnvironmentInjector), <any>loader, serializer, tree('a/b'), config)
-          .forEach(r => {
+      recognize(
+          TestBed.inject(EnvironmentInjector), <any>loader, null, config, tree('a/b'), serializer)
+          .forEach(({tree: r}) => {
             expectTreeToBe(r, '/a/b');
           });
     });
@@ -335,8 +339,8 @@ describe('applyRedirects', () => {
         loadChildren: jasmine.createSpy('children')
       }];
 
-      applyRedirects(
-          TestBed.inject(EnvironmentInjector), <any>loader, serializer, tree('a/b'), config)
+      recognize(
+          TestBed.inject(EnvironmentInjector), <any>loader, null, config, tree('a/b'), serializer)
           .subscribe(
               () => {
                 throw 'Should not reach';
@@ -363,8 +367,8 @@ describe('applyRedirects', () => {
         loadChildren: jasmine.createSpy('children')
       }];
 
-      applyRedirects(
-          TestBed.inject(EnvironmentInjector), <any>loader, serializer, tree('a/b'), config)
+      recognize(
+          TestBed.inject(EnvironmentInjector), <any>loader, null, config, tree('a/b'), serializer)
           .subscribe(
               () => {
                 throw 'Should not reach';
@@ -390,10 +394,10 @@ describe('applyRedirects', () => {
         loadChildren: jasmine.createSpy('children')
       }];
 
-      applyRedirects(
-          TestBed.inject(EnvironmentInjector), <any>loader, serializer, tree('a/b'), config)
+      recognize(
+          TestBed.inject(EnvironmentInjector), <any>loader, null, config, tree('a/b'), serializer)
           .subscribe(
-              (r) => {
+              ({tree: r}) => {
                 expectTreeToBe(r, '/a/b');
               },
               (e) => {
@@ -424,10 +428,10 @@ describe('applyRedirects', () => {
         loadChildren: jasmine.createSpy('children')
       }];
 
-      applyRedirects(
-          TestBed.inject(EnvironmentInjector), <any>loader, serializer, tree('a/b'), config)
+      recognize(
+          TestBed.inject(EnvironmentInjector), <any>loader, null, config, tree('a/b'), serializer)
           .subscribe(
-              (r) => {
+              ({tree: r}) => {
                 expectTreeToBe(r, '/a/b');
                 expect(passedUrlSegments.length).toBe(2);
                 expect(passedUrlSegments[0].path).toBe('a');
@@ -464,9 +468,9 @@ describe('applyRedirects', () => {
         loadChildren: jasmine.createSpy('children')
       }];
 
-      applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
+      recognize(<any>injector, <any>loader, null, config, tree('a/b'), serializer)
           .subscribe(
-              (r) => {
+              ({tree: r}) => {
                 expectTreeToBe(r, '/a/b');
                 expect(passedUrlSegments.length).toBe(2);
                 expect(passedUrlSegments[0].path).toBe('a');
@@ -492,10 +496,11 @@ describe('applyRedirects', () => {
         {path: 'a', loadChildren: jasmine.createSpy('children')}
       ];
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
-        expectTreeToBe(r, 'a');
-        expect(getLoadedRoutes(config[1])).toBe(loadedConfig.routes);
-      });
+      recognize(testModule.injector, <any>loader, null, config, tree(''), serializer)
+          .forEach(({tree: r}) => {
+            expectTreeToBe(r, 'a');
+            expect(getLoadedRoutes(config[1])).toBe(loadedConfig.routes);
+          });
     });
 
     it('should load the configuration only once', () => {
@@ -515,12 +520,12 @@ describe('applyRedirects', () => {
 
       const config: Routes = [{path: 'a', loadChildren: jasmine.createSpy('children')}];
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree('a?k1'), config)
+      recognize(testModule.injector, <any>loader, null, config, tree('a?k1'), serializer)
           .subscribe(r => {});
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree('a?k2'), config)
+      recognize(testModule.injector, <any>loader, null, config, tree('a?k2'), serializer)
           .subscribe(
-              r => {
+              ({tree: r}) => {
                 expectTreeToBe(r, 'a?k2');
                 expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
               },
@@ -541,8 +546,8 @@ describe('applyRedirects', () => {
 
       const config: Routes = [{path: '**', loadChildren: jasmine.createSpy('children')}];
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => {
+      recognize(testModule.injector, <any>loader, null, config, tree('xyz'), serializer)
+          .forEach(({tree: r}) => {
             expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
           });
     });
@@ -562,12 +567,13 @@ describe('applyRedirects', () => {
         {path: '**', loadChildren: jasmine.createSpy('children')},
       ];
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
-        expect(loader.loadChildren.calls.count()).toEqual(1);
-        expect(loader.loadChildren.calls.first().args).not.toContain(jasmine.objectContaining({
-          loadChildren: jasmine.createSpy('children')
-        }));
-      });
+      recognize(testModule.injector, <any>loader, null, config, tree(''), serializer)
+          .forEach(({tree: r}) => {
+            expect(loader.loadChildren.calls.count()).toEqual(1);
+            expect(loader.loadChildren.calls.first().args).not.toContain(jasmine.objectContaining({
+              loadChildren: jasmine.createSpy('children')
+            }));
+          });
     });
 
     it('should load the configuration after a local redirect from a wildcard route', () => {
@@ -585,8 +591,8 @@ describe('applyRedirects', () => {
         {path: '**', redirectTo: 'not-found'}
       ];
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => {
+      recognize(testModule.injector, <any>loader, null, config, tree('xyz'), serializer)
+          .forEach(({tree: r}) => {
             expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
           });
     });
@@ -606,8 +612,8 @@ describe('applyRedirects', () => {
         {path: '**', redirectTo: '/not-found'}
       ];
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => {
+      recognize(testModule.injector, <any>loader, null, config, tree('xyz'), serializer)
+          .forEach(({tree: r}) => {
             expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
           });
     });
@@ -636,7 +642,8 @@ describe('applyRedirects', () => {
            {path: '', loadChildren: jasmine.createSpy('aux'), outlet: 'popup'}
          ];
 
-         applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).subscribe();
+         recognize(testModule.injector, <any>loader, null, config, tree(''), serializer)
+             .subscribe();
          expect(loadCalls).toBe(1);
          tick(100);
          expect(loaded).toEqual(['root']);
@@ -668,18 +675,18 @@ describe('applyRedirects', () => {
            {path: '**', loadChildren: jasmine.createSpy('children')},
          ];
 
-         applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz/a'), config)
+         recognize(testModule.injector, <any>loader, null, config, tree('xyz/a'), serializer)
              .subscribe();
          expect(loadCalls).toBe(1);
          tick(50);
          expect(loaded).toEqual([]);
-         applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz/b'), config)
+         recognize(testModule.injector, <any>loader, null, config, tree('xyz/b'), serializer)
              .subscribe();
          tick(50);
          expect(loaded).toEqual(['children']);
          expect(loadCalls).toBe(2);
          tick(200);
-         applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz/c'), config)
+         recognize(testModule.injector, <any>loader, null, config, tree('xyz/c'), serializer)
              .subscribe();
          tick(50);
          expect(loadCalls).toBe(2);
@@ -708,7 +715,7 @@ describe('applyRedirects', () => {
         {path: 'a', loadChildren: jasmine.createSpy('second')}
       ];
 
-      applyRedirects(testModule.injector, <any>loader, serializer, tree('a'), config).subscribe();
+      recognize(testModule.injector, <any>loader, null, config, tree('a'), serializer).subscribe();
       expect(loadCalls).toBe(1);
       expect(loaded).toEqual(['first']);
     });
@@ -740,7 +747,8 @@ describe('applyRedirects', () => {
            {path: '', loadChildren: jasmine.createSpy('root')},
          ];
 
-         applyRedirects(testModule.injector, <any>loader, serializer, tree('(popup:modal)'), config)
+         recognize(
+             testModule.injector, <any>loader, null, config, tree('(popup:modal)'), serializer)
              .subscribe();
          tick(auxDelay);
          tick(rootDelay);
@@ -795,7 +803,7 @@ describe('applyRedirects', () => {
         {path: '', redirectTo: 'a', pathMatch: 'full'}
       ];
 
-      applyRedirects(testModule.injector, null!, serializer, tree('b'), config)
+      recognize(testModule.injector, null!, null, config, tree('b'), serializer)
           .subscribe(
               (_) => {
                 throw 'Should not be reached';
@@ -954,7 +962,7 @@ describe('applyRedirects', () => {
           },
           {path: 'c', component: ComponentC}
         ];
-        applyRedirects(testModule.injector, null!, serializer, tree('/b'), config)
+        recognize(testModule.injector, null!, null, config, tree('/b'), serializer)
             .subscribe(
                 (_) => {
                   throw 'Should not be reached';
@@ -1047,7 +1055,7 @@ describe('applyRedirects', () => {
           ]
         }];
 
-        applyRedirects(testModule.injector, null!, serializer, tree('a/(d//aux:e)'), config)
+        recognize(testModule.injector, null!, null, config, tree('a/(d//aux:e)'), serializer)
             .subscribe(
                 (_) => {
                   throw 'Should not be reached';
@@ -1085,9 +1093,10 @@ describe('applyRedirects', () => {
     });
 
     it('should error when no children matching and some url is left', () => {
-      applyRedirects(
-          testModule.injector, null!, serializer, tree('/a/c'),
-          [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}])
+      recognize(
+          testModule.injector, null!, null,
+          [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
+          tree('/a/c'), serializer)
           .subscribe(
               (_) => {
                 throw 'Should not be reached';
@@ -1122,8 +1131,8 @@ describe('applyRedirects', () => {
 
   describe('multiple matches with empty path named outlets', () => {
     it('should work with redirects when other outlet comes before the one being activated', () => {
-      applyRedirects(
-          testModule.injector, null!, serializer, tree(''),
+      recognize(
+          testModule.injector, null!, null,
           [
             {
               path: '',
@@ -1134,9 +1143,10 @@ describe('applyRedirects', () => {
                 {path: 'b', component: ComponentB},
               ],
             },
-          ])
+          ],
+          tree(''), serializer)
           .subscribe(
-              (tree: UrlTree) => {
+              ({tree}) => {
                 expect(tree.toString()).toEqual('/b(aux:b)');
                 expect(tree.root.children['primary'].toString()).toEqual('b');
                 expect(tree.root.children['aux']).toBeDefined();
@@ -1149,8 +1159,8 @@ describe('applyRedirects', () => {
 
     it('should prevent empty named outlets from appearing in leaves, resulting in odd tree url',
        () => {
-         applyRedirects(
-             testModule.injector, null!, serializer, tree(''),
+         recognize(
+             testModule.injector, null!, null,
              [
                {
                  path: '',
@@ -1160,9 +1170,10 @@ describe('applyRedirects', () => {
                    {path: 'b', component: ComponentB},
                  ],
                },
-             ])
+             ],
+             tree(''), serializer)
              .subscribe(
-                 (tree: UrlTree) => {
+                 ({tree}) => {
                    expect(tree.toString()).toEqual('/b');
                  },
                  () => {
@@ -1172,14 +1183,15 @@ describe('applyRedirects', () => {
 
 
     it('should work when entry point is named outlet', () => {
-      applyRedirects(
-          testModule.injector, null!, serializer, tree('(popup:modal)'),
+      recognize(
+          testModule.injector, null!, null,
           [
             {path: '', component: ComponentA},
             {path: 'modal', component: ComponentB, outlet: 'popup'},
-          ])
+          ],
+          tree('(popup:modal)'), serializer)
           .subscribe(
-              (tree: UrlTree) => {
+              ({tree}) => {
                 expect(tree.toString()).toEqual('/(popup:modal)');
               },
               (e) => {
@@ -1213,11 +1225,12 @@ describe('applyRedirects', () => {
     });
 
     it('should throw when using non-absolute redirects', () => {
-      applyRedirects(
-          testModule.injector, null!, serializer, tree('a'),
+      recognize(
+          testModule.injector, null!, null,
           [
             {path: 'a', redirectTo: 'b(aux:c)'},
-          ])
+          ],
+          tree('a'), serializer)
           .subscribe(
               () => {
                 throw new Error('should not be reached');
@@ -1236,17 +1249,24 @@ describe('applyRedirects', () => {
       config.push({path: 'no_match', component: ComponentB});
     }
     config.push({path: 'match', component: ComponentA});
-    applyRedirects(testModule.injector, null!, serializer, tree('match'), config).forEach(r => {
+    recognize(testModule.injector, null!, null, config, tree('match'), serializer).forEach(({
+                                                                                             tree: r
+                                                                                           }) => {
       expectTreeToBe(r, 'match');
     });
   });
 });
 
 function checkRedirect(config: Routes, url: string, callback: any): void {
-  applyRedirects(
-      TestBed.inject(EnvironmentInjector), null!, new DefaultUrlSerializer(), tree(url), config)
-      .subscribe(callback, e => {
-        throw e;
+  recognize(
+      TestBed.inject(EnvironmentInjector), TestBed.inject(RouterConfigLoader), null, config,
+      tree(url), new DefaultUrlSerializer())
+      .pipe(map(result => result.tree))
+      .subscribe({
+        next: callback,
+        error: e => {
+          throw e;
+        }
       });
 }
 

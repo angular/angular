@@ -1,13 +1,16 @@
+// #docregion import-resources-for-details
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { HousingService } from '../housing.service';
 import { HousingLocation } from '../housinglocation';
+// #enddocregion
 
 @Component({
   selector: 'app-details',
   standalone: true,
   imports: [CommonModule],
+  // #docregion update-details-template
   template: `
     <article>
       <img class="listing-photo" [src]="housingLocation?.photo"
@@ -26,8 +29,10 @@ import { HousingLocation } from '../housinglocation';
       </section>
     </article>
   `,
+  // #enddocregion
   styleUrls: ['./details.component.css'],
 })
+// #docregion get-housing-details
 export class DetailsComponent {
 
   route: ActivatedRoute = inject(ActivatedRoute);
@@ -40,3 +45,4 @@ export class DetailsComponent {
   }
 
 }
+// #enddocregion

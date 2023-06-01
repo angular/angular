@@ -244,9 +244,13 @@ function replaceBootstrapCallExpression(
 
     // Push the providers after `importProvidersFrom` call for better readability.
     combinedProviders.push(...providers);
+
+    const providersArray = ts.factory.createNodeArray(
+        combinedProviders,
+        analysis.metadata.properties.hasTrailingComma && combinedProviders.length > 2);
     const initializer = remapDynamicImports(
         sourceFile.fileName,
-        ts.factory.createArrayLiteralExpression(combinedProviders, combinedProviders.length > 1));
+        ts.factory.createArrayLiteralExpression(providersArray, combinedProviders.length > 1));
 
     args.push(ts.factory.createObjectLiteralExpression(
         [ts.factory.createPropertyAssignment('providers', initializer)], true));

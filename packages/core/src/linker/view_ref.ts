@@ -33,12 +33,12 @@ export abstract class ViewRef extends ChangeDetectorRef {
    * @param callback A handler function that cleans up developer-defined data
    * associated with a view. Called when the `destroy()` method is invoked.
    */
-  abstract onDestroy(callback: Function): any /** TODO #9100, replace by void in a major release*/;
+  abstract onDestroy(callback: Function): void;
 }
 
 /**
  * Represents an Angular [view](guide/glossary#view) in a view container.
- * An [embedded view](guide/glossary#view-tree) can be referenced from a component
+ * An [embedded view](guide/glossary#view-hierarchy) can be referenced from a component
  * other than the hosting component whose template defines it, or it can be defined
  * independently by a `TemplateRef`.
  *

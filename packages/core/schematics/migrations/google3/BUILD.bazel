@@ -5,7 +5,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
-        "//packages/core/schematics/migrations/relative-link-resolution",
+        "//packages/core/schematics/migrations/guard-and-resolve-interfaces",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
@@ -14,10 +14,10 @@ ts_library(
 )
 
 esbuild(
-    name = "relative_link_resolution_cjs",
-    entry_point = ":relativeLinkResolutionRule.ts",
+    name = "guard_and_resolve_interfaces_cjs",
+    entry_point = ":guardAndResolveInterfacesRule.ts",
     format = "cjs",
-    output = "relativeLinkResolutionCjsRule.js",
+    output = "guardAndResolveInterfacesCjsRule.js",
     platform = "node",
     deps = [":google3"],
 )
@@ -34,7 +34,7 @@ esbuild(
 filegroup(
     name = "google3_cjs",
     srcs = [
-        ":relative_link_resolution_cjs",
+        ":guard_and_resolve_interfaces_cjs",
         ":wait_for_async_rule_cjs",
     ],
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],

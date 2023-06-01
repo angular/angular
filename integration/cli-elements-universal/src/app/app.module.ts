@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { APP_ID, CUSTOM_ELEMENTS_SCHEMA, Inject, Injector, NgModule, PLATFORM_ID } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Inject, Injector, NgModule, PLATFORM_ID } from '@angular/core';
 import { createCustomElement } from '@angular/elements';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';

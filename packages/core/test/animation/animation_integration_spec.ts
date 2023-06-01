@@ -8,7 +8,7 @@
 import {animate, animateChild, animation, AnimationEvent, AnimationMetadata, AnimationOptions, AUTO_STYLE, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
-import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild, ViewContainerRef} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -907,6 +907,56 @@ describe('animation tests', function() {
              new Map<string, string|number>([['offset', 0], ['opacity', '0']]),
              new Map<string, string|number>([['offset', 1], ['opacity', '1']])
            ]);
+         }));
+
+      it('should trigger a leave animation when the inner has ViewContainerRef injected',
+         fakeAsync(() => {
+           @Component({
+             selector: 'parent-cmp',
+             template: `
+             <child-cmp *ngIf="exp"></child-cmp>
+           `
+           })
+           class ParentCmp {
+             public exp = true;
+           }
+
+           @Component({
+             selector: 'child-cmp',
+             template: '...',
+             animations: [trigger(
+                 'host',
+                 [transition(':leave', [style({opacity: 1}), animate(1000, style({opacity: 0}))])])]
+           })
+           class ChildCmp {
+             @HostBinding('@host') public hostAnimation = true;
+             constructor(private vcr: ViewContainerRef) {}
+           }
+
+           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+
+           const engine = TestBed.inject(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(ParentCmp);
+           const cmp = fixture.componentInstance;
+           fixture.detectChanges();
+           engine.flush();
+           expect(getLog().length).toEqual(0);
+
+           cmp.exp = false;
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement.children.length).toBe(1);
+
+           engine.flush();
+           expect(getLog().length).toEqual(1);
+
+           const [player] = getLog();
+           expect(player.keyframes).toEqual([
+             new Map<string, string|number>([['opacity', '1'], ['offset', 0]]),
+             new Map<string, string|number>([['opacity', '0'], ['offset', 1]]),
+           ]);
+
+           player.finish();
+           expect(fixture.debugElement.nativeElement.children.length).toBe(0);
          }));
 
       it('should trigger a leave animation when the inner components host binding updates',
@@ -4262,7 +4312,7 @@ describe('animation tests', function() {
 
 
     function syntheticPropError(name: string, nameKind: string) {
-      return `Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
+      return `NG05105: Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
   - Either \`BrowserAnimationsModule\` or \`NoopAnimationsModule\` are imported in your application.
   - There is corresponding configuration for the animation named \`${
           name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`;

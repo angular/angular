@@ -127,7 +127,7 @@ export abstract class EnvironmentInjector implements Injector {
   /**
    * @internal
    */
-  abstract onDestroy(callback: () => void): void;
+  abstract onDestroy(callback: () => void): () => void;
 }
 
 export class R3Injector extends EnvironmentInjector {
@@ -199,7 +199,11 @@ export class R3Injector extends EnvironmentInjector {
       for (const service of this._ngOnDestroyHooks) {
         service.ngOnDestroy();
       }
-      for (const hook of this._onDestroyHooks) {
+      const onDestroyHooks = this._onDestroyHooks;
+      // Reset the _onDestroyHooks array before iterating over it to prevent hooks that unregister
+      // themselves from mutating the array during iteration.
+      this._onDestroyHooks = [];
+      for (const hook of onDestroyHooks) {
         hook();
       }
     } finally {
@@ -207,12 +211,13 @@ export class R3Injector extends EnvironmentInjector {
       this.records.clear();
       this._ngOnDestroyHooks.clear();
       this.injectorDefTypes.clear();
-      this._onDestroyHooks.length = 0;
     }
   }
 
-  override onDestroy(callback: () => void): void {
+  override onDestroy(callback: () => void): () => void {
+    this.assertNotDestroyed();
     this._onDestroyHooks.push(callback);
+    return () => this.removeOnDestroy(callback);
   }
 
   override runInContext<ReturnT>(fn: () => ReturnT): ReturnT {
@@ -396,6 +401,13 @@ export class R3Injector extends EnvironmentInjector {
       return providedIn === 'any' || (this.scopes.has(providedIn));
     } else {
       return this.injectorDefTypes.has(providedIn);
+    }
+  }
+
+  private removeOnDestroy(callback: () => void): void {
+    const destroyCBIdx = this._onDestroyHooks.indexOf(callback);
+    if (destroyCBIdx !== -1) {
+      this._onDestroyHooks.splice(destroyCBIdx, 1);
     }
   }
 }

@@ -54,6 +54,9 @@
     "name": "BaseControlValueAccessor"
   },
   {
+    "name": "BehaviorSubject"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -153,6 +156,9 @@
     "name": "DefaultValueAccessor"
   },
   {
+    "name": "DistinctUntilChangedSubscriber"
+  },
+  {
     "name": "DomAdapter"
   },
   {
@@ -160,9 +166,6 @@
   },
   {
     "name": "DomRendererFactory2"
-  },
-  {
-    "name": "DomSharedStylesHost"
   },
   {
     "name": "EMPTY_ARRAY"
@@ -177,10 +180,10 @@
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
-    "name": "ERROR_ORIGINAL_ERROR"
+    "name": "EVENT_MANAGER_PLUGINS"
   },
   {
-    "name": "EVENT_MANAGER_PLUGINS"
+    "name": "EffectManager"
   },
   {
     "name": "ElementRef"
@@ -232,6 +235,9 @@
   },
   {
     "name": "INTERNAL_APPLICATION_ERROR_HANDLER"
+  },
+  {
+    "name": "InitialRenderPendingTasks"
   },
   {
     "name": "InjectFlags"
@@ -297,12 +303,6 @@
     "name": "NG_COMP_DEF"
   },
   {
-    "name": "NG_DEV_MODE4"
-  },
-  {
-    "name": "NG_DEV_MODE5"
-  },
-  {
     "name": "NG_DIR_DEF"
   },
   {
@@ -336,16 +336,13 @@
     "name": "NG_TEMPLATE_SELECTOR"
   },
   {
-    "name": "NG_TEMP_TOKEN_PATH"
-  },
-  {
-    "name": "NG_TOKEN_PATH"
-  },
-  {
     "name": "NG_VALIDATORS"
   },
   {
     "name": "NG_VALUE_ACCESSOR"
+  },
+  {
+    "name": "NOOP_CLEANUP_FN"
   },
   {
     "name": "NOT_FOUND"
@@ -358,9 +355,6 @@
   },
   {
     "name": "NO_CHANGE"
-  },
-  {
-    "name": "NO_NEW_LINE"
   },
   {
     "name": "NO_PARENT_INJECTOR"
@@ -432,9 +426,6 @@
     "name": "Optional"
   },
   {
-    "name": "PARAMETERS"
-  },
-  {
     "name": "PLATFORM_DESTROY_LISTENERS"
   },
   {
@@ -445,9 +436,6 @@
   },
   {
     "name": "PRESERVE_HOST_CONTENT"
-  },
-  {
-    "name": "PRESERVE_HOST_CONTENT_DEFAULT"
   },
   {
     "name": "PlatformRef"
@@ -469,6 +457,12 @@
   },
   {
     "name": "RadioControlRegistryModule"
+  },
+  {
+    "name": "ReactiveLViewConsumer"
+  },
+  {
+    "name": "ReactiveNode"
   },
   {
     "name": "RefCountOperator"
@@ -499,9 +493,6 @@
   },
   {
     "name": "SIMPLE_CHANGES_STORE"
-  },
-  {
-    "name": "SOURCE"
   },
   {
     "name": "SafeSubscriber"
@@ -544,9 +535,6 @@
   },
   {
     "name": "Subscription"
-  },
-  {
-    "name": "TEMPLATES"
   },
   {
     "name": "TESTABILITY"
@@ -594,9 +582,6 @@
     "name": "VE_ViewContainerRef"
   },
   {
-    "name": "VIEW_REFS"
-  },
-  {
     "name": "ViewContainerRef"
   },
   {
@@ -607,6 +592,12 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "Watch"
+  },
+  {
+    "name": "WeakRefImpl"
   },
   {
     "name": "ZONE_IS_STABLE_OBSERVABLE"
@@ -631,9 +622,6 @@
   },
   {
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
-  },
-  {
-    "name": "_findMatchingDehydratedViewImpl"
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"
@@ -663,6 +651,9 @@
     "name": "_locateOrCreateTextNode"
   },
   {
+    "name": "_nextReactiveId"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -679,6 +670,9 @@
   },
   {
     "name": "_wrapInTimeout"
+  },
+  {
+    "name": "activeConsumer"
   },
   {
     "name": "addPropertyAlias"
@@ -732,7 +726,13 @@
     "name": "bloomHasToken"
   },
   {
+    "name": "booleanAttribute"
+  },
+  {
     "name": "callHook"
+  },
+  {
+    "name": "callHookInternal"
   },
   {
     "name": "callHooks"
@@ -747,7 +747,7 @@
     "name": "cleanUpView"
   },
   {
-    "name": "coerceToBoolean"
+    "name": "clearViewRefreshFlag"
   },
   {
     "name": "collectNativeNodes"
@@ -757,6 +757,9 @@
   },
   {
     "name": "collectStylingFromTAttrs"
+  },
+  {
+    "name": "commitLViewConsumerIfHasProducers"
   },
   {
     "name": "composeAsyncValidators"
@@ -819,7 +822,7 @@
     "name": "createTView"
   },
   {
-    "name": "decoratePreventDefault"
+    "name": "currentConsumer"
   },
   {
     "name": "deepForEach"
@@ -831,9 +834,6 @@
     "name": "defaultIterableDiffersFactory"
   },
   {
-    "name": "describeKey"
-  },
-  {
     "name": "destroyLView"
   },
   {
@@ -841,6 +841,18 @@
   },
   {
     "name": "detachView"
+  },
+  {
+    "name": "detectChangesInChildComponents"
+  },
+  {
+    "name": "detectChangesInComponent"
+  },
+  {
+    "name": "detectChangesInEmbeddedViews"
+  },
+  {
+    "name": "detectChangesInView"
   },
   {
     "name": "detectChangesInternal"
@@ -894,9 +906,6 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "findMatchingDehydratedView"
-  },
-  {
     "name": "findStylingValue"
   },
   {
@@ -915,13 +924,13 @@
     "name": "formDirectiveProvider"
   },
   {
-    "name": "formatRuntimeError"
-  },
-  {
     "name": "forwardRef"
   },
   {
     "name": "from"
+  },
+  {
+    "name": "fromArray"
   },
   {
     "name": "generateInitialInputs"
@@ -1011,6 +1020,9 @@
     "name": "getOrCreateComponentTView"
   },
   {
+    "name": "getOrCreateCurrentLViewConsumer"
+  },
+  {
     "name": "getOrCreateInjectable"
   },
   {
@@ -1051,6 +1063,9 @@
   },
   {
     "name": "getPromiseCtor"
+  },
+  {
+    "name": "getReactiveLViewConsumer"
   },
   {
     "name": "getSelectedIndex"
@@ -1105,6 +1120,9 @@
   },
   {
     "name": "importProvidersFrom"
+  },
+  {
+    "name": "inNotificationPhase"
   },
   {
     "name": "includeViewProviders"
@@ -1236,6 +1254,9 @@
     "name": "isOptionsObj"
   },
   {
+    "name": "isPlatformServer"
+  },
+  {
     "name": "isPositive"
   },
   {
@@ -1248,6 +1269,9 @@
     "name": "isPromise2"
   },
   {
+    "name": "isScheduler"
+  },
+  {
     "name": "isStableFactory"
   },
   {
@@ -1255,9 +1279,6 @@
   },
   {
     "name": "isStylingValuePresent"
-  },
-  {
-    "name": "isSubscribable"
   },
   {
     "name": "isTemplateNode"
@@ -1314,22 +1335,19 @@
     "name": "markAsComponentHost"
   },
   {
-    "name": "markDirtyIfOnPush"
-  },
-  {
     "name": "markDuplicates"
   },
   {
     "name": "markViewDirty"
   },
   {
+    "name": "markViewForRefresh"
+  },
+  {
     "name": "maybeUnwrapEmpty"
   },
   {
     "name": "maybeWrapInNotSelector"
-  },
-  {
-    "name": "mergeAll"
   },
   {
     "name": "mergeErrors"
@@ -1443,12 +1461,6 @@
     "name": "refCount"
   },
   {
-    "name": "refreshComponent"
-  },
-  {
-    "name": "refreshContainsDirtyView"
-  },
-  {
     "name": "refreshContentQueries"
   },
   {
@@ -1533,6 +1545,9 @@
     "name": "selectIndexInternal"
   },
   {
+    "name": "setActiveConsumer"
+  },
+  {
     "name": "setBindingRootForHostBindings"
   },
   {
@@ -1590,6 +1605,9 @@
     "name": "setupStaticAttributes"
   },
   {
+    "name": "share"
+  },
+  {
     "name": "shareSubjectFactory"
   },
   {
@@ -1638,13 +1656,10 @@
     "name": "updateMicroTaskStatus"
   },
   {
-    "name": "updateTransplantedViewCount"
+    "name": "updateViewsToRefresh"
   },
   {
     "name": "urlParsingNode"
-  },
-  {
-    "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "walkProviderTree"
@@ -1657,6 +1672,9 @@
   },
   {
     "name": "writeDirectClass"
+  },
+  {
+    "name": "writeToDirectiveInput"
   },
   {
     "name": "ɵInternalFormsSharedModule"

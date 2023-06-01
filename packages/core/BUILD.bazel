@@ -75,6 +75,7 @@ ng_package(
     ],
     deps = [
         ":core",
+        "//packages/core/rxjs-interop",
         "//packages/core/testing",
     ],
 )

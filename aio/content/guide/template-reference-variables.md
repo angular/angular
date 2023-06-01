@@ -97,7 +97,7 @@ Here, `ref2` is declared in the child scope created by `*ngIf`, and is not acces
 {@a template-input-variables}
 ## Template input variable
 
-A _template input variable_ is a variable with a value that is set when an instance of that template is created. See: [Writing structural directives](https://angular.io/guide/structural-directives)
+A _template input variable_ is a variable with a value that is set when an instance of that template is created. See: [Writing structural directives](/guide/structural-directives)
 
 Template input variables can be seen in action in the long-form usage of `NgFor`:
 
@@ -125,6 +125,6 @@ When an `<ng-template>` is instantiated, multiple named values can be passed whi
 
 ## What’s next
 
-[Writing structural directives](https://angular.io/guide/structural-directives)
+[Writing structural directives](/guide/structural-directives)
 
 @reviewed 2022-05-12

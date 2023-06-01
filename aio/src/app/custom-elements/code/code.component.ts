@@ -68,7 +68,7 @@ export class CodeComponent implements OnChanges {
   /** Whether the copy button should be shown. */
   @Input() hideCopy: boolean;
 
-  /** Language to render the code (e.g. javascript, dart, typescript). */
+  /** Language to render the code (e.g. javascript, typescript). */
   @Input() language: string | undefined;
 
   /**

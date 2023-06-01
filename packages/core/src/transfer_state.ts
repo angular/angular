@@ -6,32 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID} from './application_tokens';
+import {APP_ID, PLATFORM_ID} from './application_tokens';
 import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
 import {getDocument} from './render3/interfaces/document';
-
-export function escapeTransferStateContent(text: string): string {
-  const escapedText: {[k: string]: string} = {
-    '&': '&a;',
-    '"': '&q;',
-    '\'': '&s;',
-    '<': '&l;',
-    '>': '&g;',
-  };
-  return text.replace(/[&"'<>]/g, s => escapedText[s]);
-}
-
-export function unescapeTransferStateContent(text: string): string {
-  const unescapedText: {[k: string]: string} = {
-    '&a;': '&',
-    '&q;': '"',
-    '&s;': '\'',
-    '&l;': '<',
-    '&g;': '>',
-  };
-  return text.replace(/&[^;]+;/g, s => unescapedText[s]);
-}
 
 /**
  * A type-safe key to use with `TransferState`.
@@ -70,9 +48,12 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
   return key as StateKey<T>;
 }
 
-function initTransferState() {
+function initTransferState(): TransferState {
   const transferState = new TransferState();
-  transferState.store = retrieveTransferredState(getDocument(), inject(APP_ID));
+  if (inject(PLATFORM_ID) === 'browser') {
+    transferState.store = retrieveTransferredState(getDocument(), inject(APP_ID));
+  }
+
   return transferState;
 }
 
@@ -101,7 +82,7 @@ export class TransferState {
       });
 
   /** @internal */
-  store: {[k: string]: unknown|undefined} = {};
+  store: Record<string, unknown|undefined> = {};
 
   private onSerializeCallbacks: {[k: string]: () => unknown | undefined} = {};
 
@@ -129,7 +110,7 @@ export class TransferState {
   /**
    * Test whether a key exists in the store.
    */
-  hasKey<T>(key: StateKey<T>) {
+  hasKey<T>(key: StateKey<T>): boolean {
     return this.store.hasOwnProperty(key);
   }
 
@@ -161,22 +142,27 @@ export class TransferState {
         }
       }
     }
-    return JSON.stringify(this.store);
+
+    // Escape script tag to avoid break out of <script> tag in serialized output.
+    // Encoding of `<` is the same behaviour as G3 script_builders.
+    return JSON.stringify(this.store).replace(/</g, '\\u003C');
   }
 }
 
-function retrieveTransferredState(doc: Document, appId: string) {
+function retrieveTransferredState(doc: Document, appId: string): Record<string, unknown|undefined> {
   // Locate the script tag with the JSON data transferred from the server.
   // The id of the script tag is set to the Angular appId + 'state'.
   const script = doc.getElementById(appId + '-state');
-  let initialState = {};
-  if (script && script.textContent) {
+  if (script?.textContent) {
     try {
       // Avoid using any here as it triggers lint errors in google3 (any is not allowed).
-      initialState = JSON.parse(unescapeTransferStateContent(script.textContent)) as {};
+      // Decoding of `<` is done of the box by browsers and node.js, same behaviour as G3
+      // script_builders.
+      return JSON.parse(script.textContent) as {};
     } catch (e) {
       console.warn('Exception while restoring TransferState for app ' + appId, e);
     }
   }
-  return initialState;
+
+  return {};
 }

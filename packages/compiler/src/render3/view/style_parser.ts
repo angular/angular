@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// Any changes here should be ported to the Angular Domino fork.
+// https://github.com/angular/domino/blob/main/lib/style_parser.js
+
 const enum Char {
   OpenParen = 40,
   CloseParen = 41,
@@ -39,7 +42,6 @@ export function parse(value: string): string[] {
   let valueStart = 0;
   let propStart = 0;
   let currentProp: string|null = null;
-  let valueHasQuotes = false;
   while (i < value.length) {
     const token = value.charCodeAt(i++) as Char;
     switch (token) {
@@ -52,7 +54,6 @@ export function parse(value: string): string[] {
       case Char.QuoteSingle:
         // valueStart needs to be there since prop values don't
         // have quotes in CSS
-        valueHasQuotes = valueHasQuotes || valueStart > 0;
         if (quote === Char.QuoteNone) {
           quote = Char.QuoteSingle;
         } else if (quote === Char.QuoteSingle && value.charCodeAt(i - 1) !== Char.BackSlash) {
@@ -61,7 +62,6 @@ export function parse(value: string): string[] {
         break;
       case Char.QuoteDouble:
         // same logic as above
-        valueHasQuotes = valueHasQuotes || valueStart > 0;
         if (quote === Char.QuoteNone) {
           quote = Char.QuoteDouble;
         } else if (quote === Char.QuoteDouble && value.charCodeAt(i - 1) !== Char.BackSlash) {
@@ -77,11 +77,10 @@ export function parse(value: string): string[] {
       case Char.Semicolon:
         if (currentProp && valueStart > 0 && parenDepth === 0 && quote === Char.QuoteNone) {
           const styleVal = value.substring(valueStart, i - 1).trim();
-          styles.push(currentProp, valueHasQuotes ? stripUnnecessaryQuotes(styleVal) : styleVal);
+          styles.push(currentProp, styleVal);
           propStart = i;
           valueStart = 0;
           currentProp = null;
-          valueHasQuotes = false;
         }
         break;
     }
@@ -89,24 +88,10 @@ export function parse(value: string): string[] {
 
   if (currentProp && valueStart) {
     const styleVal = value.slice(valueStart).trim();
-    styles.push(currentProp, valueHasQuotes ? stripUnnecessaryQuotes(styleVal) : styleVal);
+    styles.push(currentProp, styleVal);
   }
 
   return styles;
-}
-
-export function stripUnnecessaryQuotes(value: string): string {
-  const qS = value.charCodeAt(0);
-  const qE = value.charCodeAt(value.length - 1);
-  if (qS == qE && (qS == Char.QuoteSingle || qS == Char.QuoteDouble)) {
-    const tempValue = value.substring(1, value.length - 1);
-    // special case to avoid using a multi-quoted string that was just chomped
-    // (e.g. `font-family: "Verdana", "sans-serif"`)
-    if (tempValue.indexOf('\'') == -1 && tempValue.indexOf('"') == -1) {
-      value = tempValue;
-    }
-  }
-  return value;
 }
 
 export function hyphenate(value: string): string {

@@ -67,23 +67,3 @@ export class StringConcatBuiltinFn extends KnownFn {
     return result;
   }
 }
-
-export class ObjectAssignBuiltinFn extends KnownFn {
-  override evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
-    if (args.length === 0) {
-      return DynamicValue.fromUnsupportedSyntax(node);
-    }
-    for (const arg of args) {
-      if (arg instanceof DynamicValue) {
-        return DynamicValue.fromDynamicInput(node, arg);
-      } else if (!(arg instanceof Map)) {
-        return DynamicValue.fromUnsupportedSyntax(node);
-      }
-    }
-    const [target, ...sources] = args as Map<string, ResolvedValue>[];
-    for (const source of sources) {
-      source.forEach((value, key) => target.set(key, value));
-    }
-    return target;
-  }
-}

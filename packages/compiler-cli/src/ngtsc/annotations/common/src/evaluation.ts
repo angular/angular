@@ -11,11 +11,10 @@ import ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {Reference} from '../../../imports';
 import {EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
-import {ClassDeclaration, Decorator, ValueUnavailableKind} from '../../../reflection';
+import {ClassDeclaration, Decorator} from '../../../reflection';
 
 import {createValueHasWrongTypeError} from './diagnostics';
 import {isAngularCoreReference, unwrapExpression} from './util';
-
 
 
 export function resolveEnumValue(
@@ -58,7 +57,7 @@ export function resolveLiteral(
   }
   if (decorator.args === null || decorator.args.length !== 1) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
+        ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
         `Incorrect number of arguments to @${decorator.name} decorator`);
   }
   const meta = unwrapExpression(decorator.args[0]);

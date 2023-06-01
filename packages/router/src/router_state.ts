@@ -68,7 +68,7 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>|null
   const emptyParams = new BehaviorSubject({});
   const emptyData = new BehaviorSubject({});
   const emptyQueryParams = new BehaviorSubject({});
-  const fragment = new BehaviorSubject('');
+  const fragment = new BehaviorSubject<string|null>('');
   const activated = new ActivatedRoute(
       emptyUrl, emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent,
       snapshot.root);
@@ -84,7 +84,7 @@ export function createEmptyStateSnapshot(
   const fragment = '';
   const activated = new ActivatedRouteSnapshot(
       [], emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent, null,
-      urlTree.root, -1, {});
+      {});
   return new RouterStateSnapshot('', new TreeNode<ActivatedRouteSnapshot>(activated, []));
 }
 
@@ -120,26 +120,43 @@ export class ActivatedRoute {
   _queryParamMap?: Observable<ParamMap>;
 
   /** An Observable of the resolved route title */
-  readonly title: Observable<string|undefined> =
-      this.data?.pipe(map((d: Data) => d[RouteTitleKey])) ?? of(undefined);
+  readonly title: Observable<string|undefined>;
+
+  /** An observable of the URL segments matched by this route. */
+  public url: Observable<UrlSegment[]>;
+  /** An observable of the matrix parameters scoped to this route. */
+  public params: Observable<Params>;
+  /** An observable of the query parameters shared by all the routes. */
+  public queryParams: Observable<Params>;
+  /** An observable of the URL fragment shared by all the routes. */
+  public fragment: Observable<string|null>;
+  /** An observable of the static and resolved data of this route. */
+  public data: Observable<Data>;
 
   /** @internal */
   constructor(
-      /** An observable of the URL segments matched by this route. */
-      public url: Observable<UrlSegment[]>,
-      /** An observable of the matrix parameters scoped to this route. */
-      public params: Observable<Params>,
-      /** An observable of the query parameters shared by all the routes. */
-      public queryParams: Observable<Params>,
-      /** An observable of the URL fragment shared by all the routes. */
-      public fragment: Observable<string|null>,
-      /** An observable of the static and resolved data of this route. */
-      public data: Observable<Data>,
+      /** @internal */
+      public urlSubject: BehaviorSubject<UrlSegment[]>,
+      /** @internal */
+      public paramsSubject: BehaviorSubject<Params>,
+      /** @internal */
+      public queryParamsSubject: BehaviorSubject<Params>,
+      /** @internal */
+      public fragmentSubject: BehaviorSubject<string|null>,
+      /** @internal */
+      public dataSubject: BehaviorSubject<Data>,
       /** The outlet name of the route, a constant. */
       public outlet: string,
       /** The component of the route, a constant. */
       public component: Type<any>|null, futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
+    this.title = this.dataSubject?.pipe(map((d: Data) => d[RouteTitleKey])) ?? of(undefined);
+    // TODO(atscott): Verify that these can be changed to `.asObservable()` with TGP.
+    this.url = urlSubject;
+    this.params = paramsSubject;
+    this.queryParams = queryParamsSubject;
+    this.fragment = fragmentSubject;
+    this.data = dataSubject;
   }
 
   /** The configuration used to match this route. */
@@ -281,10 +298,6 @@ function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
 export class ActivatedRouteSnapshot {
   /** The configuration used to match this route **/
   public readonly routeConfig: Route|null;
-  /** @internal **/
-  _urlSegment: UrlSegmentGroup;
-  /** @internal */
-  _lastPathIndex: number;
   /** @internal */
   _resolve: ResolveData;
   /** @internal */
@@ -336,11 +349,8 @@ export class ActivatedRouteSnapshot {
       /** The outlet name of the route */
       public outlet: string,
       /** The component of the route */
-      public component: Type<any>|null, routeConfig: Route|null, urlSegment: UrlSegmentGroup,
-      lastPathIndex: number, resolve: ResolveData) {
+      public component: Type<any>|null, routeConfig: Route|null, resolve: ResolveData) {
     this.routeConfig = routeConfig;
-    this._urlSegment = urlSegment;
-    this._lastPathIndex = lastPathIndex;
     this._resolve = resolve;
   }
 
@@ -452,25 +462,25 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
     const nextSnapshot = route._futureSnapshot;
     route.snapshot = nextSnapshot;
     if (!shallowEqual(currentSnapshot.queryParams, nextSnapshot.queryParams)) {
-      (<any>route.queryParams).next(nextSnapshot.queryParams);
+      route.queryParamsSubject.next(nextSnapshot.queryParams);
     }
     if (currentSnapshot.fragment !== nextSnapshot.fragment) {
-      (<any>route.fragment).next(nextSnapshot.fragment);
+      route.fragmentSubject.next(nextSnapshot.fragment);
     }
     if (!shallowEqual(currentSnapshot.params, nextSnapshot.params)) {
-      (<any>route.params).next(nextSnapshot.params);
+      route.paramsSubject.next(nextSnapshot.params);
     }
     if (!shallowEqualArrays(currentSnapshot.url, nextSnapshot.url)) {
-      (<any>route.url).next(nextSnapshot.url);
+      route.urlSubject.next(nextSnapshot.url);
     }
     if (!shallowEqual(currentSnapshot.data, nextSnapshot.data)) {
-      (<any>route.data).next(nextSnapshot.data);
+      route.dataSubject.next(nextSnapshot.data);
     }
   } else {
     route.snapshot = route._futureSnapshot;
 
     // this is for resolved data
-    (<any>route.data).next(route._futureSnapshot.data);
+    route.dataSubject.next(route._futureSnapshot.data);
   }
 }
 

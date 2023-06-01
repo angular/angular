@@ -1,14 +1,14 @@
-import * as ɵngcc0 from '@angular/core';
+import * as i0 from '@angular/core';
 
 declare class LibDirective {
-  static ɵfac: ɵngcc0.ɵɵFactoryDeclaration<LibDirective, never>;
-  static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration<LibDirective, 'lib-dir', never, {}, {}, never>;
+  static ɵfac: i0.ɵɵFactoryDeclaration<LibDirective, never>;
+  static ɵdir: i0.ɵɵDirectiveDeclaration<LibDirective, 'lib-dir', never, {}, {}, never>;
 }
 
 export declare class LibModule {
-  static ɵfac: ɵngcc0.ɵɵFactoryDeclaration<LibModule, never>;
-  static ɵmod: ɵngcc0.ɵɵNgModuleDeclaration<LibModule, [typeof LibDirective], never, [typeof LibDirective]>;
-  static ɵinj: ɵngcc0.ɵɵInjectorDeclaration<LibModule>;
+  static ɵfac: i0.ɵɵFactoryDeclaration<LibModule, never>;
+  static ɵmod: i0.ɵɵNgModuleDeclaration<LibModule, [typeof LibDirective], never, [typeof LibDirective]>;
+  static ɵinj: i0.ɵɵInjectorDeclaration<LibModule>;
 }
 
 export {LibDirective as ɵangular_packages_forms_forms_a}

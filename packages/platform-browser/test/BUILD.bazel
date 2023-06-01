@@ -29,6 +29,8 @@ ts_library(
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
         "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
         "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",

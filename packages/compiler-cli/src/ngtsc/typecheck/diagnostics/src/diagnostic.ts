@@ -61,10 +61,9 @@ export function makeTemplateDiagnostic(
     // For external temoplates, the HTML filename is used.
     const componentSf = mapping.componentClass.getSourceFile();
     const componentName = mapping.componentClass.name.text;
-    // TODO(alxhub): remove cast when TS in g3 supports this narrowing.
     const fileName = mapping.type === 'indirect' ?
         `${componentSf.fileName} (${componentName} template)` :
-        (mapping as ExternalTemplateSourceMapping).templateUrl;
+        mapping.templateUrl;
 
     let relatedInformation: ts.DiagnosticRelatedInformation[] = [];
     if (relatedMessages !== undefined) {

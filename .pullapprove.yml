@@ -56,8 +56,9 @@
 
 version: 3
 
-# availability:
-#   users_unavailable:
+availability:
+  users_unavailable:
+    - atscott
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -157,13 +158,15 @@ groups:
           'aio/content/guide/angular-compiler-options.md',
           'aio/content/guide/aot-compiler.md',
           'aio/content/guide/aot-metadata-errors.md',
-          'aio/content/guide/template-typecheck.md'
+          'aio/content/guide/template-typecheck.md',
+          'aio/content/extended-diagnostics/*.md'
           ])
     reviewers:
       users:
         - alxhub
         - AndrewKushnir
         - atscott
+        - crisbeto
         - JoostK
 
   # =========================================================
@@ -202,6 +205,7 @@ groups:
           'aio/content/guide/architecture-services.md',
           'aio/content/guide/architecture.md',
           'aio/content/examples/architecture/**/{*,.*}',
+          'aio/content/guide/rxjs-interop.md',
           'aio/content/images/guide/architecture/**/{*,.*}',
           'aio/content/guide/attribute-directives.md',
           'aio/content/examples/attribute-directives/**/{*,.*}',
@@ -215,31 +219,12 @@ groups:
           'aio/content/images/guide/change-detection/**/{*,.*}',
           'aio/content/guide/class-binding.md',
           'aio/content/guide/cheatsheet.md',
-          'aio/content/guide/component/component-content-projection-complex.md',
-          'aio/content/guide/component/component-content-projection-conditional.md',
-          'aio/content/guide/component/component-content-projection-multi-slot.md',
-          'aio/content/guide/component/component-content-projection-overview.md',
-          'aio/content/guide/component/component-content-projection-single-slot.md',
-          'aio/content/guide/component/component-create-cli.md',
-          'aio/content/guide/component/component-create-manual.md',
-          'aio/content/guide/component/component-example-dynamic-load.md',
-          'aio/content/guide/component/component-example-interaction.md',
-          'aio/content/guide/component/component-example.md',
-          'aio/content/guide/component/component-exchange-data.md',
-          'aio/content/guide/component/component-lifecycle-overview.md',
-          'aio/content/guide/component/component-overview.md',
-          'aio/content/guide/component/component-share-data-overview.md',
-          'aio/content/guide/component/component-share-data-to-child.md',
-          'aio/content/guide/component/component-share-data-to-parent.md',
-          'aio/content/guide/component/component-structure.md',
-          'aio/content/guide/component/component-style-overview.md',
-          'aio/content/guide/component/component-style-view-encapsulate.md',
-          'aio/content/guide/component/component-style.md',
-          'aio/content/guide/component/component-use-overview.md',
           'aio/content/guide/component-interaction.md',
           'aio/content/examples/component-interaction/**/{*,.*}',
           'aio/content/images/guide/component-interaction/**/{*,.*}',
           'aio/content/guide/component-overview.md',
+          'aio/content/errors/*.md',
+          'aio/content/examples/errors/**/{*,.*}',
           'aio/content/examples/component-overview/**/{*,.*}',
           'aio/content/guide/component-styles.md',
           'aio/content/guide/developer-guide-overview.md',
@@ -265,7 +250,6 @@ groups:
           'aio/content/examples/dynamic-component-loader/**/{*,.*}',
           'aio/content/images/guide/dynamic-component-loader/**/{*,.*}',
           'aio/content/guide/example-apps-list.md',
-          'aio/content/guide/entry-components.md',
           'aio/content/guide/feature-modules.md',
           'aio/content/examples/feature-modules/**/{*,.*}',
           'aio/content/images/guide/feature-modules/**/{*,.*}',
@@ -280,8 +264,6 @@ groups:
           'aio/content/guide/lazy-loading-ngmodules.md',
           'aio/content/examples/lazy-loading-ngmodules/**/{*,.*}',
           'aio/content/images/guide/lazy-loading-ngmodules/**/{*,.*}',
-          'aio/content/guide/lifecycle-hook/lifecycle-hook-example.md',
-          'aio/content/guide/lifecycle-hook/lifecycle-hook-overview.md',
           'aio/content/guide/lifecycle-hooks.md',
           'aio/content/examples/lifecycle-hooks/**/{*,.*}',
           'aio/content/images/guide/lifecycle-hooks/**/{*,.*}',
@@ -352,13 +334,16 @@ groups:
           'aio/content/guide/view-encapsulation.md',
           'aio/content/examples/view-encapsulation/**/{*,.*}',
           'aio/content/images/guide/view-encapsulation/**/{*,.*}',
-          'aio/content/special-elements/**/{*,.*}'
+          'aio/content/special-elements/**/{*,.*}',
+          'aio/content/guide/hydration.md',
+          'aio/content/guide/signals.md'
           ])
     reviewers:
       users:
         - alxhub
         - AndrewKushnir
         - atscott
+        - crisbeto
         - dylhunn
         - jessicajaniuk
         - pkozlowski-opensource
@@ -850,6 +835,7 @@ groups:
           'aio/content/images/guide/toh/**/{*,.*}',
           'aio/content/demos/first-app/**/{*,.*}',
           'aio/content/examples/first-app-*/**/{*,.*}',
+          'aio/content/images/guide/faa/**/{*,.*}',
           'aio/content/examples/toh-pt0/**/{*,.*}',
           'aio/content/examples/toh-pt1/**/{*,.*}',
           'aio/content/examples/toh-pt2/**/{*,.*}',
@@ -942,8 +928,10 @@ groups:
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
           'aio/content/guide/update-to-latest-version.md',
+          'aio/content/guide/versions.md',
           'aio/content/guide/update-to-version-14.md',
-          'aio/content/guide/update-to-version-15.md'
+          'aio/content/guide/update-to-version-15.md',
+          'aio/content/guide/update-to-version-16.md',
           ])
     reviewers:
       users:
@@ -1017,6 +1005,7 @@ groups:
           'aio/content/guide/workspace-config.md',
           'aio/content/guide/migration-solution-style-tsconfig.md',
           'aio/content/guide/migration-update-libraries-tslib.md',
+          'aio/content/guide/esbuild.md',
           ])
     reviewers:
       users:
@@ -1177,6 +1166,7 @@ groups:
           'tools/legacy-saucelabs/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',
           'tools/saucelabs/**/{*,.*}',
+          'tools/saucelabs-daemon/**/{*,.*}',
           'tools/symbol-extractor/**/{*,.*}',
           'tools/testing/**/{*,.*}',
           'tools/tslint/**/{*,.*}',
@@ -1203,11 +1193,8 @@ groups:
           'goldens/public-api/**/{*,.*}',
           'docs/NAMING.md',
           'aio/content/guide/angular-package-format.md',
-          'aio/content/errors/*.md',
-          'aio/content/extended-diagnostics/*.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',
-          'aio/content/examples/errors/**/{*,.*}',
           'aio/content/examples/styleguide/**/{*,.*}',
           'aio/content/images/guide/styleguide/{*,.*}'
           ])

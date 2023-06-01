@@ -20,12 +20,12 @@ For details about changes between versions, and information about updating from 
 
 Invoke the tool on the command line through the `ng` executable.
 Online help is available on the command line.
-Enter the following to list commands or options for a given command \(such as [generate](cli/generate)\) with a short description.
+Enter the following to list commands or options for a given command \(such as [new](cli/new)\) with a short description.
 
 <code-example format="shell" language="shell">
 
-ng help
-ng generate --help
+ng --help
+ng new --help
 
 </code-example>
 

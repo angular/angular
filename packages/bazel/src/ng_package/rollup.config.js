@@ -15,7 +15,6 @@ const MagicString = require('magic-string');
 const sourcemaps = require('rollup-plugin-sourcemaps');
 const path = require('path');
 const fs = require('fs');
-const ts = require('typescript');
 
 function log_verbose(...m) {
   // This is a template file so we use __filename to output the actual filename
@@ -26,7 +25,6 @@ const workspaceName = 'TMPL_workspace_name';
 const rootDir = 'TMPL_root_dir';
 const bannerFile = TMPL_banner_file;
 const moduleMappings = TMPL_module_mappings;
-const downlevelToES2015 = TMPL_downlevel_to_es2015;
 const nodeModulesRoot = 'TMPL_node_modules_root';
 
 log_verbose(`running with
@@ -136,28 +134,6 @@ if (bannerFile) {
   bannerContent = fs.readFileSync(bannerFile, {encoding: 'utf-8'});
 }
 
-// Transform that is enabled for ES2015 FESM generation. It transforms existing ES2020
-// prodmode output to ES2015 so that we can generate the ES2015 flat ESM bundle.
-const downlevelToES2015Plugin = {
-  name: 'downlevel-to-es2015',
-  transform: (code, filePath) => {
-    const compilerOptions = {
-      target: ts.ScriptTarget.ES2015,
-      module: ts.ModuleKind.ES2015,
-      allowJs: true,
-      sourceMap: true,
-      downlevelIteration: true,
-      importHelpers: true,
-      mapRoot: path.dirname(filePath),
-    };
-    const {outputText, sourceMapText} = ts.transpileModule(code, {compilerOptions});
-    return {
-      code: outputText,
-      map: JSON.parse(sourceMapText),
-    };
-  },
-};
-
 /** Removed license banners from input files. */
 const stripBannerPlugin = {
   name: 'strip-license-banner',
@@ -195,11 +171,6 @@ const plugins = [
   commonjs({ignoreGlobal: true}),
   sourcemaps(),
 ];
-
-// If downleveling to ES2015 is enabled, set up the downlevel rollup plugin.
-if (downlevelToES2015) {
-  plugins.push(downlevelToES2015Plugin);
-}
 
 const config = {
   plugins,

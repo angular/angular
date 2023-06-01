@@ -25,13 +25,15 @@ export const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
 // @public
 export interface PlatformConfig {
+    // @deprecated
     baseUrl?: string;
     document?: string;
     url?: string;
+    // @deprecated
     useAbsoluteUrl?: boolean;
 }
 
-// @public
+// @public @deprecated
 export const platformDynamicServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 // @public (undocumented)
@@ -49,21 +51,12 @@ export class PlatformState {
 }
 
 // @public
-export function provideServerSupport(): EnvironmentProviders;
+export function provideServerRendering(): EnvironmentProviders;
 
 // @public
 export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {
     document?: string | Document;
     url?: string;
-    platformProviders?: Provider[];
-}): Promise<string>;
-
-// @public
-export function renderApplication<T>(rootComponent: Type<T>, options: {
-    appId: string;
-    document?: string | Document;
-    url?: string;
-    providers?: Array<Provider | EnvironmentProviders>;
     platformProviders?: Provider[];
 }): Promise<string>;
 

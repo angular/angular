@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * The list of error codes used in runtime code of the `animations` package.
+ * Reserved error code range: 3000-3999.
+ */
 export const enum RuntimeErrorCode {
   // Invalid values
   INVALID_TIMING_VALUE = 3000,

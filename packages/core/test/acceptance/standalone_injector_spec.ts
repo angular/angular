@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, createEnvironmentInjector, EnvironmentInjector, Injector, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, createComponent, createEnvironmentInjector, EnvironmentInjector, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('standalone injector', () => {
@@ -85,10 +85,9 @@ describe('standalone injector', () => {
 
     const fixture = TestBed.createComponent(AppComponent);
 
-    const cfr = TestBed.inject(ComponentFactoryResolver);
-    const cf = cfr.resolveComponentFactory(DynamicComponent);
-
-    const componentRef = cf.create(Injector.NULL);
+    const environmentInjector =
+        createEnvironmentInjector([Service], TestBed.inject(EnvironmentInjector));
+    const componentRef = createComponent(DynamicComponent, {environmentInjector});
     componentRef.changeDetectorRef.detectChanges();
 
     expect(componentRef.location.nativeElement.textContent).toBe('Service value');

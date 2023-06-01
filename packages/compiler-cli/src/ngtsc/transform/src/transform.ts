@@ -105,6 +105,11 @@ class IvyTransformationVisitor extends Visitor {
     const members = [...node.members];
 
     for (const field of this.classCompilationMap.get(node)!) {
+      // Type-only member.
+      if (field.initializer === null) {
+        continue;
+      }
+
       // Translate the initializer for the field into TS nodes.
       const exprNode = translateExpression(field.initializer, this.importManager, translateOptions);
 

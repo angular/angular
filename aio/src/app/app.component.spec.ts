@@ -22,7 +22,7 @@ import { SearchResultsComponent } from 'app/shared/search-results/search-results
 import { TocItem, TocService } from 'app/shared/toc.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { of, Subject, timer } from 'rxjs';
-import { first, mapTo } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
@@ -1431,7 +1431,7 @@ class TestHttpClient {
   };
 
   get(url: string) {
-    let data;
+    let data: any;
     if (/navigation\.json/.test(url)) {
       data = this.navJson;
     } else {
@@ -1445,7 +1445,7 @@ class TestHttpClient {
     }
 
     // Preserve async nature of `HttpClient`.
-    return timer(1).pipe(mapTo(data));
+    return timer(1).pipe(map(() => data));
   }
 }
 

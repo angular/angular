@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, refreshView, renderView} from '../../../src/render3/instructions/shared';
+import {refreshView} from '../../../src/render3/instructions/change_detection';
+import {renderView} from '../../../src/render3/instructions/render';
+import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate, DirectiveDefList} from '../../../src/render3/interfaces/definition';
 import {TAttributes, TElementNode, TNodeType} from '../../../src/render3/interfaces/node';
-import {LView, LViewFlags, TVIEW, TView, TViewType} from '../../../src/render3/interfaces/view';
+import {LView, LViewEnvironment, LViewFlags, TVIEW, TView, TViewType} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
+import {EffectManager} from '../../../src/render3/reactivity/effect';
 
 import {MicroBenchmarkDomRendererFactory, MicroBenchmarkRendererFactory} from './noop_renderer';
 
@@ -19,11 +22,17 @@ const rendererFactory =
     isBrowser ? new MicroBenchmarkDomRendererFactory() : new MicroBenchmarkRendererFactory();
 const renderer = rendererFactory.createRenderer(null, null);
 
+const environment: LViewEnvironment = {
+  rendererFactory,
+  sanitizer: null,
+  effectManager: new EffectManager(),
+};
+
 export function createAndRenderLView(
     parentLView: LView, tView: TView, hostTNode: TElementNode): LView {
   const embeddedLView = createLView(
-      parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, rendererFactory, renderer,
-      null, null, null, null);
+      parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, environment, renderer, null,
+      null, null);
   renderView(tView, embeddedLView, null);
   return embeddedLView;
 }
@@ -55,8 +64,8 @@ export function setupTestHarness(
   const tContainerNode = getOrCreateTNode(hostTView, 0, TNodeType.Container, null, null);
   const hostNode = renderer.createElement('div');
   const hostLView = createLView(
-      null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, hostNode, null,
-      rendererFactory, renderer, null, null, null, null);
+      null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, hostNode, null, environment,
+      renderer, null, null, null);
   const mockRCommentNode = renderer.createComment('');
   const lContainer =
       createLContainer(mockRCommentNode, hostLView, mockRCommentNode, tContainerNode);
@@ -72,7 +81,7 @@ export function setupTestHarness(
   function createEmbeddedLView(): LView {
     const embeddedLView = createLView(
         hostLView, embeddedTView, embeddedViewContext, LViewFlags.CheckAlways, null, viewTNode,
-        rendererFactory, renderer, null, null, null, null);
+        environment, renderer, null, null, null);
     renderView(embeddedTView, embeddedLView, embeddedViewContext);
     return embeddedLView;
   }

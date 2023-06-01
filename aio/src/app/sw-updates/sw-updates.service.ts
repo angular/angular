@@ -1,7 +1,7 @@
 import { ApplicationRef, ErrorHandler, Injectable, OnDestroy } from '@angular/core';
-import { SwUpdate } from '@angular/service-worker';
-import { concat, interval, Subject } from 'rxjs';
-import { first, takeUntil, tap } from 'rxjs/operators';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { concat, from, interval, Subject } from 'rxjs';
+import { filter, first, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -43,20 +43,19 @@ export class SwUpdatesService implements OnDestroy {
         .subscribe(() => this.swu.checkForUpdate());
 
     // Activate available updates.
-    this.swu.available
+    this.swu.versionUpdates
         .pipe(
+            filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
             tap(evt => this.log(`Update available: ${JSON.stringify(evt)}`)),
             takeUntil(this.onDisable),
+            switchMap(() => from(this.swu.activateUpdate()))
         )
-        .subscribe(() => this.swu.activateUpdate());
-
-    // Request a full page navigation once an update has been activated.
-    this.swu.activated
-        .pipe(
-            tap(evt => this.log(`Update activated: ${JSON.stringify(evt)}`)),
-            takeUntil(this.onDisable),
-        )
-        .subscribe(() => this.location.fullPageNavigationNeeded());
+        .subscribe((isActivated) => {
+          if(isActivated) {
+            this.log('Update activated');
+            this.location.fullPageNavigationNeeded();
+          }
+        });
 
     // Request an immediate page reload once an unrecoverable state has been detected.
     this.swu.unrecoverable

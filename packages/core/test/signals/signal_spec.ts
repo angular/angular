@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal} from '@angular/core/src/signals';
+import {computed, setPostSignalSetFn, signal} from '@angular/core/src/signals';
 
 describe('signals', () => {
-  it('should be a getter which reflect the set value', () => {
+  it('should be a getter which reflects the set value', () => {
     const state = signal(false);
     expect(state()).toBeFalse();
     state.set(true);
@@ -37,7 +37,7 @@ describe('signals', () => {
   });
 
   it('should not update signal when new value is equal to the previous one', () => {
-    const state = signal('aaa', (a, b) => a.length === b.length);
+    const state = signal('aaa', {equal: (a, b) => a.length === b.length});
     expect(state()).toEqual('aaa');
 
     // set to a "different" value that is "equal" to the previous one
@@ -55,7 +55,7 @@ describe('signals', () => {
   });
 
   it('should not propagate change when the new signal value is equal to the previous one', () => {
-    const state = signal('aaa', (a, b) => a.length === b.length);
+    const state = signal('aaa', {equal: (a, b) => a.length === b.length});
     const upper = computed(() => state().toUpperCase());
 
     // set to a "different" value that is "equal" to the previous one
@@ -96,5 +96,64 @@ describe('signals', () => {
     // reset signal value to the same array instance, expect change notification
     state.set(stateValue);
     expect(derived()).toEqual('object:5');
+  });
+
+  it('should allow converting writable signals to their readonly counterpart', () => {
+    const counter = signal(0);
+    const readOnlyCounter = counter.asReadonly();
+
+    // @ts-expect-error
+    expect(readOnlyCounter.set).toBeUndefined();
+    // @ts-expect-error
+    expect(readOnlyCounter.update).toBeUndefined();
+    // @ts-expect-error
+    expect(readOnlyCounter.mutate).toBeUndefined();
+
+    const double = computed(() => readOnlyCounter() * 2);
+    expect(double()).toBe(0);
+
+    counter.set(2);
+    expect(double()).toBe(4);
+  });
+
+  describe('post-signal-set functions', () => {
+    let prevPostSignalSetFn: (() => void)|null = null;
+    let log: number;
+    beforeEach(() => {
+      log = 0;
+      prevPostSignalSetFn = setPostSignalSetFn(() => log++);
+    });
+
+    afterEach(() => {
+      setPostSignalSetFn(prevPostSignalSetFn);
+    });
+
+    it('should call the post-signal-set fn when invoking .set()', () => {
+      const counter = signal(0);
+
+      counter.set(1);
+      expect(log).toBe(1);
+    });
+
+    it('should call the post-signal-set fn when invoking .update()', () => {
+      const counter = signal(0);
+
+      counter.update(c => c + 2);
+      expect(log).toBe(1);
+    });
+
+    it('should call the post-signal-set fn when invoking .mutate()', () => {
+      const counter = signal(0);
+
+      counter.mutate(() => {});
+      expect(log).toBe(1);
+    });
+
+    it('should not call the post-signal-set fn when the value doesn\'t change', () => {
+      const counter = signal(0);
+
+      counter.set(0);
+      expect(log).toBe(0);
+    });
   });
 });

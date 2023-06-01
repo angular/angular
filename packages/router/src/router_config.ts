@@ -11,7 +11,6 @@ import {InjectionToken} from '@angular/core';
 import {OnSameUrlNavigation} from './models';
 import {UrlSerializer, UrlTree} from './url_tree';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * Error handler that is invoked when a navigation error occurs.
@@ -199,6 +198,12 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
   initialNavigation?: InitialNavigation;
 
   /**
+   * When true, enables binding information from the `Router` state directly to the inputs of the
+   * component in `Route` configurations.
+   */
+  bindToComponentInputs?: boolean;
+
+  /**
    * A custom error handler for failed navigations.
    * If the handler returns a value, the navigation Promise is resolved with this value.
    * If the handler throws an exception, the navigation Promise is rejected with the exception.
@@ -244,8 +249,8 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
  *
  * @publicApi
  */
-export const ROUTER_CONFIGURATION =
-    new InjectionToken<ExtraOptions>(NG_DEV_MODE ? 'router config' : '', {
+export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router config' : '', {
       providedIn: 'root',
       factory: () => ({}),
     });

@@ -166,7 +166,7 @@ export class ScrollSpyService {
   }
 
   private getScrollTop() {
-    return window && window.pageYOffset || 0;
+    return window && window.scrollY || 0;
   }
 
   private getTopOffset() {

@@ -10,7 +10,6 @@ import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, Iterab
 
 import {RuntimeErrorCode} from '../errors';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * @publicApi
@@ -167,7 +166,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
-    if (NG_DEV_MODE && fn != null && typeof fn !== 'function') {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && fn != null && typeof fn !== 'function') {
       console.warn(
           `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
           `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
@@ -215,7 +214,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
       // React on ngForOf changes only once all inputs have been initialized
       const value = this._ngForOf;
       if (!this._differ && value) {
-        if (NG_DEV_MODE) {
+        if (typeof ngDevMode === 'undefined' || ngDevMode) {
           try {
             // CAUTION: this logic is duplicated for production mode below, as the try-catch
             // is only present in development builds.

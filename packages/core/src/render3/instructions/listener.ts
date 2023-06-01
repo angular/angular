@@ -19,7 +19,8 @@ import {profiler, ProfilerEvent} from '../profiler';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 
-import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {markViewDirty} from './mark_view_dirty';
+import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer} from './shared';
 
 
 
@@ -270,8 +271,6 @@ function wrapListener(
 
     if (wrapWithPreventDefault && result === false) {
       e.preventDefault();
-      // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
-      e.returnValue = false;
     }
 
     return result;

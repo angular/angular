@@ -7,15 +7,23 @@
  */
 
 import {createSignalFromFunction, defaultEquals, Signal, ValueEqualityFn} from './api';
-import {ConsumerId, Edge, nextReactiveId, Producer, producerAccessed, producerNotifyConsumers} from './graph';
-import {WeakRef} from './weak_ref';
+import {throwInvalidWriteToSignalError} from './errors';
+import {ReactiveNode} from './graph';
+
+/**
+ * If set, called after `WritableSignal`s are updated.
+ *
+ * This hook can be used to achieve various effects, such as running effects synchronously as part
+ * of setting a signal.
+ */
+let postSignalSetFn: (() => void)|null = null;
 
 /**
  * A `Signal` with a value that can be mutated via a setter interface.
  *
  * @developerPreview
  */
-export interface SettableSignal<T> extends Signal<T> {
+export interface WritableSignal<T> extends Signal<T> {
   /**
    * Directly set the signal to a new value, and notify any dependents.
    */
@@ -32,21 +40,30 @@ export interface SettableSignal<T> extends Signal<T> {
    * notify any dependents.
    */
   mutate(mutatorFn: (value: T) => void): void;
+
+  /**
+   * Returns a readonly version of this signal. Readonly signals can be accessed to read their value
+   * but can't be changed using set, update or mutate methods. The readonly signals do _not_ have
+   * any built-in mechanism that would prevent deep-mutation of their value.
+   */
+  asReadonly(): Signal<T>;
 }
 
-/**
- * Backing type for a `SettableSignal`, a mutable reactive value.
- */
-class SettableSignalImpl<T> implements Producer {
-  constructor(private value: T, private equal: ValueEqualityFn<T>) {}
+class WritableSignalImpl<T> extends ReactiveNode {
+  private readonlySignal: Signal<T>|undefined;
 
-  readonly id = nextReactiveId();
-  readonly ref = new WeakRef(this);
-  readonly consumers = new Map<ConsumerId, Edge>();
-  valueVersion = 0;
+  protected override readonly consumerAllowSignalWrites = false;
 
-  checkForChangedValue(): void {
-    // Settable signals can only change when set, so there's nothing to check here.
+  constructor(private value: T, private equal: ValueEqualityFn<T>) {
+    super();
+  }
+
+  protected override onConsumerDependencyMayHaveChanged(): void {
+    // This never happens for writable signals as they're not consumers.
+  }
+
+  protected override onProducerUpdateValueVersion(): void {
+    // Writable signal value versions are always up to date.
   }
 
   /**
@@ -57,10 +74,15 @@ class SettableSignalImpl<T> implements Producer {
    * a no-op.
    */
   set(newValue: T): void {
+    if (!this.producerUpdatesAllowed) {
+      throwInvalidWriteToSignalError();
+    }
     if (!this.equal(this.value, newValue)) {
       this.value = newValue;
       this.valueVersion++;
-      producerNotifyConsumers(this);
+      this.producerMayHaveChanged();
+
+      postSignalSetFn?.();
     }
   }
 
@@ -71,6 +93,9 @@ class SettableSignalImpl<T> implements Producer {
    * value.
    */
   update(updater: (value: T) => T): void {
+    if (!this.producerUpdatesAllowed) {
+      throwInvalidWriteToSignalError();
+    }
     this.set(updater(this.value));
   }
 
@@ -78,16 +103,40 @@ class SettableSignalImpl<T> implements Producer {
    * Calls `mutator` on the current value and assumes that it has been mutated.
    */
   mutate(mutator: (value: T) => void): void {
+    if (!this.producerUpdatesAllowed) {
+      throwInvalidWriteToSignalError();
+    }
     // Mutate bypasses equality checks as it's by definition changing the value.
     mutator(this.value);
     this.valueVersion++;
-    producerNotifyConsumers(this);
+    this.producerMayHaveChanged();
+
+    postSignalSetFn?.();
+  }
+
+  asReadonly(): Signal<T> {
+    if (this.readonlySignal === undefined) {
+      this.readonlySignal = createSignalFromFunction(this, () => this.signal());
+    }
+    return this.readonlySignal;
   }
 
   signal(): T {
-    producerAccessed(this);
+    this.producerAccessed();
     return this.value;
   }
+}
+
+/**
+ * Options passed to the `signal` creation function.
+ *
+ * @developerPreview
+ */
+export interface CreateSignalOptions<T> {
+  /**
+   * A comparison function which defines equality for signal values.
+   */
+  equal?: ValueEqualityFn<T>;
 }
 
 /**
@@ -95,14 +144,22 @@ class SettableSignalImpl<T> implements Producer {
  *
  * @developerPreview
  */
-export function signal<T>(
-    initialValue: T, equal: ValueEqualityFn<T> = defaultEquals): SettableSignal<T> {
-  const signalNode = new SettableSignalImpl(initialValue, equal);
-  // Casting here is required for g3.
-  const signalFn = createSignalFromFunction(signalNode.signal.bind(signalNode), {
+export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
+  const signalNode = new WritableSignalImpl(initialValue, options?.equal ?? defaultEquals);
+
+  // Casting here is required for g3, as TS inference behavior is slightly different between our
+  // version/options and g3's.
+  const signalFn = createSignalFromFunction(signalNode, signalNode.signal.bind(signalNode), {
                      set: signalNode.set.bind(signalNode),
                      update: signalNode.update.bind(signalNode),
                      mutate: signalNode.mutate.bind(signalNode),
-                   }) as unknown as SettableSignal<T>;
+                     asReadonly: signalNode.asReadonly.bind(signalNode)
+                   }) as unknown as WritableSignal<T>;
   return signalFn;
+}
+
+export function setPostSignalSetFn(fn: (() => void)|null): (() => void)|null {
+  const prev = postSignalSetFn;
+  postSignalSetFn = fn;
+  return prev;
 }

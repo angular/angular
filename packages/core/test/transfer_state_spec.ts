@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID as APP_ID_TOKEN} from '@angular/core';
+import {APP_ID as APP_ID_TOKEN, PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {getDocument} from '../src/render3/interfaces/document';
-import {escapeTransferStateContent, makeStateKey, TransferState, unescapeTransferStateContent} from '../src/transfer_state';
+import {makeStateKey, TransferState} from '../src/transfer_state';
 
-(function() {
 function removeScriptTag(doc: Document, id: string) {
   const existing = doc.getElementById(id);
   if (existing) {
@@ -20,12 +19,12 @@ function removeScriptTag(doc: Document, id: string) {
   }
 }
 
-function addScriptTag(doc: Document, appId: string, data: {}) {
+function addScriptTag(doc: Document, appId: string, data: object|string) {
   const script = doc.createElement('script');
   const id = appId + '-state';
   script.id = id;
   script.setAttribute('type', 'application/json');
-  script.textContent = escapeTransferStateContent(JSON.stringify(data));
+  script.textContent = typeof data === 'string' ? data : JSON.stringify(data);
 
   // Remove any stale script tags.
   removeScriptTag(doc, id);
@@ -44,7 +43,8 @@ describe('TransferState', () => {
   beforeEach(() => {
     doc = getDocument();
     TestBed.configureTestingModule({
-      providers: [{provide: APP_ID_TOKEN, useValue: APP_ID}],
+      providers:
+          [{provide: APP_ID_TOKEN, useValue: APP_ID}, {provide: PLATFORM_ID, useValue: 'browser'}],
     });
   });
 
@@ -128,19 +128,26 @@ describe('TransferState', () => {
     transferState.remove(TEST_KEY);
     expect(transferState.isEmpty).toBeTrue();
   });
-});
 
-describe('escape/unescape', () => {
-  it('works with all escaped characters', () => {
-    const testString = '</script><script>alert(\'Hello&\' + "World");';
-    const testObj = {testString};
-    const escaped = escapeTransferStateContent(JSON.stringify(testObj));
-    expect(escaped).toBe(
-        '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
-        'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}');
+  it('should encode `<` to avoid breaking out of <script> tag in serialized output', () => {
+    const transferState = TestBed.inject(TransferState);
 
-    const unescapedObj = JSON.parse(unescapeTransferStateContent(escaped)) as {testString: string};
-    expect(unescapedObj['testString']).toBe(testString);
+    // The state is empty initially.
+    expect(transferState.isEmpty).toBeTrue();
+
+    transferState.set(DELAYED_KEY, '</script><script>alert(\'Hello&\' + "World");');
+    expect(transferState.toJson())
+        .toBe(`{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`);
+  });
+
+  it('should decode `\\u003C` (<) when restoring stating', () => {
+    const encodedState =
+        `{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`;
+    addScriptTag(doc, APP_ID, encodedState);
+    const transferState = TestBed.inject(TransferState);
+
+    expect(transferState.toJson()).toBe(encodedState);
+    expect(transferState.get(DELAYED_KEY, null))
+        .toBe('</script><script>alert(\'Hello&\' + "World");');
   });
 });
-})();

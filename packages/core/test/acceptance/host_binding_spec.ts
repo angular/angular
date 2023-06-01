@@ -8,7 +8,7 @@
 
 import {state, style, transition, trigger} from '@angular/animations';
 import {CommonModule} from '@angular/common';
-import {AfterContentInit, Component, ComponentFactoryResolver, ComponentRef, ContentChildren, Directive, DoCheck, HostBinding, HostListener, Injectable, Input, NgModule, OnChanges, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {AfterContentInit, Component, ComponentRef, ContentChildren, Directive, DoCheck, HostBinding, HostListener, Injectable, Input, NgModule, OnChanges, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '@angular/core/src/sanitization/bypass';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -142,11 +142,8 @@ describe('host bindings', () => {
         @Input() prop2 = 0;
 
         ngAfterViewInit() {
-          const factory = this.componentFactoryResolver.resolveComponentFactory(ChildCmp);
-          this.child = this.vcr.createComponent(factory);
+          this.child = this.vcr.createComponent(ChildCmp);
         }
-
-        constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
       }
 
       @Component({

@@ -12,6 +12,13 @@ const {hostname} = require('os');
 const seed = process.env.JASMINE_RANDOM_SEED || String(Math.random()).slice(-5);
 console.info(`Jasmine random seed: ${seed}`);
 
+const isBazel = !!process.env.TEST_TARGET;
+
+if (!process.env.KARMA_WEB_TEST_MODE && isBazel && process.env.TEST_TARGET.includes('_saucelabs')) {
+  console.info(`Saucelabs target detected: ${process.env.TEST_TARGET}`);
+  process.env.KARMA_WEB_TEST_MODE = 'SL_REQUIRED';
+}
+
 module.exports = function(config) {
   const conf = {
     frameworks: ['jasmine'],
@@ -41,13 +48,6 @@ module.exports = function(config) {
       {pattern: 'packages/platform-browser/test/static_assets/**/*', included: false},
       {pattern: 'packages/platform-browser/test/browser/static_assets/**/*', included: false},
 
-      // Serve polyfills necessary for testing the `elements` package.
-      {
-        pattern: 'node_modules/@webcomponents/custom-elements/**/*.js',
-        included: false,
-        watched: false,
-      },
-
       'node_modules/reflect-metadata/Reflect.js',
 
       'dist/legacy-test-bundle.spec.js',
@@ -57,7 +57,6 @@ module.exports = function(config) {
 
     plugins: [
       'karma-jasmine',
-      'karma-sauce-launcher',
       'karma-chrome-launcher',
       'karma-sourcemap-loader',
     ],
@@ -106,20 +105,29 @@ module.exports = function(config) {
     set: () => {},
   });
 
-  if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
-    console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
+  if (isBazel) {
+    // Add the custom Saucelabs daemon to the plugins
+    const saucelabsDaemonLauncher = require('./tools/saucelabs-daemon/launcher/index.cjs').default;
+    conf.plugins.push(saucelabsDaemonLauncher);
+  } else {
+    conf.plugins.push('karma-sauce-launcher');
 
-    const tunnelIdentifier = process.env['SAUCE_TUNNEL_IDENTIFIER'];
+    if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
+      console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
 
-    // Setup the Saucelabs plugin so that it can launch browsers using the proper tunnel.
-    conf.sauceLabs.build = tunnelIdentifier;
-    conf.sauceLabs.tunnelIdentifier = tunnelIdentifier;
+      const tunnelIdentifier = process.env['SAUCE_TUNNEL_IDENTIFIER'];
 
-    // Patch the `saucelabs` package so that `karma-sauce-launcher` does not attempt downloading
-    // the test logs from upstream and tries re-uploading them with the Karma enhanced details.
-    // This slows-down tests/browser restarting and can decrease stability.
-    // https://github.com/karma-runner/karma-sauce-launcher/blob/59b0c5c877448e064ad56449cd906743721c6b62/src/launcher/launcher.ts#L72-L79.
-    require('saucelabs').default.prototype.downloadJobAsset = () => Promise.resolve('<FAKE-LOGS>');
+      // Setup the Saucelabs plugin so that it can launch browsers using the proper tunnel.
+      conf.sauceLabs.build = tunnelIdentifier;
+      conf.sauceLabs.tunnelIdentifier = tunnelIdentifier;
+
+      // Patch the `saucelabs` package so that `karma-sauce-launcher` does not attempt downloading
+      // the test logs from upstream and tries re-uploading them with the Karma enhanced details.
+      // This slows-down tests/browser restarting and can decrease stability.
+      // https://github.com/karma-runner/karma-sauce-launcher/blob/59b0c5c877448e064ad56449cd906743721c6b62/src/launcher/launcher.ts#L72-L79.
+      require('saucelabs').default.prototype.downloadJobAsset = () =>
+          Promise.resolve('<FAKE-LOGS>');
+    }
   }
 
   // For SauceLabs jobs, we set up a domain which resolves to the machine which launched

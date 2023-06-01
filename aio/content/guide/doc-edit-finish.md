@@ -10,7 +10,7 @@ This procedure confirms that your commit is now in the `main` branch of the `ang
 
 #### To review the commit log on <code>github.com</code> for your commit
 
-In a web browser, open [`https://https://github.com/angular/angular/commits/main`](https://github.com/angular/angular/commits/main).
+In a web browser, open [`https://github.com/angular/angular/commits/main`](https://github.com/angular/angular/commits/main).
 
 1.  Review the commit list.
     1.  Find the entry with your GitHub username, commit message, and pull request number of your commit.

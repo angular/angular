@@ -150,14 +150,14 @@
 
 
 <h4 id="ngFor-index">*ngFor with index</h4>
-<p>with <i>semi-colon</i> separator</p>
+<p>with <em>semi-colon</em> separator</p>
 <div class="box">
   <!-- #docregion NgFor-3 -->
   <div *ngFor="let item of items; let i=index">{{i + 1}} - {{item.name}}</div>
   <!-- #enddocregion NgFor-3 -->
 </div>
 
-<p>with <i>comma</i> separator</p>
+<p>with <em>comma</em> separator</p>
 <div class="box">
  <div *ngFor="let item of items, let i=index">{{i + 1}} - {{item.name}}</div>
 </div>
@@ -167,7 +167,7 @@
 <button type="button" (click)="changeIds()">Change ids</button>
 <button type="button" (click)="clearTrackByCounts()">Clear counts</button>
 
-<p><i>without</i> trackBy</p>
+<p><em>without</em> trackBy</p>
 <div class="box">
   <div #noTrackBy *ngFor="let item of items">({{item.id}}) {{item.name}}</div>
 
@@ -187,7 +187,7 @@
 
 <br><br><br>
 
-<p>with trackBy and <i>semi-colon</i> separator</p>
+<p>with trackBy and <em>semi-colon</em> separator</p>
 <div class="box">
   <!-- #docregion trackBy -->
   <div *ngFor="let item of items; trackBy: trackByItems">
@@ -196,17 +196,17 @@
   <!-- #enddocregion trackBy -->
 </div>
 
-<p>with trackBy and <i>comma</i> separator</p>
+<p>with trackBy and <em>comma</em> separator</p>
 <div class="box">
   <div *ngFor="let item of items, trackBy: trackByItems">({{item.id}}) {{item.name}}</div>
 </div>
 
-<p>with trackBy and <i>space</i> separator</p>
+<p>with trackBy and <em>space</em> separator</p>
 <div class="box">
   <div *ngFor="let item of items trackBy: trackByItems">({{item.id}}) {{item.name}}</div>
 </div>
 
-<p>with <i>generic</i> trackById function</p>
+<p>with <em>generic</em> trackById function</p>
 <div class="box">
   <div *ngFor="let item of items, trackBy: trackById">({{item.id}}) {{item.name}}</div>
 </div>

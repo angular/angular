@@ -54,7 +54,7 @@ describe('EventManager', () => {
     const plugin = new FakeEventManagerPlugin(doc, ['dblclick']);
     const manager = new EventManager([plugin], new FakeNgZone());
     expect(() => manager.addEventListener(element, 'click', null!))
-        .toThrowError('No event manager plugin found for event click');
+        .toThrowError('NG05101: No event manager plugin found for event click');
   });
 
   it('events are caught when fired from a child', () => {
@@ -73,26 +73,6 @@ describe('EventManager', () => {
     getDOM().dispatchEvent(child, dispatchedEvent);
 
     expect(receivedEvent).toBe(dispatchedEvent);
-  });
-
-  it('should add and remove global event listeners', () => {
-    const element = el('<div><div></div></div>');
-    doc.body.appendChild(element);
-    const dispatchedEvent = createMouseEvent('click');
-    let receivedEvent: any /** TODO #9100 */ = null;
-    const handler = (e: any /** TODO #9100 */) => {
-      receivedEvent = e;
-    };
-    const manager = new EventManager([domEventPlugin], new FakeNgZone());
-
-    const remover = manager.addGlobalEventListener('document', 'click', handler);
-    getDOM().dispatchEvent(element, dispatchedEvent);
-    expect(receivedEvent).toBe(dispatchedEvent);
-
-    receivedEvent = null;
-    remover();
-    getDOM().dispatchEvent(element, dispatchedEvent);
-    expect(receivedEvent).toBe(null);
   });
 
   it('should keep zone when addEventListener', () => {

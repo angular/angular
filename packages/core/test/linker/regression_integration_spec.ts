@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, destroyPlatform, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, Component, ComponentRef, ContentChild, createComponent, destroyPlatform, Directive, EnvironmentInjector, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {BrowserModule, By} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -186,19 +186,6 @@ describe('regressions', () => {
       const injector = createInjector([{provide: 'someToken', useValue: data}]);
       expect(injector.get('someToken')).toEqual(data);
     });
-
-    describe('ANALYZE_FOR_ENTRY_COMPONENTS providers', () => {
-      it('should support class instances', () => {
-        class SomeObject {
-          someMethod() {}
-        }
-
-        expect(
-            () => createInjector(
-                [{provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: new SomeObject(), multi: true}]))
-            .not.toThrow();
-      });
-    });
   });
 
   it('should allow logging a previous elements class binding via interpolation', () => {
@@ -347,9 +334,8 @@ describe('regressions', () => {
     class App {
     }
 
-    const modRef = TestBed.configureTestingModule({declarations: [App]}).inject(NgModuleRef);
     const compRef =
-        modRef.componentFactoryResolver.resolveComponentFactory(App).create(Injector.NULL);
+        createComponent(App, {environmentInjector: TestBed.inject(EnvironmentInjector)});
 
     expect(compRef.location.nativeElement.hasAttribute('ng-version')).toBe(false);
   });

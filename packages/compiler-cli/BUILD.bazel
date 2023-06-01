@@ -7,6 +7,7 @@ package(default_visibility = ["//visibility:public"])
 PUBLIC_TARGETS = [
     ":compiler-cli",
     "//packages/compiler-cli/private",
+    "//packages/compiler-cli/ngcc",
     "//packages/compiler-cli/linker",
     "//packages/compiler-cli/linker/babel",
 ]
@@ -22,6 +23,7 @@ esbuild(
     entry_points = [
         ":index.ts",
         "//packages/compiler-cli:src/bin/ngc.ts",
+        "//packages/compiler-cli/ngcc:index.ts",
         "//packages/compiler-cli:src/bin/ng_xi18n.ts",
         "//packages/compiler-cli/linker:index.ts",
         "//packages/compiler-cli/linker/babel:index.ts",

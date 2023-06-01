@@ -24,34 +24,6 @@ describe('NgModule', () => {
   class TestCmp2 {
   }
 
-  describe('entryComponents', () => {
-    it('should throw when specified entry component is not added to a module', () => {
-      @NgModule({entryComponents: [TestCmp, [TestCmp2]]})
-      class MyModule {
-      }
-
-      TestBed.configureTestingModule({imports: [MyModule]});
-
-      expect(() => {
-        TestBed.createComponent(TestCmp);
-        TestBed.createComponent(TestCmp2);
-      }).toThrowError(/not part of any NgModule/);
-    });
-
-    it('should not throw when specified entry component is added to a module', () => {
-      @NgModule({declarations: [TestCmp, TestCmp2], entryComponents: [TestCmp, [TestCmp2]]})
-      class MyModule {
-      }
-
-      TestBed.configureTestingModule({imports: [MyModule]});
-
-      expect(() => {
-        TestBed.createComponent(TestCmp);
-        TestBed.createComponent(TestCmp2);
-      }).not.toThrow();
-    });
-  });
-
   describe('bootstrap', () => {
     it('should throw when specified bootstrap component is not added to a module', () => {
       @NgModule({bootstrap: [TestCmp, [TestCmp2]]})

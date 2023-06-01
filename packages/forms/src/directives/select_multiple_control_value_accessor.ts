@@ -179,7 +179,7 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
 
   /** @internal */
   _getOptionId(value: any): string|null {
-    for (const id of Array.from(this._optionMap.keys())) {
+    for (const id of this._optionMap.keys()) {
       if (this._compareWith(this._optionMap.get(id)!._value, value)) return id;
     }
     return null;

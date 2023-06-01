@@ -42,14 +42,14 @@ System.config({
   // Assume npm: is set in `paths` in systemjs.config
   // Map the angular testing bundles
   map: {
-    '@angular/core/testing': 'npm:@angular/core/fesm2015/testing.mjs',
-    '@angular/common/testing': 'npm:@angular/common/fesm2015/testing.mjs',
-    '@angular/common/http/testing': 'npm:@angular/common/fesm2015/http/testing.mjs',
-    '@angular/compiler/testing': 'npm:@angular/compiler/fesm2015/testing.mjs',
-    '@angular/platform-browser/testing': 'npm:@angular/platform-browser/fesm2015/testing.mjs',
-    '@angular/platform-browser-dynamic/testing': 'npm:@angular/platform-browser-dynamic/fesm2015/testing.mjs',
-    '@angular/router/testing': 'npm:@angular/router/fesm2015/testing.mjs',
-    '@angular/forms/testing': 'npm:@angular/forms/fesm2015/testing.mjs',
+    '@angular/core/testing': 'npm:@angular/core/fesm2022/testing.mjs',
+    '@angular/common/testing': 'npm:@angular/common/fesm2022/testing.mjs',
+    '@angular/common/http/testing': 'npm:@angular/common/fesm2022/http/testing.mjs',
+    '@angular/compiler/testing': 'npm:@angular/compiler/fesm2022/testing.mjs',
+    '@angular/platform-browser/testing': 'npm:@angular/platform-browser/fesm2022/testing.mjs',
+    '@angular/platform-browser-dynamic/testing': 'npm:@angular/platform-browser-dynamic/fesm2022/testing.mjs',
+    '@angular/router/testing': 'npm:@angular/router/fesm2022/testing.mjs',
+    '@angular/forms/testing': 'npm:@angular/forms/fesm2022/testing.mjs',
   },
 });
 

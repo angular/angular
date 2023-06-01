@@ -12,12 +12,6 @@ if (isBrowser) {
   describe('ResourceLoaderImpl', () => {
     let resourceLoader: ResourceLoaderImpl;
 
-    // TODO(juliemr): This file currently won't work with dart unit tests run using
-    // exclusive it or describe (iit or ddescribe). This is because when
-    // pub run test is executed against this specific file the relative paths
-    // will be relative to here, so url200 should look like
-    // static_assets/200.html.
-    // We currently have no way of detecting this.
     const url200 = '/base/angular/packages/platform-browser/test/browser/static_assets/200.html';
     const url404 = '/bad/path/404.html';
 

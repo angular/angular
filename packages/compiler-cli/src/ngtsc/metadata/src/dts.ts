@@ -60,6 +60,9 @@ export class DtsMetadataReader implements MetadataReader {
       rawImports: null,
       rawExports: null,
       decorator: null,
+      // NgModules declared outside the current compilation are assumed to contain providers, as it
+      // would be a non-breaking change for a library to introduce providers at any point.
+      mayDeclareProviders: true,
     };
   }
 
@@ -99,9 +102,12 @@ export class DtsMetadataReader implements MetadataReader {
     const inputs = ClassPropertyMapping.fromMappedObject(readInputsType(def.type.typeArguments[3]));
     const outputs = ClassPropertyMapping.fromMappedObject(
         readMapType(def.type.typeArguments[4], readStringType));
+
     const hostDirectives = def.type.typeArguments.length > 8 ?
         readHostDirectivesType(this.checker, def.type.typeArguments[8], ref.bestGuessOwningModule) :
         null;
+    const isSignal =
+        def.type.typeArguments.length > 9 && (readBooleanType(def.type.typeArguments[9]) ?? false);
 
     return {
       kind: MetaKind.Directive,
@@ -121,12 +127,15 @@ export class DtsMetadataReader implements MetadataReader {
       isStructural,
       animationTriggerNames: null,
       isStandalone,
+      isSignal,
       // Imports are tracked in metadata only for template type-checking purposes,
       // so standalone components from .d.ts files don't have any.
       imports: null,
       // The same goes for schemas.
       schemas: null,
       decorator: null,
+      // Assume that standalone components from .d.ts files may export providers.
+      assumedToExportProviders: isComponent && isStandalone,
     };
   }
 
@@ -178,13 +187,31 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
       }
 
       const stringValue = readStringType(member.type);
+      const classPropertyName = member.name.text;
 
-      // TODO(required-inputs): handle object literal case.
+      // Before v16 the inputs map has the type of `{[field: string]: string}`.
+      // After v16 it has the type of `{[field: string]: {alias: string, required: boolean}}`.
       if (stringValue != null) {
-        inputsMap[member.name.text] = {
+        inputsMap[classPropertyName] = {
           bindingPropertyName: stringValue,
-          classPropertyName: member.name.text,
-          required: false
+          classPropertyName,
+          required: false,
+          // Input transform are only tracked for locally-compiled directives. Directives coming
+          // from the .d.ts already have them included through `ngAcceptInputType` class members.
+          transform: null,
+        };
+      } else {
+        const config = readMapType(member.type, innerValue => {
+                         return readStringType(innerValue) ?? readBooleanType(innerValue);
+                       }) as {alias: string, required: boolean};
+
+        inputsMap[classPropertyName] = {
+          classPropertyName,
+          bindingPropertyName: config.alias,
+          required: config.required,
+          // Input transform are only tracked for locally-compiled directives. Directives coming
+          // from the .d.ts already have them included through `ngAcceptInputType` class members.
+          transform: null,
         };
       }
     }

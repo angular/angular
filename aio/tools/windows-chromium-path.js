@@ -17,7 +17,7 @@ exports.getAdjustedChromeBinPathForWindows = function() {
         const runfilesWorkspaceRoot = path.join(process.env.RUNFILES, 'angular');
 
         // Get the path to chromium from the runfiles base folder. By default, the Bazel make var
-        // $(CHROMIUM) (which CHROME_BIN is set to) has a preceeding '../' to escape the workspace
+        // $(CHROMIUM) (which CHROME_BIN is set to) has a preceding '../' to escape the workspace
         // root within runfiles. Additional '../' may have been prepended to cancel out any chdirs.
         const chromiumPath = process.env.CHROME_BIN.replace(/^(\.\.\/)*/, '');
 

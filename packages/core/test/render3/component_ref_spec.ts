@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ComponentRef} from '@angular/core';
 import {ComponentFactoryResolver} from '@angular/core/src/render3/component_ref';
 import {Renderer} from '@angular/core/src/render3/interfaces/renderer';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {TestBed} from '@angular/core/testing';
 
-import {ChangeDetectionStrategy, Component, Injector, Input, NgModuleRef, OnChanges, Output, RendererType2, SimpleChanges, ViewEncapsulation} from '../../src/core';
+import {ChangeDetectionStrategy, Component, Injector, Input, NgModuleRef, OnChanges, Output, RendererType2, SimpleChanges, ViewChild, ViewContainerRef, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
@@ -107,9 +108,11 @@ describe('ComponentFactory', () => {
 
     describe('(when `ngModuleRef` is not provided)', () => {
       it('should retrieve `RendererFactory2` from the specified injector', () => {
-        const injector = Injector.create([
-          {provide: RendererFactory2, useValue: rendererFactorySpy},
-        ]);
+        const injector = Injector.create({
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+          ]
+        });
 
         cf.create(injector);
 
@@ -118,10 +121,12 @@ describe('ComponentFactory', () => {
 
       it('should retrieve `Sanitizer` from the specified injector', () => {
         const sanitizerFactorySpy = jasmine.createSpy('sanitizerFactory').and.returnValue({});
-        const injector = Injector.create([
-          {provide: RendererFactory2, useValue: rendererFactorySpy},
-          {provide: Sanitizer, useFactory: sanitizerFactorySpy, deps: []},
-        ]);
+        const injector = Injector.create({
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+            {provide: Sanitizer, useFactory: sanitizerFactorySpy, deps: []},
+          ]
+        });
 
         cf.create(injector);
 
@@ -131,10 +136,12 @@ describe('ComponentFactory', () => {
 
     describe('(when `ngModuleRef` is provided)', () => {
       it('should retrieve `RendererFactory2` from the specified injector first', () => {
-        const injector = Injector.create([
-          {provide: RendererFactory2, useValue: rendererFactorySpy},
-        ]);
-        const mInjector = Injector.create([THROWING_RENDERER_FACTOR2_PROVIDER]);
+        const injector = Injector.create({
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+          ]
+        });
+        const mInjector = Injector.create({providers: [THROWING_RENDERER_FACTOR2_PROVIDER]});
 
         cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
 
@@ -143,10 +150,12 @@ describe('ComponentFactory', () => {
 
       it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector',
          () => {
-           const injector = Injector.create([]);
-           const mInjector = Injector.create([
-             {provide: RendererFactory2, useValue: rendererFactorySpy},
-           ]);
+           const injector = Injector.create({providers: []});
+           const mInjector = Injector.create({
+             providers: [
+               {provide: RendererFactory2, useValue: rendererFactorySpy},
+             ]
+           });
 
            cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
 
@@ -156,16 +165,20 @@ describe('ComponentFactory', () => {
       it('should retrieve `Sanitizer` from the specified injector first', () => {
         const iSanitizerFactorySpy =
             jasmine.createSpy('Injector#sanitizerFactory').and.returnValue({});
-        const injector = Injector.create([
-          {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
-        ]);
+        const injector = Injector.create({
+          providers: [
+            {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
+          ]
+        });
 
         const mSanitizerFactorySpy =
             jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
-        const mInjector = Injector.create([
-          {provide: RendererFactory2, useValue: rendererFactorySpy},
-          {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
-        ]);
+        const mInjector = Injector.create({
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+            {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+          ]
+        });
 
         cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
 
@@ -175,14 +188,16 @@ describe('ComponentFactory', () => {
 
       it('should retrieve `Sanitizer` from the `ngModuleRef` if not provided by the injector',
          () => {
-           const injector = Injector.create([]);
+           const injector = Injector.create({providers: []});
 
            const mSanitizerFactorySpy =
                jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
-           const mInjector = Injector.create([
-             {provide: RendererFactory2, useValue: rendererFactorySpy},
-             {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
-           ]);
+           const mInjector = Injector.create({
+             providers: [
+               {provide: RendererFactory2, useValue: rendererFactorySpy},
+               {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+             ]
+           });
 
 
            cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
@@ -193,10 +208,14 @@ describe('ComponentFactory', () => {
 
     describe('(when the factory is bound to a `ngModuleRef`)', () => {
       it('should retrieve `RendererFactory2` from the specified injector first', () => {
-        const injector = Injector.create([
-          {provide: RendererFactory2, useValue: rendererFactorySpy},
-        ]);
-        (cf as any).ngModule = {injector: Injector.create([THROWING_RENDERER_FACTOR2_PROVIDER])};
+        const injector = Injector.create({
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+          ]
+        });
+        (cf as any).ngModule = {
+          injector: Injector.create({providers: [THROWING_RENDERER_FACTOR2_PROVIDER]})
+        };
 
         cf.create(injector);
 
@@ -205,11 +224,13 @@ describe('ComponentFactory', () => {
 
       it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector',
          () => {
-           const injector = Injector.create([]);
+           const injector = Injector.create({providers: []});
            (cf as any).ngModule = {
-             injector: Injector.create([
-               {provide: RendererFactory2, useValue: rendererFactorySpy},
-             ])
+             injector: Injector.create({
+               providers: [
+                 {provide: RendererFactory2, useValue: rendererFactorySpy},
+               ]
+             })
            };
 
            cf.create(injector);
@@ -220,17 +241,21 @@ describe('ComponentFactory', () => {
       it('should retrieve `Sanitizer` from the specified injector first', () => {
         const iSanitizerFactorySpy =
             jasmine.createSpy('Injector#sanitizerFactory').and.returnValue({});
-        const injector = Injector.create([
-          {provide: RendererFactory2, useValue: rendererFactorySpy},
-          {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
-        ]);
+        const injector = Injector.create({
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+            {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
+          ]
+        });
 
         const mSanitizerFactorySpy =
             jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
         (cf as any).ngModule = {
-          injector: Injector.create([
-            {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
-          ])
+          injector: Injector.create({
+            providers: [
+              {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+            ]
+          })
         };
 
         cf.create(injector);
@@ -241,15 +266,17 @@ describe('ComponentFactory', () => {
 
       it('should retrieve `Sanitizer` from the `ngModuleRef` if not provided by the injector',
          () => {
-           const injector = Injector.create([]);
+           const injector = Injector.create({providers: []});
 
            const mSanitizerFactorySpy =
                jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
            (cf as any).ngModule = {
-             injector: Injector.create([
-               {provide: RendererFactory2, useValue: rendererFactorySpy},
-               {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
-             ])
+             injector: Injector.create({
+               providers: [
+                 {provide: RendererFactory2, useValue: rendererFactorySpy},
+                 {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+               ]
+             })
            };
 
 
@@ -270,9 +297,11 @@ describe('ComponentFactory', () => {
         }
       }
 
-      const injector = Injector.create([
-        {provide: RendererFactory2, useFactory: () => new TestMockRendererFactory(), deps: []},
-      ]);
+      const injector = Injector.create({
+        providers: [
+          {provide: RendererFactory2, useFactory: () => new TestMockRendererFactory(), deps: []},
+        ]
+      });
 
       const hostNode = document.createElement('div');
       const componentRef = cf.create(injector, undefined, hostNode);
@@ -368,6 +397,70 @@ describe('ComponentFactory', () => {
       fixture.componentRef.setInput('in', 'pushed');
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('pushed');
+    });
+
+    it('should not set input if value is the same as the previous', () => {
+      let log: string[] = [];
+      @Component({
+        template: `{{in}}`,
+        standalone: true,
+      })
+      class DynamicCmp {
+        @Input()
+            set in(v: string) {
+          log.push(v);
+        }
+      }
+
+      const fixture = TestBed.createComponent(DynamicCmp);
+      fixture.componentRef.setInput('in', '1');
+      fixture.detectChanges();
+      fixture.componentRef.setInput('in', '1');
+      fixture.detectChanges();
+      fixture.componentRef.setInput('in', '2');
+      fixture.detectChanges();
+      expect(log).toEqual(['1', '2']);
+    });
+
+    it('marks parents dirty so component is not "shielded" by a non-dirty OnPush parent', () => {
+      @Component({
+        template: `{{input}}`,
+        standalone: true,
+        selector: 'dynamic',
+      })
+      class DynamicCmp {
+        @Input() input?: string;
+      }
+
+      @Component({
+        template: '<ng-template #template></ng-template>',
+        standalone: true,
+        imports: [DynamicCmp],
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class Wrapper {
+        @ViewChild('template', {read: ViewContainerRef}) template?: ViewContainerRef;
+        componentRef?: ComponentRef<DynamicCmp>;
+
+        create() {
+          this.componentRef = this.template!.createComponent(DynamicCmp);
+        }
+        setInput(value: string) {
+          this.componentRef!.setInput('input', value);
+        }
+      }
+
+      const fixture = TestBed.createComponent(Wrapper);
+      fixture.detectChanges();
+      fixture.componentInstance.create();
+
+      fixture.componentInstance.setInput('1');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerText).toBe('1');
+
+      fixture.componentInstance.setInput('2');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerText).toBe('2');
     });
   });
 });

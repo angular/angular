@@ -34,7 +34,7 @@ export function resetFakeAsyncZone(): void {
  *
  * Can be used to wrap `inject()` calls.
  *
- * @param fn The function that you want to wrap in the `fakeAysnc` zone.
+ * @param fn The function that you want to wrap in the `fakeAsync` zone.
  *
  * @usageNotes
  * ### Example

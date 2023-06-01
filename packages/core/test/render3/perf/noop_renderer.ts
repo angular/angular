@@ -174,8 +174,6 @@ class MicroBenchmarkDomRenderer implements Renderer {
     if (flags & RendererStyleFlags2.DashCase) {
       el.style.removeProperty(style);
     } else {
-      // IE requires '' instead of null
-      // see https://github.com/angular/angular/issues/7916
       el.style[style] = '';
     }
   }

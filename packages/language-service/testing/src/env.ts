@@ -48,12 +48,15 @@ export class LanguageServiceTestEnv {
 
   constructor(private host: MockServerHost, private projectService: ts.server.ProjectService) {}
 
-  addProject(name: string, files: ProjectFiles, options: TestableOptions = {}): Project {
+  addProject(
+      name: string, files: ProjectFiles, angularCompilerOptions: TestableOptions = {},
+      tsCompilerOptions = {}): Project {
     if (this.projects.has(name)) {
       throw new Error(`Project ${name} is already defined`);
     }
 
-    const project = Project.initialize(name, this.projectService, files, options);
+    const project = Project.initialize(
+        name, this.projectService, files, angularCompilerOptions, tsCompilerOptions);
     this.projects.set(name, project);
     return project;
   }

@@ -87,7 +87,7 @@
       // The destination value must be updated with each new major version.
       // When changing this value, be sure to update or add the corresponding
       //  test in angular/aio/tests/deployment/shared/URLS_TO_REDIRECT.txt
-      {"type": 301, "source": "/guide/update-to-latest-version", "destination": "/guide/update-to-version-15"},
+      {"type": 301, "source": "/guide/update-to-latest-version", "destination": "/guide/update-to-version-16"},
 
       // Renaming of Getting Started topics
       {"type": 301, "source": "/start/data", "destination": "/start/start-data"},
@@ -168,7 +168,6 @@
       // URLs that use the old scheme before we moved the docs to the angular/angular repo
       {"type": 301, "source": "/docs/*/latest", "destination": "/docs"},
       {"type": 301, "source": "/docs/*/latest/api/", "destination": "/api"},
-      {"type": 301, "source": "/docs/*/latest/api/:package", "destination": "/api/:package"},
       {"type": 301, "source": "/docs/*/latest/api/testing/:api-*",  "destination": "/api/core/testing/:api"},
       {"type": 301, "source": "/docs/*/latest/api/:package/:api-*", "destination": "/api/:package/:api"},
       {"type": 301, "source": "/docs/*/latest/api/:package/index/:api-*", "destination": "/api/:package/:api"},

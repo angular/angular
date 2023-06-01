@@ -10,8 +10,7 @@ import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@a
 import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injectable, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {ChildrenOutletContexts, Resolve, Router, RouterOutlet} from '@angular/router';
-import {RouterTestingModule} from '@angular/router/testing';
+import {ChildrenOutletContexts, DefaultUrlSerializer, Router, RouterModule, RouterOutlet, UrlSerializer, UrlTree} from '@angular/router';
 import {of} from 'rxjs';
 import {delay, mapTo} from 'rxjs/operators';
 
@@ -44,7 +43,7 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes(
+           imports: [RouterModule.forRoot(
                [{path: 'link-a', component: SimpleCmp}, {path: 'link-b', component: SimpleCmp}])],
            declarations: [LinkComponent, SimpleCmp]
          });
@@ -88,7 +87,7 @@ describe('Integration', () => {
          }
 
          @NgModule({
-           imports: [CommonModule, RouterTestingModule],
+           imports: [CommonModule, RouterModule.forRoot([])],
            declarations: [MyCmp, SimpleCmp],
          })
          class MyModule {
@@ -143,7 +142,7 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}])],
+           imports: [RouterModule.forRoot([{path: 'simple', component: SimpleCmp}])],
            declarations: [ComponentWithRouterLink, SimpleCmp]
          });
 
@@ -179,7 +178,7 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}])],
+           imports: [RouterModule.forRoot([{path: 'simple', component: SimpleCmp}])],
            declarations: [OnPushComponent, SimpleCmp]
          });
 
@@ -204,8 +203,8 @@ describe('Integration', () => {
        }
 
        TestBed.configureTestingModule({
-         imports: [RouterTestingModule.withRoutes(
-             [{path: ':id', component: SimpleComponent, outlet: 'aux'}])],
+         imports:
+             [RouterModule.forRoot([{path: ':id', component: SimpleComponent, outlet: 'aux'}])],
          declarations: [SimpleComponent, AppComponent],
        });
 
@@ -246,12 +245,13 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes([
+           imports: [RouterModule.forRoot([
              {path: '', component: SimpleCmp},
              {path: 'one', component: OneCmp, canActivate: ['returnRootUrlTree']}
            ])],
            declarations: [SimpleCmp, RootCmp, OneCmp],
            providers: [
+             provideLocationMocks(),
              {
                provide: 'returnRootUrlTree',
                useFactory: (router: Router) => () => {
@@ -278,13 +278,13 @@ describe('Integration', () => {
   });
 
   describe('duplicate navigation handling (#43447, #43446)', () => {
-    let location: SpyLocation;
+    let location: Location;
     let router: Router;
     let fixture: ComponentFixture<{}>;
 
     beforeEach(fakeAsync(() => {
       @Injectable()
-      class DelayedResolve implements Resolve<{}> {
+      class DelayedResolve {
         resolve() {
           return of('').pipe(delay(1000), mapTo(true));
         }
@@ -316,7 +316,7 @@ describe('Integration', () => {
       });
 
       router = TestBed.inject(Router);
-      location = TestBed.inject(Location) as SpyLocation;
+      location = TestBed.inject(Location);
 
       router.navigateByUrl('/');
       // Will setup location change listeners
@@ -324,9 +324,9 @@ describe('Integration', () => {
     }));
 
     it('duplicate navigation to same url', fakeAsync(() => {
-         location.simulateHashChange('/one');
+         location.go('/one');
          tick(100);
-         location.simulateHashChange('/one');
+         location.go('/one');
          tick(1000);
          advance(fixture);
 
@@ -364,7 +364,7 @@ describe('Integration', () => {
     }
 
     TestBed.configureTestingModule({
-      imports: [CommonModule, RouterTestingModule.withRoutes([{path: '**', component: EmptyCmp}])],
+      imports: [CommonModule, RouterModule.forRoot([{path: '**', component: EmptyCmp}])],
       declarations: [TestCmp, EmptyCmp]
     });
     const fixture = TestBed.createComponent(TestCmp);
@@ -388,6 +388,32 @@ describe('Integration', () => {
     // Destroying the first one show not clear the outlet context because the second one takes over
     // as the registered outlet.
     expect(contexts.getContext('primary')?.outlet).not.toBeNull();
+  });
+
+  it('should respect custom serializer all the way to the final url on state', async () => {
+    const QUERY_VALUE = {user: 'atscott'};
+    const SPECIAL_SERIALIZATION = 'special';
+
+    class CustomSerializer extends DefaultUrlSerializer {
+      override serialize(tree: UrlTree): string {
+        const mutableCopy = new UrlTree(tree.root, {...tree.queryParams}, tree.fragment);
+        if (mutableCopy.queryParams['q']) {
+          mutableCopy.queryParams['q'] = SPECIAL_SERIALIZATION;
+        }
+        return new DefaultUrlSerializer().serialize(mutableCopy);
+      }
+    }
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), {provide: UrlSerializer, useValue: new CustomSerializer()}]
+    });
+
+    const router = TestBed.inject(Router);
+    const tree = router.createUrlTree([]);
+    tree.queryParams = {q: QUERY_VALUE};
+    await router.navigateByUrl(tree);
+
+    expect(router.url).toEqual(`/?q=${SPECIAL_SERIALIZATION}`);
   });
 });
 

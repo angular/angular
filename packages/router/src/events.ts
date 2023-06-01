@@ -180,7 +180,7 @@ export const enum NavigationCancellationCode {
    */
   SupersededByNewNavigation,
   /**
-   * A navigation failed because one of the resolvers completed without emiting a value.
+   * A navigation failed because one of the resolvers completed without emitting a value.
    */
   NoDataFromResolver,
   /**

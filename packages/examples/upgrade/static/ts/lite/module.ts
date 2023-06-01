@@ -122,8 +122,6 @@ class Ng1HeroComponentWrapper extends UpgradeComponent {
     // Register an Angular provider whose value is the "upgraded" AngularJS service.
     {provide: 'titleCase', useFactory: (i: any) => i.get('titleCase'), deps: ['$injector']}
   ],
-  // All components that are to be "downgraded" must be declared as `entryComponents`.
-  entryComponents: [Ng2HeroesComponent]
   // Note that there are no `bootstrap` components, since the "downgraded" component
   // will be instantiated by ngUpgrade.
 })

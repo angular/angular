@@ -14,11 +14,13 @@ import {Injector, MeasureValues, RegressionSlopeValidator} from '../../index';
 
     function createValidator({size, metric}: {size: number, metric: string}) {
       validator = Injector
-                      .create([
-                        RegressionSlopeValidator.PROVIDERS,
-                        {provide: RegressionSlopeValidator.METRIC, useValue: metric},
-                        {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: size}
-                      ])
+                      .create({
+                        providers: [
+                          RegressionSlopeValidator.PROVIDERS,
+                          {provide: RegressionSlopeValidator.METRIC, useValue: metric},
+                          {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: size}
+                        ]
+                      })
                       .get(RegressionSlopeValidator);
     }
 

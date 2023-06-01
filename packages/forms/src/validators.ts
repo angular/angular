@@ -14,7 +14,6 @@ import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, Validator
 import {RuntimeErrorCode} from './errors';
 import {AbstractControl} from './model/abstract_model';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 function isEmptyInputValue(value: any): boolean {
   /**
@@ -572,7 +571,7 @@ function isPresent(o: any): boolean {
 
 export function toObservable(value: any): Observable<any> {
   const obs = isPromise(value) ? from(value) : value;
-  if (NG_DEV_MODE && !(isSubscribable(obs))) {
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && !(isSubscribable(obs))) {
     let errorMessage = `Expected async validator to return Promise or Observable.`;
     // A synchronous validator will return object or null.
     if (typeof value === 'object') {

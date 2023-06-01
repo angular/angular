@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import ts from 'typescript';
+
 import {initMockFileSystem} from '../../file_system/testing';
 import {TypeCheckingConfig} from '../api';
 import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from '../testing';
@@ -593,6 +595,37 @@ describe('type check blocks', () => {
     expect(block).toContain(
         'var _t1: typeof i0.Dir.ngAcceptInputType_fieldA = null!; ' +
         '_t1 = (((this).foo));');
+  });
+
+  it('should use transform type if an input has one', () => {
+    const TEMPLATE = `<div dir [fieldA]="expr"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {
+        fieldA: {
+          bindingPropertyName: 'fieldA',
+          classPropertyName: 'fieldA',
+          required: false,
+          transform: {
+            node: ts.factory.createFunctionDeclaration(
+                undefined, undefined, undefined, undefined, [], undefined, undefined),
+            type: ts.factory.createUnionTypeNode([
+              ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+              ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+            ])
+          },
+        },
+      },
+      coercedInputFields: ['fieldA'],
+    }];
+
+    const block = tcb(TEMPLATE, DIRECTIVES);
+
+    expect(block).toContain(
+        'var _t1: boolean | string = null!; ' +
+        '_t1 = (((this).expr));');
   });
 
   it('should handle $any casts', () => {

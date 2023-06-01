@@ -10,7 +10,7 @@ import {DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
 import {RNode} from '../render3/interfaces/renderer_dom';
 
 import {removeDehydratedViews} from './cleanup';
-import {DehydratedContainerView, NUM_ROOT_NODES, SerializedContainerView, TEMPLATE_ID} from './interfaces';
+import {DehydratedContainerView, MULTIPLIER, NUM_ROOT_NODES, SerializedContainerView, TEMPLATE_ID} from './interfaces';
 import {siblingAfter} from './node_lookup_utils';
 
 
@@ -24,21 +24,25 @@ export function locateDehydratedViewsInContainer(
     serializedViews: SerializedContainerView[]): [RNode, DehydratedContainerView[]] {
   const dehydratedViews: DehydratedContainerView[] = [];
   for (const serializedView of serializedViews) {
-    const view: DehydratedContainerView = {
-      data: serializedView,
-      firstChild: null,
-    };
-    if (serializedView[NUM_ROOT_NODES] > 0) {
-      // Keep reference to the first node in this view,
-      // so it can be accessed while invoking template instructions.
-      view.firstChild = currentRNode as HTMLElement;
+    // Repeats a view multiple times as needed, based on the serialized information
+    // (for example, for *ngFor-produced views).
+    for (let i = 0; i < (serializedView[MULTIPLIER] ?? 1); i++) {
+      const view: DehydratedContainerView = {
+        data: serializedView,
+        firstChild: null,
+      };
+      if (serializedView[NUM_ROOT_NODES] > 0) {
+        // Keep reference to the first node in this view,
+        // so it can be accessed while invoking template instructions.
+        view.firstChild = currentRNode as HTMLElement;
 
-      // Move over to the next node after this view, which can
-      // either be a first node of the next view or an anchor comment
-      // node after the last view in a container.
-      currentRNode = siblingAfter(serializedView[NUM_ROOT_NODES], currentRNode)!;
+        // Move over to the next node after this view, which can
+        // either be a first node of the next view or an anchor comment
+        // node after the last view in a container.
+        currentRNode = siblingAfter(serializedView[NUM_ROOT_NODES], currentRNode)!;
+      }
+      dehydratedViews.push(view);
     }
-    dehydratedViews.push(view);
   }
 
   return [currentRNode, dehydratedViews];

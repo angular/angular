@@ -31,13 +31,16 @@ import { HousingService } from '../housing.service';
 export class HomeComponent {
   housingLocationList: HousingLocation[] = [];
   housingService: HousingService = inject(HousingService);
+  // #docregion add-filtered-location-list
   filteredLocationList: HousingLocation[] = [];
-
+  // #enddocregion
+  // #docregion update-constructor
   constructor() {
     this.housingLocationList = this.housingService.getAllHousingLocations();
     this.filteredLocationList = this.housingLocationList;
   }
-
+  // #enddocregion
+  // #docregion add-filter-results-fn
   filterResults(text: string) {
     if (!text) {
       this.filteredLocationList = this.housingLocationList;
@@ -47,5 +50,5 @@ export class HomeComponent {
       housingLocation => housingLocation?.city.toLowerCase().includes(text.toLowerCase())
     );
   }
-
+  // #enddocregion
 }
