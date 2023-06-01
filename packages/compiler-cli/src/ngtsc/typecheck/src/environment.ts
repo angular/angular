@@ -182,6 +182,11 @@ export class Environment implements ReferenceEmitEnvironment {
         type, this.contextFile, this.reflector, this.refEmitter, this.importManager);
   }
 
+  referenceExternalSymbol(moduleName: string, name: string): ts.Expression {
+    const external = new ExternalExpr({moduleName, name});
+    return translateExpression(external, this.importManager);
+  }
+
   getPreludeStatements(): ts.Statement[] {
     return [
       ...this.pipeInstStatements,

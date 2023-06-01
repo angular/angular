@@ -18,6 +18,12 @@ import {ReactiveNode} from './graph';
  */
 let postSignalSetFn: (() => void)|null = null;
 
+// TODO(signals)
+// This will be replaced, depending on how we implement `InputSignal`
+export function ɵɵtoWritableSignal<T>(_s: Signal<T>): WritableSignal<T> {
+  return null as any;
+}
+
 /**
  * A `Signal` with a value that can be mutated via a setter interface.
  *
