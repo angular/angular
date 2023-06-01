@@ -33,6 +33,12 @@ export interface WritableSignal<T> extends Signal<T> {
   asReadonly(): Signal<T>;
 }
 
+// TODO(signals)
+// This will be replaced, depending on how we implement `InputSignal`
+export function ɵɵtoWritableSignal<T>(_s: Signal<T>): WritableSignal<T> {
+  return null as any;
+}
+
 /**
  * Options passed to the `signal` creation function.
  */

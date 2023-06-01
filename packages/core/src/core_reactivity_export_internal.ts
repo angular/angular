@@ -20,6 +20,7 @@ export {
   CreateSignalOptions,
   signal,
   WritableSignal,
+  ɵɵtoWritableSignal
 } from './render3/reactivity/signal';
 export {
   untracked,
