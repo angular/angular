@@ -29,14 +29,16 @@ export class Greet<T> {
   selector: 'my-app',
   template: `
     Hello <greet [counter]="3" [bla4Public]="10" #ok
-      [bla3]="-10" [gen]="{yes: true}"
+      [bla3]="10" [gen]="{yes: true}"
     />
 
     <button (click)="ok.works().yes">Click</button>
   `,
   imports: [Greet],
+  signals: true,
 })
 export class MyApp {
+  someVar = -10;
 }
 
 bootstrapApplication(MyApp).catch((e) => console.error(e));

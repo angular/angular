@@ -156,6 +156,13 @@ export function styleMap(expression: o.Expression): ir.UpdateOp {
   return call(Identifiers.styleMap, [expression]);
 }
 
+export function propertyCreate(name: string, expression: o.Expression): ir.CreateOp {
+  return call(Identifiers.propertyCreate, [
+    o.literal(name),
+    o.fn([], [new o.ReturnStatement(expression)]),
+  ]);
+}
+
 const PIPE_BINDINGS: o.ExternalReference[] = [
   Identifiers.pipeBind1,
   Identifiers.pipeBind2,

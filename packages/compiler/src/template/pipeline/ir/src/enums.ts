@@ -126,7 +126,12 @@ export enum OpKind {
   /**
    * An operation to interpolate text into an attribute binding.
    */
+
   InterpolateAttribute,
+  /*
+   * TODO
+   */
+  PropertyCreate,
 }
 
 /**

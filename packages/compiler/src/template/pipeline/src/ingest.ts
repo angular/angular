@@ -20,8 +20,9 @@ import {BINARY_OPERATORS} from './conversion';
  * representation.
  */
 export function ingest(
-    componentName: string, template: t.Node[], constantPool: ConstantPool): ComponentCompilation {
-  const cpl = new ComponentCompilation(componentName, constantPool);
+    componentName: string, isSignal: boolean, template: t.Node[],
+    constantPool: ConstantPool): ComponentCompilation {
+  const cpl = new ComponentCompilation(componentName, isSignal, constantPool);
   ingestNodes(cpl.root, template);
   return cpl;
 }
@@ -307,10 +308,17 @@ function ingestPropertyBinding(
             throw Error('Unexpected style binding on ng-template');
           }
           view.update.push(ir.createStyleMapOp(xref, convertAst(value, view.tpl)));
-        } else {
-          view.update.push(
-              ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
+          break;
         }
+
+        if (view.tpl.isSignal) {
+          console.error('Signal');
+          // TODO: binding kind?
+          view.create.push(ir.createPropertyCreateOp(xref, name, convertAst(value, view.tpl)));
+          break;
+        }
+
+        view.update.push(ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
         break;
       case e.BindingType.Style:
         if (bindingKind !== ir.ElementAttributeKind.Binding) {
