@@ -425,7 +425,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
             continue;
           case TraitState.Pending:
             throw new Error(`Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${
-                Object.getPrototypeOf(trait.handler).constructor.name}`);
+                trait.handler.name}`);
           case TraitState.Resolved:
             throw new Error(`Resolving an already resolved trait`);
         }

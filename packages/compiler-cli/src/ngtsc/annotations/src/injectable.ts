@@ -42,7 +42,7 @@ export class InjectableDecoratorHandler implements
       private errorOnDuplicateProv = true) {}
 
   readonly precedence = HandlerPrecedence.SHARED;
-  readonly name = InjectableDecoratorHandler.name;
+  readonly name = 'InjectableDecoratorHandler';
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {

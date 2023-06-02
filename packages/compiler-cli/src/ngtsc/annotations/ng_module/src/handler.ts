@@ -180,7 +180,7 @@ export class NgModuleDecoratorHandler implements
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
-  readonly name = NgModuleDecoratorHandler.name;
+  readonly name = 'NgModuleDecoratorHandler';
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {

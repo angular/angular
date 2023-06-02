@@ -58,7 +58,7 @@ export class DirectiveDecoratorHandler implements
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
-  readonly name = DirectiveDecoratorHandler.name;
+  readonly name = 'DirectiveDecoratorHandler';
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null):
       DetectResult<Decorator|null>|undefined {
