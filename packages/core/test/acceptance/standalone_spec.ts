@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgIf} from '@angular/common';
 import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, Injector, Input, isStandalone, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
@@ -943,6 +943,27 @@ describe('standalone components, directives, and pipes', () => {
       const fixture = TestBed.createComponent(StandaloneCmpC);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('((A)B)C');
+    });
+
+    it('should not throw if a standalone component imports itself', () => {
+      @Component({
+        selector: 'comp',
+        template: '<comp *ngIf="recurse"/>',
+        standalone: true,
+        imports: [Comp, NgIf]
+      })
+      class Comp {
+        @Input() recurse = false;
+      }
+
+      @Component({template: '<comp [recurse]="true"/>', standalone: true, imports: [Comp]})
+      class App {
+      }
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      }).not.toThrow();
     });
   });
 });

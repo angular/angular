@@ -242,9 +242,10 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
   let cachedPipeDefs: PipeDefList|null = null;
   const directiveDefs = () => {
     if (cachedDirectiveDefs === null) {
+      const selfDefinition = getComponentDef(type)!;
       // Standalone components are always able to self-reference, so include the component's own
       // definition in its `directiveDefs`.
-      cachedDirectiveDefs = [getComponentDef(type)!];
+      cachedDirectiveDefs = [selfDefinition];
       const seen = new Set<Type<unknown>>();
 
       for (const rawDep of imports) {
@@ -267,7 +268,7 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
           }
         } else {
           const def = getComponentDef(dep) || getDirectiveDef(dep);
-          if (def) {
+          if (def && def !== selfDefinition) {
             cachedDirectiveDefs.push(def);
           }
         }
