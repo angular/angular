@@ -9,7 +9,7 @@
 import {sanitizeIdentifier} from '../../../../parse_util';
 import {hyphenate} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
-import {ViewCompilationUnit, type CompilationJob, type CompilationUnit, HostBindingCompilationUnit} from '../compilation';
+import {type CompilationJob, type CompilationUnit, HostBindingCompilationUnit, ViewCompilationUnit} from '../compilation';
 import {prefixWithNamespace} from '../conversion';
 
 /**
@@ -37,6 +37,7 @@ function addNamesToView(
   for (const op of unit.ops()) {
     switch (op.kind) {
       case ir.OpKind.Property:
+      case ir.OpKind.PropertyCreate:
       case ir.OpKind.HostProperty:
         if (op.isAnimationTrigger) {
           op.name = '@' + op.name;

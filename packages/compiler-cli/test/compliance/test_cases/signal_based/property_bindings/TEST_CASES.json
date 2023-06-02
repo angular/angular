@@ -1,0 +1,15 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "focusTest": true,
+      "description": "should support binding to DOM properties",
+      "inputFiles": ["simple_dom_binding.ts"],
+      "expectations": [
+        {
+          "files": [{"generated": "simple_dom_binding.js", "expected": "simple_dom_binding.js"}]
+        }
+      ]
+    }
+  ]
+}

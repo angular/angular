@@ -22,7 +22,7 @@ export enum CompilationJobKind {
  */
 export abstract class CompilationJob {
   constructor(
-      readonly componentName: string, readonly pool: ConstantPool,
+      readonly componentName: string, readonly isSignal: boolean, readonly pool: ConstantPool,
       readonly compatibility: ir.CompatibilityMode) {}
 
   kind: CompilationJobKind = CompilationJobKind.Both;
@@ -63,9 +63,10 @@ export abstract class CompilationJob {
  */
 export class ComponentCompilationJob extends CompilationJob {
   constructor(
-      componentName: string, pool: ConstantPool, compatibility: ir.CompatibilityMode,
-      readonly relativeContextFilePath: string, readonly i18nUseExternalIds: boolean) {
-    super(componentName, pool, compatibility);
+      componentName: string, isSignal: boolean, pool: ConstantPool,
+      compatibility: ir.CompatibilityMode, readonly relativeContextFilePath: string,
+      readonly i18nUseExternalIds: boolean) {
+    super(componentName, isSignal, pool, compatibility);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
   }
@@ -213,8 +214,10 @@ export class ViewCompilationUnit extends CompilationUnit {
  * Compilation-in-progress of a host binding, which contains a single unit for that host binding.
  */
 export class HostBindingCompilationJob extends CompilationJob {
-  constructor(componentName: string, pool: ConstantPool, compatibility: ir.CompatibilityMode) {
-    super(componentName, pool, compatibility);
+  constructor(
+      componentName: string, isSignal: boolean, pool: ConstantPool,
+      compatibility: ir.CompatibilityMode) {
+    super(componentName, isSignal, pool, compatibility);
     this.root = new HostBindingCompilationUnit(this);
   }
 

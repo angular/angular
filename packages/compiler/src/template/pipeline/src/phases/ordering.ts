@@ -26,6 +26,9 @@ interface Rule<T extends ir.CreateOp|ir.UpdateOp> {
 const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
   {test: op => op.kind === ir.OpKind.Listener && op.hostListener && op.isAnimationListener},
   {test: op => op.kind === ir.OpKind.Listener && !(op.hostListener && op.isAnimationListener)},
+
+  // TODO(signals): Think about ordering for instructions in the create block!
+  // Right now, not relevant as we only have a single property create instruction.
 ];
 
 /**
@@ -47,8 +50,14 @@ const UPDATE_ORDERING: Array<Rule<ir.UpdateOp>> = [
  * The set of all op kinds we handle in the reordering phase.
  */
 const handledOpKinds = new Set([
-  ir.OpKind.Listener, ir.OpKind.StyleMap, ir.OpKind.ClassMap, ir.OpKind.StyleProp,
-  ir.OpKind.ClassProp, ir.OpKind.Property, ir.OpKind.HostProperty, ir.OpKind.Attribute
+  ir.OpKind.Listener,
+  ir.OpKind.StyleMap,
+  ir.OpKind.ClassMap,
+  ir.OpKind.StyleProp,
+  ir.OpKind.ClassProp,
+  ir.OpKind.Property,
+  ir.OpKind.HostProperty,
+  ir.OpKind.Attribute,
 ]);
 
 export function phaseOrdering(job: CompilationJob) {

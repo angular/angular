@@ -6,25 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, DeferSecondaryKind, OpKind} from '../enums';
+import {Interpolation} from '../interpolation';
 import {Op, OpList, XrefId} from '../operations';
-import {ConsumesSlotOpTrait, HasConstTrait, TRAIT_CONSUMES_SLOT, TRAIT_HAS_CONST, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
+import {ConsumesSlotOpTrait, ConsumesVarsTrait, HasConstTrait, TRAIT_CONSUMES_SLOT, TRAIT_CONSUMES_VARS, TRAIT_HAS_CONST, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
-
 import type {UpdateOp} from './update';
 
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp =
-    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
-    ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|DisableBindingsOp|TextOp|ListenerOp|
-    PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|ProjectionOp|ExtractedAttributeOp|
-    DeferOp|DeferSecondaryBlockOp|DeferOnOp|ExtractedMessageOp|I18nOp|I18nStartOp|I18nEndOp;
+export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
+    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
+    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
+    ProjectionOp|ExtractedAttributeOp|DeferOp|DeferSecondaryBlockOp|DeferOnOp|ExtractedMessageOp|
+    I18nOp|I18nStartOp|I18nEndOp|BindingSignalPlaceholder|PropertyCreateOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -771,6 +772,100 @@ export function createI18nEndOp(xref: XrefId): I18nEndOp {
   return {
     kind: OpKind.I18nEnd,
     xref,
+    ...NEW_OP,
+  };
+}
+
+/*
+ * A placeholder operation reserving space for `Binding` operations that end up being
+ * moved into the creation block phase for signal components.
+ *
+ * e.g. `Property` is moved into `PropertyCreate` from the update block to the
+ * creation block.
+ */
+export interface BindingSignalPlaceholder extends Op<CreateOp> {
+  kind: OpKind.BindingSignalPlaceholder;
+
+  /** Xref ID for the binding. */
+  bindingXref: XrefId;
+}
+
+/**
+ * Create a `BindingSignalPlaceholder`.
+ */
+export function createBindingSignalPlaceholderOp(bindingXref: XrefId): BindingSignalPlaceholder {
+  return {
+    kind: OpKind.BindingSignalPlaceholder,
+    bindingXref,
+    ...NEW_OP,
+  };
+}
+
+export interface PropertyCreateOp extends Op<CreateOp>, ConsumesSlotOpTrait, ConsumesVarsTrait {
+  kind: OpKind.PropertyCreate;
+
+  /** Xref ID of the binding. Needed as we consume a slot for the expression to be stored. */
+  xref: XrefId;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Name of the bound property.
+   */
+  name: string;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression|Interpolation;
+
+  /**
+   * Whether this property is an animation trigger.
+   */
+  isAnimationTrigger: boolean;
+
+  /**
+   * The security context of the binding.
+   */
+  securityContext: SecurityContext;
+
+  /**
+   * The sanitizer for this property.
+   */
+  sanitizer: o.Expression|null;
+
+  /**
+   * Whether this binding is on a template.
+   */
+  isTemplate: boolean;
+
+  /** Source span describing the property binding. */
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create a `PropertyCreateOp`.
+ */
+export function createPropertyCreateOp(
+    bindingXref: XrefId, target: XrefId, name: string, expression: o.Expression|Interpolation,
+    isAnimationTrigger: boolean, securityContext: SecurityContext, isTemplate: boolean,
+    sourceSpan: ParseSourceSpan): PropertyCreateOp {
+  return {
+    kind: OpKind.PropertyCreate,
+    xref: bindingXref,
+    target,
+    name,
+    expression,
+    isAnimationTrigger,
+    securityContext,
+    sanitizer: null,
+    isTemplate,
+    sourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
   };
 }

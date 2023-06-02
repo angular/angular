@@ -9,12 +9,12 @@
 import * as o from '../../../../../../src/output/output_ast';
 import {ParseSourceSpan} from '../../../../../../src/parse_util';
 import {OpKind} from '../enums';
+import {Interpolation} from '../interpolation';
 import {Op} from '../operations';
 import {ConsumesVarsTrait, TRAIT_CONSUMES_VARS} from '../traits';
 
 import {NEW_OP} from './shared';
-
-import type {Interpolation, UpdateOp} from './update';
+import type {UpdateOp} from './update';
 
 
 /**

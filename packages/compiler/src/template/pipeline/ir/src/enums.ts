@@ -101,6 +101,12 @@ export enum OpKind {
   Binding,
 
   /**
+   * A placeholder operation reserving space for `Binding` operations that end up being
+   * moved into the creation block phase for signal components.
+   */
+  BindingSignalPlaceholder,
+
+  /**
    * An operation to bind an expression to a property of an element.
    */
   Property,
@@ -209,6 +215,11 @@ export enum OpKind {
    * An instruction that applies a set of i18n expressions.
    */
   I18nApply,
+
+  /*
+   * TODO
+   */
+  PropertyCreate,
 }
 
 /**

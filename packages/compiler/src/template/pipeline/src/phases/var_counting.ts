@@ -72,6 +72,7 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
   let slots: number;
   switch (op.kind) {
     case ir.OpKind.Property:
+    case ir.OpKind.PropertyCreate:
     case ir.OpKind.HostProperty:
     case ir.OpKind.Attribute:
       // All of these bindings use 1 variable slot, plus 1 slot for every interpolated expression,

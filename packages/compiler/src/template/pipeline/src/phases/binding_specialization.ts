@@ -64,8 +64,9 @@ export function phaseBindingSpecialization(job: CompilationJob): void {
             ir.OpList.replace<ir.UpdateOp>(
                 op,
                 ir.createPropertyOp(
-                    op.target, op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
-                    op.securityContext, op.isTemplate, op.sourceSpan));
+                    op.bindingXref, op.target, op.name, op.expression,
+                    op.bindingKind === ir.BindingKind.Animation, op.securityContext, op.isTemplate,
+                    op.sourceSpan));
           }
 
           break;

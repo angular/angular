@@ -9,7 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
-import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
+import {type CompilationJob, type CompilationUnit, ViewCompilationUnit} from '../compilation';
 import * as ng from '../instruction';
 
 /**
@@ -163,6 +163,14 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         }
         ir.OpList.replace<ir.CreateOp>(
             op, ng.projection(op.slot, op.projectionSlotIndex, op.attributes));
+        break;
+      case ir.OpKind.PropertyCreate:
+        if (op.expression instanceof ir.Interpolation) {
+          // TODO: handle interpolation
+        } else {
+          ir.OpList.replace(
+              op, ng.propertyCreate(op.slot!, op.name, op.expression, op.sanitizer, op.sourceSpan));
+        }
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.

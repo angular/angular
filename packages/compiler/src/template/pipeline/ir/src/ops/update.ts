@@ -12,6 +12,7 @@ import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {BindingKind, OpKind} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
+import {Interpolation} from '../interpolation';
 import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
@@ -72,16 +73,15 @@ export function createInterpolateTextOp(
   };
 }
 
-export class Interpolation {
-  constructor(readonly strings: string[], readonly expressions: o.Expression[]) {}
-}
-
 /**
  * An intermediate binding op, that has not yet been processed into an individual property,
  * attribute, style, etc.
  */
 export interface BindingOp extends Op<UpdateOp> {
   kind: OpKind.Binding;
+
+  /** Xref ID for the binding. */
+  bindingXref: XrefId;
 
   /**
    * Reference to the element on which the property is bound.
@@ -132,11 +132,12 @@ export interface BindingOp extends Op<UpdateOp> {
  * Create a `BindingOp`, not yet transformed into a particular type of binding.
  */
 export function createBindingOp(
-    target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
-    unit: string|null, securityContext: SecurityContext, isTextAttribute: boolean,
-    isTemplate: boolean, sourceSpan: ParseSourceSpan): BindingOp {
+    bindingXref: XrefId, target: XrefId, kind: BindingKind, name: string,
+    expression: o.Expression|Interpolation, unit: string|null, securityContext: SecurityContext,
+    isTextAttribute: boolean, isTemplate: boolean, sourceSpan: ParseSourceSpan): BindingOp {
   return {
     kind: OpKind.Binding,
+    bindingXref,
     bindingKind: kind,
     target,
     name,
@@ -155,6 +156,9 @@ export function createBindingOp(
  */
 export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
   kind: OpKind.Property;
+
+  /** Xref ID for the binding. Used to reference the `BindingSignalPlaceholder`. */
+  bindingXref: XrefId;
 
   /**
    * Reference to the element on which the property is bound.
@@ -198,12 +202,13 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
  * Create a `PropertyOp`.
  */
 export function createPropertyOp(
-    target: XrefId, name: string, expression: o.Expression|Interpolation,
+    bindingXref: XrefId, target: XrefId, name: string, expression: o.Expression|Interpolation,
     isAnimationTrigger: boolean, securityContext: SecurityContext, isTemplate: boolean,
 
     sourceSpan: ParseSourceSpan): PropertyOp {
   return {
     kind: OpKind.Property,
+    bindingXref,
     target,
     name,
     expression,

@@ -7,6 +7,7 @@
  */
 
 export * from './src/enums';
+export * from './src/interpolation';
 export * from './src/expression';
 export * from './src/operations';
 export * from './src/ops/create';

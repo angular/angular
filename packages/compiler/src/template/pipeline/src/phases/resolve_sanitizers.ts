@@ -27,28 +27,34 @@ const sanitizers = new Map<SecurityContext, ir.SanitizerFn|null>([
 export function phaseResolveSanitizers(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     const elements = getElementsByXrefId(unit);
-    let sanitizerFn: ir.SanitizerFn|null;
-    for (const op of unit.update) {
+    for (const op of unit.ops()) {
       switch (op.kind) {
         case ir.OpKind.Property:
+        case ir.OpKind.PropertyCreate:
         case ir.OpKind.Attribute:
-          sanitizerFn = sanitizers.get(op.securityContext) || null;
-          op.sanitizer = sanitizerFn ? new ir.SanitizerExpr(sanitizerFn) : null;
-          // If there was no sanitization function found based on the security context of an
-          // attribute/property, check whether this attribute/property is one of the
-          // security-sensitive <iframe> attributes (and that the current element is actually an
-          // <iframe>).
-          if (op.sanitizer === null) {
-            const ownerOp = elements.get(op.target);
-            if (ownerOp === undefined) {
-              throw Error('Property should have an element-like owner');
-            }
-            if (isIframeElement(ownerOp) && isIframeSecuritySensitiveAttr(op.name)) {
-              op.sanitizer = new ir.SanitizerExpr(ir.SanitizerFn.IframeAttribute);
-            }
-          }
+          resolveSanitizer(op, elements);
           break;
       }
+    }
+  }
+}
+
+function resolveSanitizer(
+    op: ir.PropertyOp|ir.PropertyCreateOp|ir.AttributeOp,
+    elements: Map<ir.XrefId, ir.ElementOrContainerOps>): void {
+  const sanitizerFn = sanitizers.get(op.securityContext) || null;
+  op.sanitizer = sanitizerFn ? new ir.SanitizerExpr(sanitizerFn) : null;
+  // If there was no sanitization function found based on the security context of an
+  // attribute/property, check whether this attribute/property is one of the
+  // security-sensitive <iframe> attributes (and that the current element is actually an
+  // <iframe>).
+  if (op.sanitizer === null) {
+    const ownerOp = elements.get(op.target);
+    if (ownerOp === undefined) {
+      throw Error('Property should have an element-like owner');
+    }
+    if (isIframeElement(ownerOp) && isIframeSecuritySensitiveAttr(op.name)) {
+      op.sanitizer = new ir.SanitizerExpr(ir.SanitizerFn.IframeAttribute);
     }
   }
 }

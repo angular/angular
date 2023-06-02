@@ -25,6 +25,7 @@ const CHAINABLE = new Set([
   R3.listener,
   R3.listener,
   R3.property,
+  R3.propertyCreate,
   R3.styleProp,
   R3.stylePropInterpolate1,
   R3.stylePropInterpolate2,
@@ -119,7 +120,8 @@ interface Chain {
    * The expression representing the whole current chained call.
    *
    * This should be the same as `op.statement.expression`, but is extracted here for convenience
-   * since the `op` type doesn't capture the fact that `op.statement` is an `o.ExpressionStatement`.
+   * since the `op` type doesn't capture the fact that `op.statement` is an
+   * `o.ExpressionStatement`.
    */
   expression: o.Expression;
 
