@@ -489,6 +489,30 @@ To remove Zone.js, make the following changes.
     .catch(err =&gt; console.error(err));
 
     </code-example>
+    
+    
+To remove Zone.js on fully standalone applications, make the following changes.
+
+1.  Remove the `zone.js` from `angular.json` `architect > build > polyfills`:
+
+    <code-example format="typescript" language="typescript">
+
+    "polyfills": [
+      "zone.js"
+    ],
+
+    </code-example>
+
+1.  Bootstrap Angular with the `noop` zone in `src/main.ts`:
+
+    <code-example format="typescript" language="typescript">
+
+    bootstrapApplication(AppComponent, {
+      providers: [{ provide: NgZone, useClass: ɵNoopNgZone }],
+    }).catch((err) => console.error(err));
+
+    </code-example>
+    
 
 <!-- links -->
 
