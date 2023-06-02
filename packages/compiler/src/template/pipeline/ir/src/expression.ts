@@ -10,11 +10,10 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import {ExpressionKind, OpKind} from './enums';
-import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
-
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
 import type {UpdateOp} from './ops/update';
+import {ConsumesVarsTrait, UsesSlotIndex, UsesSlotIndexTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
@@ -662,6 +661,9 @@ export function transformExpressionsInOp(
       for (const innerOp of op.handlerOps) {
         transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.InChildOperation);
       }
+      break;
+    case OpKind.PropertyCreate:
+      transformExpressionsInExpression(op.expression, transform, flags);
       break;
     case OpKind.Element:
     case OpKind.ElementStart:

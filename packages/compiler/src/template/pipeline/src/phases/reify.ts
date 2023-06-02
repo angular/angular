@@ -8,7 +8,6 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-
 import type {ComponentCompilation, ViewCompilation} from '../compilation';
 import * as ng from '../instruction';
 
@@ -99,6 +98,9 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
             op,
             ir.createStatementOp(new o.DeclareVarStmt(
                 op.variable.name, op.initializer, undefined, o.StmtModifier.Final)));
+        break;
+      case ir.OpKind.PropertyCreate:
+        ir.OpList.replace(op, ng.propertyCreate(op.name, op.expression))
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.

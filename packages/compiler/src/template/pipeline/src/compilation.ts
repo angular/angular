@@ -37,7 +37,8 @@ export class ComponentCompilation {
    */
   readonly root: ViewCompilation;
 
-  constructor(readonly componentName: string, readonly pool: ConstantPool) {
+  constructor(
+      readonly componentName: string, readonly isSignal: boolean, readonly pool: ConstantPool) {
     // Allocate the root view.
     const root = new ViewCompilation(this, this.allocateXrefId(), null);
     this.views.set(root.xref, root);
