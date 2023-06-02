@@ -57,7 +57,7 @@ export class PipeDecoratorHandler implements
       private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
-  readonly name = PipeDecoratorHandler.name;
+  readonly name = 'PipeDecoratorHandler';
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
