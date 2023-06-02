@@ -719,6 +719,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
     const emitted = emittedRef.expression;
     if (emitted instanceof WrappedNodeExpr) {
+      if (refTo.node === inContext) {
+        // Suppress self-imports since components do not have to import themselves.
+        return null;
+      }
+
       let isForwardReference = false;
       if (emitted.node.getStart() > inContext.getStart()) {
         const declaration = this.programDriver.getProgram()

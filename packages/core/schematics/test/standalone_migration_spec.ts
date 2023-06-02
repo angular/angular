@@ -1550,6 +1550,39 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should not generate a forwardRef for a self import', async () => {
+    writeFile('decls.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'comp',
+        template: '<comp/>'
+      })
+      export class MyComp {}
+    `);
+
+    writeFile('module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './decls';
+
+      @NgModule({declarations: [MyComp]})
+      export class Mod {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('decls.ts'))).toEqual(stripWhitespace(`
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'comp',
+        template: '<comp/>',
+        standalone: true
+      })
+      export class MyComp {}
+    `));
+  });
+
   it('should not generate a forwardRef when adding an imported module dependency', async () => {
     writeFile('./comp.ts', `
       import {Component, NgModule} from '@angular/core';
