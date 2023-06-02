@@ -64,9 +64,8 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getReferencesAtPosition(fileName, position);
   }
 
-  function findRenameLocations(
-      fileName: string, position: number, findInStrings: boolean, findInComments: boolean,
-      providePrefixAndSuffixTextForRename?: boolean): readonly ts.RenameLocation[]|undefined {
+  function findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|
+      undefined {
     // Most operations combine results from all extensions. However, rename locations are exclusive
     // (results from only one extension are used) so our rename locations are a superset of the TS
     // rename locations. As a result, we do not check the `angularOnly` flag here because we always

@@ -1,8 +1,7 @@
-class AModule {}
+export class AModule {}
 AModule.ɵfac = function AModule_Factory(t) { return new (t || AModule)(); };
 AModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
 AModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
-export { AModule }
 …
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AModule, [{
   type: NgModule,
@@ -10,11 +9,10 @@ export { AModule }
 }], null, null); })();
 …
 
-class BModule {}
+export class BModule {}
 BModule.ɵfac = function BModule_Factory(t) { return new (t || BModule)(); };
 BModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BModule });
 BModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [AModule] });
-export { BModule }
 …
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(BModule, [{
         type: NgModule,
@@ -22,11 +20,10 @@ export { BModule }
     }], null, null); })();
 …
 
-class AppModule {}
+export class AppModule {}
 AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
 AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
 AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [BModule] });
-export { AppModule }
 …
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
   type: NgModule,
