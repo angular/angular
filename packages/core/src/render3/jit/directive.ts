@@ -245,7 +245,7 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
       // Standalone components are always able to self-reference, so include the component's own
       // definition in its `directiveDefs`.
       cachedDirectiveDefs = [getComponentDef(type)!];
-      const seen = new Set<Type<unknown>>();
+      const seen = new Set<Type<unknown>>([type]);
 
       for (const rawDep of imports) {
         ngDevMode && verifyStandaloneImport(rawDep, type);
