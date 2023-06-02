@@ -26,6 +26,7 @@ export class Greet<T> {
 
 @Component({
   standalone: true,
+  selector: 'my-app',
   template: `
     Hello <greet [counter]="3" [bla4Public]="10" #ok
       [bla3]="-10" [gen]="{yes: true}"
