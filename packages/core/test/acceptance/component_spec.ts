@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
-import {ApplicationRef, Component, ComponentRef, createComponent, createEnvironmentInjector, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, inject, Injectable, InjectionToken, Injector, Input, NgModule, OnDestroy, reflectComponentType, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {DOCUMENT, NgIf} from '@angular/common';
+import {ApplicationRef, Component, ComponentRef, createComponent, createEnvironmentInjector, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, forwardRef, inject, Injectable, InjectionToken, Injector, Input, NgModule, OnDestroy, reflectComponentType, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {stringifyForError} from '@angular/core/src/render3/util/stringify_utils';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -399,6 +399,68 @@ describe('component', () => {
       expect(() => TestBed.createComponent(App))
           .toThrowError(
               /NG0300: Multiple components match node with tagname comp: CompA and CompB/);
+    });
+
+    it('should not throw if a standalone component imports itself', () => {
+      @Component({
+        selector: 'comp',
+        template: '<comp *ngIf="recurse"/>hello',
+        standalone: true,
+        imports: [Comp, NgIf]
+      })
+      class Comp {
+        @Input() recurse = false;
+      }
+
+      @Component({
+        template: '<comp [recurse]="true"/>',
+        standalone: true,
+        imports: [Comp],
+      })
+      class App {
+      }
+
+      let textContent = '';
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        textContent = fixture.nativeElement.textContent.trim();
+      }).not.toThrow();
+
+      // Ensure that the component actually rendered.
+      expect(textContent).toBe('hellohello');
+    });
+
+    it('should not throw if a standalone component imports itself using a forwardRef', () => {
+      @Component({
+        selector: 'comp',
+        template: '<comp *ngIf="recurse"/>hello',
+        standalone: true,
+        imports: [forwardRef(() => Comp), NgIf]
+      })
+      class Comp {
+        @Input() recurse = false;
+      }
+
+      @Component({
+        template: '<comp [recurse]="true"/>',
+        standalone: true,
+        imports: [Comp],
+      })
+      class App {
+      }
+
+      let textContent = '';
+
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        textContent = fixture.nativeElement.textContent.trim();
+      }).not.toThrow();
+
+      // Ensure that the component actually rendered.
+      expect(textContent).toBe('hellohello');
     });
   });
 
