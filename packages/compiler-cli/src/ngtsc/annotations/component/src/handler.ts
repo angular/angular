@@ -85,7 +85,7 @@ export class ComponentDecoratorHandler implements
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
-  readonly name = ComponentDecoratorHandler.name;
+  readonly name = 'ComponentDecoratorHandler';
 
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
