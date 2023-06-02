@@ -6,12 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {forwardRef, InjectionToken, Injector, ɵcreateInjector, ɵsetCurrentInjector, ɵɵdefineInjector, ɵɵInjectableDeclaration, ɵɵngDeclareInjectable, ɵɵngDeclareInjector, ɵɵngDeclareNgModule} from '@angular/core';
+import {forwardRef, InjectionToken, Injector, ɵcreateInjector, ɵInjectorProfilerContext, ɵsetCurrentInjector, ɵsetInjectorProfilerContext, ɵɵdefineInjector, ɵɵInjectableDeclaration, ɵɵngDeclareInjectable, ɵɵngDeclareInjector, ɵɵngDeclareNgModule} from '@angular/core';
 
 describe('Injectable declaration jit compilation', () => {
   let previousInjector: Injector|null|undefined;
-  beforeEach(() => previousInjector = ɵsetCurrentInjector(ɵcreateInjector(TestInjector)));
-  afterEach(() => ɵsetCurrentInjector(previousInjector));
+  let previousInjectorProfilerContext: ɵInjectorProfilerContext;
+  beforeEach(() => {
+    const injector = ɵcreateInjector(TestInjector);
+    previousInjector = ɵsetCurrentInjector(injector);
+    previousInjectorProfilerContext = ɵsetInjectorProfilerContext({injector, token: null});
+  });
+  afterEach(() => {
+    ɵsetCurrentInjector(previousInjector);
+    previousInjectorProfilerContext = ɵsetInjectorProfilerContext(previousInjectorProfilerContext);
+  });
 
   it('should compile a minimal injectable declaration that delegates to `ɵfac`', () => {
     const provider = Minimal.ɵprov as ɵɵInjectableDeclaration<Minimal>;
