@@ -140,6 +140,7 @@ export {
   ɵɵprojection,
   ɵɵprojectionDef,
   ɵɵproperty,
+  ɵɵpropertyCreate,
   ɵɵpropertyInterpolate,
   ɵɵpropertyInterpolate1,
   ɵɵpropertyInterpolate2,
