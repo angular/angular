@@ -212,6 +212,7 @@ export class Identifiers {
 
   static hostProperty: o.ExternalReference = {name: 'ɵɵhostProperty', moduleName: CORE};
 
+  static propertyCreate: o.ExternalReference = {name: 'ɵɵpropertyCreate', moduleName: CORE};
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
 
   static propertyInterpolate:

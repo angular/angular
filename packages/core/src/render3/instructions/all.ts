@@ -46,6 +46,7 @@ export * from './namespace';
 export * from './next_context';
 export * from './projection';
 export * from './property';
+export * from './property_create';
 export * from './property_interpolation';
 export * from './storage';
 export * from './style_map_interpolation';

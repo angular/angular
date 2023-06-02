@@ -336,7 +336,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
       }
 
       const lView = this._rootLView;
-      setInputsForProperty(lView[TVIEW], lView, dataValue, name, value);
+      setInputsForProperty(lView[TVIEW], lView, dataValue, name, value, /* TODO(signals) */ false);
       this.previousInputValues.set(name, value);
       const childComponentLView = getComponentLViewByIndex(this._tNode.index, lView);
       markViewDirty(childComponentLView);
