@@ -138,9 +138,6 @@ export function patchEventTarget(
   };
 
   function globalCallback(context: unknown, event: Event, isCapture: boolean) {
-    // https://github.com/angular/zone.js/issues/911, in IE, sometimes
-    // event will be undefined, so we need to use window.event
-    event = event || _global.event;
     if (!event) {
       return;
     }

@@ -348,7 +348,6 @@ interface _ZonePrivate {
   patchMacroTask:
       (obj: any, funcName: string, metaCreator: (self: any, args: any[]) => any) => void;
   patchEventPrototype: (_global: any, api: _ZonePrivate) => void;
-  isIEOrEdge: () => boolean;
   ObjectDefineProperty:
       (o: any, p: PropertyKey, attributes: PropertyDescriptor&ThisType<any>) => any;
   ObjectGetOwnPropertyDescriptor: (o: any, p: PropertyKey) => PropertyDescriptor | undefined;
@@ -1423,7 +1422,6 @@ const Zone: ZoneType = (function(global: any) {
     patchThen: () => noop,
     patchMacroTask: () => noop,
     patchEventPrototype: () => noop,
-    isIEOrEdge: () => false,
     getGlobalObjects: () => undefined,
     ObjectDefineProperty: () => noop,
     ObjectGetOwnPropertyDescriptor: () => undefined,

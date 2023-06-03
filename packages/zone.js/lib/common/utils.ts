@@ -123,9 +123,6 @@ export const isMix: boolean = typeof _global.process !== 'undefined' &&
 const zoneSymbolEventNames: {[eventName: string]: string} = {};
 
 const wrapFn = function(this: unknown, event: Event) {
-  // https://github.com/angular/zone.js/issues/911, in IE, sometimes
-  // event will be undefined, so we need to use window.event
-  event = event || _global.event;
   if (!event) {
     return;
   }
@@ -481,35 +478,4 @@ export function patchMicroTask(
 
 export function attachOriginToPatched(patched: Function, original: any) {
   (patched as any)[zoneSymbol('OriginalDelegate')] = original;
-}
-
-let isDetectedIEOrEdge = false;
-let ieOrEdge = false;
-
-export function isIE() {
-  try {
-    const ua = internalWindow.navigator.userAgent;
-    if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1) {
-      return true;
-    }
-  } catch (error) {
-  }
-  return false;
-}
-
-export function isIEOrEdge() {
-  if (isDetectedIEOrEdge) {
-    return ieOrEdge;
-  }
-
-  isDetectedIEOrEdge = true;
-
-  try {
-    const ua = internalWindow.navigator.userAgent;
-    if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1 || ua.indexOf('Edge/') !== -1) {
-      ieOrEdge = true;
-    }
-  } catch (error) {
-  }
-  return ieOrEdge;
 }

@@ -31,13 +31,9 @@ export function eventTargetLegacyPatch(_global: any, api: _ZonePrivate) {
     apis = NO_EVENT_TARGET;
   }
 
-  const isDisableIECheck = _global['__Zone_disable_IE_check'] || false;
   const isEnableCrossContextCheck = _global['__Zone_enable_cross_context_check'] || false;
-  const ieOrEdge = api.isIEOrEdge();
 
   const ADD_EVENT_LISTENER_SOURCE = '.addEventListener:';
-  const FUNCTION_WRAPPER = '[object FunctionWrapper]';
-  const BROWSER_TOOLS = 'function __BROWSERTOOLS_CONSOLE_SAFEFUNC() { [native code] }';
 
   const pointerEventsMap: {[key: string]: string} = {
     'MSPointerCancel': 'pointercancel',
@@ -73,28 +69,8 @@ export function eventTargetLegacyPatch(_global: any, api: _ZonePrivate) {
     }
   }
 
-  const checkIEAndCrossContext = function(
-      nativeDelegate: any, delegate: any, target: any, args: any) {
-    if (!isDisableIECheck && ieOrEdge) {
-      if (isEnableCrossContextCheck) {
-        try {
-          const testString = delegate.toString();
-          if ((testString === FUNCTION_WRAPPER || testString == BROWSER_TOOLS)) {
-            nativeDelegate.apply(target, args);
-            return false;
-          }
-        } catch (error) {
-          nativeDelegate.apply(target, args);
-          return false;
-        }
-      } else {
-        const testString = delegate.toString();
-        if ((testString === FUNCTION_WRAPPER || testString == BROWSER_TOOLS)) {
-          nativeDelegate.apply(target, args);
-          return false;
-        }
-      }
-    } else if (isEnableCrossContextCheck) {
+  const checkCrossContext = function(nativeDelegate: any, delegate: any, target: any, args: any) {
+    if (isEnableCrossContextCheck) {
       try {
         delegate.toString();
       } catch (error) {
@@ -113,7 +89,7 @@ export function eventTargetLegacyPatch(_global: any, api: _ZonePrivate) {
   // vh is validateHandler to check event handler
   // is valid or not(for security check)
   api.patchEventTarget(_global, api, apiTypes, {
-    vh: checkIEAndCrossContext,
+    vh: checkCrossContext,
     transferEventName: (eventName: string) => {
       const pointerEventName = pointerEventsMap[eventName];
       return pointerEventName || eventName;

@@ -250,70 +250,13 @@ const htmlElementEventNames = [
 ];
 const mediaElementEventNames =
     ['encrypted', 'waitingforkey', 'msneedkey', 'mozinterruptbegin', 'mozinterruptend'];
-const ieElementEventNames = [
-  'activate',
-  'afterupdate',
-  'ariarequest',
-  'beforeactivate',
-  'beforedeactivate',
-  'beforeeditfocus',
-  'beforeupdate',
-  'cellchange',
-  'controlselect',
-  'dataavailable',
-  'datasetchanged',
-  'datasetcomplete',
-  'errorupdate',
-  'filterchange',
-  'layoutcomplete',
-  'losecapture',
-  'move',
-  'moveend',
-  'movestart',
-  'propertychange',
-  'resizeend',
-  'resizestart',
-  'rowenter',
-  'rowexit',
-  'rowsdelete',
-  'rowsinserted',
-  'command',
-  'compassneedscalibration',
-  'deactivate',
-  'help',
-  'mscontentzoom',
-  'msmanipulationstatechanged',
-  'msgesturechange',
-  'msgesturedoubletap',
-  'msgestureend',
-  'msgesturehold',
-  'msgesturestart',
-  'msgesturetap',
-  'msgotpointercapture',
-  'msinertiastart',
-  'mslostpointercapture',
-  'mspointercancel',
-  'mspointerdown',
-  'mspointerenter',
-  'mspointerhover',
-  'mspointerleave',
-  'mspointermove',
-  'mspointerout',
-  'mspointerover',
-  'mspointerup',
-  'pointerout',
-  'mssitemodejumplistitemremoved',
-  'msthumbnailclick',
-  'stop',
-  'storagecommit'
-];
 const webglEventNames = ['webglcontextrestored', 'webglcontextlost', 'webglcontextcreationerror'];
 const formEventNames = ['autocomplete', 'autocompleteerror'];
 const detailEventNames = ['toggle'];
 
 const eventNames = [
   ...globalEventHandlersEventNames, ...webglEventNames, ...formEventNames, ...detailEventNames,
-  ...documentEventNames, ...windowEventNames, ...htmlElementEventNames, ...ieElementEventNames
+  ...documentEventNames, ...windowEventNames, ...htmlElementEventNames
 ];
 
 // Whenever any eventListener fires, we check the eventListener target and all parents

@@ -10,7 +10,7 @@
  * @suppress {globalThis}
  */
 
-import {isBrowser, isIE, isMix, isNode, ObjectGetPrototypeOf, patchOnProperties} from '../common/utils';
+import {isBrowser, isMix, isNode, ObjectGetPrototypeOf, patchOnProperties} from '../common/utils';
 
 export interface IgnoreProperty {
   target: any;
@@ -70,22 +70,18 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
       'Document', 'SVGElement', 'Element', 'HTMLElement', 'HTMLBodyElement', 'HTMLMediaElement',
       'HTMLFrameSetElement', 'HTMLFrameElement', 'HTMLIFrameElement', 'HTMLMarqueeElement', 'Worker'
     ]);
-    const ignoreErrorProperties =
-        isIE() ? [{target: internalWindow, ignoreProperties: ['error']}] : [];
-    // in IE/Edge, onProp not exist in window object, but in WindowPrototype
-    // so we need to pass WindowPrototype to check onProp exist or not
+
     patchFilteredProperties(
-        internalWindow, getOnEventNames(internalWindow),
-        ignoreProperties ? ignoreProperties.concat(ignoreErrorProperties) : ignoreProperties,
+        internalWindow, getOnEventNames(internalWindow), ignoreProperties,
         ObjectGetPrototypeOf(internalWindow));
   }
   patchTargets = patchTargets.concat([
     'XMLHttpRequest', 'XMLHttpRequestEventTarget', 'IDBIndex', 'IDBRequest', 'IDBOpenDBRequest',
     'IDBDatabase', 'IDBTransaction', 'IDBCursor', 'WebSocket'
   ]);
-  for (let i = 0; i < patchTargets.length; i++) {
-    const target = _global[patchTargets[i]];
-    target && target.prototype &&
+  for (const patchTarget of patchTargets) {
+    const target = _global[patchTarget];
+    target?.prototype &&
         patchFilteredProperties(
             target.prototype, getOnEventNames(target.prototype), ignoreProperties);
   }
