@@ -255,7 +255,7 @@ export interface ComplianceTest {
   excludeTest?: boolean;
 }
 
-export type CompilationMode = 'linked compile'|'full compile';
+export type CompilationMode = 'linked compile'|'full compile'|'local compile';
 
 export interface Expectation {
   /** The message to display if this expectation fails. */
