@@ -27,7 +27,8 @@
               "type": "string",
               "enum": [
                 "full compile",
-                "linked compile"
+                "linked compile",
+                "local compile"
               ]
             },
             "default": [
