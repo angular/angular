@@ -13,6 +13,8 @@ import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics
 import {NgTemplateDiagnostic} from '../../../api';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
+const STRUCTURAL_DIRECTIVES: string[] = ['ngFor', 'ngIf', 'ngSwitchCase', 'ngSwitchDefault'];
+
 /**
  * Makes sure user doesn't forget to add `*` when using ngFor, ngIf, ngSwitchCase or
  * ngSwitchDefault. Will return diagnostic when `*` is missing.
@@ -30,16 +32,15 @@ class MissingAsteriskStructuralDirectives extends
 
     if (node.attributes.length === 0) return [];
 
-    const directives: string[] = ['ngFor', 'ngIf', 'ngSwitchCase', 'ngSwitchDefault'];
+    const attr =
+        node.attributes.find((attribute) => STRUCTURAL_DIRECTIVES.includes(attribute.name));
 
-    const attrIndex: number =
-        node.attributes.findIndex((attribute) => directives.includes(attribute.name));
-
-    if (attrIndex === -1) {
+    if (!attr) {
       return [];
     }
 
-    const errorString = 'You seems to be missing `*` for ' + node.attributes[attrIndex].name + '.';
+    const errorString =
+        `You are missing the asterisk \`*\` from the structural directive ${attr.name}.`;
     const diagnostic = ctx.makeTemplateDiagnostic(node.sourceSpan, errorString);
     return [diagnostic];
   }
