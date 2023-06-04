@@ -351,6 +351,18 @@ export enum ErrorCode {
   SKIP_HYDRATION_NOT_STATIC = 8108,
 
   /**
+   * Structural directives should start with *, but in some cases it can be missed
+   * in their statement.
+   *
+   * For example:
+   * ```
+   * <ul><li ngFor="let fruit of fruits">{{ fruit }}</li></ul>
+   * <button ngIf="show">Create</button>
+   * ```
+   */
+  MISSING_ASTERISK_STRUCTURAL_DIRECTIVES = 8109,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

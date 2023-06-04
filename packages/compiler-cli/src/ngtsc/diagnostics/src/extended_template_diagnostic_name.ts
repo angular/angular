@@ -24,4 +24,5 @@ export enum ExtendedTemplateDiagnosticName {
   MISSING_NGFOROF_LET = 'missingNgForOfLet',
   SUFFIX_NOT_SUPPORTED = 'suffixNotSupported',
   SKIP_HYDRATION_NOT_STATIC = 'skipHydrationNotStatic',
+  MISSING_ASTERISK_STRUCTURAL_DIRECTIVES = 'missingAsteriskStructuralDirectives'
 }

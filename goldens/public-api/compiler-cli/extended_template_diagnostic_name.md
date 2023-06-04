@@ -9,6 +9,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     INVALID_BANANA_IN_BOX = "invalidBananaInBox",
     // (undocumented)
+    MISSING_ASTERISK_STRUCTURAL_DIRECTIVES = "missingAsteriskStructuralDirectives",
+    // (undocumented)
     MISSING_CONTROL_FLOW_DIRECTIVE = "missingControlFlowDirective",
     // (undocumented)
     MISSING_NGFOROF_LET = "missingNgForOfLet",
