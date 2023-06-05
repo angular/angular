@@ -12,7 +12,8 @@
       "compilerOptions": {
         "sourceMap": true,
         "inlineSources": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should create external template source-mapping (linked compile)",
@@ -52,7 +53,8 @@
           ".",
           "extraRootDir"
         ]
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should create correct mappings when templateUrl is in a different rootDir (linked compile)",
@@ -92,7 +94,8 @@
       "compilerOptions": {
         "sourceMap": true,
         "inlineSources": true
-      }
+      },
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle unusual escaped chars when source-mapping (linked compile)",

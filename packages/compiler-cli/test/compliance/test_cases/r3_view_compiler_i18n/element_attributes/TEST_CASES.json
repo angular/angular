@@ -13,7 +13,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support i18n attributes on explicit <ng-template> elements",
@@ -27,7 +28,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support i18n attributes on explicit <ng-template> with structural directives",
@@ -41,7 +43,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support i18n attributes with interpolations on explicit <ng-template> elements",
@@ -55,7 +58,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support i18n attributes with interpolations on explicit <ng-template> elements with structural directives",
@@ -69,7 +73,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not create translations for empty attributes",
@@ -97,7 +102,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should translate static attributes",
@@ -111,7 +117,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should translate static attributes when used on an element with structural directive",
@@ -125,7 +132,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support interpolation",
@@ -139,7 +147,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support interpolation with custom interpolation config",
@@ -153,7 +162,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should correctly bind to context in nested template",
@@ -167,7 +177,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support complex expressions in interpolation",
@@ -181,7 +192,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support complex expressions in interpolation",
@@ -195,7 +207,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should work correctly when placed on i18n root node",
@@ -209,7 +222,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should sanitize ids and generate proper variable names",
@@ -226,7 +240,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

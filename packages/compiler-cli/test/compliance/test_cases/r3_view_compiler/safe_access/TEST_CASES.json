@@ -16,7 +16,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle safe method calls inside templates",
@@ -33,7 +34,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle safe calls inside templates",
@@ -50,7 +52,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle non-null assertions after a safe access",
@@ -67,7 +70,8 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

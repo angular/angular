@@ -13,7 +13,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle single translation message using <ng-template>",
@@ -27,7 +28,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should be able to act as child elements inside i18n block",
@@ -41,7 +43,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle ICUs outside of translatable sections",
@@ -55,7 +58,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should correctly propagate i18n context through nested templates",
@@ -69,7 +73,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should work with ICUs",
@@ -83,7 +88,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle self-closing tags as content",
@@ -97,7 +103,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not emit duplicate i18n consts for nested <ng-container>s",
@@ -123,7 +130,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should generate a self-closing container instruction for ng-container inside i18n",
@@ -137,7 +145,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not generate a self-closing container instruction for ng-container with non-text ",
@@ -151,7 +160,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle structural directives",
@@ -165,7 +175,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
