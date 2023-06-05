@@ -438,6 +438,12 @@
     "name": "Subscription"
   },
   {
+    "name": "SwitchMapOperator"
+  },
+  {
+    "name": "SwitchMapSubscriber"
+  },
+  {
     "name": "TESTABILITY"
   },
   {
@@ -813,6 +819,9 @@
     "name": "forwardRef"
   },
   {
+    "name": "from"
+  },
+  {
     "name": "fromArray"
   },
   {
@@ -1038,6 +1047,9 @@
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
+    "name": "innerSubscribe"
+  },
+  {
     "name": "insertBloom"
   },
   {
@@ -1176,6 +1188,9 @@
     "name": "makeRecord"
   },
   {
+    "name": "map"
+  },
+  {
     "name": "markAsComponentHost"
   },
   {
@@ -1189,6 +1204,9 @@
   },
   {
     "name": "maybeWrapInNotSelector"
+  },
+  {
+    "name": "mergeAll"
   },
   {
     "name": "mergeHostAttribute"
@@ -1405,6 +1423,9 @@
   },
   {
     "name": "subscribeToArray"
+  },
+  {
+    "name": "switchMap"
   },
   {
     "name": "throwProviderNotFoundError"

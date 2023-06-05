@@ -9,7 +9,7 @@
 import './util/ng_jit_mode';
 
 import {Observable, of, Subscription} from 'rxjs';
-import {distinctUntilChanged, mergeMap, share} from 'rxjs/operators';
+import {distinctUntilChanged, share, switchMap} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
 import {PLATFORM_INITIALIZER} from './application_tokens';
@@ -847,7 +847,7 @@ export class ApplicationRef {
   public readonly isStable: Observable<boolean> =
       inject(InitialRenderPendingTasks)
           .hasPendingTasks.pipe(
-              mergeMap(hasPendingTasks => hasPendingTasks ? of(false) : this.zoneIsStable),
+              switchMap(hasPendingTasks => hasPendingTasks ? of(false) : this.zoneIsStable),
               distinctUntilChanged(),
               share(),
           );
