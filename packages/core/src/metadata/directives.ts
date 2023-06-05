@@ -393,9 +393,9 @@ export interface ComponentDecorator {
    * Unlike other directives, only one component can be instantiated for a given element in a
    * template.
    *
-   * A component must belong to an NgModule in order for it to be available
-   * to another component or application. To make it a member of an NgModule,
-   * list it in the `declarations` field of the `NgModule` metadata.
+   * In order to make the component available to other components or application, 
+   * you should either mark it as [standalone](guide/standalone-components), 
+   * or declare it in an NgModule by adding it to the `declarations` and `exports` fields.
    *
    * Note that, in addition to these options for configuring a directive,
    * you can control a component's runtime behavior by implementing
@@ -695,9 +695,9 @@ export interface PipeDecorator {
    *
    * The result of the expression is passed to the pipe's `transform()` method.
    *
-   * A pipe must belong to an NgModule in order for it to be available
-   * to a template. To make it a member of an NgModule,
-   * list it in the `declarations` field of the `NgModule` metadata.
+   * In order to make the pipe available to other component or application, 
+   * you should either mark it as [standalone](guide/standalone-components), 
+   * or declare it in an NgModule by adding it to the `declarations` and `exports` fields.
    *
    * @see [Style Guide: Pipe Names](guide/styleguide#02-09)
    *
