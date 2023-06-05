@@ -1320,7 +1320,7 @@ function setInputsFromAttrs<T>(
   }
 }
 
-function writeToDirectiveInput<T>(
+export function writeToDirectiveInput<T>(
     def: DirectiveDef<T>, instance: T, publicName: string, privateName: string, value: string) {
   const prevConsumer = setActiveConsumer(null);
   try {
