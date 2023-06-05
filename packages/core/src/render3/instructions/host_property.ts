@@ -34,7 +34,9 @@ export function ɵɵhostProperty<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, true);
+    elementPropertyInternal(
+        tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, true,
+        /* TODO(signals) */ false);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵhostProperty;
@@ -72,7 +74,8 @@ export function ɵɵsyntheticHostProperty<T>(
     const tNode = getSelectedTNode();
     const currentDef = getCurrentDirectiveDef(tView.data);
     const renderer = loadComponentRenderer(currentDef, tNode, lView);
-    elementPropertyInternal(tView, tNode, lView, propName, value, renderer, sanitizer, true);
+    elementPropertyInternal(
+        tView, tNode, lView, propName, value, renderer, sanitizer, true, /* TODO(signals) */ false);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵsyntheticHostProperty;
