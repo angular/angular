@@ -220,8 +220,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
             hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation, rootViewInjector) :
         createElementNode(hostRenderer, elementName, getNamespace(elementName));
 
-    // Signal components use the granular "RefreshView"  for change detection
-    const signalFlags = (LViewFlags.SignalView | LViewFlags.IsRoot);
+    // Signal components use the granular "RefreshView" for change detection
+    const signalFlags = (LViewFlags.SignalView | LViewFlags.RefreshView | LViewFlags.IsRoot);
     // Non-signal components use the traditional "CheckAlways or OnPush/Dirty" change detection
     const nonSignalFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                       LViewFlags.CheckAlways | LViewFlags.IsRoot;
@@ -409,7 +409,7 @@ function createRootComponentView(
   const viewRenderer = environment.rendererFactory.createRenderer(hostRNode, rootComponentDef);
   let lViewFlags = LViewFlags.CheckAlways;
   if (rootComponentDef.signals) {
-    lViewFlags = LViewFlags.SignalView;
+    lViewFlags = LViewFlags.SignalView | LViewFlags.RefreshView;
   } else if (rootComponentDef.onPush) {
     lViewFlags = LViewFlags.Dirty;
   }
@@ -445,7 +445,7 @@ function applyRootComponentStyling(
 }
 
 /**
- * Creates a root component and sets it up with features and host bindings.Shared by
+ * Creates a root component and sets it up with features and host bindings. Shared by
  * renderComponent() and ViewContainerRef.createComponent().
  */
 function createRootComponent<T>(

@@ -1245,7 +1245,7 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
   const rendererFactory = lView[ENVIRONMENT].rendererFactory;
   let lViewFlags = LViewFlags.CheckAlways;
   if (def.signals) {
-    lViewFlags = LViewFlags.SignalView;
+    lViewFlags = LViewFlags.SignalView | LViewFlags.RefreshView;
   } else if (def.onPush) {
     lViewFlags = LViewFlags.Dirty;
   }
