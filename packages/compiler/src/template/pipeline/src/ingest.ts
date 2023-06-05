@@ -275,7 +275,11 @@ function ingestPropertyBinding(
         if (view.tpl.isSignal) {
           console.error('Signal');
           // TODO: binding kind?
-          view.create.push(ir.createPropertyCreateOp(xref, name, convertAst(value, view.tpl)));
+          // Allocating an XRef ID because a property create operation
+          // consumes a slot to store the expression.
+          const propertyXrefId = view.tpl.allocateXrefId();
+          view.create.push(
+              ir.createPropertyCreateOp(propertyXrefId, xref, name, convertAst(value, view.tpl)));
         } else {
           view.update.push(
               ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
