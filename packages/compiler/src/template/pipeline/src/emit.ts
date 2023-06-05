@@ -33,12 +33,14 @@ import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
+import {phaseAttributeExtraction} from './phases/register_element_attributes';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
  * processing, the compilation should be in a state where it can be emitted via `emitTemplateFn`.s
  */
 export function transformTemplate(cpl: ComponentCompilation): void {
+  phaseAttributeExtraction(cpl, true);
   phasePipeCreation(cpl);
   phasePipeVariadic(cpl);
   phasePureLiteralStructures(cpl);

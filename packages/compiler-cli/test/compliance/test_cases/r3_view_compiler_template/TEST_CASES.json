@@ -176,6 +176,7 @@
       "inputFiles": [
         "ng_template_interpolated_prop_with_structural_directive.ts"
       ],
+      "focusTest": true,
       "expectations": [
         {
           "files": [
