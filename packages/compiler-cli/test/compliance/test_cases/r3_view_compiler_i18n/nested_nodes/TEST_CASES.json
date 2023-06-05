@@ -13,7 +13,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should ignore HTML comments within translated text",
@@ -27,7 +28,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should properly escape quotes in content",
@@ -41,7 +43,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle interpolations wrapped in backticks",
@@ -55,7 +58,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle i18n attributes with plain-text content",
@@ -69,7 +73,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support named interpolations",
@@ -83,7 +88,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support interpolation with custom interpolation config",
@@ -97,7 +103,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support interpolations with complex expressions",
@@ -111,7 +118,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle i18n attributes with bindings in content",
@@ -125,7 +133,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle i18n attributes with bindings and nested elements in content",
@@ -139,7 +148,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle i18n attributes with bindings in content and element attributes",
@@ -153,7 +163,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle i18n attributes in nested templates",
@@ -167,7 +178,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should ignore i18n attributes on self-closing tags",
@@ -181,7 +193,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle i18n context in nested templates",
@@ -195,7 +208,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should handle i18n attribute with directives",
@@ -209,7 +223,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should generate event listeners instructions before i18n ones",
@@ -223,7 +238,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
