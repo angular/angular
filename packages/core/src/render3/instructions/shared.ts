@@ -10,7 +10,7 @@ import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedView} from '../../hydration/interfaces';
-import {hasInSkipHydrationBlockFlag, hasSkipHydrationAttrOnRElement, SKIP_HYDRATION_ATTR_NAME} from '../../hydration/skip_hydration';
+import {hasSkipHydrationAttrOnRElement} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
@@ -1233,7 +1233,7 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
   const rendererFactory = lView[ENVIRONMENT].rendererFactory;
   let lViewFlags = LViewFlags.CheckAlways;
   if (def.signals) {
-    lViewFlags = LViewFlags.SignalView;
+    lViewFlags = LViewFlags.SignalView | LViewFlags.RefreshView;
   } else if (def.onPush) {
     lViewFlags = LViewFlags.Dirty;
   }
