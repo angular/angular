@@ -136,7 +136,7 @@ export class LiveExampleComponent implements AfterContentInit {
  */
 @Component({
   selector: 'aio-embedded-stackblitz',
-  template: '<iframe #iframe style="border: 0" width="100%" height="100%"></iframe>',
+  template: '<iframe #iframe style="border: 0" width="100%" height="100%" title="live example"></iframe>',
   styles: [ 'iframe { min-height: 400px; }' ]
 })
 export class EmbeddedStackblitzComponent implements AfterViewInit {
