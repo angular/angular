@@ -16,7 +16,8 @@
           ],
           "failureMessage": "Incorrect initialization attributes"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should dedup multiple [@event] listeners",
@@ -33,7 +34,8 @@
           ],
           "failureMessage": "Incorrect initialization attributes"
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

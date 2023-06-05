@@ -13,7 +13,8 @@
             "mixed.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should stamp out pipe definitions in the creation block if used by styling bindings",
@@ -27,7 +28,8 @@
             "pipe_bindings.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should properly offset multiple style pipe references for styling bindings",
@@ -41,7 +43,8 @@
             "pipe_bindings_slots.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should always generate advance() statements before any styling instructions",
@@ -55,7 +58,8 @@
             "multiple_elements.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }
