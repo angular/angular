@@ -313,7 +313,7 @@ export function createPipeOp(xref: XrefId, name: string): PipeOp {
 /**
  * TODO
  */
-export interface PropertyCreateOp extends Op<CreateOp> {
+export interface PropertyCreateOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   kind: OpKind.PropertyCreate;
 
   /**
@@ -336,12 +336,14 @@ export interface PropertyCreateOp extends Op<CreateOp> {
  * Create a `PropertyCreateOp`.
  */
 export function createPropertyCreateOp(
-    target: XrefId, name: string, expression: o.Expression): PropertyCreateOp {
+    xref: XrefId, target: XrefId, name: string, expression: o.Expression): PropertyCreateOp {
   return {
     kind: OpKind.PropertyCreate,
+    xref,
     target,
     name,
     expression,
+    ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
 }

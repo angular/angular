@@ -156,8 +156,9 @@ export function styleMap(expression: o.Expression): ir.UpdateOp {
   return call(Identifiers.styleMap, [expression]);
 }
 
-export function propertyCreate(name: string, expression: o.Expression): ir.CreateOp {
+export function propertyCreate(slot: number, name: string, expression: o.Expression): ir.CreateOp {
   return call(Identifiers.propertyCreate, [
+    o.literal(slot),
     o.literal(name),
     o.fn([], [new o.ReturnStatement(expression)]),
   ]);
