@@ -7,7 +7,7 @@
  */
 
 
-import {ComputedImpl, defaultEquals, ERRORED, setActiveConsumer, Signal, UNSET, WritableSignal} from '../../signals';
+import {ComputedImpl, createSignalFromFunction, defaultEquals, ERRORED, setActiveConsumer, Signal, UNSET, WritableSignal} from '../../signals';
 
 export const BRAND_WRITE_TYPE = Symbol();
 
@@ -42,7 +42,10 @@ export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
    */
   protected boundValue: WriteT|undefined;
 
-  protected isInitialized = false;
+  // TODO: this should be `false` to start with, and the runtime should call `initialized` after all
+  // inputs have been set for the first time. However this is not currently implemented, so we cheat
+  // and treat all input signals as initialized for now.
+  protected isInitialized = true;
   protected transform: (value: WriteT) => ReadT;
 
   constructor(defaultValue: WriteT|undefined, transform: ((value: WriteT) => ReadT)|null) {
@@ -134,4 +137,11 @@ export class ModelSignalImpl<ReadT, WriteT> extends InputSignalImpl<ReadT, Write
 
 function noopTransform<T>(value: T): T {
   return value;
+}
+export function input<ReadT>(): InputSignal<ReadT|undefined, ReadT>;
+export function input<ReadT>(defaultValue: ReadT): InputSignal<ReadT, ReadT>;
+export function input<ReadT>(defaultValue?: ReadT): InputSignal<ReadT|undefined, ReadT> {
+  const node = new InputSignalImpl(undefined, null);
+  return createSignalFromFunction(node, node.signal.bind(node)) as
+      InputSignal<ReadT|undefined, ReadT>;
 }

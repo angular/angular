@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵdefineComponent as defineComponent, ɵɵelement as element} from '@angular/core';
-import {propertyCreate} from '@angular/core/src/render3/interfaces/virtual_property';
+import {ɵɵdefineComponent as defineComponent, ɵɵelement as element, ɵɵpropertyCreate as propertyCreate} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 
