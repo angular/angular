@@ -297,7 +297,7 @@ export function applyUpdateOpCodes(
                 } else {
                   elementPropertyInternal(
                       tView, tNodeOrTagName, lView, propName, value, lView[RENDERER], sanitizeFn,
-                      false);
+                      false, /* TODO(signals) */ false);
                 }
                 break;
               case I18nUpdateOpCode.Text:
@@ -348,9 +348,11 @@ function applyIcuUpdateCase(tView: TView, tIcu: TIcu, bindingsStartIndex: number
     let mask = changeMask;
     if (activeCaseIndex < 0) {
       // Clear the flag.
-      // Negative number means that the ICU was freshly created and we need to force the update.
+      // Negative number means that the ICU was freshly created and we need to
+      // force the update.
       activeCaseIndex = lView[tIcu.currentCaseLViewIndex] = ~activeCaseIndex;
-      // -1 is same as all bits on, which simulates creation since it marks all bits dirty
+      // -1 is same as all bits on, which simulates creation since it marks all
+      // bits dirty
       mask = -1;
     }
     applyUpdateOpCodes(tView, lView, tIcu.update[activeCaseIndex], bindingsStartIndex, mask);

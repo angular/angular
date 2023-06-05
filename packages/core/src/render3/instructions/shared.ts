@@ -42,7 +42,7 @@ import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler, ProfilerEvent} from '../profiler';
 import {commitLViewConsumerIfHasProducers, getReactiveLViewConsumer} from '../reactive_lview_consumer';
-import {getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isInSkipHydrationBlock, leaveView, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
+import {getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isInSkipHydrationBlock, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
@@ -753,13 +753,16 @@ export function mapPropName(name: string): string {
 
 export function elementPropertyInternal<T>(
     tView: TView, tNode: TNode, lView: LView, propName: string, value: T, renderer: Renderer,
-    sanitizer: SanitizerFn|null|undefined, nativeOnly: boolean): void {
+    sanitizer: SanitizerFn|null|undefined, nativeOnly: boolean, skipSignal: boolean): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   const element = getNativeByTNode(tNode, lView) as RElement | RComment;
   let inputData = tNode.inputs;
   let dataValue: PropertyAliasValue|undefined;
+
+
+  // TODO(signals): use prop target here
   if (!nativeOnly && inputData != null && (dataValue = inputData[propName])) {
-    setInputsForProperty(tView, lView, dataValue, propName, value);
+    setInputsForProperty(tView, lView, dataValue, propName, value, skipSignal);
     if (isComponentHost(tNode)) markDirtyIfOnPush(lView, tNode.index);
     if (ngDevMode) {
       setNgReflectProperties(lView, element, tNode.type, dataValue, value);
@@ -1569,13 +1572,19 @@ export function handleError(lView: LView, error: any): void {
  * @param value Value to set.
  */
 export function setInputsForProperty(
-    tView: TView, lView: LView, inputs: PropertyAliasValue, publicName: string, value: any): void {
+    tView: TView, lView: LView, inputs: PropertyAliasValue, publicName: string, value: any,
+    skipSignal: boolean): void {
   for (let i = 0; i < inputs.length;) {
     const index = inputs[i++] as number;
     const privateName = inputs[i++] as string;
     const instance = lView[index];
     ngDevMode && assertIndexInRange(lView, index);
     const def = tView.data[index] as DirectiveDef<any>;
+
+    // TODO(signals): not ideal. just for prototyping.
+    if (def.signals && skipSignal) {
+      continue;
+    }
 
     writeToDirectiveInput(def, instance, publicName, privateName, value);
   }
