@@ -52,7 +52,8 @@
             }
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should use appropriate function for a given no of pipe arguments",

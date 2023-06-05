@@ -13,7 +13,8 @@
             "chain_multiple_bindings.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain multiple single-interpolation attribute bindings into one instruction",
@@ -27,7 +28,8 @@
             "chain_multiple_single_interpolation.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain attribute bindings in the presence of other bindings",
@@ -41,7 +43,8 @@
             "chain_multiple_bindings_mixed.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not add interpolated attributes to the attribute instruction chain",
@@ -55,7 +58,8 @@
             "chain_bindings_with_interpolations.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain multiple attribute bindings when there are multiple elements",
@@ -69,7 +73,8 @@
             "chain_multiple_bindings_for_multiple_elements.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain multiple attribute bindings when there are child elements",
@@ -83,7 +88,8 @@
             "chain_multiple_bindings_with_child_elements.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should exclude attribute bindings from the attributes array",
@@ -97,7 +103,8 @@
             "exclude_bindings_from_consts.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should generate the proper update instructions for interpolated attributes",
@@ -111,7 +118,8 @@
             "interpolated_attributes.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

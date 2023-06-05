@@ -13,7 +13,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should be generated for ICU-only i18n blocks",
@@ -27,7 +28,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should be generated within <ng-container> and <ng-template> blocks",
@@ -41,7 +43,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should not be generated in case we have styling instructions",
@@ -55,7 +58,8 @@
             "verifyUniqueConsts"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     }
   ]
 }

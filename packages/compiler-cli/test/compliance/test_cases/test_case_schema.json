@@ -133,6 +133,10 @@
             "title": "Additional options to pass to the Angular compiler",
             "type": "object"
           },
+          "skipForTemplatePipeline": {
+            "tite": "Set to true to skip this test when running with use_template_pipeline",
+            "type": "boolean"
+          },
           "focusTest": {
             "title": "Set to true to focus on this test - equivalent to jasmine's `fit()` function",
             "type": "boolean"

@@ -87,7 +87,8 @@
             "content_query_for_directive.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support content queries with forwardRefs",
@@ -101,7 +102,8 @@
             "content_query_forward_ref.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support content queries with local refs",
@@ -130,7 +132,8 @@
             "static_content_query.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support content queries with read tokens specified",

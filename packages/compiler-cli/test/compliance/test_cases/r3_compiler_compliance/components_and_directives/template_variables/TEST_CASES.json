@@ -14,7 +14,8 @@
             "svg_embedded_view.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should support a let variable and reference",

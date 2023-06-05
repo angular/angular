@@ -13,7 +13,8 @@
             "class_bindings.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain styleProp instruction calls",
@@ -27,7 +28,8 @@
             "style_bindings.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain mixed styleProp and classProp calls",
@@ -41,7 +43,8 @@
             "mixed_bindings.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain style interpolations of the same kind",
@@ -55,7 +58,8 @@
             "interpolations_equal_arity.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain style interpolations of multiple kinds",
@@ -69,7 +73,8 @@
             "interpolations_different_arity.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should break into multiple chains if there are other styling instructions in between",
@@ -83,7 +88,8 @@
             "break_different_instructions.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should break into multiple chains if there are other styling interpolation instructions in between",
@@ -97,7 +103,8 @@
             "break_different_interpolation_instructions.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should chain styling instructions inside host bindings",
