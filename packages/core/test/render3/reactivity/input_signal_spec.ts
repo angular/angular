@@ -14,7 +14,7 @@ import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
-fdescribe('input signals', () => {
+describe('input signals', () => {
   it('should throw before initialization', () => {
     const foo = input<string>();
     expect(foo).toThrow();
