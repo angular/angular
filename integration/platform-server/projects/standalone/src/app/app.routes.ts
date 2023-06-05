@@ -18,4 +18,11 @@ export const routes: Routes = [
         (c) => c.TransferStateComponent
       ),
   },
+  {
+    path: 'http-transferstate-lazy-on-init',
+    loadComponent: () =>
+      import('./http-transferstate-lazy-on-init/http-transfer-state-on-init.component').then(
+        (c) => c.TransferStateOnInitComponent
+      ),
+  },
 ];
