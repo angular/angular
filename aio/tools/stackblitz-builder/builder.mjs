@@ -139,11 +139,8 @@ export class StackblitzBuilder {
 
   _addStackblitzrc(postData) {
     postData['project[files][.stackblitzrc]'] = JSON.stringify({
-      installDependencies: true,
-      startCommand: 'turbo start',
-      env: {
-        ENABLE_CJS_IMPORTS: true
-      }
+      installDependencies: false,
+      startCommand: 'npm install --legacy-peer-deps && npm start'
     });
   }
 
