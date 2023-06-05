@@ -549,6 +549,12 @@
     "name": "Subscription"
   },
   {
+    "name": "SwitchMapOperator"
+  },
+  {
+    "name": "SwitchMapSubscriber"
+  },
+  {
     "name": "TESTABILITY"
   },
   {
@@ -1212,6 +1218,9 @@
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
+    "name": "innerSubscribe"
+  },
+  {
     "name": "insertBloom"
   },
   {
@@ -1390,6 +1399,9 @@
   },
   {
     "name": "maybeWrapInNotSelector"
+  },
+  {
+    "name": "mergeAll"
   },
   {
     "name": "mergeErrors"
@@ -1651,6 +1663,9 @@
   },
   {
     "name": "subscribeToArray"
+  },
+  {
+    "name": "switchMap"
   },
   {
     "name": "throwProviderNotFoundError"
