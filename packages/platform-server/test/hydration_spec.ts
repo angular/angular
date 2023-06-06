@@ -12,7 +12,6 @@ import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf
 import {MockPlatformLocation} from '@angular/common/testing';
 import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {InitialRenderPendingTasks} from '@angular/core/src/initial_render_pending_tasks';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
@@ -213,7 +212,7 @@ function withDebugConsole() {
   return [{provide: Console, useClass: DebugConsole}];
 }
 
-describe('platform-server integration', () => {
+describe('platform-server hydration integration', () => {
   beforeEach(() => {
     if (typeof ngDevMode === 'object') {
       // Reset all ngDevMode counters.
@@ -279,9 +278,6 @@ describe('platform-server integration', () => {
     async function hydrate(
         html: string, component: Type<unknown>, envProviders?: Provider[],
         hydrationFeatures: HydrationFeature<HydrationFeatureKind>[] = []): Promise<ApplicationRef> {
-      // Destroy existing platform, a new one will be created later by the `bootstrapApplication`.
-      destroyPlatform();
-
       // Get HTML contents of the `<app>`, create a DOM element and append it into the body.
       const container = convertHtmlToDom(html, doc);
       Array.from(container.children).forEach(node => doc.body.appendChild(node));
@@ -4777,7 +4773,7 @@ describe('platform-server integration', () => {
           }
         }
 
-        ssr(SimpleComponent, undefined, withNoopErrorHandler()).catch((err: unknown) => {
+        await ssr(SimpleComponent, undefined, withNoopErrorHandler()).catch((err: unknown) => {
           const message = (err as Error).message;
           expect(message).toContain(
               'During serialization, Angular was unable to find an element in the DOM');
