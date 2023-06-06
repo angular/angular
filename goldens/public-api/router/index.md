@@ -793,24 +793,24 @@ class RouterLink implements OnChanges, OnDestroy {
     fragment?: string;
     href: string | null;
     // (undocumented)
+    static ngAcceptInputType_preserveFragment: unknown;
+    // (undocumented)
+    static ngAcceptInputType_replaceUrl: unknown;
+    // (undocumented)
+    static ngAcceptInputType_skipLocationChange: unknown;
+    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): any;
     // (undocumented)
     onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean): boolean;
-    set preserveFragment(preserveFragment: boolean | string | null | undefined);
-    // (undocumented)
-    get preserveFragment(): boolean;
+    preserveFragment: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
     relativeTo?: ActivatedRoute | null;
-    set replaceUrl(replaceUrl: boolean | string | null | undefined);
-    // (undocumented)
-    get replaceUrl(): boolean;
+    replaceUrl: boolean;
     set routerLink(commands: any[] | string | null | undefined);
-    set skipLocationChange(skipLocationChange: boolean | string | null | undefined);
-    // (undocumented)
-    get skipLocationChange(): boolean;
+    skipLocationChange: boolean;
     state?: {
         [k: string]: any;
     };
