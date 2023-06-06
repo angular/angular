@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementAttributes} from '../element';
+import * as o from '../../../../../output/output_ast';
+import {ElementAttributeKind, ElementAttributes} from '../element';
 import {OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
 import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
+
 import type {UpdateOp} from './update';
 
 /**
@@ -20,6 +22,21 @@ import type {UpdateOp} from './update';
 export type CreateOp =
     ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
     ContainerStartOp|ContainerEndOp|TemplateOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>;
+
+
+/**
+ * Ops that "look" like a template, i.e. various kinds of elements, templates, containers etc. They
+ * can all have property and attribute bindings, for instance.
+ */
+export type ElementOrContainerOps =
+    ElementOp|ElementStartOp|ContainerOp|ContainerStartOp|TemplateOp;
+export type ElementOrContainerOpKinds = ElementOrContainerOps['kind'];
+
+export function isElementOrContainerOp(op: CreateOp): op is ElementOrContainerOps {
+  return [
+    OpKind.Element, OpKind.ElementStart, OpKind.Container, OpKind.ContainerStart, OpKind.Template
+  ].includes(op.kind);
+}
 
 /**
  * Representation of a local reference on an element.
@@ -41,7 +58,7 @@ export interface LocalRef {
  * used to represent their element-like nature.
  */
 export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
-  kind: OpKind.Element|OpKind.ElementStart|OpKind.Container|OpKind.ContainerStart|OpKind.Template;
+  kind: ElementOrContainerOpKinds;
 
   /**
    * `XrefId` allocated for this element.

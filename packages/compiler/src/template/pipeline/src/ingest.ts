@@ -58,7 +58,6 @@ function ingestElement(view: ViewCompilation, element: t.Element): void {
   const startOp = ir.createElementStartOp(element.name, id);
   view.create.push(startOp);
 
-  ingestAttributes(startOp, element);
   ingestBindings(view, startOp, element);
   ingestReferences(startOp, element);
 
@@ -76,7 +75,6 @@ function ingestTemplate(view: ViewCompilation, tmpl: t.Template): void {
   const tplOp = ir.createTemplateOp(childView.xref, tmpl.tagName ?? 'ng-template');
   view.create.push(tplOp);
 
-  ingestAttributes(tplOp, tmpl);
   ingestBindings(view, tplOp, tmpl);
   ingestReferences(tplOp, tmpl);
 
@@ -184,45 +182,32 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
 }
 
 /**
- * Process all of the attributes on an element-like structure in the template AST and convert them
- * to their IR representation.
- */
-function ingestAttributes(op: ir.ElementOpBase, element: t.Element|t.Template): void {
-  ir.assertIsElementAttributes(op.attributes);
-  for (const attr of element.attributes) {
-    op.attributes.add(ir.ElementAttributeKind.Attribute, attr.name, o.literal(attr.value));
-  }
-
-  for (const input of element.inputs) {
-    op.attributes.add(ir.ElementAttributeKind.Binding, input.name, null);
-  }
-  for (const output of element.outputs) {
-    op.attributes.add(ir.ElementAttributeKind.Binding, output.name, null);
-  }
-  if (element instanceof t.Template) {
-    for (const attr of element.templateAttrs) {
-      // TODO: what do we do about the value here?
-      op.attributes.add(ir.ElementAttributeKind.Template, attr.name, null);
-    }
-  }
-}
-
-/**
  * Process all of the bindings on an element-like structure in the template AST and convert them
  * to their IR representation.
  */
 function ingestBindings(
     view: ViewCompilation, op: ir.ElementOpBase, element: t.Element|t.Template): void {
   if (element instanceof t.Template) {
-    for (const attr of [...element.templateAttrs, ...element.inputs]) {
-      if (!(attr instanceof t.BoundAttribute)) {
-        continue;
+    for (const attr of element.templateAttrs) {
+      if (attr instanceof t.TextAttribute) {
+        view.update.push(ir.createAttributeOp(
+            op.xref, ir.ElementAttributeKind.Template, attr.name, o.literal(attr.value)));
+      } else {
+        ingestPropertyBinding(
+            view, op.xref, ir.ElementAttributeKind.Template, attr.name, attr.value);
       }
-      ingestPropertyBinding(view, op.xref, attr.name, attr.value);
+    }
+    for (const attr of element.inputs) {
+      ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Binding, attr.name, attr.value);
     }
   } else {
+    for (const attr of element.attributes) {
+      view.update.push(ir.createAttributeOp(
+          op.xref, ir.ElementAttributeKind.Attribute, attr.name, o.literal(attr.value)));
+    }
     for (const input of element.inputs) {
-      ingestPropertyBinding(view, op.xref, input.name, input.value);
+      ingestPropertyBinding(
+          view, op.xref, ir.ElementAttributeKind.Binding, input.name, input.value);
     }
 
     for (const output of element.outputs) {
@@ -259,15 +244,18 @@ function ingestBindings(
 }
 
 function ingestPropertyBinding(
-    view: ViewCompilation, xref: ir.XrefId, name: string, value: e.AST): void {
+    view: ViewCompilation, xref: ir.XrefId,
+    bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template, name: string,
+    value: e.AST): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
   }
   if (value instanceof e.Interpolation) {
     view.update.push(ir.createInterpolatePropertyOp(
-        xref, name, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+        xref, bindingKind, name, value.strings,
+        value.expressions.map(expr => convertAst(expr, view.tpl))));
   } else {
-    view.update.push(ir.createPropertyOp(xref, name, convertAst(value, view.tpl)));
+    view.update.push(ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
   }
 }
 

@@ -97,6 +97,11 @@ export enum OpKind {
    * An operation to instantiate a pipe.
    */
   Pipe,
+
+  /**
+   * An operation to bind an expression (or constant) to an element's attribute.
+   */
+  Attribute,
 }
 
 /**
