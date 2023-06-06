@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {booleanAttribute, Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 import {isPlatformServer} from '../../platform_id';
@@ -247,7 +247,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * Image name will be processed by the image loader and the final URL will be applied as the `src`
    * property of the image.
    */
-  @Input() ngSrc!: string;
+  @Input({required: true}) ngSrc!: string;
 
   /**
    * A comma separated list of width or density descriptors.
@@ -272,30 +272,14 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * For responsive images: the intrinsic width of the image in pixels.
    * For fixed size images: the desired rendered width of the image in pixels.
    */
-  @Input()
-  set width(value: string|number|undefined) {
-    ngDevMode && assertGreaterThanZero(this, value, 'width');
-    this._width = inputToInteger(value);
-  }
-  get width(): number|undefined {
-    return this._width;
-  }
-  private _width?: number;
+  @Input({transform: numberAttribute}) width: number|undefined;
 
   /**
    * For responsive images: the intrinsic height of the image in pixels.
    * For fixed size images: the desired rendered height of the image in pixels.* The intrinsic
    * height of the image in pixels.
    */
-  @Input()
-  set height(value: string|number|undefined) {
-    ngDevMode && assertGreaterThanZero(this, value, 'height');
-    this._height = inputToInteger(value);
-  }
-  get height(): number|undefined {
-    return this._height;
-  }
-  private _height?: number;
+  @Input({transform: numberAttribute}) height: number|undefined;
 
   /**
    * The desired loading behavior (lazy, eager, or auto).
@@ -308,14 +292,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * Indicates whether this image should have a high priority.
    */
-  @Input()
-  set priority(value: string|boolean|undefined) {
-    this._priority = inputToBoolean(value);
-  }
-  get priority(): boolean {
-    return this._priority;
-  }
-  private _priority = false;
+  @Input({transform: booleanAttribute}) priority = false;
 
   /**
    * Data to pass through to custom loaders.
@@ -325,14 +302,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * Disables automatic srcset generation for this image.
    */
-  @Input()
-  set disableOptimizedSrcset(value: string|boolean|undefined) {
-    this._disableOptimizedSrcset = inputToBoolean(value);
-  }
-  get disableOptimizedSrcset(): boolean {
-    return this._disableOptimizedSrcset;
-  }
-  private _disableOptimizedSrcset = false;
+  @Input({transform: booleanAttribute}) disableOptimizedSrcset = false;
 
   /**
    * Sets the image to "fill mode", which eliminates the height/width requirement and adds
@@ -340,14 +310,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    *
    * @developerPreview
    */
-  @Input()
-  set fill(value: string|boolean|undefined) {
-    this._fill = inputToBoolean(value);
-  }
-  get fill(): boolean {
-    return this._fill;
-  }
-  private _fill = false;
+  @Input({transform: booleanAttribute}) fill = false;
 
   /**
    * Value of the `src` attribute if set on the host `<img>` element.
@@ -381,6 +344,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         assertNonZeroRenderedHeight(this, this.imgElement, this.renderer);
       } else {
         assertNonEmptyWidthAndHeight(this);
+        if (this.height !== undefined) {
+          assertGreaterThanZero(this, this.height, 'height');
+        }
+        if (this.width !== undefined) {
+          assertGreaterThanZero(this, this.width, 'width');
+        }
         // Only check for distorted images when not in fill mode, where
         // images may be intentionally stretched, cropped or letterboxed.
         assertNoImageDistortion(this, this.imgElement, this.renderer);
@@ -548,7 +517,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   private shouldGenerateAutomaticSrcset(): boolean {
-    return !this._disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader &&
+    return !this.disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader &&
         !(this.width! > FIXED_SRCSET_WIDTH_LIMIT || this.height! > FIXED_SRCSET_HEIGHT_LIMIT);
   }
 
@@ -567,20 +536,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 }
 
 /***** Helpers *****/
-
-/**
- * Convert input value to integer.
- */
-function inputToInteger(value: string|number|undefined): number|undefined {
-  return typeof value === 'string' ? parseInt(value, 10) : value;
-}
-
-/**
- * Convert input value to boolean.
- */
-function inputToBoolean(value: unknown): boolean {
-  return value != null && `${value}` !== 'false';
-}
 
 /**
  * Sorts provided config breakpoints and uses defaults.
@@ -778,9 +733,8 @@ function assertGreaterThanZero(dir: NgOptimizedImage, inputValue: unknown, input
   if (!validNumber && !validString) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `${imgDirectiveDetails(dir.ngSrc)} \`${inputName}\` has an invalid value ` +
-            `(\`${inputValue}\`). To fix this, provide \`${inputName}\` ` +
-            `as a number greater than 0.`);
+        `${imgDirectiveDetails(dir.ngSrc)} \`${inputName}\` has an invalid value. ` +
+            `To fix this, provide \`${inputName}\` as a number greater than 0.`);
   }
 }
 

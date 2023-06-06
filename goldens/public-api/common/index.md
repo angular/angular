@@ -599,19 +599,23 @@ export abstract class NgLocalization {
 
 // @public
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
-    set disableOptimizedSrcset(value: string | boolean | undefined);
-    // (undocumented)
-    get disableOptimizedSrcset(): boolean;
-    set fill(value: string | boolean | undefined);
-    // (undocumented)
-    get fill(): boolean;
-    set height(value: string | number | undefined);
-    // (undocumented)
-    get height(): number | undefined;
+    disableOptimizedSrcset: boolean;
+    fill: boolean;
+    height: number | undefined;
     loaderParams?: {
         [key: string]: any;
     };
     loading?: 'lazy' | 'eager' | 'auto';
+    // (undocumented)
+    static ngAcceptInputType_disableOptimizedSrcset: unknown;
+    // (undocumented)
+    static ngAcceptInputType_fill: unknown;
+    // (undocumented)
+    static ngAcceptInputType_height: unknown;
+    // (undocumented)
+    static ngAcceptInputType_priority: unknown;
+    // (undocumented)
+    static ngAcceptInputType_width: unknown;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
@@ -620,15 +624,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     ngOnInit(): void;
     ngSrc: string;
     ngSrcset: string;
-    set priority(value: string | boolean | undefined);
-    // (undocumented)
-    get priority(): boolean;
+    priority: boolean;
     sizes?: string;
-    set width(value: string | number | undefined);
+    width: number | undefined;
     // (undocumented)
-    get width(): number | undefined;
-    // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": { "alias": "ngSrc"; "required": false; }; "ngSrcset": { "alias": "ngSrcset"; "required": false; }; "sizes": { "alias": "sizes"; "required": false; }; "width": { "alias": "width"; "required": false; }; "height": { "alias": "height"; "required": false; }; "loading": { "alias": "loading"; "required": false; }; "priority": { "alias": "priority"; "required": false; }; "loaderParams": { "alias": "loaderParams"; "required": false; }; "disableOptimizedSrcset": { "alias": "disableOptimizedSrcset"; "required": false; }; "fill": { "alias": "fill"; "required": false; }; "src": { "alias": "src"; "required": false; }; "srcset": { "alias": "srcset"; "required": false; }; }, {}, never, never, true, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": { "alias": "ngSrc"; "required": true; }; "ngSrcset": { "alias": "ngSrcset"; "required": false; }; "sizes": { "alias": "sizes"; "required": false; }; "width": { "alias": "width"; "required": false; }; "height": { "alias": "height"; "required": false; }; "loading": { "alias": "loading"; "required": false; }; "priority": { "alias": "priority"; "required": false; }; "loaderParams": { "alias": "loaderParams"; "required": false; }; "disableOptimizedSrcset": { "alias": "disableOptimizedSrcset"; "required": false; }; "fill": { "alias": "fill"; "required": false; }; "src": { "alias": "src"; "required": false; }; "srcset": { "alias": "srcset"; "required": false; }; }, {}, never, never, true, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
 }
