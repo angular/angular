@@ -377,7 +377,7 @@ describe('Image directive', () => {
           .toThrowError(
               'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
               'element with the `ngSrc="img.png"`) has detected that `width` ' +
-              'has an invalid value (`0`). To fix this, provide `width` as ' +
+              'has an invalid value. To fix this, provide `width` as ' +
               'a number greater than 0.');
     });
 
@@ -392,7 +392,7 @@ describe('Image directive', () => {
           .toThrowError(
               'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
               'element with the `ngSrc="img.png"`) has detected that `width` ' +
-              'has an invalid value (`10px`). To fix this, provide `width` ' +
+              'has an invalid value. To fix this, provide `width` ' +
               'as a number greater than 0.');
     });
 
@@ -424,7 +424,7 @@ describe('Image directive', () => {
           .toThrowError(
               'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
               'element with the `ngSrc="img.png"`) has detected that `height` ' +
-              'has an invalid value (`0`). To fix this, provide `height` as a number ' +
+              'has an invalid value. To fix this, provide `height` as a number ' +
               'greater than 0.');
     });
 
@@ -439,7 +439,7 @@ describe('Image directive', () => {
           .toThrowError(
               'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
               'with the `ngSrc="img.png"`) has detected that `height` has an invalid ' +
-              'value (`10%`). To fix this, provide `height` as a number greater than 0.');
+              'value. To fix this, provide `height` as a number greater than 0.');
     });
 
     it('should throw if `ngSrc` value is not provided', () => {
