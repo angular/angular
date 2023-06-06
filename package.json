@@ -172,7 +172,7 @@
     "firebase-tools": "^12.0.0",
     "glob": "8.1.0",
     "gulp": "^4.0.2",
-    "gulp-conventional-changelog": "^2.0.35",
+    "gulp-conventional-changelog": "^3.0.0",
     "husky": "8.0.3",
     "karma-sauce-launcher": "^4.3.6",
     "madge": "^6.0.0",
