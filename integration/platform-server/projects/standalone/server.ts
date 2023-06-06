@@ -13,6 +13,7 @@ import * as express from 'express';
 import bootstrap from './src/main.server';
 import {join} from 'path';
 import {readFileSync} from 'fs';
+import './prerender';
 
 const app = express();
 const distFolder = join(process.cwd(), 'dist/standalone/browser');
