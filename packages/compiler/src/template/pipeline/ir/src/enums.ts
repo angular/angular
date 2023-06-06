@@ -167,6 +167,26 @@ export enum ExpressionKind {
    * Binding to a pipe transformation with a variable number of arguments.
    */
   PipeBindingVariadic,
+
+  /*
+   * A safe property read requiring expansion into a null check.
+   */
+  SafePropertyRead,
+
+  /**
+   * A safe keyed read requiring expansion into a null check.
+   */
+  SafeKeyedRead,
+
+  /**
+   * A safe function call requiring expansion into a null check.
+   */
+  SafeInvokeFunction,
+
+  /**
+   * An intermediate expression that will be expanded from a safe read into an explicit ternary.
+   */
+  SafeTernaryExpr,
 }
 
 /**
