@@ -25,4 +25,13 @@ export const routes: Routes = [
         (c) => c.TransferStateOnInitComponent
       ),
   },
+  {
+    path: 'error',
+    component: HelloWorldComponent,
+    resolve: {
+      'id': () => {
+        throw new Error('Error in resolver.');
+      },
+    },
+  },
 ];
