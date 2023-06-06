@@ -18,6 +18,7 @@ import {phaseChaining} from './phases/chaining';
 import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
 import {phaseGenerateAdvance} from './phases/generate_advance';
+import {phaseNullishCoalescing} from './phases/nullish_coalescing';
 import {phaseGenerateVariables} from './phases/generate_variables';
 import {phaseLocalRefs} from './phases/local_refs';
 import {phaseNaming} from './phases/naming';
@@ -50,6 +51,7 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseResolveContexts(cpl);
   phaseLocalRefs(cpl);
   phaseConstCollection(cpl);
+  phaseNullishCoalescing(cpl);
   phaseSlotAllocation(cpl);
   phaseVarCounting(cpl);
   phaseGenerateAdvance(cpl);
