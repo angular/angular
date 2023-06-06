@@ -51,6 +51,10 @@ export class ReactiveLViewConsumer extends ReactiveNode {
     }
   }
 
+  beforeRun(): void {
+    this.trackingVersion++;
+  }
+
   destroy(): void {
     // Incrementing the version means that every producer which tries to update this consumer will
     // consider its record stale, and not notify.
