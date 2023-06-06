@@ -42,7 +42,7 @@ import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler, ProfilerEvent} from '../profiler';
 import {commitLViewConsumerIfHasProducers, getReactiveLViewConsumer} from '../reactive_lview_consumer';
-import {getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isInSkipHydrationBlock, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
+import {getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, getVirtualInstructionIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isInSkipHydrationBlock, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
@@ -263,7 +263,20 @@ export function executeTemplate<T>(
         isUpdatePhase ? ProfilerEvent.TemplateUpdateStart : ProfilerEvent.TemplateCreateStart;
     profiler(preHookType, context as unknown as {});
     if (isUpdatePhase) {
-      consumer.runInContext(templateFn, rf, context);
+      consumer.beforeRun();
+      const prevConsumer = setActiveConsumer(consumer);
+      try {
+        templateFn(rf, context);
+
+        // Flush remaining virtual instructions.
+        if (tView.virtualUpdate) {
+          for (let idx = getVirtualInstructionIndex(); idx < tView.virtualUpdate.length; idx++) {
+            tView.virtualUpdate[idx].instruction();
+          }
+        }
+      } finally {
+        setActiveConsumer(prevConsumer);
+      }
     } else {
       const prevConsumer = setActiveConsumer(null);
       try {

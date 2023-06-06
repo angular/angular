@@ -45,13 +45,14 @@ export function ɵɵpropertyCreate<T>(
 
   const inputData = tNode.inputs?.[propName] ?? EMPTY_ARRAY;
 
+  debugger;
   let zoneTargets: PropertyAliasValue|null = null;
   for (let i = 0; i < inputData.length;) {
     const index = inputData[i++] as number;
     const privateName = inputData[i++] as string;
     const def = tView.data[index] as DirectiveDef<any>;
     if (!def.signals) {
-      (zoneTargets ??= []).push(inputData[i], inputData[i + 1]);
+      (zoneTargets ??= []).push(index, privateName);
     } else {
       ngDevMode && assertIndexInRange(lView, index);
       (lView[index][privateName][SIGNAL] as InternalInputSignal).bindToComputation(expr);
@@ -64,14 +65,14 @@ export function ɵɵpropertyCreate<T>(
   if (inputData.length === 0) {
     // Untargeted input -> DOM binding.
     (tView.virtualUpdate ??= []).push({
-      slot,
+      slot: expressionSlot,
       instruction: () =>
           propertyUpdateDom(tNode.index, propName, expressionSlot, sanitizer ?? null),
     });
   } else if (zoneTargets?.length ?? 0 > 0) {
     // Some binding targets were zone-based, so we need an update instruction to process them.
     (tView.virtualUpdate ??= []).push({
-      slot,
+      slot: expressionSlot,
       instruction: () => propertyUpdateInput(propName, expressionSlot, zoneTargets!),
     });
   } else {
