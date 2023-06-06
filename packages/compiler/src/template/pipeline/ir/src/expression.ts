@@ -75,6 +75,10 @@ export class LexicalReadExpr extends ExpressionBase {
   }
 
   override transformInternalExpressions(): void {}
+
+  override clone(): LexicalReadExpr {
+    return new LexicalReadExpr(this.name);
+  }
 }
 
 /**
@@ -102,6 +106,12 @@ export class ReferenceExpr extends ExpressionBase implements UsesSlotIndexTrait 
   }
 
   override transformInternalExpressions(): void {}
+
+  override clone(): ReferenceExpr {
+    const expr = new ReferenceExpr(this.target, this.offset);
+    expr.slot = this.slot;
+    return expr;
+  }
 }
 
 /**
@@ -125,6 +135,10 @@ export class ContextExpr extends ExpressionBase {
   }
 
   override transformInternalExpressions(): void {}
+
+  override clone(): ContextExpr {
+    return new ContextExpr(this.view);
+  }
 }
 
 /**
@@ -150,6 +164,12 @@ export class NextContextExpr extends ExpressionBase {
   }
 
   override transformInternalExpressions(): void {}
+
+  override clone(): NextContextExpr {
+    const expr = new NextContextExpr();
+    expr.steps = this.steps;
+    return expr;
+  }
 }
 
 /**
@@ -176,6 +196,10 @@ export class GetCurrentViewExpr extends ExpressionBase {
   }
 
   override transformInternalExpressions(): void {}
+
+  override clone(): GetCurrentViewExpr {
+    return new GetCurrentViewExpr();
+  }
 }
 
 /**
@@ -216,6 +240,10 @@ export class RestoreViewExpr extends ExpressionBase {
       this.view = transformExpressionsInExpression(this.view, transform, flags);
     }
   }
+
+  override clone(): RestoreViewExpr {
+    return new RestoreViewExpr(this.view instanceof o.Expression ? this.view.clone() : this.view);
+  }
 }
 
 /**
@@ -244,6 +272,10 @@ export class ResetViewExpr extends ExpressionBase {
       void {
     this.expr = transformExpressionsInExpression(this.expr, transform, flags);
   }
+
+  override clone(): ResetViewExpr {
+    return new ResetViewExpr(this.expr.clone());
+  }
 }
 
 /**
@@ -267,6 +299,12 @@ export class ReadVariableExpr extends ExpressionBase {
   }
 
   override transformInternalExpressions(): void {}
+
+  override clone(): ReadVariableExpr {
+    const expr = new ReadVariableExpr(this.xref);
+    expr.name = this.name;
+    return expr;
+  }
 }
 
 export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrait,
@@ -297,7 +335,7 @@ export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrai
    */
   fn: o.Expression|null = null;
 
-  constructor(expression: o.Expression, args: o.Expression[]) {
+  constructor(expression: o.Expression|null, args: o.Expression[]) {
     super();
     this.body = expression;
     this.args = args;
@@ -337,6 +375,14 @@ export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrai
       this.args[i] = transformExpressionsInExpression(this.args[i], transform, flags);
     }
   }
+
+  override clone(): PureFunctionExpr {
+    const expr =
+        new PureFunctionExpr(this.body?.clone() ?? null, this.args.map(arg => arg.clone()));
+    expr.fn = this.fn?.clone() ?? null;
+    expr.varOffset = this.varOffset;
+    return expr;
+  }
 }
 
 export class PureFunctionParameterExpr extends ExpressionBase {
@@ -357,6 +403,10 @@ export class PureFunctionParameterExpr extends ExpressionBase {
   }
 
   override transformInternalExpressions(): void {}
+
+  override clone(): PureFunctionParameterExpr {
+    return new PureFunctionParameterExpr(this.index);
+  }
 }
 
 export class PipeBindingExpr extends ExpressionBase implements UsesSlotIndexTrait,
@@ -394,6 +444,13 @@ export class PipeBindingExpr extends ExpressionBase implements UsesSlotIndexTrai
       this.args[idx] = transformExpressionsInExpression(this.args[idx], transform, flags);
     }
   }
+
+  override clone() {
+    const r = new PipeBindingExpr(this.target, this.name, this.args.map(a => a.clone()));
+    r.slot = this.slot;
+    r.varOffset = this.varOffset;
+    return r;
+  }
 }
 
 export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotIndexTrait,
@@ -428,6 +485,13 @@ export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotI
   override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
       void {
     this.args = transformExpressionsInExpression(this.args, transform, flags);
+  }
+
+  override clone(): PipeBindingVariadicExpr {
+    const r = new PipeBindingVariadicExpr(this.target, this.name, this.args.clone(), this.numArgs);
+    r.slot = this.slot;
+    r.varOffset = this.varOffset;
+    return r;
   }
 }
 

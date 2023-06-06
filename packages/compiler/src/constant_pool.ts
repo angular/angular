@@ -71,6 +71,10 @@ class FixupExpression extends o.Expression {
     return true;
   }
 
+  override clone(): FixupExpression {
+    throw new Error(`Not supported.`);
+  }
+
   fixup(expression: o.Expression) {
     this.resolved = expression;
     this.shared = true;
