@@ -16,6 +16,7 @@ import {untracked} from '../../src/signals';
  * Options for `toSignal`.
  *
  * @publicApi
+ * @developerPreview
  */
 export interface ToSignalOptions<T> {
   /**
