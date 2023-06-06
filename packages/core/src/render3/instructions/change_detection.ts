@@ -128,13 +128,6 @@ export function refreshView<T>(
       executeTemplate(tView, lView, templateFn, RenderFlags.Update, context);
     }
 
-    // Flush remaining virtual instructions.
-    if (tView.virtualUpdate) {
-      for (let idx = getVirtualInstructionIndex(); idx < tView.virtualUpdate.length; idx++) {
-        tView.virtualUpdate[idx].instruction();
-      }
-    }
-
     const hooksInitPhaseCompleted =
         (flags & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
 
