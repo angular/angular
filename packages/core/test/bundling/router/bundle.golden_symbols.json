@@ -2031,6 +2031,9 @@
     "name": "ɵEmptyOutletComponent"
   },
   {
+    "name": "ɵɵInputTransformsFeature"
+  },
+  {
     "name": "ɵɵNgOnChangesFeature"
   },
   {

@@ -120,10 +120,6 @@ import {UrlTree} from '../url_tree';
   standalone: true,
 })
 export class RouterLink implements OnChanges, OnDestroy {
-  private _preserveFragment = false;
-  private _skipLocationChange = false;
-  private _replaceUrl = false;
-
   /**
    * Represents an `href` attribute value applied to a host element,
    * when a host element is `<a>`. For other tags, the value is `null`.
@@ -210,14 +206,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    * @see {@link UrlCreationOptions#preserveFragment UrlCreationOptions#preserveFragment}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  @Input()
-  set preserveFragment(preserveFragment: boolean|string|null|undefined) {
-    this._preserveFragment = booleanAttribute(preserveFragment);
-  }
-
-  get preserveFragment(): boolean {
-    return this._preserveFragment;
-  }
+  @Input({transform: booleanAttribute}) preserveFragment: boolean = false;
 
   /**
    * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
@@ -225,14 +214,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    * @see {@link NavigationBehaviorOptions#skipLocationChange NavigationBehaviorOptions#skipLocationChange}
    * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
-  @Input()
-  set skipLocationChange(skipLocationChange: boolean|string|null|undefined) {
-    this._skipLocationChange = booleanAttribute(skipLocationChange);
-  }
-
-  get skipLocationChange(): boolean {
-    return this._skipLocationChange;
-  }
+  @Input({transform: booleanAttribute}) skipLocationChange: boolean = false;
 
   /**
    * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
@@ -240,14 +222,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    * @see {@link NavigationBehaviorOptions#replaceUrl NavigationBehaviorOptions#replaceUrl}
    * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
-  @Input()
-  set replaceUrl(replaceUrl: boolean|string|null|undefined) {
-    this._replaceUrl = booleanAttribute(replaceUrl);
-  }
-
-  get replaceUrl(): boolean {
-    return this._replaceUrl;
-  }
+  @Input({transform: booleanAttribute}) replaceUrl: boolean = false;
 
   /**
    * Modifies the tab index if there was not a tabindex attribute on the element during
