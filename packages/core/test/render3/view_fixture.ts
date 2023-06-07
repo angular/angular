@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Sanitizer, Type} from '@angular/core';
+import {Sanitizer, Type, ɵAfterRenderEventManager as AfterRenderEventManager} from '@angular/core';
 import {EffectManager} from '@angular/core/src/render3/reactivity/effect';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -76,6 +76,7 @@ export class ViewFixture {
           rendererFactory,
           sanitizer: sanitizer || null,
           effectManager: new EffectManager(),
+          afterRenderEventManager: new AfterRenderEventManager(),
         },
         hostRenderer, null, null, null);
 

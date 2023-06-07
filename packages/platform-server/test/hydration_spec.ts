@@ -10,7 +10,7 @@ import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {afterRender, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
@@ -3248,6 +3248,102 @@ describe('platform-server hydration integration', () => {
         // After the cleanup, we expect to see CLIENT content, but not SERVER.
         expect(clientContents).toContain('<i>This is a CLIENT-ONLY content</i>');
         expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
+      });
+
+      it('should trigger change detection after cleanup (immediate)', async () => {
+        const observedChildCountLog: number[] = [];
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NgIf],
+          template: `
+            <span *ngIf="isServer">This is a SERVER-ONLY content</span>
+            <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
+          `,
+        })
+        class SimpleComponent {
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+          elementRef = inject(ElementRef);
+
+          constructor() {
+            afterRender(() => {
+              observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
+            });
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        let ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        // Before hydration
+        expect(observedChildCountLog).toEqual([]);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        await whenStable(appRef);
+
+        // afterRender should be triggered by:
+        //   1.) Bootstrap
+        //   2.) Microtask empty event
+        //   3.) Stabilization + cleanup
+        expect(observedChildCountLog).toEqual([2, 2, 1]);
+      });
+
+      it('should trigger change detection after cleanup (deferred)', async () => {
+        const observedChildCountLog: number[] = [];
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [NgIf],
+          template: `
+            <span *ngIf="isServer">This is a SERVER-ONLY content</span>
+            <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
+          `,
+        })
+        class SimpleComponent {
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+          elementRef = inject(ElementRef);
+
+          constructor() {
+            afterRender(() => {
+              observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
+            });
+
+            // Create a dummy promise to prevent stabilization
+            new Promise<void>(resolve => {
+              setTimeout(resolve, 0);
+            });
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        let ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        // Before hydration
+        expect(observedChildCountLog).toEqual([]);
+
+        const appRef = await hydrate(html, SimpleComponent);
+
+        // afterRender should be triggered by:
+        //   1.) Bootstrap
+        //   2.) Microtask empty event
+        expect(observedChildCountLog).toEqual([2, 2]);
+
+        await whenStable(appRef);
+
+        // afterRender should be triggered by:
+        //   3.) Microtask empty event
+        //   4.) Stabilization + cleanup
+        expect(observedChildCountLog).toEqual([2, 2, 2, 1]);
       });
     });
 

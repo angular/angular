@@ -13,6 +13,7 @@ import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
 import type {EffectManager} from '../reactivity/effect';
+import type {AfterRenderEventManager} from '../after_render_hooks';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
@@ -371,6 +372,9 @@ export interface LViewEnvironment {
 
   /** Container for reactivity system `effect`s. */
   effectManager: EffectManager|null;
+
+  /** Container for after render hooks */
+  afterRenderEventManager: AfterRenderEventManager|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

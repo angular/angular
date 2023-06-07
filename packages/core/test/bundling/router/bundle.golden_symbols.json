@@ -21,6 +21,9 @@
     "name": "ActivatedRouteSnapshot"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
