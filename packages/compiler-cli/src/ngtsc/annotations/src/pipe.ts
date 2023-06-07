@@ -54,7 +54,7 @@ export class PipeDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
-      private perf: PerfRecorder) {}
+      private perf: PerfRecorder, private includeClassMetadata: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'PipeDecoratorHandler';
@@ -138,7 +138,9 @@ export class PipeDecoratorHandler implements
           pure,
           isStandalone,
         },
-        classMetadata: extractClassMetadata(clazz, this.reflector, this.isCore),
+        classMetadata: this.includeClassMetadata ?
+            extractClassMetadata(clazz, this.reflector, this.isCore) :
+            null,
         pipeNameExpr,
         decorator: decorator?.node as ts.Decorator | null ?? null,
       },
