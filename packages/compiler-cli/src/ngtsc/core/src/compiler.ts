@@ -1041,6 +1041,15 @@ export class NgCompiler {
         CycleHandlingStrategy.Error;
 
     const strictCtorDeps = this.options.strictInjectionParameters || false;
+    const supportTestBed = this.options.supportTestBed ?? true;
+
+    // Libraries compiled in partial mode could potentially be used with TestBed within an
+    // application. Since this is not known at library compilation time, support is required to
+    // prevent potential downstream application testing breakage.
+    if (supportTestBed === false && compilationMode === CompilationMode.PARTIAL) {
+      throw new Error(
+          'TestBed support ("supportTestBed" option) cannot be disabled in partial compilation mode.');
+    }
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[] = [
@@ -1053,7 +1062,8 @@ export class NgCompiler {
           this.options.i18nNormalizeLineEndingsInICUs === true, this.moduleResolver,
           this.cycleAnalyzer, cycleHandlingStrategy, refEmitter, referencesRegistry,
           this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
-          this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver),
+          this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
+          supportTestBed),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -1063,21 +1073,22 @@ export class NgCompiler {
             injectableRegistry, refEmitter, referencesRegistry, isCore, strictCtorDeps, semanticDepGraphUpdater,
           this.closureCompilerEnabled,
           this.delegatingPerfRecorder,
+          supportTestBed,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
           reflector, evaluator, metaRegistry, ngModuleScopeRegistry, injectableRegistry, isCore,
-          this.delegatingPerfRecorder),
+          this.delegatingPerfRecorder, supportTestBed),
       new InjectableDecoratorHandler(
           reflector, evaluator, isCore, strictCtorDeps, injectableRegistry,
-          this.delegatingPerfRecorder),
+          this.delegatingPerfRecorder, supportTestBed),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,
           exportedProviderStatusResolver, semanticDepGraphUpdater, isCore, refEmitter,
           this.closureCompilerEnabled, this.options.onlyPublishPublicTypingsForNgModules ?? false,
-          injectableRegistry, this.delegatingPerfRecorder),
+          injectableRegistry, this.delegatingPerfRecorder, supportTestBed),
     ];
 
     const traitCompiler = new TraitCompiler(

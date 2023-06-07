@@ -72,7 +72,8 @@ function setupHandler(errorOnDuplicateProv: boolean) {
   const evaluator = new PartialEvaluator(reflectionHost, checker, null);
   const handler = new InjectableDecoratorHandler(
       reflectionHost, evaluator, /* isCore */ false,
-      /* strictCtorDeps */ false, injectableRegistry, NOOP_PERF_RECORDER, errorOnDuplicateProv);
+      /* strictCtorDeps */ false, injectableRegistry, NOOP_PERF_RECORDER, true,
+      errorOnDuplicateProv);
   const TestClass = getDeclaration(program, ENTRY_FILE, 'TestClass', isNamedClassDeclaration);
   const ɵprov = reflectionHost.getMembersOfClass(TestClass).find(member => member.name === 'ɵprov');
   if (ɵprov === undefined) {

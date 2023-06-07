@@ -60,7 +60,8 @@ export class ComponentDecoratorHandler implements
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
-      private hostDirectivesResolver: HostDirectivesResolver) {
+      private hostDirectivesResolver: HostDirectivesResolver,
+      private includeClassMetadata: boolean) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
@@ -443,9 +444,11 @@ export class ComponentDecoratorHandler implements
           relativeContextFilePath,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
-        classMetadata: extractClassMetadata(
-            node, this.reflector, this.isCore, this.annotateForClosureCompiler,
-            dec => transformDecoratorResources(dec, component, styles, template)),
+        classMetadata: this.includeClassMetadata ?
+            extractClassMetadata(
+                node, this.reflector, this.isCore, this.annotateForClosureCompiler,
+                dec => transformDecoratorResources(dec, component, styles, template)) :
+            null,
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,

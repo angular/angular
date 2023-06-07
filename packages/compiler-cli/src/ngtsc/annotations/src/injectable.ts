@@ -33,6 +33,7 @@ export class InjectableDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private isCore: boolean, private strictCtorDeps: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
+      private includeClassMetadata: boolean,
       /**
        * What to do if the injectable already contains a ɵprov property.
        *
@@ -72,7 +73,9 @@ export class InjectableDecoratorHandler implements
         meta,
         ctorDeps: extractInjectableCtorDeps(
             node, meta, decorator, this.reflector, this.isCore, this.strictCtorDeps),
-        classMetadata: extractClassMetadata(node, this.reflector, this.isCore),
+        classMetadata: this.includeClassMetadata ?
+            extractClassMetadata(node, this.reflector, this.isCore) :
+            null,
         // Avoid generating multiple factories if a class has
         // more Angular decorators, apart from Injectable.
         needsFactory: !decorators ||

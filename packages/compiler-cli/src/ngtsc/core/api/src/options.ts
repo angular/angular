@@ -44,7 +44,18 @@ export interface TestOnlyOptions {
 /**
  * Internal only options for compiler.
  */
-export interface InternalOptions {}
+export interface InternalOptions {
+  /**
+   * Enables the full usage of TestBed APIs within Angular unit tests by emitting class metadata
+   * for each Angular related class.
+   *
+   * This is only intended to be used by the Angular CLI.
+   * Defaults to true if not specified.
+   *
+   * @internal
+   */
+  supportTestBed?: boolean;
+}
 
 /**
  * A merged interface of all of the various Angular compiler options, as well as the standard

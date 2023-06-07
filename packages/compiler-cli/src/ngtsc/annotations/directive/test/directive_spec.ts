@@ -177,7 +177,7 @@ runInEachFileSystem(() => {
         /*isCore*/ false,
         /*strictCtorDeps*/ false,
         /*semanticDepGraphUpdater*/ null,
-        /*annotateForClosureCompiler*/ false, NOOP_PERF_RECORDER);
+        /*annotateForClosureCompiler*/ false, NOOP_PERF_RECORDER, /*includeClassMetadata*/ true);
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);
 

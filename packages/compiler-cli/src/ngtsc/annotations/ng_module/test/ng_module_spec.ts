@@ -74,7 +74,7 @@ runInEachFileSystem(() => {
           reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
           exportedProviderStatusResolver, /* semanticDepGraphUpdater */ null, /* isCore */ false,
           refEmitter, /* annotateForClosureCompiler */ false, /* onlyPublishPublicTypings */ false,
-          injectableRegistry, NOOP_PERF_RECORDER);
+          injectableRegistry, NOOP_PERF_RECORDER, true);
       const TestModule =
           getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
       const detected =
