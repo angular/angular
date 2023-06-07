@@ -9,6 +9,8 @@
 
 import {COMPUTED_NODE, ComputedNode, UNSET} from '@angular/core/primitives/signals';
 
+import {setPureFunctionsEnabled} from '../pure_function';
+
 import {Signal} from './api';
 
 export const BRAND_WRITE_TYPE = Symbol();
@@ -67,7 +69,24 @@ export const INPUT_SIGNAL_NODE: InputSignalNode<unknown, unknown> = /* @__PURE__
         // TODO: Make this a proper RuntimeError
         throw new Error(`InputSignal not yet initialized`);
       }
-      return this.transform(this._boundComputation?.() ?? this._boundValue);
+
+      if (this._boundComputation !== undefined) {
+        // TODO(signals): Do we need this?
+        // Disable pure function memoization when running computations of input signals.
+        // ---
+        // Bound computations are generated with instructions in place to memoize allocations like
+        // object literals, or for pipe transformations. Such operations do not need to be memoized
+        // in input computations as the `InputSignal` naturally memoizes the whole expression.
+        const prevPureFunctionsEnabled = setPureFunctionsEnabled(false);
+        try {
+          return this.transform(this._boundComputation());
+        } finally {
+          setPureFunctionsEnabled(prevPureFunctionsEnabled);
+        }
+      }
+
+      // Alternatively, if there no bound computation, we use the bound value.
+      return this.transform(this._boundValue);
     },
 
     bind: function<ReadT, WriteT>(
