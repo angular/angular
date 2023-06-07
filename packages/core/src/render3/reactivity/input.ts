@@ -16,26 +16,26 @@ export interface PrimaryInputOptions<ReadT, WriteT> {
 }
 
 export interface InputOptions<ReadT, WriteT> extends PrimaryInputOptions<ReadT, WriteT> {
-  defaultValue?: WriteT;
+  initialValue?: WriteT;
   required?: boolean;
 }
 
 export function input(): InputSignal<undefined, undefined>;
 export function input<T>(): InputSignal<T|undefined, T>;
 export function input<T>(
-    defaultValue: T&(string | number | boolean),
+    initialValue: T&(string | number | boolean),
     opts?: PrimaryInputOptions<T, T>&{transform?: undefined}): InputSignal<T, T>;
 export function input<ReadT, WriteT = ReadT>(
-    defaultValue: WriteT&(string | number | boolean),
+    initialValue: WriteT&(string | number | boolean),
     opts: PrimaryInputOptions<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
 export function input<T>(opts: InputOptions<T, T>&
                          {required: true, transform?: undefined}): InputSignal<T, T>;
 export function input<ReadT, WriteT = ReadT>(opts: InputOptions<ReadT, WriteT>&
                                              {required: true}): InputSignal<ReadT, WriteT>;
 export function input<T>(opts: InputOptions<T, T>&
-                         {defaultValue: T, transform?: undefined}): InputSignal<T, T>;
+                         {initialValue: T, transform?: undefined}): InputSignal<T, T>;
 export function input<ReadT, WriteT = ReadT>(opts: InputOptions<ReadT, WriteT>&
-                                             {defaultValue: ReadT}): InputSignal<ReadT, WriteT>;
+                                             {initialValue: ReadT}): InputSignal<ReadT, WriteT>;
 export function input<ReadT, WriteT = ReadT>(opts: InputOptions<ReadT, WriteT>):
     InputSignal<ReadT|undefined, WriteT>;
 export function input<ReadT, WriteT>(opts?: InputOptions<ReadT, WriteT>):
@@ -43,6 +43,7 @@ export function input<ReadT, WriteT>(opts?: InputOptions<ReadT, WriteT>):
   const node: InputSignalNode<ReadT, WriteT> = Object.create(INPUT_SIGNAL_NODE);
 
   opts?.transform && (node.transform = opts.transform);
+  opts?.initialValue && (node.value = node.transform(opts.initialValue));
 
   function inputValueFn() {
     // Check if the value needs updating before returning it.

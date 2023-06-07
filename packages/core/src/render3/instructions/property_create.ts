@@ -5,26 +5,25 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {SIGNAL} from '@angular/core/primitives/signals';
+
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
-import {computed, SIGNAL, WritableSignal} from '../../signals';
 import {assertDefined, assertIndexInRange} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
 import {bindingUpdated} from '../bindings';
 import {DirectiveDef} from '../interfaces/definition';
-import {PropertyAliases, PropertyAliasValue, TNode} from '../interfaces/node';
-import {InternalInputSignal} from '../interfaces/reactivity';
+import {PropertyAliasValue, TNode} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, RENDERER} from '../interfaces/view';
-import {effect} from '../reactivity/effect';
+import {InputSignalNode} from '../reactivity/input_signal';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
-import {getNativeByTNode, getTNode} from '../util/view_utils';
+import {getNativeByTNode} from '../util/view_utils';
 
 import {handleUnknownPropertyError, isPropertyValid} from './element_validation';
-import {ɵɵproperty} from './property';
-import {mapPropName, markDirtyIfOnPush, setInputsForProperty, setNgReflectProperties, writeToDirectiveInput} from './shared';
-import {analyzePropertyForElement, TargetType} from './shared_property_analysis';
+import {mapPropName, markDirtyIfOnPush, setNgReflectProperties, writeToDirectiveInput} from './shared';
 
 /**
  * TODO
@@ -55,7 +54,14 @@ export function ɵɵpropertyCreate<T>(
       (zoneTargets ??= []).push(index, privateName);
     } else {
       ngDevMode && assertIndexInRange(lView, index);
-      (lView[index][privateName][SIGNAL] as InternalInputSignal).bindToComputation(expr);
+      const inputSignalNode =
+          lView[index][privateName][SIGNAL] as InputSignalNode<unknown, unknown>;
+
+      // TODO: Improve this by not allocating an object literal here. This exists just for testing.
+      inputSignalNode.bind(inputSignalNode, {computation: expr});
+
+      // TODO: figure out where to set `isInitialized`.
+      inputSignalNode.isInitialized = true;
     }
   }
 

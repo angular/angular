@@ -57,7 +57,7 @@ describe('input signals', () => {
   describe('with transform', () => {
     it('should transform values when reading', () => {
       const truthy =
-          input<boolean, unknown>({defaultValue: false, transform: (value: unknown) => !!value});
+          input<boolean, unknown>({initialValue: false, transform: (value: unknown) => !!value});
       const impl = unwrap(truthy);
       impl.isInitialized = true;
 
