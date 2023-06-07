@@ -18,7 +18,7 @@ export const BRAND_WRITE_TYPE = Symbol();
  */
 export type InputSignal<ReadT, WriteT> = Signal<ReadT>&{
   [BRAND_WRITE_TYPE]: WriteT;
-}
+};
 
 /**
  * A `Signal` representing a component or directive model input.

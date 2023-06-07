@@ -234,7 +234,7 @@ export function compileComponentFromMetadata(
   } else {
     // This path compiles the template using the prototype template pipeline. First the template is
     // ingested into IR:
-    console.error('ingest', meta.name, meta.isSignal)
+    console.error('ingest', meta.name, meta.isSignal);
     const tpl = ingest(meta.name, meta.isSignal, meta.template.nodes, constantPool);
 
     // Then the IR is transformed to prepare it for cod egeneration.

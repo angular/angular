@@ -787,13 +787,13 @@ class TcbDirectiveInputsOp extends TcbOp {
         // TODO(signals)
         if (this.dir.isSignal) {
           const toWritableSignalExpr =
-              this.tcb.env.referenceExternalSymbol('@angular/core', 'ɵɵtoWritableSignal')
+              this.tcb.env.referenceExternalSymbol('@angular/core', 'ɵɵtoWritableSignal');
 
           statements.push(ts.factory.createExpressionStatement(ts.factory.createCallExpression(
               ts.factory.createPropertyAccessExpression(
                   ts.factory.createCallExpression(toWritableSignalExpr, undefined, [target]),
                   ts.factory.createIdentifier('set')),
-              undefined, [wrapForDiagnostics(expr)])))
+              undefined, [wrapForDiagnostics(expr)])));
         } else {
           // Finally the assignment is extended by assigning it into the target expression.
           statements.push(ts.factory.createExpressionStatement(ts.factory.createBinaryExpression(
