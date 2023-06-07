@@ -18,6 +18,8 @@ jasmine_node_test(
         "//packages/compiler-cli/test/compliance/test_cases",
     ],
     shard_count = 2,
+    # Also run these tests with the template pipeline.
+    tags = ["also-template-pipeline"],
     deps = [
         ":test_lib",
     ],
