@@ -35,7 +35,6 @@ esbuild(
     external = [
         "@angular/compiler",
         "typescript",
-        "tsickle",
         "@babel/core",
         "reflect-metadata",
         "chokidar",
@@ -94,7 +93,6 @@ ts_library(
         "@npm//@types/yargs",
         "@npm//chokidar",
         "@npm//reflect-metadata",
-        "@npm//tsickle",
         "@npm//typescript",
     ],
 )
