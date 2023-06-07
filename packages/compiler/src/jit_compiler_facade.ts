@@ -662,7 +662,7 @@ function inputsMappingToInputMetadata(inputs: Record<string, string|[string, str
       result[key] = {
         bindingPropertyName: value[0],
         classPropertyName: value[1],
-        transformFunction: value[2] || null,
+        transformFunction: value[2] ? new WrappedNodeExpr(value[2]) : null,
         required: false,
       };
     }
