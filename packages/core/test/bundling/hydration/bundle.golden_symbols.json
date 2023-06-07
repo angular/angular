@@ -12,6 +12,9 @@
     "name": "APP_INITIALIZER"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
@@ -975,9 +978,6 @@
     "name": "isArrayLike"
   },
   {
-    "name": "isBrowser"
-  },
-  {
     "name": "isComponentDef"
   },
   {
@@ -1009,6 +1009,9 @@
   },
   {
     "name": "isObject"
+  },
+  {
+    "name": "isPlatformBrowser"
   },
   {
     "name": "isPlatformServer"

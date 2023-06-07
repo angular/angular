@@ -20,6 +20,7 @@ import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructi
 import {enableApplyRootElementTransformImpl} from '../render3/instructions/shared';
 import {enableLocateOrCreateContainerAnchorImpl} from '../render3/instructions/template';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
+import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {TransferState} from '../transfer_state';
 import {NgZone} from '../zone';
 
@@ -64,15 +65,6 @@ function enableHydrationRuntimeSupport() {
     enableFindMatchingDehydratedViewImpl();
     enableApplyRootElementTransformImpl();
   }
-}
-
-/**
- * Detects whether the code is invoked in a browser.
- * Later on, this check should be replaced with a tree-shakable
- * flag (e.g. `!isServer`).
- */
-function isBrowser(): boolean {
-  return inject(PLATFORM_ID) === 'browser';
 }
 
 /**
@@ -129,7 +121,7 @@ export function withDomHydration(): EnvironmentProviders {
       provide: IS_HYDRATION_DOM_REUSE_ENABLED,
       useFactory: () => {
         let isEnabled = true;
-        if (isBrowser()) {
+        if (isPlatformBrowser()) {
           // On the client, verify that the server response contains
           // hydration annotations. Otherwise, keep hydration disabled.
           const transferState = inject(TransferState, {optional: true});
@@ -161,7 +153,7 @@ export function withDomHydration(): EnvironmentProviders {
         // on the client. Moving forward, the `isBrowser` check should
         // be replaced with a tree-shakable alternative (e.g. `isServer`
         // flag).
-        if (isBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
+        if (isPlatformBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
           enableHydrationRuntimeSupport();
         }
       },
@@ -174,13 +166,13 @@ export function withDomHydration(): EnvironmentProviders {
         // environment and when hydration is configured properly.
         // On a server, an application is rendered from scratch,
         // so the host content needs to be empty.
-        return isBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED);
+        return isPlatformBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED);
       }
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,
       useFactory: () => {
-        if (isBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
+        if (isPlatformBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
           const appRef = inject(ApplicationRef);
           const injector = inject(Injector);
           return () => {

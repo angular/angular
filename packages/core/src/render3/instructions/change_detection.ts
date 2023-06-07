@@ -21,14 +21,20 @@ import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCo
 
 export function detectChangesInternal<T>(
     tView: TView, lView: LView, context: T, notifyErrorHandler = true) {
-  const rendererFactory = lView[ENVIRONMENT].rendererFactory;
+  const environment = lView[ENVIRONMENT];
+  const rendererFactory = environment.rendererFactory;
+  const afterRenderEventManager = environment.afterRenderEventManager;
 
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to invoke renderer factory functions in that mode
   // to avoid any possible side-effects.
   const checkNoChangesMode = !!ngDevMode && isInCheckNoChangesMode();
 
-  if (!checkNoChangesMode && rendererFactory.begin) rendererFactory.begin();
+  if (!checkNoChangesMode) {
+    rendererFactory.begin?.();
+    afterRenderEventManager?.begin();
+  }
+
   try {
     refreshView(tView, lView, tView.template, context);
   } catch (error) {
@@ -37,11 +43,16 @@ export function detectChangesInternal<T>(
     }
     throw error;
   } finally {
-    if (!checkNoChangesMode && rendererFactory.end) rendererFactory.end();
+    if (!checkNoChangesMode) {
+      rendererFactory.end?.();
 
-    // One final flush of the effects queue to catch any effects created in `ngAfterViewInit` or
-    // other post-order hooks.
-    !checkNoChangesMode && lView[ENVIRONMENT].effectManager?.flush();
+      // One final flush of the effects queue to catch any effects created in `ngAfterViewInit` or
+      // other post-order hooks.
+      environment.effectManager?.flush();
+
+      // Invoke all callbacks registered via `after*Render`, if needed.
+      afterRenderEventManager?.end();
+    }
   }
 }
 
