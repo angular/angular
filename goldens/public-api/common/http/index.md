@@ -16,7 +16,7 @@ import { XhrFactory } from '@angular/common';
 // @public
 export class FetchBackend implements HttpBackend {
     // (undocumented)
-    handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
+    handle(request: HttpRequest<any>): Observable<HttpEvent<any>>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FetchBackend, never>;
     // (undocumented)
