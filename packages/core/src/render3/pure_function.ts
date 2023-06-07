@@ -7,11 +7,19 @@
  */
 
 import {assertIndexInRange} from '../util/assert';
+
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './bindings';
 import {LView} from './interfaces/view';
 import {getBindingRoot, getLView} from './state';
 import {NO_CHANGE} from './tokens';
 
+let pureFunctionsEnabled = true;
+
+export function setPureFunctionsEnabled(value: boolean): boolean {
+  const prev = pureFunctionsEnabled;
+  pureFunctionsEnabled = value;
+  return prev;
+}
 
 /**
  * Bindings for pure functions are stored after regular bindings.
@@ -43,6 +51,8 @@ import {NO_CHANGE} from './tokens';
  * @codeGenApi
  */
 export function ɵɵpureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: any): T {
+  if (!pureFunctionsEnabled) return thisArg ? pureFn.call(thisArg) : pureFn();
+
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   return lView[bindingIndex] === NO_CHANGE ?
@@ -308,9 +318,11 @@ export function pureFunction1Internal(
     lView: LView, bindingRoot: number, slotOffset: number, pureFn: (v: any) => any, exp: any,
     thisArg?: any): any {
   const bindingIndex = bindingRoot + slotOffset;
-  return bindingUpdated(lView, bindingIndex, exp) ?
-      updateBinding(lView, bindingIndex + 1, thisArg ? pureFn.call(thisArg, exp) : pureFn(exp)) :
-      getPureFunctionReturnValue(lView, bindingIndex + 1);
+  if (pureFunctionsEnabled && !bindingUpdated(lView, bindingIndex, exp)) {
+    return getPureFunctionReturnValue(lView, bindingIndex + 1);
+  }
+  const value = thisArg ? pureFn.call(thisArg, exp) : pureFn(exp);
+  return pureFunctionsEnabled ? updateBinding(lView, bindingIndex + 1, value) : value;
 }
 
 
@@ -331,11 +343,11 @@ export function pureFunction2Internal(
     lView: LView, bindingRoot: number, slotOffset: number, pureFn: (v1: any, v2: any) => any,
     exp1: any, exp2: any, thisArg?: any): any {
   const bindingIndex = bindingRoot + slotOffset;
-  return bindingUpdated2(lView, bindingIndex, exp1, exp2) ?
-      updateBinding(
-          lView, bindingIndex + 2,
-          thisArg ? pureFn.call(thisArg, exp1, exp2) : pureFn(exp1, exp2)) :
-      getPureFunctionReturnValue(lView, bindingIndex + 2);
+  if (pureFunctionsEnabled && !bindingUpdated2(lView, bindingIndex, exp1, exp2)) {
+    return getPureFunctionReturnValue(lView, bindingIndex + 2);
+  }
+  const value = thisArg ? pureFn.call(thisArg, exp1, exp2) : pureFn(exp1, exp2);
+  return pureFunctionsEnabled ? updateBinding(lView, bindingIndex + 2, value) : value;
 }
 
 /**
@@ -357,11 +369,11 @@ export function pureFunction3Internal(
     pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any,
     thisArg?: any): any {
   const bindingIndex = bindingRoot + slotOffset;
-  return bindingUpdated3(lView, bindingIndex, exp1, exp2, exp3) ?
-      updateBinding(
-          lView, bindingIndex + 3,
-          thisArg ? pureFn.call(thisArg, exp1, exp2, exp3) : pureFn(exp1, exp2, exp3)) :
-      getPureFunctionReturnValue(lView, bindingIndex + 3);
+  if (pureFunctionsEnabled && !bindingUpdated3(lView, bindingIndex, exp1, exp2, exp3)) {
+    return getPureFunctionReturnValue(lView, bindingIndex + 3);
+  }
+  const value = thisArg ? pureFn.call(thisArg, exp1, exp2, exp3) : pureFn(exp1, exp2, exp3);
+  return pureFunctionsEnabled ? updateBinding(lView, bindingIndex + 3, value) : value;
 }
 
 
@@ -386,11 +398,12 @@ export function pureFunction4Internal(
     pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any, exp3: any, exp4: any,
     thisArg?: any): any {
   const bindingIndex = bindingRoot + slotOffset;
-  return bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4) ?
-      updateBinding(
-          lView, bindingIndex + 4,
-          thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4) : pureFn(exp1, exp2, exp3, exp4)) :
-      getPureFunctionReturnValue(lView, bindingIndex + 4);
+  if (pureFunctionsEnabled && !bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4)) {
+    return getPureFunctionReturnValue(lView, bindingIndex + 4);
+  }
+  const value =
+      thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4) : pureFn(exp1, exp2, exp3, exp4);
+  return pureFunctionsEnabled ? updateBinding(lView, bindingIndex + 4, value) : value;
 }
 
 /**
@@ -413,9 +426,15 @@ export function pureFunctionVInternal(
     exps: any[], thisArg?: any): any {
   let bindingIndex = bindingRoot + slotOffset;
   let different = false;
-  for (let i = 0; i < exps.length; i++) {
-    bindingUpdated(lView, bindingIndex++, exps[i]) && (different = true);
+  if (pureFunctionsEnabled) {
+    for (let i = 0; i < exps.length; i++) {
+      bindingUpdated(lView, bindingIndex++, exps[i]) && (different = true);
+    }
+    if (!different) {
+      return getPureFunctionReturnValue(lView, bindingIndex);
+    }
   }
-  return different ? updateBinding(lView, bindingIndex, pureFn.apply(thisArg, exps)) :
-                     getPureFunctionReturnValue(lView, bindingIndex);
+
+  const value = pureFn.apply(thisArg, exps);
+  return pureFunctionsEnabled ? updateBinding(lView, bindingIndex, value) : value;
 }

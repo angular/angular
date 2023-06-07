@@ -8,6 +8,7 @@
 
 
 import {ComputedImpl, createSignalFromFunction, defaultEquals, ERRORED, setActiveConsumer, Signal, UNSET, WritableSignal} from '../../signals';
+import {setPureFunctionsEnabled} from '../pure_function';
 
 export const BRAND_WRITE_TYPE = Symbol();
 
@@ -50,6 +51,7 @@ export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
 
   constructor(defaultValue: WriteT|undefined, transform: ((value: WriteT) => ReadT)|null) {
     super(null!, defaultEquals);
+
     this.boundValue = defaultValue;
     this.computation = this.switchedComputation.bind(this);
 
@@ -92,7 +94,17 @@ export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
     }
 
     if (this.boundComputation !== null) {
-      return this.transform(this.boundComputation());
+      // Disable pure function memoization when running computations of input signals.
+      //
+      // Bound computations are generated with instructions in place to memoize allocations like
+      // object literals, or for pipe transformations. Such operations do not need to be memoized in
+      // input computations as the `InputSignal` naturally memoizes the whole expression.
+      const prevPureFunctionsEnabled = setPureFunctionsEnabled(false);
+      try {
+        return this.transform(this.boundComputation());
+      } finally {
+        setPureFunctionsEnabled(prevPureFunctionsEnabled);
+      }
     } else {
       // `boundValue` is only `undefined` when `boundComputation` is not (unless `undefined` is
       // actually the current value).
@@ -137,11 +149,4 @@ export class ModelSignalImpl<ReadT, WriteT> extends InputSignalImpl<ReadT, Write
 
 function noopTransform<T>(value: T): T {
   return value;
-}
-export function input<ReadT>(): InputSignal<ReadT|undefined, ReadT>;
-export function input<ReadT>(defaultValue: ReadT): InputSignal<ReadT, ReadT>;
-export function input<ReadT>(defaultValue?: ReadT): InputSignal<ReadT|undefined, ReadT> {
-  const node = new InputSignalImpl(undefined, null);
-  return createSignalFromFunction(node, node.signal.bind(node)) as
-      InputSignal<ReadT|undefined, ReadT>;
 }
