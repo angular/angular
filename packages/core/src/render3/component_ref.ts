@@ -26,6 +26,7 @@ import {assertDefined, assertGreaterThan, assertIndexInRange} from '../util/asse
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 
+import {AfterRenderEventManager} from './after_render_hooks';
 import {assertComponentType} from './assert';
 import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './definition';
@@ -189,10 +190,13 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
 
     const effectManager = rootViewInjector.get(EffectManager, null);
 
+    const afterRenderEventManager = rootViewInjector.get(AfterRenderEventManager, null);
+
     const environment: LViewEnvironment = {
       rendererFactory,
       sanitizer,
       effectManager,
+      afterRenderEventManager,
     };
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);

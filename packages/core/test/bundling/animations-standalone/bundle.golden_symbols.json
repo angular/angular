@@ -15,6 +15,9 @@
     "name": "APP_INITIALIZER"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnimationAstBuilderContext"
   },
   {

@@ -25,6 +25,22 @@ export interface AfterContentInit {
 }
 
 // @public
+export function afterNextRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
+
+// @public
+export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
+
+// @public
+export interface AfterRenderOptions {
+    injector?: Injector;
+}
+
+// @public
+export interface AfterRenderRef {
+    destroy(): void;
+}
+
+// @public
 export interface AfterViewChecked {
     ngAfterViewChecked(): void;
 }

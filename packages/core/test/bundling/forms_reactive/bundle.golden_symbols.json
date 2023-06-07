@@ -24,6 +24,9 @@
     "name": "AbstractFormGroupDirective"
   },
   {
+    "name": "AfterRenderEventManager"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
