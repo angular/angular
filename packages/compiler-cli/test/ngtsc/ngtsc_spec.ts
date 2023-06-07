@@ -4909,7 +4909,7 @@ function allTests(os: string) {
               trim('MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });'));
     });
 
-    it('should emit setClassMetadata calls for all types', () => {
+    it('should emit setClassMetadata calls for all types by default', () => {
       env.write('test.ts', `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 
@@ -4927,6 +4927,48 @@ function allTests(os: string) {
       expect(jsContents).toContain('\u0275setClassMetadata(TestInjectable, ');
       expect(jsContents).toContain('\u0275setClassMetadata(TestNgModule, ');
       expect(jsContents).toContain('\u0275setClassMetadata(TestPipe, ');
+    });
+
+    it('should emit setClassMetadata calls for all types when supportTestBed is true', () => {
+      env.tsconfig({
+        'supportTestBed': true,
+      });
+      env.write('test.ts', `
+      import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
+
+      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
+      @Directive({selector: 'dir'}) class TestDirective {}
+      @Injectable() class TestInjectable {}
+      @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
+      @Pipe({name: 'pipe'}) class TestPipe {}
+    `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('\u0275setClassMetadata(TestComponent, ');
+      expect(jsContents).toContain('\u0275setClassMetadata(TestDirective, ');
+      expect(jsContents).toContain('\u0275setClassMetadata(TestInjectable, ');
+      expect(jsContents).toContain('\u0275setClassMetadata(TestNgModule, ');
+      expect(jsContents).toContain('\u0275setClassMetadata(TestPipe, ');
+    });
+
+    it('should not emit setClassMetadata calls for all types when supportTestBed is false', () => {
+      env.tsconfig({
+        'supportTestBed': false,
+      });
+      env.write('test.ts', `
+      import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
+
+      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
+      @Directive({selector: 'dir'}) class TestDirective {}
+      @Injectable() class TestInjectable {}
+      @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
+      @Pipe({name: 'pipe'}) class TestPipe {}
+    `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).not.toContain('\u0275setClassMetadata(');
     });
 
     it('should use imported types in setClassMetadata if they can be represented as values', () => {

@@ -93,6 +93,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* annotateForClosureCompiler */ false,
       NOOP_PERF_RECORDER,
       hostDirectivesResolver,
+      true,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }
