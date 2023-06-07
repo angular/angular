@@ -15,7 +15,7 @@ import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticDepGraphUpdater, 
 import {ExportedProviderStatusResolver, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
-import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral,} from '../../../reflection';
+import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral,} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
 import {getDiagnosticNode} from '../../../scope/src/util';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
@@ -177,7 +177,8 @@ export class NgModuleDecoratorHandler implements
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null, private isCore: boolean,
       private refEmitter: ReferenceEmitter, private annotateForClosureCompiler: boolean,
       private onlyPublishPublicTypings: boolean,
-      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
+      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
+      private includeClassMetadata: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'NgModuleDecoratorHandler';
@@ -469,8 +470,10 @@ export class NgModuleDecoratorHandler implements
         providersRequiringFactory: rawProviders ?
             resolveProvidersRequiringFactory(rawProviders, this.reflector, this.evaluator) :
             null,
-        classMetadata: extractClassMetadata(
-            node, this.reflector, this.isCore, this.annotateForClosureCompiler),
+        classMetadata: this.includeClassMetadata ?
+            extractClassMetadata(
+                node, this.reflector, this.isCore, this.annotateForClosureCompiler) :
+            null,
         factorySymbolName: node.name.text,
         remoteScopesMayRequireCycleProtection,
         decorator: decorator?.node as ts.Decorator | null ?? null,

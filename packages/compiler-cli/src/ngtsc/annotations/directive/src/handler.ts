@@ -55,7 +55,8 @@ export class DirectiveDecoratorHandler implements
       private refEmitter: ReferenceEmitter, private referencesRegistry: ReferencesRegistry,
       private isCore: boolean, private strictCtorDeps: boolean,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
-      private annotateForClosureCompiler: boolean, private perf: PerfRecorder) {}
+      private annotateForClosureCompiler: boolean, private perf: PerfRecorder,
+      private includeClassMetadata: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'DirectiveDecoratorHandler';
@@ -113,8 +114,10 @@ export class DirectiveDecoratorHandler implements
         meta: analysis,
         hostDirectives: directiveResult.hostDirectives,
         rawHostDirectives: directiveResult.rawHostDirectives,
-        classMetadata: extractClassMetadata(
-            node, this.reflector, this.isCore, this.annotateForClosureCompiler),
+        classMetadata: this.includeClassMetadata ?
+            extractClassMetadata(
+                node, this.reflector, this.isCore, this.annotateForClosureCompiler) :
+            null,
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, directiveResult.inputs, this.reflector),
         providersRequiringFactory,
