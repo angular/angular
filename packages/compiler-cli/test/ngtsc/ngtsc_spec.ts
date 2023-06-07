@@ -660,29 +660,19 @@ function allTests(os: string) {
 
           const verifyOutput = (jsContents: string) => {
             // verify that there is no pattern that triggers automatic semicolon
-            // insertion by checking that there are no return statements not wrapped in
-            // parentheses
-            expect(trim(jsContents)).not.toContain(trim(`
-              return /**
-              * @return {?}
-              */
-            `));
+            // insertion by checking that there are no function return statements
+            // not wrapped in parentheses
+            expect(trim(jsContents)).not.toMatch(/return\s+function/);
             expect(trim(jsContents)).toContain(trim(`
               [{
                   provide: 'token-a',
                   useFactory: ((service) => {
-                      return (/**
-                      * @return {?}
-                      */
-                      () => service.id);
+                      return (() => service.id);
                   })
               }, {
                   provide: 'token-b',
                   useFactory: (function (service) {
-                      return (/**
-                      * @return {?}
-                      */
-                      function () { return service.id; });
+                      return (function () { return service.id; });
                   })
               }]
             `));
@@ -6653,119 +6643,6 @@ function allTests(os: string) {
       expect(beforeCount).toBe(1);
       expect(afterCount).toBe(1);
     });
-
-    // These tests trigger the Tsickle compiler which asserts that the file-paths
-    // are valid for the real OS. When on non-Windows systems it doesn't like paths
-    // that start with `C:`.
-    if (os !== 'Windows' || platform() === 'win32') {
-      describe('@fileoverview Closure annotations', () => {
-        it('should be produced if not present in source file', () => {
-          env.tsconfig({
-            'annotateForClosureCompiler': true,
-          });
-          env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-
-        @Component({
-          template: '<div class="test"></div>',
-        })
-        export class SomeComp {}
-      `);
-
-          env.driveMain();
-          const jsContents = env.getContents('test.js');
-          const fileoverview = `
-        /**
-         * @fileoverview added by tsickle
-         * Generated from: test.ts
-         * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
-         */
-      `;
-          expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-        });
-
-        it('should be produced for empty source files', () => {
-          env.tsconfig({
-            'annotateForClosureCompiler': true,
-          });
-          env.write(`test.ts`, ``);
-
-          env.driveMain();
-          const jsContents = env.getContents('test.js');
-          const fileoverview = `
-        /**
-         * @fileoverview added by tsickle
-         * Generated from: test.ts
-         * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
-         */
-      `;
-          expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-        });
-
-        it('should always be at the very beginning of a script (if placed above imports)', () => {
-          env.tsconfig({
-            'annotateForClosureCompiler': true,
-          });
-          env.write(`test.ts`, `
-        /**
-         * @fileoverview Some Comp overview
-         * @modName {some_comp}
-         */
-
-        import {Component} from '@angular/core';
-
-        @Component({
-          template: '<div class="test"></div>',
-        })
-        export class SomeComp {}
-      `);
-
-          env.driveMain();
-          const jsContents = env.getContents('test.js');
-          const fileoverview = `
-        /**
-         *
-         * @fileoverview Some Comp overview
-         * Generated from: test.ts
-         * @modName {some_comp}
-         *
-         * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
-         */
-      `;
-          expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-        });
-
-        it('should always be at the very beginning of a script (if placed above non-imports)',
-           () => {
-             env.tsconfig({
-               'annotateForClosureCompiler': true,
-             });
-             env.write(`test.ts`, `
-        /**
-         * @fileoverview Some Comp overview
-         * @modName {some_comp}
-         */
-
-        const testConst = 'testConstValue';
-        const testFn = function() { return true; }
-      `);
-
-             env.driveMain();
-             const jsContents = env.getContents('test.js');
-             const fileoverview = `
-        /**
-         *
-         * @fileoverview Some Comp overview
-         * Generated from: test.ts
-         * @modName {some_comp}
-         *
-         * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
-         */
-      `;
-             expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-           });
-      });
-    }
 
     describe('sanitization', () => {
       it('should generate sanitizers for unsafe attributes in hostBindings fn in Directives',

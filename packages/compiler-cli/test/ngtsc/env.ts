@@ -8,7 +8,6 @@
 
 import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/compiler-cli';
 import * as api from '@angular/compiler-cli/src/transformers/api';
-import * as tsickle from 'tsickle';
 import ts from 'typescript';
 
 import {createCompilerHost, createProgram} from '../../index';
@@ -222,7 +221,7 @@ export class NgtscTestEnvironment {
     }
     const exitCode = main(
         this.commandLineArgs, errorSpy, undefined, customTransformers, reuseProgram,
-        this.changedResources, tsickle);
+        this.changedResources);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
     if (this.multiCompileHostExt !== null) {
@@ -243,7 +242,7 @@ export class NgtscTestEnvironment {
     }
 
     const {exitCode, diagnostics} = mainDiagnosticsForTest(
-        this.commandLineArgs, undefined, reuseProgram, this.changedResources, tsickle);
+        this.commandLineArgs, undefined, reuseProgram, this.changedResources);
     if (expectedExitCode !== undefined) {
       expect(exitCode)
           .withContext(`Expected program to exit with code ${

@@ -12,7 +12,6 @@ import {PerfPhase} from '@angular/compiler-cli/private/bazel';
 import tscw from '@bazel/concatjs/internal/tsc_wrapped/index.js';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as tsickle from 'tsickle';
 import ts from 'typescript';
 
 import {EXT, patchNgHostWithFileNameToModuleName as patchNgHost, relativeToRootDirs} from './utils';
@@ -295,7 +294,7 @@ export function compile({
     console.error('Check that it\'s included in the `assets` attribute of the `ng_module` rule.\n');
   };
 
-  const emitCallback: ng.TsEmitCallback<tsickle.EmitResult> = ({
+  const emitCallback: ng.TsEmitCallback<ts.EmitResult> = ({
     program,
     targetSourceFile,
     writeFile,
@@ -303,36 +302,21 @@ export function compile({
     emitOnlyDtsFiles,
     customTransformers = {},
   }) =>
-      tsickle.emitWithTsickle(
-          program, bazelHost!, bazelHost!, compilerOpts, targetSourceFile, writeFile,
-          cancellationToken, emitOnlyDtsFiles, {
-            beforeTs: customTransformers.before,
-            afterTs: customTransformers.after,
-            afterDeclarations: customTransformers.afterDeclarations,
-          });
+      program.emit(
+          targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
+
 
   if (!gatherDiagnostics) {
     gatherDiagnostics = (program) =>
         gatherDiagnosticsForInputsOnly(compilerOpts, bazelOpts, program);
   }
-  const {diagnostics, emitResult, program} = ng.performCompilation({
-    rootNames: files,
-    options: compilerOpts,
-    host: ngHost,
-    emitCallback,
-    mergeEmitResultsCallback: tsickle.mergeEmitResults,
-    gatherDiagnostics
-  });
-  const tsickleEmitResult = emitResult as tsickle.EmitResult;
+  const {diagnostics, emitResult, program} = ng.performCompilation(
+      {rootNames: files, options: compilerOpts, host: ngHost, emitCallback, gatherDiagnostics});
   let externs = '/** @externs */\n';
   const hasError = diagnostics.some((diag) => diag.category === ts.DiagnosticCategory.Error);
   if (!hasError) {
-    if (bazelOpts.tsickleGenerateExterns) {
-      externs += tsickle.getGeneratedExterns(tsickleEmitResult.externs, rootDir);
-    }
     if (bazelOpts.manifest) {
-      const manifest = tscw.constructManifest(tsickleEmitResult.modulesManifest, bazelHost);
-      fs.writeFileSync(bazelOpts.manifest, manifest);
+      fs.writeFileSync(bazelOpts.manifest, '// Empty. Should not be used.');
     }
   }
 

@@ -23,8 +23,7 @@
     "concurrently": "3.4.0",
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor",
-    "rollup": "file:../../node_modules/rollup",
-    "tsickle": "file:../../node_modules/tsickle"
+    "rollup": "file:../../node_modules/rollup"
   },
   "scripts": {
     "build": "yarn ngc && yarn rollup -c rollup.config.mjs",

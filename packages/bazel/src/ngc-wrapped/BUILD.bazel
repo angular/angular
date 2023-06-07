@@ -19,7 +19,6 @@ ts_library(
         "//packages/compiler-cli/private",
         "@npm//@bazel/concatjs",
         "@npm//@types/node",
-        "@npm//tsickle",
         "@npm//typescript",
         "@npm//typescript:typescript__typings",
     ],

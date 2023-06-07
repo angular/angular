@@ -19,17 +19,7 @@ async function runNgcComamnd() {
   // We are running the real compiler so run against the real file-system
   setFileSystem(new NodeJSFileSystem());
 
-  let tsickleModule: typeof import('tsickle')|undefined;
-
-  // Load tsickle if it's available. We load it here because tsickle
-  // is not needed in all Angular projects directly using `ngc`.
-  try {
-    tsickleModule = (await import('tsickle')).default;
-  } catch {
-  }
-
-  process.exitCode =
-      main(args, undefined, undefined, undefined, undefined, undefined, tsickleModule);
+  process.exitCode = main(args, undefined, undefined, undefined, undefined, undefined);
 }
 
 runNgcComamnd().catch(e => {
