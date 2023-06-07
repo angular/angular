@@ -75,7 +75,7 @@ export class TypeCheckFile extends Environment {
     source += '\nexport const IS_A_MODULE = true;\n';
 
     // TODO(signals)
-    console.error(source)
+    console.error(source);
 
     return source;
   }

@@ -100,7 +100,7 @@ function reifyCreateOperations(view: ViewCompilation, ops: ir.OpList<ir.CreateOp
                 op.variable.name, op.initializer, undefined, o.StmtModifier.Final)));
         break;
       case ir.OpKind.PropertyCreate:
-        ir.OpList.replace(op, ng.propertyCreate(op.slot!, op.name, op.expression))
+        ir.OpList.replace(op, ng.propertyCreate(op.slot!, op.name, op.expression));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.

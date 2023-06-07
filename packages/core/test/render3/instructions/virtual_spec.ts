@@ -10,7 +10,7 @@ import {input, signal, ViewEncapsulation, ɵɵdefineComponent as defineComponent
 import {TestBed} from '@angular/core/testing';
 
 
-fdescribe('virtual instructions', () => {
+describe('virtual instructions', () => {
   it('should support DOM bindings', () => {
     class TestCmp {
       value = 'hello';

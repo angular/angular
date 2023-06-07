@@ -6,25 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
-import {computed, SIGNAL, WritableSignal} from '../../signals';
+import {SIGNAL} from '../../signals';
 import {assertDefined, assertIndexInRange} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
 import {bindingUpdated} from '../bindings';
 import {DirectiveDef} from '../interfaces/definition';
-import {PropertyAliases, PropertyAliasValue, TNode} from '../interfaces/node';
+import {PropertyAliasValue, TNode} from '../interfaces/node';
 import {InternalInputSignal} from '../interfaces/reactivity';
 import {RComment, RElement} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, RENDERER} from '../interfaces/view';
-import {effect} from '../reactivity/effect';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
-import {getNativeByTNode, getTNode} from '../util/view_utils';
+import {getNativeByTNode} from '../util/view_utils';
 
 import {handleUnknownPropertyError, isPropertyValid} from './element_validation';
-import {ɵɵproperty} from './property';
-import {mapPropName, markDirtyIfOnPush, setInputsForProperty, setNgReflectProperties, writeToDirectiveInput} from './shared';
-import {analyzePropertyForElement, TargetType} from './shared_property_analysis';
+import {mapPropName, markDirtyIfOnPush, setNgReflectProperties, writeToDirectiveInput} from './shared';
 
 /**
  * TODO
@@ -45,7 +42,6 @@ export function ɵɵpropertyCreate<T>(
 
   const inputData = tNode.inputs?.[propName] ?? EMPTY_ARRAY;
 
-  debugger;
   let zoneTargets: PropertyAliasValue|null = null;
   for (let i = 0; i < inputData.length;) {
     const index = inputData[i++] as number;
