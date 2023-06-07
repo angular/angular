@@ -35,27 +35,41 @@ function processLexicalScope(view: ViewCompilation, ops: ir.OpList<ir.CreateOp|i
       case ir.OpKind.Variable:
         switch (op.variable.kind) {
           case ir.SemanticVariableKind.Context:
+            if (op.variable.view === view.xref) {
+              // This variable is for the same view as `ctx`. Ideally we'd use `ctx`, but we should
+              // prefer the variable in non-root views because of the risk of closure-capturing
+              // `ctx`.
+
+              if (view === view.tpl.root) {
+                // This is the root view, so it's safe to use `ctx` and we don't need to use this
+                // variable.
+                break;
+              }
+            }
+
+            // This is a reference to a different context.
             scope.set(op.variable.view, new ir.ReadVariableExpr(op.xref));
-            break;
         }
-        break;
-      case ir.OpKind.Listener:
-        processLexicalScope(view, op.handlerOps);
         break;
     }
+    break;
+    case ir.OpKind.Listener:
+      processLexicalScope(view, op.handlerOps);
+      break;
   }
+}
 
-  for (const op of ops) {
-    ir.transformExpressionsInOp(op, expr => {
-      if (expr instanceof ir.ContextExpr) {
-        if (!scope.has(expr.view)) {
-          throw new Error(
-              `No context found for reference to view ${expr.view} from view ${view.xref}`);
-        }
-        return scope.get(expr.view)!;
-      } else {
-        return expr;
+for (const op of ops) {
+  ir.transformExpressionsInOp(op, expr => {
+    if (expr instanceof ir.ContextExpr) {
+      if (!scope.has(expr.view)) {
+        throw new Error(
+            `No context found for reference to view ${expr.view} from view ${view.xref}`);
       }
-    }, ir.VisitorContextFlag.None);
-  }
+      return scope.get(expr.view)!;
+    } else {
+      return expr;
+    }
+  }, ir.VisitorContextFlag.None);
+}
 }
