@@ -40,12 +40,6 @@ function recursivelyProcessView(view: ViewCompilation, parentScope: Scope|null):
   // Extract a `Scope` from this view.
   const scope = getScopeForView(view, parentScope);
 
-  // Embedded views require an operation to save/restore the view context.
-  if (view.parent !== null) {
-    // Start the view creation block with an operation to save the current view context. This may be
-    // used to restore the view context in any listeners that may be present.
-  }
-
   for (const op of view.create) {
     switch (op.kind) {
       case ir.OpKind.Template:
