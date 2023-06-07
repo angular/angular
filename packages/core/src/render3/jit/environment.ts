@@ -89,6 +89,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵprojectionDef': r3.ɵɵprojectionDef,
        'ɵɵhostProperty': r3.ɵɵhostProperty,
        'ɵɵproperty': r3.ɵɵproperty,
+       'ɵɵpropertyCreate': r3.ɵɵpropertyCreate,
        'ɵɵpropertyInterpolate': r3.ɵɵpropertyInterpolate,
        'ɵɵpropertyInterpolate1': r3.ɵɵpropertyInterpolate1,
        'ɵɵpropertyInterpolate2': r3.ɵɵpropertyInterpolate2,
