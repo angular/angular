@@ -10,9 +10,9 @@ import {bootstrapApplication} from '@angular/platform-browser';
 export class Greet<T> {
   counter = input(0);
   bla = input();  // TODO: should be a diagnostic. no type & no value
-  bla2 = input<string>()
-  bla3 = input({initialValue: 3, required: true});
-  bla4 = input(3, {required: true, alias: 'bla4Public'})
+  bla2 = input<string>();
+  bla3 = input({required: true});
+  bla4 = input(3, {alias: 'bla4Public'});
   gen = input<T>({required: true});
   gen2 = input<T>();
 
