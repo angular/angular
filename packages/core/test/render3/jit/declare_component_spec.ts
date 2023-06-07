@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, Component, Directive, ElementRef, forwardRef, Pipe, Type, ViewEncapsulation, ɵɵngDeclareComponent} from '@angular/core';
 
-import {AttributeMarker, ComponentDef, ɵɵInheritDefinitionFeature, ɵɵNgOnChangesFeature} from '../../../src/render3';
+import {AttributeMarker, ComponentDef, ɵɵInheritDefinitionFeature, ɵɵInputTransformsFeature, ɵɵNgOnChangesFeature} from '../../../src/render3';
 
 import {functionContaining} from './matcher';
 
@@ -59,6 +59,30 @@ describe('component declaration jit compilation', () => {
       outputs: {
         'eventBindingName': 'minifiedEventName',
       },
+    });
+  });
+
+  it('should compile input with a transform function', () => {
+    const transformFn = () => 1;
+    const def = ɵɵngDeclareComponent({
+                  type: TestClass,
+                  template: '<div></div>',
+                  inputs: {
+                    minifiedClassProperty: ['bindingName', 'classProperty', transformFn],
+                  }
+                }) as ComponentDef<TestClass>;
+
+    expectComponentDef(def, {
+      inputs: {
+        'bindingName': 'minifiedClassProperty',
+      },
+      inputTransforms: {
+        'minifiedClassProperty': transformFn,
+      },
+      declaredInputs: {
+        'bindingName': 'classProperty',
+      },
+      features: [ɵɵInputTransformsFeature],
     });
   });
 
@@ -486,7 +510,7 @@ type ComponentDefExpectations = jasmine.Expected<Pick<
     ComponentDef<unknown>,
     'selectors'|'template'|'inputs'|'declaredInputs'|'outputs'|'features'|'hostAttrs'|
     'hostBindings'|'hostVars'|'contentQueries'|'viewQuery'|'exportAs'|'providersResolver'|
-    'encapsulation'|'onPush'|'styles'|'data'>>&{
+    'encapsulation'|'onPush'|'styles'|'data'|'inputTransforms'>>&{
   directives: Type<unknown>[]|null;
   pipes: Type<unknown>[]|null;
 };
@@ -504,6 +528,7 @@ function expectComponentDef(
     template: jasmine.any(Function),
     inputs: {},
     declaredInputs: {},
+    inputTransforms: null,
     outputs: {},
     features: null,
     hostAttrs: null,
@@ -529,6 +554,9 @@ function expectComponentDef(
   expect(actual.template).withContext('template').toEqual(expectation.template);
   expect(actual.inputs).withContext('inputs').toEqual(expectation.inputs);
   expect(actual.declaredInputs).withContext('declaredInputs').toEqual(expectation.declaredInputs);
+  expect(actual.inputTransforms)
+      .withContext('inputTransforms')
+      .toEqual(expectation.inputTransforms);
   expect(actual.outputs).withContext('outputs').toEqual(expectation.outputs);
   expect(actual.features).withContext('features').toEqual(expectation.features);
   expect(actual.hostAttrs).withContext('hostAttrs').toEqual(expectation.hostAttrs);
