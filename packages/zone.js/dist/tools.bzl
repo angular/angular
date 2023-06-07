@@ -12,7 +12,6 @@ ES5_BUNDLES = [
     "task-tracking",
     "wtf",
     "zone-error",
-    "zone-legacy",
     "zone-bluebird",
     "zone-patch-canvas",
     "zone-patch-cordova",

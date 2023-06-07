@@ -12,7 +12,6 @@ if (typeof window !== 'undefined') {
 }
 import '../lib/common/to-string';
 import '../lib/browser/api-util';
-import '../lib/browser/browser-legacy';
 import '../lib/browser/browser';
 import '../lib/browser/canvas';
 import '../lib/common/fetch';

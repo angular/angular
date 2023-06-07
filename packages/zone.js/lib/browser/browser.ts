@@ -18,13 +18,6 @@ import {patchCustomElements} from './custom-elements';
 import {eventTargetPatch, patchEvent} from './event-target';
 import {propertyDescriptorPatch} from './property-descriptor';
 
-Zone.__load_patch('legacy', (global: any) => {
-  const legacyPatch = global[Zone.__symbol__('legacyPatch')];
-  if (legacyPatch) {
-    legacyPatch();
-  }
-});
-
 Zone.__load_patch('queueMicrotask', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   api.patchMethod(global, 'queueMicrotask', delegate => {
     return function(self: any, args: any[]) {

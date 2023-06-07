@@ -43,9 +43,6 @@ BUNDLES_ENTRY_POINTS = {
     "zone-error": {
         "entrypoint": _DIR + "common/error-rewrite",
     },
-    "zone-legacy": {
-        "entrypoint": _DIR + "browser/browser-legacy",
-    },
     "zone-bluebird": {
         "entrypoint": _DIR + "extra/bluebird",
     },
