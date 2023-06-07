@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {USE_TEMPLATE_PIPELINE} from '@angular/compiler/src/template/pipeline/switch/index';
 import {Component, input} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
@@ -22,7 +30,12 @@ describe('Signal component inputs', () => {
         num = input(0);
       }
 
-      @Component({signals: true, template: `<print [num]="3">`})
+      @Component({
+        signals: true,
+        template: `<print [num]="3">`,
+        imports: [Print],
+        standalone: true,
+      })
       class App {
       }
 
@@ -32,4 +45,4 @@ describe('Signal component inputs', () => {
       expect(fixture.nativeElement.textContent).toBe('3');
     });
   });
-})
+});
