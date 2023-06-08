@@ -77,6 +77,9 @@ export class InjectionToken<T> {
       // This is a special hack to assign __NG_ELEMENT_ID__ to this instance.
       // See `InjectorMarkers`
       (this as any).__NG_ELEMENT_ID__ = options;
+    } else if (options instanceof ElementIdFactory) {
+      // This is a special hack to assign __NG_ELEMENT_ID__ to this instance.
+      (this as any).__NG_ELEMENT_ID__ = options.factory;
     } else if (options !== undefined) {
       this.ɵprov = ɵɵdefineInjectable({
         token: this,
@@ -95,6 +98,14 @@ export class InjectionToken<T> {
 
   toString(): string {
     return `InjectionToken ${this._desc}`;
+  }
+}
+
+export class ElementIdFactory<T> {
+  public factory: () => T;
+
+  constructor(factory: () => T) {
+    this.factory = factory;
   }
 }
 

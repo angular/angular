@@ -1064,6 +1064,9 @@ export interface NgZoneOptions {
 export const NO_ERRORS_SCHEMA: SchemaMetadata;
 
 // @public
+export const NO_TAG_NAME: unique symbol;
+
+// @public
 export function numberAttribute(value: unknown, fallbackValue?: number): number;
 
 // @public
@@ -1395,6 +1398,9 @@ export interface StaticClassSansProvider {
 
 // @public
 export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
+
+// @public
+export const TAG_NAME: InjectionToken<string | typeof NO_TAG_NAME>;
 
 // @public
 export abstract class TemplateRef<C> {

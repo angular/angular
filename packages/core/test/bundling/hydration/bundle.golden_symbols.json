@@ -141,6 +141,9 @@
     "name": "EffectManager"
   },
   {
+    "name": "ElementIdFactory"
+  },
+  {
     "name": "ElementRef"
   },
   {

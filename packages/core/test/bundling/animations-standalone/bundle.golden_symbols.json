@@ -198,6 +198,9 @@
     "name": "EffectManager"
   },
   {
+    "name": "ElementIdFactory"
+  },
+  {
     "name": "ElementInstructionMap"
   },
   {

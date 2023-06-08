@@ -9,6 +9,9 @@
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
+    "name": "ElementIdFactory"
+  },
+  {
     "name": "EnvironmentInjector"
   },
   {
