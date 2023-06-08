@@ -1,3 +1,30 @@
+<a name="16.1.0-rc.0"></a>
+# 16.1.0-rc.0 (2023-06-08)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f3867597f0](https://github.com/angular/angular/commit/f3867597f079794ae9c7ed8be3788c9cea5123a3) | feat | add component input binding support for NgComponentOutlet ([#49735](https://github.com/angular/angular/pull/49735)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [540e643347](https://github.com/angular/angular/commit/540e643347b9cb889b4ef8acb81bf39b31a778c9) | fix | do not remove comments in component styles ([#50346](https://github.com/angular/angular/pull/50346)) |
+| [4e663297c5](https://github.com/angular/angular/commit/4e663297c564078c8185c6a73e2baa844406a315) | fix | error when reading compiled input transforms metadata in JIT mode ([#50600](https://github.com/angular/angular/pull/50600)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [79a706c847](https://github.com/angular/angular/commit/79a706c8476003ce506e61fbd0b14587a99e9257) | fix | incorrectly throwing error for self-referencing component ([#50559](https://github.com/angular/angular/pull/50559)) |
+| [edceb486dd](https://github.com/angular/angular/commit/edceb486dd09c2d7335a149c6384e78479ab93b0) | fix | wait for HTTP in `ngOnInit` correctly before server render ([#50573](https://github.com/angular/angular/pull/50573)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [85c5427582](https://github.com/angular/angular/commit/85c54275825a57fd3c7055a99e58bb211e085af9) | feat | Introduction of the `fetch` Backend for the `HttpClient` ([#50247](https://github.com/angular/angular/pull/50247)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0875b519b9](https://github.com/angular/angular/commit/0875b519b9dcf15703039b20ef7398b0c964ba0c) | fix | surface errors during rendering ([#50587](https://github.com/angular/angular/pull/50587)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.0-next.3"></a>
 # 16.1.0-next.3 (2023-06-01)
 ### animations
