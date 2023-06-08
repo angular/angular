@@ -10,6 +10,8 @@ import {USE_TEMPLATE_PIPELINE} from '@angular/compiler/src/template/pipeline/swi
 import {Component, input} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
+import {Input} from '../../../src/metadata';
+
 
 if (!USE_TEMPLATE_PIPELINE) {
   console.error(
@@ -23,11 +25,11 @@ describe('Signal component inputs', () => {
       @Component({
         selector: 'print',
         signals: true,
-        template: `num()`,
+        template: `{{num()}}`,
         standalone: true,
       })
       class Print {
-        num = input(0);
+        @Input() num = input(0);
       }
 
       @Component({
