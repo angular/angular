@@ -14,7 +14,6 @@ import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter}
 import {ClassPropertyMapping, HostDirectiveMeta, InputMapping, InputTransform} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
-import {HandlerFlags} from '../../../transform';
 import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
@@ -34,8 +33,8 @@ const QUERY_TYPES = new Set([
 export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Readonly<Decorator|null>, reflector: ReflectionHost,
     evaluator: PartialEvaluator, refEmitter: ReferenceEmitter,
-    referencesRegistry: ReferencesRegistry, isCore: boolean, flags: HandlerFlags,
-    annotateForClosureCompiler: boolean, defaultSelector: string|null = null): {
+    referencesRegistry: ReferencesRegistry, isCore: boolean, annotateForClosureCompiler: boolean,
+    defaultSelector: string|null = null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   inputs: ClassPropertyMapping<InputMapping>,
@@ -217,7 +216,7 @@ export function extractDirectiveMetadata(
     queries,
     viewQueries,
     selector,
-    fullInheritance: !!(flags & HandlerFlags.FULL_INHERITANCE),
+    fullInheritance: false,
     type,
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: createSourceSpan(clazz.name),

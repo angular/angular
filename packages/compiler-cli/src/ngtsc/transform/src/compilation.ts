@@ -21,7 +21,7 @@ import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {getSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 
-import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, HandlerPrecedence, ResolveResult} from './api';
 import {DtsTransformRegistry} from './declaration';
 import {PendingTrait, Trait, TraitState} from './trait';
 
@@ -385,8 +385,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   }
 
   private analyzeTrait(
-      clazz: ClassDeclaration, trait: Trait<unknown, unknown, SemanticSymbol|null, unknown>,
-      flags?: HandlerFlags): void {
+      clazz: ClassDeclaration, trait: Trait<unknown, unknown, SemanticSymbol|null, unknown>): void {
     if (trait.state !== TraitState.Pending) {
       throw new Error(`Attempt to analyze trait of ${clazz.name.text} in state ${
           TraitState[trait.state]} (expected DETECTED)`);
@@ -397,7 +396,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
     let result: AnalysisOutput<unknown>;
     try {
-      result = trait.handler.analyze(clazz, trait.detected.metadata, flags);
+      result = trait.handler.analyze(clazz, trait.detected.metadata);
     } catch (err) {
       if (err instanceof FatalDiagnosticError) {
         trait.toAnalyzed(null, [err.toDiagnostic()], null);
