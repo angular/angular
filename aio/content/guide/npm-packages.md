@@ -31,7 +31,7 @@ The `package.json` is organized into two groups of packages:
 | Packages                                               | Details |
 |:---                                                    |:---     |
 | [Dependencies](guide/npm-packages#dependencies)        | Essential to *running* applications.      |
-| [DevDependencies](guide/npm-packages#dev-dependencies) | Only necessary to *develop* applications. |
+| [DevDependencies](guide/npm-packages#dev-dependencies) | Only necessary to *develop* and *build* applications. |
 
 <div class="alert is-helpful">
 
