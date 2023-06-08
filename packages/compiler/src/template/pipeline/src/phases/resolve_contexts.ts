@@ -51,25 +51,23 @@ function processLexicalScope(view: CompilationUnit, ops: ir.OpList<ir.CreateOp|i
             scope.set(op.variable.view, new ir.ReadVariableExpr(op.xref));
         }
         break;
+      case ir.OpKind.Listener:
+        processLexicalScope(view, op.handlerOps);
+        break;
     }
-    break;
-    case ir.OpKind.Listener:
-      processLexicalScope(view, op.handlerOps);
-      break;
   }
-}
 
-for (const op of ops) {
-  ir.transformExpressionsInOp(op, expr => {
-    if (expr instanceof ir.ContextExpr) {
-      if (!scope.has(expr.view)) {
-        throw new Error(
-            `No context found for reference to view ${expr.view} from view ${view.xref}`);
+  for (const op of ops) {
+    ir.transformExpressionsInOp(op, expr => {
+      if (expr instanceof ir.ContextExpr) {
+        if (!scope.has(expr.view)) {
+          throw new Error(
+              `No context found for reference to view ${expr.view} from view ${view.xref}`);
+        }
+        return scope.get(expr.view)!;
+      } else {
+        return expr;
       }
-      return scope.get(expr.view)!;
-    } else {
-      return expr;
-    }
-  }, ir.VisitorContextFlag.None);
-}
+    }, ir.VisitorContextFlag.None);
+  }
 }
