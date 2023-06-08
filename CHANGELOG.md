@@ -144,7 +144,7 @@
 <a name="16.0.0"></a>
 # 16.0.0 (2023-05-03)
 
-[Blog post "Angular v16 is now available"](http://goo.gle/angular-v16).
+[Blog post "Angular v16 is now available"](https://goo.gle/angular-v16).
 
 ## Breaking Changes
 ### 
@@ -994,7 +994,7 @@ Andrew Kushnir
 <a name="15.0.0"></a>
 # 15.0.0 (2022-11-16)
 
-[Blog post "Angular v15 is now available"](http://goo.gle/angular-v15).
+[Blog post "Angular v15 is now available"](https://goo.gle/angular-v15).
 
 ## Breaking Changes
 ### compiler
@@ -1657,7 +1657,7 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
 <a name="14.0.0"></a>
 # 14.0.0 (2022-06-02)
 
-[Blog post "Angular v14 is now available"](http://goo.gle/angular-v14).
+[Blog post "Angular v14 is now available"](https://goo.gle/angular-v14).
 
 ## Breaking Changes
 ### animations
