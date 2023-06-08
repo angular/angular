@@ -294,7 +294,7 @@ From the root of your workspace, run the `npm link` command with the path to you
 
 <code-example format="shell" language="shell">
 
-npm link dist/my-lib
+npm link dist/my-lib/
 
 </code-example>
 
