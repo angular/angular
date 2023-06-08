@@ -7,7 +7,7 @@
  */
 
 import {USE_TEMPLATE_PIPELINE} from '@angular/compiler/src/template/pipeline/switch/index';
-import {Component, input} from '@angular/core';
+import {Component, input, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {Input} from '../../../src/metadata';
@@ -45,6 +45,39 @@ describe('Signal component inputs', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('3');
+    });
+
+    it('should support binding to signals', () => {
+      @Component({
+        selector: 'print',
+        signals: true,
+        template: `{{num()}}`,
+        standalone: true,
+      })
+      class Print {
+        @Input() num = input(0);
+      }
+
+      @Component({
+        signals: true,
+        template: `<print [num]="num()">`,
+        imports: [Print],
+        standalone: true,
+      })
+      class App {
+        num = signal(3);
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('3');
+
+      fixture.componentInstance.num.set(4);
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('4');
     });
   });
 });
