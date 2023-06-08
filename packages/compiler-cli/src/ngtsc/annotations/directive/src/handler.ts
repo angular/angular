@@ -16,7 +16,7 @@ import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry} from '../../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, InjectableClassRegistry, isAngularDecorator, readBaseClass, ReferencesRegistry, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
 
 import {extractDirectiveMetadata} from './shared';
@@ -76,7 +76,7 @@ export class DirectiveDecoratorHandler implements
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Readonly<Decorator|null>, flags = HandlerFlags.NONE):
+  analyze(node: ClassDeclaration, decorator: Readonly<Decorator|null>):
       AnalysisOutput<DirectiveHandlerData> {
     // Skip processing of the class declaration if compilation of undecorated classes
     // with Angular features is disabled. Previously in ngtsc, such classes have always
@@ -95,7 +95,7 @@ export class DirectiveDecoratorHandler implements
 
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
-        this.isCore, flags, this.annotateForClosureCompiler);
+        this.isCore, this.annotateForClosureCompiler);
     if (directiveResult === undefined) {
       return {};
     }
