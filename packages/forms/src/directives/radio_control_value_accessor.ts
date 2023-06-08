@@ -12,7 +12,7 @@ import {RuntimeErrorCode} from '../errors';
 
 import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
-import {CALL_SET_DISABLED_STATE, setDisabledStateDefault, SetDisabledStateOption} from './shared';
+import {CALL_SET_DISABLED_STATE, setDisabledStateDefault} from './shared';
 
 const RADIO_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
