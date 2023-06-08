@@ -6,18 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentRef, createNgModule, Directive, DoCheck, Injector, Input, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, Type, ViewContainerRef} from '@angular/core';
+import {ComponentRef, createNgModule, Directive, Injector, Input, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, Type, ViewContainerRef} from '@angular/core';
 
-/**
- * Represents internal object used to track state of each component input.
- */
-interface ComponentInputState {
-  /**
-   * Track whether the input exists in the current object bound to the component input;
-   * inputs that are not present any more can be removed from the internal data structures.
-   */
-  touched: boolean;
-}
 
 /**
  * Instantiates a {@link Component} type and inserts its Host View into the current View.
@@ -31,9 +21,6 @@ interface ComponentInputState {
  * ### Fine tune control
  *
  * You can control the component creation process by using the following optional attributes:
- *
- * * `ngComponentOutletInputs`: Optional component inputs object, which will be bind to the
- * component.
  *
  * * `ngComponentOutletInjector`: Optional custom {@link Injector} that will be used as parent for
  * the Component. Defaults to the injector of the current view container.
@@ -53,13 +40,6 @@ interface ComponentInputState {
  * Simple
  * ```
  * <ng-container *ngComponentOutlet="componentTypeExpression"></ng-container>
- * ```
- *
- * With inputs
- * ```
- * <ng-container *ngComponentOutlet="componentTypeExpression;
- *                                   inputs: inputsExpression;">
- * </ng-container>
  * ```
  *
  * Customized injector/content
@@ -92,10 +72,9 @@ interface ComponentInputState {
   selector: '[ngComponentOutlet]',
   standalone: true,
 })
-export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
+export class NgComponentOutlet implements OnChanges, OnDestroy {
   @Input() ngComponentOutlet: Type<any>|null = null;
 
-  @Input() ngComponentOutletInputs?: Record<string, unknown>;
   @Input() ngComponentOutletInjector?: Injector;
   @Input() ngComponentOutletContent?: any[][];
 
@@ -108,103 +87,45 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
   private _componentRef: ComponentRef<any>|undefined;
   private _moduleRef: NgModuleRef<any>|undefined;
 
-  private inputStateMap = new Map<string, ComponentInputState>();
-
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     const {
-      ngComponentOutlet: componentTypeChange,
-      ngComponentOutletContent: contentChange,
-      ngComponentOutletInjector: injectorChange,
-      ngComponentOutletNgModule: ngModuleChange,
-      ngComponentOutletNgModuleFactory: ngModuleFactoryChange,
-    } = changes;
-
-    const {
       _viewContainerRef: viewContainerRef,
-      ngComponentOutlet: componentType,
-      ngComponentOutletContent: content,
       ngComponentOutletNgModule: ngModule,
       ngComponentOutletNgModuleFactory: ngModuleFactory,
     } = this;
+    viewContainerRef.clear();
+    this._componentRef = undefined;
 
-    if (componentTypeChange || contentChange || injectorChange || ngModuleChange ||
-        ngModuleFactoryChange) {
-      viewContainerRef.clear();
-      this._componentRef = undefined;
+    if (this.ngComponentOutlet) {
+      const injector = this.ngComponentOutletInjector || viewContainerRef.parentInjector;
 
-      if (componentType) {
-        const injector = this.ngComponentOutletInjector || viewContainerRef.parentInjector;
+      if (changes['ngComponentOutletNgModule'] || changes['ngComponentOutletNgModuleFactory']) {
+        if (this._moduleRef) this._moduleRef.destroy();
 
-        if (ngModuleChange || ngModuleFactoryChange) {
-          this._moduleRef?.destroy();
-
-          if (ngModule) {
-            this._moduleRef = createNgModule(ngModule, getParentInjector(injector));
-          } else if (ngModuleFactory) {
-            this._moduleRef = ngModuleFactory.create(getParentInjector(injector));
-          } else {
-            this._moduleRef = undefined;
-          }
-        }
-
-        this._componentRef = viewContainerRef.createComponent(componentType, {
-          index: viewContainerRef.length,
-          injector,
-          ngModuleRef: this._moduleRef,
-          projectableNodes: content,
-        });
-      }
-    }
-  }
-
-  /** @nodoc */
-  ngDoCheck() {
-    const {
-      _componentRef: componentRef,
-      ngComponentOutletInputs: inputs,
-    } = this;
-
-    if (componentRef) {
-      if (inputs) {
-        for (const inputName of Object.keys(inputs)) {
-          this._updateInputState(inputName);
+        if (ngModule) {
+          this._moduleRef = createNgModule(ngModule, getParentInjector(injector));
+        } else if (ngModuleFactory) {
+          this._moduleRef = ngModuleFactory.create(getParentInjector(injector));
+        } else {
+          this._moduleRef = undefined;
         }
       }
 
-      this._applyInputStateDiff(componentRef);
+      this._componentRef = viewContainerRef.createComponent(this.ngComponentOutlet, {
+        index: viewContainerRef.length,
+        injector,
+        ngModuleRef: this._moduleRef,
+        projectableNodes: this.ngComponentOutletContent,
+      });
     }
   }
 
   /** @nodoc */
   ngOnDestroy() {
-    this._moduleRef?.destroy();
-  }
-
-  private _updateInputState(inputName: string) {
-    const state = this.inputStateMap.get(inputName);
-    if (state) {
-      state.touched = true;
-    } else {
-      this.inputStateMap.set(inputName, {touched: true});
-    }
-  }
-
-  private _applyInputStateDiff(componentRef: ComponentRef<unknown>) {
-    for (const [inputName, state] of this.inputStateMap) {
-      if (!state.touched) {
-        // The input that was previously active no longer exists and needs to be set to undefined.
-        componentRef.setInput(inputName, undefined);
-        this.inputStateMap.delete(inputName);
-      } else {
-        // Since touched is true, it can be asserted that the inputs object is not empty.
-        componentRef.setInput(inputName, this.ngComponentOutletInputs![inputName]);
-      }
-
-      state.touched = false;
-    }
+    if (this._moduleRef) this._moduleRef.destroy();
   }
 }
 
