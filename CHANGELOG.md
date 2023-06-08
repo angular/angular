@@ -1,3 +1,21 @@
+<a name="16.0.5"></a>
+# 16.0.5 (2023-06-08)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [703b8fcac1](https://github.com/angular/angular/commit/703b8fcac1c9051bf2f342e5502b3cf28dbcab2c) | fix | do not remove comments in component styles ([#50346](https://github.com/angular/angular/pull/50346)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b6da93e19](https://github.com/angular/angular/commit/2b6da93e191a4250dfc81a7bd54c86e45909ea2d) | fix | incorrectly throwing error for self-referencing component ([#50559](https://github.com/angular/angular/pull/50559)) |
+| [c992109d6c](https://github.com/angular/angular/commit/c992109d6c385a2b471f08eaa56701dfd513f219) | fix | wait for HTTP in `ngOnInit` correctly before server render ([#50573](https://github.com/angular/angular/pull/50573)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c0d4086c6e](https://github.com/angular/angular/commit/c0d4086c6eb7685571366b65cd68a51de186f1a3) | fix | surface errors during rendering ([#50587](https://github.com/angular/angular/pull/50587)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.0-rc.0"></a>
 # 16.1.0-rc.0 (2023-06-08)
 ### compiler
