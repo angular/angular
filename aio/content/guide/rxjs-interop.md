@@ -29,7 +29,7 @@ export class Ticker {
 ```
 
 Like the `async` pipe, `toSignal` subscribes to the Observable immediately, which may trigger side effects. The subscription created by
-`toSignal` automatically unsubscribes from the given Observable upon destruction of the the component in which `toSignal` is called.
+`toSignal` automatically unsubscribes from the given Observable upon destruction of the component in which `toSignal` is called.
 
 ### Initial values
 
