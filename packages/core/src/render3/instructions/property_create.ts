@@ -44,14 +44,14 @@ export function ɵɵpropertyCreate<T>(
 
   let zoneTargets: PropertyAliasValue|null = null;
   for (let i = 0; i < inputData.length;) {
-    const index = inputData[i++] as number;
+    const directiveIndex = inputData[i++] as number;
     const privateName = inputData[i++] as string;
-    const def = tView.data[index] as DirectiveDef<any>;
+    const def = tView.data[directiveIndex] as DirectiveDef<any>;
     if (!def.signals) {
-      (zoneTargets ??= []).push(index, privateName);
+      (zoneTargets ??= []).push(directiveIndex, privateName);
     } else {
-      ngDevMode && assertIndexInRange(lView, index);
-      (lView[index][privateName][SIGNAL] as InternalInputSignal).bindToComputation(expr);
+      ngDevMode && assertIndexInRange(lView, directiveIndex);
+      (lView[directiveIndex][privateName][SIGNAL] as InternalInputSignal).bindToComputation(expr);
     }
   }
 
