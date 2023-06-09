@@ -113,9 +113,68 @@ describe('Signal component inputs', () => {
         expect(dir2Instance.testInput()).toBe('Reactive Angular');
       });
 
+      it('should bind inputs when a target shows up multiple times in a template', () => {
+        @Component({
+          signals: true,
+          template: `<print [num]="num()"></print>:<print [num]="num() * 2"></print>
+          `,
+          imports: [Print],
+          standalone: true,
+        })
+        class App {
+          num = signal(3);
+        }
 
-      // TODO:
-      // - binding of regular variables?
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toBe('3:6');
+
+        fixture.componentInstance.num.set(4);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toBe('4:8');
+      });
+
+      xit('should reveal dragon no 1: shared expression value for non-primitive literals', () => {
+        @Directive({
+          selector: '[dir1]',
+          standalone: true,
+          signals: true,
+        })
+        class Dir1 {
+          @Input() testInput = input<string[]>({initialValue: []});
+        }
+
+        @Directive({
+          selector: '[dir2]',
+          standalone: true,
+          signals: true,
+        })
+        class Dir2 {
+          @Input() testInput = input<string[]>({initialValue: []});
+        }
+
+        @Component({
+          signals: true,
+          template: `<div dir1 dir2 [testInput]="['foo', 'bar']"></div>`,
+          imports: [Dir1, Dir2],
+          standalone: true,
+        })
+        class App {
+        }
+
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const dir1Instance = fixture.debugElement.children[0].injector.get(Dir1);
+        const dir2Instance = fixture.debugElement.children[0].injector.get(Dir2);
+
+        expect(dir1Instance.testInput()).toEqual(['foo', 'bar']);
+        expect(dir2Instance.testInput()).toEqual(['foo', 'bar']);
+        expect(dir1Instance.testInput()).toBe(dir2Instance.testInput());
+      });
     });
+
+    // TODO:
+    // - binding of regular variables?
   });
 });
