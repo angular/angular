@@ -8,7 +8,7 @@
 
 import {invalidSkipHydrationHost, validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
-import {hasNgSkipHydrationAttr} from '../../hydration/skip_hydration';
+import {hasSkipHydrationAttrOnRElement, hasSkipHydrationAttrOnTNode} from '../../hydration/skip_hydration';
 import {getSerializedContainerViews, isDisconnectedNode, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
@@ -17,7 +17,7 @@ import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
+import {hasI18n, isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild, clearElementContents, createElementNode, setupStaticAttributes} from '../node_manipulation';
@@ -230,8 +230,11 @@ function locateOrCreateElementNodeImpl(
   }
 
   // Checks if the skip hydration attribute is present during hydration so we know to
-  // skip attempting to hydrate this block.
-  if (hydrationInfo && hasNgSkipHydrationAttr(tNode)) {
+  // skip attempting to hydrate this block. We check both TNode and RElement for an
+  // attribute: the RElement case is needed for i18n cases, when we add it to host
+  // elements during the annotation phase (after all internal data structures are setup).
+  if (hydrationInfo &&
+      (hasSkipHydrationAttrOnTNode(tNode) || hasSkipHydrationAttrOnRElement(native))) {
     if (isComponentHost(tNode)) {
       enterSkipHydrationBlock(tNode);
 
