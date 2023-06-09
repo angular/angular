@@ -20,8 +20,8 @@ if (!USE_TEMPLATE_PIPELINE) {
 }
 
 describe('Signal component inputs', () => {
-  describe('both', () => {
-    it('should support binding to literal strings', () => {
+  describe('input bindings from signal based components', () => {
+    describe('to signal based components', () => {
       @Component({
         selector: 'print',
         signals: true,
@@ -32,52 +32,46 @@ describe('Signal component inputs', () => {
         @Input() num = input(0);
       }
 
-      @Component({
-        signals: true,
-        template: `<print [num]="3">`,
-        imports: [Print],
-        standalone: true,
-      })
-      class App {
-      }
+      it('should bind literal values', () => {
+        @Component({
+          signals: true,
+          // TODO: why aren't we failing for the unclosed <print> tag?
+          template: `<print [num]="3">`,
+          imports: [Print],
+          standalone: true,
+        })
+        class App {
+        }
 
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
 
-      expect(fixture.nativeElement.textContent).toBe('3');
-    });
+        expect(fixture.nativeElement.textContent).toBe('3');
+      });
 
-    it('should support binding to signals', () => {
-      @Component({
-        selector: 'print',
-        signals: true,
-        template: `{{num()}}`,
-        standalone: true,
-      })
-      class Print {
-        @Input() num = input(0);
-      }
 
-      @Component({
-        signals: true,
-        template: `<print [num]="num()">`,
-        imports: [Print],
-        standalone: true,
-      })
-      class App {
-        num = signal(3);
-      }
+      it('should bind signal values', () => {
+        @Component({
+          signals: true,
+          template: `<print [num]="num()">`,
+          imports: [Print],
+          standalone: true,
+        })
+        class App {
+          num = signal(3);
+        }
 
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toBe('3');
 
-      expect(fixture.nativeElement.textContent).toBe('3');
+        fixture.componentInstance.num.set(4);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toBe('4');
+      });
 
-      fixture.componentInstance.num.set(4);
-
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('4');
+      // TODO:
+      // - binding of regular variables?
     });
   });
 });
