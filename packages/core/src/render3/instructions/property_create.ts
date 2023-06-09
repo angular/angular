@@ -83,8 +83,8 @@ export function propertyUpdateDom(
     nodeSlot: number, propName: string, expressionSlot: number, sanitizer: SanitizerFn|null): void {
   const lView = getLView();
   const expr = lView[expressionSlot];
-  let value = expr();
 
+  let value = expr();
   const bindingIndex = nextBindingIndex();
   if (!bindingUpdated(lView, bindingIndex, value)) {
     return;
