@@ -62,6 +62,7 @@ export function phaseVarCounting(cpl: ComponentCompilation): void {
 function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): number {
   switch (op.kind) {
     case ir.OpKind.Property:
+    case ir.OpKind.StyleProp:
       // Property bindings use 1 variable slot.
       return 1;
     case ir.OpKind.InterpolateText:

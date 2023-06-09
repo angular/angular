@@ -273,6 +273,12 @@ function ingestPropertyBinding(
       case e.BindingType.Property:
         view.update.push(ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
         break;
+      case e.BindingType.Style:
+        if (bindingKind !== ir.ElementAttributeKind.Binding) {
+          throw Error('Unexpected style binding on ng-template');
+        }
+        view.update.push(ir.createStylePropOp(xref, name, convertAst(value, view.tpl)));
+        break;
       default:
         // TODO: implement remaining binding types.
         throw Error(`Property binding type not handled: ${type}`);
