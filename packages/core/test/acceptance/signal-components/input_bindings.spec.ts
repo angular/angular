@@ -7,7 +7,7 @@
  */
 
 import {USE_TEMPLATE_PIPELINE} from '@angular/compiler/src/template/pipeline/switch/index';
-import {Component, input, signal} from '@angular/core';
+import {Component, Directive, input, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {Input} from '../../../src/metadata';
@@ -69,6 +69,50 @@ describe('Signal component inputs', () => {
         fixture.detectChanges();
         expect(fixture.nativeElement.textContent).toBe('4');
       });
+
+      it('should bind to multiple directives matching on the same node', () => {
+        @Directive({
+          selector: '[dir1]',
+          standalone: true,
+          signals: true,
+        })
+        class Dir1 {
+          @Input() testInput = input('');
+        }
+
+        @Directive({
+          selector: '[dir2]',
+          standalone: true,
+          signals: true,
+        })
+        class Dir2 {
+          @Input() testInput = input('');
+        }
+
+        @Component({
+          signals: true,
+          template: `<div dir1 dir2 [testInput]="name()"></div>`,
+          imports: [Dir1, Dir2],
+          standalone: true,
+        })
+        class App {
+          name = signal('Angular');
+        }
+
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const dir1Instance = fixture.debugElement.children[0].injector.get(Dir1);
+        const dir2Instance = fixture.debugElement.children[0].injector.get(Dir2);
+
+        expect(dir1Instance.testInput()).toBe('Angular');
+        expect(dir2Instance.testInput()).toBe('Angular');
+
+        fixture.componentInstance.name.set('Reactive Angular');
+        expect(dir1Instance.testInput()).toBe('Reactive Angular');
+        expect(dir2Instance.testInput()).toBe('Reactive Angular');
+      });
+
 
       // TODO:
       // - binding of regular variables?
