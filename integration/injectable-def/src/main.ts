@@ -1,29 +1,42 @@
-// ZoneJS does not add any package exports right now, so we need to directly
-// reference the ESM entry-point for ZoneJS in NodeJS.
-// TODO: Replace this with a package import if ZoneJS sets the `exports` field.
+import { enableProdMode } from '@angular/core';
+import { renderModule } from '@angular/platform-server';
+import { createDocument } from 'domino';
+import { readFileSync } from 'fs';
 import 'zone.js/fesm2015/zone-node.js';
+import { AppModule } from './app.js';
 
-// Load the Angular compiler as we will rely on JIT compilation for this test.
-// This test does not use the CLI and we are not processing the framework packages
-// with the linker here.
-import '@angular/compiler';
+// Function to configure the global DOM environment using 'domino'
+function configureGlobalDOM() {
+  const indexHtml = readFileSync('./index.html', 'utf-8');
+  const win = createDocument(indexHtml).defaultView;
+  global['window'] = win;
+  global['document'] = win.document;
+  global['navigator'] = win.navigator;
+}
 
-import {enableProdMode} from '@angular/core';
-import {renderModule} from '@angular/platform-server';
-import {AppModule} from './app.js';
+// Function to render the Angular app and check for a specific pattern in the HTML
+async function renderApp() {
+  const html = await renderModule(AppModule, {
+    document: '<test-app></test-app>',
+    url: '/',
+  });
 
-enableProdMode();
-renderModule(AppModule, {
-  document: '<test-app></test-app>',
-  url: '/',
-}).then(html => {
   if (/>0:0</.test(html)) {
-    process.exit(0);
+    process.exitCode = 0;
   } else {
     console.error('html was', html);
-    process.exit(1);
+    process.exitCode = 1;
   }
-}).catch(err => {
+}
+
+// Configure the global DOM environment
+configureGlobalDOM();
+
+// Enable production mode in Angular
+enableProdMode();
+
+// Render the Angular app and handle errors
+renderApp().catch(err => {
   console.error(err);
-  process.exit(2);
-})
+  process.exitCode = 2;
+});
