@@ -89,6 +89,11 @@ export enum OpKind {
   StyleProp,
 
   /**
+   * An operation to bind an expression to the styles of an element.
+   */
+  StyleMap,
+
+  /**
    * An operation to interpolate text into a property binding.
    */
   InterpolateProperty,
