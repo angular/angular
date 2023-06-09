@@ -8,7 +8,7 @@
  */
 
 import {ConsoleLogger, LogLevel, NodeJSFileSystem, setFileSystem} from '@angular/compiler-cli/private/localize';
-import glob from 'glob';
+import glob from 'fast-glob';
 import yargs from 'yargs';
 
 import {DiagnosticHandlingStrategy} from '../diagnostics';
@@ -94,7 +94,7 @@ const fileSystem = new NodeJSFileSystem();
 setFileSystem(fileSystem);
 
 const rootPath = options.r;
-const sourceFilePaths = glob.sync(options.s, {cwd: rootPath, nodir: true});
+const sourceFilePaths = glob.sync(options.s, {cwd: rootPath});
 const logLevel = options.loglevel as (keyof typeof LogLevel) | undefined;
 const logger = new ConsoleLogger(logLevel ? LogLevel[logLevel] : LogLevel.warn);
 const duplicateMessageHandling = options.d as DiagnosticHandlingStrategy;
