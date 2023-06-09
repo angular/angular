@@ -105,8 +105,14 @@ There are a few more lessons to complete before that happens.
 ## Lesson review
 
 In this lesson, you created an interface that created a new data type for your app.
-This new data type makes it possible for you to specify where `HousingLocation` data is required.
-This new data type also makes it possible for your IDE and the TypeScript compiler can ensure that `HousingLocation` data is used where it's required.
+
+Angular uses TypeScript to take advantage of working in a strongly typed programming environment.
+Strong type checking reduces the likelihood of one element in your app sending incorrectly formatted data to another.
+Such type-mismatch errors are caught by the TypeScript compiler and many such errors can also be caught in your IDE.
+
+In this lesson, you'll create an interface to define properties that represent data about a single housing location.
+This new data type makes it possible for you to define properties about `HousingLocation` data and caught type-mismatch errors using either the TypeScript compiler or our IDE. 
+
 
 If you are having any trouble with this lesson, you can review the completed code for it in the <live-example></live-example>.
 
