@@ -636,6 +636,7 @@ export function transformExpressionsInOp(
   switch (op.kind) {
     case OpKind.Property:
     case OpKind.StyleProp:
+    case OpKind.StyleMap:
       op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;
     case OpKind.InterpolateProperty:
