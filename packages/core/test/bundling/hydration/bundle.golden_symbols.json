@@ -906,6 +906,9 @@
     "name": "hasInSkipHydrationBlockFlag"
   },
   {
+    "name": "hasSkipHydrationAttrOnRElement"
+  },
+  {
     "name": "hostReportError"
   },
   {
