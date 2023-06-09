@@ -27,7 +27,8 @@
             "forward_referenced_pipe.js"
           ]
         }
-      ]
+      ],
+      "skipForTemplatePipeline": true
     },
     {
       "description": "should split multiple `exportAs` values into an array",

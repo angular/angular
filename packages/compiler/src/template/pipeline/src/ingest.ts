@@ -203,12 +203,11 @@ function ingestBindings(
         view.update.push(ir.createAttributeOp(
             op.xref, ir.ElementAttributeKind.Template, attr.name, o.literal(attr.value)));
       } else {
-        ingestPropertyBinding(
-            view, op.xref, ir.ElementAttributeKind.Template, attr.name, attr.value);
+        ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Template, attr);
       }
     }
     for (const attr of element.inputs) {
-      ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Binding, attr.name, attr.value);
+      ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Binding, attr);
     }
   } else {
     for (const attr of element.attributes) {
@@ -216,8 +215,7 @@ function ingestBindings(
           op.xref, ir.ElementAttributeKind.Attribute, attr.name, o.literal(attr.value)));
     }
     for (const input of element.inputs) {
-      ingestPropertyBinding(
-          view, op.xref, ir.ElementAttributeKind.Binding, input.name, input.value);
+      ingestPropertyBinding(view, op.xref, ir.ElementAttributeKind.Binding, input);
     }
 
     for (const output of element.outputs) {
@@ -255,17 +253,31 @@ function ingestBindings(
 
 function ingestPropertyBinding(
     view: ViewCompilation, xref: ir.XrefId,
-    bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template, name: string,
-    value: e.AST): void {
+    bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template,
+    {name, value, type}: t.BoundAttribute): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
   }
   if (value instanceof e.Interpolation) {
-    view.update.push(ir.createInterpolatePropertyOp(
-        xref, bindingKind, name, value.strings,
-        value.expressions.map(expr => convertAst(expr, view.tpl))));
+    switch (type) {
+      case e.BindingType.Property:
+        view.update.push(ir.createInterpolatePropertyOp(
+            xref, bindingKind, name, value.strings,
+            value.expressions.map(expr => convertAst(expr, view.tpl))));
+        break;
+      default:
+        // TODO: implement remaining binding types.
+        throw Error(`Interpolated property binding type not handled: ${type}`);
+    }
   } else {
-    view.update.push(ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
+    switch (type) {
+      case e.BindingType.Property:
+        view.update.push(ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
+        break;
+      default:
+        // TODO: implement remaining binding types.
+        throw Error(`Property binding type not handled: ${type}`);
+    }
   }
 }
 
