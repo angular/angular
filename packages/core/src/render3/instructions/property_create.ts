@@ -47,15 +47,15 @@ export function ɵɵpropertyCreate<T>(
   debugger;
   let zoneTargets: PropertyAliasValue|null = null;
   for (let i = 0; i < inputData.length;) {
-    const index = inputData[i++] as number;
+    const directiveIndex = inputData[i++] as number;
     const privateName = inputData[i++] as string;
-    const def = tView.data[index] as DirectiveDef<any>;
+    const def = tView.data[directiveIndex] as DirectiveDef<any>;
     if (!def.signals) {
-      (zoneTargets ??= []).push(index, privateName);
+      (zoneTargets ??= []).push(directiveIndex, privateName);
     } else {
-      ngDevMode && assertIndexInRange(lView, index);
+      ngDevMode && assertIndexInRange(lView, directiveIndex);
       const inputSignalNode =
-          lView[index][privateName][SIGNAL] as InputSignalNode<unknown, unknown>;
+          lView[directiveIndex][privateName][SIGNAL] as InputSignalNode<unknown, unknown>;
 
       // TODO: Improve this by not allocating an object literal here. This exists just for testing.
       inputSignalNode.bind(inputSignalNode, {computation: expr});
