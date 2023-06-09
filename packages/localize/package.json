@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "@babel/core": "7.21.8",
-    "glob": "8.1.0",
+    "fast-glob": "3.2.12",
     "yargs": "^17.2.1"
   },
   "peerDependencies": {

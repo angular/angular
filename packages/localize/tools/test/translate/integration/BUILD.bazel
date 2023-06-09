@@ -25,7 +25,7 @@ jasmine_node_test(
     ],
     deps = [
         ":test_lib",
-        "@npm//glob",
+        "@npm//fast-glob",
         "@npm//yargs",
     ],
 )
