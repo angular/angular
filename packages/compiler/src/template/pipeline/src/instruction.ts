@@ -147,6 +147,10 @@ export function styleProp(name: string, expression: o.Expression): ir.UpdateOp {
   ]);
 }
 
+export function styleMap(expression: o.Expression): ir.UpdateOp {
+  return call(Identifiers.styleMap, [expression]);
+}
+
 const PIPE_BINDINGS: o.ExternalReference[] = [
   Identifiers.pipeBind1,
   Identifiers.pipeBind2,
