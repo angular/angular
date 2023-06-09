@@ -15,7 +15,7 @@
     {
       "name": "target",
       "type": "string",
-      "description": "The Architect target to run provided in the the following format `project:target[:configuration]`.",
+      "description": "The Architect target to run provided in the following format `project:target[:configuration]`.",
       "positional": 0
     }
   ]
