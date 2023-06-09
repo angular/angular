@@ -17,7 +17,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 /**
  * An operation usable on the update side of the IR.
  */
-export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|StylePropOp|
+export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|StylePropOp|StyleMapOp|
     InterpolatePropertyOp|AttributeOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
 
 /**
@@ -140,6 +140,35 @@ export function createStylePropOp(
     kind: OpKind.StyleProp,
     target: xref,
     name,
+    expression,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * A logical operation representing binding to a style map in the update IR.
+ */
+export interface StyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  kind: OpKind.StyleMap;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression;
+}
+
+/** Create a `StyleMapOp`. */
+export function createStyleMapOp(xref: XrefId, expression: o.Expression): StyleMapOp {
+  return {
+    kind: OpKind.StyleMap,
+    target: xref,
     expression,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,

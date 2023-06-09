@@ -271,7 +271,16 @@ function ingestPropertyBinding(
   } else {
     switch (type) {
       case e.BindingType.Property:
-        view.update.push(ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
+        // Bindings to [style] are mapped to their own special instruction.
+        if (name === 'style') {
+          if (bindingKind !== ir.ElementAttributeKind.Binding) {
+            throw Error('Unexpected style binding on ng-template');
+          }
+          view.update.push(ir.createStyleMapOp(xref, convertAst(value, view.tpl)));
+        } else {
+          view.update.push(
+              ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
+        }
         break;
       case e.BindingType.Style:
         if (bindingKind !== ir.ElementAttributeKind.Binding) {
