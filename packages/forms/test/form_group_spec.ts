@@ -223,7 +223,6 @@ describe('FormGroup', () => {
     });
   });
 
-
   describe('touched', () => {
     let c: FormControl, g: FormGroup;
 
@@ -2410,6 +2409,16 @@ describe('FormGroup', () => {
         }
       }
     });
+  });
+
+  it('should throw with invalid keys', () => {
+    const consoleWarnSpy = spyOn(console, 'warn');
+    new FormGroup({
+      foo: new FormControl('foo'),
+      bar: new FormControl('foo', [Validators.required]),
+      'baz.not.ok': new FormControl('baz')
+    });
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
   });
 });
 })();
