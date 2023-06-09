@@ -52,3 +52,7 @@ export function isRootView(target: LView): boolean {
 export function isProjectionTNode(tNode: TNode): boolean {
   return (tNode.type & TNodeType.Projection) === TNodeType.Projection;
 }
+
+export function hasI18n(lView: LView): boolean {
+  return (lView[FLAGS] & LViewFlags.HasI18n) === LViewFlags.HasI18n;
+}
