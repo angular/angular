@@ -13,7 +13,7 @@ import {getComponentDef} from '../render3/definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
-import {isComponentHost, isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
+import {hasI18n, isComponentHost, isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
 import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
@@ -412,8 +412,7 @@ function componentUsesShadowDomEncapsulation(lView: LView): boolean {
 function annotateHostElementForHydration(
     element: RElement, lView: LView, context: HydrationContext): void {
   const renderer = lView[RENDERER];
-  if ((lView[FLAGS] & LViewFlags.HasI18n) === LViewFlags.HasI18n ||
-      componentUsesShadowDomEncapsulation(lView)) {
+  if (hasI18n(lView) || componentUsesShadowDomEncapsulation(lView)) {
     // Attach the skip hydration attribute if this component:
     // - either has i18n blocks, since hydrating such blocks is not yet supported
     // - or uses ShadowDom view encapsulation, since Domino doesn't support

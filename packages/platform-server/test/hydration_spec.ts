@@ -1842,6 +1842,46 @@ describe('platform-server hydration integration', () => {
            verifyAllNodesClaimedForHydration(clientRootNode);
            verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
          });
+
+      it('should exclude components with i18n from hydration automatically', async () => {
+        @Component({
+          standalone: true,
+          selector: 'nested',
+          template: `
+            <div i18n>Hi!</div>
+          `,
+        })
+        class NestedComponent {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [NestedComponent],
+          selector: 'app',
+          template: `
+            Nested component with i18n inside
+            (the content of this component would be excluded from hydration):
+            <nested />
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
     });
 
     describe('ShadowDom encapsulation', () => {

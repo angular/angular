@@ -10,7 +10,7 @@ import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedView} from '../../hydration/interfaces';
-import {hasInSkipHydrationBlockFlag, SKIP_HYDRATION_ATTR_NAME} from '../../hydration/skip_hydration';
+import {hasInSkipHydrationBlockFlag, hasSkipHydrationAttrOnRElement, SKIP_HYDRATION_ATTR_NAME} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
@@ -497,7 +497,7 @@ let _applyRootElementTransformImpl: typeof applyRootElementTransformImpl =
  * @param rootElement the app root HTML Element
  */
 export function applyRootElementTransformImpl(rootElement: HTMLElement) {
-  if (rootElement.hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
+  if (hasSkipHydrationAttrOnRElement(rootElement)) {
     // Handle a situation when the `ngSkipHydration` attribute is applied
     // to the root node of an application. In this case, we should clear
     // the contents and render everything from scratch.

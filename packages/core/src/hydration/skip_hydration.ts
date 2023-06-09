@@ -7,7 +7,7 @@
  */
 
 import {TNode, TNodeFlags} from '../render3/interfaces/node';
-import {LView} from '../render3/interfaces/view';
+import {RElement} from '../render3/interfaces/renderer_dom';
 
 /**
  * The name of an attribute that can be added to the hydration boundary node
@@ -16,9 +16,9 @@ import {LView} from '../render3/interfaces/view';
 export const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
 
 /**
- * Helper function to check if a given node has the 'ngSkipHydration' attribute
+ * Helper function to check if a given TNode has the 'ngSkipHydration' attribute.
  */
-export function hasNgSkipHydrationAttr(tNode: TNode): boolean {
+export function hasSkipHydrationAttrOnTNode(tNode: TNode): boolean {
   const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
 
   const attrs = tNode.mergedAttrs;
@@ -34,6 +34,13 @@ export function hasNgSkipHydrationAttr(tNode: TNode): boolean {
     }
   }
   return false;
+}
+
+/**
+ * Helper function to check if a given RElement has the 'ngSkipHydration' attribute.
+ */
+export function hasSkipHydrationAttrOnRElement(rNode: RElement): boolean {
+  return rNode.hasAttribute(SKIP_HYDRATION_ATTR_NAME);
 }
 
 /**
@@ -56,7 +63,7 @@ export function hasInSkipHydrationBlockFlag(tNode: TNode): boolean {
 export function isInSkipHydrationBlock(tNode: TNode): boolean {
   let currentTNode: TNode|null = tNode.parent;
   while (currentTNode) {
-    if (hasNgSkipHydrationAttr(currentTNode)) {
+    if (hasSkipHydrationAttrOnTNode(currentTNode)) {
       return true;
     }
     currentTNode = currentTNode.parent;

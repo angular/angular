@@ -67,6 +67,7 @@ export interface RElement extends RNode {
   className: string;
   tagName: string;
   textContent: string|null;
+  hasAttribute(name: string): boolean;
   getAttribute(name: string): string|null;
   setAttribute(name: string, value: string|TrustedHTML|TrustedScript|TrustedScriptURL): void;
   removeAttribute(name: string): void;
