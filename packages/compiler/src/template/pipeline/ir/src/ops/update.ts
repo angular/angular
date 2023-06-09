@@ -17,8 +17,8 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 /**
  * An operation usable on the update side of the IR.
  */
-export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|InterpolatePropertyOp|
-    AttributeOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
+export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|StylePropOp|
+    InterpolatePropertyOp|AttributeOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -103,6 +103,42 @@ export function createPropertyOp(
     kind: OpKind.Property,
     target: xref,
     bindingKind,
+    name,
+    expression,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * A logical operation representing binding to a style property in the update IR.
+ */
+export interface StylePropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  kind: OpKind.StyleProp;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Name of the bound property.
+   */
+  name: string;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression;
+}
+
+/** Create a `StylePropOp`. */
+export function createStylePropOp(
+    xref: XrefId, name: string, expression: o.Expression): StylePropOp {
+  return {
+    kind: OpKind.StyleProp,
+    target: xref,
     name,
     expression,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
