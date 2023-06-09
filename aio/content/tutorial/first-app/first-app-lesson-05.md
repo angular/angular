@@ -19,8 +19,7 @@ If you have any trouble during this lesson, you can review the completed code fo
 
 ## After you finish
 
-*  Your app has a new interface that it can use as a data type.
-*  Your app has an instance of the new interface with sample data.
+* Your app's `HousingLocationComponent` template has a `HousingLocation` property to receive input.
 
 ## Conceptual preview of Inputs
 [Inputs](api/core/Input) allow components to share data. The direction of the data sharing is from parent component to child component.
