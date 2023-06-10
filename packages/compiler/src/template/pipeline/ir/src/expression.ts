@@ -19,9 +19,10 @@ import type {UpdateOp} from './ops/update';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
-    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr;
+export type Expression =
+    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
+    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
+    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -492,6 +493,119 @@ export class PipeBindingVariadicExpr extends ExpressionBase implements UsesSlotI
     r.slot = this.slot;
     r.varOffset = this.varOffset;
     return r;
+  }
+}
+
+export class SafePropertyReadExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SafePropertyRead;
+
+  constructor(public receiver: o.Expression, public name: string) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
+  }
+
+  override clone(): SafePropertyReadExpr {
+    return new SafePropertyReadExpr(this.receiver.clone(), this.name);
+  }
+}
+
+export class SafeKeyedReadExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SafeKeyedRead;
+
+  constructor(public receiver: o.Expression, public index: o.Expression) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
+    this.index = transformExpressionsInExpression(this.index, transform, flags);
+  }
+
+  override clone(): SafeKeyedReadExpr {
+    return new SafeKeyedReadExpr(this.receiver.clone(), this.index.clone());
+  }
+}
+
+export class SafeInvokeFunctionExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SafeInvokeFunction;
+
+  constructor(public receiver: o.Expression, public args: o.Expression[]) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
+    for (let i = 0; i < this.args.length; i++) {
+      this.args[i] = transformExpressionsInExpression(this.args[i], transform, flags);
+    }
+  }
+
+  override clone(): SafeInvokeFunctionExpr {
+    return new SafeInvokeFunctionExpr(this.receiver.clone(), this.args.map(a => a.clone()));
+  }
+}
+
+export class SafeTernaryExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SafeTernaryExpr;
+
+  constructor(public guard: o.Expression, public expr: o.Expression) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.guard = transformExpressionsInExpression(this.guard, transform, flags);
+    this.expr = transformExpressionsInExpression(this.expr, transform, flags);
+  }
+
+  override clone(): SafeTernaryExpr {
+    return new SafeTernaryExpr(this.guard.clone(), this.expr.clone());
   }
 }
 
