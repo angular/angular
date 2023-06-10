@@ -34,11 +34,8 @@ import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
-<<<<<<< HEAD
-=======
-import {phaseAttributeExtraction} from './phases/register_element_attributes';
 import {phaseExpandSafeReads} from './phases/expand_safe_reads';
->>>>>>> ff0c9aa178 (refactor(compiler): Support safe property reads and keyed reads.)
+import {phaseTemporaryVariables} from './phases/temporary_variables';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
@@ -56,6 +53,7 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseConstCollection(cpl);
   phaseNullishCoalescing(cpl);
   phaseExpandSafeReads(cpl);
+  phaseTemporaryVariables(cpl);
   phaseSlotAllocation(cpl);
   phaseVarCounting(cpl);
   phaseGenerateAdvance(cpl);

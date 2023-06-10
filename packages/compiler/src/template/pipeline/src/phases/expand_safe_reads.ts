@@ -15,12 +15,43 @@ import {ComponentCompilation} from '../compilation';
  * reads, guarded by null checks.
  */
 export function phaseExpandSafeReads(cpl: ComponentCompilation): void {
+  const safeTransformWithCpl: ir.ExpressionTransform = e => safeTransform(e);
+
   for (const [_, view] of cpl.views) {
     for (const op of view.ops()) {
-      ir.transformExpressionsInOp(op, safeTransform, ir.VisitorContextFlag.None);
+      if ((op as any)?.expressions) debugger;
+
+      ir.transformExpressionsInOp(op, safeTransformWithCpl, ir.VisitorContextFlag.None);
       ir.transformExpressionsInOp(op, ternaryTransform, ir.VisitorContextFlag.None);
     }
   }
+}
+
+function needsTemporaryInSafeAccess(e: o.Expression): boolean {
+  if (e instanceof o.UnaryOperatorExpr) {
+    return needsTemporaryInSafeAccess(e.expr);
+  } else if (e instanceof o.BinaryOperatorExpr) {
+    return needsTemporaryInSafeAccess(e.lhs) || needsTemporaryInSafeAccess(e.rhs);
+  } else if (e instanceof o.ConditionalExpr) {
+    if (e.falseCase && needsTemporaryInSafeAccess(e.falseCase)) return true;
+    return needsTemporaryInSafeAccess(e.condition) || needsTemporaryInSafeAccess(e.trueCase);
+  } else if (e instanceof o.NotExpr) {
+    return needsTemporaryInSafeAccess(e.condition);
+  } else if (e instanceof ir.AssignTemporaryExpr) {
+    return needsTemporaryInSafeAccess(e.expr);
+  } else if (e instanceof o.InvokeFunctionExpr) {
+    return true;
+  } else if (e instanceof ir.SafeInvokeFunctionExpr) {
+    return true;
+  } else if (e instanceof o.LiteralArrayExpr) {
+    return true;
+  } else if (e instanceof o.LiteralMapExpr) {
+    return true;
+  } else if (e instanceof ir.PipeBindingExpr) {
+    // TODO: Is this the right way to detect a pipe in the expression?
+    return true;
+  }
+  return false;
 }
 
 function isAccessExpression(e: o.Expression): e is o.ReadPropExpr|ir.SafePropertyReadExpr|
