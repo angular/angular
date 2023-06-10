@@ -169,6 +169,9 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
         convertAst(ast.trueExp, cpl),
         convertAst(ast.falseExp, cpl),
     );
+  } else if (ast instanceof e.NonNullAssert) {
+    // A non-null assertion shouldn't impact generated instructions, so we can just drop it.
+    return convertAst(ast.expression, cpl);
   } else if (ast instanceof e.BindingPipe) {
     return new ir.PipeBindingExpr(
         cpl.allocateXrefId(),
@@ -272,8 +275,8 @@ function ingestPropertyBinding(
 }
 
 /**
- * Process all of the local references on an element-like structure in the template AST and convert
- * them to their IR representation.
+ * Process all of the local references on an element-like structure in the template AST and
+ * convert them to their IR representation.
  */
 function ingestReferences(op: ir.ElementOpBase, element: t.Element|t.Template): void {
   assertIsArray<ir.LocalRef>(op.localRefs);
