@@ -211,6 +211,9 @@ function ingestBindings(
     }
   } else {
     for (const attr of element.attributes) {
+      // This is only attribute TextLiteral bindings, such as `attr.foo="bar'`. This can never be
+      // `[attr.foo]="bar"` or `attr.foo="{{bar}}"`, both of which will be handled as inputs with
+      // `BindingType.Attribute`.
       view.update.push(ir.createAttributeOp(
           op.xref, ir.ElementAttributeKind.Attribute, attr.name, o.literal(attr.value)));
     }
@@ -252,7 +255,7 @@ function ingestBindings(
 }
 
 function ingestPropertyBinding(
-    view: ViewCompilation, xref: ir.XrefId,
+    view: ViewCompilation, target: ir.XrefId,
     bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template,
     {name, value, type}: t.BoundAttribute): void {
   if (value instanceof e.ASTWithSource) {
@@ -262,8 +265,14 @@ function ingestPropertyBinding(
     switch (type) {
       case e.BindingType.Property:
         view.update.push(ir.createInterpolatePropertyOp(
-            xref, bindingKind, name, value.strings,
+            target, bindingKind, name, value.strings,
             value.expressions.map(expr => convertAst(expr, view.tpl))));
+        break;
+      case e.BindingType.Attribute:
+        const attributeInterpolate = ir.createInterpolateAttributeOp(
+            target, bindingKind /* likely `binding`, unclear when this is `template` */, name,
+            value.strings, value.expressions.map(expr => convertAst(expr, view.tpl)));
+        view.update.push(attributeInterpolate);
         break;
       default:
         // TODO: implement remaining binding types.
@@ -272,7 +281,15 @@ function ingestPropertyBinding(
   } else {
     switch (type) {
       case e.BindingType.Property:
-        view.update.push(ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));
+        view.update.push(
+            ir.createPropertyOp(target, bindingKind, name, convertAst(value, view.tpl)));
+        break;
+      case e.BindingType.Attribute:
+        debugger;
+        const attrOp = ir.createAttributeOp(
+            target, bindingKind /* likely `binding`, unclear when this is `template` */, name,
+            convertAst(value, view.tpl));
+        view.update.push(attrOp);
         break;
       default:
         // TODO: implement remaining binding types.

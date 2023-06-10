@@ -102,6 +102,11 @@ export enum OpKind {
    * An operation to bind an expression (or constant) to an element's attribute.
    */
   Attribute,
+
+  /**
+   * An operation interpolate text into an attribute binding.
+   */
+  InterpolateAttribute,
 }
 
 /**

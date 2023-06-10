@@ -18,7 +18,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  * An operation usable on the update side of the IR.
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|InterpolatePropertyOp|
-    AttributeOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
+    AttributeOp|InterpolateAttributeOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -115,7 +115,7 @@ export interface AttributeOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
   kind: OpKind.Attribute;
 
   /**
-   * The `XrefId` of the template-like element the attribte will belong to.
+   * The `XrefId` of the template-like element the attribute will belong to.
    */
   target: XrefId;
 
@@ -139,14 +139,9 @@ export function createAttributeOp(
     target: XrefId, attributeKind: ElementAttributeKind, name: string,
     value: o.Expression): AttributeOp {
   return {
-    kind: OpKind.Attribute,
-    target,
-    attributeKind,
-    name,
-    value,
-    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
-    ...NEW_OP,
-  };
+    kind: OpKind.Attribute, target, attributeKind, name, value, ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+        ...TRAIT_CONSUMES_VARS, ...NEW_OP,
+  }
 }
 
 /**
@@ -194,6 +189,56 @@ export function createInterpolatePropertyOp(
     kind: OpKind.InterpolateProperty,
     target: xref,
     bindingKind,
+    name,
+    strings,
+    expressions,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+export interface InterpolateAttributeOp extends Op<UpdateOp>, ConsumesVarsTrait,
+                                                DependsOnSlotContextOpTrait {
+  kind: OpKind.InterpolateAttribute;
+
+  /**
+   * The `XrefId` of the template-like element the attribute will belong to.
+   * TODO: This is not currently used; should it be?
+   */
+  target: XrefId;
+
+  /**
+   * The kind of attribute.
+   */
+  attributeKind: ElementAttributeKind;
+
+  /**
+   * The name of the attribute.
+   */
+  name: string;
+
+  /**
+   * All of the literal strings in the attribute interpolation, in order.
+   *
+   * Conceptually interwoven around the `expressions`.
+   */
+  strings: string[];
+
+  /**
+   * All of the dynamic expressions in the attribute interpolation, in order.
+   *
+   * Conceptually interwoven in between the `strings`.
+   */
+  expressions: o.Expression[];
+}
+
+export function createInterpolateAttributeOp(
+    target: XrefId, attributeKind: ElementAttributeKind, name: string, strings: string[],
+    expressions: o.Expression[]): InterpolateAttributeOp {
+  return {
+    kind: OpKind.InterpolateAttribute,
+    target: target,
+    attributeKind,
     name,
     strings,
     expressions,
