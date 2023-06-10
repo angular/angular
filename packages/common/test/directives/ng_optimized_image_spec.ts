@@ -986,7 +986,7 @@ describe('Image directive', () => {
        }));
 
     it('should log a warning if there is a preconnect, but it doesn\'t match the priority image',
-       withHead('<link rel="preconnect" href="http://angular.io">', () => {
+       withHead('<link rel="preconnect" href="https://angular.io">', () => {
          setupTestingModule({imageLoader});
 
          const consoleWarnSpy = spyOn(console, 'warn');
@@ -1278,7 +1278,7 @@ describe('Image directive', () => {
     it('should pass data payload from loaderParams to custom image loaders', () => {
       setupTestingModule({imageLoader: imageLoaderWithData});
       const template = `
-        <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50" 
+        <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50"
           [loaderParams]="{testProp1: 'testValue1', testProp2: 'testValue2'}" />
       `;
       const fixture = createTestComponent(template);

@@ -578,12 +578,12 @@ describe('R3 template transform', () => {
 
   describe('<link rel="stylesheet">', () => {
     it('should keep <link rel="stylesheet"> elements if they have an absolute url', () => {
-      expectFromHtml('<link rel="stylesheet" href="http://someurl">').toEqual([
+      expectFromHtml('<link rel="stylesheet" href="https://someurl">').toEqual([
         ['Element', 'link'],
         ['TextAttribute', 'rel', 'stylesheet'],
         ['TextAttribute', 'href', 'http://someurl'],
       ]);
-      expectFromHtml('<link REL="stylesheet" href="http://someurl">').toEqual([
+      expectFromHtml('<link REL="stylesheet" href="https://someurl">').toEqual([
         ['Element', 'link'],
         ['TextAttribute', 'REL', 'stylesheet'],
         ['TextAttribute', 'href', 'http://someurl'],
