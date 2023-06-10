@@ -167,6 +167,9 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
         convertAst(ast.trueExp, cpl),
         convertAst(ast.falseExp, cpl),
     );
+  } else if (ast instanceof e.NonNullAssert) {
+    // A non-null assertion shouldn't impact generated instructions, so we can just drop it.
+    return convertAst(ast.expression, cpl);
   } else if (ast instanceof e.BindingPipe) {
     return new ir.PipeBindingExpr(
         cpl.allocateXrefId(),
