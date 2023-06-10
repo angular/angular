@@ -179,6 +179,13 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
           ...ast.args.map(arg => convertAst(arg, cpl)),
         ],
     );
+  } else if (ast instanceof e.SafeKeyedRead) {
+    return new ir.SafeKeyedReadExpr(convertAst(ast.receiver, cpl), convertAst(ast.key, cpl));
+  } else if (ast instanceof e.SafePropertyRead) {
+    return new ir.SafePropertyReadExpr(convertAst(ast.receiver, cpl), ast.name);
+  } else if (ast instanceof e.SafeCall) {
+    return new ir.SafeInvokeFunctionExpr(
+        convertAst(ast.receiver, cpl), ast.args.map(a => convertAst(a, cpl)));
   } else {
     throw new Error(`Unhandled expression type: ${ast.constructor.name}`);
   }
