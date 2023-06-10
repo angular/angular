@@ -96,7 +96,7 @@ and a path to an `expected` file (relative to the test case).
 The `generated` file is checked to see if it "matches" the `expected` file. The matching is
 resilient to whitespace and variable name changes.
 
-If no `files` property is provided, the default is a a collection of objects `{expected, generated}`,
+If no `files` property is provided, the default is a collection of objects `{expected, generated}`,
 where `expected` and `generated` are computed by taking each path in the `inputFiles` collection
 and replacing the `.ts` extension with `.js`.
 
