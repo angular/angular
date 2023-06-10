@@ -59,7 +59,7 @@ There are two types of content in the documentation:
 API docs are generated directly from the source code.
 The source code is contained in TypeScript files, located in the `angular/packages` folder.
 Each API item may have a preceding comment, which contains JSDoc style tags and content.
-The content is written in markdown. To generate docs, each package's files need to be explicitly included in the [packages/BUILD.bazel](../packages/BUILD.bazel) file under the `files_for_docgen` target.
+The content is written in markdown. To create docs, each package's files need to be explicitly included in the [packages/BUILD.bazel](../packages/BUILD.bazel) file under the `files_for_docgen` target.
 
 * **Other content**: guides, tutorials, and other marketing material.
 All other content is written using markdown in text files, located in the `angular/aio/content` folder.

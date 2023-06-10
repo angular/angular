@@ -84,7 +84,7 @@ Collect a set of styles in an animation state, and give the state a name, such a
 
 Let's create a new `open-close` component to animate with simple transitions.
 
-Run the following command in terminal to generate the component:
+Run the following command in terminal to create the component:
 
 <code-example format="shell" language="shell">
 
