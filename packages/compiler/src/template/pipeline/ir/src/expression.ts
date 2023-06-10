@@ -19,10 +19,10 @@ import type {UpdateOp} from './ops/update';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression =
-    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
-    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
-    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr;
+export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
+    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
+    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
+    SafeKeyedReadExpr|SafeInvokeFunctionExpr|AssignTemporaryExpr|ReadTemporaryExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -499,6 +499,11 @@ export class SafePropertyReadExpr extends ExpressionBase {
     super();
   }
 
+  // An alias for name, which allows other logic to handle property reads and keyed reads together.
+  get index() {
+    return this.name;
+  }
+
   override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
 
   override isEquivalent(): boolean {
@@ -602,6 +607,66 @@ export class SafeTernaryExpr extends ExpressionBase {
 
   override clone(): SafeTernaryExpr {
     return new SafeTernaryExpr(this.guard.clone(), this.expr.clone());
+  }
+}
+
+export class AssignTemporaryExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.AssignTemporaryExpr;
+
+  public name: string|null = null;
+
+  constructor(public expr: o.Expression, public xref: XrefId) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {
+    this.expr = transformExpressionsInExpression(this.expr, transform, flags);
+  }
+
+  override clone(): AssignTemporaryExpr {
+    const a = new AssignTemporaryExpr(this.expr, this.xref);
+    a.name = this.name;
+    return a;
+  }
+}
+
+export class ReadTemporaryExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.ReadTemporaryExpr;
+
+  public name: string|null = null;
+
+  constructor(public xref: XrefId) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(): boolean {
+    return this.xref === this.xref;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
+      void {}
+
+  override clone(): ReadTemporaryExpr {
+    const r = new ReadTemporaryExpr(this.xref);
+    r.name = this.name;
+    return r;
   }
 }
 
@@ -743,6 +808,10 @@ export function transformExpressionsInStatement(
     stmt.expr = transformExpressionsInExpression(stmt.expr, transform, flags);
   } else if (stmt instanceof o.ReturnStatement) {
     stmt.value = transformExpressionsInExpression(stmt.value, transform, flags);
+  } else if (stmt instanceof o.DeclareVarStmt) {
+    if (stmt.value !== undefined) {
+      stmt.value = transformExpressionsInExpression(stmt.value, transform, flags);
+    }
   } else {
     throw new Error(`Unhandled statement kind: ${stmt.constructor.name}`);
   }

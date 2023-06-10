@@ -187,6 +187,16 @@ export enum ExpressionKind {
    * An intermediate expression that will be expanded from a safe read into an explicit ternary.
    */
   SafeTernaryExpr,
+
+  /**
+   * An assignment to a temporary variable.
+   */
+  AssignTemporaryExpr,
+
+  /**
+   * A reference to a temporary variable.
+   */
+  ReadTemporaryExpr,
 }
 
 /**
