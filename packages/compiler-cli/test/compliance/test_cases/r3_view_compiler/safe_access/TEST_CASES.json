@@ -20,6 +20,23 @@
       "skipForTemplatePipeline": true
     },
     {
+      "description": "should handle deep safe property reads inside templates",
+      "inputFiles": [
+        "safe_access_deep.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_deep_template.js",
+              "generated": "safe_access_deep.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should handle safe method calls inside templates",
       "inputFiles": [
         "safe_method_call.ts"
