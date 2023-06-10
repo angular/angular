@@ -131,16 +131,22 @@ export interface StylePropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnS
    * Expression which is bound to the property.
    */
   expression: o.Expression;
+
+  /**
+   * The unit of the expression value.
+   */
+  unit: string|null;
 }
 
 /** Create a `StylePropOp`. */
 export function createStylePropOp(
-    xref: XrefId, name: string, expression: o.Expression): StylePropOp {
+    xref: XrefId, name: string, expression: o.Expression, unit: string|null): StylePropOp {
   return {
     kind: OpKind.StyleProp,
     target: xref,
     name,
     expression,
+    unit,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,

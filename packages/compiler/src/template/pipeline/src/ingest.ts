@@ -252,7 +252,7 @@ function ingestBindings(
 function ingestPropertyBinding(
     view: ViewCompilation, xref: ir.XrefId,
     bindingKind: ir.ElementAttributeKind.Binding|ir.ElementAttributeKind.Template,
-    {name, value, type}: t.BoundAttribute): void {
+    {name, value, type, unit}: t.BoundAttribute): void {
   if (value instanceof e.ASTWithSource) {
     value = value.ast;
   }
@@ -286,7 +286,7 @@ function ingestPropertyBinding(
         if (bindingKind !== ir.ElementAttributeKind.Binding) {
           throw Error('Unexpected style binding on ng-template');
         }
-        view.update.push(ir.createStylePropOp(xref, name, convertAst(value, view.tpl)));
+        view.update.push(ir.createStylePropOp(xref, name, convertAst(value, view.tpl), unit));
         break;
       default:
         // TODO: implement remaining binding types.

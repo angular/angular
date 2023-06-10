@@ -140,11 +140,12 @@ export function property(name: string, expression: o.Expression): ir.UpdateOp {
   ]);
 }
 
-export function styleProp(name: string, expression: o.Expression): ir.UpdateOp {
-  return call(Identifiers.styleProp, [
-    o.literal(name),
-    expression,
-  ]);
+export function styleProp(name: string, expression: o.Expression, unit: string|null): ir.UpdateOp {
+  const args = [o.literal(name), expression];
+  if (unit !== null) {
+    args.push(o.literal(unit));
+  }
+  return call(Identifiers.styleProp, args);
 }
 
 export function styleMap(expression: o.Expression): ir.UpdateOp {
