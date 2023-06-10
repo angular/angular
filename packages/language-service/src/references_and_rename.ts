@@ -276,7 +276,7 @@ export class RenameBuilder {
           if (!isDirectRenameContext(renameRequest)) {
             // Discard any non-template results for non-direct renames. We should only rename
             // template results + the name/selector/alias `ts.Expression`. The other results
-            // will be the the `ts.Identifier` of the transform method (pipe rename) or the
+            // will be the `ts.Identifier` of the transform method (pipe rename) or the
             // directive class (selector rename).
             continue;
           }
