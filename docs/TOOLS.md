@@ -85,14 +85,13 @@ profiles will be nested under "Change Detection".
 
 #### Interpreting the numbers
 
-In a properly-designed application repeated attempts to detect changes without
-any user actions should result in no changes to be applied on the UI. It is
-also desirable to have the cost of a user action be proportional to the amount
-of UI changes required. For example, popping up a menu with 5 items should be
-vastly faster than rendering a table of 500 rows and 10 columns. Therefore,
-change detection with no UI updates should be as fast as possible. Ideally the
-number printed by the profiler should be well below the length of a single
-animation frame (16ms). A good rule of thumb is to keep it under 3ms.
+In a well-designed app, if there are no user actions, repeated change detection 
+should not change the UI. The cost of a user action should be proportional to 
+the amount of UI changes required. For example, showing a menu with 5 items 
+should be much faster than rendering a table with 500 rows and 10 columns. 
+Change detection with no UI updates should be as fast as possible. Ideally, 
+the profiler should show a number well below 16 milliseconds, and a good rule of
+thumb is to keep it under 3 milliseconds.
 
 #### Investigating slow change detection
 
