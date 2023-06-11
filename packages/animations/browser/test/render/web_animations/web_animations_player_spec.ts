@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {DOMAnimation} from '../../../src/render/web_animations/dom_animation';
 import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player';
 
 {
@@ -91,7 +90,7 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
   });
 }
 
-class MockDomAnimation implements DOMAnimation {
+class MockDomAnimation implements Animation {
   log: string[] = [];
   cancel(): void {
     this.log.push('cancel');
@@ -105,9 +104,53 @@ class MockDomAnimation implements DOMAnimation {
   finish(): void {
     this.log.push('finish');
   }
-  onfinish: Function = () => {};
-  position: number = 0;
   currentTime: number = 0;
+
+  // Other properties to ensure conformnce to interface
+  effect: AnimationEffect|null = null;
+  finished: Promise<Animation> = Promise.resolve({} as any);
+  id: string = '';
+  oncancel: ((this: Animation, ev: AnimationPlaybackEvent) => any)|null = null;
+  onfinish: ((this: Animation, ev: AnimationPlaybackEvent) => any)|null = null;
+  onremove: ((this: Animation, ev: Event) => any)|null = null;
+  pending: boolean = false;
+  playState: AnimationPlayState = 'running';
+  playbackRate: number = 0;
+  ready: Promise<Animation> = Promise.resolve({} as any);
+  replaceState: AnimationReplaceState = 'active';
+  startTime: number|null = null;
+  timeline: AnimationTimeline|null = null;
+  commitStyles(): void {
+    throw new Error('Method not implemented.');
+  }
+  persist(): void {
+    throw new Error('Method not implemented.');
+  }
+  reverse(): void {
+    throw new Error('Method not implemented.');
+  }
+  updatePlaybackRate(playbackRate: number): void {
+    throw new Error('Method not implemented.');
+  }
+  removeEventListener<K extends keyof AnimationEventMap>(
+      type: K, listener: (this: Animation, ev: AnimationEventMap[K]) => any,
+      options?: boolean|EventListenerOptions|undefined): void;
+  removeEventListener(
+      type: string, listener: EventListenerOrEventListenerObject,
+      options?: boolean|EventListenerOptions|undefined): void;
+  removeEventListener(type: unknown, listener: unknown, options?: unknown): void {
+    throw new Error('Method not implemented.');
+  }
+  dispatchEvent(event: Event): boolean;
+  dispatchEvent(event: Event): boolean;
+  dispatchEvent(event: unknown): boolean {
+    throw new Error('Method not implemented.');
+  }
+  removeAllListeners?(eventName?: string|undefined): void {
+    throw new Error('Method not implemented.');
+  }
+  eventListeners?(eventName?: string|undefined): EventListenerOrEventListenerObject[] {
+    throw new Error('Method not implemented.');
+  }
   addEventListener(eventName: string, handler: (event: any) => any): any {}
-  dispatchEvent(eventName: string): any {}
 }
