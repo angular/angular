@@ -22,16 +22,6 @@ import {childNodesAsList, hasClass, hasStyle, isCommentNode} from './browser_uti
  */
 export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
   /**
-   * Expect the value to be a `Promise`.
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * {@example testing/ts/matchers.ts region='toBePromise'}
-   */
-  toBePromise(): boolean;
-
-  /**
    * Expect the value to be an instance of a class.
    *
    * @usageNotes
@@ -82,16 +72,6 @@ export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
   toImplement(expected: any): boolean;
 
   /**
-   * Expect an exception to contain the given error text.
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * {@example testing/ts/matchers.ts region='toContainError'}
-   */
-  toContainError(expected: any): boolean;
-
-  /**
    * Expect a component of the given type to show.
    */
   toContainComponent(expectedComponentType: Type<any>, expectationFailOutput?: any): boolean;
@@ -132,20 +112,6 @@ export const expect: <T = any>(actual: T) => NgMatchers<T> = _global.expect;
 
 _global.beforeEach(function() {
   jasmine.addMatchers({
-    toBePromise: function() {
-      return {
-        compare: function(actual: any) {
-          const pass = typeof actual === 'object' && typeof actual.then === 'function';
-          return {
-            pass: pass,
-            get message() {
-              return 'Expected ' + actual + ' to be a promise';
-            }
-          };
-        }
-      };
-    },
-
     toBeAnInstanceOf: function() {
       return {
         compare: function(actual: any, expectedClass: any) {
@@ -210,20 +176,6 @@ _global.beforeEach(function() {
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
                       CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${
                   expectedValueStr}"`;
-            }
-          };
-        }
-      };
-    },
-
-    toContainError: function() {
-      return {
-        compare: function(actual: any, expectedText: any) {
-          const errorMessage = actual.toString();
-          return {
-            pass: errorMessage.indexOf(expectedText) > -1,
-            get message() {
-              return 'Expected ' + errorMessage + ' to contain ' + expectedText;
             }
           };
         }
