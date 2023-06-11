@@ -404,7 +404,7 @@ describe('integration tests', function() {
         const fixture = TestBed.createComponent(MyComp);
 
         expect(fixture.debugElement.children[0].children[0].references!['alice'])
-            .toBeAnInstanceOf(ChildComp);
+            .toBeInstanceOf(ChildComp);
       });
 
       it('should assign a directive to a ref-', () => {
@@ -414,7 +414,7 @@ describe('integration tests', function() {
         const fixture = TestBed.createComponent(MyComp);
 
         expect(fixture.debugElement.children[0].children[0].references!['localdir'])
-            .toBeAnInstanceOf(ExportDir);
+            .toBeInstanceOf(ExportDir);
       });
 
       it('should assign a directive to a ref when it has multiple exportAs names', () => {
@@ -426,9 +426,9 @@ describe('integration tests', function() {
 
         const fixture = TestBed.createComponent(MyComp);
         expect(fixture.debugElement.children[0].references!['x'])
-            .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
+            .toBeInstanceOf(DirectiveWithMultipleExportAsNames);
         expect(fixture.debugElement.children[0].references!['y'])
-            .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
+            .toBeInstanceOf(DirectiveWithMultipleExportAsNames);
       });
 
       it('should make the assigned component accessible in property bindings, even if they were declared before the component',
@@ -454,8 +454,8 @@ describe('integration tests', function() {
 
         const alice = pEl.children[0].references!['alice'];
         const bob = pEl.children[1].references!['bob'];
-        expect(alice).toBeAnInstanceOf(ChildComp);
-        expect(bob).toBeAnInstanceOf(ChildComp);
+        expect(alice).toBeInstanceOf(ChildComp);
+        expect(bob).toBeInstanceOf(ChildComp);
         expect(alice).not.toBe(bob);
       });
 
@@ -465,7 +465,7 @@ describe('integration tests', function() {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        expect(fixture.debugElement.children[0].references!['alice']).toBeAnInstanceOf(ChildComp);
+        expect(fixture.debugElement.children[0].references!['alice']).toBeInstanceOf(ChildComp);
       });
 
       it('should assign the element instance to a user-defined variable', () => {
@@ -496,7 +496,7 @@ describe('integration tests', function() {
         const fixture = TestBed.createComponent(MyComp);
 
         expect(fixture.debugElement.children[0].children[0].references!['superAlice'])
-            .toBeAnInstanceOf(ChildComp);
+            .toBeInstanceOf(ChildComp);
       });
     });
 
@@ -653,7 +653,7 @@ describe('integration tests', function() {
 
       const childComponent =
           fixture.debugElement.children[0].children[0].children[0].references!['child'];
-      expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
+      expect(childComponent.myHost).toBeInstanceOf(SomeDirective);
     });
 
     it('should create a component that injects an @Host through viewcontainer directive', () => {
@@ -675,7 +675,7 @@ describe('integration tests', function() {
       const tc = fixture.debugElement.children[0].children[0].children[0];
 
       const childComponent = tc.references!['child'];
-      expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
+      expect(childComponent.myHost).toBeInstanceOf(SomeDirective);
     });
 
     it('should support events via EventEmitter on regular elements', waitForAsync(() => {
@@ -1207,7 +1207,7 @@ describe('integration tests', function() {
       const fixture = TestBed.createComponent(MyComp);
 
       const comp = fixture.debugElement.children[0].children[0].references!['consuming'];
-      expect(comp.injectable).toBeAnInstanceOf(InjectableService);
+      expect(comp.injectable).toBeInstanceOf(InjectableService);
     });
 
     it('should support viewProviders', () => {
@@ -1223,7 +1223,7 @@ describe('integration tests', function() {
       const fixture = TestBed.createComponent(DirectiveProvidingInjectableInView);
 
       const comp = fixture.debugElement.children[0].references!['consuming'];
-      expect(comp.injectable).toBeAnInstanceOf(InjectableService);
+      expect(comp.injectable).toBeInstanceOf(InjectableService);
     });
 
     it('should support unbounded lookup', () => {
@@ -1251,7 +1251,7 @@ describe('integration tests', function() {
       const fixture = TestBed.createComponent(MyComp);
 
       const comp = fixture.debugElement.children[0].children[0].references!['dir'];
-      expect(comp.directive.injectable).toBeAnInstanceOf(InjectableService);
+      expect(comp.directive.injectable).toBeInstanceOf(InjectableService);
     });
 
     it('should support the event-bus scenario', () => {

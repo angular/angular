@@ -250,7 +250,7 @@ describe('View injector', () => {
     it('should instantiate directives that have no dependencies', () => {
       TestBed.configureTestingModule({declarations: [SimpleDirective]});
       const el = createComponent('<div simpleDirective>');
-      expect(el.children[0].injector.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
+      expect(el.children[0].injector.get(SimpleDirective)).toBeInstanceOf(SimpleDirective);
     });
 
     it('should instantiate directives that depend on another directive', () => {
@@ -259,8 +259,8 @@ describe('View injector', () => {
 
       const d = el.children[0].injector.get(NeedsDirective);
 
-      expect(d).toBeAnInstanceOf(NeedsDirective);
-      expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
+      expect(d).toBeInstanceOf(NeedsDirective);
+      expect(d.dependency).toBeInstanceOf(SimpleDirective);
     });
 
     it('should support useValue with different values', () => {
@@ -665,8 +665,8 @@ describe('View injector', () => {
          const el = createComponent('<div simpleDirective><div needsDirective></div></div>');
          const d = el.children[0].children[0].injector.get(NeedsDirective);
 
-         expect(d).toBeAnInstanceOf(NeedsDirective);
-         expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
+         expect(d).toBeInstanceOf(NeedsDirective);
+         expect(d.dependency).toBeInstanceOf(SimpleDirective);
        }));
 
     it('should throw when a dependency cannot be resolved', fakeAsync(() => {
@@ -689,7 +689,7 @@ describe('View injector', () => {
           SimpleComponent, {set: {template: '<div needsComponentFromHost></div>'}});
       const el = createComponent('<div simpleComponent></div>');
       const d = el.children[0].children[0].injector.get(NeedsComponentFromHost);
-      expect(d.dependency).toBeAnInstanceOf(SimpleComponent);
+      expect(d.dependency).toBeInstanceOf(SimpleComponent);
     });
 
     it('should not instantiate directives that depend on other directives on the host element', () => {
@@ -898,7 +898,7 @@ describe('View injector', () => {
       TestBed.configureTestingModule(
           {declarations: [SimpleDirective, DuplicatePipe1, DuplicatePipe2]});
       const el = createComponent('<div [simpleDirective]="true | duplicatePipe"></div>');
-      expect(el.children[0].injector.get(SimpleDirective).value).toBeAnInstanceOf(DuplicatePipe2);
+      expect(el.children[0].injector.get(SimpleDirective).value).toBeInstanceOf(DuplicatePipe2);
     });
 
     it('should inject ChangeDetectorRef into pipes', () => {
@@ -920,12 +920,12 @@ describe('View injector', () => {
       const impurePipe2 = el.children[1].injector.get(SimpleDirective).value;
       const impurePipe3 = el.children[2].injector.get(SimpleDirective).value;
       const impurePipe4 = el.children[3].injector.get(SimpleDirective).value;
-      expect(impurePipe1).toBeAnInstanceOf(ImpurePipe);
-      expect(impurePipe2).toBeAnInstanceOf(ImpurePipe);
+      expect(impurePipe1).toBeInstanceOf(ImpurePipe);
+      expect(impurePipe2).toBeInstanceOf(ImpurePipe);
       expect(impurePipe2).not.toBe(impurePipe1);
-      expect(impurePipe3).toBeAnInstanceOf(ImpurePipe);
+      expect(impurePipe3).toBeInstanceOf(ImpurePipe);
       expect(impurePipe3).not.toBe(impurePipe1);
-      expect(impurePipe4).toBeAnInstanceOf(ImpurePipe);
+      expect(impurePipe4).toBeInstanceOf(ImpurePipe);
       expect(impurePipe4).not.toBe(impurePipe1);
     });
   });

@@ -261,7 +261,7 @@ const bTok = new InjectionToken<string>('b');
 
         it('should be able to create any declared components', () => {
           const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-          expect(compFixture.componentInstance).toBeAnInstanceOf(CompUsingModuleDirectiveAndPipe);
+          expect(compFixture.componentInstance).toBeInstanceOf(CompUsingModuleDirectiveAndPipe);
         });
 
         it('should use set up directives and pipes', () => {
@@ -274,7 +274,7 @@ const bTok = new InjectionToken<string>('b');
 
         it('should use set up imported modules',
            inject([SomeLibModule], (libModule: SomeLibModule) => {
-             expect(libModule).toBeAnInstanceOf(SomeLibModule);
+             expect(libModule).toBeInstanceOf(SomeLibModule);
            }));
 
         describe('provided schemas', () => {
@@ -290,7 +290,7 @@ const bTok = new InjectionToken<string>('b');
           it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
              () => {
                expect(TestBed.createComponent(ComponentUsingInvalidProperty).componentInstance)
-                   .toBeAnInstanceOf(ComponentUsingInvalidProperty);
+                   .toBeInstanceOf(ComponentUsingInvalidProperty);
              });
         });
       });
@@ -311,7 +311,7 @@ const bTok = new InjectionToken<string>('b');
 
         it('should use set up library modules',
            withModule(moduleConfig).inject([SomeLibModule], (libModule: SomeLibModule) => {
-             expect(libModule).toBeAnInstanceOf(SomeLibModule);
+             expect(libModule).toBeInstanceOf(SomeLibModule);
            }));
       });
 
@@ -376,7 +376,7 @@ const bTok = new InjectionToken<string>('b');
           });
           it('should work', () => {
             expect(TestBed.createComponent(SomeOtherComponent).componentInstance)
-                .toBeAnInstanceOf(SomeOtherComponent);
+                .toBeInstanceOf(SomeOtherComponent);
           });
         });
 
@@ -532,7 +532,7 @@ const bTok = new InjectionToken<string>('b');
             TestBed.overrideProvider(aTok, {useValue: 'mockValue'});
 
             expect(TestBed.inject(aTok)).toBe('mockValue');
-            expect(someModule).toBeAnInstanceOf(SomeModule);
+            expect(someModule).toBeInstanceOf(SomeModule);
           });
 
           describe('injecting eager providers into an eager overwritten provider', () => {
@@ -764,7 +764,7 @@ const bTok = new InjectionToken<string>('b');
                               .createComponent(MyComponent);
           fixture.detectChanges();
           expect(fixture.nativeElement).toHaveText('Hello world!');
-          expect(testDir).toBeAnInstanceOf(TestDir);
+          expect(testDir).toBeInstanceOf(TestDir);
           expect(testDir!.test).toBe('some prop');
         });
 

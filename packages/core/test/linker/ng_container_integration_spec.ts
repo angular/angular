@@ -56,7 +56,7 @@ describe('<ng-container>', function() {
     fixture.detectChanges();
 
     const dir = fixture.debugElement.children[0].injector.get(TextDirective);
-    expect(dir).toBeAnInstanceOf(TextDirective);
+    expect(dir).toBeInstanceOf(TextDirective);
     expect(dir.text).toEqual('container');
   });
 

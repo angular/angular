@@ -53,7 +53,7 @@ class SportsCar extends Car {
          const child = Injector.create({providers: [TurboEngine.PROVIDER], parent});
 
          const carFromChild = child.get<Car>(Car);
-         expect(carFromChild.engine).toBeAnInstanceOf(Engine);
+         expect(carFromChild.engine).toBeInstanceOf(Engine);
        });
 
     it('should create new instance in a child injector', () => {
@@ -64,7 +64,7 @@ class SportsCar extends Car {
       const engineFromChild = child.get(Engine);
 
       expect(engineFromParent).not.toBe(engineFromChild);
-      expect(engineFromChild).toBeAnInstanceOf(TurboEngine);
+      expect(engineFromChild).toBeInstanceOf(TurboEngine);
     });
 
     it('should give access to parent', () => {
@@ -80,7 +80,7 @@ class SportsCar extends Car {
       const inj = Injector.create({providers: [Engine.PROVIDER]});
       const childInj = Injector.create({providers: [Car.PROVIDER], parent: inj});
       const car = childInj.get<Car>(Car);
-      expect(car).toBeAnInstanceOf(Car);
+      expect(car).toBeInstanceOf(Car);
       expect(car.engine).toBe(inj.get(Engine));
     });
   });
@@ -95,7 +95,7 @@ class SportsCar extends Car {
           ]
         });
 
-        expect(inj.get(Car)).toBeAnInstanceOf(Car);
+        expect(inj.get(Car)).toBeInstanceOf(Car);
       });
 
       it('should throw when not requested provider on self', () => {
@@ -152,7 +152,7 @@ class SportsCar extends Car {
           parent
         });
 
-        expect(child.get<Car>(Car).engine).toBeAnInstanceOf(Engine);
+        expect(child.get<Car>(Car).engine).toBeInstanceOf(Engine);
       });
     });
   });
@@ -181,8 +181,8 @@ class SportsCar extends Car {
           }
         ]
       });
-      expect(injector.get(String)).toBeAnInstanceOf(Engine);
-      expect(injector.get(BrokenEngine)).toBeAnInstanceOf(Engine);
+      expect(injector.get(String)).toBeInstanceOf(Engine);
+      expect(injector.get(BrokenEngine)).toBeInstanceOf(Engine);
     });
 
     it('should support overriding factory dependencies with dependency annotations', () => {
@@ -193,7 +193,7 @@ class SportsCar extends Car {
         ]
       });
 
-      expect(injector.get('token')).toBeAnInstanceOf(Engine);
+      expect(injector.get('token')).toBeInstanceOf(Engine);
     });
   });
 

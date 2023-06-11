@@ -1583,7 +1583,7 @@ describe('styling', () => {
       fixture.detectChanges();
 
       const childDir = fixture.debugElement.query(By.directive(ChildDir)).injector.get(ChildDir);
-      expect(childDir.parent).toBeAnInstanceOf(TestDir);
+      expect(childDir.parent).toBeInstanceOf(TestDir);
       expect(testDirDiv.classList).not.toContain('with-button');
       expect(fixture.debugElement.nativeElement.textContent).toContain('Hello');
     });

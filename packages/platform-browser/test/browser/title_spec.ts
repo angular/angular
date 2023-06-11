@@ -58,7 +58,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     it('should inject Title service when using BrowserModule', () => {
-      expect(TestBed.inject(DependsOnTitle).title).toBeAnInstanceOf(Title);
+      expect(TestBed.inject(DependsOnTitle).title).toBeInstanceOf(Title);
     });
   });
 }

@@ -1617,7 +1617,7 @@ describe('acceptance integration tests', () => {
     fixture.detectChanges();
 
     expect(subInstance.dirs.length).toBe(1);
-    expect(subInstance.dirs.first).toBeAnInstanceOf(SomeDir);
+    expect(subInstance.dirs.first).toBeInstanceOf(SomeDir);
   });
 
   it('should not set inputs after destroy', () => {

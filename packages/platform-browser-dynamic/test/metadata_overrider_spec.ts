@@ -61,7 +61,7 @@ class OtherMetadata extends SomeMetadata implements OtherMetadataType {
       const oldInstance = new SomeMetadata({plainProp: 'somePlainProp', getterProp: 'someInput'});
       const newInstance = overrider.overrideMetadata(SomeMetadata, oldInstance, {});
       expect(newInstance).not.toBe(oldInstance);
-      expect(newInstance).toBeAnInstanceOf(SomeMetadata);
+      expect(newInstance).toBeInstanceOf(SomeMetadata);
       expect(newInstance).toEqual(oldInstance);
     });
 
