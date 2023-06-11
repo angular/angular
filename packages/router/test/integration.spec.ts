@@ -4130,7 +4130,7 @@ describe('Integration', () => {
            router.navigateByUrl('/b');
            advance(fixture);
 
-           expect(log[0].component).toBeAnInstanceOf(AdminComponent);
+           expect(log[0].component).toBeInstanceOf(AdminComponent);
          })));
 
       it('should not create a route state if navigation is canceled',
@@ -5708,15 +5708,15 @@ describe('Integration', () => {
 
          expect(pInj.get('moduleName')).toEqual('parent');
          expect(pInj.get('fromParent')).toEqual('from parent');
-         expect(pInj.get(Parent)).toBeAnInstanceOf(Parent);
+         expect(pInj.get(Parent)).toBeInstanceOf(Parent);
          expect(pInj.get('fromChild', null)).toEqual(null);
          expect(pInj.get(Child, null)).toEqual(null);
 
          expect(cInj.get('moduleName')).toEqual('child');
          expect(cInj.get('fromParent')).toEqual('from parent');
          expect(cInj.get('fromChild')).toEqual('from child');
-         expect(cInj.get(Parent)).toBeAnInstanceOf(Parent);
-         expect(cInj.get(Child)).toBeAnInstanceOf(Child);
+         expect(cInj.get(Parent)).toBeInstanceOf(Parent);
+         expect(cInj.get(Child)).toBeInstanceOf(Child);
          // The child module can not shadow the parent component
          expect(cInj.get('shadow')).toEqual('from parent component');
 
@@ -6712,7 +6712,7 @@ describe('Integration', () => {
          router.navigateByUrl('/c');
          advance(fixture);
          expect(location.path()).toEqual('/c');
-         expect(fixture.debugElement.children[1].componentInstance).toBeAnInstanceOf(UserCmp);
+         expect(fixture.debugElement.children[1].componentInstance).toBeInstanceOf(UserCmp);
          // We have still not encountered a route that should be reattached
          expect(router.routeReuseStrategy.retrieve).not.toHaveBeenCalled();
 

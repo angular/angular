@@ -22,16 +22,6 @@ import {childNodesAsList, hasClass, hasStyle, isCommentNode} from './browser_uti
  */
 export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
   /**
-   * Expect the value to be an instance of a class.
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * {@example testing/ts/matchers.ts region='toBeAnInstanceOf'}
-   */
-  toBeAnInstanceOf(expected: any): boolean;
-
-  /**
    * Expect the element to have exactly the given text.
    *
    * @usageNotes
@@ -112,20 +102,6 @@ export const expect: <T = any>(actual: T) => NgMatchers<T> = _global.expect;
 
 _global.beforeEach(function() {
   jasmine.addMatchers({
-    toBeAnInstanceOf: function() {
-      return {
-        compare: function(actual: any, expectedClass: any) {
-          const pass = typeof actual === 'object' && actual instanceof expectedClass;
-          return {
-            pass: pass,
-            get message() {
-              return 'Expected ' + actual + ' to be an instance of ' + expectedClass;
-            }
-          };
-        }
-      };
-    },
-
     toHaveText: function() {
       return {
         compare: function(actual: any, expectedText: string) {

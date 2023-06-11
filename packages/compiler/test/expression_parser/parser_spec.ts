@@ -221,7 +221,7 @@ describe('parser', () => {
 
       it('should parse an EmptyExpr with a correct span for a trailing empty argument', () => {
         const ast = parseAction('fn(1, )').ast as Call;
-        expect(ast.args[1]).toBeAnInstanceOf(EmptyExpr);
+        expect(ast.args[1]).toBeInstanceOf(EmptyExpr);
         const sourceSpan = (ast.args[1] as EmptyExpr).sourceSpan;
         expect([sourceSpan.start, sourceSpan.end]).toEqual([5, 6]);
       });
@@ -743,8 +743,8 @@ describe('parser', () => {
         ['key', 'value|pipe', false],
       ]);
       const {value} = bindings[0];
-      expect(value).toBeAnInstanceOf(ASTWithSource);
-      expect((value as ASTWithSource).ast).toBeAnInstanceOf(BindingPipe);
+      expect(value).toBeInstanceOf(ASTWithSource);
+      expect((value as ASTWithSource).ast).toBeInstanceOf(BindingPipe);
     });
 
     describe('"let" binding', () => {
@@ -992,7 +992,7 @@ describe('parser', () => {
     it('should produce an empty expression ast for empty interpolations', () => {
       const parsed = parseInterpolation('{{}}')!.ast as Interpolation;
       expect(parsed.expressions.length).toBe(1);
-      expect(parsed.expressions[0]).toBeAnInstanceOf(EmptyExpr);
+      expect(parsed.expressions[0]).toBeInstanceOf(EmptyExpr);
     });
 
     it('should parse conditional expression', () => {

@@ -34,7 +34,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
 
     it('should work with inject()',
        fakeAsync(inject([EventManager], (eventManager: EventManager) => {
-         expect(eventManager).toBeAnInstanceOf(EventManager);
+         expect(eventManager).toBeInstanceOf(EventManager);
        })));
 
     it('should throw on nested calls', () => {

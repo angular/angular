@@ -629,7 +629,7 @@ describe('providers', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.foo).toBeAnInstanceOf(SomeProviderImpl);
+      expect(fixture.componentInstance.foo).toBeInstanceOf(SomeProviderImpl);
     });
 
 
@@ -654,7 +654,7 @@ describe('providers', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.foo).toBeAnInstanceOf(SomeProviderImpl);
+      expect(fixture.componentInstance.foo).toBeInstanceOf(SomeProviderImpl);
     });
   });
 

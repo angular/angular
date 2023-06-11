@@ -569,7 +569,7 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
 
-    expect(hello.componentInstance).toBeAnInstanceOf(HelloWorld);
+    expect(hello.componentInstance).toBeInstanceOf(HelloWorld);
   });
 
   it('should give the ability to query by css', () => {
@@ -578,7 +578,7 @@ describe('TestBed', () => {
 
     const greetingByCss = hello.debugElement.query(By.css('greeting-cmp'));
     expect(greetingByCss.nativeElement).toHaveText('Hello World!');
-    expect(greetingByCss.componentInstance).toBeAnInstanceOf(GreetingCmp);
+    expect(greetingByCss.componentInstance).toBeInstanceOf(GreetingCmp);
   });
 
   it('should give the ability to trigger the change detection', () => {
@@ -654,7 +654,7 @@ describe('TestBed', () => {
     hello.detectChanges();
 
     const greetingByDirective = hello.debugElement.query(By.directive(GreetingCmp));
-    expect(greetingByDirective.componentInstance).toBeAnInstanceOf(GreetingCmp);
+    expect(greetingByDirective.componentInstance).toBeInstanceOf(GreetingCmp);
   });
 
   it('should allow duplicate NgModule registrations with the same id', () => {
@@ -1716,7 +1716,7 @@ describe('TestBed', () => {
          fixture.detectChanges();
 
          let childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
-         expect(childCmpInstance.componentInstance).toBeAnInstanceOf(ChildCmp);
+         expect(childCmpInstance.componentInstance).toBeInstanceOf(ChildCmp);
          expect(fixture.nativeElement.textContent).toBe('Child comp');
 
          TestBed.resetTestingModule();
