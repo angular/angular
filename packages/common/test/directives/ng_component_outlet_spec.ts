@@ -51,8 +51,8 @@ describe('insert/remove', () => {
 
        fixture.detectChanges();
        expect(fixture.nativeElement).toHaveText('foo');
-       expect(fixture.componentInstance.cmpRef).toBeAnInstanceOf(ComponentRef);
-       expect(fixture.componentInstance.cmpRef!.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(fixture.componentInstance.cmpRef).toBeInstanceOf(ComponentRef);
+       expect(fixture.componentInstance.cmpRef!.instance).toBeInstanceOf(InjectedComponent);
      }));
 
 
@@ -103,8 +103,8 @@ describe('insert/remove', () => {
 
        fixture.detectChanges();
        let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
-       expect(cmpRef).toBeAnInstanceOf(ComponentRef);
-       expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(cmpRef).toBeInstanceOf(ComponentRef);
+       expect(cmpRef.instance).toBeInstanceOf(InjectedComponent);
        expect(cmpRef.instance.testToken).toBe(uniqueValue);
      }));
 
@@ -117,8 +117,8 @@ describe('insert/remove', () => {
        fixture.componentInstance.currentComponent = InjectedComponent;
        fixture.detectChanges();
        let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
-       expect(cmpRef).toBeAnInstanceOf(ComponentRef);
-       expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(cmpRef).toBeInstanceOf(ComponentRef);
+       expect(cmpRef.instance).toBeInstanceOf(InjectedComponent);
        expect(cmpRef.instance.testToken).toBeNull();
      }));
 

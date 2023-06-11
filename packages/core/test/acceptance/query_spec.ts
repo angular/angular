@@ -45,9 +45,9 @@ describe('query logic', () => {
          `;
       const fixture = initWithTemplate(QueryComp, template);
       const comp = fixture.componentInstance;
-      expect(comp.viewChild).toBeAnInstanceOf(SimpleCompA);
-      expect(comp.viewChildren.first).toBeAnInstanceOf(SimpleCompA);
-      expect(comp.viewChildren.last).toBeAnInstanceOf(SimpleCompB);
+      expect(comp.viewChild).toBeInstanceOf(SimpleCompA);
+      expect(comp.viewChildren.first).toBeInstanceOf(SimpleCompA);
+      expect(comp.viewChildren.last).toBeInstanceOf(SimpleCompB);
     });
 
     it('should return ElementRef when HTML element is labeled and retrieved', () => {
@@ -56,8 +56,8 @@ describe('query logic', () => {
     `;
       const fixture = initWithTemplate(QueryComp, template);
       const comp = fixture.componentInstance;
-      expect(comp.viewChild).toBeAnInstanceOf(ElementRef);
-      expect(comp.viewChildren.first).toBeAnInstanceOf(ElementRef);
+      expect(comp.viewChild).toBeInstanceOf(ElementRef);
+      expect(comp.viewChildren.first).toBeInstanceOf(ElementRef);
     });
 
     it('should return ElementRefs when HTML elements are labeled and retrieved', () => {
@@ -68,11 +68,11 @@ describe('query logic', () => {
       const fixture = initWithTemplate(QueryComp, template);
       const comp = fixture.componentInstance;
 
-      expect(comp.viewChild).toBeAnInstanceOf(ElementRef);
+      expect(comp.viewChild).toBeInstanceOf(ElementRef);
       expect(comp.viewChild.nativeElement).toBe(fixture.debugElement.children[0].nativeElement);
 
-      expect(comp.viewChildren.first).toBeAnInstanceOf(ElementRef);
-      expect(comp.viewChildren.last).toBeAnInstanceOf(ElementRef);
+      expect(comp.viewChildren.first).toBeInstanceOf(ElementRef);
+      expect(comp.viewChildren.last).toBeInstanceOf(ElementRef);
       expect(comp.viewChildren.length).toBe(2);
     });
 
@@ -82,7 +82,7 @@ describe('query logic', () => {
     `;
       const fixture = initWithTemplate(QueryComp, template);
       const comp = fixture.componentInstance;
-      expect(comp.viewChildren.first).toBeAnInstanceOf(TemplateRef);
+      expect(comp.viewChildren.first).toBeInstanceOf(TemplateRef);
     });
 
     it('should support selecting InjectionToken', () => {
@@ -105,12 +105,12 @@ describe('query logic', () => {
             `;
       const fixture = initWithTemplate(QueryComp, template);
       const comp = fixture.componentInstance;
-      expect(comp.viewChild).toBeAnInstanceOf(TemplateRef);
+      expect(comp.viewChild).toBeInstanceOf(TemplateRef);
       expect(comp.viewChild.elementRef.nativeElement)
           .toBe(fixture.debugElement.childNodes[0].nativeNode);
 
-      expect(comp.viewChildren.first).toBeAnInstanceOf(TemplateRef);
-      expect(comp.viewChildren.last).toBeAnInstanceOf(TemplateRef);
+      expect(comp.viewChildren.first).toBeInstanceOf(TemplateRef);
+      expect(comp.viewChildren.last).toBeInstanceOf(TemplateRef);
       expect(comp.viewChildren.length).toBe(2);
     });
 
@@ -119,7 +119,7 @@ describe('query logic', () => {
       const component = fixture.componentInstance;
 
       // static ViewChild query should be set in creation mode, before CD runs
-      expect(component.textDir).toBeAnInstanceOf(TextDirective);
+      expect(component.textDir).toBeInstanceOf(TextDirective);
       expect(component.textDir.text).toEqual('');
       expect(component.setEvents).toEqual(['textDir set']);
 
@@ -140,7 +140,7 @@ describe('query logic', () => {
       const spans = fixture.nativeElement.querySelectorAll('span');
 
       // static ViewChild queries should be set in creation mode, before CD runs
-      expect(component.textDir).toBeAnInstanceOf(TextDirective);
+      expect(component.textDir).toBeInstanceOf(TextDirective);
       expect(component.textDir.text).toEqual('');
       expect(component.bar.nativeElement).toEqual(divs[1]);
 
@@ -166,8 +166,8 @@ describe('query logic', () => {
       const secondComponent = fixture.debugElement.children[1].injector.get(StaticViewQueryComp);
 
       // static ViewChild query should be set in creation mode, before CD runs
-      expect(firstComponent.textDir).toBeAnInstanceOf(TextDirective);
-      expect(secondComponent.textDir).toBeAnInstanceOf(TextDirective);
+      expect(firstComponent.textDir).toBeInstanceOf(TextDirective);
+      expect(secondComponent.textDir).toBeInstanceOf(TextDirective);
       expect(firstComponent.textDir.text).toEqual('');
       expect(secondComponent.textDir.text).toEqual('');
       expect(firstComponent.setEvents).toEqual(['textDir set']);
@@ -211,7 +211,7 @@ describe('query logic', () => {
 
       const fixture = TestBed.createComponent(SubComp);
       fixture.detectChanges();
-      expect(fixture.componentInstance.foo).toBeAnInstanceOf(ElementRef);
+      expect(fixture.componentInstance.foo).toBeInstanceOf(ElementRef);
     });
 
     it('should support ViewChild query inherited from undecorated grand superclasses', () => {
@@ -229,7 +229,7 @@ describe('query logic', () => {
 
       const fixture = TestBed.createComponent(SubComp);
       fixture.detectChanges();
-      expect(fixture.componentInstance.foo).toBeAnInstanceOf(ElementRef);
+      expect(fixture.componentInstance.foo).toBeInstanceOf(ElementRef);
     });
 
     it('should support ViewChildren query inherited from undecorated superclasses', () => {
@@ -255,7 +255,7 @@ describe('query logic', () => {
 
       const fixture = TestBed.createComponent(SubComp);
       fixture.detectChanges();
-      expect(fixture.componentInstance.foo).toBeAnInstanceOf(QueryList);
+      expect(fixture.componentInstance.foo).toBeInstanceOf(QueryList);
       expect(fixture.componentInstance.foo.length).toBe(2);
     });
 
@@ -284,7 +284,7 @@ describe('query logic', () => {
 
       const fixture = TestBed.createComponent(SubComp);
       fixture.detectChanges();
-      expect(fixture.componentInstance.foo).toBeAnInstanceOf(QueryList);
+      expect(fixture.componentInstance.foo).toBeInstanceOf(QueryList);
       expect(fixture.componentInstance.foo.length).toBe(2);
     });
 
@@ -379,8 +379,8 @@ describe('query logic', () => {
          `;
       const fixture = initWithTemplate(AppComp, template);
       const comp = fixture.debugElement.children[0].references['q'];
-      expect(comp.contentChild).toBeAnInstanceOf(SimpleCompA);
-      expect(comp.contentChildren.first).toBeAnInstanceOf(SimpleCompA);
+      expect(comp.contentChild).toBeInstanceOf(SimpleCompA);
+      expect(comp.contentChildren.first).toBeInstanceOf(SimpleCompA);
     });
 
     it('should support selecting InjectionToken', () => {
@@ -403,9 +403,9 @@ describe('query logic', () => {
               `;
       const fixture = initWithTemplate(AppComp, template);
       const comp = fixture.debugElement.children[0].references['q'];
-      expect(comp.contentChild).toBeAnInstanceOf(SimpleCompA);
-      expect(comp.contentChildren.first).toBeAnInstanceOf(SimpleCompA);
-      expect(comp.contentChildren.last).toBeAnInstanceOf(SimpleCompB);
+      expect(comp.contentChild).toBeInstanceOf(SimpleCompA);
+      expect(comp.contentChildren.first).toBeInstanceOf(SimpleCompA);
+      expect(comp.contentChildren.last).toBeInstanceOf(SimpleCompB);
       expect(comp.contentChildren.length).toBe(2);
     });
 
@@ -418,7 +418,7 @@ describe('query logic', () => {
        `;
       const fixture = initWithTemplate(AppComp, template);
       const comp = fixture.debugElement.children[0].references['q'];
-      expect(comp.contentChildren.first).toBeAnInstanceOf(ElementRef);
+      expect(comp.contentChildren.first).toBeInstanceOf(ElementRef);
     });
 
     it('should return ElementRefs when HTML elements are labeled and retrieved', () => {
@@ -432,11 +432,11 @@ describe('query logic', () => {
       const firstChild = fixture.debugElement.children[0];
       const comp = firstChild.references['q'];
 
-      expect(comp.contentChild).toBeAnInstanceOf(ElementRef);
+      expect(comp.contentChild).toBeInstanceOf(ElementRef);
       expect(comp.contentChild.nativeElement).toBe(firstChild.children[0].nativeElement);
 
-      expect(comp.contentChildren.first).toBeAnInstanceOf(ElementRef);
-      expect(comp.contentChildren.last).toBeAnInstanceOf(ElementRef);
+      expect(comp.contentChildren.first).toBeInstanceOf(ElementRef);
+      expect(comp.contentChildren.last).toBeInstanceOf(ElementRef);
       expect(comp.contentChildren.length).toBe(2);
     });
 
@@ -448,7 +448,7 @@ describe('query logic', () => {
      `;
       const fixture = initWithTemplate(AppComp, template);
       const comp = fixture.debugElement.children[0].references['q'];
-      expect(comp.contentChildren.first).toBeAnInstanceOf(TemplateRef);
+      expect(comp.contentChildren.first).toBeInstanceOf(TemplateRef);
     });
 
     it('should return TemplateRefs when templates are labeled and retrieved', () => {
@@ -462,11 +462,11 @@ describe('query logic', () => {
       const firstChild = fixture.debugElement.children[0];
       const comp = firstChild.references['q'];
 
-      expect(comp.contentChild).toBeAnInstanceOf(TemplateRef);
+      expect(comp.contentChild).toBeInstanceOf(TemplateRef);
       expect(comp.contentChild.elementRef.nativeElement).toBe(firstChild.childNodes[0].nativeNode);
 
-      expect(comp.contentChildren.first).toBeAnInstanceOf(TemplateRef);
-      expect(comp.contentChildren.last).toBeAnInstanceOf(TemplateRef);
+      expect(comp.contentChildren.first).toBeInstanceOf(TemplateRef);
+      expect(comp.contentChildren.last).toBeInstanceOf(TemplateRef);
       expect(comp.contentChildren.length).toBe(2);
     });
 
@@ -483,7 +483,7 @@ describe('query logic', () => {
          const component = fixture.debugElement.children[0].injector.get(StaticContentQueryComp);
 
          // static ContentChild query should be set in creation mode, before CD runs
-         expect(component.textDir).toBeAnInstanceOf(TextDirective);
+         expect(component.textDir).toBeInstanceOf(TextDirective);
          expect(component.textDir.text).toEqual('');
          expect(component.setEvents).toEqual(['textDir set']);
 
@@ -516,7 +516,7 @@ describe('query logic', () => {
       const spans = fixture.nativeElement.querySelectorAll('span');
 
       // static ContentChild queries should be set in creation mode, before CD runs
-      expect(component.textDir).toBeAnInstanceOf(TextDirective);
+      expect(component.textDir).toBeInstanceOf(TextDirective);
       expect(component.textDir.text).toEqual('');
       expect(component.bar.nativeElement).toEqual(divs[1]);
 
@@ -543,7 +543,7 @@ describe('query logic', () => {
       const component = fixture.debugElement.children[0].injector.get(StaticContentQueryDir);
 
       // static ContentChild query should be set in creation mode, before CD runs
-      expect(component.textDir).toBeAnInstanceOf(TextDirective);
+      expect(component.textDir).toBeInstanceOf(TextDirective);
       expect(component.textDir.text).toEqual('');
       expect(component.setEvents).toEqual(['textDir set']);
 
@@ -576,8 +576,8 @@ describe('query logic', () => {
       const secondComponent = fixture.debugElement.children[1].injector.get(StaticContentQueryComp);
 
       // static ContentChild query should be set in creation mode, before CD runs
-      expect(firstComponent.textDir).toBeAnInstanceOf(TextDirective);
-      expect(secondComponent.textDir).toBeAnInstanceOf(TextDirective);
+      expect(firstComponent.textDir).toBeInstanceOf(TextDirective);
+      expect(secondComponent.textDir).toBeInstanceOf(TextDirective);
       expect(firstComponent.textDir.text).toEqual('');
       expect(secondComponent.textDir.text).toEqual('');
       expect(firstComponent.setEvents).toEqual(['textDir set']);
@@ -619,7 +619,7 @@ describe('query logic', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(ElementRef);
+      expect(fixture.componentInstance.subComp.foo).toBeInstanceOf(ElementRef);
     });
 
     it('should support ContentChild query inherited from undecorated grand superclasses', () => {
@@ -642,7 +642,7 @@ describe('query logic', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(ElementRef);
+      expect(fixture.componentInstance.subComp.foo).toBeInstanceOf(ElementRef);
     });
 
     it('should support ContentChildren query inherited from undecorated superclasses', () => {
@@ -674,7 +674,7 @@ describe('query logic', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(QueryList);
+      expect(fixture.componentInstance.subComp.foo).toBeInstanceOf(QueryList);
       expect(fixture.componentInstance.subComp.foo.length).toBe(2);
     });
 
@@ -709,7 +709,7 @@ describe('query logic', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(QueryList);
+      expect(fixture.componentInstance.subComp.foo).toBeInstanceOf(QueryList);
       expect(fixture.componentInstance.subComp.foo.length).toBe(2);
     });
 
@@ -1089,7 +1089,7 @@ describe('query logic', () => {
   it('should generate an empty QueryList for root components', () => {
     const fixture = TestBed.createComponent(QueryComp);
     fixture.detectChanges();
-    expect(fixture.componentInstance.contentChildren).toBeAnInstanceOf(QueryList);
+    expect(fixture.componentInstance.contentChildren).toBeInstanceOf(QueryList);
     expect(fixture.componentInstance.contentChildren.length).toBe(0);
   });
 
@@ -1214,7 +1214,7 @@ describe('query logic', () => {
 
       fixture.detectChanges();
       expect(cmptWithQuery.targets.length).toBe(1);
-      expect(cmptWithQuery.targets.first).toBeAnInstanceOf(TargetDir);
+      expect(cmptWithQuery.targets.first).toBeInstanceOf(TargetDir);
     });
 
     it('should match directives inside nested <ng-container>', () => {
@@ -1250,7 +1250,7 @@ describe('query logic', () => {
 
       fixture.detectChanges();
       expect(cmptWithQuery.targets.length).toBe(1);
-      expect(cmptWithQuery.targets.first).toBeAnInstanceOf(TargetDir);
+      expect(cmptWithQuery.targets.first).toBeInstanceOf(TargetDir);
     });
 
     it('should cross child ng-container when query is declared on ng-container', () => {
@@ -1284,7 +1284,7 @@ describe('query logic', () => {
 
       fixture.detectChanges();
       expect(cmptWithQuery.targets.length).toBe(1);
-      expect(cmptWithQuery.targets.first).toBeAnInstanceOf(TargetDir);
+      expect(cmptWithQuery.targets.first).toBeInstanceOf(TargetDir);
     });
 
     it('should match nodes when using structural directives (*syntax) on <ng-container>', () => {
@@ -1318,7 +1318,7 @@ describe('query logic', () => {
 
       fixture.detectChanges();
       expect(cmptWithQuery.dirTargets.length).toBe(1);
-      expect(cmptWithQuery.dirTargets.first).toBeAnInstanceOf(TargetDir);
+      expect(cmptWithQuery.dirTargets.first).toBeInstanceOf(TargetDir);
       expect(cmptWithQuery.localRefsTargets.length).toBe(1);
       expect(isElementRefLike(cmptWithQuery.localRefsTargets.first)).toBeTruthy();
     });
@@ -1403,7 +1403,7 @@ describe('query logic', () => {
 
       const qList = fixture.componentInstance.query!;
       expect(qList.length).toBe(1);
-      expect(qList.first).toBeAnInstanceOf(OtherChild);
+      expect(qList.first).toBeInstanceOf(OtherChild);
     });
 
     it('should not add results to query if a requested token cant be read', () => {
@@ -2390,7 +2390,7 @@ describe('query logic', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.queryResults.length).toBe(1);
-      expect(fixture.componentInstance.queryResults.first).toBeAnInstanceOf(WithMultiProvider);
+      expect(fixture.componentInstance.queryResults.first).toBeInstanceOf(WithMultiProvider);
     });
 
     it('should flatten multi-provider results when crossing ng-template', () => {
@@ -2421,8 +2421,8 @@ describe('query logic', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.queryResults.length).toBe(2);
-      expect(fixture.componentInstance.queryResults.first).toBeAnInstanceOf(WithMultiProvider);
-      expect(fixture.componentInstance.queryResults.last).toBeAnInstanceOf(WithMultiProvider);
+      expect(fixture.componentInstance.queryResults.first).toBeInstanceOf(WithMultiProvider);
+      expect(fixture.componentInstance.queryResults.last).toBeInstanceOf(WithMultiProvider);
     });
 
     it('should allow undefined provider value in a [View/Content]Child queries', () => {
@@ -2452,7 +2452,7 @@ describe('query logic', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.group).toBeAnInstanceOf(GroupDir);
+      expect(fixture.componentInstance.group).toBeInstanceOf(GroupDir);
     });
 
     it('should allow null / undefined provider value in a [View/Content]Children queries', () => {
@@ -2494,7 +2494,7 @@ describe('query logic', () => {
 
       const groups = queryList.toArray();
       expect(groups[0]).toBeNull();
-      expect(groups[1]).toBeAnInstanceOf(GroupDir);
+      expect(groups[1]).toBeInstanceOf(GroupDir);
       expect(groups[2]).toBeUndefined();
     });
   });
@@ -2516,7 +2516,7 @@ describe('query logic', () => {
       TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      expect(fixture.componentInstance.token).toBeAnInstanceOf(TextTokenDirective);
+      expect(fixture.componentInstance.token).toBeInstanceOf(TextTokenDirective);
     });
 
     it('should give precedence to local reference if both a reference and a string injection token provider match a ViewChild query',
@@ -2529,7 +2529,7 @@ describe('query logic', () => {
          TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
          const fixture = TestBed.createComponent(App);
          fixture.detectChanges();
-         expect(fixture.componentInstance.token).toBeAnInstanceOf(ElementRef);
+         expect(fixture.componentInstance.token).toBeInstanceOf(ElementRef);
        });
 
     it('should match string injection token in a ViewChildren query', () => {
@@ -2544,7 +2544,7 @@ describe('query logic', () => {
 
       const tokens = fixture.componentInstance.tokens;
       expect(tokens.length).toBe(1);
-      expect(tokens.first).toBeAnInstanceOf(TextTokenDirective);
+      expect(tokens.first).toBeInstanceOf(TextTokenDirective);
     });
 
     it('should match both string injection token and local reference inside a ViewChildren query',
@@ -2578,7 +2578,7 @@ describe('query logic', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.queryComp.token).toBeAnInstanceOf(TextTokenDirective);
+      expect(fixture.componentInstance.queryComp.token).toBeInstanceOf(TextTokenDirective);
     });
 
     it('should give precedence to local reference if both a reference and a string injection token provider match a ContentChild query',
@@ -2597,7 +2597,7 @@ describe('query logic', () => {
          const fixture = TestBed.createComponent(App);
          fixture.detectChanges();
 
-         expect(fixture.componentInstance.queryComp.token).toBeAnInstanceOf(ElementRef);
+         expect(fixture.componentInstance.queryComp.token).toBeInstanceOf(ElementRef);
        });
 
     it('should match string injection token in a ContentChildren query', () => {
@@ -2617,7 +2617,7 @@ describe('query logic', () => {
 
       const tokens = fixture.componentInstance.queryComp.tokens;
       expect(tokens.length).toBe(1);
-      expect(tokens.first).toBeAnInstanceOf(TextTokenDirective);
+      expect(tokens.first).toBeInstanceOf(TextTokenDirective);
     });
 
     it('should match both string injection token and local reference inside a ContentChildren query',
@@ -2650,7 +2650,7 @@ describe('query logic', () => {
       TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-      expect(fixture.componentInstance.token).toBeAnInstanceOf(TextTokenDirective);
+      expect(fixture.componentInstance.token).toBeInstanceOf(TextTokenDirective);
     });
 
     it('should match string token specified through the `read` option of a content query', () => {
@@ -2668,7 +2668,7 @@ describe('query logic', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.queryComp.token).toBeAnInstanceOf(TextTokenDirective);
+      expect(fixture.componentInstance.queryComp.token).toBeInstanceOf(TextTokenDirective);
     });
   });
 });
