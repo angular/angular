@@ -83,23 +83,6 @@ const _global = <any>(typeof window === 'undefined' ? global : window);
  */
 export const expect: <T = any>(actual: T) => NgMatchers<T> = _global.expect;
 
-
-// Some Map polyfills don't polyfill Map.toString correctly, which
-// gives us bad error messages in tests.
-// The only way to do this in Jasmine is to monkey patch a method
-// to the object :-(
-(Map as any).prototype['jasmineToString'] = function() {
-  const m = this;
-  if (!m) {
-    return '' + m;
-  }
-  const res: any[] = [];
-  m.forEach((v: any, k: any) => {
-    res.push(`${String(k)}:${String(v)}`);
-  });
-  return `{ ${res.join(',')} }`;
-};
-
 _global.beforeEach(function() {
   jasmine.addMatchers({
     toHaveText: function() {
