@@ -3,7 +3,8 @@
   "schematics": {
     "ng-add": {
       "description": "Add my library to the project.",
-      "factory": "./ng-add/index#ngAdd"
+      "factory": "./ng-add/index#ngAdd",
+      "schema": "./ng-add/schema.json"
     }
   }
 }

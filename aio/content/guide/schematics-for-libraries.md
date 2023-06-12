@@ -44,11 +44,7 @@ The following steps define this type of schematic.
 
     <code-example header="projects/my-lib/schematics/ng-add/index.ts (ng-add Rule Factory)" path="schematics-for-libraries/projects/my-lib/schematics/ng-add/index.ts"></code-example>
 
-The only step needed to provide initial `ng add` support is to trigger an installation task using the `SchematicContext`.
-The task uses the user's preferred package manager to add the library to the project's `package.json` configuration file, and install it in the project's `node_modules` directory.
-
-In this example, the function receives the current `Tree` and returns it without any modifications.
-If you need to, do additional setup when your package is installed, such as generating files, updating configuration, or any other initial setup your library requires.
+The Angular CLI will install the latest version of the library automatically, and this example is taking it a step further by adding the `MyLibModule` to the root of the application. The `addRootImport` function accepts a callback that needs to return a code block. You can write any code inside of the string tagged with the `code` function and any external symbol have to be wrapped with the `external` function to ensure that the appropriate import statements are generated.
 
 ### Define dependency type
 
