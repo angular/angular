@@ -7,6 +7,7 @@
  */
 
 import * as o from '../../../../../output/output_ast';
+import {ElementAttributeKind} from '../element';
 import {OpKind} from '../enums';
 import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT} from '../traits';
@@ -17,7 +18,7 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  * An operation usable on the update side of the IR.
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|InterpolatePropertyOp|
-    InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
+    AttributeOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -85,15 +86,23 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
    * Expression which is bound to the property.
    */
   expression: o.Expression;
+
+  /**
+   * The kind of binding represented by this op, either a template binding or a normal binding.
+   */
+  bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding;
 }
 
 /**
  * Create a `PropertyOp`.
  */
-export function createPropertyOp(xref: XrefId, name: string, expression: o.Expression): PropertyOp {
+export function createPropertyOp(
+    xref: XrefId, bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding,
+    name: string, expression: o.Expression): PropertyOp {
   return {
     kind: OpKind.Property,
     target: xref,
+    bindingKind,
     name,
     expression,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
@@ -102,7 +111,48 @@ export function createPropertyOp(xref: XrefId, name: string, expression: o.Expre
   };
 }
 
+/**
+ * A logical operation representing setting an attribute  on an element in the update IR.
+ */
+export interface AttributeOp extends Op<UpdateOp> {
+  kind: OpKind.Attribute;
 
+  /**
+   * The `XrefId` of the template-like element the attribte will belong to.
+   */
+  target: XrefId;
+
+  /**
+   * The kind of attribute.
+   */
+  attributeKind: ElementAttributeKind;
+
+  /**
+   * The name of the attribute.
+   */
+  name: string;
+
+  /**
+   * The value of the attribute.
+   */
+  value: o.Expression;
+}
+
+/**
+ * Create an `AttributeOp`.
+ */
+export function createAttributeOp(
+    target: XrefId, attributeKind: ElementAttributeKind, name: string,
+    value: o.Expression): AttributeOp {
+  return {
+    kind: OpKind.Attribute,
+    target,
+    attributeKind,
+    name,
+    value,
+    ...NEW_OP,
+  };
+}
 
 /**
  * A logical operation representing binding an interpolation to a property in the update IR.
@@ -134,17 +184,23 @@ export interface InterpolatePropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
    * Conceptually interwoven in between the `strings`.
    */
   expressions: o.Expression[];
+
+  /**
+   * The kind of binding represented by this op, either a template binding or a normal binding.
+   */
+  bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding;
 }
 
 /**
  * Create a `InterpolateProperty`.
  */
 export function createInterpolatePropertyOp(
-    xref: XrefId, name: string, strings: string[],
-    expressions: o.Expression[]): InterpolatePropertyOp {
+    xref: XrefId, bindingKind: ElementAttributeKind.Template|ElementAttributeKind.Binding,
+    name: string, strings: string[], expressions: o.Expression[]): InterpolatePropertyOp {
   return {
     kind: OpKind.InterpolateProperty,
     target: xref,
+    bindingKind,
     name,
     strings,
     expressions,

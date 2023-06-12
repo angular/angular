@@ -467,6 +467,11 @@ export function transformExpressionsInOp(
     case OpKind.Statement:
       transformExpressionsInStatement(op.statement, transform, flags);
       break;
+    case OpKind.Attribute:
+      if (op.value) {
+        transformExpressionsInExpression(op.value, transform, flags);
+      }
+      break;
     case OpKind.Variable:
       op.initializer = transformExpressionsInExpression(op.initializer, transform, flags);
       break;

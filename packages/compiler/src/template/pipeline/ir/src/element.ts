@@ -87,7 +87,10 @@ export class ElementAttributes {
     this.known.add(name);
     const array = this.arrayFor(kind);
     array.push(...getAttributeNameLiterals(name));
-    if (value !== null) {
+    if (kind === ElementAttributeKind.Attribute || kind === ElementAttributeKind.Style) {
+      if (value === null) {
+        throw Error('Attribute & style element attributes must have a value');
+      }
       array.push(value);
     }
   }
