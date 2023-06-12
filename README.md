@@ -1,6 +1,6 @@
-<h1 align="center">Angular - The modern web developer's platform</h1>
+<h1 style="text-align: center">Angular - The modern web developer's platform</h1>
 
-<p align="center">
+<p style="text-align: center">
   <img src="aio/src/assets/images/logos/angular/angular.png" alt="angular-logo" width="120px" height="120px"/>
   <br>
   <i>Angular is a development platform for building mobile and desktop web applications
@@ -8,12 +8,12 @@
   <br>
 </p>
 
-<p align="center">
+<p style="text-align: center">
   <a href="https://www.angular.io"><strong>www.angular.io</strong></a>
   <br>
 </p>
 
-<p align="center">
+<p style="text-align: center"">
   <a href="CONTRIBUTING.md">Contributing Guidelines</a>
   ·
   <a href="https://github.com/angular/angular/issues">Submit an Issue</a>
@@ -23,7 +23,7 @@
   <br>
 </p>
 
-<p align="center">
+<p style="text-align: center">
   <a href="https://circleci.com/gh/angular/workflows/angular/tree/main">
     <img src="https://img.shields.io/circleci/build/github/angular/angular/main.svg?logo=circleci&logoColor=fff&label=CircleCI" alt="CI status" />
   </a>&nbsp;
@@ -35,7 +35,7 @@
   </a>
 </p>
 
-<p align="center">
+<p style="text-align: center">
   <a href="https://app.circleci.com/insights/github/angular/angular/workflows/default_workflow?branch=main">
     <img src="https://dl.circleci.com/insights-snapshot/gh/angular/angular/main/default_workflow/badge.svg" alt="InsightsSnapshot" />
   </a>
