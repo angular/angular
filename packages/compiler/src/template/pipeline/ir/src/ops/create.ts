@@ -10,7 +10,7 @@ import * as o from '../../../../../output/output_ast';
 import {ElementAttributes} from '../element';
 import {OpKind} from '../enums';
 import {Op, OpList, XrefId} from '../operations';
-import {ConsumesSlotOpTrait, TRAIT_CONSUMES_SLOT, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
+import {ConsumesSlotOpTrait, ConsumesVarsTrait, TRAIT_CONSUMES_SLOT, TRAIT_CONSUMES_VARS, TRAIT_USES_SLOT_INDEX, UsesSlotIndexTrait} from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
@@ -313,7 +313,7 @@ export function createPipeOp(xref: XrefId, name: string): PipeOp {
 /**
  * TODO
  */
-export interface PropertyCreateOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+export interface PropertyCreateOp extends Op<CreateOp>, ConsumesSlotOpTrait, ConsumesVarsTrait {
   kind: OpKind.PropertyCreate;
 
   /**
@@ -344,6 +344,7 @@ export function createPropertyCreateOp(
     name,
     expression,
     ...TRAIT_CONSUMES_SLOT,
+    ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
   };
 }
