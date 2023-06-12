@@ -16,13 +16,18 @@ function customElementsSupport() {
 }
 customElementsSupport.message = 'window.customElements';
 
+function supportsFormAssociatedElements() {
+  return 'attachInternals' in HTMLElement.prototype;
+}
+
 describe('customElements', function() {
   const testZone = Zone.current.fork({name: 'test'});
   const bridge = {
     connectedCallback: () => {},
     disconnectedCallback: () => {},
     adoptedCallback: () => {},
-    attributeChangedCallback: () => {}
+    attributeChangedCallback: () => {},
+    formAssociatedCallback: () => {}
   };
 
   class TestCustomElement extends HTMLElement {
@@ -51,8 +56,17 @@ describe('customElements', function() {
     }
   }
 
+  class TestFormAssociatedCustomElement extends HTMLElement {
+    static formAssociated = true;
+
+    formAssociatedCallback() {
+      return bridge.formAssociatedCallback();
+    }
+  }
+
   testZone.run(() => {
     customElements.define('x-test', TestCustomElement);
+    customElements.define('x-test-form-associated', TestFormAssociatedCustomElement);
   });
 
   let elt;
@@ -62,6 +76,7 @@ describe('customElements', function() {
     bridge.disconnectedCallback = () => {};
     bridge.attributeChangedCallback = () => {};
     bridge.adoptedCallback = () => {};
+    bridge.formAssociatedCallback = () => {};
   });
 
   afterEach(() => {
@@ -104,5 +119,21 @@ describe('customElements', function() {
     elt = document.createElement('x-test');
     document.body.appendChild(elt);
     elt.setAttribute('attr1', 'value1');
+  });
+
+  it('should work with formAssociatedCallback', function(done) {
+    if (!supportsFormAssociatedElements()) {
+      return;
+    }
+
+    bridge.formAssociatedCallback = function() {
+      expect(Zone.current.name).toBe(testZone.name);
+      done();
+    };
+
+    elt = document.createElement('x-test-form-associated');
+    const form = document.createElement('form');
+    form.appendChild(elt);
+    document.body.appendChild(form);
   });
 });
