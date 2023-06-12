@@ -6,8 +6,7 @@ import {NgModule, Component} from '@angular/core';
   jit: true
 })
 export class LazyComponent {
-  constructor() {
-  }
+
 }
 
 @NgModule({
