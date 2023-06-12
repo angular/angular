@@ -414,6 +414,10 @@ declare global {
      *   disconnectedCallback() {}
      *   attributeChangedCallback(attrName, oldVal, newVal) {}
      *   adoptedCallback() {}
+     *   formAssociatedCallback(form) {}
+     *   formDisabledCallback(isDisabled) {}
+     *   formResetCallback() {}
+     *   formStateRestoreCallback(state, reason) {}
      * }
      *
      * const zone = Zone.fork({name: 'myZone'});
