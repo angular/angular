@@ -273,7 +273,7 @@ bootstrapApplication(PhotoAppComponent, {
 });
 ```
 
-The new bootstrap API gives us back the means of configuring “module injectors” without using `NgModule`s. In this sense, the “module” part of the name is no longer relevant and we’ve decided to introduce a new term: “environment injectors”. 
+The new bootstrap API gives us back the means of configuring “module injectors” without using `NgModule`s. In this sense, the “module” part of the name is no longer relevant, and we’ve decided to introduce a new term: “environment injectors”. 
 
 Environment injectors can be configured using one of the following:
 
@@ -320,7 +320,7 @@ class DatePickerComponent {
 
 @NgModule({
         declarations: [DatePickerComponent],
-        exports: [DatePickerComponent]
+        exports: [DatePickerComponent],
         providers: [CalendarService],
 })
 class DatePickerModule {
@@ -338,7 +338,7 @@ class DateModalComponent {
 
 In the above example, the component `DateModalComponent` is standalone - it can be consumed directly and has no NgModule which needs to be imported in order to use it. However, `DateModalComponent` has a dependency, the `DatePickerComponent,` which is imported via its NgModule (the `DatePickerModule`). This NgModule may declare providers (in this case: `CalendarService`) which are required for the `DatePickerComponent` to function correctly.
 
-When Angular creates a standalone component, it needs to know that the current injector has all of the necessary services for the standalone component's dependencies, including those based on NgModules. To guarantee that, in some cases Angular will create a new "standalone injector" as a child of the current environment injector. Today, this happens for all bootstrapped standalone components: it will be a child of the root environment injector. The same rule applies to the dynamically created (for example, by the router or the `ViewContainerRef` API) standalone components. 
+When Angular creates a standalone component, it needs to know that the current injector has all the necessary services for the standalone component's dependencies, including those based on NgModules. To guarantee that, in some cases Angular will create a new "standalone injector" as a child of the current environment injector. Today, this happens for all bootstrapped standalone components: it will be a child of the root environment injector. The same rule applies to the dynamically created (for example, by the router or the `ViewContainerRef` API) standalone components. 
 
 A separate standalone injector is created to ensure that providers imported by a standalone component are “isolated” from the rest of the application. This lets us think of standalone components as truly self-contained pieces that can’t “leak” their implementation details to the rest of the application.
 
