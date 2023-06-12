@@ -12,33 +12,35 @@ import * as ir from '../ir';
 
 import type {ComponentCompilation, ViewCompilation} from './compilation';
 
+import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
+import {phaseAttributeExtraction} from './phases/attribute_extraction';
+import {phaseChaining} from './phases/chaining';
 import {phaseConstCollection} from './phases/const_collection';
 import {phaseEmptyElements} from './phases/empty_elements';
 import {phaseGenerateAdvance} from './phases/generate_advance';
-import {phaseReify} from './phases/reify';
-import {phaseSlotAllocation} from './phases/slot_allocation';
-import {phaseVarCounting} from './phases/var_counting';
-import {phaseNaming} from './phases/naming';
-import {phaseLocalRefs} from './phases/local_refs';
 import {phaseGenerateVariables} from './phases/generate_variables';
-import {phaseResolveNames} from './phases/resolve_names';
-import {phaseResolveContexts} from './phases/resolve_contexts';
-import {phaseVariableOptimization} from './phases/variable_optimization';
-import {phaseChaining} from './phases/chaining';
+import {phaseLocalRefs} from './phases/local_refs';
+import {phaseNaming} from './phases/naming';
 import {phaseMergeNextContext} from './phases/next_context_merging';
 import {phaseNgContainer} from './phases/ng_container';
-import {phaseSaveRestoreView} from './phases/save_restore_view';
-import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
+import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
-import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
+import {phaseReify} from './phases/reify';
+import {phaseResolveContexts} from './phases/resolve_contexts';
+import {phaseResolveNames} from './phases/resolve_names';
+import {phaseSaveRestoreView} from './phases/save_restore_view';
+import {phaseSlotAllocation} from './phases/slot_allocation';
+import {phaseVarCounting} from './phases/var_counting';
+import {phaseVariableOptimization} from './phases/variable_optimization';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
  * processing, the compilation should be in a state where it can be emitted via `emitTemplateFn`.s
  */
 export function transformTemplate(cpl: ComponentCompilation): void {
+  phaseAttributeExtraction(cpl, true);
   phasePipeCreation(cpl);
   phasePipeVariadic(cpl);
   phasePureLiteralStructures(cpl);
