@@ -18,7 +18,7 @@ if (!USE_TEMPLATE_PIPELINE) {
 
 describe('dom property bindings in signal based components', () => {
   // TODO: this test should be passing but currently it doesn't since we are not propagating `vars`
-  xit('should bind to mapped property names', () => {
+  it('should bind to mapped property names', () => {
     @Component({
       signals: true,
       template: `<div [tabindex]="5"></div>`,
