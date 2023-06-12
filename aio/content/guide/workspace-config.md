@@ -390,7 +390,7 @@ You can mix simple and complex file references for styles and scripts.
 
 #### Style preprocessor options
 
-In Sass you can make use of the `includePaths` feature for both component and global styles. This allows you to add extra base paths that are checked for imports.
+In Sass, you can make use of the `includePaths` feature for both component and global styles. This allows you to add extra base paths that are checked for imports.
 
 To add paths, use the `stylePreprocessorOptions` option:
 
