@@ -15,6 +15,13 @@ import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {getUrl} from './url';
 
+interface ObservedImageState {
+  priority: boolean;
+  modified: boolean;
+  alreadyWarnedPriority: boolean;
+  alreadyWarnedModified: boolean;
+}
+
 /**
  * Observer that detects whether an image with `NgOptimizedImage`
  * is treated as a Largest Contentful Paint (LCP) element. If so,
@@ -28,9 +35,7 @@ import {getUrl} from './url';
 @Injectable({providedIn: 'root'})
 export class LCPImageObserver implements OnDestroy {
   // Map of full image URLs -> original `ngSrc` values.
-  private images = new Map<string, string>();
-  // Keep track of images for which `console.warn` was produced.
-  private alreadyWarned = new Set<string>();
+  private images = new Map<string, ObservedImageState>();
 
   private window: Window|null = null;
   private observer: PerformanceObserver|null = null;
@@ -65,19 +70,30 @@ export class LCPImageObserver implements OnDestroy {
       // Exclude `data:` and `blob:` URLs, since they are not supported by the directive.
       if (imgSrc.startsWith('data:') || imgSrc.startsWith('blob:')) return;
 
-      const imgNgSrc = this.images.get(imgSrc);
-      if (imgNgSrc && !this.alreadyWarned.has(imgSrc)) {
-        this.alreadyWarned.add(imgSrc);
+      const img = this.images.get(imgSrc);
+      if (!img) return;
+      if (!img.priority && !img.alreadyWarnedPriority) {
+        img.alreadyWarnedPriority = true;
         logMissingPriorityWarning(imgSrc);
+      }
+      if (img.modified && !img.alreadyWarnedModified) {
+        img.alreadyWarnedModified = true;
+        logModifiedWarning(imgSrc);
       }
     });
     observer.observe({type: 'largest-contentful-paint', buffered: true});
     return observer;
   }
 
-  registerImage(rewrittenSrc: string, originalNgSrc: string) {
+  registerImage(rewrittenSrc: string, originalNgSrc: string, isPriority: boolean) {
     if (!this.observer) return;
-    this.images.set(getUrl(rewrittenSrc, this.window!).href, originalNgSrc);
+    const newObservedImageState: ObservedImageState = {
+      priority: isPriority,
+      modified: false,
+      alreadyWarnedModified: false,
+      alreadyWarnedPriority: false
+    };
+    this.images.set(getUrl(rewrittenSrc, this.window!).href, newObservedImageState);
   }
 
   unregisterImage(rewrittenSrc: string) {
@@ -85,11 +101,20 @@ export class LCPImageObserver implements OnDestroy {
     this.images.delete(getUrl(rewrittenSrc, this.window!).href);
   }
 
+  updateImage(originalSrc: string, newSrc: string) {
+    const originalUrl = getUrl(originalSrc, this.window!).href;
+    const img = this.images.get(originalUrl);
+    if (img) {
+      img.modified = true;
+      this.images.set(getUrl(newSrc, this.window!).href, img);
+      this.images.delete(originalUrl);
+    }
+  }
+
   ngOnDestroy() {
     if (!this.observer) return;
     this.observer.disconnect();
     this.images.clear();
-    this.alreadyWarned.clear();
   }
 }
 
@@ -101,4 +126,14 @@ function logMissingPriorityWarning(ngSrc: string) {
           `element but was not marked "priority". This image should be marked ` +
           `"priority" in order to prioritize its loading. ` +
           `To fix this, add the "priority" attribute.`));
+}
+
+function logModifiedWarning(ngSrc: string) {
+  const directiveDetails = imgDirectiveDetails(ngSrc);
+  console.warn(formatRuntimeError(
+      RuntimeErrorCode.LCP_IMG_NGSRC_MODIFIED,
+      `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
+          `element and has had its "ngSrc" attribute modified. This can cause ` +
+          `slower loading performance. It is recommended not to modify the "ngSrc" ` +
+          `property on any image which could be the LCP element.`));
 }

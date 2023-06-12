@@ -15,6 +15,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
     // (undocumented)
+    LCP_IMG_NGSRC_MODIFIED = 2964,
+    // (undocumented)
     MISSING_BUILTIN_LOADER = 2962,
     // (undocumented)
     MISSING_NECESSARY_LOADER = 2963,

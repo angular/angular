@@ -642,9 +642,8 @@ describe('Image directive', () => {
     });
 
     const inputs = [
-      ['ngSrc', 'new-img.png'], ['width', 10], ['height', 20], ['priority', true], ['fill', true],
-      ['loading', true], ['sizes', '90vw'], ['disableOptimizedSrcset', true],
-      ['loaderParams', '{foo: "test1"}']
+      ['width', 10], ['height', 20], ['priority', true], ['fill', true], ['loading', true],
+      ['sizes', '90vw'], ['disableOptimizedSrcset', true], ['loaderParams', '{foo: "test1"}']
     ];
     inputs.forEach(([inputName, value]) => {
       it(`should throw if the \`${inputName}\` input changed after directive initialized the input`,
@@ -691,6 +690,35 @@ describe('Image directive', () => {
              fixture.detectChanges();
            }).toThrowError(new RegExp(expectedErrorMessage));
          });
+    });
+    it(`should not throw if ngSrc changed after directive is initialized`, () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `<img
+              [ngSrc]="ngSrc"
+              [width]="width"
+              [height]="height"
+              [loading]="loading"
+              [sizes]="sizes"
+            >`
+      })
+      class TestComponent {
+        width = 100;
+        height = 50;
+        ngSrc = 'img.png';
+        loading = false;
+        sizes = '100vw';
+      }
+
+      setupTestingModule({component: TestComponent});
+
+      // Initial render
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(() => {
+        fixture.componentInstance.ngSrc = 'newImg.png';
+        fixture.detectChanges();
+      }).not.toThrowError(new RegExp('was updated after initialization'));
     });
   });
 
@@ -1258,6 +1286,75 @@ describe('Image directive', () => {
          expect(imgs[0].src.trim()).toBe(`${IMG_BASE_URL}/img.png`);
          expect(imgs[1].src.trim()).toBe(`${IMG_BASE_URL}/img-2.png`);
        });
+
+    it('should use the image loader to update `src` if `ngSrc` updated', () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `<img
+           [ngSrc]="ngSrc"
+           width="300"
+           height="300"
+         >`
+      })
+      class TestComponent {
+        ngSrc = `img.png`;
+      }
+      const imageLoader = (config: ImageLoaderConfig) => `${IMG_BASE_URL}/${config.src}`;
+      setupTestingModule({imageLoader, component: TestComponent});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      let nativeElement = fixture.nativeElement as HTMLElement;
+      let imgs = nativeElement.querySelectorAll('img')!;
+      expect(imgs[0].src).toBe(`${IMG_BASE_URL}/img.png`);
+
+      fixture.componentInstance.ngSrc = 'updatedImg.png';
+      fixture.detectChanges();
+      expect(imgs[0].src).toBe(`${IMG_BASE_URL}/updatedImg.png`);
+    });
+
+    it('should use the image loader to update `srcset` if `ngSrc` updated', () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `<img
+           [ngSrc]="ngSrc"
+           width="300"
+           height="300"
+           sizes="100vw"
+         >`
+      })
+      class TestComponent {
+        ngSrc = `img.png`;
+      }
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const width = config.width ? `?w=${config.width}` : ``;
+        return `${IMG_BASE_URL}/${config.src}${width}`;
+      };
+      setupTestingModule({imageLoader, component: TestComponent});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      let nativeElement = fixture.nativeElement as HTMLElement;
+      let imgs = nativeElement.querySelectorAll('img')!;
+      expect(imgs[0].getAttribute('srcset'))
+          .toBe(`${IMG_BASE_URL}/img.png?w=640 640w, ${IMG_BASE_URL}/img.png?w=750 750w, ${
+              IMG_BASE_URL}/img.png?w=828 828w, ${IMG_BASE_URL}/img.png?w=1080 1080w, ${
+              IMG_BASE_URL}/img.png?w=1200 1200w, ${IMG_BASE_URL}/img.png?w=1920 1920w, ${
+              IMG_BASE_URL}/img.png?w=2048 2048w, ${IMG_BASE_URL}/img.png?w=3840 3840w`);
+
+      fixture.componentInstance.ngSrc = 'updatedImg.png';
+      nativeElement = fixture.nativeElement as HTMLElement;
+      imgs = nativeElement.querySelectorAll('img')!;
+      fixture.detectChanges();
+      expect(imgs[0].getAttribute('srcset'))
+          .toBe(`${IMG_BASE_URL}/updatedImg.png?w=640 640w, ${
+              IMG_BASE_URL}/updatedImg.png?w=750 750w, ${IMG_BASE_URL}/updatedImg.png?w=828 828w, ${
+              IMG_BASE_URL}/updatedImg.png?w=1080 1080w, ${
+              IMG_BASE_URL}/updatedImg.png?w=1200 1200w, ${
+              IMG_BASE_URL}/updatedImg.png?w=1920 1920w, ${
+              IMG_BASE_URL}/updatedImg.png?w=2048 2048w, ${
+              IMG_BASE_URL}/updatedImg.png?w=3840 3840w`);
+    });
 
     it('should pass absolute URLs defined in the `ngSrc` to custom image loaders provided via the `IMAGE_LOADER` token',
        () => {
