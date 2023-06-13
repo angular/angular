@@ -17,8 +17,7 @@
       ],
       "compilationModeFilter": [
         "full compile"
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

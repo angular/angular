@@ -13,8 +13,7 @@
             "class_binding.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should place initial, multi, singular and application followed by attribute class instructions in the template code in that order",
@@ -28,8 +27,7 @@
             "class_ordering.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not generate the styling apply instruction if there are only static style/class attributes",
@@ -43,8 +41,7 @@
             "static_bindings.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not create instructions for empty class bindings",
@@ -58,8 +55,7 @@
             "empty_class_bindings.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

@@ -27,8 +27,7 @@
             "local_reference_nested.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support local refs mixed with context assignments",
@@ -42,8 +41,7 @@
             "local_reference_and_context_variables.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should gen hooks with a few simple components",
@@ -69,8 +67,7 @@
             }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
