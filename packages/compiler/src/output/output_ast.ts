@@ -440,6 +440,11 @@ export class InvokeFunctionExpr extends Expression {
     super(type, sourceSpan);
   }
 
+  // An alias for fn, which allows other logic to handle calls and property reads together.
+  get receiver(): Expression {
+    return this.fn;
+  }
+
   override isEquivalent(e: Expression): boolean {
     return e instanceof InvokeFunctionExpr && this.fn.isEquivalent(e.fn) &&
         areAllEquivalent(this.args, e.args) && this.pure === e.pure;
@@ -915,6 +920,11 @@ export class ReadPropExpr extends Expression {
       public receiver: Expression, public name: string, type?: Type|null,
       sourceSpan?: ParseSourceSpan|null) {
     super(type, sourceSpan);
+  }
+
+  // An alias for name, which allows other logic to handle property reads and keyed reads together.
+  get index() {
+    return this.name;
   }
 
   override isEquivalent(e: Expression): boolean {
