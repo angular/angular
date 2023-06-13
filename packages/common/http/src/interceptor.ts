@@ -32,7 +32,7 @@ import {HttpEvent} from './response';
  *
  * @publicApi
  *
- * @see [HTTP Guide](guide/http#intercepting-requests-and-responses)
+ * @see [HTTP Guide](guide/http-intercept-requests-and-responses)
  *
  * @usageNotes
  *
@@ -70,7 +70,7 @@ export interface HttpInterceptor {
  *
  * @publicApi
  *
- * @see [HTTP Guide](guide/http#intercepting-requests-and-responses)
+ * @see [HTTP Guide](guide/http-intercept-requests-and-responses)
  */
 export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<unknown>>;
 
