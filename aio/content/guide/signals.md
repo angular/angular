@@ -223,7 +223,7 @@ effect(() => {
 });
 ```
 
-This example logs a message when _either_ `currentUser` or `counter` changes. However, if the effect should only run only when `currentUser` changes, then the read of `counter` is only incidental and changes to `counter` shouldn't log a new message.
+This example logs a message when _either_ `currentUser` or `counter` changes. However, if the effect should only run when `currentUser` changes, then the read of `counter` is only incidental and changes to `counter` shouldn't log a new message.
 
 You can prevent a signal read from being tracked by calling its getter with `untracked`:
 
