@@ -36,6 +36,7 @@ import {phaseSlotAllocation} from './phases/slot_allocation';
 import {phaseVarCounting} from './phases/var_counting';
 import {phaseVariableOptimization} from './phases/variable_optimization';
 import {phaseExpandSafeReads} from './phases/expand_safe_reads';
+import {phaseTemporaryVariables} from './phases/temporary_variables';
 
 /**
  * Run all transformation phases in the correct order against a `ComponentCompilation`. After this
@@ -53,7 +54,8 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseLocalRefs(cpl);
   phaseConstCollection(cpl);
   phaseNullishCoalescing(cpl);
-  phaseExpandSafeReads(cpl);
+  phaseExpandSafeReads(cpl, true);
+  phaseTemporaryVariables(cpl);
   phaseSlotAllocation(cpl);
   phaseVarCounting(cpl);
   phaseGenerateAdvance(cpl);

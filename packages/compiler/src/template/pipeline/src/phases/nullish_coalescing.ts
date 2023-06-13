@@ -20,16 +20,18 @@ export function phaseNullishCoalescing(cpl: ComponentCompilation): void {
           return expr;
         }
 
-        // TODO: We need to unconditionally emit a temporary variable to match
-        // TemplateDefinitionBuilder. (We could also emit one conditionally when not in
-        // compatibility mode.)
+        const assignment = new ir.AssignTemporaryExpr(expr.lhs.clone(), cpl.allocateXrefId());
+        const read = new ir.ReadTemporaryExpr(assignment.xref);
+
+        // TODO: When not in compatibility mode for TemplateDefinitionBuilder, we can just emit
+        // `t != null` instead of including an undefined check as well.
         return new o.ConditionalExpr(
             new o.BinaryOperatorExpr(
                 o.BinaryOperator.And,
-                new o.BinaryOperatorExpr(o.BinaryOperator.NotIdentical, expr.lhs, o.NULL_EXPR),
+                new o.BinaryOperatorExpr(o.BinaryOperator.NotIdentical, assignment, o.NULL_EXPR),
                 new o.BinaryOperatorExpr(
-                    o.BinaryOperator.NotIdentical, expr.lhs, new o.LiteralExpr(undefined))),
-            expr.lhs,
+                    o.BinaryOperator.NotIdentical, read, new o.LiteralExpr(undefined))),
+            read.clone(),
             expr.rhs,
         );
       }, ir.VisitorContextFlag.None);

@@ -212,6 +212,16 @@ export enum ExpressionKind {
    * An empty expression that will be stipped before generating the final output.
    */
   EmptyExpr,
+
+  /*
+   * An assignment to a temporary variable.
+   */
+  AssignTemporaryExpr,
+
+  /**
+   * A reference to a temporary variable.
+   */
+  ReadTemporaryExpr,
 }
 
 /**

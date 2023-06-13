@@ -37,6 +37,23 @@
       ]
     },
     {
+      "description": "should handle property reads requiring temporary variables",
+      "inputFiles": [
+        "safe_access_temporaries.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_temporaries_template.js",
+              "generated": "safe_access_temporaries.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should handle safe method calls inside templates",
       "inputFiles": [
         "safe_method_call.ts"
