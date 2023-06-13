@@ -41,8 +41,7 @@
             "animation_property_bindings.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate animation listeners",
@@ -56,8 +55,7 @@
             "animation_listeners.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate animation host binding and listener code for directives",

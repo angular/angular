@@ -69,8 +69,7 @@
             "temporary_variables.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple property bindings into a single instruction",
@@ -98,8 +97,7 @@
             "chain_multiple_bindings_mixed.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not add interpolated properties to the property instruction chain",
@@ -113,8 +111,7 @@
             "chain_bindings_with_interpolations.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain synthetic property bindings together with regular property bindings",
@@ -128,8 +125,7 @@
             "chain_synthetic_bindings.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple property bindings on an ng-template",

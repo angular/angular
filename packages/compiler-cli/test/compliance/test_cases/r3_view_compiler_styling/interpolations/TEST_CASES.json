@@ -13,8 +13,7 @@
             "class_interpolations.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate the proper update instructions for interpolated style properties",
@@ -28,8 +27,7 @@
             "style_properties.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate update instructions for interpolated style properties with a suffix",
@@ -43,8 +41,7 @@
             "style_binding_suffixed.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate update instructions for interpolated style properties with a sanitizer",
@@ -58,8 +55,7 @@
             "style_binding_sanitizer.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate update instructions for interpolated style properties with !important",
@@ -73,8 +69,7 @@
             "style_binding_important.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
