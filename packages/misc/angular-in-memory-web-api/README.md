@@ -158,7 +158,7 @@ The [tests](https://github.com/angular/angular/blob/main/packages/misc/angular-i
 are a good place to learn how to setup and use this in-memory web api library.
 
 See also the example source code in the official Angular.io documentation such as the
-[HttpClient](https://angular.io/guide/http) guide and the
+[HttpClient](https://angular.io/guide/understanding-communicating-with-http) guide and the
 [Tour of Heroes](https://angular.io/tutorial/tour-of-heroes/toh-pt6).
 
 # Advanced Features
