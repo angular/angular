@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {Observable, of, SubscriptionLike} from 'rxjs';
+import {Observable, SubscriptionLike} from 'rxjs';
 
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
 import {INPUT_BINDER} from './directives/router_outlet';
