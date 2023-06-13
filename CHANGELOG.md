@@ -1,9 +1,5 @@
 <a name="16.1.0"></a>
 # 16.1.0 (2023-06-13)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f3867597f0](https://github.com/angular/angular/commit/f3867597f079794ae9c7ed8be3788c9cea5123a3) | feat | add component input binding support for NgComponentOutlet ([#49735](https://github.com/angular/angular/pull/49735)) |
 ### compiler
 | Commit | Type | Description |
 | -- | -- | -- |
