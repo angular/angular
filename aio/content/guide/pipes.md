@@ -335,7 +335,7 @@ The following code example binds an observable of message strings
 
 ## Caching HTTP requests
 
-To [communicate with backend services using HTTP](guide/http "Communicating with backend services using HTTP"), the `HttpClient` service uses observables and offers the `HttpClient.get()` method to fetch data from a server.
+To [communicate with backend services using HTTP](guide/understanding-communicating-with-http "Communicating with backend services using HTTP"), the `HttpClient` service uses observables and offers the `HttpClient.get()` method to fetch data from a server.
 The asynchronous method sends an HTTP request, and returns an observable that emits the requested data for the response.
 
 As shown in the previous section, use the impure `AsyncPipe` to accept an observable as input and subscribe to the input automatically.
