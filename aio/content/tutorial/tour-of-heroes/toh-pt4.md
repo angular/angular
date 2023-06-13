@@ -168,7 +168,7 @@ synchronous, because that would block the browser as it waits to return data.
 
 In this tutorial, `HeroService.getHeroes()` returns an `Observable` so that it can
 use the Angular `HttpClient.get` method to fetch the heroes
-and have [`HttpClient.get()`](guide/http) return an `Observable`.
+and have [`HttpClient.get()`](guide/understanding-communicating-with-http) return an `Observable`.
 
 ### Observable `HeroService`
 

@@ -605,7 +605,7 @@ Each symbol \(`-`, `x`, `|`, `#`\) marks the passing of one frame.
 
 A *cold* observable doesn't produce values until you subscribe to it.
 Most of your application observables are cold.
-All [*HttpClient*](guide/http) methods return cold observables.
+All [*HttpClient*](guide/understanding-communicating-with-http) methods return cold observables.
 
 A *hot* observable is already producing values *before* you subscribe to it.
 The [`Router.events`](api/router/Router#events) observable, which reports router activity, is a *hot* observable.

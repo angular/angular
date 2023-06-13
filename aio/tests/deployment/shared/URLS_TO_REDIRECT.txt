@@ -186,7 +186,8 @@
 /docs/ts/latest/cookbook/someCookbook.html --> /guide/someCookbook
 /docs/ts/latest/cookbook/ts-to-js.html --> https://v2.angular.io/docs/ts/latest/cookbook/ts-to-js.html
 /docs/ts/latest/glossary.html --> /guide/glossary
-/docs/ts/latest/guide/server-communication.html --> /guide/http
+/docs/ts/latest/guide/http --> /guide/understanding-communicating-with-http
+/docs/ts/latest/guide/server-communication.html --> /guide/understanding-communicating-with-http
 /docs/ts/latest/guide/style-guide.html --> /guide/styleguide
 /docs/ts/latest/quickstart.html --> /start
 /foo/bar/some-file.html --> /foo/bar/some-file

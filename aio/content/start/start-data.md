@@ -225,7 +225,7 @@ To get shipping data, from `shipping.json`, You can use the `HttpClient` `get()`
 
     <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts" region="get-shipping"></code-example>
 
-For more information about Angular's `HttpClient`, see the [Client-Server Interaction](guide/http "Server interaction through HTTP") guide.
+For more information about Angular's `HttpClient`, see the [Client-Server Interaction](guide/understanding-communicating-with-http "Server interaction through HTTP") guide.
 
 ## Create a shipping component
 

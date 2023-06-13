@@ -102,7 +102,7 @@ function addBody<T>(
  * }
  * ```
  *
- * @see [HTTP Guide](guide/http)
+ * @see [HTTP Guide](guide/understanding-communicating-with-http)
  * @see [HTTP Request](api/common/http/HttpRequest)
  *
  * @publicApi
