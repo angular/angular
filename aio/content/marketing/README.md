@@ -9,7 +9,6 @@ The `contributors.json` should be maintained to keep our "org chart" in a single
 There are two pages:
 
 *   https://developers.google.com/experts/all/technology/angular
-(Googlers: source at http://google3/googledata/devsite/content/en/experts/all/technology/angular.html) which is maintained by Dawid Ostrowski based on a spreadsheet https://docs.google.com/spreadsheets/d/1_Ls2Kle7NxPBIG8f3OEVZ4gJZ8OCTtBxGYwMPb1TUVE/edit#gid=0.
     <!-- gkalpak: That URL doesn't seem to work anymore. New URL: https://developers.google.com/programs/experts/directory/ (?) -->
 
 *   [Ours](/about?group=GDE) which is derived from `contributors.json`.
