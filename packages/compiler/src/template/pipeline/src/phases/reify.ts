@@ -185,6 +185,16 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
         throw new Error(`Read of unnamed variable ${expr.xref}`);
       }
       return o.variable(expr.name);
+    case ir.ExpressionKind.ReadTemporaryExpr:
+      if (expr.name === null) {
+        throw new Error(`Read of unnamed temporary ${expr.xref}`);
+      }
+      return o.variable(expr.name);
+    case ir.ExpressionKind.AssignTemporaryExpr:
+      if (expr.name === null) {
+        throw new Error(`Assign of unnamed temporary ${expr.xref}`);
+      }
+      return o.variable(expr.name).set(expr.expr);
     case ir.ExpressionKind.PureFunctionExpr:
       if (expr.fn === null) {
         throw new Error(`AssertionError: expected PureFunctions to have been extracted`);
