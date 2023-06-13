@@ -1,3 +1,12 @@
+<a name="16.0.6"></a>
+# 16.0.6 (2023-06-13)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [05ac0868c9](https://github.com/angular/angular/commit/05ac0868c9149fafcb0a0b815b31a65119090838) | fix | avoid duplicated content during hydration while processing a component with i18n ([#50644](https://github.com/angular/angular/pull/50644)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.0.5"></a>
 # 16.0.5 (2023-06-08)
 ### compiler
