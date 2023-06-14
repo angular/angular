@@ -51,6 +51,8 @@ describe('ComponentFactory', () => {
     });
 
     it('should correctly populate defined properties', () => {
+      function transformFn() {}
+
       @Component({
         selector: 'test[foo], bar',
         standalone: true,
@@ -64,6 +66,8 @@ describe('ComponentFactory', () => {
         @Input() in1: unknown;
 
         @Input('input-attr-2') in2: unknown;
+
+        @Input({alias: 'input-attr-3', transform: transformFn}) in3: unknown;
 
         @Output() out1: unknown;
 
@@ -79,6 +83,7 @@ describe('ComponentFactory', () => {
       expect(cf.inputs).toEqual([
         {propName: 'in1', templateName: 'in1'},
         {propName: 'in2', templateName: 'input-attr-2'},
+        {propName: 'in3', templateName: 'input-attr-3', transform: transformFn},
       ]);
       expect(cf.outputs).toEqual([
         {propName: 'out1', templateName: 'out1'},
