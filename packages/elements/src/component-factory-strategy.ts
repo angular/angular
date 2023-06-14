@@ -154,8 +154,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * Sets the input value for the property. If the component has not yet been created, the value is
    * cached and set when the component is created.
    */
-  setInputValue(property: string, value: any): void {
+  setInputValue(property: string, value: any, transform?: (value: any) => any): void {
     this.runInZone(() => {
+      if (transform) {
+        value = transform.call(this.componentRef?.instance, value);
+      }
+
       if (this.componentRef === null) {
         this.initialInputValues.set(property, value);
         return;
@@ -205,11 +209,11 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Set any stored initial inputs on the component's properties. */
   protected initializeInputs(): void {
-    this.componentFactory.inputs.forEach(({propName}) => {
+    this.componentFactory.inputs.forEach(({propName, transform}) => {
       if (this.initialInputValues.has(propName)) {
         // Call `setInputValue()` now that the component has been instantiated to update its
         // properties and fire `ngOnChanges()`.
-        this.setInputValue(propName, this.initialInputValues.get(propName));
+        this.setInputValue(propName, this.initialInputValues.get(propName), transform);
       }
     });
 
