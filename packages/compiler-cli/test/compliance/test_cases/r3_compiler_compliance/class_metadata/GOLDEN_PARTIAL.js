@@ -78,7 +78,7 @@ export declare class RootInjectable {
 }
 export declare class ComponentWithExternalResource {
     static ɵfac: i0.ɵɵFactoryDeclaration<ComponentWithExternalResource, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ComponentWithExternalResource, "test-cmp", never, {}, {}, never, never, false, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ComponentWithExternalResource, "test-cmp", never, {}, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -152,7 +152,7 @@ export declare class MyDir {
     mixed: string;
     none: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, never, never, { "foo": { "alias": "foo"; "required": false; }; "bar": { "alias": "baz"; "required": false; }; "mixed": { "alias": "mixed"; "required": false; }; }, { "mixed": "mixed"; }, never, never, false, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, never, never, { "foo": { "alias": "foo"; "required": false; }; "bar": { "alias": "baz"; "required": false; }; "mixed": { "alias": "mixed"; "required": false; }; }, { "mixed": "mixed"; }, never, never, false, never>;
 }
 
 /****************************************************************************************************
