@@ -1365,9 +1365,6 @@
     "name": "profiler"
   },
   {
-    "name": "promise"
-  },
-  {
     "name": "refCount"
   },
   {
@@ -1429,12 +1426,6 @@
   },
   {
     "name": "scheduleArray"
-  },
-  {
-    "name": "scheduleMicroTask"
-  },
-  {
-    "name": "scheduleMicroTask2"
   },
   {
     "name": "searchTokensOnInjector"

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {fakeAsync} from '@angular/core/testing';
+
 import {flushMicrotasks} from '../../core/testing/src/fake_async';
 import {NoopAnimationPlayer} from '../src/players/animation_player';
-import {scheduleMicroTask} from '../src/util';
 
 {
   describe('NoopAnimationPlayer', function() {
@@ -70,7 +70,7 @@ import {scheduleMicroTask} from '../src/util';
 
          const player = new NoopAnimationPlayer();
          player.onStart(() => {
-           scheduleMicroTask(() => log.push('started'));
+           queueMicrotask(() => log.push('started'));
          });
          player.onDone(() => log.push('done'));
          expect(log).toEqual([]);

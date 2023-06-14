@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {scheduleMicroTask} from '../util';
-
 import {AnimationPlayer} from './animation_player';
 
 /**
@@ -38,7 +36,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     const total = this.players.length;
 
     if (total == 0) {
-      scheduleMicroTask(() => this._onFinish());
+      queueMicrotask(() => this._onFinish());
     } else {
       this.players.forEach(player => {
         player.onDone(() => {

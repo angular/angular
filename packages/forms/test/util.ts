@@ -80,7 +80,7 @@ export function currentStateOf(controls: AbstractControl[]):
  */
 export function asyncValidatorReturningObservable(c: AbstractControl): EventEmitter<any> {
   const e = new EventEmitter();
-  Promise.resolve().then(() => {
+  queueMicrotask(() => {
     e.emit({'async': true});
   });
   return e;

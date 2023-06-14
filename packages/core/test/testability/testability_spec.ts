@@ -10,17 +10,16 @@ import {EventEmitter} from '@angular/core';
 import {Injectable} from '@angular/core/src/di';
 import {GetTestability, PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {fakeAsync, flush, tick, waitForAsync} from '@angular/core/testing';
+import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 
 import {setTestabilityGetter} from '../../src/testability/testability';
-import {scheduleMicroTask} from '../../src/util/microtask';
 
-// Schedules a microtasks (using a resolved promise .then())
+// Schedules a microtasks (using queueMicrotask)
 function microTask(fn: Function): void {
-  scheduleMicroTask(() => {
-    // We do double dispatch so that we  can wait for scheduleMicrotask in the Testability when
+  queueMicrotask(() => {
+    // We do double dispatch so that we can wait for queueMicrotask in the Testability when
     // NgZone becomes stable.
-    scheduleMicroTask(fn);
+    queueMicrotask(() => fn());
   });
 }
 

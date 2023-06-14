@@ -1290,9 +1290,6 @@
     "name": "profiler"
   },
   {
-    "name": "promise"
-  },
-  {
     "name": "provideZoneChangeDetection"
   },
   {
@@ -1357,9 +1354,6 @@
   },
   {
     "name": "scheduleArray"
-  },
-  {
-    "name": "scheduleMicroTask"
   },
   {
     "name": "searchTokensOnInjector"

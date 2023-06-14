@@ -858,9 +858,6 @@
     "name": "profiler"
   },
   {
-    "name": "promise"
-  },
-  {
     "name": "refCount"
   },
   {

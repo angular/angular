@@ -425,7 +425,7 @@ describe('EventManager', () => {
        const sub = zone.onStable.subscribe(() => {
          sub.unsubscribe();
          logs.push('begin');
-         Promise.resolve().then(() => {
+         queueMicrotask(() => {
            logs.push('promise resolved');
          });
          element.appendChild(child);
@@ -471,7 +471,7 @@ describe('EventManager', () => {
        const sub = zone.onStable.subscribe(() => {
          sub.unsubscribe();
          logs.push('begin');
-         Promise.resolve().then(() => {
+         queueMicrotask(() => {
            logs.push('promise resolved');
          });
          element.appendChild(child);

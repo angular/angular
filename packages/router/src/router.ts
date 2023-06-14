@@ -733,7 +733,7 @@ export class Router {
     afterNextNavigation(this, () => {
       // Remove pending task in a microtask to allow for cancelled
       // initial navigations and redirects within the same task.
-      Promise.resolve().then(() => this.pendingTasks.remove(taskId));
+      queueMicrotask(() => this.pendingTasks.remove(taskId));
     });
 
     this.navigationTransitions.handleNavigationRequest({

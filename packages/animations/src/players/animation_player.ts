@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {scheduleMicroTask} from '../util';
 
 /**
  * Provides programmatic control of a reusable animation sequence,
@@ -166,7 +165,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
 
   /** @internal */
   triggerMicrotask() {
-    scheduleMicroTask(() => this._onFinish());
+    queueMicrotask(() => this._onFinish());
   }
 
   private _onStart() {

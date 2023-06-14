@@ -160,7 +160,7 @@ withEachNg1Version(() => {
              });
 
              // Create a micro-task to update the value to be rendered asynchronously.
-             Promise.resolve().then(() => this.valueFromPromise = changes['value'].currentValue);
+             queueMicrotask(() => this.valueFromPromise = changes['value'].currentValue);
            }
          }
 

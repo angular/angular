@@ -25,7 +25,6 @@ export class AnimationRendererFactory implements RendererFactory2 {
   private _animationCallbacksBuffer: [(e: any) => any, any][] = [];
   private _rendererCache = new Map<Renderer2, BaseAnimationRenderer>();
   private _cdRecurDepth = 0;
-  private promise: Promise<any> = Promise.resolve(0);
 
   constructor(
       private delegate: RendererFactory2, private engine: AnimationEngine, private _zone: NgZone) {
@@ -88,8 +87,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
   }
 
   private _scheduleCountTask() {
-    // always use promise to schedule microtask instead of use Zone
-    this.promise.then(() => {
+    queueMicrotask(() => {
       this._microtaskId++;
     });
   }
@@ -102,7 +100,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     }
 
     if (this._animationCallbacksBuffer.length == 0) {
-      Promise.resolve(null).then(() => {
+      queueMicrotask(() => {
         this._zone.run(() => {
           this._animationCallbacksBuffer.forEach(tuple => {
             const [fn, data] = tuple;

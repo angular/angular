@@ -10,6 +10,7 @@ import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation,
 import {Inject, Injectable, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
 import * as url from 'url';
+
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 function parseUrl(urlStr: string) {
@@ -92,7 +93,7 @@ export class ServerPlatformLocation implements PlatformLocation {
     }
     (this as {hash: string}).hash = value;
     const newUrl = this.url;
-    scheduleMicroTask(
+    queueMicrotask(
         () => this._hashUpdate.next(
             {type: 'hashchange', state: null, oldUrl, newUrl} as LocationChangeEvent));
   }
@@ -121,8 +122,4 @@ export class ServerPlatformLocation implements PlatformLocation {
   getState(): unknown {
     return undefined;
   }
-}
-
-export function scheduleMicroTask(fn: Function) {
-  Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
 }

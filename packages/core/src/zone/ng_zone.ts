@@ -13,11 +13,14 @@ import {inject, InjectionToken} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
 import {global} from '../util/global';
-import {scheduleMicroTask} from '../util/microtask';
 import {noop} from '../util/noop';
 import {getNativeRequestAnimationFrame} from '../util/raf';
 
 import {AsyncStackTaggingZoneSpec} from './async-stack-tagging';
+
+// The below is needed as otherwise a number of targets fail in G3 due to:
+// ERROR - [JSC_UNDEFINED_VARIABLE] variable Zone is undeclared
+declare const Zone: any;
 
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
@@ -547,7 +550,7 @@ export function isStableFactory() {
 
         // Check whether there are no pending macro/micro tasks in the next tick
         // to allow for NgZone to update the state.
-        scheduleMicroTask(() => {
+        queueMicrotask(() => {
           if (!_stable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks) {
             _stable = true;
             observer.next(true);
