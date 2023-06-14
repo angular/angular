@@ -88,7 +88,7 @@ export class ComponentFixture<T> {
               // If so check whether there are no pending macrotasks before resolving.
               // Do this check in the next tick so that ngZone gets a chance to update the state of
               // pending macrotasks.
-              scheduleMicroTask(() => {
+              queueMicrotask(() => {
                 if (!ngZone.hasPendingMacrotasks) {
                   if (this._promise !== null) {
                     this._resolve!(true);
@@ -224,8 +224,4 @@ export class ComponentFixture<T> {
       this._isDestroyed = true;
     }
   }
-}
-
-function scheduleMicroTask(fn: Function) {
-  Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
 }
