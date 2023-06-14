@@ -331,6 +331,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /** @nodoc */
   ngOnInit() {
     if (ngDevMode) {
+      const ngZone = this.injector.get(NgZone);
       assertNonEmptyInput(this, 'ngSrc', this.ngSrc);
       assertValidNgSrcset(this, this.ngSrcset);
       assertNoConflictingSrc(this);
@@ -341,7 +342,10 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNotBlobUrl(this);
       if (this.fill) {
         assertEmptyWidthAndHeight(this);
-        assertNonZeroRenderedHeight(this, this.imgElement, this.renderer);
+        // This leaves the Angular zone to avoid triggering unnecessary change detection cycles when
+        // `load` tasks are invoked on images.
+        ngZone.runOutsideAngular(
+            () => assertNonZeroRenderedHeight(this, this.imgElement, this.renderer));
       } else {
         assertNonEmptyWidthAndHeight(this);
         if (this.height !== undefined) {
@@ -352,7 +356,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         }
         // Only check for distorted images when not in fill mode, where
         // images may be intentionally stretched, cropped or letterboxed.
-        assertNoImageDistortion(this, this.imgElement, this.renderer);
+        ngZone.runOutsideAngular(
+            () => assertNoImageDistortion(this, this.imgElement, this.renderer));
       }
       assertValidLoadingInput(this);
       if (!this.ngSrcset) {
@@ -369,7 +374,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         // the `priority` attribute is missing. Otherwise, an image
         // has the necessary settings and no extra checks are required.
         if (this.lcpObserver !== null) {
-          const ngZone = this.injector.get(NgZone);
           ngZone.runOutsideAngular(() => {
             this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc);
           });
