@@ -189,7 +189,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
   private update(): void {
     if (!this.links || !this.router.navigated) return;
-    Promise.resolve().then(() => {
+    queueMicrotask(() => {
       const hasActiveLinks = this.hasActiveLinks();
       if (this._isActive !== hasActiveLinks) {
         this._isActive = hasActiveLinks;

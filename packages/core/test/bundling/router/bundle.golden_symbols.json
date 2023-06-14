@@ -1764,9 +1764,6 @@
     "name": "profiler"
   },
   {
-    "name": "promise"
-  },
-  {
     "name": "provideZoneChangeDetection"
   },
   {
