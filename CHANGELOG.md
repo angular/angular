@@ -1,3 +1,20 @@
+<a name="16.1.1"></a>
+# 16.1.1 (2023-06-14)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [71360b3a3e](https://github.com/angular/angular/commit/71360b3a3e7cb3419176c89f8c78ebd2e14ff880) | fix | libraries compiled with v16.1+ breaking with Angular framework v16.0.x ([#50715](https://github.com/angular/angular/pull/50715)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d9bed48eb5](https://github.com/angular/angular/commit/d9bed48eb590bc4a45769835bccc206d418f620c) | fix | extend toSignal to accept any Subscribable ([#50162](https://github.com/angular/angular/pull/50162)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5e1d8444ae](https://github.com/angular/angular/commit/5e1d8444ae2952b4e9e5d7089200e7a3ac700e0d) | fix | Prevent a component from importing itself. ([#50554](https://github.com/angular/angular/pull/50554)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="16.1.0"></a>
 # 16.1.0 (2023-06-13)
 ### compiler
