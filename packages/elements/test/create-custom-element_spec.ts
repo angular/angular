@@ -14,10 +14,11 @@ import {Subject} from 'rxjs';
 import {createCustomElement, NgElementConstructor} from '../src/create-custom-element';
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
 
-type WithFooBar = {
-  fooFoo: string,
-  barBar: string
-};
+interface WithFooBar {
+  fooFoo: string;
+  barBar: string;
+  fooTransformed: unknown;
+}
 
 describe('createCustomElement', () => {
   let selectorUid = 0;
@@ -52,18 +53,20 @@ describe('createCustomElement', () => {
   });
 
   it('should use a default strategy for converting component inputs', () => {
-    expect(NgElementCtor.observedAttributes).toEqual(['foo-foo', 'barbar']);
+    expect(NgElementCtor.observedAttributes).toEqual(['foo-foo', 'barbar', 'foo-transformed']);
   });
 
   it('should send input values from attributes when connected', () => {
     const element = new NgElementCtor(injector);
     element.setAttribute('foo-foo', 'value-foo-foo');
     element.setAttribute('barbar', 'value-barbar');
+    element.setAttribute('foo-transformed', 'truthy');
     element.connectedCallback();
     expect(strategy.connectedElement).toBe(element);
 
     expect(strategy.getInputValue('fooFoo')).toBe('value-foo-foo');
     expect(strategy.getInputValue('barBar')).toBe('value-barbar');
+    expect(strategy.getInputValue('fooTransformed')).toBe(true);
   });
 
   it('should work even if the constructor is not called (due to polyfill)', () => {
@@ -78,11 +81,13 @@ describe('createCustomElement', () => {
 
     element.setAttribute('foo-foo', 'value-foo-foo');
     element.setAttribute('barbar', 'value-barbar');
+    element.setAttribute('foo-transformed', 'truthy');
     element.connectedCallback();
 
     expect(strategy.connectedElement).toBe(element);
     expect(strategy.getInputValue('fooFoo')).toBe('value-foo-foo');
     expect(strategy.getInputValue('barBar')).toBe('value-barbar');
+    expect(strategy.getInputValue('fooTransformed')).toBe(true);
   });
 
   it('should listen to output events after connected', () => {
@@ -154,9 +159,11 @@ describe('createCustomElement', () => {
     const element = new NgElementCtor(injector);
     element.fooFoo = 'foo-foo-value';
     element.barBar = 'barBar-value';
+    element.fooTransformed = 'truthy';
 
     expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
     expect(strategy.inputs.get('barBar')).toBe('barBar-value');
+    expect(strategy.inputs.get('fooTransformed')).toBe(true);
   });
 
   it('should properly handle getting/setting properties on the element even if the constructor is not called',
@@ -170,9 +177,11 @@ describe('createCustomElement', () => {
 
        element.fooFoo = 'foo-foo-value';
        element.barBar = 'barBar-value';
+       element.fooTransformed = 'truthy';
 
        expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
        expect(strategy.inputs.get('barBar')).toBe('barBar-value');
+       expect(strategy.inputs.get('fooTransformed')).toBe(true);
      });
 
   it('should capture properties set before upgrading the element', () => {
@@ -181,18 +190,22 @@ describe('createCustomElement', () => {
     const element = Object.assign(document.createElement(selector), {
       fooFoo: 'foo-prop-value',
       barBar: 'bar-prop-value',
+      fooTransformed: 'truthy' as unknown,
     });
     expect(element.fooFoo).toBe('foo-prop-value');
     expect(element.barBar).toBe('bar-prop-value');
+    expect(element.fooTransformed).toBe('truthy');
 
     // Upgrade the element to a Custom Element and insert it into the DOM.
     customElements.define(selector, ElementCtor);
     testContainer.appendChild(element);
     expect(element.fooFoo).toBe('foo-prop-value');
     expect(element.barBar).toBe('bar-prop-value');
+    expect(element.fooTransformed).toBe(true);
 
     expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
     expect(strategy.inputs.get('barBar')).toBe('bar-prop-value');
+    expect(strategy.inputs.get('fooTransformed')).toBe(true);
   });
 
   it('should capture properties set after upgrading the element but before inserting it into the DOM',
@@ -202,25 +215,31 @@ describe('createCustomElement', () => {
        const element = Object.assign(document.createElement(selector), {
          fooFoo: 'foo-prop-value',
          barBar: 'bar-prop-value',
+         fooTransformed: 'truthy' as unknown,
        });
        expect(element.fooFoo).toBe('foo-prop-value');
        expect(element.barBar).toBe('bar-prop-value');
+       expect(element.fooTransformed).toBe('truthy');
 
        // Upgrade the element to a Custom Element (without inserting it into the DOM) and update a
        // property.
        customElements.define(selector, ElementCtor);
        customElements.upgrade(element);
        element.barBar = 'bar-prop-value-2';
+       element.fooTransformed = '';
        expect(element.fooFoo).toBe('foo-prop-value');
        expect(element.barBar).toBe('bar-prop-value-2');
+       expect(element.fooTransformed).toBe('');
 
        // Insert the element into the DOM.
        testContainer.appendChild(element);
        expect(element.fooFoo).toBe('foo-prop-value');
        expect(element.barBar).toBe('bar-prop-value-2');
+       expect(element.fooTransformed).toBe(false);
 
        expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
        expect(strategy.inputs.get('barBar')).toBe('bar-prop-value-2');
+       expect(strategy.inputs.get('fooTransformed')).toBe(false);
      });
 
   it('should allow overwriting properties with attributes after upgrading the element but before inserting it into the DOM',
@@ -230,25 +249,31 @@ describe('createCustomElement', () => {
        const element = Object.assign(document.createElement(selector), {
          fooFoo: 'foo-prop-value',
          barBar: 'bar-prop-value',
+         fooTransformed: 'truthy' as unknown,
        });
        expect(element.fooFoo).toBe('foo-prop-value');
        expect(element.barBar).toBe('bar-prop-value');
+       expect(element.fooTransformed).toBe('truthy');
 
        // Upgrade the element to a Custom Element (without inserting it into the DOM) and set an
        // attribute.
        customElements.define(selector, ElementCtor);
        customElements.upgrade(element);
        element.setAttribute('barbar', 'bar-attr-value');
+       element.setAttribute('foo-transformed', '');
        expect(element.fooFoo).toBe('foo-prop-value');
        expect(element.barBar).toBe('bar-attr-value');
+       expect(element.fooTransformed).toBe(false);
 
        // Insert the element into the DOM.
        testContainer.appendChild(element);
        expect(element.fooFoo).toBe('foo-prop-value');
        expect(element.barBar).toBe('bar-attr-value');
+       expect(element.fooTransformed).toBe(false);
 
        expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
        expect(strategy.inputs.get('barBar')).toBe('bar-attr-value');
+       expect(strategy.inputs.get('fooTransformed')).toBe(false);
      });
 
   // Helpers
@@ -274,6 +299,7 @@ describe('createCustomElement', () => {
   class TestComponent {
     @Input() fooFoo: string = 'foo';
     @Input('barbar') barBar!: string;
+    @Input({transform: (value: unknown) => !!value}) fooTransformed!: boolean;
 
     @Output() bazBaz = new EventEmitter<boolean>();
     @Output('quxqux') quxQux = new EventEmitter<Object>();
@@ -306,8 +332,8 @@ describe('createCustomElement', () => {
       return this.inputs.get(propName);
     }
 
-    setInputValue(propName: string, value: string): void {
-      this.inputs.set(propName, value);
+    setInputValue(propName: string, value: string, transform?: (value: any) => any): void {
+      this.inputs.set(propName, transform ? transform(value) : value);
     }
 
     reset(): void {

@@ -98,10 +98,11 @@ export function strictEquals(value1: any, value2: any): boolean {
 
 /** Gets a map of default set of attributes to observe and the properties they affect. */
 export function getDefaultAttributeToPropertyInputs(
-    inputs: {propName: string, templateName: string}[]) {
-  const attributeToPropertyInputs: {[key: string]: string} = {};
-  inputs.forEach(({propName, templateName}) => {
-    attributeToPropertyInputs[camelToDashCase(templateName)] = propName;
+    inputs: {propName: string, templateName: string, transform?: (value: any) => any}[]) {
+  const attributeToPropertyInputs:
+      {[key: string]: [propName: string, transform: ((value: any) => any)|undefined]} = {};
+  inputs.forEach(({propName, templateName, transform}) => {
+    attributeToPropertyInputs[camelToDashCase(templateName)] = [propName, transform];
   });
 
   return attributeToPropertyInputs;
@@ -111,9 +112,12 @@ export function getDefaultAttributeToPropertyInputs(
  * Gets a component's set of inputs. Uses the injector to get the component factory where the inputs
  * are defined.
  */
-export function getComponentInputs(
-    component: Type<any>, injector: Injector): {propName: string, templateName: string}[] {
-  const componentFactoryResolver: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
+export function getComponentInputs(component: Type<any>, injector: Injector): {
+  propName: string,
+  templateName: string,
+  transform?: (value: any) => any,
+}[] {
+  const componentFactoryResolver = injector.get(ComponentFactoryResolver);
   const componentFactory = componentFactoryResolver.resolveComponentFactory(component);
   return componentFactory.inputs;
 }
