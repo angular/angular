@@ -118,8 +118,28 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   override ngContentSelectors: string[];
   isBoundToModule: boolean;
 
-  override get inputs(): {propName: string; templateName: string;}[] {
-    return toRefArray(this.componentDef.inputs);
+  override get inputs(): {
+    propName: string,
+    templateName: string,
+    transform?: (value: any) => any,
+  }[] {
+    const componentDef = this.componentDef;
+    const inputTransforms = componentDef.inputTransforms;
+    const refArray = toRefArray(componentDef.inputs) as {
+      propName: string,
+      templateName: string,
+      transform?: (value: any) => any,
+    }[];
+
+    if (inputTransforms !== null) {
+      for (const input of refArray) {
+        if (inputTransforms.hasOwnProperty(input.propName)) {
+          input.transform = inputTransforms[input.propName];
+        }
+      }
+    }
+
+    return refArray;
   }
 
   override get outputs(): {propName: string; templateName: string;}[] {
