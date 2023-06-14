@@ -106,7 +106,11 @@ export interface ComponentMirror<C> {
   /**
    * The inputs of the component.
    */
-  get inputs(): ReadonlyArray<{readonly propName: string, readonly templateName: string}>;
+  get inputs(): ReadonlyArray<{
+    readonly propName: string,
+    readonly templateName: string,
+    readonly transform?: (value: any) => any,
+  }>;
   /**
    * The outputs of the component.
    */
@@ -178,7 +182,11 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|
     get type(): Type<C> {
       return factory.componentType;
     },
-    get inputs(): ReadonlyArray<{propName: string, templateName: string}> {
+    get inputs(): ReadonlyArray<{
+      propName: string,
+      templateName: string,
+      transform?: (value: any) => any,
+    }> {
       return factory.inputs;
     },
     get outputs(): ReadonlyArray<{propName: string, templateName: string}> {
