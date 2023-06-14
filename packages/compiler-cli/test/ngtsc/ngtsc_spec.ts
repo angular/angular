@@ -327,7 +327,7 @@ function allTests(os: string) {
 
       const dtsContents = env.getContents('test.d.ts');
       const expectedDirectiveDeclaration =
-          'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, {}, {}, never, never, false, never, false>';
+          'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, {}, {}, never, never, false, never>';
       expect(dtsContents).toContain(expectedDirectiveDeclaration);
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>');
     });
@@ -350,7 +350,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, never, never, false, never, false>');
+              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, never, never, false, never>');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>');
     });
 
@@ -374,7 +374,7 @@ function allTests(os: string) {
 
       const dtsContents = env.getContents('test.d.ts');
       const expectedComponentDeclaration =
-          'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never, false>';
+          'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>';
       expect(dtsContents).toContain(expectedComponentDeclaration);
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>');
     });
@@ -402,7 +402,7 @@ function allTests(os: string) {
       expect(dtsContents)
           .toContain(
               'static ɵcmp: i0.ɵɵComponentDeclaration' +
-              '<TestCmp, "test-cmp", never, {}, {}, never, never, false, never, false>');
+              '<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>');
     });
 
@@ -429,7 +429,7 @@ function allTests(os: string) {
 
       const dtsContents = env.getContents('test.d.ts');
       const expectedComponentDeclaration =
-          'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never, false>';
+          'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>';
       expect(dtsContents).toContain(expectedComponentDeclaration);
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>');
     });
@@ -1153,7 +1153,7 @@ function allTests(os: string) {
 
       const dtsContents = env.getContents('test.d.ts');
       const expectedDirectiveDeclaration =
-          `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, false, never, false>;`;
+          `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, false, never>;`;
       expect(dtsContents).toContain(expectedDirectiveDeclaration);
     });
 
@@ -1260,7 +1260,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never, false>');
+              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>');
       expect(dtsContents)
           .toContain(
               'static ɵmod: i0.ɵɵNgModuleDeclaration<TestModule, [typeof TestCmp], never, never>');
@@ -4028,7 +4028,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test", never, {}, {}, never, ["*", ".foo"], false, never, false>');
+              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test", never, {}, {}, never, ["*", ".foo"], false, never>');
     });
 
     it('should generate queries for components', () => {
@@ -5735,7 +5735,7 @@ function allTests(os: string) {
               '{ "noArgs": { "alias": "noArgs"; "required": false; }; "stringArg": ' +
               '{ "alias": "aliasedStringArg"; "required": false; }; "requiredNoAlias": ' +
               '{ "alias": "requiredNoAlias"; "required": true; }; "requiredWithAlias": ' +
-              '{ "alias": "aliasedRequiredWithAlias"; "required": true; }; }, {}, never, never, false, never, false>;');
+              '{ "alias": "aliasedRequiredWithAlias"; "required": true; }; }, {}, never, never, false, never>;');
     });
 
     it('should generate the correct declaration for directives using the `inputs` array', () => {
@@ -5773,7 +5773,7 @@ function allTests(os: string) {
               '"plainLiteral": { "alias": "plainLiteral"; "required": false; }; ' +
               '"aliasedLiteral": { "alias": "alisedLiteralAlias"; "required": false; }; ' +
               '"requiredLiteral": { "alias": "requiredLiteral"; "required": true; }; ' +
-              '"requiredAlisedLiteral": { "alias": "requiredAlisedLiteralAlias"; "required": true; }; }, {}, never, never, false, never, false>;');
+              '"requiredAlisedLiteral": { "alias": "requiredAlisedLiteralAlias"; "required": true; }; }, {}, never, never, false, never>;');
     });
 
     describe('NgModule invalid import/export errors', () => {
