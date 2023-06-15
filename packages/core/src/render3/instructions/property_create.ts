@@ -31,48 +31,53 @@ import {mapPropName, markDirtyIfOnPush, setNgReflectProperties, writeToDirective
 export function ɵɵpropertyCreate<T>(
     slot: number, propName: string, expr: () => T,
     sanitizer?: SanitizerFn|null): typeof ɵɵpropertyCreate {
-  const tView = getTView();
-  if (!tView.firstCreatePass) {
-    return ɵɵpropertyCreate;
-  }
-
   const lView = getLView();
+  const expressionSlot = HEADER_OFFSET + slot;
+  lView[expressionSlot] = expr;
+
+  const tView = getTView();
   const tNode = getCurrentTNode();
   assertDefined(tNode, `propertyCreate() must follow an actual element`);
 
   const inputData = tNode.inputs?.[propName] ?? EMPTY_ARRAY;
 
+  // PERF: the fact that we need to iterate over all the inputs here isn't great.
+  // We might consider storing more info on TView
   let zoneTargets: PropertyAliasValue|null = null;
   for (let i = 0; i < inputData.length;) {
     const directiveIndex = inputData[i++] as number;
     const privateName = inputData[i++] as string;
     const def = tView.data[directiveIndex] as DirectiveDef<any>;
     if (!def.signals) {
-      (zoneTargets ??= []).push(directiveIndex, privateName);
+      // TODO(pk): refactor - code flow with all those firstCreatePass checks becomes hard to follow
+      if (tView.firstCreatePass) {
+        (zoneTargets ??= []).push(directiveIndex, privateName);
+      }
     } else {
       ngDevMode && assertIndexInRange(lView, directiveIndex);
+      // TODO(pk): make sure that we are creating one computed for all the inputs
+      // PERF: megamorphic read on [privateName] access
       (lView[directiveIndex][privateName][SIGNAL] as InternalInputSignal).bindToComputation(expr);
     }
   }
 
-  const expressionSlot = HEADER_OFFSET + slot;
-  lView[expressionSlot] = expr;
-
-  if (inputData.length === 0) {
-    // Untargeted input -> DOM binding.
-    (tView.virtualUpdate ??= []).push({
-      slot: expressionSlot,
-      instruction: () =>
-          propertyUpdateDom(tNode.index, propName, expressionSlot, sanitizer ?? null),
-    });
-  } else if (zoneTargets?.length ?? 0 > 0) {
-    // Some binding targets were zone-based, so we need an update instruction to process them.
-    (tView.virtualUpdate ??= []).push({
-      slot: expressionSlot,
-      instruction: () => propertyUpdateInput(propName, expressionSlot, zoneTargets!),
-    });
-  } else {
-    // The only target(s) were signal-based, so no update path is needed.
+  if (tView.firstCreatePass) {
+    if (inputData.length === 0) {
+      // Untargeted input -> DOM binding.
+      (tView.virtualUpdate ??= []).push({
+        slot: expressionSlot,
+        instruction: () =>
+            propertyUpdateDom(tNode.index, propName, expressionSlot, sanitizer ?? null),
+      });
+    } else if (zoneTargets?.length ?? 0 > 0) {
+      // Some binding targets were zone-based, so we need an update instruction to process them.
+      (tView.virtualUpdate ??= []).push({
+        slot: expressionSlot,
+        instruction: () => propertyUpdateInput(propName, expressionSlot, zoneTargets!),
+      });
+    } else {
+      // The only target(s) were signal-based, so no update path is needed.
+    }
   }
 
   // TODO virtual instruction
