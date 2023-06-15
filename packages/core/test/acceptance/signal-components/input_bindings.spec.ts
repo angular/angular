@@ -134,6 +134,32 @@ describe('Signal component inputs', () => {
         expect(fixture.nativeElement.textContent).toBe('4:8');
       });
 
+      it('should support usage of the same input in different views', () => {
+        @Component({
+          signals: true,
+          selector: 'uses-print',
+          template: `<print [num]="num()"></print>`,
+          imports: [Print],
+          standalone: true,
+        })
+        class UsesPrint {
+          num = signal(3);
+        }
+
+        @Component({
+          signals: true,
+          template: `<uses-print/>:<uses-print/>`,
+          imports: [UsesPrint],
+          standalone: true,
+        })
+        class App {
+        }
+
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toBe('3:3');
+      });
+
       xit('should reveal dragon no 1: shared expression value for non-primitive literals', () => {
         @Directive({
           selector: '[dir1]',
