@@ -237,7 +237,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#7dad055464ea9847e4870b9e3baad1f0c417bdf7":
   version "0.0.0-5f06c4774df908ed69e1441f4ec63b898acf0c68"
-  uid "7dad055464ea9847e4870b9e3baad1f0c417bdf7"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#7dad055464ea9847e4870b9e3baad1f0c417bdf7"
   dependencies:
     "@angular-devkit/build-angular" "16.0.0-rc.0"
@@ -369,10 +368,9 @@
     "@material/typography" "15.0.0-canary.51f9c0c28.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#231bc6ee07c0f799d28f201a4e6d68ae31d88cfa":
-  version "0.0.0-5f06c4774df908ed69e1441f4ec63b898acf0c68"
-  uid "231bc6ee07c0f799d28f201a4e6d68ae31d88cfa"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#231bc6ee07c0f799d28f201a4e6d68ae31d88cfa"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#dec40448ead7b52cddae4d32bdb21d8c48589413":
+  version "0.0.0-b3f65c93ab2a7fdac2e91b31a4258becfa4025f8"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#dec40448ead7b52cddae4d32bdb21d8c48589413"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
@@ -3817,6 +3815,7 @@
     "@types/node" "*"
 
 "@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.15", "@types/selenium-webdriver@^4.0.18":
+  name "@types/selenium-webdriver4"
   version "4.1.15"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.15.tgz#d346b674b96f5ba43f1ad5343f997030559e5b23"
   integrity sha512-oQ15G3q3EZ0dS049SB/5zx2tQkIS2kmDQWC/TSfAHJYKvXLZoUiLaPXnfSwbLP8Q5lcJeu5oYjKVSEV0t3H6Bg==
@@ -7035,12 +7034,6 @@ decompress-tarbz2@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/decompress-tarbz2/-/decompress-tarbz2-4.1.1.tgz#3082a5b880ea4043816349f378b56c516be1a39b"
   integrity sha512-s88xLzf1r81ICXLAVQVzaN6ZmX4A6U4z2nMbOwobxkLoIIfjVMBg7TeguTUXkKeXni795B6y5rnvDw7rxhAq9A==
-  dependencies:
-    decompress-tar "^4.1.0"
-    file-type "^6.1.0"
-    is-stream "^1.1.0"
-    seek-bzip "^1.0.5"
-    unbzip2-stream "^1.0.9"
 
 decompress-targz@^4.0.0:
   version "4.1.1"
@@ -7506,8 +7499,7 @@ domhandler@^4.2.0, domhandler@^4.3.1:
     domelementtype "^2.2.0"
 
 "domino@https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1":
-  version "2.1.6+git"
-  uid aa8de3486307f57a518b4b0d9e5e16d9fbd998d1
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#aa8de3486307f57a518b4b0d9e5e16d9fbd998d1"
 
 domutils@^2.8.0:
@@ -7607,9 +7599,6 @@ ecc-jsbn@~0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz#3a83a904e54353287874c564b7549386849a98c9"
   integrity sha512-eh9O+hwRHNbG4BLTjEl3nw044CkGm5X6LoaCf7LPp7UU8Qrt47JYNi6nPX8xjW97TKGKm1ouctg0QSpZe9qrnw==
-  dependencies:
-    jsbn "~0.1.0"
-    safer-buffer "^2.1.0"
 
 ecdsa-sig-formatter@1.0.11, ecdsa-sig-formatter@^1.0.11:
   version "1.0.11"
@@ -14396,7 +14385,6 @@ sass@1.62.1:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz":
   version "0.0.0"
-  uid "9c16682e4c9716734432789884f868212f95f563"
   resolved "https://saucelabs.com/downloads/sc-4.8.1-linux.tar.gz#9c16682e4c9716734432789884f868212f95f563"
 
 saucelabs@7.2.1, saucelabs@^1.5.0, saucelabs@^4.6.3:
