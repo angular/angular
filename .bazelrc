@@ -108,9 +108,10 @@ build:remote --define=EXECUTOR=remote
 # Set a higher timeout value, just in case.
 build:remote --remote_timeout=600
 
-# Increase the default number of jobs by 50% because our build has lots of
-# parallelism
-build:remote --jobs=150
+# Bazel detects maximum number of jobs based on host resources.
+# Since we run remotely, we can increase this number significantly.
+common:remote --jobs=200
+
 build:remote --google_default_credentials
 
 # Limit the number of test jobs for on an AIO local deps build. The example tests running
