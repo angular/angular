@@ -564,6 +564,48 @@ declare global {
     __zone_symbol__UNPATCHED_EVENTS?: string[];
 
     /**
+     * Define a list of `on` properties to be ignored when being monkey patched by the `zone.js`.
+     *
+     * By default, `zone.js` monkey patches `on` properties on inbuilt browser classes as
+     * `WebSocket`, `XMLHttpRequest`, `Worker`, `HTMLElement` and others (see `patchTargets` in
+     * `propertyDescriptorPatch`). `on` properties may be `WebSocket.prototype.onclose`,
+     * `XMLHttpRequest.prototype.onload`, etc.
+     *
+     * Sometimes, we're not able to customise third-party libraries, which setup `on` listeners.
+     * Given a library creates a `Websocket` and sets `socket.onmessage`, this will impact
+     * performance if the `onmessage` property is set within the Angular zone, because this will
+     * trigger change detection on any message coming through the socket. We can exclude specific
+     * targets and their `on` properties from being patched by zone.js.
+     *
+     * Users can achieve this by defining `__Zone_ignore_on_properties`, it expects an array of
+     * objects where `target` is the actual object `on` properties will be set on:
+     * ```
+     * __Zone_ignore_on_properties = [
+     *   {
+     *     target: WebSocket.prototype,
+     *     ignoreProperties: ['message', 'close', 'open']
+     *   }
+     * ];
+     * ```
+     *
+     * In order to check whether `on` properties have been successfully ignored or not, it's enough
+     * to open the console in the browser, run `WebSocket.prototype` and expand the object, we
+     * should see the following:
+     * ```
+     * {
+     *   __zone_symbol__ononclosepatched: true,
+     *   __zone_symbol__ononerrorpatched: true,
+     *   __zone_symbol__ononmessagepatched: true,
+     *   __zone_symbol__ononopenpatched: true
+     * }
+     * ```
+     * These `__zone_symbol__*` properties are set by zone.js when `on` properties have been patched
+     * previously. When `__Zone_ignore_on_properties` is setup, we should not see those properties
+     * on targets.
+     */
+    __Zone_ignore_on_properties?: {target: any; ignoreProperties: string[];}[];
+
+    /**
      * Define the event names of the passive listeners.
      *
      * To add passive event listeners, you can use `elem.addEventListener('scroll', listener,
