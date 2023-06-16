@@ -65,7 +65,7 @@ export class FetchBackend implements HttpBackend {
     let response;
 
     try {
-      const fetchPromise = this.fetchImpl(request.url, {signal, ...init});
+      const fetchPromise = this.fetchImpl(request.urlWithParams, {signal, ...init});
 
       // Make sure Zone.js doesn't trigger false-positive unhandled promise
       // error in case the Promise is rejected synchronously. See function
@@ -81,7 +81,7 @@ export class FetchBackend implements HttpBackend {
         error,
         status: error.status ?? 0,
         statusText: error.statusText,
-        url: request.url,
+        url: request.urlWithParams,
         headers: error.headers,
       }));
       return;
@@ -89,7 +89,7 @@ export class FetchBackend implements HttpBackend {
 
     const headers = new HttpHeaders(response.headers);
     const statusText = response.statusText;
-    const url = getResponseUrl(response) ?? request.url;
+    const url = getResponseUrl(response) ?? request.urlWithParams;
 
     let status = response.status;
     let body: string|ArrayBuffer|Blob|object|null = null;
@@ -143,7 +143,7 @@ export class FetchBackend implements HttpBackend {
           headers: new HttpHeaders(response.headers),
           status: response.status,
           statusText: response.statusText,
-          url: getResponseUrl(response) ?? request.url,
+          url: getResponseUrl(response) ?? request.urlWithParams,
         }));
         return;
       }
