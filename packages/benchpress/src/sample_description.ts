@@ -7,33 +7,10 @@
  */
 
 
-import {Options} from './common_options';
-import {Metric} from './metric';
-import {Validator} from './validator';
-
-
 /**
  * SampleDescription merges all available descriptions about a sample
  */
 export class SampleDescription {
-  static PROVIDERS = [{
-    provide: SampleDescription,
-    useFactory:
-        (metric: Metric, id: string, forceGc: boolean, userAgent: string, validator: Validator,
-         defaultDesc: {[key: string]: string}, userDesc: {[key: string]: string}) =>
-            new SampleDescription(
-                id,
-                [
-                  {'forceGc': forceGc, 'userAgent': userAgent}, validator.describe(), defaultDesc,
-                  userDesc
-                ],
-                metric.describe()),
-    deps:
-        [
-          Metric, Options.SAMPLE_ID, Options.FORCE_GC, Options.USER_AGENT, Validator,
-          Options.DEFAULT_DESCRIPTION, Options.SAMPLE_DESCRIPTION
-        ]
-  }];
   description: {[key: string]: any};
 
   constructor(
