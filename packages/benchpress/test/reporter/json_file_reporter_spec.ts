@@ -54,12 +54,18 @@ import {Injector, JsonFileReporter, MeasureValues, Options, SampleDescription} f
           'description': {'a': 2},
           'metrics': {'a': 'script time', 'b': 'render time'}
         },
+        'metricsText': '                 a |                  b',
         'stats': {'a': '4.00+-25%', 'b': '7.50+-20%'},
+        'statsText': '         4.00+-25% |          7.50+-20%',
         'completeSample':
             [{'timeStamp': '1970-01-01T00:00:00.000Z', 'runIndex': 0, 'values': {'a': 3, 'b': 6}}],
         'validSample': [
           {'timeStamp': '1970-01-01T00:00:00.000Z', 'runIndex': 0, 'values': {'a': 3, 'b': 6}},
           {'timeStamp': '1970-01-01T00:00:00.001Z', 'runIndex': 1, 'values': {'a': 5, 'b': 9}}
+        ],
+        'validSampleTexts': [
+          '              3.00 |               6.00',
+          '              5.00 |               9.00',
         ]
       });
       done();

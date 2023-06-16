@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {COLUMN_WIDTH} from '@angular/benchpress/src/reporter/text_reporter_base';
 import {StaticProvider} from '@angular/core';
 
 import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../../index';
@@ -37,7 +38,7 @@ import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../..
         {provide: ConsoleReporter.PRINT, useValue: (line: string) => log.push(line)}
       ];
       if (columnWidth != null) {
-        providers.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue: columnWidth});
+        providers.push({provide: COLUMN_WIDTH, useValue: columnWidth});
       }
       reporter = Injector.create(providers).get(ConsoleReporter);
     }
@@ -49,7 +50,7 @@ import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../..
         descriptions: [{'a': 1, 'b': 2}],
         metrics: {'m1': 'some desc', 'm2': 'some other desc'}
       });
-      expect(log).toEqual([
+      expect(log).toEqual([[
         'BENCHMARK someSample',
         'Description:',
         '- a: 1',
@@ -60,7 +61,8 @@ import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../..
         '',
         '      m1 |       m2',
         '-------- | --------',
-      ]);
+        '',
+      ].join('\n')]);
     });
 
     it('should print a table row', () => {
