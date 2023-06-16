@@ -16,7 +16,7 @@ import {UserMetric} from './metric/user_metric';
 import {Reporter} from './reporter';
 import {ConsoleReporter} from './reporter/console_reporter';
 import {MultiReporter} from './reporter/multi_reporter';
-import {SampleDescription} from './sample_description';
+import {sampleDescriptionProviders} from './sample_description_providers';
 import {Sampler, SampleState} from './sampler';
 import {Validator} from './validator';
 import {RegressionSlopeValidator} from './validator/regression_slope_validator';
@@ -102,7 +102,7 @@ const _DEFAULT_PROVIDERS = [
   IOsDriverExtension.PROVIDERS,
   PerflogMetric.PROVIDERS,
   UserMetric.PROVIDERS,
-  SampleDescription.PROVIDERS,
+  sampleDescriptionProviders,
   MultiReporter.provideWith([ConsoleReporter]),
   MultiMetric.provideWith([PerflogMetric, UserMetric]),
   {provide: Reporter, useExisting: MultiReporter},
