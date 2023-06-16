@@ -11,7 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {Observable, of, Subject} from 'rxjs';
 import {catchError, retry, scan, skip, take, toArray} from 'rxjs/operators';
 
-import {HttpDownloadProgressEvent, HttpErrorResponse, HttpHeaderResponse, HttpStatusCode} from '../public_api';
+import {HttpDownloadProgressEvent, HttpErrorResponse, HttpHeaderResponse, HttpParams, HttpStatusCode} from '../public_api';
 import {FetchBackend, FetchFactory} from '../src/fetch';
 
 function trackEvents(obs: Observable<any>): Promise<any[]> {
@@ -92,6 +92,16 @@ describe('FetchBackend', async () => {
     callFetchAndFlush(TEST_POST);
     expect(fetchMock.request.method).toBe('POST');
     expect(fetchMock.request.url).toBe('/test');
+  });
+
+  it('use query params from request', () => {
+    const requestWithQuery = new HttpRequest('GET', '/test', 'some body', {
+      params: new HttpParams({fromObject: {query: 'foobar'}}),
+      responseType: 'text',
+    });
+    callFetchAndFlush(requestWithQuery);
+    expect(fetchMock.request.method).toBe('GET');
+    expect(fetchMock.request.url).toBe('/test?query=foobar');
   });
 
   it('sets outgoing body correctly', () => {
