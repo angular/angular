@@ -22,7 +22,7 @@ import type {UpdateOp} from './ops/update';
 export type Expression =
     LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
     ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
-    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr;
+    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -607,6 +607,26 @@ export class SafeTernaryExpr extends ExpressionBase {
   override clone(): SafeTernaryExpr {
     return new SafeTernaryExpr(this.guard.clone(), this.expr.clone());
   }
+}
+
+export class EmptyExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.EmptyExpr;
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof EmptyExpr;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override clone(): EmptyExpr {
+    return new EmptyExpr();
+  }
+
+  override transformInternalExpressions(): void {}
 }
 
 /**

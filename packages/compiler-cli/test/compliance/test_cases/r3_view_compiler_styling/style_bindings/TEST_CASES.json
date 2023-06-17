@@ -62,8 +62,7 @@
           "failureMessage": "Incorrect template",
           "files": ["empty_style_bindings.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
