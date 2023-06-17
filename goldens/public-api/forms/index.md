@@ -518,6 +518,9 @@ export interface FormRecord<TControl> {
     addControl(name: string, control: TControl, options?: {
         emitEvent?: boolean;
     }): void;
+    clearControls(options?: {
+        emitEvent?: boolean;
+    }): void;
     contains(controlName: string): boolean;
     getRawValue(): {
         [key: string]: ɵRawValue<TControl>;
