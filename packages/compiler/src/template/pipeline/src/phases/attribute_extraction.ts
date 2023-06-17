@@ -11,6 +11,16 @@ import * as ir from '../../ir';
 import {ComponentCompilation, ViewCompilation} from '../compilation';
 
 /**
+ * Find all attribute and binding ops, and collect them into the ElementAttribute structures.
+ * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
+ */
+export function phaseAttributeExtraction(cpl: ComponentCompilation, compatibility: boolean): void {
+  for (const [_, view] of cpl.views) {
+    populateElementAttributes(view, compatibility);
+  }
+}
+
+/**
  * Looks up an element in the given map by xref ID.
  */
 function lookupElement(
@@ -23,13 +33,14 @@ function lookupElement(
 }
 
 /**
- * Find all attribute and binding ops, and collect them into the ElementAttribute structures.
- * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
+ * Removes the op if its expression is empty.
  */
-export function phaseAttributeExtraction(cpl: ComponentCompilation, compatibility: boolean): void {
-  for (const [_, view] of cpl.views) {
-    populateElementAttributes(view, compatibility);
+function removeIfExpressionIsEmpty(op: ir.UpdateOp|ir.CreateOp, expression: o.Expression) {
+  if (expression instanceof ir.EmptyExpr) {
+    ir.OpList.remove(op as ir.UpdateOp);
+    return true;
   }
+  return false;
 }
 
 /**
@@ -52,6 +63,8 @@ function populateElementAttributes(view: ViewCompilation, compatibility: boolean
         ownerOp = lookupElement(elements, op.target);
         ir.assertIsElementAttributes(ownerOp.attributes);
 
+        // The old compiler only extracted string constants, so we emulate that behavior in
+        // compaitiblity mode, otherwise we optimize more aggressively.
         let extractable = compatibility ?
             (op.value instanceof o.LiteralExpr && typeof op.value.value === 'string') :
             (op.value.isConstant());
@@ -64,11 +77,27 @@ function populateElementAttributes(view: ViewCompilation, compatibility: boolean
         break;
 
       case ir.OpKind.Property:
+        ownerOp = lookupElement(elements, op.target);
+        ir.assertIsElementAttributes(ownerOp.attributes);
+        removeIfExpressionIsEmpty(op, op.expression);
+        ownerOp.attributes.add(op.bindingKind, op.name, null);
+        break;
+
       case ir.OpKind.InterpolateProperty:
         ownerOp = lookupElement(elements, op.target);
         ir.assertIsElementAttributes(ownerOp.attributes);
-
         ownerOp.attributes.add(op.bindingKind, op.name, null);
+        break;
+
+      case ir.OpKind.StyleProp:
+        ownerOp = lookupElement(elements, op.target);
+        ir.assertIsElementAttributes(ownerOp.attributes);
+
+        // The old compiler treated empty style bindings as regular bindings for the purpose of
+        // directive matching. That behavior is incorrect, but we emulate it in compatibility mode.
+        if (removeIfExpressionIsEmpty(op, op.expression) && compatibility) {
+          ownerOp.attributes.add(ir.ElementAttributeKind.Binding, op.name, null);
+        }
         break;
 
       case ir.OpKind.Listener:
