@@ -1054,6 +1054,28 @@ export class CommaExpr extends Expression {
   }
 }
 
+export class EmptyExpr extends Expression {
+  constructor(sourceSpan?: ParseSourceSpan|null) {
+    super(null, sourceSpan);
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof EmptyExpr;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override visitExpression(): any {
+    throw Error('Visiting EmptyExpr that should have been stripped');
+  }
+
+  override clone(): EmptyExpr {
+    return new EmptyExpr();
+  }
+}
+
 export interface ExpressionVisitor {
   visitReadVarExpr(ast: ReadVarExpr, context: any): any;
   visitWriteVarExpr(expr: WriteVarExpr, context: any): any;

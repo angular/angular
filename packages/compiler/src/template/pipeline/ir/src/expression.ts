@@ -729,7 +729,7 @@ export function transformExpressionsInExpression(
     }
   } else if (
       expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
-      expr instanceof o.LiteralExpr) {
+      expr instanceof o.LiteralExpr || expr instanceof o.EmptyExpr) {
     // No action for these types.
   } else {
     throw new Error(`Unhandled expression kind: ${expr.constructor.name}`);
