@@ -18,21 +18,35 @@ import {ComponentDependencies, DepsTrackerApi, NgModuleScope, StandaloneComponen
 class DepsTracker implements DepsTrackerApi {
   private ownerNgModule = new Map<ComponentType<any>, NgModuleType<any>>();
   private ngModulesScopeCache = new Map<NgModuleType<any>, NgModuleScope>();
-  private standaloneComponentsScopeCache = new Map<NgModuleType<any>, StandaloneComponentScope>();
+  private standaloneComponentsScopeCache = new Map<ComponentType<any>, StandaloneComponentScope>();
 
   /** @override */
-  getComponentDependencies(cmp: Type<any>): ComponentDependencies {
+  getComponentDependencies(cmp: ComponentType<any>): ComponentDependencies {
     // TODO: implement this.
     return {dependencies: []};
   }
 
   /** @override */
-  registerNgModule(type: Type<any>, scopeInfo: NgModuleScopeInfoFromDecorator): void {}
-
-  /** The main deps calculation takes place here. */
-  private getNgModuleScope(m: NgModuleType<any>): NgModuleScope {
+  registerNgModule(type: Type<any>, scopeInfo: NgModuleScopeInfoFromDecorator): void {
     // TODO: implement this.
-    return {exported: {}, compilation: {}};
+  }
+
+  /** @override */
+  clearScopeCacheFor(type: ComponentType<any>|NgModuleType): void {
+    // TODO: implement this.
+  }
+
+  /** @override */
+  getNgModuleScope(type: NgModuleType<any>): NgModuleScope {
+    // TODO: implement this.
+    return {exported: {directives: [], pipes: []}, compilation: {directives: [], pipes: []}};
+  }
+
+  /** @override */
+  getStandaloneComponentScope(type: ComponentType<any>, imports: Type<any>[]):
+      StandaloneComponentScope {
+    // TODO: implement this.
+    return {compilation: {directives: [], pipes: []}};
   }
 }
 
