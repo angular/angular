@@ -197,6 +197,11 @@ export enum ExpressionKind {
    * An intermediate expression that will be expanded from a safe read into an explicit ternary.
    */
   SafeTernaryExpr,
+
+  /**
+   * An empty expression that will be stipped before generating the final output.
+   */
+  EmptyExpr,
 }
 
 /**
