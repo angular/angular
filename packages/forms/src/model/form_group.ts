@@ -632,7 +632,14 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
  * @publicApi
  */
 export class FormRecord<TControl extends AbstractControl = AbstractControl> extends
-    FormGroup<{[key: string]: TControl}> {}
+    FormGroup<{[key: string]: TControl}> {
+  /**
+   * Private marker to differentiate `FormRecord` from `FormGroup` type.
+   *
+   * @private
+   */
+  private readonly _formRecordBrand = Symbol('FormRecordBrand');
+}
 
 export interface FormRecord<TControl> {
   /**
