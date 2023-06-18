@@ -638,7 +638,7 @@ export class FormRecord<TControl extends AbstractControl = AbstractControl> exte
    *
    * This is for internal Angular usage to support typed forms; do not directly use it.
    */
-  private readonly ɵformRecordBrand = Symbol('FormRecordBrand');
+  private readonly formRecordBrand!: unknown;
 }
 
 export interface FormRecord<TControl> {
