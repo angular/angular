@@ -474,7 +474,7 @@ In the logical tree, this is represented as follows:
   &lt;#VIEW&gt;
     &lt;p&gt;Emoji from FlowerService: {{flower.emoji}} (&#x1F33A;)&lt;/p&gt;
     &lt;app-child &commat;Provide(FlowerService="&#x1F33B;")
-               &commat;Inject(FlowerService)=&gt;"&#x1F33B;"&gt; &lt;!-- search ends here --&gt;
+               &commat;Inject(FlowerService) flower=&gt;"&#x1F33B;"&gt; &lt;!-- search ends here --&gt;
       &lt;#VIEW&gt; &lt;!-- search starts here --&gt;
         &lt;h2&gt;Parent Component&lt;/h2&gt;
         &lt;p&gt;Emoji from FlowerService: {{flower.emoji}} (&#x1F33B;)&lt;/p&gt;
@@ -556,9 +556,10 @@ The logic tree for this example of `viewProviders` is as follows:
 &lt;app-root &commat;NgModule(AppModule)
          &commat;Inject(AnimalService) animal=&gt;"&#x1F433;"&gt;
   &lt;#VIEW&gt;
+    &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F433;)&lt;/p&gt;
     &lt;app-child&gt;
       &lt;#VIEW &commat;Provide(AnimalService="&#x1F436;")
-            &commat;Inject(AnimalService=&gt;"&#x1F436;")&gt;
+            &commat;Inject(AnimalService) animal=&gt;"&#x1F436;"&gt;
        &lt;!-- ^^using viewProviders means AnimalService is available in &lt;#VIEW&gt;--&gt;
        &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
       &lt;/#VIEW&gt;
@@ -633,7 +634,7 @@ The `AnimalService` in the logical tree would look like this:
   &lt;#VIEW&gt;
     &lt;app-child&gt;
       &lt;#VIEW &commat;Provide(AnimalService="&#x1F436;")
-            &commat;Inject(AnimalService=&gt;"&#x1F436;")&gt;
+            &commat;Inject(AnimalService) animal=&gt;"&#x1F436;"&gt;
         &lt;!-- ^^using viewProviders means AnimalService is available in &lt;#VIEW&gt;--&gt;
         &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
   
@@ -644,12 +645,12 @@ The `AnimalService` in the logical tree would look like this:
           &lt;/app-inspector&gt;
         &lt;/div&gt;
   
-      &lt;/#VIEW&gt;
-      &lt;app-inspector&gt;
+      &lt;app-inspector &commat;Inject(AnimalService) animal=&gt;"&#x1F436;"&gt;
         &lt;#VIEW&gt;
           &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
         &lt;/#VIEW&gt;
       &lt;/app-inspector&gt;
+      &lt;/#VIEW&gt;
     &lt;/app-child&gt;
   &lt;/#VIEW&gt;
 &lt;/app-root&gt;
@@ -698,7 +699,7 @@ In a logical tree, this same idea might look like this:
         &commat;Inject(FlowerService) flower=&gt;"&#x1F33A;"&gt;
   &lt;#VIEW&gt;
     &lt;app-child &commat;Provide(FlowerService="&#x1F33B;")&gt;
-      &lt;#VIEW &commat;Inject(FlowerService, SkipSelf)=&gt;"&#x1F33A;"&gt;
+      &lt;#VIEW &commat;Inject(FlowerService, SkipSelf) flower=&gt;"&#x1F33A;"&gt;
         &lt;!-- With SkipSelf, the injector looks to the next injector up the tree --&gt;
       &lt;/#VIEW&gt;
     &lt;/app-child&gt;
@@ -719,7 +720,7 @@ Here's the idea in the logical tree:
         &commat;Inject(FlowerService) flower=&gt;"&#x1F33A;"&gt;
   &lt;#VIEW&gt; &lt;!-- end search here with null--&gt;
     &lt;app-child &commat;Provide(FlowerService="&#x1F33B;")&gt; &lt;!-- start search here --&gt;
-      &lt;#VIEW &commat;Inject(FlowerService, &commat;SkipSelf, &commat;Host, &commat;Optional)=&gt;null&gt;
+      &lt;#VIEW &commat;Inject(FlowerService, &commat;SkipSelf, &commat;Host, &commat;Optional) flower=&gt;null&gt;
       &lt;/#VIEW&gt;
       &lt;/app-parent&gt;
   &lt;/#VIEW&gt;
@@ -773,11 +774,11 @@ The logical tree looks like this with `@SkipSelf()` in `<app-child>`:
 <code-example format="html" language="html">
 
 &lt;app-root &commat;NgModule(AppModule)
-          &commat;Inject(AnimalService=&gt;"&#x1F433;")&gt;
+          &commat;Inject(AnimalService) animal=&gt;"&#x1F433;"&gt;
   &lt;#VIEW&gt;&lt;!-- search begins here --&gt;
     &lt;app-child&gt;
       &lt;#VIEW &commat;Provide(AnimalService="&#x1F436;")
-             &commat;Inject(AnimalService, SkipSelf=&gt;"&#x1F433;")&gt;
+             &commat;Inject(AnimalService, SkipSelf) animal=&gt;"&#x1F433;"&gt;
         &lt;!--Add &commat;SkipSelf --&gt;
       &lt;/#VIEW&gt;
     &lt;/app-child&gt;
@@ -813,11 +814,11 @@ export class ChildComponent {
 <code-example format="html" language="html">
 
 &lt;app-root &commat;NgModule(AppModule)
-          &commat;Inject(AnimalService=&gt;"&#x1F433;")&gt;
+          &commat;Inject(AnimalService) animal=&gt;"&#x1F433;"&gt;
   &lt;#VIEW&gt;
     &lt;app-child&gt;
       &lt;#VIEW &commat;Provide(AnimalService="&#x1F436;")
-             &commat;Inject(AnimalService, &commat;Host=&gt;"&#x1F436;")&gt; &lt;!-- &commat;Host stops search here --&gt;
+             &commat;Inject(AnimalService, &commat;Host) animal=&gt;"&#x1F436;"&gt; &lt;!-- &commat;Host stops search here --&gt;
       &lt;/#VIEW&gt;
     &lt;/app-child&gt;
   &lt;/#VIEW&gt;
@@ -862,13 +863,13 @@ The logical tree representation shows why this is:
 <code-example format="html" language="html">
 
 &lt;app-root &commat;NgModule(AppModule)
-        &commat;Inject(AnimalService=&gt;"&#x1F433;")&gt;
+        &commat;Inject(AnimalService) animal=&gt;"&#x1F433;"&gt;
   &lt;#VIEW &commat;Provide(AnimalService="&#x1F994;")
-         &commat;Inject(AnimalService, &commat;Optional)=&gt;"&#x1F994;"&gt;
+         &commat;Inject(AnimalService, &commat;Optional) animal=&gt;"&#x1F994;"&gt;
     &lt;!-- ^^&commat;SkipSelf() starts here,  &commat;Host() stops here^^ --&gt;
     &lt;app-child&gt;
       &lt;#VIEW &commat;Provide(AnimalService="&#x1F436;")
-             &commat;Inject(AnimalService, &commat;SkipSelf, &commat;Host, &commat;Optional)=&gt;"&#x1F994;"&gt;
+             &commat;Inject(AnimalService, &commat;SkipSelf, &commat;Host, &commat;Optional) animal=&gt;"&#x1F994;"&gt;
                &lt;!-- Add &commat;SkipSelf ^^--&gt;
       &lt;/#VIEW&gt;
       &lt;/app-child&gt;
