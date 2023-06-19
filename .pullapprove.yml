@@ -781,8 +781,9 @@ groups:
           ])
     reviewers:
       users:
-        - alxhub
+        - devversion
         - josephperrott
+        - pkozlowski-opensource
 
   # =========================================================
   #  Integration Tests
