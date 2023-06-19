@@ -99,6 +99,11 @@ export enum OpKind {
   InterpolateProperty,
 
   /**
+   * An operation to interpolate text into a style property binding.
+   */
+  InterpolateStyleProp,
+
+  /**
    * An operation to advance the runtime's implicit slot context during the update phase of a view.
    */
   Advance,
