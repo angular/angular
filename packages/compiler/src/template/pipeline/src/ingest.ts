@@ -262,9 +262,17 @@ function ingestPropertyBinding(
   if (value instanceof e.Interpolation) {
     switch (type) {
       case e.BindingType.Property:
-        view.update.push(ir.createInterpolatePropertyOp(
-            xref, bindingKind, name, value.strings,
-            value.expressions.map(expr => convertAst(expr, view.tpl))));
+        if (name === 'style') {
+          if (bindingKind !== ir.ElementAttributeKind.Binding) {
+            throw Error('Unexpected style binding on ng-template');
+          }
+          view.update.push(ir.createInterpolateStyleMapOp(
+              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+        } else {
+          view.update.push(ir.createInterpolatePropertyOp(
+              xref, bindingKind, name, value.strings,
+              value.expressions.map(expr => convertAst(expr, view.tpl))));
+        }
         break;
       case e.BindingType.Style:
         if (bindingKind !== ir.ElementAttributeKind.Binding) {
