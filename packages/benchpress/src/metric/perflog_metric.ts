@@ -72,13 +72,15 @@ export class PerflogMetric extends Metric {
   override describe(): {[key: string]: string} {
     const res: {[key: string]: any} = {
       'scriptTime': 'script execution time in ms, including gc and render',
-      'pureScriptTime': 'script execution time in ms, without gc nor render'
+      'pureScriptTime': 'script execution time in ms, without gc nor render',
     };
     if (this._perfLogFeatures.render) {
       res['renderTime'] = 'render time in ms';
+      res['renderTimeInScript'] = 'render time in ms while executing script (usually means reflow)';
     }
     if (this._perfLogFeatures.gc) {
       res['gcTime'] = 'gc time in ms';
+      res['gcTimeInScript'] = 'gc time in ms while executing scripts';
       res['gcAmount'] = 'gc amount in kbytes';
       res['majorGcTime'] = 'time of major gcs in ms';
       if (this._forceGc) {
@@ -380,7 +382,11 @@ export class PerflogMetric extends Metric {
     if (frameTimes.length > 0) {
       this._addFrameMetrics(result, frameTimes);
     }
+
+    result['renderTimeInScript'] = renderTimeInScript;
+    result['gcTimeInScript'] = gcTimeInScript;
     result['pureScriptTime'] = result['scriptTime'] - gcTimeInScript - renderTimeInScript;
+
     return result;
   }
 
