@@ -86,8 +86,7 @@ async function prepareForGitHubAction(commentBody: string): Promise<void> {
   }
 
   const git = await GitClient.get();
-  const compareRefRaw = matches[1];
-  const benchmarkTarget = matches[2];
+  const [_, compareRefRaw, benchmarkTarget] = matches;
 
   // We assume the PR is checked out and therefore `HEAD` is the PR head SHA.
   const prHeadSha = git.run(['rev-parse', 'HEAD']).stdout.trim();
