@@ -97,8 +97,8 @@ async function prepareForGitHubAction(commentBody: string): Promise<void> {
   // Attempt to find the compare SHA. The commit may be either part of the
   // pull request, or might be a commit unrelated to the PR- but part of the
   // upstream repository. We attempt to fetch/resolve the SHA in both remotes.
-  let compareRefSha: string | null = git.runGraceful(['rev-parse', compareRefRaw]).stdout.trim();
-  if (compareRefSha == null) {
+  let compareRefSha: string = git.runGraceful(['rev-parse', compareRefRaw]).stdout.trim();
+  if (compareRefSha === '') {
     git.run(['fetch', '--depth=1', git.getRepoGitUrl(), compareRefRaw]);
     compareRefSha = git.run(['rev-parse', 'FETCH_HEAD']).stdout.trim();
   }
