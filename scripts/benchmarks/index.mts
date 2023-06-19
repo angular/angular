@@ -30,7 +30,11 @@ await yargs(process.argv.slice(2))
     'Runs a benchmark between two SHAs',
     (argv) =>
       argv
-        .positional('compare-ref', {description: 'Comparison SHA', type: 'string', demandOption: true})
+        .positional('compare-ref', {
+          description: 'Comparison SHA',
+          type: 'string',
+          demandOption: true,
+        })
         .positional('bazel-target', {description: 'Bazel target', type: 'string'}),
     (args) => runCompare(args.bazelTarget, args.compareRef)
   )
@@ -149,18 +153,18 @@ async function runCompare(bazelTargetRaw: string | undefined, compareRef: string
   // If we are running in a GitHub action, expose the benchmark text
   // results as outputs. Useful if those are exposed as a GitHub comment then.
   if (process.env.GITHUB_ACTION !== undefined) {
-    setOutput('comparisonResultsText', comparisonResults.textSummary);
-    setOutput('workingStageResultsText', workingDirResults.textSummary);
+    setOutput('comparisonResultsText', comparisonResults.summaryMarkdownText);
+    setOutput('workingStageResultsText', workingDirResults.summaryMarkdownText);
   }
 
   Log.info('\n\n\n');
   Log.info(bold(green('Results!')));
 
   Log.info(bold(yellow('Comparison results')), '\n');
-  Log.info(comparisonResults.textSummary);
+  Log.info(comparisonResults.summaryConsoleText);
 
   Log.info(bold(yellow('Working stage results')), '\n');
-  Log.info(workingDirResults.textSummary);
+  Log.info(workingDirResults.summaryConsoleText);
 }
 
 function restoreWorkingStage(git: GitClient, initialRef: string) {

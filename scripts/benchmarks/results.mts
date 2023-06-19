@@ -10,12 +10,14 @@ import path from 'path';
 import Zip from 'adm-zip';
 
 import type {JsonReport} from '../../packages/benchpress/src/reporter/json_file_reporter_types.js';
+import {bold} from '@angular/ng-dev';
 
 /** Results of an individual benchmark scenario. */
 export interface ScenarioResult {
   id: string;
   data: JsonReport;
-  textSummary: string;
+  summaryConsoleText: string;
+  summaryMarkdownText: string;
 }
 
 /**
@@ -24,7 +26,8 @@ export interface ScenarioResult {
  */
 export interface OverallResult {
   scenarios: ScenarioResult[];
-  textSummary: string;
+  summaryConsoleText: string;
+  summaryMarkdownText: string;
 }
 
 /** Collects and parses the benchmark results of the given Bazel target testlog directory. */
@@ -47,13 +50,38 @@ export function collectBenchmarkResults(testlogDir: string): OverallResult {
     scenarioResults.push({
       id: data.description.id,
       data,
-      textSummary: `${data.metricsText}\n${data.validSampleTexts.join('\n')}\n${data.statsText}`,
+      // Output used for console output when running locally/CI.
+      summaryConsoleText: `\
+${data.metricsText}
+${data.validSampleTexts.join('\n')}
+${data.statsText}`,
+      // Output used for e.g. GitHub actions.
+      summaryMarkdownText: `\
+<details><summary>Full example results</summary>
+
+\`\`\`
+${data.metricsText}
+${data.validSampleTexts.join('\n')}
+${data.statsText}
+\`\`\`
+
+</details>
+
+\`\`\`
+${data.metricsText}
+${data.statsText}
+\`\`\``,
     });
   }
 
   return {
     scenarios: scenarioResults,
-    textSummary: scenarioResults.map((s) => `### ${s.id}\n\n${s.textSummary}`).join('`\n'),
+    summaryConsoleText: scenarioResults
+      .map((s) => `${bold(s.id)}\n\n${s.summaryConsoleText}`)
+      .join('`\n'),
+    summaryMarkdownText: scenarioResults
+      .map((s) => `### ${s.id}\n\n${s.summaryMarkdownText}`)
+      .join('`\n'),
   };
 }
 
