@@ -134,6 +134,9 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(
             op, ng.stylePropInterpolate(op.name, op.strings, op.expressions, op.unit));
         break;
+      case ir.OpKind.InterpolateStyleMap:
+        ir.OpList.replace(op, ng.styleMapInterpolate(op.strings, op.expressions));
+        break;
       case ir.OpKind.InterpolateText:
         ir.OpList.replace(op, ng.textInterpolate(op.strings, op.expressions));
         break;
