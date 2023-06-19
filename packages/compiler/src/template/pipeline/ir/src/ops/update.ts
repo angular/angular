@@ -18,7 +18,8 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  * An operation usable on the update side of the IR.
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|StylePropOp|StyleMapOp|
-    InterpolatePropertyOp|AttributeOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
+    InterpolatePropertyOp|InterpolateStylePropOp|AttributeOp|InterpolateTextOp|AdvanceOp|
+    VariableOp<UpdateOp>;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -133,7 +134,7 @@ export interface StylePropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnS
   expression: o.Expression;
 
   /**
-   * The unit of the expression value.
+   * The unit of the bound value.
    */
   unit: string|null;
 }
@@ -281,7 +282,61 @@ export function createInterpolatePropertyOp(
   };
 }
 
+/**
+ * A logical operation representing binding an interpolation to a style property in the update IR.
+ */
+export interface InterpolateStylePropOp extends Op<UpdateOp>, ConsumesVarsTrait,
+                                                DependsOnSlotContextOpTrait {
+  kind: OpKind.InterpolateStyleProp;
 
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Name of the bound property.
+   */
+  name: string;
+
+  /**
+   * All of the literal strings in the property interpolation, in order.
+   *
+   * Conceptually interwoven around the `expressions`.
+   */
+  strings: string[];
+
+  /**
+   * All of the dynamic expressions in the property interpolation, in order.
+   *
+   * Conceptually interwoven in between the `strings`.
+   */
+  expressions: o.Expression[];
+
+  /**
+   * The unit of the bound value.
+   */
+  unit: string|null;
+}
+
+/**
+ * Create a `InterpolateStyleProp`.
+ */
+export function createInterpolateStylePropOp(
+    xref: XrefId, name: string, strings: string[], expressions: o.Expression[],
+    unit: string|null): InterpolateStylePropOp {
+  return {
+    kind: OpKind.InterpolateStyleProp,
+    target: xref,
+    name,
+    strings,
+    expressions,
+    unit,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
 
 /**
  * Logical operation to advance the runtime's internal slot pointer in the update IR.

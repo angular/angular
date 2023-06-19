@@ -70,6 +70,7 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
       // `ir.InterpolateTextOp`s use a variable slot for each dynamic expression.
       return op.expressions.length;
     case ir.OpKind.InterpolateProperty:
+    case ir.OpKind.InterpolateStyleProp:
       // `ir.InterpolatePropertyOp`s use a variable slot for each dynamic expression, plus one for
       // the result.
       return 1 + op.expressions.length;
