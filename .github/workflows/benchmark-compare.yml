@@ -44,17 +44,11 @@ jobs:
         with:
           bazelrc: ./.bazelrc.user
 
-      - name: Extracting comment information
+      - name: Preparing benchmark for GitHub action
         id: info
-        run: yarn benchmarks extract-compare-comment "${{github.event.comment.body}}"
+        run: yarn benchmarks prepare-for-github-action "${{github.event.comment.body}}"
 
-      - name: Resolving current PR SHA
-        id: refs
-        run: |
-          echo "prSha=$(git rev-parse ${{steps.comment-branch.outputs.head_ref}})" >> "$GITHUB_OUTPUT"
-          echo "compareSha=$(git rev-parse ${{steps.info.outputs.compareRef}})" >> "$GITHUB_OUTPUT"
-
-      - run: yarn benchmarks run-compare ${{steps.refs.outputs.compareSha}} ${{steps.info.outputs.benchmarkTarget}}
+      - run: yarn benchmarks run-compare ${{steps.info.outputs.compareSha}} ${{steps.info.outputs.benchmarkTarget}}
         id: benchmark
         name: Running benchmark
 
@@ -66,8 +60,8 @@ jobs:
             ## Benchmark Test Results
             **Test**: `${{steps.info.outputs.benchmarkTarget}}`
 
-            ### PR (${{steps.refs.outputs.prSha}})
+            ### PR (${{steps.info.outputs.prHeadSha}})
             ${{steps.benchmark.outputs.workingStageResultsText}}
 
-            ### Compare Ref (${{steps.refs.outputs.compareSha}})
+            ### Compare Ref (${{steps.info.outputs.compareSha}})
             ${{steps.benchmark.outputs.comparisonResultsText}}
