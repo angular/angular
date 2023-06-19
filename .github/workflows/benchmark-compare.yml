@@ -27,11 +27,13 @@ jobs:
           token: '${{secrets.GITHUB_TOKEN}}'
           reactions: 'rocket'
 
-      - uses: xt0rted/pull-request-comment-branch@d97294d304604fa98a2600a6e2f916a84b596dc7 # v2
+      - uses: alessbell/pull-request-comment-branch@v1.1
         id: comment-branch
 
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
         with:
+          # Specify repository as the PR branch might be from a fork.
+          repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
           # Checkout the pull request and assume it being trusted given we've checked
           # that the action was triggered by a team member.
           ref: ${{steps.comment-branch.outputs.head_ref}}
