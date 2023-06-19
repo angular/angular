@@ -153,9 +153,26 @@ import {TraceEventFactory} from '../trace_event_factory';
           .then((events) => {
             expect(events.length).toEqual(2);
             expect(events[0]).toEqual(
-                normEvents.start('gc', 1.0, {'usedHeapSize': 1000, 'majorGc': false}));
+                normEvents.start('gc', 1.0, {'usedHeapSize': 1000, 'majorGc': false, gcAmount: 0}));
             expect(events[1]).toEqual(
-                normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': false}));
+                normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': false, gcAmount: 0}));
+            done();
+          });
+    });
+
+    it('should report minor gc with GC amount', done => {
+      createExtension([
+        chromeTimelineV8Events.create(
+            'X', 'MinorGC', 1000, {'usedHeapSizeBefore': 5000, 'usedHeapSizeAfter': 2000}),
+      ])
+          .readPerfLog()
+          .then((events) => {
+            expect(events.length).toEqual(1);
+            expect(events[0]).toEqual({
+              ...normEvents.create(
+                  'X', 'gc', 1.0, {'usedHeapSize': 2000, 'majorGc': false, gcAmount: 3000}),
+              dur: 0
+            });
             done();
           });
     });
@@ -171,9 +188,26 @@ import {TraceEventFactory} from '../trace_event_factory';
           .then((events) => {
             expect(events.length).toEqual(2);
             expect(events[0]).toEqual(
-                normEvents.start('gc', 1.0, {'usedHeapSize': 1000, 'majorGc': true}));
+                normEvents.start('gc', 1.0, {'usedHeapSize': 1000, 'majorGc': true, gcAmount: 0}));
             expect(events[1]).toEqual(
-                normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': true}));
+                normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': true, gcAmount: 0}));
+            done();
+          });
+    });
+
+    it('should report major gc with GC amount', done => {
+      createExtension([
+        chromeTimelineV8Events.create(
+            'X', 'MajorGC', 1000, {'usedHeapSizeBefore': 5000, 'usedHeapSizeAfter': 2000}),
+      ])
+          .readPerfLog()
+          .then((events) => {
+            expect(events.length).toEqual(1);
+            expect(events[0]).toEqual({
+              ...normEvents.create(
+                  'X', 'gc', 1.0, {'usedHeapSize': 2000, 'majorGc': true, gcAmount: 3000}),
+              dur: 0
+            });
             done();
           });
     });

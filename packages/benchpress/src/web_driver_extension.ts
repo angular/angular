@@ -21,6 +21,7 @@ export type PerfLogEvent = {
   args?: {
     encodedDataLength?: number,
     usedHeapSize?: number,
+    gcAmount?: number,
     majorGc?: boolean,
     url?: string,
     method?: string

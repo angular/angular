@@ -147,19 +147,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
             categories, name, ['disabled-by-default-devtools.timeline'], 'CompositeLayers')) {
       return normalizeEvent(event, {'name': 'render'});
     } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MajorGC')) {
-      const normArgs = {
-        'majorGc': true,
-        'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
-                                                                  args['usedHeapSizeBefore']
-      };
-      return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
+      return normalizeGCEvent(event, true);
     } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MinorGC')) {
-      const normArgs = {
-        'majorGc': false,
-        'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
-                                                                  args['usedHeapSizeBefore']
-      };
-      return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
+      return normalizeGCEvent(event, false);
     } else if (
         this._isEvent(categories, name, ['devtools.timeline'], 'FunctionCall') &&
         (!args || !args['data'] ||
@@ -241,4 +231,26 @@ function normalizeEvent(chromeEvent: {[key: string]: any}, data: PerfLogEvent): 
     result[prop] = data[prop];
   }
   return result;
+}
+
+function normalizeGCEvent(chromeEvent: {[key: string]: any}, majorGc: boolean) {
+  const args = chromeEvent['args'];
+  const heapSizeBefore = args['usedHeapSizeBefore'];
+  const heapSizeAfter = args['usedHeapSizeAfter'];
+
+  if (heapSizeBefore === undefined && heapSizeAfter === undefined) {
+    throw new Error(
+        `GC event didn't specify heap size to calculate amount of collected memory. Expected one of usedHeapSizeBefore / usedHeapSizeAfter arguments but got ${
+            JSON.stringify(args)}`);
+  }
+
+  const normalizedArgs = {
+    'majorGc': majorGc,
+    'usedHeapSize': heapSizeAfter !== undefined ? heapSizeAfter : heapSizeBefore,
+    'gcAmount': heapSizeBefore !== undefined && heapSizeAfter !== undefined ?
+        heapSizeBefore - heapSizeAfter :
+        0,
+  };
+
+  return normalizeEvent(chromeEvent, {'name': 'gc', 'args': normalizedArgs});
 }
