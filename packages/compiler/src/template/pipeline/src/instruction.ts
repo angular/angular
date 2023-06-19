@@ -221,6 +221,12 @@ export function stylePropInterpolate(
       STYLE_PROP_INTERPOLATE_CONFIG, [o.literal(name)], interpolationArgs, extraArgs);
 }
 
+export function styleMapInterpolate(strings: string[], expressions: o.Expression[]): ir.UpdateOp {
+  const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
+  return callVariadicInstruction(STYLE_MAP_INTERPOLATE_CONFIG, [], interpolationArgs);
+}
+
 export function pureFunction(
     varOffset: number, fn: o.Expression, args: o.Expression[]): o.Expression {
   return callVariadicInstructionExpr(
@@ -326,7 +332,7 @@ const PROPERTY_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
  */
 const STYLE_PROP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   constant: [
-    null!,  // Interpolation with 0 variables is not supported.
+    null!,  // Single argument stylePropInterpolate is converted to styleProp instruction.
     Identifiers.stylePropInterpolate1,
     Identifiers.stylePropInterpolate2,
     Identifiers.stylePropInterpolate3,
@@ -337,6 +343,33 @@ const STYLE_PROP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     Identifiers.stylePropInterpolate8,
   ],
   variable: Identifiers.stylePropInterpolateV,
+  mapping: n => {
+    if (n % 2 === 0) {
+      throw new Error(`Expected odd number of arguments`);
+    }
+    if (n < 3) {
+      throw new Error(`Expected at least 3 arguments`);
+    }
+    return (n - 1) / 2;
+  },
+};
+
+/**
+ * `InterpolationConfig` for the `styleMapInterpolate` instruction.
+ */
+const STYLE_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
+  constant: [
+    null!,  // Single argument styleMapInterpolate is converted to styleMap instruction.
+    Identifiers.styleMapInterpolate1,
+    Identifiers.styleMapInterpolate2,
+    Identifiers.styleMapInterpolate3,
+    Identifiers.styleMapInterpolate4,
+    Identifiers.styleMapInterpolate5,
+    Identifiers.styleMapInterpolate6,
+    Identifiers.styleMapInterpolate7,
+    Identifiers.styleMapInterpolate8,
+  ],
+  variable: Identifiers.styleMapInterpolateV,
   mapping: n => {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);

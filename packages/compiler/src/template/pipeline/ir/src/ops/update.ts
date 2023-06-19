@@ -18,8 +18,8 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  * An operation usable on the update side of the IR.
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|StylePropOp|StyleMapOp|
-    InterpolatePropertyOp|InterpolateStylePropOp|AttributeOp|InterpolateTextOp|AdvanceOp|
-    VariableOp<UpdateOp>;
+    InterpolatePropertyOp|InterpolateStylePropOp|InterpolateStyleMapOp|AttributeOp|
+    InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -337,6 +337,50 @@ export function createInterpolateStylePropOp(
     ...NEW_OP,
   };
 }
+
+/**
+ * A logical operation representing binding an interpolation to a style mapping in the update IR.
+ */
+export interface InterpolateStyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait,
+                                               DependsOnSlotContextOpTrait {
+  kind: OpKind.InterpolateStyleMap;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * All of the literal strings in the property interpolation, in order.
+   *
+   * Conceptually interwoven around the `expressions`.
+   */
+  strings: string[];
+
+  /**
+   * All of the dynamic expressions in the property interpolation, in order.
+   *
+   * Conceptually interwoven in between the `strings`.
+   */
+  expressions: o.Expression[];
+}
+
+/**
+ * Create a `InterpolateStyleMap`.
+ */
+export function createInterpolateStyleMapOp(
+    xref: XrefId, strings: string[], expressions: o.Expression[]): InterpolateStyleMapOp {
+  return {
+    kind: OpKind.InterpolateStyleMap,
+    target: xref,
+    strings,
+    expressions,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
 
 /**
  * Logical operation to advance the runtime's internal slot pointer in the update IR.
