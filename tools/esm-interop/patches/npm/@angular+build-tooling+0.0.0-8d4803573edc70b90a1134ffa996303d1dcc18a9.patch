@@ -1,14 +1,3 @@
-diff --git a/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl b/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
-index 6cee158..815a55d 100755
---- a/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
-+++ b/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
-@@ -1,5 +1,5 @@
- load("@npm//@angular/build-tooling/bazel:extract_types.bzl", "extract_types")
--load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
-+load("@angular//tools/esm-interop:index.bzl", "nodejs_binary", "nodejs_test")
- 
- nodejs_test_args = [
-     # Needed so that node doesn't walk back to the source directory.
 diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/app-bundling/BUILD.bazel
 index 1c27a95..c239203 100755
 --- a/node_modules/@angular/build-tooling/bazel/app-bundling/BUILD.bazel
@@ -23,9 +12,7 @@ diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.conf
 index f006d34..c17cefe 100755
 --- a/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
 +++ b/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
-@@ -7,7 +7,7 @@
-  */
- 
+@@ -9,5 +9,5 @@
  import {createEsbuildAngularOptimizePlugin} from '@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs';
 -import {GLOBAL_DEFS_FOR_TERSER_WITH_AOT} from '@angular/compiler-cli/private/tooling';
 +import {GLOBAL_DEFS_FOR_TERSER_WITH_AOT} from '@angular/compiler-cli/private/tooling.mjs';
