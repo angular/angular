@@ -69,6 +69,9 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
     case ir.OpKind.Attribute:
       // Attribute bindings use 1 variable slot.
       return 1;
+    case ir.OpKind.ClassMap:
+      // TODO: explain why 2.
+      return 2;
     case ir.OpKind.InterpolateText:
       // `ir.InterpolateTextOp`s use a variable slot for each dynamic expression.
       return op.expressions.length;
