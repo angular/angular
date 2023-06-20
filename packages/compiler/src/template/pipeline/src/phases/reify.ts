@@ -124,6 +124,9 @@ function reifyUpdateOperations(_view: ViewCompilation, ops: ir.OpList<ir.UpdateO
       case ir.OpKind.StyleProp:
         ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit));
         break;
+      case ir.OpKind.ClassProp:
+        ir.OpList.replace(op, ng.classProp(op.name, op.expression));
+        break;
       case ir.OpKind.StyleMap:
         ir.OpList.replace(op, ng.styleMap(op.expression));
         break;
