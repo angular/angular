@@ -152,6 +152,10 @@ export function styleProp(name: string, expression: o.Expression, unit: string|n
   return call(Identifiers.styleProp, args);
 }
 
+export function classProp(name: string, expression: o.Expression): ir.UpdateOp {
+  return call(Identifiers.classProp, [o.literal(name), expression]);
+}
+
 export function styleMap(expression: o.Expression): ir.UpdateOp {
   return call(Identifiers.styleMap, [expression]);
 }

@@ -90,6 +90,7 @@ function populateElementAttributes(view: ViewCompilation, compatibility: boolean
         break;
 
       case ir.OpKind.StyleProp:
+      case ir.OpKind.ClassProp:
         ownerOp = lookupElement(elements, op.target);
         ir.assertIsElementAttributes(ownerOp.attributes);
 
