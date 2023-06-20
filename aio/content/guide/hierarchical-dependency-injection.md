@@ -556,6 +556,7 @@ The logic tree for this example of `viewProviders` is as follows:
 &lt;app-root &commat;NgModule(AppModule)
          &commat;Inject(AnimalService)=&gt;"&#x1F433;"&gt;
   &lt;#VIEW&gt;
+    &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F433;)&lt;/p&gt;
     &lt;app-child&gt;
       &lt;#VIEW &commat;Provide(AnimalService="&#x1F436;")
             &commat;Inject(AnimalService)=&gt;"&#x1F436;"&gt;
@@ -644,7 +645,7 @@ The `AnimalService` in the logical tree would look like this:
           &lt;/app-inspector&gt;
         &lt;/div&gt;
   
-        &lt;app-inspector&gt;
+        &lt;app-inspector &commat;Inject(AnimalService) animal=&gt;"&#x1F436;"&gt;
           &lt;#VIEW &commat;Inject(AnimalService) animal=&gt;"&#x1F436;"&gt;
           &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
         &lt;/#VIEW&gt;
