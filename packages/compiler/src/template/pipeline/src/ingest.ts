@@ -271,6 +271,12 @@ function ingestPropertyBinding(
           }
           view.update.push(ir.createInterpolateStyleMapOp(
               xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
+        } else if (name === 'class') {
+          if (bindingKind !== ir.ElementAttributeKind.Binding) {
+            throw Error('Unexpected class binding on ng-template');
+          }
+          view.update.push(ir.createInterpolateClassMapOp(
+              xref, value.strings, value.expressions.map(expr => convertAst(expr, view.tpl))));
         } else {
           view.update.push(ir.createInterpolatePropertyOp(
               xref, bindingKind, name, value.strings,

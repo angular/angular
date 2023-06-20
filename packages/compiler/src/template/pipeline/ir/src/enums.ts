@@ -114,6 +114,11 @@ export enum OpKind {
   InterpolateStyleMap,
 
   /**
+   * An operation to interpolate text into a class mapping.
+   */
+  InterpolateClassMap,
+
+  /**
    * An operation to advance the runtime's implicit slot context during the update phase of a view.
    */
   Advance,

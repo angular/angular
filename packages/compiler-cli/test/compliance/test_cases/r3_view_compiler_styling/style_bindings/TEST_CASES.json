@@ -19,8 +19,7 @@
           "failureMessage": "Incorrect template",
           "files": ["binding_slots.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should place initial, multi, singular and application followed by attribute style instructions in the template code in that order",
