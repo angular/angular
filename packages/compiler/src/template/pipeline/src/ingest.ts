@@ -307,6 +307,11 @@ function ingestPropertyBinding(
             throw Error('Unexpected style binding on ng-template');
           }
           view.update.push(ir.createStyleMapOp(xref, convertAst(value, view.tpl)));
+        } else if (name === 'class') {
+          if (bindingKind !== ir.ElementAttributeKind.Binding) {
+            throw Error('Unexpected class binding on ng-template');
+          }
+          view.update.push(ir.createClassMapOp(xref, convertAst(value, view.tpl)));
         } else {
           view.update.push(
               ir.createPropertyOp(xref, bindingKind, name, convertAst(value, view.tpl)));

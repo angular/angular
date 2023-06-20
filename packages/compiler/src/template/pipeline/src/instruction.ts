@@ -156,6 +156,10 @@ export function styleMap(expression: o.Expression): ir.UpdateOp {
   return call(Identifiers.styleMap, [expression]);
 }
 
+export function classMap(expression: o.Expression): ir.UpdateOp {
+  return call(Identifiers.classMap, [expression]);
+}
+
 const PIPE_BINDINGS: o.ExternalReference[] = [
   Identifiers.pipeBind1,
   Identifiers.pipeBind2,
