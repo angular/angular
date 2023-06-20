@@ -243,6 +243,12 @@ export function styleMapInterpolate(strings: string[], expressions: o.Expression
   return callVariadicInstruction(STYLE_MAP_INTERPOLATE_CONFIG, [], interpolationArgs);
 }
 
+export function classMapInterpolate(strings: string[], expressions: o.Expression[]): ir.UpdateOp {
+  const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
+  return callVariadicInstruction(CLASS_MAP_INTERPOLATE_CONFIG, [], interpolationArgs);
+}
+
 export function pureFunction(
     varOffset: number, fn: o.Expression, args: o.Expression[]): o.Expression {
   return callVariadicInstructionExpr(
@@ -410,6 +416,33 @@ const STYLE_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     Identifiers.styleMapInterpolate8,
   ],
   variable: Identifiers.styleMapInterpolateV,
+  mapping: n => {
+    if (n % 2 === 0) {
+      throw new Error(`Expected odd number of arguments`);
+    }
+    if (n < 3) {
+      throw new Error(`Expected at least 3 arguments`);
+    }
+    return (n - 1) / 2;
+  },
+};
+
+/**
+ * `InterpolationConfig` for the `classMapInterpolate` instruction.
+ */
+const CLASS_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
+  constant: [
+    null!,  // Single argument classMapInterpolate is converted to classMap instruction.
+    Identifiers.classMapInterpolate1,
+    Identifiers.classMapInterpolate2,
+    Identifiers.classMapInterpolate3,
+    Identifiers.classMapInterpolate4,
+    Identifiers.classMapInterpolate5,
+    Identifiers.classMapInterpolate6,
+    Identifiers.classMapInterpolate7,
+    Identifiers.classMapInterpolate8,
+  ],
+  variable: Identifiers.classMapInterpolateV,
   mapping: n => {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);
