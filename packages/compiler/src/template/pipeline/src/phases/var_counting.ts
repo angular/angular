@@ -64,6 +64,7 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
     case ir.OpKind.Property:
     case ir.OpKind.StyleProp:
     case ir.OpKind.StyleMap:
+    case ir.OpKind.ClassProp:
       // Property bindings use 1 variable slot.
       return 1;
     case ir.OpKind.Attribute:

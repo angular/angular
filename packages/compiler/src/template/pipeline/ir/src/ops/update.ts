@@ -17,7 +17,8 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 /**
  * An operation usable on the update side of the IR.
  */
-export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
+export type UpdateOp =
+    ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|ClassPropOp|
     StyleMapOp|ClassMapOp|InterpolatePropertyOp|InterpolateAttributeOp|InterpolateStylePropOp|
     InterpolateStyleMapOp|InterpolateClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
 
@@ -148,6 +149,44 @@ export function createStylePropOp(
     name,
     expression,
     unit,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * A logical operation representing binding to a class property in the update IR.
+ */
+export interface ClassPropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  kind: OpKind.ClassProp;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Name of the bound property.
+   */
+  name: string;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression;
+}
+
+/**
+ * Create a `ClassPropOp`.
+ */
+export function createClassPropOp(
+    xref: XrefId, name: string, expression: o.Expression): ClassPropOp {
+  return {
+    kind: OpKind.ClassProp,
+    target: xref,
+    name,
+    expression,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
