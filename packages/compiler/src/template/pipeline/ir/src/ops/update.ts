@@ -18,8 +18,8 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
  * An operation usable on the update side of the IR.
  */
 export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
-    StyleMapOp|InterpolatePropertyOp|InterpolateAttributeOp|InterpolateStylePropOp|
-    InterpolateStyleMapOp|AttributeOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
+    StyleMapOp|ClassMapOp|InterpolatePropertyOp|InterpolateAttributeOp|InterpolateStylePropOp|
+    InterpolateStyleMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -175,6 +175,37 @@ export interface StyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
 export function createStyleMapOp(xref: XrefId, expression: o.Expression): StyleMapOp {
   return {
     kind: OpKind.StyleMap,
+    target: xref,
+    expression,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * A logical operation representing binding to a style map in the update IR.
+ */
+export interface ClassMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  kind: OpKind.ClassMap;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression;
+}
+
+/**
+ * Create a `ClassMapOp`.
+ */
+export function createClassMapOp(xref: XrefId, expression: o.Expression): ClassMapOp {
+  return {
+    kind: OpKind.ClassMap,
     target: xref,
     expression,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
