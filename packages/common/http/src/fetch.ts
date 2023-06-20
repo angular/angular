@@ -221,7 +221,7 @@ export class FetchBackend implements HttpBackend {
     }
 
     return {
-      body: req.body,
+      body: req.serializeBody(),
       method: req.method,
       headers,
       credentials,
