@@ -24,6 +24,10 @@ const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
   responseType: 'text',
 });
 
+const TEST_POST_WITH_JSON_BODY = new HttpRequest('POST', '/test', {'some': 'body'}, {
+  responseType: 'text',
+});
+
 const XSSI_PREFIX = ')]}\'\n';
 
 {
@@ -48,6 +52,10 @@ const XSSI_PREFIX = ')]}\'\n';
     it('sets outgoing body correctly', () => {
       backend.handle(TEST_POST).subscribe();
       expect(factory.mock.body).toBe('some body');
+    });
+    it('sets outgoing body correctly when request payload is json', () => {
+      backend.handle(TEST_POST_WITH_JSON_BODY).subscribe();
+      expect(factory.mock.body).toBe('{"some":"body"}');
     });
     it('sets outgoing headers, including default headers', () => {
       const post = TEST_POST.clone({
