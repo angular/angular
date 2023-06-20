@@ -988,7 +988,7 @@ export class LiteralArrayExpr extends Expression {
     return visitor.visitLiteralArrayExpr(this, context);
   }
 
-  clone(): LiteralArrayExpr {
+  override clone(): LiteralArrayExpr {
     return new LiteralArrayExpr(this.entries.map(e => e.clone()), this.type, this.sourceSpan);
   }
 }
