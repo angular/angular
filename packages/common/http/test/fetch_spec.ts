@@ -33,6 +33,10 @@ const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
   responseType: 'text',
 });
 
+const TEST_POST_WITH_JSON_BODY = new HttpRequest('POST', '/test', {'some': 'body'}, {
+  responseType: 'text',
+});
+
 const XSSI_PREFIX = ')]}\'\n';
 
 describe('FetchBackend', async () => {
@@ -107,6 +111,11 @@ describe('FetchBackend', async () => {
   it('sets outgoing body correctly', () => {
     callFetchAndFlush(TEST_POST);
     expect(fetchMock.request.body).toBe('some body');
+  });
+
+  it('sets outgoing body correctly when request payload is json', () => {
+    callFetchAndFlush(TEST_POST_WITH_JSON_BODY);
+    expect(fetchMock.request.body).toBe('{"some":"body"}');
   });
 
   it('sets outgoing headers, including default headers', () => {
