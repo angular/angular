@@ -9,8 +9,7 @@
           "failureMessage": "Incorrect template",
           "files": ["class_bindings.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain styleProp instruction calls",
@@ -41,8 +40,7 @@
           "failureMessage": "Incorrect template",
           "files": ["interpolations_equal_arity.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain style interpolations of multiple kinds",
@@ -52,8 +50,7 @@
           "failureMessage": "Incorrect template",
           "files": ["interpolations_different_arity.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should break into multiple chains if there are other styling instructions in between",
@@ -74,8 +71,7 @@
           "failureMessage": "Incorrect template",
           "files": ["break_different_interpolation_instructions.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain styling instructions inside host bindings",

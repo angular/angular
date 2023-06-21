@@ -9,8 +9,7 @@
           "failureMessage": "Incorrect handling of interpolated classes",
           "files": ["class_interpolations.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate the proper update instructions for interpolated style properties",
@@ -20,8 +19,7 @@
           "failureMessage": "Incorrect handling of interpolated style properties",
           "files": ["style_properties.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate update instructions for interpolated style properties with a suffix",
