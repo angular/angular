@@ -3,63 +3,45 @@
   "cases": [
     {
       "description": "should split [style] and [class] bindings into a separate instructions",
-      "inputFiles": [
-        "mixed.ts"
-      ],
+      "inputFiles": ["mixed.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "mixed.js"
-          ]
+          "files": ["mixed.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should stamp out pipe definitions in the creation block if used by styling bindings",
-      "inputFiles": [
-        "pipe_bindings.ts"
-      ],
+      "inputFiles": ["pipe_bindings.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "pipe_bindings.js"
-          ]
+          "files": ["pipe_bindings.js"]
         }
       ],
       "skipForTemplatePipeline": true
     },
     {
       "description": "should properly offset multiple style pipe references for styling bindings",
-      "inputFiles": [
-        "pipe_bindings_slots.ts"
-      ],
+      "inputFiles": ["pipe_bindings_slots.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "pipe_bindings_slots.js"
-          ]
+          "files": ["pipe_bindings_slots.js"]
         }
       ],
       "skipForTemplatePipeline": true
     },
     {
       "description": "should always generate advance() statements before any styling instructions",
-      "inputFiles": [
-        "multiple_elements.ts"
-      ],
+      "inputFiles": ["multiple_elements.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "multiple_elements.js"
-          ]
+          "files": ["multiple_elements.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
