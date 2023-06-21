@@ -108,7 +108,6 @@ aio-nav-menu {
         visibility: visible;
         opacity: 1;
         padding-left: 0;
-        max-height: 4000px; // Arbitrary max-height. Can increase if needed. Must have measurement to transition height.
         transition: visibility 500ms, opacity 500ms, max-height 500ms;
         transition-timing-function: ease-in-out;
       }
