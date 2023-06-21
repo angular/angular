@@ -79,7 +79,7 @@ export class SaucelabsDaemon {
       private _browsers: Browser[],
       private _maxParallelExecutions: number,
       private _sauceConnect: string,
-      private _userCapabilities: object = {},
+      private _userCapabilities: {tunnelIdentifier: string},
   ) {
     // Starts the keep alive loop for all active browsers, running every 15 seconds.
     this._keepAliveIntervalId = setInterval(() => this._keepAliveBrowsers(), 15_000);
@@ -90,11 +90,12 @@ export class SaucelabsDaemon {
    * This is typically done when the first test is started so that no connection is made
    * if all tests are cache hits.
    */
-  async connectTunnel() {
+  async connectTunnel(): Promise<void> {
     if (!this._connection) {
-      this._connection = this._connect();
+      this._connection =
+          openSauceConnectTunnel(this._userCapabilities.tunnelIdentifier, this._sauceConnect);
     }
-    return this._connection;
+    return await this._connection;
   }
 
   /**
@@ -178,17 +179,6 @@ export class SaucelabsDaemon {
     }
 
     return true;
-  }
-
-  /**
-   * @internal
-   * Connects the daemon to Saucelabs.
-   * This is typically done when the first test is started so that no connection is made
-   * if all tests are cache hits.
-   **/
-  private async _connect() {
-    await openSauceConnectTunnel(
-        (this._userCapabilities as any).tunnelIdentifier, this._sauceConnect);
   }
 
   /**

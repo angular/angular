@@ -15,6 +15,7 @@ import path from 'node:path';
  **/
 export async function openSauceConnectTunnel(tunnelIdentifier: string, sauceConnect: string) {
   console.debug('Starting sauce connect tunnel...');
+  console.debug('Using tunnel identifier:', tunnelIdentifier);
 
   const tmpFolder = await fs.mkdtemp('saucelabs-daemon-');
 
@@ -26,11 +27,15 @@ export async function openSauceConnectTunnel(tunnelIdentifier: string, sauceConn
       '--pidfile',
       `${tmpFolder}/pidfile`,
       '--tunnel-identifier',
-      tunnelIdentifier || path.basename(tmpFolder),
+      tunnelIdentifier,
     ];
-    const sc = spawn(sauceConnect, sauceConnectArgs);
+    const sc = spawn(sauceConnect, sauceConnectArgs, {stdio: 'pipe'});
 
-    sc.stdout!.on('data', (data) => {
+    sc.stderr.on('data', data => process.stderr.write(data));
+    sc.stdout.on('data', (data) => {
+      process.stdout.write(data);
+
+      // If we see this message, we know the tunnel is ready.
       if (data.includes('Sauce Connect is up, you may start your tests.')) {
         resolve();
       }
