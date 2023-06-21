@@ -358,7 +358,7 @@ const PROPERTY_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
  */
 const STYLE_PROP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   constant: [
-    null!,  // Single argument stylePropInterpolate is converted to styleProp instruction.
+    Identifiers.styleProp,
     Identifiers.stylePropInterpolate1,
     Identifiers.stylePropInterpolate2,
     Identifiers.stylePropInterpolate3,
@@ -372,9 +372,6 @@ const STYLE_PROP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   mapping: n => {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);
-    }
-    if (n < 3) {
-      throw new Error(`Expected at least 3 arguments`);
     }
     return (n - 1) / 2;
   },
@@ -409,7 +406,7 @@ const ATTRIBUTE_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
  */
 const STYLE_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   constant: [
-    null!,  // Single argument styleMapInterpolate is converted to styleMap instruction.
+    Identifiers.styleMap,
     Identifiers.styleMapInterpolate1,
     Identifiers.styleMapInterpolate2,
     Identifiers.styleMapInterpolate3,
@@ -424,9 +421,6 @@ const STYLE_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);
     }
-    if (n < 3) {
-      throw new Error(`Expected at least 3 arguments`);
-    }
     return (n - 1) / 2;
   },
 };
@@ -436,7 +430,7 @@ const STYLE_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
  */
 const CLASS_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   constant: [
-    null!,  // Single argument classMapInterpolate is converted to classMap instruction.
+    Identifiers.classMap,
     Identifiers.classMapInterpolate1,
     Identifiers.classMapInterpolate2,
     Identifiers.classMapInterpolate3,
@@ -450,9 +444,6 @@ const CLASS_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
   mapping: n => {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);
-    }
-    if (n < 3) {
-      throw new Error(`Expected at least 3 arguments`);
     }
     return (n - 1) / 2;
   },
