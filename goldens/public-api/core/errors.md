@@ -99,6 +99,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PLATFORM_NOT_FOUND = 401,
     // (undocumented)
+    PROVIDE_ZONE_CHANGE_DETECTION_CALLED_IN_WRONG_CONTEXT = 913,
+    // (undocumented)
     PROVIDER_IN_WRONG_CONTEXT = 207,
     // (undocumented)
     PROVIDER_NOT_FOUND = -201,

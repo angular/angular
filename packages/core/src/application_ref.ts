@@ -12,7 +12,7 @@ import {Observable, of, Subscription} from 'rxjs';
 import {distinctUntilChanged, share, switchMap} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
-import {PLATFORM_INITIALIZER} from './application_tokens';
+import {PLATFORM_ID, PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
 import {ENVIRONMENT_INITIALIZER, inject, makeEnvironmentProviders} from './di';
@@ -1294,8 +1294,27 @@ export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone):
  * @see NgZoneOptions
  */
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
-  const zoneProviders =
-      internalProvideZoneChangeDetection(() => new NgZone(getNgZoneOptions(options)));
+  const zoneProviders = internalProvideZoneChangeDetection(() => {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && inject(PLATFORM_ID) !== 'browser') {
+      // `provideZoneChangeDetection` must be called only when the code is executed in the
+      // browser. The `NgZone` delays change detection when multiple event tasks are executed within
+      // the same animation frame or when there're multiple `ngZone.run` calls in a row. It
+      // schedules a task through `requestAnimationFrame`, which is not available in the Node.js.
+      // This will throw an error `Cannot read property call of undefined` when running this code in
+      // the Node.js (when Angular Universal is used), because `nativeRequestAnimationFrame` would
+      // be `undefined`. This wasn't an issue previously because these options were provided when
+      // calling `platformBrowser().bootstrapModule`. The `provideZoneChangeDetection` providers
+      // should not be a part of the server application config.
+      const message =
+          'provideZoneChangeDetection() must be called only when the code is executed in the browser.' +
+          '\n' +
+          'Consider using `mergeApplicationConfig` to provide different configurations for the browser and the server.';
+      throw new RuntimeError(
+          RuntimeErrorCode.PROVIDE_ZONE_CHANGE_DETECTION_CALLED_IN_WRONG_CONTEXT,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && message);
+    }
+    return new NgZone(getNgZoneOptions(options));
+  });
   return makeEnvironmentProviders([
     (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: PROVIDED_NG_ZONE, useValue: true} :
                                                       [],
