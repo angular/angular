@@ -237,6 +237,13 @@ function normalizeGCEvent(chromeEvent: {[key: string]: any}, majorGc: boolean) {
   const args = chromeEvent['args'];
   const heapSizeBefore = args['usedHeapSizeBefore'];
   const heapSizeAfter = args['usedHeapSizeAfter'];
+
+  if (heapSizeBefore === undefined && heapSizeAfter === undefined) {
+    throw new Error(
+        `GC event didn't specify heap size to calculate amount of collected memory. Expected one of usedHeapSizeBefore / usedHeapSizeAfter arguments but got ${
+            JSON.stringify(args)}`);
+  }
+
   const normalizedArgs = {
     'majorGc': majorGc,
     'usedHeapSize': heapSizeAfter !== undefined ? heapSizeAfter : heapSizeBefore,
