@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
 load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 circular_dependency_test(
@@ -26,4 +26,9 @@ jasmine_node_test(
     deps = [
         ":test_lib",
     ],
+)
+
+karma_web_test_suite(
+    name = "test_web",
+    deps = [":test_lib"],
 )
