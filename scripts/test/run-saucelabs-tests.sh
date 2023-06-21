@@ -16,8 +16,8 @@ if [[ -z "${SAUCE_ACCESS_KEY:-}" ]]; then
   echo "SAUCE_ACCESS_KEY environment variable must be set; see tools/saucelabs-daemon/README.md for more info."
   exit 1
 fi
-if [[ -z "${SAUCE_TUNNEL_IDENTIFIER:-}" ]]; then
-  echo "SAUCE_TUNNEL_IDENTIFIER environment variable must be set; see tools/saucelabs-daemon/README.md for more info."
+if [[ -z "${SAUCE_TUNNEL_NAME:-}" ]]; then
+  echo "SAUCE_TUNNEL_NAME environment variable must be set; see tools/saucelabs-daemon/README.md for more info."
   exit 1
 fi
 

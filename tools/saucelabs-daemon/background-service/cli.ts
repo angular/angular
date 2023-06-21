@@ -14,7 +14,7 @@ import {SaucelabsDaemon} from './saucelabs-daemon';
 const args = process.argv.slice(2);
 const username = process.env.SAUCE_USERNAME;
 const accessKey = process.env.SAUCE_ACCESS_KEY;
-const tunnelIdentifier = process.env.SAUCE_TUNNEL_IDENTIFIER;
+const tunnelName = process.env.SAUCE_TUNNEL_NAME;
 
 const buildName = process.env.CIRCLECI ? `circleci-${process.env.CIRCLE_BUILD_NUM}` : 'localdev';
 
@@ -22,8 +22,8 @@ if (!username || !accessKey) {
   throw Error('Please set the `SAUCE_USERNAME` and `SAUCE_ACCESS_KEY` variables.');
 }
 
-if (!tunnelIdentifier) {
-  throw Error('No tunnel set up. Please set the `SAUCE_TUNNEL_IDENTIFIER` variable.');
+if (!tunnelName) {
+  throw Error('No tunnel set up. Please set the `SAUCE_TUNNEL_NAME` variable.');
 }
 
 // First argument is the path to the sauce connect binary. This argument is templated into the bazel
@@ -51,7 +51,7 @@ const daemon = new SaucelabsDaemon(
     Object.values(customLaunchers) as Browser[],
     parallelExecutions,
     sauceConnect,
-    {tunnelIdentifier},
+    {tunnelName},
 );
 
 if (args.includes('--connect')) {

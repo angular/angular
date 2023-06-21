@@ -79,7 +79,7 @@ export class SaucelabsDaemon {
       private _browsers: Browser[],
       private _maxParallelExecutions: number,
       private _sauceConnect: string,
-      private _userCapabilities: {tunnelIdentifier: string},
+      private _userCapabilities: {tunnelName: string},
   ) {
     // Starts the keep alive loop for all active browsers, running every 15 seconds.
     this._keepAliveIntervalId = setInterval(() => this._keepAliveBrowsers(), 15_000);
@@ -93,7 +93,7 @@ export class SaucelabsDaemon {
   async connectTunnel(): Promise<void> {
     if (!this._connection) {
       this._connection =
-          openSauceConnectTunnel(this._userCapabilities.tunnelIdentifier, this._sauceConnect);
+          openSauceConnectTunnel(this._userCapabilities.tunnelName, this._sauceConnect);
     }
     return await this._connection;
   }

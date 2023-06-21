@@ -15,7 +15,7 @@ ts_library(
 )
 
 # We need a commonjs version of the launcher that can be required from the
-# root karma-js.conf.js.
+# root `karma-saucelabs-bazel.conf.js`.
 esbuild(
     name = "launcher_cjs",
     entry_point = "index.ts",

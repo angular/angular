@@ -56,7 +56,7 @@ setSecretVar SAUCE_ACCESS_KEY "f4bf7c639c5a-c6bb-d6a4-a4b5-800aa111";
 setPublicVar SAUCE_LOG_FILE /tmp/angular/sauce-connect.log
 setPublicVar SAUCE_READY_FILE /tmp/angular/sauce-connect-ready-file.lock
 setPublicVar SAUCE_PID_FILE /tmp/angular/sauce-connect-pid-file.lock
-setPublicVar SAUCE_TUNNEL_IDENTIFIER "angular-framework-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX}"
+setPublicVar SAUCE_TUNNEL_NAME "angular-framework-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX}"
 # Amount of seconds we wait for sauceconnect to establish a tunnel instance. In order to not
 # acquire CircleCI instances for too long if sauceconnect failed, we need a connect timeout.
 setPublicVar SAUCE_READY_FILE_TIMEOUT 120
