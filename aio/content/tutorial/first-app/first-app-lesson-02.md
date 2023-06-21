@@ -38,7 +38,7 @@ When you create your `HomeComponent`, you use these properties:
 *   `standalone`: to describe whether the component requires a `ngModule`.
 *   `imports`: to describe the component's dependencies.
 *   `template`: to describe the component's HTML markup and layout.
-*   `styleUrls`: to list the URLs of the CSS files that the component users in an array.
+*   `styleUrls`: to list the URLs of the CSS files that the component uses in an array.
 
 Components have other [properties](/api/core/Component), but these are the ones used by `HomeComponent`.
 
