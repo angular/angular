@@ -43,8 +43,7 @@
             }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support class interpolation",

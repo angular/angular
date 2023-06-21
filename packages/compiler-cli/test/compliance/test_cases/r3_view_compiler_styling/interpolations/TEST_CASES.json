@@ -50,8 +50,7 @@
           "failureMessage": "Incorrect handling of interpolated style properties",
           "files": ["style_binding_important.js"]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }
