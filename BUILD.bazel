@@ -6,7 +6,7 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "LICENSE",
-    "karma-js.conf.js",
+    "karma-saucelabs-bazel.conf.js",
     "browser-providers.conf.js",
     YARN_PATH,
     "scripts/ci/bazel-payload-size.sh",

@@ -327,7 +327,7 @@ def karma_web_test_suite(
             # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
             # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
             timeout = "long",
-            config_file = "//:karma-js.conf.js",
+            config_file = "//:karma-saucelabs-bazel.conf.js",
             deps = [
                 ":%s_bundle" % name,
             ],
