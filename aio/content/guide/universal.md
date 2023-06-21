@@ -2,13 +2,13 @@
 
 This guide describes **Angular Universal**, a technology that allows Angular to render applications on the server.
 
-By default, Angular renders applications only in a *browser*. Angular Universal allows Angular to render an application on the *server*, generating *static* HTML contents, which represents an application state. Once the HTML contents is rendered in a browser, Angular bootstraps an application and reuses the information available in the server-generated HTML.
+By default, Angular renders applications only in a *browser*. Angular Universal allows Angular to render an application on the *server*, generating *static* HTML content, which represents an application state. Once the HTML content is rendered in a browser, Angular bootstraps an application and reuses the information available in the server-generated HTML.
 
-With server-side rendering an application generally renders in a browser faster, giving users a chance to view the application UI before it becomes fully interactive. See ([the "Why use Server-Side Rendering?" section](#why-do-it)) below for addition information.
+With server-side rendering an application generally renders in a browser faster, giving users a chance to view the application UI before it becomes fully interactive. See the ["Why use Server-Side Rendering?"](#why-do-it) section below for additional information.
 
 Also for a more detailed look at different techniques and concepts surrounding SSR, check out this [article](https://developers.google.com/web/updates/2019/02/rendering-on-the-web).
 
-You can enable server-side rendering in your Angular application using the `@nguniversal/express-engine` schematic as described below.
+You can enable server-side rendering in your Angular application using the `@nguniversal/express-engine` package as described below.
 
 <div class="alert is-helpful">
 
@@ -66,10 +66,10 @@ The command updates the application code to enable SSR and adds extra files to t
         </div>
         <div class='children'>
             <div class='file'>
-              app.config.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &lt; client-side application configuration (standalone app only)
+              app.config.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &lt;-- client-side application configuration (standalone app only)
             </div>
             <div class='file'>
-              app.module.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &lt; client-side application module (NgModule app only)
+              app.module.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &lt;-- client-side application module (NgModule app only)
             </div>
         </div>
         <div class='children'>
@@ -226,9 +226,9 @@ Universal applications use the Angular `platform-server` package \(as opposed to
 server implementations of the DOM, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 
 The server \([Node.js Express](https://expressjs.com) in this guide's example\) passes client requests for application pages to the NgUniversal `ngExpressEngine`.
-Under the hood, the render functions, while providing caching and other helpful utilities.
+Under the hood, the engine renders the app, while also providing caching and other helpful utilities.
 
-The render functions takes as inputs a *template* HTML page \(usually `index.html`\), and Angular *module* containing components or a function that when invoked returns a `Promise` that resolves to an `ApplicationRef`, and a *route* that determines which components to display. The route comes from the client's request to the server.
+The render function takes as inputs a *template* HTML page \(usually `index.html`\), and an Angular *module* containing components. Alternatively, it can take a function that when invoked returns a `Promise` that resolves to an `ApplicationRef`, and a *route* that determines which components to display. The route comes from the client's request to the server.
 
 Each request results in the appropriate view for the requested route.
 The render function renders the view within the `<app>` tag of the template, creating a finished HTML page for the client.
@@ -279,8 +279,8 @@ This engine's `Promise` callback returns the rendered page to the web server, wh
 <div class="alert is-helpful">
 
 **NOTE**: <br />
-The basic behavior described below is handled automatically when using the NgUniversal Express schematic.
-This is helpful when trying to understand the underlying behavior or replicate it without using the schematic.
+The basic behavior described below is handled automatically when using the NgUniversal Express package.
+This is helpful when trying to understand the underlying behavior or replicate it without using the package.
 
 </div>
 
@@ -298,12 +298,12 @@ Because you use routing, you can recognize the three types of requests and handl
 
 | Routing request types | Details |
 |:---                   |:---     |
-| Data request          | Request URL that begins `/api`.     |
-| App navigation        | Request URL with no file extension. |
-| Static asset          | All other requests.                 |
+| Data request          | Request URL that begins `/api`     |
+| App navigation        | Request URL with no file extension |
+| Static asset          | All other requests                 |
 
 A Node.js Express server is a pipeline of middleware that filters and processes requests one after the other.
-You configure the Node.js Express server pipeline with calls to `server.get()` like this one for data requests.
+You configure the Node.js Express server pipeline with calls to `server.get()` like this one for data requests:
 
 <code-example header="server.ts (data URL)" path="universal/server.ts" region="data-request"></code-example>
 
@@ -317,7 +317,7 @@ In practice, you would remove that module and register your web API middleware o
 
 </div>
 
-The following code filters for request URLs with no extensions and treats them as navigation requests.
+The following code filters for request URLs with no extensions and treats them as navigation requests:
 
 <code-example header="server.ts (navigation)" path="universal/server.ts" region="navigation-request"></code-example>
 
@@ -366,4 +366,4 @@ Now, on every HTTP request made as part of rendering the application on the serv
 
 <!-- end links -->
 
-@reviewed 2023-04-25
+@reviewed 2023-06-21
