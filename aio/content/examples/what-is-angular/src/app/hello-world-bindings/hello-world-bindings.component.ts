@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 export class HelloWorldBindingsComponent {
   fontColor = 'blue';
   sayHelloId = 1;
-  canClick = false;
+  canClick = true;
   message = 'Hello, World';
 
 // #docregion method
