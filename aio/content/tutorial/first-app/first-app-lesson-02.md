@@ -25,7 +25,7 @@ If you have any trouble during this lesson, you can review the completed code fo
 
 Angular apps are built around components, which are Angular's building blocks.
 Components contain the code, HTML layout, and CSS style information that provide the function and appearance of an element in the app.
-In Angular, components can contain other components. An app's functions and appearance can divided and partitioned into components.
+In Angular, components can contain other components. An app's functions and appearance can be divided and partitioned into components.
 
 In [Lesson 1](tutorial/first-app/first-app-lesson-01), you updated the `AppComponent`, whose function is to contain all the other components.
 In this lesson, you create a `HomeComponent` to display the home page of the app.
