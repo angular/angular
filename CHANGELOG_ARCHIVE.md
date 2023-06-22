@@ -1660,7 +1660,7 @@ Alex Rickabaugh, Daniel Díaz, David Shevitz, Dylan Hunn, Front-end developer, G
 * Minified UMD bundles are no longer included in the distributed NPM packages.
 * **animations:** DOM elements are now correctly removed when the root view is removed.
 If you are using SSR and use the app's HTML for rendering, you will need
-to ensure that you save the HTML to a variable before destorying the
+to ensure that you save the HTML to a variable before destroying the
 app.
 It is also possible that tests could be accidentally relying on the old behavior by
 trying to find an element that was not removed in a previous test. If
