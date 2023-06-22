@@ -1,3 +1,4 @@
+<ul>
 <li [class.completed]="todo.completed">
   <div class="view" appTooltip>
     <input class="toggle" type="checkbox" [checked]="todo.completed" (change)="toggle()" />
@@ -11,3 +12,4 @@
     (keydown.enter)="completeEdit($any($event.target).value)"
   />
 </li>
+</ul>
