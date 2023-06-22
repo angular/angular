@@ -28,6 +28,7 @@ import {phaseNullishCoalescing} from './phases/nullish_coalescing';
 import {phasePipeCreation} from './phases/pipe_creation';
 import {phasePipeVariadic} from './phases/pipe_variadic';
 import {phasePropertyNameNormalization} from './phases/property_name_normalization';
+import {phasePropertyOrdering} from './phases/property_ordering';
 import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
 import {phasePureLiteralStructures} from './phases/pure_literal_structures';
 import {phaseReify} from './phases/reify';
@@ -68,6 +69,7 @@ export function transformTemplate(cpl: ComponentCompilation): void {
   phaseEmptyElements(cpl);
   phasePureFunctionExtraction(cpl);
   phaseAlignPipeVariadicVarOffset(cpl);
+  phasePropertyOrdering(cpl);
   phaseReify(cpl);
   phaseChaining(cpl);
 }
