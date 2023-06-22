@@ -92,7 +92,7 @@ As a shortcut in the console, Angular DevTools provides you access to instances 
 
 ### Select a directive or component
 
-Similar to Chrome DevTools, you can inspect the page to select a particular component or directive. Click the **_Inspect element_** icon at the top left corner within Devtools and hover over a DOM element on the page. Angular DevTools recognizes the associated directives and/or components and lets you select the corresponding element in the Component tree.
+Similar to Chrome DevTools, you can inspect the page to select a particular component or directive. Click the **_Inspect element_** icon in the top left corner within Devtools and hover over a DOM element on the page. Angular DevTools recognizes the associated directives and/or components and lets you select the corresponding element in the Component tree.
 
 ![selecting dom node](assets/inspect-element.png)
 
@@ -102,7 +102,7 @@ The **Profiler** tab lets you preview the execution of Angular's change detectio
 
 ![profiler](assets/profiler.png)
 
-The Profiler lets you start profiling or import an existing profile. To start profiling your application, hover over the circle at the top-left corner within the **Profiler** tab and click **Start recording**.
+The Profiler lets you start profiling or import an existing profile. To start profiling your application, hover over the circle in the top-left corner within the **Profiler** tab and click **Start recording**.
 
 During profiling, Angular DevTools captures execution events, such as change detection and lifecycle hook execution. To finish recording, click the circle again to **Stop recording**.
 
@@ -139,7 +139,7 @@ For example, if during one change detection cycle at a specific position in the 
 
 Each tile is colored depending on how much time Angular has spent there. DevTools determines the intensity of the color by the time spent relative to the tile where we've spent the most time in change detection.
 
-When you click on a certain tile, you'll see details about it in the panel on the right. Double-clicking the tile zooms it in so you can preview the nested children.
+When you click on a certain tile, you'll see details about it in the panel on the right. Double-clicking the tile zooms it in, so you can preview the nested children.
 
 ### Debug OnPush
 
