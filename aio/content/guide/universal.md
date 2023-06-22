@@ -226,7 +226,7 @@ Universal applications use the Angular `platform-server` package \(as opposed to
 server implementations of the DOM, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 
 The server \([Node.js Express](https://expressjs.com) in this guide's example\) passes client requests for application pages to the NgUniversal `ngExpressEngine`.
-Under the hood, the render functions, while providing caching and other helpful utilities.
+Under the hood, the engine renders the app, while also providing caching and other helpful utilities.
 
 The render function takes as inputs a *template* HTML page \(usually `index.html`\), and an Angular *module* containing components. Alternatively, it can take a function that when invoked returns a `Promise` that resolves to an `ApplicationRef`, and a *route* that determines which components to display. The route comes from the client's request to the server.
 
