@@ -112,7 +112,16 @@ async function runBenchmarkCmd(bazelTargetRaw: string | undefined): Promise<void
   if (bazelTargetRaw === undefined) {
     bazelTargetRaw = await promptForBenchmarkTarget();
   }
-  await runBenchmarkTarget(await resolveTarget(bazelTargetRaw));
+  const bazelTarget = await resolveTarget(bazelTargetRaw);
+  const testlogPath = await getTestlogPath(bazelTarget);
+
+  await runBenchmarkTarget(bazelTarget);
+
+  const workingDirResults = await collectBenchmarkResults(testlogPath);
+
+  Log.info('\n\n\n');
+  Log.info(bold(green('Results!')));
+  Log.info(workingDirResults.summaryConsoleText);
 }
 
 /** Runs a benchmark Bazel target. */
