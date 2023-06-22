@@ -307,9 +307,9 @@
   "devversion": {
     "name": "Paul Gschwendtner",
     "picture": "devversion.jpg",
-    "twitter": "DevVersion",
-    "website": "https://github.com/DevVersion",
-    "bio": "Paul is a 17-year-old developer living in Germany. While he attends school, Paul works as a core team member on Angular Material. Paul focuses on tooling and building components for Angular.",
+    "twitter": "devversion",
+    "website": "https://github.com/devversion",
+    "bio": "Paul is a Software Engineer at Google. He is part of the Angular team since 2016.",
     "groups": ["Angular"],
     "lead": "jelbourn"
   },
@@ -421,7 +421,7 @@
   },
   "jeanmeche": {
     "name": "Matthieu Riegler",
-    "picture":"jeanmeche.jpg",
+    "picture": "jeanmeche.jpg",
     "twitter": "jean__meche",
     "bio": "Software engineer from the french Alps. Matthieu was born and raised with the web and now he love's building it! He currently works for Viseo.",
     "groups": ["Collaborators"]
@@ -652,9 +652,7 @@
     "twitter": "mwycliffe_dev",
     "website": "https://mainawycliffe.dev/",
     "bio": "Wycliffe is a Software Engineer from Kenya passionate about Teaching, Speaking, Writing, Open Source, and Mentorship. On top of that, he is passionate about Typescript and loves teaching developers how to get the most out of it.",
-    "groups": [
-      "GDE"
-    ]
+    "groups": ["GDE"]
   },
   "manekinekko": {
     "name": "Wassim Chegham",
@@ -886,12 +884,12 @@
     "groups": ["GDE"]
   },
   "selintunc": {
-      "name": "Selin Tunc",
-      "picture": "selin.jpeg",
-      "twitter": "selintunc_",
-      "website": "https://www.linkedin.com/in/selinkaragulletunc",
-      "bio": "Selin is a Software Developer Expert using Angular and Java at Garanti BBVA Technology in Turkey. She is the first woman Angular GDE in Turkey. She spends her spare time with her family, especially her little son, and by keeping herself up-to-date.",
-      "groups": ["GDE"]
+    "name": "Selin Tunc",
+    "picture": "selin.jpeg",
+    "twitter": "selintunc_",
+    "website": "https://www.linkedin.com/in/selinkaragulletunc",
+    "bio": "Selin is a Software Developer Expert using Angular and Java at Garanti BBVA Technology in Turkey. She is the first woman Angular GDE in Turkey. She spends her spare time with her family, especially her little son, and by keeping herself up-to-date.",
+    "groups": ["GDE"]
   },
   "shairez": {
     "name": "Shai Reznik",
@@ -916,7 +914,7 @@
     "bio": "Siddharth is a Full Stack JavaScript Developer and a GDE in Angular. He's passionate about sharing his knowledge on Angular, Firebase and the Web in general. He's the organizer of WebStack, a local community of developers focused on Web, Mobile, Voice and Server related technologies in general. WebStack hosts free monthly meetups every 2nd or 3rd Saturday of the month. Siddharth is also an avid photographer and loves traveling. Find him anywhere on the Web with `SiddAjmera`.",
     "groups": ["GDE"]
   },
-	"simonaco": {
+  "simonaco": {
     "name": "Simona Cotin",
     "picture": "simonacotin.jpg",
     "twitter": "simona_cotin",
