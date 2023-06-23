@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 
 @Component({
   selector: 'app',
@@ -23,5 +23,5 @@ export class FromContextBindingStatic {
   template: `<button [disabled]="isDisabled()"></button>`,
 })
 export class FromContextBindingSignal {
-  isDisabled = () => true;  // TODO
+  isDisabled = signal(true);
 }
