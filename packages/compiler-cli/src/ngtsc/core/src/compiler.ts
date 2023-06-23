@@ -1041,6 +1041,7 @@ export class NgCompiler {
         CycleHandlingStrategy.Error;
 
     const strictCtorDeps = this.options.strictInjectionParameters || false;
+    const supportJitMode = this.options.supportJitMode ?? true;
     const supportTestBed = this.options.supportTestBed ?? true;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
@@ -1049,6 +1050,10 @@ export class NgCompiler {
     if (supportTestBed === false && compilationMode === CompilationMode.PARTIAL) {
       throw new Error(
           'TestBed support ("supportTestBed" option) cannot be disabled in partial compilation mode.');
+    }
+    if (supportJitMode === false && compilationMode === CompilationMode.PARTIAL) {
+      throw new Error(
+          'JIT mode support ("supportJitMode" option) cannot be disabled in partial compilation mode.');
     }
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
@@ -1088,7 +1093,8 @@ export class NgCompiler {
           reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,
           exportedProviderStatusResolver, semanticDepGraphUpdater, isCore, refEmitter,
           this.closureCompilerEnabled, this.options.onlyPublishPublicTypingsForNgModules ?? false,
-          injectableRegistry, this.delegatingPerfRecorder, supportTestBed, compilationMode),
+          injectableRegistry, this.delegatingPerfRecorder, supportTestBed, supportJitMode,
+          compilationMode),
     ];
 
     const traitCompiler = new TraitCompiler(
