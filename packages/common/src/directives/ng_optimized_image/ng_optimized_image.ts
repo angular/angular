@@ -94,7 +94,6 @@ export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinary
  * Learn more about the responsive image configuration in [the NgOptimizedImage
  * guide](guide/image-directive).
  * @publicApi
- * @developerPreview
  */
 export type ImageConfig = {
   breakpoints?: number[]
@@ -109,7 +108,6 @@ const defaultConfig: ImageConfig = {
  *
  * @see {@link NgOptimizedImage}
  * @publicApi
- * @developerPreview
  */
 export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
     'ImageConfig', {providedIn: 'root', factory: () => defaultConfig});
@@ -307,8 +305,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * Sets the image to "fill mode", which eliminates the height/width requirement and adds
    * styles such that the image fills its containing element.
-   *
-   * @developerPreview
    */
   @Input({transform: booleanAttribute}) fill = false;
 
