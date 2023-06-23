@@ -768,7 +768,7 @@ export function transformExpressionsInOp(
       }
       break;
     case OpKind.PropertyCreate:
-      transformExpressionsInExpression(op.expression, transform, flags);
+      op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;
     case OpKind.Element:
     case OpKind.ElementStart:
