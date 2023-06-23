@@ -12,7 +12,13 @@ import type {CompilationJob} from '../compilation';
 
 export function phasePureLiteralStructures(job: CompilationJob): void {
   for (const view of job.units) {
-    for (const op of view.update) {
+    for (const op of view.ops()) {
+      if (op.kind === ir.OpKind.PropertyCreate) {
+        // Don't transform literals in `propertyCreate()` instructions as they
+        // will be memoized by `computed` instead.
+        continue;
+      }
+
       ir.transformExpressionsInOp(op, (expr, flags) => {
         if (flags & ir.VisitorContextFlag.InChildOperation) {
           return expr;

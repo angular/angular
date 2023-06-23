@@ -18,6 +18,7 @@ import {RComment, RElement} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, RENDERER} from '../interfaces/view';
+import {computed} from '../reactivity/computed';
 import {InputSignalNode} from '../reactivity/input_signal';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {getNativeByTNode} from '../util/view_utils';
@@ -35,13 +36,14 @@ export function ɵɵpropertyCreate<T>(
     sanitizer?: SanitizerFn|null): typeof ɵɵpropertyCreate {
   const lView = getLView();
   const expressionSlot = HEADER_OFFSET + slot;
-  lView[expressionSlot] = expr;
 
   const tView = getTView();
   const tNode = getCurrentTNode();
   assertDefined(tNode, `propertyCreate() must follow an actual element`);
 
   const inputData = tNode.inputs?.[propName] ?? EMPTY_ARRAY;
+
+  let signalInputs: InputSignalNode<unknown, unknown>[]|null = null;
 
   // PERF: the fact that we need to iterate over all the inputs here isn't great.
   // We might consider storing more info on TView
@@ -57,17 +59,31 @@ export function ɵɵpropertyCreate<T>(
       }
     } else {
       ngDevMode && assertIndexInRange(lView, directiveIndex);
-      // TODO(pk): make sure that we are creating one computed for all the inputs
       // PERF: megamorphic read on [privateName] access
-      const inputSignalNode =
+      const inputSignal =
           lView[directiveIndex][privateName][SIGNAL] as InputSignalNode<unknown, unknown>;
-
-      // TODO: Improve this by not allocating an object literal here. This exists just for testing.
-      inputSignalNode.bind(inputSignalNode, {computation: expr});
-
-      // TODO: figure out where to set `isInitialized`.
-      inputSignalNode.isInitialized = true;
+      (signalInputs ??= []).push(inputSignal);
     }
+  }
+
+  zoneTargets ??= EMPTY_ARRAY;
+  signalInputs ??= EMPTY_ARRAY;
+
+  // If there are multiple signal targets, or any zone targets, then wrap `expr` in a computed. This
+  // ensures that the expression is only evaluated once, even if it has multiple consumers. Zone
+  // targets always use a computed as this memoizes all object/literal creation (which would
+  // otherwise have used pure functions).
+  if (zoneTargets.length > 0 || signalInputs.length > 1) {
+    expr = computed(expr);
+  }
+
+  lView[expressionSlot] = expr;
+  for (const inputSignal of signalInputs) {
+    // TODO: Improve this by not allocating an object literal here. This exists just for testing.
+    inputSignal.bind(inputSignal, {computation: expr});
+
+    // TODO: figure out where to set `isInitialized`.
+    inputSignal.isInitialized = true;
   }
 
   if (tView.firstCreatePass) {
