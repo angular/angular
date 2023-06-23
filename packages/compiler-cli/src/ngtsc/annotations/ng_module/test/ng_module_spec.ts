@@ -42,7 +42,7 @@ function setup(program: ts.Program, compilationMode = CompilationMode.FULL) {
       exportedProviderStatusResolver, /* semanticDepGraphUpdater */ null,
       /* isCore */ false, refEmitter,
       /* annotateForClosureCompiler */ false,
-      /* onlyPublishPublicTypings */ false, injectableRegistry, NOOP_PERF_RECORDER, true,
+      /* onlyPublishPublicTypings */ false, injectableRegistry, NOOP_PERF_RECORDER, true, true,
       compilationMode);
 
   return {handler, reflectionHost};
@@ -127,9 +127,9 @@ runInEachFileSystem(() => {
                 contents: `
                   import {NgModule} from '@angular/core';
                   import {SomeModule} from './some_where';
-                  
+
                   @NgModule({
-                    imports: [SomeModule],              
+                    imports: [SomeModule],
                   }) class TestModule {}
               `
               }
@@ -157,9 +157,9 @@ runInEachFileSystem(() => {
                 contents: `
                   import {NgModule} from '@angular/core';
                   import {SomeModule} from './some_where';
-                  
+
                   @NgModule({
-                    exports: [SomeModule],              
+                    exports: [SomeModule],
                   }) class TestModule {}
               `
               }
@@ -187,9 +187,9 @@ runInEachFileSystem(() => {
                 contents: `
                   import {NgModule} from '@angular/core';
                   import {SomeComponent} from './some_where';
-                  
+
                   @NgModule({
-                    declarations: [SomeComponent],              
+                    declarations: [SomeComponent],
                   }) class TestModule {}
               `
               }
@@ -217,9 +217,9 @@ runInEachFileSystem(() => {
                 contents: `
                   import {NgModule} from '@angular/core';
                   import {SomeComponent} from './some_where';
-                  
+
                   @NgModule({
-                    bootstrap: [SomeComponent],              
+                    bootstrap: [SomeComponent],
                   }) class TestModule {}
               `
               }
@@ -247,9 +247,9 @@ runInEachFileSystem(() => {
                 contents: `
                   import {NgModule, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
                   import {SomeComponent} from './some_where';
-                  
+
                   @NgModule({
-                    schemas: [CUSTOM_ELEMENTS_SCHEMA],         
+                    schemas: [CUSTOM_ELEMENTS_SCHEMA],
                   }) class TestModule {}
               `
               }
