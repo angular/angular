@@ -55,6 +55,17 @@ export interface InternalOptions {
    * @internal
    */
   supportTestBed?: boolean;
+
+  /**
+   * Enables the usage of the JIT compiler in combination with AOT compiled code by emitting
+   * selector scope information for NgModules.
+   *
+   * This is only intended to be used by the Angular CLI.
+   * Defaults to true if not specified.
+   *
+   * @internal
+   */
+  supportJitMode?: boolean;
 }
 
 /**
