@@ -134,7 +134,11 @@
             "type": "object"
           },
           "skipForTemplatePipeline": {
-            "tite": "Set to true to skip this test when running with use_template_pipeline",
+            "title": "Set to true to skip this test when running with use_template_pipeline",
+            "type": "boolean"
+          },
+          "onlyForTemplatePipeline": {
+            "title": "If set to `true`, this test will only execute when the template pipeline is used",
             "type": "boolean"
           },
           "focusTest": {

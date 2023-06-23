@@ -52,6 +52,7 @@ export function* getComplianceTests(absTestConfigPath: AbsoluteFsPath): Generato
       expectations: parseExpectations(test.expectations, realTestPath, inputFiles),
       compilerOptions: getConfigOptions(test, 'compilerOptions', realTestPath),
       angularCompilerOptions: getConfigOptions(test, 'angularCompilerOptions', realTestPath),
+      onlyForTemplatePipeline: test.onlyForTemplatePipeline,
       skipForTemplatePipeline: test.skipForTemplatePipeline,
       focusTest: test.focusTest,
       excludeTest: test.excludeTest,
@@ -246,6 +247,8 @@ export interface ComplianceTest {
   expectations: Expectation[];
   /** If set to `true` this test is skipped when testing with use_template_pipeline */
   skipForTemplatePipeline?: boolean;
+  /** If set to `true`, this test will only execute when the template pipeline is used. */
+  onlyForTemplatePipeline?: boolean;
   /** If set to `true`, then focus on this test (equivalent to jasmine's 'fit()`). */
   focusTest?: boolean;
   /** If set to `true`, then exclude this test (equivalent to jasmine's 'xit()`). */
@@ -309,6 +312,7 @@ export interface TestCaseJson {
   };
   compilerOptions?: ConfigOptions;
   angularCompilerOptions?: ConfigOptions;
+  onlyForTemplatePipeline?: boolean;
   skipForTemplatePipeline?: boolean;
   focusTest?: boolean;
   excludeTest?: boolean;
