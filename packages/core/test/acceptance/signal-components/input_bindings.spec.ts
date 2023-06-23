@@ -20,8 +20,8 @@ if (!USE_TEMPLATE_PIPELINE) {
 }
 
 describe('Signal component inputs', () => {
-  describe('input bindings from signal based components', () => {
-    describe('to signal based components', () => {
+  describe('input bindings from signal-based components', () => {
+    describe('to signal-based targets', () => {
       @Component({
         selector: 'print',
         signals: true,
@@ -199,46 +199,104 @@ describe('Signal component inputs', () => {
         expect(dir1Instance.testInput()).toBe(dir2Instance.testInput());
       });
 
-      /*
-
-Error: AssertionError: unresolved LexicalRead of i
-
-
- cannot bind to lexical read, implicit receiver read without function
- call expression.
-
-      */
-      xit('should be able to bind to local refs in expressions', () => {
-        @Component({
-          standalone: true,
-          signals: true,
-          template: '{{elementBinding() !== undefined}}',
-          selector: 'whatever',
-        })
-        class Whatever {
-          @Input() elementBinding = input<HTMLElement>({required: true});
-        }
-
+      it('should be able to bind a variable', () => {
         @Component({
           template: `
-            <whatever [elementBinding]="varx">
+            <print [num]="varFromCtx" />|<print [num]="varFromCtx2()" />
           `,
           signals: true,
           standalone: true,
-          imports: [Whatever],
+          imports: [Print],
         })
         class App {
-          varx = () => (true);
+          varFromCtx = 1;
+          varFromCtx2 = signal(3);
         }
 
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
 
-        expect(fixture.nativeElement.textContent).toBe('true');
+        expect(fixture.nativeElement.textContent).toBe('1|3');
+
+        fixture.componentInstance.varFromCtx2.set(4);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.textContent).toBe('1|4');
+      });
+
+      it('should not evaluate expression if no signal is consumed', () => {
+        @Component({
+          template: `
+            <print [num]="varFromCtx" />|<print [num]="varFromCtx2()" />
+          `,
+          signals: true,
+          standalone: true,
+          imports: [Print],
+        })
+        class App {
+          varFromCtx = 1;
+          varFromCtx2 = signal(3);
+        }
+
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.textContent).toBe('1|3');
+
+        // Even though we change the value here, the `Print#num`
+        // binding is not refreshed because no signal was consumed.
+        fixture.componentInstance.varFromCtx = 2;
+        fixture.componentInstance.varFromCtx2.set(4);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.textContent).toBe('1|4');
       });
     });
 
-    // TODO:
-    // - binding of regular variables?
+    /*
+
+Error: AssertionError: unresolved LexicalRead of i
+
+
+cannot bind to lexical read, implicit receiver read without function
+call expression.
+
+    */
+    xit('should be able to bind to local refs in expressions', () => {
+      @Component({
+        standalone: true,
+        signals: true,
+        template: '{{elementBinding() !== undefined}}',
+        selector: 'whatever',
+      })
+      class Whatever {
+        @Input() elementBinding = input<HTMLElement>({required: true});
+      }
+
+      @Component({
+        template: `
+            <whatever [elementBinding]="varx">
+          `,
+        signals: true,
+        standalone: true,
+        imports: [Whatever],
+      })
+      class App {
+        varx = () => (true);
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('true');
+    });
+  });
+
+  describe('to zone-based targets', () => {
+    it('works', () => {});
+  });
+
+  describe('to a mix of zone-based and signal-based targets', () => {
+    it('works', () => {});
   });
 });
