@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Component, ContentChildren, createComponent, destroyPlatform, effect, EnvironmentInjector, inject, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild} from '@angular/core';
+import {signal} from '@angular/core';
 import {input} from '@angular/core/src/render3/reactivity/input';
 import {InputSignal, InputSignalImpl} from '@angular/core/src/render3/reactivity/input_signal';
 import {SIGNAL} from '@angular/core/src/signals';
-import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication} from '@angular/platform-browser';
-import {withBody} from '@angular/private/testing';
 
 describe('input signals', () => {
   it('should throw before initialization', () => {

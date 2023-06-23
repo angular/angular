@@ -55,9 +55,16 @@ export function ɵɵpropertyCreate<T>(
       }
     } else {
       ngDevMode && assertIndexInRange(lView, directiveIndex);
-      // TODO(pk): make sure that we are creating one computed for all the inputs
+
       // PERF: megamorphic read on [privateName] access
-      (lView[directiveIndex][privateName][SIGNAL] as InternalInputSignal).bindToComputation(expr);
+      const inputSignal = (lView[directiveIndex][privateName][SIGNAL] as InternalInputSignal)
+
+      // TODO(pk): make sure that we are creating one computed for all the inputs
+      inputSignal.bindToComputation(expr);
+
+      // TODO: We want to set this after ALL inputs are set I think. This right now
+      // is just a trick because we did not fully implement the semantics around this.
+      inputSignal.initialized();
     }
   }
 

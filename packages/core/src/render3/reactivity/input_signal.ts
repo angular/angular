@@ -7,7 +7,7 @@
  */
 
 
-import {ComputedImpl, createSignalFromFunction, defaultEquals, ERRORED, setActiveConsumer, Signal, UNSET, WritableSignal} from '../../signals';
+import {ComputedImpl, defaultEquals, ERRORED, setActiveConsumer, signal, Signal, UNSET, WritableSignal} from '../../signals';
 import {setPureFunctionsEnabled} from '../pure_function';
 
 export const BRAND_WRITE_TYPE = Symbol();
@@ -34,25 +34,32 @@ export type ModelSignal<ReadT, WriteT> =
  */
 export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
   /**
-   * The computation to which the `InputSignal` is currently bound, if bound to a computation.
+   * Whether the input is initialized. The runtime will set this to `true` when
+   * the input was set to a value or computation for the first time.
    */
-  protected boundComputation: (() => WriteT)|null = null;
-
-  /**
-   * If the `InputSignal` is not bound to a computation, then it's bound to a value.
-   */
-  protected boundValue: WriteT|undefined;
-
-  // TODO: this should be `false` to start with, and the runtime should call `initialized` after all
-  // inputs have been set for the first time. However this is not currently implemented, so we cheat
-  // and treat all input signals as initialized for now.
-  protected isInitialized = true;
+  protected isInitialized = false;
   protected transform: (value: WriteT) => ReadT;
 
-  constructor(defaultValue: WriteT|undefined, transform: ((value: WriteT) => ReadT)|null) {
+  private _inputBindingValue: WritableSignal<{
+    /**
+     * The computation to which the `InputSignal` is currently bound, if bound to a computation.
+     */
+    computation?: (() => WriteT);
+    /**
+     * If the `InputSignal` is not bound to a computation, then it's bound to a value.
+     *
+     * This might be used for an initial value, or used by Zone components binding to a
+     * input signal.
+     */
+    value?: WriteT;
+  }>;
+
+  constructor(initialValue: WriteT|undefined, transform: ((value: WriteT) => ReadT)|null) {
     super(null!, defaultEquals);
 
-    this.boundValue = defaultValue;
+    this._inputBindingValue = signal({value: initialValue});
+
+    // Computation used by `ComputedImpl`.
     this.computation = this.switchedComputation.bind(this);
 
     if (transform !== null) {
@@ -70,15 +77,13 @@ export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
   }
 
   bindToComputation(computation: () => WriteT): void {
-    this.boundComputation = computation;
-    this.boundValue = undefined;
+    this._inputBindingValue.set({computation});
     this.stale = true;
     this.producerMayHaveChanged();
   }
 
   bindToValue(value: WriteT): void {
-    this.boundComputation = null;
-    this.boundValue = value;
+    this._inputBindingValue.set({value});
     this.stale = true;
     this.producerMayHaveChanged();
   }
@@ -93,22 +98,24 @@ export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
       throw new Error(`InputSignal not yet initialized`);
     }
 
-    if (this.boundComputation !== null) {
+    const state = this._inputBindingValue();
+
+    if (state.computation !== undefined) {
       // Disable pure function memoization when running computations of input signals.
       //
       // Bound computations are generated with instructions in place to memoize allocations like
-      // object literals, or for pipe transformations. Such operations do not need to be memoized in
-      // input computations as the `InputSignal` naturally memoizes the whole expression.
+      // object literals, or for pipe transformations. Such operations do not need to be memoized
+      // in input computations as the `InputSignal` naturally memoizes the whole expression.
       const prevPureFunctionsEnabled = setPureFunctionsEnabled(false);
       try {
-        return this.transform(this.boundComputation());
+        return this.transform(state.computation());
       } finally {
         setPureFunctionsEnabled(prevPureFunctionsEnabled);
       }
     } else {
-      // `boundValue` is only `undefined` when `boundComputation` is not (unless `undefined` is
-      // actually the current value).
-      return this.transform(this.boundValue!);
+      // `value` is only set to `undefined` when `computation` is used, or if the current
+      // value is actually assignable to `WriteT`.
+      return this.transform(state.value!);
     }
   }
 }
