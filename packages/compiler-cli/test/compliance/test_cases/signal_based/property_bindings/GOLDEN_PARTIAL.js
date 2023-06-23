@@ -1,7 +1,7 @@
 /****************************************************************************************************
  * PARTIAL FILE: simple_dom_binding.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class LiteralValueBinding {
 }
@@ -32,7 +32,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }] });
 export class FromContextBindingSignal {
     constructor() {
-        this.isDisabled = () => true; // TODO
+        this.isDisabled = signal(true);
     }
 }
 FromContextBindingSignal.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FromContextBindingSignal, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -60,7 +60,7 @@ export declare class FromContextBindingStatic {
     static ɵcmp: i0.ɵɵComponentDeclaration<FromContextBindingStatic, "app", never, {}, {}, never, never, false, never, true>;
 }
 export declare class FromContextBindingSignal {
-    isDisabled: () => boolean;
+    isDisabled: import("@angular/core").WritableSignal<boolean>;
     static ɵfac: i0.ɵɵFactoryDeclaration<FromContextBindingSignal, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<FromContextBindingSignal, "app", never, {}, {}, never, never, false, never, true>;
 }
