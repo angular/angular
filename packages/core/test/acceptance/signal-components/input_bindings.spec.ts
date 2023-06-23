@@ -198,6 +198,44 @@ describe('Signal component inputs', () => {
         expect(dir2Instance.testInput()).toEqual(['foo', 'bar']);
         expect(dir1Instance.testInput()).toBe(dir2Instance.testInput());
       });
+
+      /*
+
+Error: AssertionError: unresolved LexicalRead of i
+
+
+ cannot bind to lexical read, implicit receiver read without function
+ call expression.
+
+      */
+      xit('should be able to bind to local refs in expressions', () => {
+        @Component({
+          standalone: true,
+          signals: true,
+          template: '{{elementBinding() !== undefined}}',
+          selector: 'whatever',
+        })
+        class Whatever {
+          @Input() elementBinding = input<HTMLElement>({required: true});
+        }
+
+        @Component({
+          template: `
+            <whatever [elementBinding]="varx">
+          `,
+          signals: true,
+          standalone: true,
+          imports: [Whatever],
+        })
+        class App {
+          varx = () => (true);
+        }
+
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.textContent).toBe('true');
+      });
     });
 
     // TODO:
