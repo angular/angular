@@ -36,7 +36,7 @@ function lookupElement(
  * Removes the op if its expression is empty.
  */
 function removeIfExpressionIsEmpty(op: ir.UpdateOp|ir.CreateOp, expression: o.Expression) {
-  if (expression instanceof o.EmptyExpr) {
+  if (expression instanceof ir.EmptyExpr) {
     ir.OpList.remove(op as ir.UpdateOp);
     return true;
   }

@@ -187,7 +187,7 @@ function convertAst(ast: e.AST, cpl: ComponentCompilation): o.Expression {
     return new ir.SafeInvokeFunctionExpr(
         convertAst(ast.receiver, cpl), ast.args.map(a => convertAst(a, cpl)));
   } else if (ast instanceof e.EmptyExpr) {
-    return new o.EmptyExpr();
+    return new ir.EmptyExpr();
   } else {
     throw new Error(`Unhandled expression type: ${ast.constructor.name}`);
   }
