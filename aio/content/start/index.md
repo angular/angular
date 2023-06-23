@@ -258,13 +258,6 @@ The Phone XL price is over &dollar;700, so the **Notify Me** button appears on t
 To make the **Notify Me** button work, the child component needs to notify and pass the data to the parent component.
 The `ProductAlertsComponent` needs to emit an event when the user clicks **Notify Me** and the `ProductListComponent` needs to respond to the event.
 
-<div class="alert is-helpful">
-
-In new components, the Angular Generator includes an empty `constructor()`, the `OnInit` interface, and the `ngOnInit()` method.
-Since these steps don't use them, the following code examples omit them for brevity.
-
-</div>
-
 1.  In `product-alerts.component.ts`, import `Output` and `EventEmitter` from `@angular/core`.
 
     <code-example header="src/app/product-alerts/product-alerts.component.ts" path="getting-started/src/app/product-alerts/product-alerts.component.ts" region="imports"></code-example>
