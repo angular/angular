@@ -1011,6 +1011,9 @@
     "name": "getTView"
   },
   {
+    "name": "getVirtualInstructionIndex"
+  },
+  {
     "name": "hasTagAndTypeMatch"
   },
   {
