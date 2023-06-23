@@ -124,7 +124,7 @@ export class ComputedImpl<T> extends ReactiveNode {
     this.recomputeValue();
   }
 
-  private recomputeValue(): void {
+  protected recomputeValue(): void {
     if (this.value === COMPUTING) {
       // Our computation somehow led to a cyclic read of itself.
       throw new Error('Detected cycle in computations.');

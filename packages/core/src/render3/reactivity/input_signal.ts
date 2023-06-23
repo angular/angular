@@ -49,6 +49,14 @@ export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
   protected isInitialized = true;
   protected transform: (value: WriteT) => ReadT;
 
+  /**
+   * Whether to skip polling our dependencies for change.
+   *
+   * Input signals can have their computation/value updated directly (the change doesn't come from
+   * producers, but rather is initiated at this node).
+   */
+  protected assumeDependenciesHaveChanged = false;
+
   constructor(defaultValue: WriteT|undefined, transform: ((value: WriteT) => ReadT)|null) {
     super(null!, defaultEquals);
 
@@ -73,6 +81,7 @@ export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
     this.boundComputation = computation;
     this.boundValue = undefined;
     this.stale = true;
+    this.assumeDependenciesHaveChanged = true;
     this.producerMayHaveChanged();
   }
 
@@ -80,6 +89,7 @@ export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
     this.boundComputation = null;
     this.boundValue = value;
     this.stale = true;
+    this.assumeDependenciesHaveChanged = true;
     this.producerMayHaveChanged();
   }
 
@@ -110,6 +120,18 @@ export class InputSignalImpl<ReadT, WriteT> extends ComputedImpl<ReadT> {
       // actually the current value).
       return this.transform(this.boundValue!);
     }
+  }
+
+  protected override recomputeValue(): void {
+    this.assumeDependenciesHaveChanged = false;
+    super.recomputeValue();
+  }
+
+  protected override consumerPollProducersForChange(): boolean {
+    if (this.assumeDependenciesHaveChanged) {
+      return true;
+    }
+    return super.consumerPollProducersForChange();
   }
 }
 
