@@ -29,6 +29,9 @@ export function runTests(
       if (USE_TEMPLATE_PIPELINE && test.skipForTemplatePipeline) {
         continue;
       }
+      if (!USE_TEMPLATE_PIPELINE && test.onlyForTemplatePipeline) {
+        continue;
+      }
 
       describe(`[${test.relativePath}]`, () => {
         const itFn = test.focusTest ? fit : test.excludeTest ? xit : it;
