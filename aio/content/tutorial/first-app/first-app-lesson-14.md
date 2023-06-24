@@ -1,31 +1,20 @@
-# Lesson 14 - Add HTTP communication to your app
+# Lesson 14: Add HTTP communication to your app
 
 This tutorial demonstrates how to integrate HTTP and an API into your app. 
 
 Up until this point your app has read data from a static array in an Angular service. The next step is to use a JSON server that your app will communicate with over HTTP. The HTTP request will simulate the experience of working with data from a server.
 
-**Time required:** expect to spend about 20 minutes to complete this lesson.
+**Estimated time**: ~15 minutes
 
-## Before you start
+**Starting code:** <live-example name="first-app-lesson-06"></live-example>
 
-This lesson starts with the code from the previous lesson, so you can:
+**Completed code:** <live-example name="first-app-lesson-07"></live-example>
 
-*   Use the code that you created in Lesson 13 in your integrated development environment (IDE).
-*   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-13"></live-example> from Lesson 13 where you can:
-    *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-    *   Use the *download example* and open it in your IDE.
-
-If you haven't reviewed the introduction, visit the [Introduction to Angular tutorial](tutorial/first-app) to make sure you have everything you need to complete this lesson.
-
-## After you finish
+## What you'll learn
 
 *  Your app will use data from a JSON server
 
-## Lesson steps
-
-Perform these steps in the terminal on your local computer.
-
-### Step 1 - Configure the JSON server
+## Step 1 - Configure the JSON server
 JSON Server is an open source tool used to create mock REST APIs. You'll use it to serve the housing location data that is currently stored in the housing service.
 
 1.  Install `json-server` from npm by using the following command.
@@ -155,7 +144,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
 
 If you have any trouble with your configuration, you can find more details in the [official documentation](https://www.npmjs.com/package/json-server).
 
-### Step 2 - Update service to use web server instead of local array
+## Step 2 - Update service to use web server instead of local array
 The data source has been configured, the next step is to update your web app to connect to it use the data.
 
 1.  In `src/app/housing.service.ts`, make the following changes:
@@ -184,7 +173,7 @@ The data source has been configured, the next step is to update your web app to 
 
         <code-example header="Final version of housing.service.ts" path="first-app-lesson-14/src/app/housing.service.ts"></code-example>
 
-### Step 3 - Update the components to use asynchronous calls to the housing service
+## Step 3 - Update the components to use asynchronous calls to the housing service
 The server is now reading data from the `HTTP` request but the components that rely on the service now have errors because they were programmed to use the synchronous version of the service.
 
 1.  In `src/app/home/home.component.ts`, update the constructor to use the new asynchronous version of the `getAllHousingLocations` method.
