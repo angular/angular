@@ -284,7 +284,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * The desired loading behavior (lazy, eager, or auto).
    *
-   * Setting images as loading='eager' or loading='auto' marks them
+   * Setting images as loading='lazy' or loading='auto' marks them
    * as non-priority images. Avoid changing this input for priority images.
    */
   @Input() loading?: 'lazy'|'eager'|'auto';
@@ -423,7 +423,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       this.setHostAttribute('srcset', rewrittenSrcset);
     }
 
-    if (this.isServer && this.priority) {
+    if (this.isServer && this.priority) {f
       this.preloadLinkCreator.createPreloadLinkTag(
           this.renderer, rewrittenSrc, rewrittenSrcset, this.sizes);
     }
