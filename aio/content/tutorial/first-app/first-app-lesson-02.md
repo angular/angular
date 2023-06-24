@@ -1,23 +1,13 @@
-# First Angular app lesson 2 - Create Home component
-
+# Lesson 2: Create Home component
 This tutorial lesson demonstrates how to create a new [component](/guide/component-overview) for your Angular app.
 
-**Time required:** expect to spend about 10 minutes to complete this lesson.
+**Estimated time**: ~10 minutes
 
-## Before you start
+**Starting code:** <live-example name="first-app-lesson-01"></live-example>
 
-This lesson starts with the code from the previous lesson, so you can:
+**Completed code:** <live-example name="first-app-lesson-02"></live-example>
 
-*   Use the code that you created in Lesson 1 in your integrated development environment (IDE).
-*   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-01"></live-example> from Lesson 1 where you can:
-    *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-    *   Use the *download example* and open it in your IDE.
-
-If you haven't reviewed the introduction, visit the [Introduction to Angular tutorial](tutorial/first-app) to make sure you have everything you need to complete this lesson.
-
-If you have any trouble during this lesson, you can review the completed code for this lesson, in the <live-example></live-example> for this lesson.
-
-## After you finish
+## What you'll learn
 
 Your app has a new component: `HomeComponent`.
 
@@ -26,10 +16,6 @@ Your app has a new component: `HomeComponent`.
 Angular apps are built around components, which are Angular's building blocks.
 Components contain the code, HTML layout, and CSS style information that provide the function and appearance of an element in the app.
 In Angular, components can contain other components. An app's functions and appearance can be divided and partitioned into components.
-
-In [Lesson 1](tutorial/first-app/first-app-lesson-01), you updated the `AppComponent`, whose function is to contain all the other components.
-In this lesson, you create a `HomeComponent` to display the home page of the app.
-In later lessons, you create more components to provide more features to the app.
 
 In Angular, components have metadata that define its properties.
 When you create your `HomeComponent`, you use these properties:
@@ -40,13 +26,9 @@ When you create your `HomeComponent`, you use these properties:
 *   `template`: to describe the component's HTML markup and layout.
 *   `styleUrls`: to list the URLs of the CSS files that the component uses in an array.
 
-Components have other [properties](/api/core/Component), but these are the ones used by `HomeComponent`.
+[Learn more about Components.](/api/core/Component)
 
-## Lesson steps
-
-Perform these steps on the app code in your IDE.
-
-### Step 1 - Create the `HomeComponent`
+## Step 1 - Create the `HomeComponent`
 
 In this step, you create a new component for your app.
 
@@ -77,7 +59,7 @@ In the **Terminal** pane of your IDE:
     </div>
 1.  Leave `ng serve` running as you complete the next steps.
 
-### Step 2 - Add the new component to your app's layout
+## Step 2 - Add the new component to your app's layout
 
 In this step, you add the new component, `HomeComponent` to your app's root component, `AppComponent`, so that it displays in your app's layout.
 
@@ -104,7 +86,7 @@ In the **Edit** pane of your IDE:
 <img alt="browser frame of page displaying the text 'home works!'" src="generated/images/guide/faa/homes-app-lesson-02-step-2.png">
 </section>
 
-### Step 3 - Add features to `HomeComponent`
+## Step 3 - Add features to `HomeComponent`
 
 In this step you add features to `HomeComponent`.
 
