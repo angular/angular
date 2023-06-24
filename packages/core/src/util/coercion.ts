@@ -9,6 +9,10 @@
 /**
  * Transforms a value (typically a string) to a boolean.
  * Intended to be used as a transform function of an input.
+ *
+ *  @usageNotes
+ *   @Input({ transform: booleanAttribute }) status!: boolean;
+ *
  * @param value Value to be transformed.
  *
  * @publicApi
@@ -22,6 +26,9 @@ export function booleanAttribute(value: unknown): boolean {
  * Intended to be used as a transform function of an input.
  * @param value Value to be transformed.
  * @param fallbackValue Value to use if the provided value can't be parsed as a number.
+ *
+ *  @usageNotes
+ *  @Input({ transform: numberAttribute }) id!: number;
  *
  * @publicApi
  */
