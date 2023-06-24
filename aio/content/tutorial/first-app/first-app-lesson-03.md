@@ -1,30 +1,17 @@
-# First Angular app lesson 3 - Create the application’s HousingLocation component
+# Lesson 3: Create the application’s HousingLocation component
 
 This tutorial lesson demonstrates how to add the `HousingLocation` component to your Angular app.
 
-**Time required:** expect to spend about 10 minutes to complete this lesson.
+**Estimated time**: ~10 minutes
 
-## Before you start
+**Starting code:** <live-example name="first-app-lesson-02"></live-example>
 
-This lesson starts with the code from the previous lesson, so you can:
+**Completed code:** <live-example name="first-app-lesson-03"></live-example>
 
-*   Use the code that you created in Lesson 2 in your integrated development environment (IDE).
-*   Start with the code example from the previous lesson. Choose the <live-example name="first-app-lesson-02"></live-example> from Lesson 1 where you can:
-    *   Use the *live example* in StackBlitz, where the StackBlitz interface is your IDE.
-    *   Use the *download example* and open it in your IDE.
+## What you'll learn
+* Your app has a new component: `HousingLocationComponent` and it displays a message confirming that the component was added to your application.
 
-If you haven't reviewed the introduction, visit the [Introduction to Angular tutorial](tutorial/first-app) to make sure you have everything you need to complete this lesson.
-
-If you have any trouble during this lesson, you can review the completed code for this lesson, in the <live-example></live-example> for this lesson.
-
-## After you finish
-Your app has a new component, `HousingLocationComponent`, and it displays a message confirming that the component was added to your application.
-
-## Lesson steps
-
-Perform these steps on the app code in your IDE.
-
-### Step 1 - Create the `HousingLocationComponent`
+## Step 1 - Create the `HousingLocationComponent`
 
 In this step, you create a new component for your app.
 
@@ -53,7 +40,7 @@ In the **Terminal** pane of your IDE:
     </div>
 1.  Leave `ng serve` running as you complete the next steps.
 
-### Step 2 - Add the new component to your app's layout
+## Step 2 - Add the new component to your app's layout
 
 In this step, you add the new component, `HousingLocationComponent` to your app's `HomeComponent`, so that it displays in your app's layout.
 
@@ -72,7 +59,7 @@ In the **Edit** pane of your IDE:
 
     <code-example header="Add housing location to the component template in src/app/home/home.component.ts" path="first-app-lesson-03/src/app/home/home.component.ts" region="add-housingLocation-to-template"></code-example>
 
-### Step 3 - Add the styles for the component
+## Step 3 - Add the styles for the component
 
 In this step, you will copy over the pre-written styles for the `HousingLocationComponent` to your app so that the app renders properly.
 
